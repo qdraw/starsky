@@ -50,7 +50,7 @@ steps:
   displayName: 'Cake Client'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs -runtime="linux-arm,linux-arm64" -target="Client"'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
@@ -58,7 +58,7 @@ steps:
   displayName: 'Cake SonarBuildTest'
   inputs:
     filePath: 'starsky\build.ps1'
-    arguments: '-ScriptArgs ''-runtime="linux-arm,linux-arm64" -target="SonarBuildTest" '''
+    arguments: '-runtime="linux-arm,linux-arm64" -target="SonarBuildTest"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 
