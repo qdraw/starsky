@@ -45,6 +45,13 @@ steps:
     version: 3.1.201
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet tool restore'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'restore'
+
 - task: PowerShell@2
   displayName: 'Cake Client'
   inputs:
