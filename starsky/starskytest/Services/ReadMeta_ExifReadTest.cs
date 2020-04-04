@@ -189,6 +189,27 @@ namespace starskytest.Services
 		     Assert.AreEqual(false,item.IsDirectory );
 		 }
 
+		 
+		 [TestMethod]
+		 public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
+		 {
+			 var newImage = CreateAnQuickTimeMp4.BytesWithLocation;
+			 var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				 new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
+
+			 var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+
+			 var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Utc).ToLocalTime();
+			 Assert.AreEqual(date, item.DateTime);
+			 Assert.AreEqual(640, item.ImageWidth);
+			 Assert.AreEqual(360, item.ImageHeight);
+			 
+			 Assert.AreEqual(52.23829861111111, item.Latitude,0.001);
+			 Assert.AreEqual(6.025800238715278, item.Longitude,0.001);
+
+			 Assert.AreEqual(false,item.IsDirectory );
+		 }
+		 
 		 // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
 		 private static Directory BuildDirectory(IEnumerable<object> values)
 		 {
