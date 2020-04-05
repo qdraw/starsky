@@ -173,5 +173,26 @@ namespace starskytest.Helpers
 		{
 			Assert.AreEqual(119, ExtensionRolesHelper.StringToByteArray("77")[0]);
 		}
+
+		[TestMethod]
+		public void MapFileTypesToExtension_fileWithNoExtension()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension("no_ext");
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
+		
+		[TestMethod]
+        public void MapFileTypesToExtension_fileWithNonExistingExtension()
+        {
+        	var result = ExtensionRolesHelper.MapFileTypesToExtension("non.ext");
+        	Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+        }
+        
+        [TestMethod]
+        public void MapFileTypesToExtension_Null()
+        {
+	        var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+        }
 	}
 }
