@@ -199,14 +199,14 @@ namespace starskytest.Helpers
         public void IsExtensionExifToolSupported_Null()
         {
 	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
-	        Assert.IsTrue(result);
+	        Assert.IsFalse(result);
         }
         
         [TestMethod]
         public void IsExtensionExifToolSupported_fileWithNoExtension()
         {
 	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
-	        Assert.IsTrue(result);
+	        Assert.IsFalse(result);
         }
 	}
 }

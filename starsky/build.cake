@@ -256,7 +256,7 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
-                          .Append("-m:1") /* https://github.com/tonerdo/coverlet/issues/725#issuecomment-584048861 */
+                          .Append("-maxcpucount:1") /* https://github.com/tonerdo/coverlet/issues/725#issuecomment-584048861 */
                           .Append("/p:CollectCoverage=true")
                           .Append("/p:CoverletOutputFormat=opencover")
                           .Append("/p:ThresholdType=line")
