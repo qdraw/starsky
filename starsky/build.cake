@@ -31,6 +31,7 @@ var configuration = Argument("Configuration", "Release");
 
 var genericName = "generic-netcore";
 var runtimeInput = Argument("runtime", genericName);
+var branchName = Argument("branch", "");
 
 /* to get a list with the generic item */
 var runtimes = runtimeInput.Split(",").ToList();
@@ -52,6 +53,7 @@ System.Console.WriteLine(buildForInformation.ToString());
 /* done, build info*/
 
 Information($"Running target {target} in configuration {configuration}");
+if(branchName != "") Information($"Using branchName overwrite: {branchName}");
 
 var publishProjectNames = new List<string>{
     "starskyadmincli",
@@ -425,8 +427,12 @@ Task("SonarBegin")
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
         var gitBranch = GitBranchCurrent(parent);
-        var branchName = gitBranch.FriendlyName;
-        if(branchName == "(no branch)") {
+
+        // allow to overwrite the branch name
+        if(branchName == "" && gitBranch.FriendlyName != "(no branch)") {
+          var branchName = gitBranch.FriendlyName; // fallback as (no branch)
+        }
+        else if(branchName == "(no branch)") {
           branchName = "master";
         }
 
@@ -444,8 +450,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 

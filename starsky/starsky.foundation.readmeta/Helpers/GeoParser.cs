@@ -95,17 +95,16 @@ namespace starsky.foundation.readmeta.Helpers
 
             string[] parts = isoStr.Split(new char[] { '+', '-' }, StringSplitOptions.None);
             if (parts.Length < 3 || parts.Length > 4)  // Check for parts count
-                parts = null;
+	            return geoListItem;
             if (parts[0].Length != 0)  // Check if first part is empty
-                parts = null;
+	            return geoListItem;
 
             int point = parts[1].IndexOf('.');
             if (point != 2 && point != 4 && point != 6) // Check for valid lenght for lat/lon
-                parts = null;
-            if (point != parts[2].IndexOf('.') - 1) // Check for lat/lon decimal positions
-                parts = null;
+	            return geoListItem;
 
-            if ( parts == null ) return geoListItem;
+            if (point != parts[2].IndexOf('.') - 1) // Check for lat/lon decimal positions
+	            return geoListItem;
             
             NumberFormatInfo fi = NumberFormatInfo.InvariantInfo; 
 
@@ -125,14 +124,16 @@ namespace starsky.foundation.readmeta.Helpers
             else  // point==8
             {
 	            geoListItem.Latitude = float.Parse(parts[1].Substring(0, 2), fi) * 3600 + 
-	                                   float.Parse(parts[1].Substring(2, 2), fi) * 60 + float.Parse(parts[1].Substring(4), fi);
+	                                   float.Parse(parts[1].Substring(2, 2), fi) * 60 + 
+	                                   float.Parse(parts[1].Substring(4), fi);
 	            geoListItem.Longitude = float.Parse(parts[2].Substring(0, 3), fi) * 3600 + 
-	                                    float.Parse(parts[2].Substring(3, 2), fi) * 60 + float.Parse(parts[2].Substring(5), fi);
+	                                    float.Parse(parts[2].Substring(3, 2), fi) * 60 + 
+	                                    float.Parse(parts[2].Substring(5), fi);
             }
             
             // Parse altitude, just to check if it is valid
-            if (parts.Length == 4)
-                float.Parse(parts[3], fi);
+            if ( parts.Length == 4 && !float.TryParse(parts[3], NumberStyles.Float, fi, out _))
+	            return geoListItem;
 
             // Add proper sign to lat/lon
             if (isoStr[0] == '-')

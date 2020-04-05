@@ -33,6 +33,27 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 		}
 
 		[TestMethod]
+		public void GeoParser_ParseIsoString_DoesNotEndOnSlash()
+		{
+			var result = GeoParser.ParseIsoString("-05.2169-080.6303"); // no slash here
+			Assert.AreEqual(0,result.Latitude,0.001);
+		}
+		
+		[TestMethod]
+		public void GeoParser_ParseIsoString_WrongPlusFormat()
+		{
+			var result = GeoParser.ParseIsoString("0-05"); 
+			Assert.AreEqual(0,result.Latitude,0.001);
+		}
+		
+		[TestMethod]
+		public void GeoParser_ParseIsoString_LotsOfMinus()
+		{
+			var result = GeoParser.ParseIsoString("0-05-0-0-0-0-0-0-0-0"); 
+			Assert.AreEqual(0,result.Latitude,0.001);
+		}
+		
+		[TestMethod]
 		public void GeoParser_ParseIsoString_Peru()
 		{
 			var result = GeoParser.ParseIsoString("-05.2169-080.6303/");
