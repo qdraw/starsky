@@ -194,5 +194,19 @@ namespace starskytest.Helpers
 	        var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
 	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
         }
+
+        [TestMethod]
+        public void IsExtensionExifToolSupported_Null()
+        {
+	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
+	        Assert.IsTrue(result);
+        }
+        
+        [TestMethod]
+        public void IsExtensionExifToolSupported_fileWithNoExtension()
+        {
+	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
+	        Assert.IsTrue(result);
+        }
 	}
 }
