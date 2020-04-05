@@ -429,14 +429,14 @@ Task("SonarBegin")
         var gitBranch = GitBranchCurrent(parent);
 
         // allow to overwrite the branch name
-        if(branchName == "" && gitBranch.FriendlyName != "(no branch)") {
-          var branchName = gitBranch.FriendlyName; // fallback as (no branch)
+        if (branchName == "" && gitBranch.FriendlyName != "(no branch)") {
+          branchName = gitBranch.FriendlyName; // fallback as (no branch)
         }
-        else if(branchName == "(no branch)") {
+        // replace default value to master
+        if (branchName == "(no branch)" || branchName == "") {
           branchName = "master";
         }
-
-        Information($">> Branch: {branchName}");
+        Information($">> Selecting Branch: {branchName}");
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
