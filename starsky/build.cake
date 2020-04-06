@@ -246,6 +246,18 @@ Task("TestNetCore")
         {
             Information("Testing project " + project);
 
+            string testParentPath = System.IO.Directory.GetParent(project.ToString()).FullName;
+
+            /* clean test results */
+            var testResultsFolder = System.IO.Path.Combine(testParentPath, "TestResults");
+            if (DirectoryExists(testResultsFolder))
+            {
+                Information(">> Removing folder => " + testResultsFolder);
+                DeleteDirectory(testResultsFolder, new DeleteDirectorySettings {
+                    Recursive = true
+                });
+            }
+
             DotNetCoreTest(
                 project.ToString(),
                 new DotNetCoreTestSettings()
@@ -256,25 +268,22 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
-                          .Append("-maxcpucount:1") /* https://github.com/tonerdo/coverlet/issues/725#issuecomment-584048861 */
-                          .Append("/p:CollectCoverage=true")
-                          .Append("/p:CoverletOutputFormat=opencover")
-                          .Append("/p:ThresholdType=line")
-                          .Append("/p:hideMigrations=\"true\"")
-                          .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starsky.foundation.database.Migrations.*\"")
-                          .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
-                          .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
-                          .Append("/p:Threshold=0")
+                          .Append("--collect:\"XPlat Code Coverage\"")
+                          .Append("--settings build.vstest.runsettings.xml")
                 });
 
-            // Check if there is any output
-            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
-            string coverageFile = System.IO.Path.Combine(parent, "netcore-coverage.opencover.xml");
+            var coverageEnum = GetFiles("./**/coverage.opencover.xml");
 
-            Information("CoverageFile " + coverageFile);
+            // Get the FirstOrDefault() but there is no LINQ here
+            var coverageFilePath =  System.IO.Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
+            foreach(var item in coverageEnum)
+            {
+              CopyFile(item.FullPath, coverageFilePath);
+            }
+            Information("CoverageFile " + coverageFilePath);
 
-            if (!FileExists(coverageFile)) {
-                throw new Exception("CoverageFile missing " + coverageFile);
+            if (!FileExists(coverageFilePath)) {
+                throw new Exception("CoverageFile missing " + coverageFilePath);
             }
         }
     });
