@@ -268,6 +268,7 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
+                          .Append("--logger trx")
                           .Append("--collect:\"XPlat Code Coverage\"")
                           .Append("--settings build.vstest.runsettings.xml")
                 });
