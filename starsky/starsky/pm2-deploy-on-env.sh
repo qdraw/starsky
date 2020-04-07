@@ -103,6 +103,10 @@ if [ -f starskywebhtmlcli ]; then
     chmod +rwx ./starskywebhtmlcli
 fi
 
+if [ -f starskyadmincli ]; then
+    chmod +rwx ./starskyadmincli
+fi
+
 if [ -f pm2-deploy-on-env.sh ]; then
     chmod +rwx ./pm2-deploy-on-env.sh
 fi
