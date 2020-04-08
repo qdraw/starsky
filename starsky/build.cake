@@ -13,11 +13,11 @@ ARM64: 'linux-arm64'
 */
 
 // For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.3.6"
+#tool "nuget:?package=ReportGenerator&version=4.5.1"
 
 // SonarQube
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.6.0
-#addin nuget:?package=Cake.Sonar&version=1.1.22
+#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
+#addin nuget:?package=Cake.Sonar&version=1.1.25
 
 // Get Git info
 #addin nuget:?package=Cake.Git&version=0.21.0
@@ -31,6 +31,7 @@ var configuration = Argument("Configuration", "Release");
 
 var genericName = "generic-netcore";
 var runtimeInput = Argument("runtime", genericName);
+var branchName = Argument("branch", "");
 
 /* to get a list with the generic item */
 var runtimes = runtimeInput.Split(",").ToList();
@@ -52,6 +53,7 @@ System.Console.WriteLine(buildForInformation.ToString());
 /* done, build info*/
 
 Information($"Running target {target} in configuration {configuration}");
+if(branchName != "") Information($"Using branchName overwrite: {branchName}");
 
 var publishProjectNames = new List<string>{
     "starskyadmincli",
@@ -68,10 +70,36 @@ var testProjectNames = new List<string>{
     "starskytest"
 };
 
+Task("TestEnv")
+    .Does(() =>
+    {
+        // is allowed to write in a temp folder (used by coverlet)
+        string systemTempPath = System.IO.Path.GetTempPath();
+        if (!DirectoryExists(systemTempPath))
+        {
+            throw new Exception($"missing temp path {systemTempPath}");
+        }
+        else {
+            var tempTestFile = System.IO.Path.Combine(systemTempPath, "__starsky.test");
+            if (FileExists(tempTestFile))
+            {
+                DeleteFile(tempTestFile);
+            }
+
+            System.IO.File.Create(tempTestFile).Dispose();
+            // if not it will fail
+
+            Information($"{systemTempPath} exist");
+        }
+    });
+
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
 Task("CleanNetCore")
     .Does(() =>
     {
+        Information("DotNetCoreClean for .");
+        DotNetCoreClean(".");
+
         foreach(var runtime in runtimes)
         {
             if (FileExists($"starsky-{runtime}.zip"))
@@ -81,7 +109,8 @@ Task("CleanNetCore")
             var distDirectory = Directory($"./{runtime}");
             CleanDirectory(distDirectory);
 
-            CleanDirectory($"obj/Release/netcoreapp3.0/{runtime}");
+            CleanDirectory($"obj/Release/netcoreapp3.1/{runtime}");
+
         }
     });
 
@@ -217,34 +246,45 @@ Task("TestNetCore")
         {
             Information("Testing project " + project);
 
+            string testParentPath = System.IO.Directory.GetParent(project.ToString()).FullName;
+
+            /* clean test results */
+            var testResultsFolder = System.IO.Path.Combine(testParentPath, "TestResults");
+            if (DirectoryExists(testResultsFolder))
+            {
+                Information(">> Removing folder => " + testResultsFolder);
+                DeleteDirectory(testResultsFolder, new DeleteDirectorySettings {
+                    Recursive = true
+                });
+            }
+
             DotNetCoreTest(
                 project.ToString(),
                 new DotNetCoreTestSettings()
                 {
                     Configuration = configuration,
                     NoBuild = true,
-                    ArgumentCustomization = args => args.Append("--no-restore")
-                                             .Append("/p:CollectCoverage=true")
-                                             .Append("--no-build")
-                                             .Append("--nologo")
-                                             .Append("/p:CoverletOutputFormat=opencover")
-                                             .Append("/p:ThresholdType=line")
-                                             .Append("/p:hideMigrations=\"true\"")
-                                             .Append("/p:Exclude=\"[MySqlConnector]*%2c[starsky.Views]*%2c[*]starsky.foundation.database.Migrations.*\"")
-                                             .Append("/p:ExcludeByFile=\"*C:\\projects\\mysqlconnector\\src\\MySqlConnector*%2c../starsky.foundation.database/Migrations/*\"") // (, comma seperated)
-                                             .Append("/p:CoverletOutput=\"netcore-coverage.opencover.xml\"")
-                                             .Append("/p:Threshold=0")
-
+                    ArgumentCustomization = args => args
+                          .Append("--no-restore")
+                          .Append("--no-build")
+                          .Append("--nologo")
+                          .Append("--logger trx")
+                          .Append("--collect:\"XPlat Code Coverage\"")
+                          .Append("--settings build.vstest.runsettings.xml")
                 });
 
-            // Check if there is any output
-            string parent = System.IO.Directory.GetParent(project.ToString()).FullName;
-            string coverageFile = System.IO.Path.Combine(parent, "netcore-coverage.opencover.xml");
+            var coverageEnum = GetFiles("./**/coverage.opencover.xml");
 
-            Information("CoverageFile " + coverageFile);
+            // Get the FirstOrDefault() but there is no LINQ here
+            var coverageFilePath =  System.IO.Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
+            foreach(var item in coverageEnum)
+            {
+              CopyFile(item.FullPath, coverageFilePath);
+            }
+            Information("CoverageFile " + coverageFilePath);
 
-            if (!FileExists(coverageFile)) {
-                throw new Exception("CoverageFile missing " + coverageFile);
+            if (!FileExists(coverageFilePath)) {
+                throw new Exception("CoverageFile missing " + coverageFilePath);
             }
         }
     });
@@ -397,12 +437,16 @@ Task("SonarBegin")
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
         var gitBranch = GitBranchCurrent(parent);
-        var branchName = gitBranch.FriendlyName;
-        if(branchName == "(no branch)") {
+
+        // allow to overwrite the branch name
+        if (branchName == "" && gitBranch.FriendlyName != "(no branch)") {
+          branchName = gitBranch.FriendlyName; // fallback as (no branch)
+        }
+        // replace default value to master
+        if (branchName == "(no branch)" || branchName == "") {
           branchName = "master";
         }
-
-        Information($">> Branch: {branchName}");
+        Information($">> Selecting Branch: {branchName}");
 
         SonarBegin(new SonarBeginSettings{
             Name = "Starsky",
@@ -416,8 +460,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/starsky.foundation.database/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 
@@ -486,6 +530,7 @@ Task("DocsGenerate")
 
 // React app build steps
 Task("Client")
+  .IsDependentOn("TestEnv")
   .IsDependentOn("ClientRestore")
   .IsDependentOn("ClientBuild")
   .IsDependentOn("ClientTest");
@@ -496,28 +541,36 @@ Task("BuildNetCore")
     .IsDependentOn("RestoreNetCore")
     .IsDependentOn("BuildNetCoreGeneric");
 
+Task("SonarBuildTest")
+    .IsDependentOn("SonarBegin")
+    .IsDependentOn("BuildNetCore")
+    .IsDependentOn("TestNetCore")
+    .IsDependentOn("SonarEnd");
+
+Task("CoverageDocs")
+    .IsDependentOn("MergeCoverageFiles")
+    .IsDependentOn("CoverageReport")
+    .IsDependentOn("DocsGenerate");
+
 // The default task to run if none is explicitly specified. In this case, we want
 // to run everything starting from Clean, all the way up to Publish.
 Task("Default")
     .IsDependentOn("Client")
-    .IsDependentOn("SonarBegin")
-    .IsDependentOn("BuildNetCore")
-    .IsDependentOn("TestNetCore")
-    .IsDependentOn("SonarEnd")
+    .IsDependentOn("SonarBuildTest")
     .IsDependentOn("BuildNetCoreRuntimeSpecific")
     .IsDependentOn("PublishWeb")
-    .IsDependentOn("MergeCoverageFiles")
-    .IsDependentOn("CoverageReport")
-    .IsDependentOn("DocsGenerate")
+    .IsDependentOn("CoverageDocs")
     .IsDependentOn("Zip");
 
-// ./build.sh --Target=BuildTestNetCore
-Task("BuildTestNetCore")
+// ./build.sh --Target=BuildTestOnlyNetCore
+Task("BuildTestOnlyNetCore")
+    .IsDependentOn("TestEnv")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
     .IsDependentOn("BuildNetCoreGeneric")
     .IsDependentOn("MergeOnlyNetCoreCoverageFiles")
     .IsDependentOn("CoverageReport");
+
 
 
 // To get fast all (net core) assemblies

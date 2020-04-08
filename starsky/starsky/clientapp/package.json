@@ -1,31 +1,24 @@
 {
   "name": "clientapp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
+  "homepage": "/starsky/",
   "dependencies": {
-    "@reach/router": "^1.2.1",
+    "@reach/router": "^1.3.3",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.14",
-    "@types/react": "^16.9.15",
-    "@types/react-dom": "^16.9.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.34",
+    "@types/react": "^16.9.32",
+    "@types/react-dom": "^16.9.6",
     "abortcontroller-polyfill": "^1.4.0",
     "intersection-observer": "^0.7.0",
     "leaflet": "^1.6.0",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.1",
-    "typescript": "^3.7.3"
-  },
-  "proxy": "http://localhost:5000",
-  "devDependencies": {
-    "@types/enzyme": "^3.10.4",
-    "@types/leaflet": "^1.5.7",
-    "@types/reach__router": "^1.2.6",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.15.1"
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,11 +26,12 @@
     "test": "react-scripts test",
     "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
-    "upgrade": "echo 'check readme.md 20191207'"
+    "upgrade": "echo 'check readme.md 20200406 3.4.1 (2020-03-20)'"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "http://localhost:5000",
   "jest": {
     "collectCoverageFrom": [
       "**/*.{ts,tsx}",
@@ -76,5 +70,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.10.5",
+    "@types/leaflet": "^1.5.12",
+    "@types/reach__router": "^1.3.4",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2"
   }
 }

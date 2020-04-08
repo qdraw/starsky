@@ -11,17 +11,16 @@ const isValidDate = (inputDateTime: string | undefined): boolean => {
 
 const leftPad = (n: number) => {
   return n > 9 ? "" + n : "0" + n;
-}
+};
 
 /**
  * Return difference in Minutes
  * @param date a Javascript Datetime stamp (unix*1000)
+ * @param now Javascript now
  */
-const differenceInDate = (date: number): number => {
-  let now = new Date().valueOf();
-  let difference = (now - date) / 60000;
-  return difference;
-}
+const differenceInDate = (date: number, now: number = new Date().valueOf()): number => {
+  return (now - date) / 60000;
+};
 
 const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!inputDateTime) return null;
@@ -29,7 +28,7 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!input) return null;
   let difference = differenceInDate(input);
   return difference <= 0.2;
-}
+};
 
 const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedLanguages): string => {
   let date = "";
@@ -78,5 +77,13 @@ const parseTime = (dateTime: string | undefined): string => {
   return date;
 }
 
-export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, };
+const secondsToHours = (seconds: number): string => {
+  if (isNaN(seconds)) return '0:00';
+  const time = new Date(0);
+  time.setUTCSeconds(seconds);
+  if (time.getUTCHours() === 0) return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
+  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
+}
+
+export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours };
 

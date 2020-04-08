@@ -4,6 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{bc265f9e-e0f1-46da-9c40-0babe44de9ee}</ProjectGuid>
+        <DebugType>Full</DebugType>
     </PropertyGroup>
 
     <ItemGroup>

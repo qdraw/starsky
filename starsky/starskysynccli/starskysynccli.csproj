@@ -5,7 +5,8 @@
     <!-- SonarQube needs this -->
     <ProjectGuid>{47d7c0fd-cee7-494c-85c2-df63234e0e5b}</ProjectGuid>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.1</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.3</RuntimeFrameworkVersion>
+      <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />

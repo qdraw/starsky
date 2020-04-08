@@ -155,8 +155,7 @@ namespace starskytest.Controllers
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-			var newImage = CreateAnImage.Bytes;
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{createAnImage.FilePath},new List<byte[]>{newImage});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{createAnImage.FilePath},new List<byte[]>{CreateAnImage.Bytes});
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller = new ExportController(_query, _appSettings, backgroundQueue, storageSelector);

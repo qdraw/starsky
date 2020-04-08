@@ -75,12 +75,18 @@ npm install --save-dev @types/leaflet
 "proxy": "http://localhost:5000",
 ```
 
+#### Homepage
+```json
+"homepage": "/starsky/",
+```
+
 #### `npm run test:ci` is used by the build-script to run all tests and ESlint
 This is added to the `package.json`
 
 ```json
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+"upgrade": "echo 'check readme.md 20200406 3.4.1 (2020-03-20)'"
 ```
 
 ### collectCoverageFrom and coverageReporters

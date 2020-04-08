@@ -3,7 +3,7 @@ import L from 'leaflet';
 import React from 'react';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import * as FetchXml from '../shared/fetch-xml';
-import DetailViewGpx from './detailview-gpx';
+import DetailViewGpx from './detail-view-gpx';
 
 describe("DetailViewGpx", () => {
 

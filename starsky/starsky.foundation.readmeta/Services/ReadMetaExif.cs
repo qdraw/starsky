@@ -395,7 +395,7 @@ namespace starsky.foundation.readmeta.Services
         /// </summary>
         /// <param name="exifItem">Directory</param>
         /// <returns>Datetime</returns>
-        public DateTime GetExifDateTime(MetadataExtractor.Directory exifItem)
+        public DateTime GetExifDateTime(Directory exifItem)
         {
             var itemDateTime = new DateTime();
             
@@ -419,12 +419,17 @@ namespace starsky.foundation.readmeta.Services
             
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
-            var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
-
-            if ( string.IsNullOrEmpty(photoShopDateCreated) ) return DateTime.MinValue;
-
             // 1970-01-01T02:00:03 formatted
+            var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
             DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+           
+            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+
+            // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
+            var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
+            DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
+	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
+            if ( itemDateTimeQuickTime.Year > 1970 ) itemDateTime = itemDateTimeQuickTime;
 
             return itemDateTime;
         }
@@ -457,17 +462,24 @@ namespace starsky.foundation.readmeta.Services
                 if (latitudeLocal != null)
                 {
                     latitudeString = latitudeLocal;
+                    continue;
+                }
+
+                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+	                p => p.DirectoryName == "QuickTime Metadata Header" 
+	                     && p.Name == "GPS Location")?.Description;
+                if ( locationQuickTime != null)
+                {
+	                return GeoParser.ParseIsoString(locationQuickTime).Latitude;
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(latitudeString))
-            {
-                var latitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
-                latitude = Math.Floor(latitude * 10000000000) / 10000000000; 
-                return latitude;
-            }
+            if ( string.IsNullOrWhiteSpace(latitudeString) )
+	            return GetXmpGeoData(allExifItems, "exif:GPSLatitude");
+            
+            var latitude = GeoParser.ConvertDegreeMinutesSecondsToDouble(latitudeString, latitudeRef);
+            return  Math.Floor(latitude * 10000000000) / 10000000000;
 
-            return GetXmpGeoData(allExifItems, "exif:GPSLatitude");
         }
 
         private double GetXmpGeoData(List<Directory> allExifItems, string propertyPath)
@@ -488,7 +500,7 @@ namespace starsky.foundation.readmeta.Services
 
 	        if ( string.IsNullOrWhiteSpace(latitudeString) ) return 0;
             
-	        var latitudeDegreeMinutes = GeoDistanceTo.ConvertDegreeMinutesToDouble(latitudeString, latitudeRef);
+	        var latitudeDegreeMinutes = GeoParser.ConvertDegreeMinutesToDouble(latitudeString, latitudeRef);
 	        return Math.Floor(latitudeDegreeMinutes * 10000000000) / 10000000000; 
         }
         
@@ -578,7 +590,7 @@ namespace starsky.foundation.readmeta.Services
         }
         
         
-        private double GetGeoLocationLongitude(List<MetadataExtractor.Directory> allExifItems)
+        private double GetGeoLocationLongitude(List<Directory> allExifItems)
         {
             var longitudeString = string.Empty;
             var longitudeRef = string.Empty;
@@ -601,12 +613,21 @@ namespace starsky.foundation.readmeta.Services
                 if (longitudeLocal != null)
                 {
                     longitudeString = longitudeLocal;
+                    continue;
+                }
+
+                var locationQuickTime = exifItem.Tags.FirstOrDefault(
+	                p => p.DirectoryName == "QuickTime Metadata Header" 
+	                     && p.Name == "GPS Location")?.Description;
+                if ( locationQuickTime != null)
+                {
+	                return GeoParser.ParseIsoString(locationQuickTime).Longitude;
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(longitudeString))
             {
-                var longitude = GeoDistanceTo.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
+                var longitude = GeoParser.ConvertDegreeMinutesSecondsToDouble(longitudeString, longitudeRef);
                 longitude = Math.Floor(longitude * 10000000000) / 10000000000; 
                 return longitude;
             }
@@ -622,29 +643,33 @@ namespace starsky.foundation.readmeta.Services
             return maxCount;
         }
             
-        public int GetImageWidthHeight(List<MetadataExtractor.Directory> allExifItems, bool isWidth)
+        public int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
         {
             // The size lives normaly in the first 5 headers
             // > "Exif IFD0" .dng
             // [Exif SubIFD] > arw; on header place 17&18
-            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "Exif IFD0", "Exif SubIFD"};
+            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "QuickTime Track Header", "Exif IFD0", "Exif SubIFD"};
             foreach (var dirName in directoryNames)
             {
                 var typeName = "Image Height";
-                if (isWidth) typeName = "Image Width";
-
-                var maxcount = GetImageWidthHeightMaxCount(dirName, allExifItems);
+                if(dirName == "QuickTime Track Header") typeName = "Height";
                 
-                for (int i = 0; i < maxcount; i++)
+                if (isWidth) typeName = "Image Width";
+                if(isWidth && dirName == "QuickTime Track Header") typeName = "Width";
+
+                var maxCount = GetImageWidthHeightMaxCount(dirName, allExifItems);
+                
+                for (int i = 0; i < maxCount; i++)
                 {
+	                if(i >= allExifItems.Count) continue;
                     var exifItem = allExifItems[i];
 
                     var ratingCountsJpeg =
-                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName));
+                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0");
                     if (ratingCountsJpeg >= 1)
                     {
                         var widthTag = exifItem.Tags
-                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName))
+                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0")
                             ?.Description;
                         widthTag = widthTag?.Replace(" pixels", string.Empty);
                         int.TryParse(widthTag, out var widthInt);
@@ -679,8 +704,6 @@ namespace starsky.foundation.readmeta.Services
                      && p.Name == iptcName)?.Description;
             return locationCity;
         }
-	    
-        
 
         /// <summary>
         /// [Exif SubIFD] Focal Length

@@ -27,8 +27,11 @@
   display: block;
   width: 100px;
   height: 100px;
-  background-image:url('../images/preloader-fancy.svg');
-  background-size: contain;
+  background-color: rgba(120, 144, 156, 0.5); 
+  /* 607D8B */
+  mask-image: url('../images/preloader-fancy.svg');
+  mask-size: contain;
+  z-index: 410;
 }
 
 .preloader.preloader--inside {

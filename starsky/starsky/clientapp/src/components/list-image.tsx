@@ -55,6 +55,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     return (<div ref={target} className="img-box--error" />);
   }
 
+  // for example show gpx, raw and mp4 as icon
   if (props.imageFormat !== ImageFormat.bmp && props.imageFormat !== ImageFormat.gif &&
     props.imageFormat !== ImageFormat.jpg && props.imageFormat !== ImageFormat.png) {
     return (<div ref={target} className={`img-box--error img-box--unsupported img-box--${props.imageFormat}`} />);
