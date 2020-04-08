@@ -15,14 +15,16 @@
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
 - []  (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
-# version 0.2.1 - 2020-03-31
-- [x]   (bug) _Front-end_ Readonly mode and modals
+# version 0.2.1 - 2020-04-08
+- [x]   (bugfix) _Front-end_ Readonly mode and modals
 - [x]   (feature) _Back-end_ ReadOnly status to DetailView
 - [x]   (feature) _Back-end_ mp4/h.264 video support
 - [x]   (feature) _Front-end_ video player (mp4)
 - [x]   (test) _Back-end_  unit tests for mp4/quickTime
 - [x]   (version) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.3 (using SDK 3.1.201)
 - [x]   (version) _Back-end_ Lots of dependencies (EF Core to 3.1.3)
+- [x]   (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.1 2020-03-20)_
+- [x]   (test) _Back-end_ Use vstest instead of mstest
 
 # version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
