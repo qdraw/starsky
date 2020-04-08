@@ -12,14 +12,22 @@ const RouterApp = () => (
   <Router>
     <ContentPage path="/" />
     <ContentPage path="starsky" />
+
     <SearchPage path="search" />
     <SearchPage path="starsky/search" />
-    <TrashPage path="starsky/trash" />
+
     <TrashPage path="trash" />
-    <ImportPage path="starsky/import" />
+    <TrashPage path="starsky/trash" />
+
     <ImportPage path="import" />
+    <ImportPage path="starsky/import" />
+
     <LoginPage path="account/login" />
+    <LoginPage path="starsky/account/login" />
+
     <AccountRegisterPage path="account/register" />
+    <AccountRegisterPage path="starsky/account/register" />
+
     <NotFoundPage default />
   </Router>
 );

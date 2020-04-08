@@ -108,11 +108,15 @@ namespace starsky.Controllers
 	    /// Overwrite if the Id is the same
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
+	    /// <response code="200">done</response>
+	    /// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
 	    [HttpPost("/api/import/thumbnail")]
 	    [DisableFormValueModelBinding]
 	    [Produces("application/json")]
 	    [RequestFormLimits(MultipartBodyLengthLimit = 100_000_000)]
 	    [RequestSizeLimit(100_000_000)] // in bytes, 100MB
+	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
+	    [ProducesResponseType(typeof(List<ImportIndexItem>),415)]  // wrong input
 	    public async Task<IActionResult> Thumbnail()
 	    {
 		    var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
@@ -138,9 +142,10 @@ namespace starsky.Controllers
 		    }
 
 		    // Status if there is nothing uploaded
-		    if ( !thumbnailNames.Any() )
+		    if (tempImportPaths.Count !=  thumbnailNames.Count)
 		    {
-			    Response.StatusCode = 206;
+			    Response.StatusCode = 415;
+			    return Json(thumbnailNames);
 		    }
 
 		    for ( var i = 0; i < tempImportPaths.Count; i++ )

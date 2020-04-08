@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskycore.Helpers;
+using starskytest.FakeCreateAn;
 
 namespace starskytest.Helpers
 {
@@ -56,10 +58,26 @@ namespace starskytest.Helpers
         }
         
         [TestMethod]
+        public void GetImageFormat_Png_Test()
+        {
+	        var newImage = CreateAnPng.Bytes.Take(15).ToArray();
+	        var result = ExtensionRolesHelper.GetImageFormat(newImage);
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,result);
+        }
+        
+        [TestMethod]
         public void Files_GetImageFormat_jpeg2_Test()
         {
             var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
             Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
+        }
+        
+        [TestMethod]
+        public void GetImageFormat_Jpeg_Test()
+        {
+	        var newImage = CreateAnImage.Bytes.Take(15).ToArray();
+	        var result = ExtensionRolesHelper.GetImageFormat(newImage);
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,result);
         }
         
         [TestMethod]
@@ -135,12 +153,60 @@ namespace starskytest.Helpers
 			Assert.AreEqual(string.Empty,result);
 		}
 		
-//		[TestMethod]
-//		public void Files_GetImageFormat_h264_Test()
-//		{
-//			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 00,  00,  00,  20,  66,  74,  79,  70,  69,  7});
-//			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.h264,fileType);
-//		}
+		[TestMethod]
+		public void Files_GetImageFormat_h264_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] { 00,  00,  00,  20,  102, 116, 121, 112});
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,fileType);
+		}
+
+		[TestMethod]
+		public void GetImageFormat_QuickTimeMp4_Test()
+		{
+			var newImage = CreateAnQuickTimeMp4.Bytes.Take(15).ToArray();
+			var result = ExtensionRolesHelper.GetImageFormat(newImage);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,result);
+		}
+
+		[TestMethod]
+		public void StringToByteArrayTest()
+		{
+			Assert.AreEqual(119, ExtensionRolesHelper.StringToByteArray("77")[0]);
+		}
+
+		[TestMethod]
+		public void MapFileTypesToExtension_fileWithNoExtension()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension("no_ext");
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
+		
+		[TestMethod]
+        public void MapFileTypesToExtension_fileWithNonExistingExtension()
+        {
+        	var result = ExtensionRolesHelper.MapFileTypesToExtension("non.ext");
+        	Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+        }
         
+        [TestMethod]
+        public void MapFileTypesToExtension_Null()
+        {
+	        var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+        }
+
+        [TestMethod]
+        public void IsExtensionExifToolSupported_Null()
+        {
+	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
+	        Assert.IsFalse(result);
+        }
+        
+        [TestMethod]
+        public void IsExtensionExifToolSupported_fileWithNoExtension()
+        {
+	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
+	        Assert.IsFalse(result);
+        }
 	}
 }

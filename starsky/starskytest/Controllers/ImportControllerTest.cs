@@ -1,34 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Attributes;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -137,7 +127,7 @@ namespace starskytest.Controllers
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
-	        // download.geonames is in the FakeHttpmessageHandler always a 404
+	        // download.geoNames is in the FakeHttpMessageHandler always a 404
 	        var actionResult = await importController.FromUrl("https://download.geonames.org","example.tiff",null)  as NotFoundObjectResult;
 	        Assert.AreEqual(404, actionResult.StatusCode);
         }
@@ -167,6 +157,50 @@ namespace starskytest.Controllers
 	        var list = actionResult.Value as List<string>;
 
 	        Assert.IsTrue(list.FirstOrDefault().Contains("example_image.tiff"));
+        }
+        
+        [TestMethod]
+        public async Task Import_Thumbnail_Ok()
+        {
+	        var services = new ServiceCollection();
+	        services.AddSingleton<IStorage, FakeIStorage>();
+	        services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+	        var serviceProvider = services.BuildServiceProvider();
+	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+	        
+	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
+		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider))
+	        {
+		        ControllerContext = RequestWithFile(),
+	        };
+	        importController.Request.Headers["filename"] = "01234567890123456789123456.jpg"; // len() 26
+	        
+	        var actionResult = await importController.Thumbnail() as JsonResult;
+	        var list = actionResult.Value as List<string>;
+
+	        Assert.AreEqual( "01234567890123456789123456", list.FirstOrDefault());
+        }
+        
+        [TestMethod]
+        public async Task Import_Thumbnail_WrongInputName()
+        {
+	        var services = new ServiceCollection();
+	        services.AddSingleton<IStorage, FakeIStorage>();
+	        services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+	        var serviceProvider = services.BuildServiceProvider();
+	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+	        
+	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
+		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider))
+	        {
+		        ControllerContext = RequestWithFile(),
+	        };
+	        importController.Request.Headers["filename"] = "123.jpg"; // len() 3
+	        
+	        var actionResult = await importController.Thumbnail() as JsonResult;
+	        var list = actionResult.Value as List<string>;
+
+	        Assert.AreEqual( 0, list.Count);
         }
     }
 }
