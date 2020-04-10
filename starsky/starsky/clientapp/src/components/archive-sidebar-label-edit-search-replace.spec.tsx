@@ -111,7 +111,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
 
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/replace", "f=%2F%2F%2Ftest.jpg&fieldName=tags&search=a&replace=");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/replace", "f=%2F%2F%2Ftest.jpg&collections=true&fieldName=tags&search=a&replace=");
     });
 
   });

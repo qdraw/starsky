@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
@@ -62,6 +63,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     setInputEnabled(false);
 
     update.append = append;
+    update.collections = state.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false) : false;
 
     var bodyParams = new URLPath().ObjectToSearchParams(update);
     if (bodyParams.toString().length === 0) return;

@@ -198,11 +198,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {MessageColorClassification}
     </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => {
-        setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
-        dispatch({ 'type': 'update', lastEdited: '' })
-      }} filePath={fileIndexItem.filePath}
-        currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
+      <ColorClassSelect
+        collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
+        onToggle={() => {
+          setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
+          dispatch({ 'type': 'update', lastEdited: '' })
+        }}
+        filePath={fileIndexItem.filePath}
+        currentColorClass={fileIndexItem.colorClass}
+        isEnabled={isFormEnabled} />
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || isValidDate(fileIndexItem.lastEdited) ||

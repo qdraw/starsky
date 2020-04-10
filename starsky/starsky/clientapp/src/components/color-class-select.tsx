@@ -12,6 +12,7 @@ export interface IColorClassSelectProps {
   filePath: string;
   clearAfter?: boolean;
   onToggle(value: number): void;
+  collections: boolean;
 }
 
 /**
@@ -55,6 +56,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", props.filePath);
     bodyParams.append("colorclass", colorClass.toString());
+    bodyParams.append('collections', props.collections.toString());
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(_ => {
       setCurrentColorClass(colorClass);

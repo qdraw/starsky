@@ -8,7 +8,7 @@ import ColorClassSelect from './color-class-select';
 describe("ColorClassSelect", () => {
 
   it("renders", () => {
-    shallow(<ColorClassSelect isEnabled={true} filePath={"/test"} onToggle={() => {
+    shallow(<ColorClassSelect collections={true} isEnabled={true} filePath={"/test"} onToggle={() => {
     }} />)
   });
 
@@ -18,14 +18,14 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
     var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => {
+    var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => {
     }} />)
 
     wrapper.find('button.colorclass--2').simulate('click');
 
     // expect
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2");
+    expect(spy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
 
     // Cleanup: To avoid that mocks are shared
     spy.mockClear();
@@ -36,7 +36,7 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
     var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }} />);
+    var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }} />);
 
     wrapper.find('button.colorclass--2').simulate('click');
 

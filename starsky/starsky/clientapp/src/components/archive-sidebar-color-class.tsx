@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from 'react';
 import { ArchiveContext } from '../contexts/archive-context';
 import useLocation from '../hooks/use-location';
+import { PageType } from '../interfaces/IDetailView';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
 import ColorClassSelect from './color-class-select';
@@ -8,6 +9,7 @@ import ColorClassSelect from './color-class-select';
 interface IArchiveSidebarColorClassProps {
   fileIndexItems: Array<IFileIndexItem>,
   isReadOnly: boolean,
+  pageType: PageType,
 }
 
 /**
@@ -32,9 +34,11 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
 
   let { dispatch } = React.useContext(ArchiveContext);
 
-  return (<ColorClassSelect onToggle={(colorclass) => {
-    dispatch({ type: 'update', colorclass, select });
-  }}
+  return (<ColorClassSelect
+    collections={props.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false) : false}
+    onToggle={(colorclass) => {
+      dispatch({ type: 'update', colorclass, select });
+    }}
     filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} />)
 });
 export default ArchiveSidebarColorClass

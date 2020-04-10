@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
@@ -72,6 +73,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectPaths);
+    bodyParams.append('collections', state.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false).toString() : 'false');
 
     for (let key of Object.entries(update)) {
       var fieldName = key[0];
