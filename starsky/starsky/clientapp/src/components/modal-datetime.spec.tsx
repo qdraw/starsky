@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import * as Modal from './modal';
 import ModalDatetime from './modal-datetime';
 
@@ -76,7 +77,7 @@ describe("ModalArchiveMkdir", () => {
       modal.find('.btn--default').simulate('click');
 
       expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith("/api/update", "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05");
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05");
     });
 
     it("test if handleExit is called", () => {

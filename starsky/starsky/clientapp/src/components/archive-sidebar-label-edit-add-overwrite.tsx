@@ -9,6 +9,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import FormControl from './form-control';
 import Preloader from './preloader';
 
@@ -72,7 +73,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     if (selectParams.length === 0) return;
     bodyParams.append("f", selectParams);
 
-    FetchPost("/api/update", bodyParams.toString()).then((anyData) => {
+    FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString()).then((anyData) => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       result.forEach(element => {
         if (element.status !== IExifStatus.Ok) return;

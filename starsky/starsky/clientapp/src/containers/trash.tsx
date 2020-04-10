@@ -44,7 +44,7 @@ function Trash(archive: IArchiveProps) {
     <>
       <MenuTrash />
       <div className={!sidebar ? "archive" : "archive collapsed"}>
-        {sidebar ? <ArchiveSidebar {...archive} collections={false} /> : ""}
+        {sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
         <div className="content">
           <div className="content--header">{collectionsCount !== 0 ?

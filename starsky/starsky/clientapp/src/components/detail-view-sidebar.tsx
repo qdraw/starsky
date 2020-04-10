@@ -57,7 +57,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
   const [collections, setCollections] = React.useState([] as string[]);
 
-  // To Get information from /Api/Info
+  // To Get information from Info Api
   var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {

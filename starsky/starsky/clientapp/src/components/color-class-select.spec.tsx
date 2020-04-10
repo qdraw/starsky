@@ -2,6 +2,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
 
 describe("ColorClassSelect", () => {
@@ -24,7 +25,7 @@ describe("ColorClassSelect", () => {
 
     // expect
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith("/api/update", "f=%2Ftest1&colorclass=2");
+    expect(spy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2");
 
     // Cleanup: To avoid that mocks are shared
     spy.mockClear();

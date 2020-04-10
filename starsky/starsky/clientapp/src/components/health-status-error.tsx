@@ -3,11 +3,12 @@ import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IHealthEntry } from '../interfaces/IHealthEntry';
 import { Language } from '../shared/language';
+import { UrlQuery } from '../shared/url-query';
 import Notification, { NotificationType } from './notification';
 
 const HealthStatusError: React.FunctionComponent = () => {
 
-  var healthCheck = useFetch("/api/health/details", 'get');
+  var healthCheck = useFetch(new UrlQuery().UrlHealthDetails(), 'get');
 
   const settings = useGlobalSettings();
   const MessageCriticalErrors = new Language(settings.language).text("Er zijn kritieke fouten in de volgende onderdelen:",

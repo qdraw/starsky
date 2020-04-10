@@ -3,6 +3,7 @@ import useIntersection from '../hooks/use-intersection-observer';
 import useLocation from '../hooks/use-location';
 import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import EmptyImage from '../style/images/empty-image.gif';
 
 interface IListImageProps {
@@ -47,7 +48,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(EmptyImage) // 26 bytes
       return;
     }
-    setSrc(`/api/thumbnail/${props.fileHash}.jpg?issingleitem=${(localStorage.getItem("issingleitem") !== "false").toString()}`)
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, localStorage.getItem("issingleitem") !== "false"))
   }, [props.fileHash, history.location.search, historyLocation, isLoading]);
 
 

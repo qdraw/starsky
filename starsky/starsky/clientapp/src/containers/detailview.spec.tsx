@@ -20,6 +20,7 @@ describe("DetailView", () => {
 
   var defaultState = {
     breadcrumb: [],
+    isReadOnly: false,
     fileIndexItem: {
       fileHash: 'hash',
       tags: 'tags!',
@@ -86,7 +87,7 @@ describe("DetailView", () => {
         image.simulate('load');
       });
       expect(image.props().src).toBe(
-        new UrlQuery().UrlThumbnailImage(contextProvider.state.fileIndexItem.fileHash));
+        new UrlQuery().UrlThumbnailImage(contextProvider.state.fileIndexItem.fileHash, true));
       expect(Component.exists('.main--error')).toBeFalsy();
     });
 

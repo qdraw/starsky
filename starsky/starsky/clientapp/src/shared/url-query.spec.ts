@@ -24,12 +24,12 @@ describe("url-query", () => {
   it("UrlIndexServerApi", () => {
     var result = urlQuery.UrlIndexServerApi({ f: "/test" });
     expect(result).toContain("test")
-    expect(result).toBe("/api/index?f=/test")
+    expect(result).toBe(urlQuery.prefix + "/api/index?f=/test")
   });
 
   it("UrlIndexServerApi nothing", () => {
     var result = urlQuery.UrlIndexServerApi({});
-    expect(result).toBe("/api/index?")
+    expect(result).toBe(urlQuery.prefix + "/api/index?")
   });
 
   it("UrlQueryInfoApi", () => {
@@ -44,7 +44,7 @@ describe("url-query", () => {
 
   it("UrlQueryInfoApi slash", () => {
     var result = urlQuery.UrlQueryInfoApi("/");
-    expect(result).toBe("/api/info?f=/&json=true")
+    expect(result).toBe(urlQuery.prefix + "/api/info?f=/&json=true")
   });
 
   it("UrlQueryUpdateApi", () => {

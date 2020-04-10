@@ -39,7 +39,7 @@ function Search(archive: IArchiveProps) {
   return (<>
     <MenuSearch />
     <div className={!sidebar ? "archive" : "archive collapsed"}>
-      <ArchiveSidebar {...archive} collections={false} />
+      <ArchiveSidebar {...archive} />
       <div className="content">
         <div className="search-header">
           <MenuSearchBar defaultText={query} />

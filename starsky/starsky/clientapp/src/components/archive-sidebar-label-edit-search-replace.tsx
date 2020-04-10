@@ -9,6 +9,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import FormControl from './form-control';
 import Preloader from './preloader';
 
@@ -86,7 +87,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
         bodyParams.set("replace", replaceValue);
 
-        FetchPost("/api/replace", bodyParams.toString()).then((anyData) => {
+        FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then((anyData) => {
           var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
             if (element.status !== IExifStatus.Ok) return;

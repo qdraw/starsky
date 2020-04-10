@@ -9,6 +9,7 @@ import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import Modal from './modal';
 import Preloader from './preloader';
 import SwitchButton from './switch-button';
@@ -67,9 +68,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     setIsLoading(true);
 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/api/RemoveCache?json=true&f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
+    FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
           var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
@@ -88,13 +89,13 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
 
-    FetchPost("/api/geo/sync", bodyParams.toString()).then((anyData) => {
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((anyData) => {
     });
   }
 
   function fetchGeoSyncStatus() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet("/api/geo/status/?f=" + new URLPath().encodeURI(parentFolder)).then((anyData) => {
+    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then((anyData) => {
 
       if (anyData.statusCode !== 200 || !anyData.data) {
         setGeoSyncPercentage(-1);
@@ -114,9 +115,9 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
-    FetchGet("/sync/?f=" + new URLPath().encodeURI(parentFolder)).then((_) => {
+    FetchGet(new UrlQuery().UrlSync(new URLPath().encodeURI(parentFolder))).then((_) => {
       setTimeout(() => {
-        FetchGet("/api/index/?f=" + new URLPath().encodeURI(parentFolder)).then((connectionResult) => {
+        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
           var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {

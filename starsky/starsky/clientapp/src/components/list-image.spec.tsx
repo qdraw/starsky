@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme';
 import React from 'react';
 import useIntersection from '../hooks/use-intersection-observer';
 import { ImageFormat } from '../interfaces/IFileIndexItem';
+import { UrlQuery } from '../shared/url-query';
 import ListImage from './list-image';
 
 jest.mock('../hooks/use-intersection-observer');
@@ -19,7 +20,7 @@ describe("ListImageTest", () => {
 
     expect(element.find('img').length).toBe(1);
     expect(element.find('img').filterWhere((item) => {
-      return item.prop('src') === '/api/thumbnail/test.jpg.jpg?issingleitem=true';
+      return item.prop('src') === new UrlQuery().UrlThumbnailImage('test.jpg', true);
     })).toHaveLength(1);
   });
 
