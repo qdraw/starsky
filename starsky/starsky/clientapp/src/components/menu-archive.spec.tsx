@@ -4,8 +4,11 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as useFetch from '../hooks/use-fetch';
 import { IArchive } from '../interfaces/IArchive';
-import { newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import * as DropArea from './drop-area';
 import MenuArchive from './menu-archive';
 import * as ModalArchiveMkdir from './modal-archive-mkdir';
@@ -115,6 +118,126 @@ describe("MenuArchive", () => {
       });
 
       expect(mkdirModalSpy).toBeCalled();
+
+      component.unmount();
+
+    });
+
+    it("more and click on select all", () => {
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      var component = mount(<MenuArchive />);
+
+      var more = component.find('.item--more');
+
+      act(() => {
+        more.find('.menu-option').first().simulate('click');
+      });
+
+      // you did press to de-select all
+      expect(globalHistory.location.search).toBe("?select=")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+
+    it("more undoSelection", () => {
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      var component = mount(<MenuArchive />);
+
+      var more = component.find('.item--more');
+      act(() => {
+        more.find('.menu-option').first().simulate('click');
+      });
+
+      expect(globalHistory.location.search).toBe("?select=")
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+
+    it("menu click MessageMoveToTrash", () => {
+
+      globalHistory.navigate("/?select=test1.jpg");
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [{ fileName: 'test.jpg', parentDirectory: '/' }] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      var component = mount(<MenuArchive />);
+
+      var item = component.find('[data-test="trash"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), 'f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8');
 
       component.unmount();
 
