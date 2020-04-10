@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using starsky.foundation.database.Data;
 
 namespace starsky.foundation.database.Serializer
@@ -15,31 +17,56 @@ namespace starsky.foundation.database.Serializer
 			_dbContext = context;
 		}
 
-		private Dictionary<string, List<string>> GetItemsByModelNameAllReflection()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		private Dictionary<string,  List<KeyValuePair<string, string>> > GetItemsByModelNameAllReflection()
 		{
-			var itemByModelName = new Dictionary<string, List<string>>();
-			foreach (var property in _dbContext.Model.GetEntityTypes()
-				.SelectMany(t => t.GetProperties()))
+			var itemByModelName = new Dictionary<string, List<KeyValuePair<string, string>> > ();
+			foreach ( var entityType in _dbContext.Model.GetEntityTypes() )
 			{
-				if ( itemByModelName.ContainsKey(property.DeclaringType.Name) )
+				var entityString = _dbContext.Model.FindEntityType(entityType.ClrType).GetTableName();
+				
+				foreach (var property in entityType.GetProperties())
 				{
-					itemByModelName[property.DeclaringType.Name].Add(property.Name);
-				}
-				else
-				{
-					itemByModelName.Add(property.DeclaringType.Name,new List<string>{property.Name});
+					if ( itemByModelName.ContainsKey( entityString ) )
+					{
+						itemByModelName[entityString].Add(new KeyValuePair<string, string>(property.Name, property.ClrType.ToString()));
+					}
+					else
+					{
+						itemByModelName.Add(entityString, new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>(property.Name, property.ClrType.ToString())});
+					}
 				}
 			}
-
 			return itemByModelName;
 		}
 
+
 		public async Task Export()
 		{
+
+
+			
 			var itemByModelName = GetItemsByModelNameAllReflection();
-			foreach ( var item in itemByModelName )
+
+			foreach ( var singleItemByModelName in itemByModelName )
 			{
-				// var result = _dbContext.Model.(item.Value.FirstOrDefault());
+				var entityType = _dbContext.Model.GetEntityTypes()
+					.FirstOrDefault(p => _dbContext.Model.FindEntityType(p.ClrType).GetTableName() == singleItemByModelName.Key);
+
+				
+				// var propertyInfo = _dbContext.GetType().GetProperty(singleItemByModelName.Key);
+				// var entityType = _dbContext.Model.FindEntityType(propertyInfo.PropertyType);
+				var schema = entityType.GetProperties();
+				var keys = entityType.GetKeys();
+				
+				Console.WriteLine();
+				foreach ( var propertyInfo in entityType.GetProperties() )
+				{
+					var value = propertyInfo.GetMemberInfo().
+				}
 			}
 		}
 
