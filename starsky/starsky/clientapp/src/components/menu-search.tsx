@@ -26,6 +26,7 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
   const MessageSelectAction = language.text("Selecteer", "Select");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
+  const MessageSelectFurther = language.text("Verder selecteren", "Select further");
 
   // Selection
   var history = useLocation();
@@ -109,6 +110,10 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
           </nav>
         </div>
       </header>
+
+      {select ? <div className="header header--sidebar header--border-left">
+        <div className="item item--continue" onClick={() => { toggleLabels(); }}>{MessageSelectFurther}</div>
+      </div> : ""}
     </>
   );
 };

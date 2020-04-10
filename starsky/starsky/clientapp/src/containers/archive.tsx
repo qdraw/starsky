@@ -26,7 +26,7 @@ function Archive(archive: IArchiveProps) {
     <>
       <MenuArchive />
       <div className={!sidebar ? "archive" : "archive collapsed"}>
-        <ArchiveSidebar {...archive} />
+        <ArchiveSidebar {...archive} collections={new URLPath().StringToIUrl(history.location.search).collections !== false} />
 
         <div className="content">
           <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath} />

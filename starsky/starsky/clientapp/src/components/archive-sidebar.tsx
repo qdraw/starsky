@@ -15,6 +15,7 @@ interface IArchiveSidebarProps {
   subPath: string;
   isReadOnly: boolean;
   pageType: PageType;
+  collections: boolean;
 }
 
 const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((archive) => {
