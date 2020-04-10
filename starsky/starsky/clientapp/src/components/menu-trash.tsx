@@ -1,10 +1,10 @@
 import React, { memo, useEffect } from 'react';
-import { ArchiveContext } from '../contexts/archive-context';
+import { ArchiveContext, defaultStateFallback } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
-import { newIArchive } from '../interfaces/IArchive';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
+import { Select } from '../shared/select';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import MenuSearchBar from './menu.searchbar';
@@ -38,48 +38,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
 
-  // Select All items
-  function allSelection() {
-    if (!select) return;
-    var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
-
-    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
-
-  /**
-   * Undo Selection
-   */
-  function undoSelection() {
-    var urlObject = new URLPath().updateSelection(history.location.search, []);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
-
-  function selectToggle() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    var selectVar: string[] = urlObject.select ? urlObject.select : [];
-    if (!urlObject.select) {
-      urlObject.select = [];
-    }
-    else {
-      delete urlObject.sidebar;
-      delete urlObject.select;
-    }
-    if (selectVar) {
-      setSelect(selectVar);
-    }
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
+  var allSelection = () => new Select(select, setSelect, state, history).allSelection();
+  var undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
+  var removeSidebarSelection = () => new Select(select, setSelect, state, history).removeSidebarSelection();
 
   let { state, dispatch } = React.useContext(ArchiveContext);
-  // fallback
-  if (!state) state = {
-    ...newIArchive(),
-    collectionsCount: 0,
-    fileIndexItems: []
-  };
+  state = defaultStateFallback(state);
 
   function forceDelete() {
     if (!select) return;
@@ -153,12 +117,12 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
             </div>
           </button> : null}
 
-          {select && select.length === 0 ? <button onClick={() => { selectToggle() }}
+          {select && select.length === 0 ? <button onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{MessageNoneSelected}</button> : null}
-          {select && select.length >= 1 ? <button onClick={() => { selectToggle() }}
+          {select && select.length >= 1 ? <button onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{select.length} {MessageSelectPresentPerfect}</button> : null}
 
-          {!select && state.fileIndexItems.length >= 1 ? <div className="item item--select" onClick={() => { selectToggle() }}>
+          {!select && state.fileIndexItems.length >= 1 ? <div className="item item--select" onClick={() => { removeSidebarSelection() }}>
             {MessageSelectAction}
           </div> : null}
 
@@ -167,15 +131,16 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
             {MessageSelectAction}
           </div> : null}
 
-          {/* When in normal state */}
+          {/* More menu - When in normal state */}
           {!select ? <MoreMenu /> : null}
 
-          {/* In the select context there are more options */}
+          {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ?
             <MoreMenu>
               <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li>
             </MoreMenu> : null}
 
+          {/* More menu - When more then 1 item is selected */}
           {select && select.length >= 1 ?
             <MoreMenu>
               {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>

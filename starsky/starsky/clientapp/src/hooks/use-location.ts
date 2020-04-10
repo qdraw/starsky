@@ -1,5 +1,10 @@
-import { globalHistory } from '@reach/router';
+import { globalHistory, HistoryLocation, NavigateFn } from '@reach/router';
 import { useEffect, useState } from 'react';
+
+export interface IUseLocation {
+  location: HistoryLocation,
+  navigate: NavigateFn
+}
 
 const useLocation = () => {
   const initialState = {
@@ -19,7 +24,7 @@ const useLocation = () => {
     };
   }, [initialState]);
 
-  return state;
+  return state as IUseLocation;
 };
 
 export default useLocation;

@@ -1,12 +1,13 @@
 
 import React, { memo, useEffect } from 'react';
-import { ArchiveContext } from '../contexts/archive-context';
+import { ArchiveContext, defaultStateFallback } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
-import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
+import { Select } from '../shared/select';
+import { Sidebar } from '../shared/sidebar';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import DropArea from './drop-area';
@@ -38,23 +39,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
-
-  // fallback state
-  if (!state) {
-    state = {
-      pageType: PageType.Loading,
-      isReadOnly: true,
-      breadcrumb: [],
-      fileIndexItems: [],
-      relativeObjects: {} as IRelativeObjects,
-      subPath: "/",
-      colorClassActiveList: [],
-      colorClassUsage: [],
-      collectionsCount: 0
-    }
-  }
+  state = defaultStateFallback(state);
 
   var history = useLocation();
+
+  var allSelection = () => new Select(select, setSelect, state, history).allSelection();
+  var undoSelection = () => new Select(select, setSelect, state, history).undoSelection();
+  var removeSidebarSelection = () => new Select(select, setSelect, state, history).removeSidebarSelection();
 
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
@@ -68,13 +59,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
-  function toggleLabels() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    urlObject.sidebar = !urlObject.sidebar;
+  var toggleLabels = () => new Sidebar(sidebar, setSidebar, history).toggleSidebar()
 
-    setSidebar(urlObject.details);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
-  }
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
 
   // Selection
@@ -82,36 +68,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
-
-  // Select All items
-  function selectAll() {
-    if (!select) return;
-    var updatedSelect = new URLPath().GetAllSelection(select, state.fileIndexItems);
-
-    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
-
-  // Undo Selection
-  function undoSelection() {
-    var urlObject = new URLPath().updateSelection(history.location.search, []);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
-
-  function selectToggle() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
-    if (!urlObject.select) {
-      urlObject.select = [];
-    }
-    else {
-      delete urlObject.sidebar;
-      delete urlObject.select;
-    }
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
 
   async function moveToTrashSelection() {
     if (!select || isReadOnly) return;
@@ -155,23 +111,28 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   return (
     <>
-      {/* Modals  */}
-      {isModalExportOpen ? <ModalExport handleExit={() =>
-        setModalExportOpen(!isModalExportOpen)} select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
+      {/* Modal download */}
+      {isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)}
+        select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
+        collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
         isOpen={isModalExportOpen} /> : null}
 
+      {/* Modal Display options */}
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
 
+      {/* Modal new directory */}
       {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
+      {/* Upload drop Area */}
       {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded
         handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
         uploadFilesList={dropAreaUploadFilesList}
         isOpen={dropAreaUploadFilesList.length !== 0} /> : null}
 
       {/* Menu */}
-      <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
+      <header className={sidebar ? "header header--main header--select header--edit" :
+        select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
           {!select ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
@@ -181,11 +142,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             </div>
           </button> : null}
 
-          {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { selectToggle() }}
+          {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{MessageNoneSelected}</button> : null}
-          {select && select.length >= 1 ? <button data-test={`selected-${select.length}`} onClick={() => { selectToggle() }}
+          {select && select.length >= 1 ? <button data-test={`selected-${select.length}`} onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{select.length} {MessageSelectPresentPerfect}</button> : null}
-          {!select ? <div className="item item--select" onClick={() => { selectToggle() }}>
+          {!select ? <div className="item item--select" onClick={() => { removeSidebarSelection() }}>
             {MessageSelectAction}
           </div> : null}
 
@@ -193,7 +154,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           {/* default more menu */}
           {!select ? <MoreMenu>
-            <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="mkdir" onClick={() => setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
+            <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="mkdir" onClick={() =>
+              setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
@@ -201,9 +163,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {/* In the select context there are more options */}
           {select ? <MoreMenu>
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
-            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => selectAll()}>{MessageSelectAll}</li> : null}
+            {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li> : null}
             {select.length >= 1 ? <li className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
-            {select.length >= 1 ? <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
+            {select.length >= 1 ? <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}
+              onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
             {state ? <UploadMenuItem /> : null}
           </MoreMenu> : null}
 

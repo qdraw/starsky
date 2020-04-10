@@ -222,7 +222,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     {/* allowed in readonly to download */}
-    {isModalExportOpen && state ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)}
+    {isModalExportOpen && state ? <ModalExport collections={false} handleExit={() => setModalExportOpen(!isModalExportOpen)}
       select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen && state && !isReadOnly ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
       isOpen={isModalRenameFileOpen} /> : null}

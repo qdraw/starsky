@@ -16,7 +16,7 @@ describe("ModalExport", () => {
     //   select: Array<string> | undefined;
     //   handleExit: Function;
     // }
-    shallow(<ModalExport select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
+    shallow(<ModalExport collections={false} select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
   });
 
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe("ModalExport", () => {
     var useFetchSpy = jest.spyOn(useFetch, 'default')
       .mockImplementationOnce(() => mockGetIConnectionDefault)
 
-    var modal = mount(<ModalExport select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
+    var modal = mount(<ModalExport collections={false} select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
 
     expect(useFetchSpy).toBeCalled();
     expect(modal.exists('[data-test="thumbnail"]')).toBeTruthy();
@@ -64,7 +64,7 @@ describe("ModalExport", () => {
     var fetchPostSpy = jest.spyOn(FetchPost, 'default')
       .mockImplementationOnce(() => mockFetchGetIConnectionDefault)
 
-    var modal = mount(<ModalExport select={["/file0", "/file1.jpg"]} isOpen={true} handleExit={() => { }}></ModalExport>)
+    var modal = mount(<ModalExport collections={false} select={["/file0", "/file1.jpg"]} isOpen={true} handleExit={() => { }}></ModalExport>)
 
     var item = modal.find('[data-test="thumbnail"]');
 
@@ -89,7 +89,7 @@ describe("ModalExport", () => {
     var useFetchSpy = jest.spyOn(useFetch, 'default')
       .mockImplementationOnce(() => mockGetIConnectionDefault)
 
-    var modal = mount(<ModalExport select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
+    var modal = mount(<ModalExport collections={false} select={["/"]} isOpen={true} handleExit={() => { }}></ModalExport>)
 
     expect(useFetchSpy).toBeCalled();
     expect(modal.exists('[data-test="btn-test"]')).toBeFalsy();
@@ -121,7 +121,7 @@ describe("ModalExport", () => {
 
     var handleExitSpy = jest.fn();
 
-    var modal = mount(<ModalExport select={["/"]} isOpen={true} handleExit={handleExitSpy} />);
+    var modal = mount(<ModalExport collections={false} select={["/"]} isOpen={true} handleExit={handleExitSpy} />);
 
     expect(handleExitSpy).toBeCalled();
 
