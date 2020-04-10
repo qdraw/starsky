@@ -1,7 +1,6 @@
 import { IUrl, newIUrl } from '../interfaces/IUrl';
 import { URLPath } from './url-path';
 
-
 export class UrlQuery {
 
   public prefix: string = "/starsky"
