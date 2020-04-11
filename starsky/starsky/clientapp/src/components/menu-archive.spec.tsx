@@ -12,6 +12,7 @@ import { UrlQuery } from '../shared/url-query';
 import * as DropArea from './drop-area';
 import MenuArchive from './menu-archive';
 import * as ModalArchiveMkdir from './modal-archive-mkdir';
+import * as ModalExport from './modal-export';
 
 describe("MenuArchive", () => {
 
@@ -205,7 +206,6 @@ describe("MenuArchive", () => {
       });
     });
 
-
     it("menu click MessageMoveToTrash", () => {
 
       globalHistory.navigate("/?select=test1.jpg");
@@ -238,6 +238,44 @@ describe("MenuArchive", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), 'f=%2Fundefined%2Ftest1.jpg&Tags=%21delete%21&append=true&Colorclass=8');
+
+      component.unmount();
+
+    });
+
+    it("menu click export", () => {
+
+      globalHistory.navigate("/?select=test1.jpg");
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      }).mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      })
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var exportModalSpy = jest.spyOn(ModalExport, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+
+      var component = mount(<MenuArchive />);
+
+      var item = component.find('[data-test="export"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(exportModalSpy).toBeCalled();
 
       component.unmount();
 
