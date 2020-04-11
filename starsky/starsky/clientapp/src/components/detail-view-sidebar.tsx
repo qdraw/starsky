@@ -57,7 +57,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
   const [collections, setCollections] = React.useState([] as string[]);
 
-  // To Get information from /Api/Info
+  // To Get information from Info Api
   var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
   const responseObject = useFetch(location, 'get');
   useEffect(() => {
@@ -129,7 +129,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       // clear search cache
       var searchTag = new URLPath().StringToIUrl(history.location.search).t;
-
       if (!searchTag) return;
       FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
     });
@@ -198,11 +197,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       {MessageColorClassification}
     </div>
     <div className="content--text">
-      <ColorClassSelect onToggle={() => {
-        setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
-        dispatch({ 'type': 'update', lastEdited: '' })
-      }} filePath={fileIndexItem.filePath}
-        currentColorClass={fileIndexItem.colorClass} isEnabled={isFormEnabled} />
+      <ColorClassSelect
+        collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
+        onToggle={() => {
+          setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
+          dispatch({ 'type': 'update', lastEdited: '' })
+        }}
+        filePath={fileIndexItem.filePath}
+        currentColorClass={fileIndexItem.colorClass}
+        isEnabled={isFormEnabled} />
     </div>
 
     {fileIndexItem.latitude || fileIndexItem.longitude || isValidDate(fileIndexItem.dateTime) || isValidDate(fileIndexItem.lastEdited) ||

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ArchiveContext } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../shared/cast-to-interface';
@@ -9,6 +10,7 @@ import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import FormControl from './form-control';
 import Preloader from './preloader';
 
@@ -71,6 +73,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectPaths);
+    bodyParams.append('collections', state.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false).toString() : 'false');
 
     for (let key of Object.entries(update)) {
       var fieldName = key[0];
@@ -86,7 +89,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
         bodyParams.set("replace", replaceValue);
 
-        FetchPost("/api/replace", bodyParams.toString()).then((anyData) => {
+        FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then((anyData) => {
           var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
             if (element.status !== IExifStatus.Ok) return;

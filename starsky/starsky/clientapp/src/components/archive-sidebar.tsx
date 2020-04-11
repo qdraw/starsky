@@ -87,7 +87,7 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo((arch
     <div className="content--header">
       {MessageUpdateLabels}
     </div>
-    <ArchiveSidebarLabelEdit {...archive} />
+    <ArchiveSidebarLabelEdit />
 
     <div className="content--header">
       {MessageColorClassification}

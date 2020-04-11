@@ -5,17 +5,18 @@ import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { newIArchive } from '../interfaces/IArchive';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />)
+    shallow(<ArchiveSidebarColorClass pageType={PageType.Archive} fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />)
   });
 
   describe("mount object (mount= select is child element)", () => {
-    var wrapper = mount(<ArchiveSidebarColorClass fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />);
+    var wrapper = mount(<ArchiveSidebarColorClass pageType={PageType.Archive} fileIndexItems={newIFileIndexItemArray()} isReadOnly={false} />);
 
     it("colorclass--select class exist", () => {
       expect(wrapper.exists('.colorclass--select')).toBeTruthy()
@@ -64,7 +65,7 @@ describe("ArchiveSidebarColorClass", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-      const element = mount(<ArchiveSidebarColorClass isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
+      const element = mount(<ArchiveSidebarColorClass pageType={PageType.Archive} isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 
       // Make sure that the element exist in the first place
       expect(element.find('a.colorclass--1')).toBeTruthy();

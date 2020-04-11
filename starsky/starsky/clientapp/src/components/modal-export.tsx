@@ -14,6 +14,7 @@ interface IModalExportProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   handleExit: Function;
+  collections: boolean;
 }
 // { isModalExportOpen ? <ModalExport handleExit={() => setModalExportOpen(!isModalExportOpen)} 
 // select={[detailView.subPath]} isOpen={isModalExportOpen} /> : null }
@@ -67,7 +68,7 @@ const ModalExport: React.FunctionComponent<IModalExportProps> = (props) => {
     bodyParams.set("f", selectString);
     bodyParams.set("json", "true");
     bodyParams.set("thumbnail", isThumbnail.toString());
-    bodyParams.set("collections", "true");
+    bodyParams.set("collections", props.collections.toString());
     setProcessing(ProcessingState.server);
 
     var zipKeyResult = await FetchPost(new UrlQuery().UrlExportPostZipApi(), bodyParams.toString());

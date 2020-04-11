@@ -1,8 +1,10 @@
 import React, { memo, useEffect } from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
+import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { Language } from '../shared/language';
+import { Select } from '../shared/select';
 import { URLPath } from '../shared/url-path';
 
 interface IDetailViewSidebarSelectionListProps {
@@ -23,27 +25,9 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  function toggleSelection(fileName: string): void {
-    var urlObject = new URLPath().toggleSelection(fileName, history.location.search);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-    setSelect(urlObject.select);
-  }
-
-  // Select All items
-  function allSelection() {
-    if (!select) return;
-    var updatedSelect = new URLPath().GetAllSelection(select, props.fileIndexItems);
-    var urlObject = new URLPath().updateSelection(history.location.search, updatedSelect);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
-
-  // Undo Selection
-  function undoSelection() {
-    var urlObject = new URLPath().updateSelection(history.location.search, []);
-    setSelect(urlObject.select);
-    history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
-  }
+  var allSelection = () => new Select(select, setSelect, props as IArchiveProps, history).allSelection();
+  var undoSelection = () => new Select(select, setSelect, props as IArchiveProps, history).undoSelection();
+  var toggleSelection = (item: string) => new Select(select, setSelect, props as IArchiveProps, history).toggleSelection(item);
 
   // noinspection HtmlUnknownAttribute
   return (<div className="sidebar-selection">

@@ -24,7 +24,8 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
 
   return (
     <div className="content--text">
-      <SwitchButton isEnabled={!state.isReadOnly} leftLabel={MessageModifyName} rightLabel={MessageSearchAndReplaceName} onToggle={(value) => setReplaceMode(value)} />
+      <SwitchButton isEnabled={!state.isReadOnly} leftLabel={MessageModifyName}
+        rightLabel={MessageSearchAndReplaceName} onToggle={(value) => setReplaceMode(value)} />
       {!isReplaceMode ? <ArchiveSidebarLabelEditAddOverwrite /> : null}
       {isReplaceMode ? <ArchiveSidebarLabelEditSearchReplace /> : null}
     </div>

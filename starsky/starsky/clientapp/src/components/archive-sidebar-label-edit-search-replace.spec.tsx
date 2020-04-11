@@ -7,6 +7,7 @@ import { IArchive } from '../interfaces/IArchive';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
 import FormControl from './form-control';
 
@@ -110,7 +111,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
 
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith("/api/replace", "f=%2F%2F%2Ftest.jpg&fieldName=tags&search=a&replace=");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/replace", "f=%2F%2F%2Ftest.jpg&collections=true&fieldName=tags&search=a&replace=");
     });
 
   });

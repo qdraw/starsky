@@ -1,7 +1,8 @@
 
 import * as React from 'react';
+import { newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
-import { newIRelativeObjects, PageType } from '../interfaces/IDetailView';
+import { IRelativeObjects, newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 
@@ -46,7 +47,7 @@ const initialState: State = {
   colorClassActiveList: [],
   colorClassUsage: [],
   isReadOnly: false,
-  pageType: PageType.Loading
+  pageType: PageType.Loading,
 };
 
 export function archiveReducer(state: State, action: Action): State {
@@ -128,4 +129,23 @@ let ArchiveContextConsumer = ArchiveContext.Consumer;
 export { ArchiveContext, ArchiveContextProvider, ArchiveContextConsumer };
 
 // exporter
-export const useArchiveContext = () => React.useContext(ArchiveContext)
+export const useArchiveContext = () => React.useContext(ArchiveContext);
+
+/**
+ * default values
+ */
+export const defaultStateFallback = (state: IArchiveProps) => {
+  if (!state) state = {
+    ...newIArchive(),
+    collectionsCount: 0,
+    fileIndexItems: [],
+    pageType: PageType.Loading,
+    isReadOnly: true,
+    breadcrumb: [],
+    relativeObjects: {} as IRelativeObjects,
+    subPath: "/",
+    colorClassActiveList: [],
+    colorClassUsage: [],
+  };
+  return state;
+}

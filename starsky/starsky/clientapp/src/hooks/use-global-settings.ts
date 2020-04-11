@@ -10,10 +10,10 @@ const useGlobalSettings = (): IGlobalSettings => {
    * Parse Language
    */
   const parseLanguage = (): SupportedLanguages => {
-    switch (navigator.language) {
-      case "nl-BE":
+    switch (navigator.language.toLowerCase()) {
+      case "nl-be":
         return SupportedLanguages.nl
-      case "nl-NL":
+      case "nl-nl":
         return SupportedLanguages.nl
       case "nl":
         return SupportedLanguages.nl

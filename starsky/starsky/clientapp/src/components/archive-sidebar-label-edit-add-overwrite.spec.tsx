@@ -8,6 +8,7 @@ import { IConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
+import { UrlQuery } from '../shared/url-query';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
 import FormControl from './form-control';
 
@@ -146,7 +147,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith("/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg");
 
       expect(dispatchedValues).toStrictEqual([{
         type: 'update',
@@ -206,7 +207,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith("/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg%3B%2F%2F%2Ftest1.jpg");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg%3B%2F%2F%2Ftest1.jpg");
 
       expect(dispatchedValues).toStrictEqual([{
         type: 'update',

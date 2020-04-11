@@ -1,11 +1,11 @@
-import React, { memo } from 'react';
+import React from 'react';
 import MenuSearchBar from './menu.searchbar';
 
 interface IMenuDefaultProps {
   isEnabled: boolean;
 }
 
-const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = memo((props) => {
+const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = (props) => {
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
 
   return (
@@ -13,24 +13,24 @@ const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = memo((props) => 
       <header className={"header header--main"}>
         <div className="wrapper">
 
-          {props.isEnabled ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
+          {props.isEnabled ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i/>
-              <i/>
-              <i/>
+              <i />
+              <i />
+              <i />
             </div>
           </button> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>
             <div className="nav__container">
               <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)}/>
+                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
               </ul>
             </div>
           </nav>
         </div>
       </header>
     </>);
-});
+};
 
 export default MenuDefault

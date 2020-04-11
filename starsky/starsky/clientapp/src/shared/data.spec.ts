@@ -29,12 +29,17 @@ describe("date", () => {
 
     it("wrong format", () => {
       var result = parseTime("2020-30");
-      expect(result).toBe("::");
+      expect(result).toBe("");
     });
 
     it("right formated (nl)", () => {
       var result = parseTime("2020-01-01T01:01:01");
       expect(result).toBe("01:01:01");
+    });
+
+    it("right formated summer time (nl)", () => {
+      var result = parseTime("2020-04-10T23:40:33");
+      expect(result).toBe("23:40:33");
     });
 
   });

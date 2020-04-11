@@ -2,7 +2,7 @@
 import { RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
 import DropArea from '../components/drop-area';
-import MenuSearch from '../components/menu-search';
+import MenuDefault from '../components/menu-default';
 import ModalDropAreaFilesAdded from '../components/modal-drop-area-files-added';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
@@ -28,7 +28,7 @@ const ImportPage: FunctionComponent<RouteComponentProps> = (props) => {
       uploadFilesList={dropAreaUploadFilesList}
       isOpen={dropAreaUploadFilesList.length !== 0} /> : null}
 
-    <MenuSearch></MenuSearch>
+    <MenuDefault isEnabled={true}></MenuDefault>
     <div className="content">
       <div className="content--header">{MessageImportName}</div>
       <div className="content--subheader">

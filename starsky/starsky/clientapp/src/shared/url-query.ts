@@ -1,8 +1,9 @@
 import { IUrl, newIUrl } from '../interfaces/IUrl';
 import { URLPath } from './url-path';
 
-
 export class UrlQuery {
+
+  public prefix: string = "/starsky"
 
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
@@ -10,45 +11,45 @@ export class UrlQuery {
   }
 
   public UrlLogin(): string {
-    return "/account/login";
+    return `${this.prefix}/account/login`;
   }
 
   public UrlAccountRegister(): string {
-    return "/account/register?json=true";
+    return `${this.prefix}/account/register?json=true`;
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
-    return "/api/search/relativeObjects?f=" + new URLPath().encodeURI(f) + "&t=" +
+    return `${this.prefix}/api/search/relativeObjects?f=` + new URLPath().encodeURI(f) + "&t=" +
       t +
       "&p=" + pageNumber;
   }
 
   public UrlQuerySearchApi = (query: string, pageNumber = 0): string => {
-    return "/api/search?json=true&t=" + query + "&p=" + pageNumber;
+    return this.prefix + "/api/search?json=true&t=" + query + "&p=" + pageNumber;
   }
 
   public UrlSearch(query: string): string {
-    return "/search?t=" + query
+    return this.prefix + "/search?t=" + query
   }
 
   public UrlSearchSuggestApi(query: string): string {
-    return "/api/suggest/?t=" + query;
+    return this.prefix + "/api/suggest/?t=" + query;
   }
 
   public UrlSearchRemoveCacheApi(): string {
-    return "/api/search/removeCache";
+    return this.prefix + "/api/search/removeCache";
   }
 
   public UrlSearchTrashApi = (pageNumber = 0): string => {
-    return "/api/search/trash?p=" + pageNumber;
+    return this.prefix + "/api/search/trash?p=" + pageNumber;
   }
 
   public UrlAccountStatus = (): string => {
-    return "/account/status";
+    return this.prefix + "/account/status";
   }
 
   public UrlAccountRegisterStatus = (): string => {
-    return "/account/register/status";
+    return this.prefix + "/account/register/status";
   }
 
   /**
@@ -78,7 +79,14 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl): string => {
-    return "/api/index" + new URLPath().IUrlToString(urlObject)
+    return this.prefix + "/api/index" + new URLPath().IUrlToString(urlObject)
+  }
+
+  /**
+   * Get Direct api/index with IUrl
+   */
+  public UrlIndexServerApiPath = (path: string): string => {
+    return this.prefix + "/api/index" + path
   }
 
   /**
@@ -88,81 +96,101 @@ export class UrlQuery {
   public UrlQueryInfoApi(subPath: string): string {
     if (!subPath) return "";
     var url = this.urlReplacePath(subPath);
-    return "/api/info?f=" + url + "&json=true";
+    return this.prefix + "/api/info?f=" + url + "&json=true";
   }
 
   /**
    * POST to this to update meta information
    */
   public UrlUpdateApi = (): string => {
-    return "/api/update";
+    return this.prefix + "/api/update";
   }
 
   /**
    * POST to this to search and replace meta information like: tags, descriptions and titles
    */
   public UrlReplaceApi = (): string => {
-    return "/api/replace";
+    return this.prefix + "/api/replace";
   }
 
   /**
   * DELETE to endpoint to remove file from database and disk
   */
   public UrlDeleteApi = (): string => {
-    return "/api/delete";
+    return this.prefix + "/api/delete";
   }
 
-  public UrlThumbnailImage = (fileHash: string): string => {
-    return "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true";
+  public UrlThumbnailImage = (fileHash: string, issingleitem: boolean): string => {
+    return this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=" + issingleitem.toString();
   }
 
   public UrlThumbnailJsonApi = (fileHash: string): string => {
-    return "/api/thumbnail/" + fileHash + "?json=true";
+    return this.prefix + "/api/thumbnail/" + fileHash + "?json=true";
   }
 
   // http://localhost:5000/api/downloadPhoto?f=%2F__starsky%2F0001-readonly%2F4.jpg&isThumbnail=True
   public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true): string => {
-    return "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
+    return this.prefix + "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
   }
 
   /**
    * url create a zip
    */
   public UrlExportPostZipApi = (): string => {
-    return "/export/createZip/"
+    return this.prefix + "/export/createZip/"
   }
 
   /**
    * export/zip/SR497519527.zip?json=true
    */
   public UrlExportZipApi = (createZipId: string, json: boolean = true): string => {
-    return "/export/zip/" + createZipId + ".zip?json=" + json;
+    return this.prefix + "/export/zip/" + createZipId + ".zip?json=" + json;
+  }
+
+  public UrlSync(parentFolder: string): string {
+    return this.prefix + "/sync" + new URLPath().encodeURI(parentFolder);
   }
 
   /**
    * Rename the file on disk and in the database
    */
   public UrlSyncRename(): string {
-    return "/sync/rename";
+    return this.prefix + "/sync/rename";
   }
 
   /**
    * Create an directory on disk and database
    */
   public UrlSyncMkdir(): string {
-    return "/sync/mkdir";
+    return this.prefix + "/sync/mkdir";
   }
 
   public UrlImportApi(): string {
-    return "/api/import";
+    return this.prefix + "/api/import";
   }
 
   public UrlUploadApi(): string {
-    return "/api/upload";
+    return this.prefix + "/api/upload";
   }
 
   public UrlAllowedTypesThumb(filename: string): string {
-    return "/api/allowed-types/thumb?f=" + filename;
+    return this.prefix + "/api/allowed-types/thumb?f=" + filename;
+  }
+
+  public UrlHealthDetails(): string {
+    return `${this.prefix}/api/health/details`
+  }
+
+  public UrlRemoveCache(parentFolder: string): string {
+    return this.prefix + "/api/RemoveCache?json=true&f=" + parentFolder
+  }
+
+  public UrlGeoSync(): string {
+    return this.prefix + "/api/geo/sync";
+  }
+
+  public UrlGeoStatus(arg0: string): string {
+    return this.prefix + "/api/geo/status/?f=" + arg0;
   }
 
 }
