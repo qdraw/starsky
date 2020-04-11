@@ -13,7 +13,7 @@ const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = (props) => {
       <header className={"header header--main"}>
         <div className="wrapper">
 
-          {props.isEnabled ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
+          {props.isEnabled ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
             <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
               <i />
               <i />

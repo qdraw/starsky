@@ -49,6 +49,17 @@ describe("MenuArchive", () => {
       component.unmount();
     });
 
+    it("check if on click the hamburger opens", () => {
+      var component = mount(<MenuArchive />);
+
+      expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
+
+      component.find('[data-test="hamburger"]').simulate('click');
+      expect(component.exists('[data-test="hamburger"] .open')).toBeTruthy();
+
+      component.unmount();
+    });
+
     it("none selected", () => {
 
       globalHistory.navigate("?select=");
