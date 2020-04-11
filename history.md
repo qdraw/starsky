@@ -15,6 +15,13 @@
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
 - []  (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
+# version 0.2.2 - 2020-04-XX
+- [x]   (bugfix) _Front-end_ Timezone issues in Safari
+- [x]   (Feature) _Front-end_ Add menu for search
+- [x]   (bugfix)  _Front-end_ Collection support in update tags / ColorClassSelect
+- [x]   (bugfix) _Front-end_ navigator.language issue in Safari
+- [x]   (change) _Front-end_ use `starsky` prefix in urls
+
 # version 0.2.1 - 2020-04-08
 - [x]   (bugfix) _Front-end_ Readonly mode and modals
 - [x]   (feature) _Back-end_ ReadOnly status to DetailView
