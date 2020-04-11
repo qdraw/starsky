@@ -67,8 +67,9 @@ const parseTime = (dateTime: string | undefined): string => {
     return "";
   }
 
-  var dateTimeObject = new Date(`${dateTime}Z`);
-  return dateTimeObject.toLocaleTimeString([], { timeZone: 'UTC', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  var regexMatch = new RegExp('(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)');
+  var matchTime = dateTime.match(regexMatch);
+  return matchTime ? matchTime[0] : "";
 }
 
 const secondsToHours = (seconds: number): string => {
