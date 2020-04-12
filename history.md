@@ -1,21 +1,26 @@
 [< readme](readme.md)
 
-# History
+# History Changelog
 
-## Todo:
-### Features planned (in random order) and lower priority
+# The following statuses are used 
+- Added _for new features_
+- Changed _for changes in existing functionality_
+- Deprecated _for soon-to-be removed features_
+- Removed _for now removed features_
+- Fixed _for any bug fixes_
+- Security _in case of vulnerabilities_
+
+# Features todo (in random order)
 - []   (feature) _Back-end_ Realtime Files API
 - []   (feature) _Back-end_ Docker support,
 - []   (feature) _Frond-end_  Search details show exact query behind modal
 - []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
 - []   (feature) _Front-end_ Zoom in picture
-
-### High priority features planned
-- []  (feature) Creating thumbnails from Web Interface (including status)
+- []   (feature) Creating thumbnails from Web Interface (including status)
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
-- []  (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
+- []   (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
-# version 0.2.2 - 2020-04-XX
+# Unreleased - 2020-04-XX
 - [x]   (bugfix) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
 - [x]   (bugfix)  _Front-end_ Collection support in update tags / ColorClassSelect
@@ -403,3 +408,4 @@ _Version number does not match SemVer_
 
 # version 0.0.1 - 2018-03-08
 - Initial commit
+
