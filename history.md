@@ -27,7 +27,7 @@
 - [x]   (Fixed) _Front-end_ navigator.language issue in Safari
 - [x]   (Changed) _Front-end_ use `starsky` prefix in api urls
 - [x]   (Fixed) _Front-end_ use `starsky` prefix only when needed
-- [x]   (Fixed) _Back-end_ Cookie path fix for stuck in 'Do you want to log out?' screen
+- [x]   (Fixed) _Back-end_ __Cookie path fix for stuck in 'Do you want to log out?' screen__
 
 # version 0.2.1 - 2020-04-08
 - [x]   (Fixed) _Front-end_ Readonly mode and modals
