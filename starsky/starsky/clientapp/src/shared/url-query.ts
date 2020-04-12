@@ -5,13 +5,33 @@ export class UrlQuery {
 
   public prefix: string = "/starsky"
 
+  public UrlHomePage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? "/" : `${this.prefix}/`;
+  }
+
+  public UrlSearchPage(t: string): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/search?t=${t}` : `${this.prefix}/search?t=${t}`;
+  }
+
+  public UrlTrashPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/trash` : `${this.prefix}/trash`;
+  }
+
+  public UrlImportPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/import` : `${this.prefix}/import`;
+  }
+
+  public UrlLoginPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
+  }
+
+  public UrlLogoutPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout` : `${this.prefix}/account/logout`;
+  }
+
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
     return output.replace(/\+/ig, "%2B");
-  }
-
-  public UrlLogin(): string {
-    return `${this.prefix}/account/login`;
   }
 
   public UrlAccountRegister(): string {
@@ -26,10 +46,6 @@ export class UrlQuery {
 
   public UrlQuerySearchApi = (query: string, pageNumber = 0): string => {
     return this.prefix + "/api/search?json=true&t=" + query + "&p=" + pageNumber;
-  }
-
-  public UrlSearch(query: string): string {
-    return this.prefix + "/search?t=" + query
   }
 
   public UrlSearchSuggestApi(query: string): string {

@@ -86,7 +86,7 @@ const AccountRegister: FunctionComponent = () => {
       return;
     }
 
-    history.navigate(new UrlQuery().UrlLogin(), { replace: true });
+    history.navigate(new UrlQuery().UrlLoginPage(), { replace: true });
   };
 
   // readonly mode

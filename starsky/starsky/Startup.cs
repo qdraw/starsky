@@ -125,8 +125,11 @@ namespace starsky
                 .AddCookie(options =>
                     {
                         options.Cookie.Name = "_id";
-                        options.ExpireTimeSpan = TimeSpan.FromDays(365);
-                        options.SlidingExpiration = true;
+                        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                        options.SlidingExpiration = false;
+                        options.Cookie.HttpOnly = true;
+                        options.Cookie.IsEssential = true;
+                        options.Cookie.Path = "/";
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
@@ -141,6 +144,7 @@ namespace starsky
                     options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
                     options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.Path = "/";
                     options.Cookie.IsEssential = true;
                     options.HeaderName = "X-XSRF-TOKEN";
                 }

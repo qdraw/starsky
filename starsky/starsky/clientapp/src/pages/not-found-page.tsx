@@ -3,6 +3,7 @@ import React, { FunctionComponent } from 'react';
 import MenuDefault from '../components/menu-default';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { Language } from '../shared/language';
+import { UrlQuery } from '../shared/url-query';
 
 const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
 
@@ -16,8 +17,8 @@ const NotFoundPage: FunctionComponent<RouteComponentProps<any>> = () => {
   return (<div>
     <MenuDefault isEnabled={true}></MenuDefault>
     <div className="content">
-      <div className="content--header"><Link to="/">{MessageNotFound}</Link></div>
-      <div className="content--subheader"><Link to="/"><u>{MessageGoToHome}</u></Link></div>
+      <div className="content--header"><Link to={new UrlQuery().UrlHomePage()}>{MessageNotFound}</Link></div>
+      <div className="content--subheader"><Link to={new UrlQuery().UrlHomePage()}><u>{MessageGoToHome}</u></Link></div>
     </div>
   </div>)
 }

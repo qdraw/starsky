@@ -67,7 +67,7 @@ describe("Login", () => {
     login.find('form [type="submit"]').first().simulate('submit');
 
     expect(postSpy).toBeCalled();
-    expect(postSpy).toBeCalledWith(new UrlQuery().UrlLogin(), "Email=dont@mail.me&Password=password");
+    expect(postSpy).toBeCalledWith(new UrlQuery().UrlLoginPage(), "Email=dont@mail.me&Password=password");
 
     expect(useLocationSpy).toBeCalled();
   });

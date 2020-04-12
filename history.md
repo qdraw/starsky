@@ -1,37 +1,44 @@
 [< readme](readme.md)
 
-# History
+# History Changelog
 
-## Todo:
-### Features planned (in random order) and lower priority
+# The following statuses are used 
+- Added _for new features_
+- Changed _for changes in existing functionality_
+- Deprecated _for soon-to-be removed features_
+- Removed _for now removed features_
+- Fixed _for any bug fixes_
+- Security _in case of vulnerabilities_
+
+# Features todo (in random order)
 - []   (feature) _Back-end_ Realtime Files API
 - []   (feature) _Back-end_ Docker support,
 - []   (feature) _Frond-end_  Search details show exact query behind modal
 - []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
 - []   (feature) _Front-end_ Zoom in picture
-
-### High priority features planned
-- []  (feature) Creating thumbnails from Web Interface (including status)
+- []   (feature) Creating thumbnails from Web Interface (including status)
 - []   (bug) _Back-end_ XMP Rotation __not implemented__
-- []  (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
+- []   (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
-# version 0.2.2 - 2020-04-XX
-- [x]   (bugfix) _Front-end_ Timezone issues in Safari
+# Unreleased - 2020-04-XX
+- [x]   (Added) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
-- [x]   (bugfix)  _Front-end_ Collection support in update tags / ColorClassSelect
-- [x]   (bugfix) _Front-end_ navigator.language issue in Safari
-- [x]   (change) _Front-end_ use `starsky` prefix in urls
+- [x]   (Fixed)  _Front-end_ Collection support in update tags / ColorClassSelect
+- [x]   (Fixed) _Front-end_ navigator.language issue in Safari
+- [x]   (Changed) _Front-end_ use `starsky` prefix in api urls
+- [x]   (Fixed) _Front-end_ use `starsky` prefix only when needed
+- [x]   (Fixed) _Back-end_ __Cookie path fix for stuck in 'Do you want to log out?' screen__
 
 # version 0.2.1 - 2020-04-08
-- [x]   (bugfix) _Front-end_ Readonly mode and modals
-- [x]   (feature) _Back-end_ ReadOnly status to DetailView
-- [x]   (feature) _Back-end_ mp4/h.264 video support
-- [x]   (feature) _Front-end_ video player (mp4)
-- [x]   (test) _Back-end_  unit tests for mp4/quickTime
-- [x]   (version) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.3 (using SDK 3.1.201)
-- [x]   (version) _Back-end_ Lots of dependencies (EF Core to 3.1.3)
-- [x]   (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.1 2020-03-20)_
-- [x]   (test) _Back-end_ Use vstest instead of mstest
+- [x]   (Fixed) _Front-end_ Readonly mode and modals
+- [x]   (Added) _Back-end_ ReadOnly status to DetailView
+- [x]   (Added) _Back-end_ mp4/h.264 video support
+- [x]   (Added) _Front-end_ video player (mp4)
+- [x]   (Added) _Back-end_  unit tests for mp4/quickTime
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.3 (using SDK 3.1.201)
+- [x]   (Security) _Back-end_ Lots of dependencies (EF Core to 3.1.3)
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.1 2020-03-20)_
+- [x]   (Changed) _Back-end_ Use vstest instead of mstest
 
 # version 0.2.0 - 2020-03-20
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
@@ -403,3 +410,4 @@ _Version number does not match SemVer_
 
 # version 0.0.1 - 2018-03-08
 - Initial commit
+

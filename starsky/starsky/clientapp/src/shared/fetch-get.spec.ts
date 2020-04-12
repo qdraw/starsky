@@ -8,7 +8,7 @@ describe("fetch-get", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchGet("/test")
 
-    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
+    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json", 'X-Requested-With': 'XMLHttpRequest' }, "method": "GET" })
     expect(result).toStrictEqual({
       "data": "response",
       "statusCode": 200,
@@ -21,7 +21,7 @@ describe("fetch-get", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchGet("/test")
 
-    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
+    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json", 'X-Requested-With': 'XMLHttpRequest' }, "method": "GET" })
     expect(result).toStrictEqual({
       "data": { "test": true },
       "statusCode": 200
@@ -36,7 +36,7 @@ describe("fetch-get", () => {
     console.error("the response has a wrong input ==>")
     var result = await FetchGet("/test")
 
-    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
+    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json", 'X-Requested-With': 'XMLHttpRequest' }, "method": "GET" })
     expect(result).toStrictEqual({
       "data": null,
       "statusCode": 200
@@ -53,7 +53,7 @@ describe("fetch-get", () => {
     var spy = jest.spyOn(window, 'fetch').mockImplementationOnce(() => mockFetchAsXml);
     var result = await FetchGet("/test")
 
-    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json" }, "method": "GET" })
+    expect(spy).toBeCalledWith("/test", { "credentials": "include", "headers": { "Accept": "application/json", 'X-Requested-With': 'XMLHttpRequest' }, "method": "GET" })
     expect(result).toStrictEqual({
       "data": "response",
       "statusCode": 500,
