@@ -125,8 +125,11 @@ namespace starsky
                 .AddCookie(options =>
                     {
                         options.Cookie.Name = "_id";
-                        options.ExpireTimeSpan = TimeSpan.FromDays(365);
-                        options.SlidingExpiration = true;
+                        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                        options.SlidingExpiration = false;
+                        options.Cookie.HttpOnly = true;
+                        options.Cookie.IsEssential = true;
+                        options.Cookie.Path = "/";
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
