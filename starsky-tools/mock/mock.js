@@ -14,16 +14,24 @@ var apiSearch = require('./api/search/index.json')
 var apiSearchTest = require('./api/search/test.json')
 var apiSearchTest1 = require('./api/search/test1.json')
 
+var prefix = "/starsky";
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get(prefix + '/', (req, res) => res.send('Hello World!'));
 
-app.get('/account/status', (req, res) => res.json(accountStatus));
-app.get('/api/health/details', (req, res) => {
+app.get(prefix + '/account/status', (req, res) => res.json(accountStatus));
+
+
+app.post(prefix + '/account/register', (req, res) => {
+  return res.json("Account Created");
+});
+
+
+app.get(prefix + '/api/health/details', (req, res) => {
   res.status(503);
   res.json(apiHealthDetails)
 });
 
-app.get('/api/index', (req, res) => {
+app.get(prefix + '/api/index', (req, res) => {
 
   if (!req.query.f || req.query.f === "/") {
     return res.json(apiIndexIndex);
@@ -45,11 +53,11 @@ app.get('/api/index', (req, res) => {
 });
 
 
-app.get('/api/search/trash', (req, res) => {
+app.get(prefix + '/api/search/trash', (req, res) => {
   return res.json(apiSearchTrash)
 });
 
-app.get('/api/search', (req, res) => {
+app.get(prefix + '/api/search', (req, res) => {
   if (req.query.t === "test" && req.query.p === "1") {
     return res.json(apiSearchTest1);
   }
@@ -59,5 +67,12 @@ app.get('/api/search', (req, res) => {
   return res.json(apiSearch)
 });
 
+app.get(prefix + '/api/suggest', (req, res) => {
+  if (req.query.t === "test") {
+    return res.json(["test", "testung"]);
+  }
+  return res.json([])
+});
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+app.listen(port, () => console.log(`Starsky mock app listening on port ${port}!`))
