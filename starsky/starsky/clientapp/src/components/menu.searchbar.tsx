@@ -17,9 +17,9 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   const language = new Language(settings.language);
 
   var defaultMenu = [
-    { "name": "Home", "url": "/" },
-    { "name": language.text("Foto's van deze week", "Photos of this week"), "url": "/search?t=-Datetime%3E7%20-ImageFormat-%22tiff%22" },
-    { "name": language.text("Prullenmand", "Trash"), url: "/trash" },
+    { "name": "Home", "url": new UrlQuery().UrlHomePage() },
+    { "name": language.text("Foto's van deze week", "Photos of this week"), "url": new UrlQuery().UrlSearchPage('-Datetime%3E7%20-ImageFormat-%22tiff%22') },
+    { "name": language.text("Prullenmand", "Trash"), url: new UrlQuery().UrlTrashPage() },
     { "name": language.text("Importeren", "Import"), url: "/import" },
     { "name": language.text("Uitloggen", "Logout"), url: "/account/login" }
   ];
@@ -57,7 +57,7 @@ const MenuSearchBar: React.FunctionComponent<IMenuSearchBarProps> = memo((props)
   function navigate(defQuery: string) {
 
     // To do change to search page
-    history.navigate(new UrlQuery().UrlSearch(defQuery));
+    history.navigate(new UrlQuery().UrlSearchPage(defQuery));
     setFormFocus(false);
 
     // force update input field after navigate to page (only the input item)
