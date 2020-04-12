@@ -130,6 +130,7 @@ namespace starsky
                         options.Cookie.HttpOnly = true;
                         options.Cookie.IsEssential = true;
                         options.Cookie.Path = "/";
+                        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
                         options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
