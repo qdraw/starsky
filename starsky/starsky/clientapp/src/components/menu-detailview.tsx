@@ -210,7 +210,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
 
   const goToParentFolderJSX: JSX.Element | null = isSearchQuery ? <li className="menu-option" data-test="go-to-parent-folder" onClick={() =>
-    history.navigate(new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory, true), {
+    history.navigate(new UrlQuery().updateFilePathHash(history.location.search, state.fileIndexItem.parentDirectory, true), {
       state: {
         filePath: state.fileIndexItem.filePath
       } as INavigateState
@@ -238,7 +238,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
           onClick={() => { setIsLoading(true) }}
-          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
+          to={new UrlQuery().updateFilePathHash(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
 
         {/* to search */}
         {isSearchQuery ? <Link className="item item--first item--search"

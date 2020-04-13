@@ -89,6 +89,20 @@ export class UrlQuery {
   }
 
   /**
+   * Keep colorClass in URL
+   */
+  public updateFilePathHash(historyLocationHash: string, toUpdateFilePath: string, clearTSearchQuery?: boolean): string {
+    var url = new URLPath().StringToIUrl(historyLocationHash);
+    url.f = toUpdateFilePath;
+    // when browsing to a parent folder from a detailview item
+    if (clearTSearchQuery) {
+      delete url.t;
+      delete url.p;
+    }
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/${new URLPath().IUrlToString(url)}` : `${this.prefix}/${new URLPath().IUrlToString(url)}`;
+  }
+
+  /**
    * Used with localisation hash
    */
   public UrlQueryServerApi = (historyLocationHash: string): string => {

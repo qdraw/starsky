@@ -8,7 +8,6 @@ import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import FetchPost from '../shared/fetch-post';
 import { FileExtensions } from '../shared/file-extensions';
 import { Language } from '../shared/language';
-import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import FormControl from './form-control';
 import Modal from './modal';
@@ -117,7 +116,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     }
 
     // redirect to new path (so if you press refresh the image is shown)
-    const replacePath = new URLPath().updateFilePath(history.location.search, filePathAfterChange);
+    const replacePath = new UrlQuery().updateFilePathHash(history.location.search, filePathAfterChange);
     await history.navigate(replacePath, { replace: true });
 
     // Close window

@@ -2,6 +2,7 @@ import { Link } from '@reach/router';
 import React, { memo } from "react";
 import useLocation from '../hooks/use-location';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 interface IBreadcrumbProps {
   subPath: string;
@@ -10,7 +11,7 @@ interface IBreadcrumbProps {
 
 const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
-  if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb"/>);
+  if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb" />);
 
   // used for reading current location
   var history = useLocation();
@@ -28,10 +29,10 @@ const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
           // For the home page
           if (item === props.subPath) {
-            return (<span key={item}><Link to={new URLPath().updateFilePath(history.location.search, item)}>{name}</Link></span>);
+            return (<span key={item}><Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>{name}</Link></span>);
           }
 
-          return (<span key={item}><Link to={new URLPath().updateFilePath(history.location.search, item)}>{name}</Link> <span> »</span> </span>);
+          return (<span key={item}><Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}>{name}</Link> <span> »</span> </span>);
         })
       }
       {new URLPath().FileNameBreadcrumb(props.subPath)}
