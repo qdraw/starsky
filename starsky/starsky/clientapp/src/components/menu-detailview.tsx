@@ -148,6 +148,14 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'update', status: IExifStatus.Ok, lastEdited: new Date().toISOString() });
       setIsLoading(false);
     }
+    clearSearchCache();
+  }
+
+  function clearSearchCache() {
+    // clear search cache * when you refresh the search page this is needed to display the correct labels
+    var searchTag = new URLPath().StringToIUrl(history.location.search).t;
+    if (!searchTag) return;
+    FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
   }
 
   /**
