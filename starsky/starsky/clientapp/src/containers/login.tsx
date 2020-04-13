@@ -54,7 +54,7 @@ const Login: React.FC<ILoginProps> = () => {
         history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
       }
     });
-  }, [history, history.location.search]);
+  }, [history, history.location.search, MessageLogin, MessageLogout]);
 
   const authHandler = async () => {
     try {
