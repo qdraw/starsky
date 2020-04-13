@@ -31,6 +31,7 @@
 - [x]   (Fixed) _Front-end_ with prefix on the archive page navigate to the right url
 - [x]   (Fixed) _Front-end_ Search page cache not cleared after edit multiple images
 - [x]   (Fixed) _Front-end_ Delete multiple images collections no applied
+search tags detailview cache not cleared 
 
 # version 0.2.1 - 2020-04-08
 - [x]   (Fixed) _Front-end_ Readonly mode and modals
