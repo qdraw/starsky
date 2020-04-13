@@ -77,16 +77,7 @@ describe("url-path", () => {
       expect(test.select).toStrictEqual(["test"])
     });
   });
-  describe("GetReturnUrl", () => {
-    it("default", () => {
-      var test = urlPath.GetReturnUrl("?");
-      expect(test).toStrictEqual("/?f=/")
-    });
-    it("url", () => {
-      var test = urlPath.GetReturnUrl("ReturnUrl=test");
-      expect(test).toStrictEqual("test")
-    });
-  });
+
   describe("getParent", () => {
     it("default", () => {
       var test = urlPath.getParent("");
@@ -107,27 +98,6 @@ describe("url-path", () => {
     });
   });
 
-  describe("updateFilePath", () => {
-    it("default", () => {
-      var test = urlPath.updateFilePath("?f=test", "test1");
-      expect(test).toStrictEqual("/?f=test1")
-    });
-
-    it("contains colorclass", () => {
-      var test = urlPath.updateFilePath("?f=test&colorclass=1", "test1");
-      expect(test).toStrictEqual("/?f=test1&colorClass=1")
-    });
-
-    it("remove search query", () => {
-      var test = urlPath.updateFilePath("?f=test&colorclass=1&t=1", "test1", true);
-      expect(test).toStrictEqual("/?f=test1&colorClass=1")
-    });
-
-    it("keep search query", () => {
-      var test = urlPath.updateFilePath("?f=test&colorclass=1&t=1", "test1");
-      expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1")
-    });
-  });
 
   describe("getFilePath", () => {
     it("default", () => {

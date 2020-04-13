@@ -86,7 +86,38 @@ describe("url-query", () => {
     expect(result).toContain("test")
   });
 
+  describe("GetReturnUrl", () => {
+    it("default", () => {
+      var test = urlQuery.GetReturnUrl("?");
+      expect(test).toStrictEqual("/?f=/")
+    });
+    it("url", () => {
+      var test = urlQuery.GetReturnUrl("ReturnUrl=test");
+      expect(test).toStrictEqual("test")
+    });
+  });
 
+  describe("updateFilePath", () => {
+    it("default", () => {
+      var test = urlQuery.updateFilePathHash("?f=test", "test1");
+      expect(test).toStrictEqual("/?f=test1")
+    });
+
+    it("contains colorclass", () => {
+      var test = urlQuery.updateFilePathHash("?f=test&colorclass=1", "test1");
+      expect(test).toStrictEqual("/?f=test1&colorClass=1")
+    });
+
+    it("remove search query", () => {
+      var test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1", "test1", true);
+      expect(test).toStrictEqual("/?f=test1&colorClass=1")
+    });
+
+    it("keep search query", () => {
+      var test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1", "test1");
+      expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1")
+    });
+  });
 
 
 });

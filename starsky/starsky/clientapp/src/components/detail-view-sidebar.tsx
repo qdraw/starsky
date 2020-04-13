@@ -282,7 +282,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
-        <Link to={new URLPath().updateFilePath(history.location.search, item)}
+        <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}
           key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
           {index !== 1 ? <div className="icon icon--photo" /> : null}
           <b>{new URLPath().getChild(item)}</b>

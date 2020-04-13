@@ -3,6 +3,7 @@ import React, { memo, useEffect } from 'react';
 import useLocation from '../hooks/use-location';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 import ListImage from './list-image';
 import Preloader from './preloader';
 
@@ -60,7 +61,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
     <div className="box box--view" data-filepath={item.filePath}>
       {/* for slow connections show preloader icon */}
       {isPreloaderState ? preloader : null}
-      <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new URLPath().updateFilePath(history.location.search, item.filePath)}
+      <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new UrlQuery().updateFilePathHash(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
         <ListImage imageFormat={item.imageFormat} alt={item.tags} fileHash={item.fileHash} />
         <div className="caption">

@@ -83,6 +83,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     bodyParams.set("Tags", "!delete!");
     bodyParams.set("append", "true");
     bodyParams.set("Colorclass", "8");
+    bodyParams.set("collections", (new URLPath().StringToIUrl(history.location.search).collections !== false).toString());
 
     var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
     if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
@@ -167,7 +168,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length >= 1 ? <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
             {select.length >= 1 ? <li data-test="trash" className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
+            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <UploadMenuItem /> : null}
+
           </MoreMenu> : null}
 
           <nav className={hamburgerMenu ? "nav open" : "nav"}>

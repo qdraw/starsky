@@ -148,6 +148,14 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'update', status: IExifStatus.Ok, lastEdited: new Date().toISOString() });
       setIsLoading(false);
     }
+    clearSearchCache();
+  }
+
+  function clearSearchCache() {
+    // clear search cache * when you refresh the search page this is needed to display the correct labels
+    var searchTag = new URLPath().StringToIUrl(history.location.search).t;
+    if (!searchTag) return;
+    FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
   }
 
   /**
@@ -210,7 +218,7 @@ const MenuDetailView: React.FunctionComponent = () => {
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
 
   const goToParentFolderJSX: JSX.Element | null = isSearchQuery ? <li className="menu-option" data-test="go-to-parent-folder" onClick={() =>
-    history.navigate(new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory, true), {
+    history.navigate(new UrlQuery().updateFilePathHash(history.location.search, state.fileIndexItem.parentDirectory, true), {
       state: {
         filePath: state.fileIndexItem.filePath
       } as INavigateState
@@ -238,12 +246,12 @@ const MenuDetailView: React.FunctionComponent = () => {
         {!isSearchQuery ? <Link className="item item--first item--close"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
           onClick={() => { setIsLoading(true) }}
-          to={new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
+          to={new UrlQuery().updateFilePathHash(history.location.search, state.fileIndexItem.parentDirectory)}>{MessageCloseDialog}</Link> : null}
 
         {/* to search */}
         {isSearchQuery ? <Link className="item item--first item--search"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
-          to={new URLPath().Search(history.location.search)}>{new URLPath().StringToIUrl(history.location.search).t}</Link> : null}
+          to={new UrlQuery().HashSearchPage(history.location.search)}>{new URLPath().StringToIUrl(history.location.search).t}</Link> : null}
 
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>

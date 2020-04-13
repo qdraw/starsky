@@ -2,7 +2,7 @@
 
 # History Changelog
 
-# The following statuses are used 
+# The following statuses are used
 - Added _for new features_
 - Changed _for changes in existing functionality_
 - Deprecated _for soon-to-be removed features_
@@ -28,6 +28,9 @@
 - [x]   (Changed) _Front-end_ use `starsky` prefix in api urls
 - [x]   (Fixed) _Front-end_ use `starsky` prefix only when needed
 - [x]   (Fixed) _Back-end_ __Cookie path fix for stuck in 'Do you want to log out?' screen__
+- [x]   (Fixed) _Front-end_ with prefix on the archive page navigate to the right url
+- [x]   (Fixed) _Front-end_ Search page cache not cleared after edit multiple images
+- [x]   (Fixed) _Front-end_ Delete multiple images collections no applied
 
 # version 0.2.1 - 2020-04-08
 - [x]   (Fixed) _Front-end_ Readonly mode and modals
@@ -410,4 +413,3 @@ _Version number does not match SemVer_
 
 # version 0.0.1 - 2018-03-08
 - Initial commit
-

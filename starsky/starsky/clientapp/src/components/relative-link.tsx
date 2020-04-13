@@ -4,7 +4,7 @@ import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IRelativeObjects } from "../interfaces/IDetailView";
 import { Language } from '../shared/language';
-import { URLPath } from '../shared/url-path';
+import { UrlQuery } from '../shared/url-query';
 
 export interface IRelativeLink {
   relativeObjects: IRelativeObjects;
@@ -25,8 +25,8 @@ const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   if (!relativeObjects) return (<div className="relativelink" />)
 
-  var prevUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.prevFilePath);
-  var nextUrl = new URLPath().updateFilePath(history.location.search, relativeObjects.nextFilePath);
+  var prevUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath);
+  var nextUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath);
 
   let prev = relativeObjects.prevFilePath !== null ?
     <Link className="prev" to={prevUrl}>{MessagePrevious}</Link> : null;

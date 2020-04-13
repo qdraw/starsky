@@ -18,6 +18,10 @@ export class DocumentTitle {
     document.title = this.GetDocumentTitle(name);
   }
 
+  public SetDocumentTitlePrefix = (prefix: string): void => {
+    document.title = this.GetDocumentTitle(prefix);
+  }
+
   public GetDocumentTitle = (prefix: string): string => {
     if (!prefix) return "Starsky App";
     return prefix + " - Starsky App";
