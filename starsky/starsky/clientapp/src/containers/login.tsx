@@ -3,6 +3,7 @@ import Button from '../components/Button';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
+import { DocumentTitle } from '../shared/document-title';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
@@ -47,6 +48,7 @@ const Login: React.FC<ILoginProps> = () => {
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
+      new DocumentTitle().SetDocumentTitlePrefix(status.statusCode === 401 ? MessageLogin : MessageLogout);
       // to help new users find the register screen
       if (status.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
         history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
