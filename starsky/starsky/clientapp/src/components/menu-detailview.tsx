@@ -243,7 +243,7 @@ const MenuDetailView: React.FunctionComponent = () => {
         {/* to search */}
         {isSearchQuery ? <Link className="item item--first item--search"
           state={{ filePath: state.fileIndexItem.filePath } as INavigateState}
-          to={new URLPath().Search(history.location.search)}>{new URLPath().StringToIUrl(history.location.search).t}</Link> : null}
+          to={new UrlQuery().HashSearchPage(history.location.search)}>{new URLPath().StringToIUrl(history.location.search).t}</Link> : null}
 
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>

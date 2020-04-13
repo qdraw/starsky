@@ -6,7 +6,6 @@ import BrowserDetect from '../shared/browser-detect';
 import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
-import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
 
@@ -68,7 +67,7 @@ const Login: React.FC<ILoginProps> = () => {
       }
       else {
         // redirect
-        var returnUrl = new URLPath().GetReturnUrl(history.location.search);
+        var returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
         history.navigate(returnUrl, { replace: true });
       }
     } catch (err) {
@@ -164,7 +163,7 @@ const Login: React.FC<ILoginProps> = () => {
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
               <a className="btn btn--default" href={new UrlQuery().UrlLogoutPage()}>{MessageLogout}</a>
-              <a className="btn btn--info" href={new UrlQuery().UrlHomePage()}>{MessageStayLoggedIn}</a>
+              <a className="btn btn--info" href={new UrlQuery().GetReturnUrl(history.location.search)}>{MessageStayLoggedIn}</a>
             </form>
           </div>
         </>

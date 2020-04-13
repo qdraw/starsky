@@ -77,16 +77,7 @@ describe("url-path", () => {
       expect(test.select).toStrictEqual(["test"])
     });
   });
-  describe("GetReturnUrl", () => {
-    it("default", () => {
-      var test = urlPath.GetReturnUrl("?");
-      expect(test).toStrictEqual("/?f=/")
-    });
-    it("url", () => {
-      var test = urlPath.GetReturnUrl("ReturnUrl=test");
-      expect(test).toStrictEqual("test")
-    });
-  });
+
   describe("getParent", () => {
     it("default", () => {
       var test = urlPath.getParent("");

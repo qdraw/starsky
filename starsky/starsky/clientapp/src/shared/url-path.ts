@@ -82,14 +82,7 @@ export class URLPath {
     return colorClassArray;
   }
 
-  public GetReturnUrl(locationHash: string): string {
-    // ?ReturnUrl=%2F
-    let hash = this.RemovePrefixUrl(locationHash);
-    let search = new URLSearchParams(hash);
-    let getReturnUrl = search.get("ReturnUrl");
-    if (!getReturnUrl) return "/" + this.addPrefixUrl("f=/");
-    return getReturnUrl;
-  }
+
 
   /**
    * Convert a comma separated string to a Array of numbers
@@ -119,7 +112,7 @@ export class URLPath {
     for (let key of Object.entries(urlObject)) {
       params.set(key[0], key[1]);
     }
-    var url = this.addPrefixUrl(params.toString());
+    var url = this.AddPrefixUrl(params.toString());
     url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
     return url;
   }
@@ -154,7 +147,11 @@ export class URLPath {
     return output.replace(/\+/ig, "%2B");
   }
 
-  private addPrefixUrl(input: string): string {
+  /**
+   * Add query string ? before url
+   * @param input url
+   */
+  public AddPrefixUrl(input: string): string {
     return "?" + input;
   }
 
@@ -224,14 +221,6 @@ export class URLPath {
       delete url.p;
     }
     return "/" + new URLPath().IUrlToString(url);
-  }
-
-  /**
-   * Search path based on Location Hash
-   */
-  public Search(historyLocationHash: string): string {
-    var url = new URLPath().StringToIUrl(historyLocationHash);
-    return "/search" + new URLPath().IUrlToString(url);
   }
 
   /**

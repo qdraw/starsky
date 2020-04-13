@@ -86,7 +86,16 @@ describe("url-query", () => {
     expect(result).toContain("test")
   });
 
-
+  describe("GetReturnUrl", () => {
+    it("default", () => {
+      var test = urlQuery.GetReturnUrl("?");
+      expect(test).toStrictEqual("/?f=/")
+    });
+    it("url", () => {
+      var test = urlQuery.GetReturnUrl("ReturnUrl=test");
+      expect(test).toStrictEqual("test")
+    });
+  });
 
 
 });

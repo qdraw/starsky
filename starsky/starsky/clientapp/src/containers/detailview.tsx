@@ -118,7 +118,7 @@ const DetailView: React.FC<IDetailView> = () => {
     if (!history.location) return;
     if (new Keyboard().isInForm(event)) return;
 
-    var url = isSearchQuery ? new URLPath().Search(history.location.search) :
+    var url = isSearchQuery ? new UrlQuery().HashSearchPage(history.location.search) :
       new URLPath().updateFilePath(history.location.search, state.fileIndexItem.parentDirectory);
 
     history.navigate(url, {

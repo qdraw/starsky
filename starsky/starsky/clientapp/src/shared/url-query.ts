@@ -9,8 +9,27 @@ export class UrlQuery {
     return document.location.pathname.indexOf(this.prefix) === -1 ? "/" : `${this.prefix}/`;
   }
 
+  public GetReturnUrl(locationHash: string): string {
+    // ?ReturnUrl=%2F
+    let hash = new URLPath().RemovePrefixUrl(locationHash);
+    let search = new URLSearchParams(hash);
+    let getReturnUrl = search.get("ReturnUrl");
+    var starskyPathIndex = document.location.pathname.indexOf(this.prefix);
+    if (!getReturnUrl) return starskyPathIndex === -1
+      ? `/${new URLPath().AddPrefixUrl("f=/")}` : `${this.prefix}/${new URLPath().AddPrefixUrl("f=/")}`;
+    return starskyPathIndex === -1 ? getReturnUrl : `${this.prefix}/${getReturnUrl}`;
+  }
+
   public UrlSearchPage(t: string): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/search?t=${t}` : `${this.prefix}/search?t=${t}`;
+  }
+
+  /**
+   * Search path based on Location Hash
+    */
+  public HashSearchPage(historyLocationHash: string): string {
+    var url = new URLPath().StringToIUrl(historyLocationHash);
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/search${new URLPath().IUrlToString(url)}` : `${this.prefix}/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
@@ -28,6 +47,7 @@ export class UrlQuery {
   public UrlLogoutPage(): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout` : `${this.prefix}/account/logout`;
   }
+
 
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
@@ -102,7 +122,7 @@ export class UrlQuery {
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApiPath = (path: string): string => {
-    return this.prefix + "/api/index" + path
+    return this.prefix + "/api/index?f=" + path
   }
 
   /**
