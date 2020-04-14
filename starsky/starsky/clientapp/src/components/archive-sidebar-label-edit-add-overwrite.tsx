@@ -82,7 +82,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString()).then((anyData) => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       result.forEach(element => {
-        console.log(element);
+        console.log(element, element.status === IExifStatus.ReadOnly);
 
         if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
         if (element.status !== IExifStatus.Ok) return;
