@@ -151,28 +151,26 @@ const DetailView: React.FC<IDetailView> = () => {
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = React.useState(true);
 
+  /**
+  * navigation function to go to next photo
+  */
   function next() {
     if (!relativeObjects) return;
-    var nextPath = updateUrl(relativeObjects.nextFilePath);
-    // Keeps loading forever
+    var nextPath = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath, false);
+    // Prevent keeps loading forever
     if (relativeObjects.nextHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
     history.navigate(nextPath, { replace: true });
   }
 
-  function updateUrl(toUpdateFilePath: string) {
-    var url = new URLPath().StringToIUrl(history.location.search);
-    url.f = toUpdateFilePath;
-    url.details = isDetails;
-    return "/" + new URLPath().IUrlToString(url);
-  }
-
-  // navigation function to go to previous photo
+  /**
+   * navigation function to go to previous photo
+   */
   function prev() {
     if (!relativeObjects) return;
-    var prevPath = updateUrl(relativeObjects.prevFilePath);
-    // Keeps loading forever
+    var prevPath = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath, false);
+    // Prevent keeps loading forever
     if (relativeObjects.prevHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }

@@ -18,6 +18,7 @@ function Search(archive: IArchiveProps) {
   const MessageNumberOfResults = language.text("resultaten", "results");
   const MessageNoResult = language.text("Geen resultaat", "No result");
   const MessageTryOtherQuery = language.text("Probeer een andere zoekopdracht", "Try another search query");
+  const MessagePageNumberToken = language.text("Pagina {pageNumber} van ", "Page {pageNumber} of") // 
 
   var history = useLocation();
 
@@ -45,9 +46,14 @@ function Search(archive: IArchiveProps) {
           <MenuSearchBar defaultText={query} />
         </div>
         <div className="content--header">
-          {archive.collectionsCount ? <>
+          {!archive.collectionsCount ? MessageNoResult : null}
+          {archive.collectionsCount && archive.pageNumber === 1 ? <>
             {archive.collectionsCount} {MessageNumberOfResults}
-          </> : MessageNoResult}
+          </> : null}
+          {archive.collectionsCount && archive.pageNumber && archive.pageNumber >= 2 ? <>
+            {language.token(MessagePageNumberToken, ["{pageNumber}"], [archive.pageNumber.toString()])}
+            {archive.collectionsCount} {MessageNumberOfResults}
+          </> : null}
         </div>
         <SearchPagination {...archive} />
         {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}>

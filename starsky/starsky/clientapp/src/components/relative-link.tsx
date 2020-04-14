@@ -10,6 +10,9 @@ export interface IRelativeLink {
   relativeObjects: IRelativeObjects;
 }
 
+/**
+ * Only for Archive pages
+ */
 const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   // content
@@ -25,6 +28,7 @@ const RelativeLink: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   if (!relativeObjects) return (<div className="relativelink" />)
 
+  // to the next/prev relative object
   var prevUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath);
   var nextUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath);
 

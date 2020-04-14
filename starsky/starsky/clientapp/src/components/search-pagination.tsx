@@ -9,6 +9,9 @@ export interface IRelativeLink {
   lastPageNumber?: number;
 }
 
+/**
+ * Next prev for search pages
+ */
 const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) => {
 
   // content
@@ -34,7 +37,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     var prevObject = { ...urlObject };
     prevObject.p = prevObject.p ? prevObject.p - 1 : 1;
     if (!urlObject.p || urlObject.p < 0 || lastPageNumber < urlObject.p) return <></>;
-    return <Link className="prev" to={new URLPath().IUrlToString(prevObject)}> {MessagePrevious}</ Link>;
+    return <Link onClick={() => window.scrollTo(0, 0)} className="prev" to={new URLPath().IUrlToString(prevObject)}> {MessagePrevious}</ Link>;
   }
 
   function next(): JSX.Element {
@@ -44,7 +47,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     nextObject.p = nextObject.p ? nextObject.p + 1 : 1;
     // if(urlObject.p) also means 0
     if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // undefined=0
-    return <Link className="next" to={new URLPath().IUrlToString(nextObject)}> {MessageNext}</ Link>;
+    return <Link onClick={() => window.scrollTo(0, 0)} className="next" to={new URLPath().IUrlToString(nextObject)}> {MessageNext}</ Link>;
   }
 
   return (<>

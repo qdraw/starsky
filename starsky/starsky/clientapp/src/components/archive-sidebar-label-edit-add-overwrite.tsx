@@ -86,7 +86,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       setIsLoading(false);
       setInputEnabled(true);
 
-      // clear search cache
+      // clear search cache * when you refresh the search page this is needed to display the correct labels
       var searchTag = new URLPath().StringToIUrl(history.location.search).t;
       if (!searchTag) return;
       FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
