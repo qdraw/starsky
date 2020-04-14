@@ -18,7 +18,7 @@ function Search(archive: IArchiveProps) {
   const MessageNumberOfResults = language.text("resultaten", "results");
   const MessageNoResult = language.text("Geen resultaat", "No result");
   const MessageTryOtherQuery = language.text("Probeer een andere zoekopdracht", "Try another search query");
-  const MessagePageNumberToken = language.text("Pagina {pageNumber} van ", "Page {pageNumber} of") // 
+  const MessagePageNumberToken = language.text("Pagina {pageNumber} van ", "Page {pageNumber} of ") // space at end
 
   var history = useLocation();
 
