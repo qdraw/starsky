@@ -36,7 +36,7 @@ namespace starskytest.Services
 			_query = new Query(dbContext,_memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg","/test2.jpg"});
-			_replace = new ReplaceService(_query,new AppSettings(),_iStorage);
+			_replace = new ReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},_iStorage);
 
 		}
 		
@@ -108,7 +108,6 @@ namespace starskytest.Services
 			// When you search for nothing, there is nothing to replace 
 			var output = _replace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
-
 		}
 
 
@@ -128,6 +127,23 @@ namespace starskytest.Services
 			Assert.AreEqual("test1, test",output[0].Tags);
 			
 			_query.RemoveItem(item1);
+		}
+
+		[TestMethod]
+		public void ReplaceServiceTest_Readonly()
+		{
+			var item0 = _query.AddItem(new FileIndexItem
+			{
+				FileName = "test.jpg",
+				ParentDirectory = "/readonly",
+				Tags = "!delete!"
+			});
+			
+			var output = _replace.Replace("/readonly/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault().Status);
+			
+			_query.RemoveItem(item0);
 		}
 
 		[TestMethod]

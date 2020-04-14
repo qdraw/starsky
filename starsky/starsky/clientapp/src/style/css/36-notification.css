@@ -14,7 +14,7 @@
   margin-right: 10px;
   padding-bottom: 10px;
   display: flex;
-  z-index: 5;
+  z-index: 7;
 }
 
 .notification.notification--danger {

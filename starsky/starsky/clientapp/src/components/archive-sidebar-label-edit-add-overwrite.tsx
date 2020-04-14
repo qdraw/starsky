@@ -21,7 +21,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   const MessageAddName = new Language(settings.language).text("Toevoegen", "Add to");
   const MessageOverwriteName = new Language(settings.language).text("Overschrijven", "Overwrite");
   const MessageTitleName = new Language(settings.language).text("Titel", "Title");
-  const MessageErrorReadOnly = new Language(settings.language).text("Eén of meerdere bestanden zijn alleen lezen", "One or more files are read only");
+  const MessageErrorReadOnly = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn alleen lezen. " +
+    "Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "One or more files are read only. " +
+    "Only the files with write permissions have been updated.");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
