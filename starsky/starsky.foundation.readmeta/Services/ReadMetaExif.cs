@@ -429,6 +429,10 @@ namespace starsky.foundation.readmeta.Services
             var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
             DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
 	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
+            
+            // to avoid errors scanning gpx files
+            itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Unspecified);
+            
             if ( itemDateTimeQuickTime.Year > 1970 ) itemDateTime = itemDateTimeQuickTime;
 
             return itemDateTime;

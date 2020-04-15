@@ -178,7 +178,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         }] as IFileIndexItem[]
       };
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 

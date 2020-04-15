@@ -41,8 +41,37 @@ namespace starskytest.starskyGeoCore.Services
                     ImageFormat = ExtensionRolesHelper.ImageFormat.gpx
                 }
             };
-
         }
+
+        [TestMethod]
+        public void GeoIndexGpx_ConvertTimeZone_EuropeAmsterdam()
+        {
+	        var fakeIStorage = new FakeIStorage();
+	        var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/Amsterdam"}, fakeIStorage).ConvertTimeZone(new DateTime(2020, 04, 15,
+		        17, 0, 0, 0));
+	        Assert.AreEqual(new DateTime(2020, 04, 15, 15, 0, 0, 0), result);
+        }
+        
+        [TestMethod]
+        public void GeoIndexGpx_ConvertTimeZone_EuropeLondon()
+        {
+	        var fakeIStorage = new FakeIStorage();
+	        var result = new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(new DateTime(2020, 01, 15,
+		        17, 0, 0, 0));
+	        Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void GeoIndexGpx_ConvertTimeZone_typeLocal_Expect_ArgumentException()
+        {
+	        var fakeIStorage = new FakeIStorage();
+	        var inputDateTime = new DateTime(2020, 01, 15,
+		        17, 0, 0, 0);
+	        inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Local);
+	        new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(inputDateTime);
+        }
+
         [TestMethod]
         public void GeoIndexGpx_LoopFolderLookupTest()
         {

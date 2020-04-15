@@ -210,7 +210,7 @@ export class UrlQuery {
   }
 
   public UrlSync(parentFolder: string): string {
-    return this.prefix + "/sync" + new URLPath().encodeURI(parentFolder);
+    return this.prefix + "/sync?f=" + new URLPath().encodeURI(parentFolder);
   }
 
   /**

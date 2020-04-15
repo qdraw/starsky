@@ -33,6 +33,8 @@
 - [x]   (Fixed) _Front-end_ Delete multiple images collections no applied
 - [x]   (Other) _Front-end_ search tags detailview cache not cleared only if you switch very fast _known issue_ _won't fix_
 - [x]   (Fixed) _Front-end_ search update read only files __Not implemented__
+- [x]   (Fixed) _Front-end_ sync API 404 fix from UI
+- [x]   (Fixed) _Back-end_ Quicktime DateTime creates error while checking GPX files
 
 # version 0.2.1 - 2020-04-08
 - [x]   (Fixed) _Front-end_ Readonly mode and modals

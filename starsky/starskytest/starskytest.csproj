@@ -56,10 +56,12 @@
     <ItemGroup>
       <Compile Remove="coverage-report.zip" />
       <Compile Remove="coverage-report\**" />
+      <Compile Remove="TestResults\**" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Remove="coverage-report.zip" />
       <EmbeddedResource Remove="coverage-report\**" />
+      <EmbeddedResource Remove="TestResults\**" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="coverage-report\**" />
@@ -67,5 +69,6 @@
       <None Remove="jest-coverage.cobertura.xml" />
       <None Remove="netcore-coverage.opencover.xml" />
       <None Remove="coverage-report.zip" />
+      <None Remove="TestResults\**" />
     </ItemGroup>
 </Project>
