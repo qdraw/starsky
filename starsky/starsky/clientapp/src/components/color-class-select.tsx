@@ -74,7 +74,6 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     FetchPost(updateApiUrl, bodyParams.toString()).then(anyData => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       if (!result || result.find((item) => { return item.status === IExifStatus.ReadOnly; })) {
-        console.log('-MessageErrorReadOnly');
         setIsError(MessageErrorReadOnly);
         return;
       }
