@@ -51,6 +51,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
 
+  // for showing a notification
   const [isError, setIsError] = useState("");
 
   // Update the disabled state + Local variable with input data

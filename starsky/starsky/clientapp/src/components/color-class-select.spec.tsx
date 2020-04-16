@@ -1,9 +1,12 @@
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IExifStatus } from '../interfaces/IExifStatus';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
+import Notification from './notification';
 
 describe("ColorClassSelect", () => {
 
@@ -34,17 +37,35 @@ describe("ColorClassSelect", () => {
 
   it("onClick disabled", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }} />);
 
     wrapper.find('button.colorclass--2').simulate('click');
 
     // expect [disabled]
-    expect(spy).toHaveBeenCalledTimes(0);
+    expect(fetchPostSpy).toHaveBeenCalledTimes(0);
 
     // Cleanup: To avoid that mocks are shared
-    spy.mockClear();
+    fetchPostSpy.mockClear();
+  });
+
+
+  it("onClick readonly file", () => {
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 404, data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
+
+    wrapper.find('button.colorclass--2').simulate('click');
+
+    wrapper.update();
+
+    console.log(wrapper.html());
+
+    expect(wrapper.exists(Notification)).toBeTruthy();
   });
 
   // it("onClick value return keypress [FAIL]", () => {

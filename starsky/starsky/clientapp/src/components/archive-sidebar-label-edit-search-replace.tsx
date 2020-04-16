@@ -12,8 +12,8 @@ import { SidebarUpdate } from '../shared/sidebar-update';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import FormControl from './form-control';
+import Notification, { NotificationType } from './notification';
 import Preloader from './preloader';
-
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
@@ -21,6 +21,11 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   const language = new Language(settings.language);
   const MessageSearchAndReplaceName = language.text("Zoeken en vervangen", "Search and replace");
   const MessageTitleName = language.text("Titel", "Title");
+  const MessageErrorReadOnly = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn alleen lezen. " +
+    "Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "One or more files are read only. " +
+    "Only the files with write permissions have been updated.");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -42,6 +47,9 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
+
+  // for showing a notification
+  const [isError, setIsError] = useState("");
 
   // Update the disabled state + Local variable with input data
   function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
@@ -92,6 +100,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then((anyData) => {
           var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
+            if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
             if (element.status !== IExifStatus.Ok) return;
             dispatch({ type: 'update', ...element, select: [element.fileName] });
           });
@@ -117,6 +126,8 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
+      {isError !== "" ? <Notification type={NotificationType.danger}>{isError}</Notification> : null}
+
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
