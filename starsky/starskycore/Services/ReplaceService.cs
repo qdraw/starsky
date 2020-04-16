@@ -69,7 +69,7 @@ namespace starskycore.Services
 				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList) || 
 				     new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList) ) continue;
 
-				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
+				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				
 				// current item is also ok
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;

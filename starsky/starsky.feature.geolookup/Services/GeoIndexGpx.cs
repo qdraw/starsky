@@ -65,6 +65,8 @@ namespace starsky.feature.geolookup.Services
         /// <exception cref="ArgumentException">DateTime Kind should not be Local</exception>
         internal DateTime ConvertTimeZone(DateTime valueDateTime)
         {
+	        if ( valueDateTime.Kind == DateTimeKind.Utc ) return valueDateTime;
+
 	        // Not supported by TimeZoneInfo convert
 	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
 	        {

@@ -60,6 +60,17 @@ namespace starskytest.starskyGeoCore.Services
 		        17, 0, 0, 0));
 	        Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
         }
+        
+        [TestMethod]
+        public void GeoIndexGpx_ConvertTimeZone_KindUtc()
+        {
+	        var fakeIStorage = new FakeIStorage();
+	        var inputDateTime = new DateTime(2020, 01, 15,
+		        17, 0, 0, 0);
+	        inputDateTime = DateTime.SpecifyKind(inputDateTime, DateTimeKind.Utc);
+	        var result =new GeoIndexGpx(new AppSettings{CameraTimeZone = "Europe/London"}, fakeIStorage).ConvertTimeZone(inputDateTime);
+	        Assert.AreEqual(new DateTime(2020, 01, 15,17, 0, 0, 0), result);
+        }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
