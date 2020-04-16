@@ -75,6 +75,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
       var readOnlyItems = result.find((item) => { return item.status === IExifStatus.ReadOnly; })
       if (readOnlyItems) {
+        console.log('00')
         setIsError(MessageErrorReadOnly);
         return;
       }
