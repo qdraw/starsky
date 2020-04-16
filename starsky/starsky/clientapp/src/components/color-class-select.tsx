@@ -1,3 +1,4 @@
+import 'core-js/es6/array'; // < - Array.prototype.find / Array.from are defined here.
 import React, { memo, useEffect, useState } from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
