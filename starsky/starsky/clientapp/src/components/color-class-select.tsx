@@ -1,4 +1,4 @@
-import 'core-js/es6/array'; // < - Array.prototype.find / Array.from are defined here.
+import 'core-js/modules/es.array.find';
 import React, { memo, useEffect, useState } from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
@@ -73,10 +73,8 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(anyData => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
-
-      var readOnlyItems = result.find((item) => { return item.status === IExifStatus.ReadOnly; })
-      if (readOnlyItems) {
-        console.log('00')
+      if (!result || result.find((item) => { return item.status === IExifStatus.ReadOnly; })) {
+        console.log('-MessageErrorReadOnly');
         setIsError(MessageErrorReadOnly);
         return;
       }
