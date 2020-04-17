@@ -12,7 +12,7 @@ describe("Login", () => {
     shallow(<Login />)
   });
 
-  it("account logged in", async () => {
+  it("account already logged in", async () => {
 
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 200 });
@@ -37,7 +37,7 @@ describe("Login", () => {
     });
   });
 
-  it("account logged in / - return url", async () => {
+  it("account already logged in / - return url", async () => {
     globalHistory.navigate("/?ReturnUrl=/test");
 
     // use this import => import * as FetchPost from '../shared/fetch-post';
@@ -95,8 +95,6 @@ describe("Login", () => {
     });
   });
 
-
-
   it("account not logged in", () => {
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 401 });
@@ -109,8 +107,29 @@ describe("Login", () => {
 
     act(() => {
       login.unmount();
+      fetchGetSpy.mockClear();
     });
-    fetchGetSpy.mockClear();
+  });
+
+  it("account 406 UrlAccountRegister", async () => {
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 406 });
+    var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+
+    var login = mount(<Login />);
+
+    // need to await this
+    await act(async () => {
+      await expect(login.find(".form-control").length).toBe(2);
+    });
+
+    expect(globalHistory.location.pathname.indexOf(new UrlQuery().UrlAccountRegister())).toBeTruthy();
+    expect(fetchGetSpy).toBeCalled();
+
+    act(() => {
+      login.unmount();
+      globalHistory.navigate("/");
+    });
   });
 
   it("login flow succesfull", async () => {
@@ -153,7 +172,7 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail", async () => {
+  it("login flow fail by backend", async () => {
     // Show extra information
     act(() => {
       globalHistory.navigate("/?ReturnUrl=/");
