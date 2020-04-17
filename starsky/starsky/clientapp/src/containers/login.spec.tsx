@@ -2,7 +2,6 @@ import { globalHistory } from '@reach/router';
 import { mount, shallow } from "enzyme";
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import * as useLocation from '../hooks/use-location';
 import * as FetchGet from '../shared/fetch-get';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
@@ -13,61 +12,72 @@ describe("Login", () => {
     shallow(<Login />)
   });
 
-  xit("not logged in", () => {
-    // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 401 });
-    var spy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+  it("account logged in", async () => {
 
-    var login = mount(<Login />);
-    expect(login.find(".form-control").length).toBe(2);
-    expect(spy).toBeCalled();
-    expect(spy).toBeCalledWith(new UrlQuery().UrlAccountStatus());
-  });
-
-  xit("account is logged in", () => {
-
-    jest.spyOn(FetchGet, 'default').mockReset();
-    // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 200 });
     var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
-    console.log('---');
-
     var login = mount(<Login />);
+
+    // need to await this
+    await act(async () => {
+      await expect(login.find(".form-control").length).toBe(2);
+    });
+
     login.update();
 
     expect(fetchGetSpy).toBeCalled();
     expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlAccountStatus());
-    expect(login.exists('.content--error-true')).toBeFalsy();
+    expect(login.exists('.content--error-true')).toBeTruthy();
     expect(login.exists('.content--header')).toBeTruthy();
 
-    // clean
-    login.unmount();
-
-    console.log('---');
-
+    act(() => {
+      login.unmount();
+    });
   });
 
-  xit("account is logged in", () => {
+  it("account logged in /starsky/return url", async () => {
+    globalHistory.navigate("/starsky/?ReturnUrl=/test");
 
-    globalHistory.navigate("/starsky/login")
-    // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 200 });
-    var spy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+    var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
     var login = mount(<Login />);
 
-    console.log(login.html());
+    // need to await this
+    await act(async () => {
+      await expect(login.find(".form-control").length).toBe(2);
+    });
 
-    // clean
+    login.update();
+
+    expect(login.exists('[data-test="logout"]')).toBeTruthy();
+    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+
     act(() => {
       login.unmount();
       globalHistory.navigate("/");
     });
+  });
 
 
+
+  it("account not logged in", () => {
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 401 });
+    var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+
+    var login = mount(<Login />);
+    expect(login.find(".form-control").length).toBe(2);
+    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlAccountStatus());
+
+    act(() => {
+      login.unmount();
+    });
+    fetchGetSpy.mockClear();
   });
 
   it("login flow succesfull", async () => {
@@ -83,9 +93,6 @@ describe("Login", () => {
 
     const mockPost: Promise<any> = Promise.resolve({ statusCode: 200, data: 'ok' });
     var postSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockPost);
-
-    // use as ==> import * as useLocation from '../hooks/use-location';
-    var useLocationSpy = jest.spyOn(useLocation, 'default');
 
     var login = mount(<Login />);
 
@@ -107,8 +114,6 @@ describe("Login", () => {
 
     expect(postSpy).toBeCalled();
     expect(postSpy).toBeCalledWith(new UrlQuery().UrlLoginPage(), "Email=dont@mail.me&Password=password");
-
-    expect(useLocationSpy).toBeCalled();
 
     act(() => {
       login.unmount();
@@ -129,9 +134,6 @@ describe("Login", () => {
     const mockPost: Promise<any> = Promise.resolve({ statusCode: 401, data: 'wrong pass' });
     var postSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockPost);
 
-    // use as ==> import * as useLocation from '../hooks/use-location';
-    var useLocationSpy = jest.spyOn(useLocation, 'default');
-
     var login = mount(<Login />);
 
     act(() => {
@@ -151,7 +153,6 @@ describe("Login", () => {
     expect(postSpy).toBeCalled();
     expect(postSpy).toBeCalledWith(new UrlQuery().UrlLoginPage(), "Email=dont@mail.me&Password=password");
 
-    expect(useLocationSpy).toBeCalled();
 
     expect(login.html().search('class="content--error-true"')).toBeTruthy();
 
