@@ -21,6 +21,8 @@
 - []   (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
 # Unreleased - 2020-04-XX
+
+# version 0.2.2 - 2020-04-17
 - [x]   (Added) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
 - [x]   (Fixed)  _Front-end_ Collection support in update tags / ColorClassSelect
