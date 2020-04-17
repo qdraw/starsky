@@ -31,10 +31,11 @@
 - [x]   (Fixed) _Front-end_ with prefix on the archive page navigate to the right url
 - [x]   (Fixed) _Front-end_ Search page cache not cleared after edit multiple images
 - [x]   (Fixed) _Front-end_ Delete multiple images collections no applied
-- [x]   (Other) _Front-end_ search tags detailview cache not cleared only if you switch very fast _known issue_ _won't fix_
-- [x]   (Fixed) _Front-end_ search update read only files __Not implemented__
+- [x]   (Other) _Front-end_ search tags detailView cache not cleared only if you switch very fast _known issue_ _won't fix_
+- [x]   (Fixed) _Front-end_ search update read only files, Created an error message if this happens
 - [x]   (Fixed) _Front-end_ sync API 404 fix from UI
-- [x]   (Fixed) _Back-end_ Quicktime DateTime creates error while checking GPX files
+- [x]   (Fixed) _Back-end_ QuickTime DateTime creates error while checking GPX files
+- [x]   (Added) _Front-end_ 'Scroll to Top' when to next search result page
 
 # version 0.2.1 - 2020-04-08
 - [x]   (Fixed) _Front-end_ Readonly mode and modals

@@ -47,11 +47,11 @@ function Search(archive: IArchiveProps) {
         </div>
         <div className="content--header">
           {!archive.collectionsCount ? MessageNoResult : null}
-          {archive.collectionsCount && archive.pageNumber === 1 ? <>
+          {archive.collectionsCount && archive.pageNumber === 0 ? <>
             {archive.collectionsCount} {MessageNumberOfResults}
           </> : null}
-          {archive.collectionsCount && archive.pageNumber && archive.pageNumber >= 2 ? <>
-            {language.token(MessagePageNumberToken, ["{pageNumber}"], [archive.pageNumber.toString()])}
+          {archive.collectionsCount && archive.pageNumber && archive.pageNumber >= 1 ? <>
+            {language.token(MessagePageNumberToken, ["{pageNumber}"], [(archive.pageNumber + 1).toString()])}
             {archive.collectionsCount} {MessageNumberOfResults}
           </> : null}
         </div>
