@@ -111,7 +111,7 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
   // noinspection HtmlUnknownAttribute
   return (
     <>
-      {isError !== "" ? <Notification type={NotificationType.danger}>{isError}</Notification> : null}
+      {isError !== "" ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
 
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
