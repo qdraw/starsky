@@ -15,6 +15,7 @@ export class UrlQuery {
 
   /**
    * Parse the return url based on the query
+   * Does NOT add prefix ONLY for default situation
    * @param locationHash location .search hash
    */
   public GetReturnUrl(locationHash: string): string {
@@ -23,9 +24,11 @@ export class UrlQuery {
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
     var starskyPathIndex = document.location.pathname.indexOf(this.prefix);
+    
+    // add only prefix for default situation
     if (!getReturnUrl) return starskyPathIndex === -1
       ? `/${new URLPath().AddPrefixUrl("f=/")}` : `${this.prefix}/${new URLPath().AddPrefixUrl("f=/")}`;
-    return starskyPathIndex === -1 ? getReturnUrl : `${this.prefix}/${getReturnUrl}`;
+    return getReturnUrl;
   }
 
   /**
@@ -56,8 +59,8 @@ export class UrlQuery {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
   }
 
-  public UrlLogoutPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout` : `${this.prefix}/account/logout`;
+  public UrlLogoutPage(returnUrl: string): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout?ReturnUrl=${returnUrl}` : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
   }
 
 
