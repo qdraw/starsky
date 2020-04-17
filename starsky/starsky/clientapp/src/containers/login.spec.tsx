@@ -37,12 +37,12 @@ describe("Login", () => {
     });
   });
 
-  it("account logged in /starsky/return url", async () => {
-    globalHistory.navigate("/starsky/?ReturnUrl=/test");
+  it("account logged in / - return url", async () => {
+    globalHistory.navigate("/?ReturnUrl=/test");
 
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 200 });
-    var fetchGetSpy = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
 
     var login = mount(<Login />);
 
@@ -55,6 +55,39 @@ describe("Login", () => {
 
     expect(login.exists('[data-test="logout"]')).toBeTruthy();
     expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+
+    // no prefix
+    expect(login.find('[data-test="logout"]').props().href).toBe("/account/logout?ReturnUrl=/test");
+    expect(login.find('[data-test="stayLoggedin"]').props().href).toBe("/test");
+
+    act(() => {
+      login.unmount();
+      globalHistory.navigate("/");
+    });
+  });
+
+  it("account logged in /starsky - return url", async () => {
+    globalHistory.navigate("/starsky/?ReturnUrl=/test");
+
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockFetchAsXml: Promise<any> = Promise.resolve({ statusCode: 200 });
+    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockFetchAsXml);
+
+    var login = mount(<Login />);
+
+    // need to await this
+    await act(async () => {
+      await expect(login.find(".form-control").length).toBe(2);
+    });
+
+    login.update();
+
+    expect(login.exists('[data-test="logout"]')).toBeTruthy();
+    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+
+    // including starsky prefix
+    expect(login.find('[data-test="logout"]').props().href).toBe("/starsky/account/logout?ReturnUrl=/starsky/test");
+    expect(login.find('[data-test="stayLoggedin"]').props().href).toBe("/starsky/test");
 
     act(() => {
       login.unmount();
