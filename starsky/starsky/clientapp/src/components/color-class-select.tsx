@@ -1,10 +1,14 @@
-import React, { memo, useEffect } from 'react';
+import 'core-js/modules/es.array.find';
+import React, { memo, useEffect, useState } from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
+import { IExifStatus } from '../interfaces/IExifStatus';
+import { CastToInterface } from '../shared/cast-to-interface';
 import FetchPost from '../shared/fetch-post';
 import { Keyboard } from '../shared/keyboard';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
+import Notification, { NotificationType } from './notification';
 
 export interface IColorClassSelectProps {
   currentColorClass?: number;
@@ -36,12 +40,21 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     language.text("Grijs", "Grey"),
   ];
 
+  const MessageErrorReadOnly = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn alleen lezen. " +
+    "Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "One or more files are read only. " +
+    "Only the files with write permissions have been updated.");
+
   const [currentColorClass, setCurrentColorClass] = React.useState(props.currentColorClass);
 
   /** re-render when switching page */
   useEffect(() => {
     setCurrentColorClass(props.currentColorClass)
   }, [props.currentColorClass]);
+
+  // for showing a notification
+  const [isError, setIsError] = useState("");
 
   /**
    * Used for Updating Colorclasses
@@ -58,7 +71,13 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     bodyParams.append("colorclass", colorClass.toString());
     bodyParams.append('collections', props.collections.toString());
 
-    FetchPost(updateApiUrl, bodyParams.toString()).then(_ => {
+    FetchPost(updateApiUrl, bodyParams.toString()).then(anyData => {
+      var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+      if (!result || result.find((item) => { return item.status === IExifStatus.ReadOnly; })) {
+        setIsError(MessageErrorReadOnly);
+        return;
+      }
+
       setCurrentColorClass(colorClass);
       props.onToggle(colorClass);
     });
@@ -75,16 +94,18 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     handleChange(Number(event.key));
   });
 
-  return (<div className={props.isEnabled ? "colorclass colorclass--select" : "colorclass colorclass--select colorclass--disabled"}>
-    {
-      colorContent.map((item, index) => (
-        <button key={index} onClick={() => { handleChange(index); }}
-          className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
-          <label /><span>{item}</span>
-        </button>
-      ))
-    }
-  </div>)
+  return (<>
+    {isError ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
+    <div className={props.isEnabled ? "colorclass colorclass--select" : "colorclass colorclass--select colorclass--disabled"}>
+      {
+        colorContent.map((item, index) => (
+          <button key={index} onClick={() => { handleChange(index); }}
+            className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
+            <label /><span>{item}</span>
+          </button>
+        ))
+      }
+    </div></>)
 });
 
 export default ColorClassSelect

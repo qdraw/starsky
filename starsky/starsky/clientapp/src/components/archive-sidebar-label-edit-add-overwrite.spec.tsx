@@ -11,6 +11,7 @@ import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
 import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
 import FormControl from './form-control';
+import Notification from './notification';
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
@@ -118,7 +119,6 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
     it('click append', async () => {
 
-
       var connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [{
@@ -163,6 +163,47 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
     });
+
+    it('click append | read only', async () => {
+
+      jest.spyOn(FetchPost, 'default').mockReset();
+
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [{
+          fileName: 'test.jpg',
+          parentDirectory: '/',
+          tags: 'test1, readonly',
+          status: IExifStatus.ReadOnly
+        }] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+      jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      act(() => {
+        // update component + now press a key
+        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+        component.find('[data-name="tags"]').simulate('input', { key: 'a' });
+      });
+
+      // need to await to contain dispatchedValues
+      await act(async () => {
+        await component.find('.btn.btn--default').simulate('click');
+      });
+
+      // force update to get the right state
+      component.update();
+
+      expect(component.exists(Notification)).toBeTruthy();
+
+      act(() => {
+        component.unmount();
+      });
+
+    });
+
 
     it('click append multiple', async () => {
 

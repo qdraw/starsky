@@ -60,15 +60,16 @@ namespace starskycore.Services
 				var statusResults =
 					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 
-				// To Inject if detailview is false
+				// To Inject if detailView is false
 				var statusModel = new FileIndexItem();
 				statusModel.SetFilePath(subPath);
 				statusModel.IsDirectory = false;
 
 				// if one item fails, the status will added
-				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
-					fileIndexResultsList) ) continue;
-				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
+				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList) || 
+				     new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList) ) continue;
+
+				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				
 				// current item is also ok
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;

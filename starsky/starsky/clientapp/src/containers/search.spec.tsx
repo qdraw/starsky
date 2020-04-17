@@ -17,14 +17,14 @@ describe("Search", () => {
       expect(text).toBe('No result')
     });
 
-    it("Page 2 of 1 results", () => {
-      var component = shallow(<Search {...newIArchive()} collectionsCount={1} fileIndexItems={[]} pageNumber={2} colorClassUsage={[]} />)
+    it("Page 3 of 1 results", () => {
+      var component = shallow(<Search {...newIArchive()} collectionsCount={1} fileIndexItems={[]} pageNumber={1} colorClassUsage={[]} />)
       var text = component.find(".content--header").text()
       expect(text).toBe('Page 2 of 1 results')
     });
 
     it("Page 1 of 1 results", () => {
-      var component = shallow(<Search {...newIArchive()} collectionsCount={1} fileIndexItems={[]} pageNumber={1} colorClassUsage={[]} />)
+      var component = shallow(<Search {...newIArchive()} collectionsCount={1} fileIndexItems={[]} pageNumber={0} colorClassUsage={[]} />)
       var text = component.find(".content--header").text()
       expect(text).toBe('1 results')
     });

@@ -4,6 +4,7 @@ import Portal, { PortalId } from './portal';
 type NotificationPropTypes = {
   children?: React.ReactNode;
   type?: NotificationType;
+  callback?(): void;
 }
 
 export enum NotificationType {
@@ -11,12 +12,13 @@ export enum NotificationType {
   danger = "danger" as any,
 }
 
-const Notification: React.FunctionComponent<NotificationPropTypes> = ({ children, type }) => {
+const Notification: React.FunctionComponent<NotificationPropTypes> = ({ children, type, callback }) => {
 
   const close = () => {
     const portal = document.getElementById(PortalId);
     if (!portal) return;
     portal.remove();
+    if (callback) callback();
   };
 
   return (

@@ -5,12 +5,13 @@ import { act } from 'react-dom/test-utils';
 import * as AppContext from '../contexts/archive-context';
 import { IArchive } from '../interfaces/IArchive';
 import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
 import ArchiveSidebarLabelEditSearchReplace from './archive-sidebar-label-edit-search-replace';
 import FormControl from './form-control';
-
+import Notification from './notification';
 
 describe("ArchiveSidebarLabelEditSearchReplace", () => {
   it("renders", () => {
@@ -112,6 +113,46 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/replace", "f=%2F%2F%2Ftest.jpg&collections=true&fieldName=tags&search=a&replace=");
+    });
+
+    it('click update | read only', async () => {
+
+      jest.spyOn(FetchPost, 'default').mockReset();
+
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [{
+          fileName: 'test.jpg',
+          parentDirectory: '/',
+          tags: 'test1, readonly',
+          status: IExifStatus.ReadOnly
+        }] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+      jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+
+      act(() => {
+        // update component + now press a key
+        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+        component.find('[data-name="tags"]').simulate('input', { key: 'a' });
+      });
+
+      // need to await to contain dispatchedValues
+      await act(async () => {
+        await component.find('.btn.btn--default').simulate('click');
+      });
+
+      // force update to get the right state
+      component.update();
+
+      expect(component.exists(Notification)).toBeTruthy();
+
+      act(() => {
+        component.unmount();
+      });
+
     });
 
   });

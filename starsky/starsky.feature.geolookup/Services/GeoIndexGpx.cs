@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
@@ -10,6 +11,7 @@ using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.geolookup.Services
 {
     public class GeoIndexGpx
@@ -51,10 +53,27 @@ namespace starsky.feature.geolookup.Services
 	            {
 		            geoList.AddRange(_readMetaGpx.ReadGpxFile(stream, geoList));
 	            }
-
             }
-
             return geoList;
+        }
+
+        /// <summary>
+        /// Convert to the appSettings timezone setting
+        /// </summary>
+        /// <param name="valueDateTime"></param>
+        /// <returns>The time in the specified timezone</returns>
+        /// <exception cref="ArgumentException">DateTime Kind should not be Local</exception>
+        internal DateTime ConvertTimeZone(DateTime valueDateTime)
+        {
+	        if ( valueDateTime.Kind == DateTimeKind.Utc ) return valueDateTime;
+
+	        // Not supported by TimeZoneInfo convert
+	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
+	        {
+		        throw new ArgumentException("DateTime Kind should be Unspecified", nameof(DateTime));
+	        }
+	        
+	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
         }
 
         public List<FileIndexItem> LoopFolder(List<FileIndexItem> metaFilesInDirectory)
@@ -72,8 +91,7 @@ namespace starsky.feature.geolookup.Services
             
             foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
-                var dateTimeCameraUtc = TimeZoneInfo.ConvertTime(metaFileItem.value.DateTime, _appSettings.CameraTimeZoneInfo,
-                    TimeZoneInfo.Utc); 
+	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime);
                 
                 var fileGeoData = gpxList.OrderBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks)).FirstOrDefault();
                 if(fileGeoData == null) continue;

@@ -1,9 +1,13 @@
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IExifStatus } from '../interfaces/IExifStatus';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import * as FetchPost from '../shared/fetch-post';
 import { UrlQuery } from '../shared/url-query';
 import ColorClassSelect from './color-class-select';
+import Notification from './notification';
 
 describe("ColorClassSelect", () => {
 
@@ -15,8 +19,8 @@ describe("ColorClassSelect", () => {
   it("onClick value", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => {
     }} />)
@@ -24,71 +28,119 @@ describe("ColorClassSelect", () => {
     wrapper.find('button.colorclass--2').simulate('click');
 
     // expect
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
 
     // Cleanup: To avoid that mocks are shared
-    spy.mockClear();
+    fetchPostSpy.mockReset();
   });
 
 
   it("onClick disabled", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={false} filePath={"/test1"} onToggle={(value) => { }} />);
 
     wrapper.find('button.colorclass--2').simulate('click');
 
     // expect [disabled]
-    expect(spy).toHaveBeenCalledTimes(0);
+    expect(fetchPostSpy).toHaveBeenCalledTimes(0);
 
     // Cleanup: To avoid that mocks are shared
-    spy.mockClear();
+    fetchPostSpy.mockReset();
   });
 
-  // it("onClick value return keypress [FAIL]", () => {
+  it("test hide 1 second", async () => {
+    jest.useFakeTimers();
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-  //   const mockDismissCallback = jest.fn();
-  //   document.addEventListener('keydown', mockDismissCallback)
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
 
-  //   const onToggle = jest.fn();
+    // need to await this click
+    await act(async () => {
+      await wrapper.find('button.colorclass--3').simulate('click');
+    })
 
-  //   const root = document.createElement('div');
-  //   document.body.appendChild(root);
-  //   const wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={onToggle}></ColorClassSelect>, { attachTo: root });
+    wrapper.update();
 
-  //   const event = new KeyboardEvent('keydown', { keyCode: 49, bubbles: true } as KeyboardEventInit);
-  //   const targetNode = wrapper.getDOMNode();
-  //   document.dispatchEvent(event);
+    expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
 
-  //   console.log(document.body.innerHTML);
+    // need to await this
+    await act(async () => {
+      await jest.advanceTimersByTime(1200);
+    });
+
+    wrapper.update();
+
+    expect(wrapper.exists('button.colorclass--3.active')).toBeFalsy();
+
+    wrapper.unmount();
+    fetchPostSpy.mockReset();
+    jest.useRealTimers();
+  });
+
+  it("onClick readonly file", async () => {
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 404, data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
+
+    // need to await this click
+    await act(async () => {
+      await wrapper.find('button.colorclass--2').simulate('click');
+    })
+
+    wrapper.update();
+
+    expect(wrapper.exists(Notification)).toBeTruthy();
+
+    act(() => {
+      wrapper.unmount();
+    })
+
+    fetchPostSpy.mockReset();
+  });
 
 
-  //   // expect(onToggle).toHaveBeenCalledTimes(1);
+  it('Should change value when onChange was called', async () => {
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault)
 
-  //   // const KEYBOARD_ESCAPE_CODE = 49;
-  //   // const mockDismissCallback = jest.fn();
+    const component = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />);
 
+    var event = new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      key: "5",
+      shiftKey: true,
+    });
 
-  //   // var wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={mockDismissCallback}></ColorClassSelect>)
+    // need to await this
+    await act(async () => {
+      await window.dispatchEvent(event);
+    })
 
-  //   // var element = wrapper.getDOMNode() as HTMLElement;
-  //   // const event = new window.KeyboardEvent('keydown', { keyCode: 27, bubbles: true } as KeyboardEventInit);
-  //   // document.dispatchEvent(event);
+    // expect
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=5&collections=true");
 
-  //   // expect(mockDismissCallback).toHaveBeenCalled();
+    component.update();
+    expect(component.exists('button.colorclass--5.active')).toBeTruthy();
 
-  //   // // const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-  //   // // var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
+    // clean
+    act(() => {
+      component.unmount();
+    })
 
-  //   // var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={(value) => {
-  //   //   console.log(value);
-  //   //   done()
-  //   // }}></ColorClassSelect>)
-  //   // wrapper.simulate('keydown', { keyCode: 49 }); // keyCode 49 === 1
+    fetchPostSpy.mockReset();
+  });
 
-  //   // // expect(spy).toHaveBeenCalledTimes(1);
-  //   // // expect(spy).toHaveBeenCalledWith("/test", "colorClass", "1");
-  // });
 });
