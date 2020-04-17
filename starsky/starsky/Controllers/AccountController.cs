@@ -109,10 +109,10 @@ namespace starsky.Controllers
         /// <response code="200">successful logout</response>
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
-        public IActionResult Logout()
+        public IActionResult Logout(string returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
-            return RedirectToAction("Login");
+            return RedirectToAction(nameof(Login), new {ReturnUrl = returnUrl});
         }
         
         /// <summary>

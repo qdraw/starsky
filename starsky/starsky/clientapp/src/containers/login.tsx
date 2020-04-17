@@ -70,6 +70,7 @@ const Login: React.FC<ILoginProps> = () => {
       else {
         // redirect
         var returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
+        console.log("returnUrl", returnUrl);
         history.navigate(returnUrl, { replace: true });
       }
     } catch (err) {
@@ -164,7 +165,7 @@ const Login: React.FC<ILoginProps> = () => {
           <div className="content">
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
-              <a className="btn btn--default" href={new UrlQuery().UrlLogoutPage()}>{MessageLogout}</a>
+              <a className="btn btn--default" href={new UrlQuery().UrlLogoutPage(new UrlQuery().GetReturnUrl(history.location.search))}>{MessageLogout}</a>
               <a className="btn btn--info" href={new UrlQuery().GetReturnUrl(history.location.search)}>{MessageStayLoggedIn}</a>
             </form>
           </div>
