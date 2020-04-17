@@ -32,7 +32,7 @@ describe("ColorClassSelect", () => {
     expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
 
     // Cleanup: To avoid that mocks are shared
-    fetchPostSpy.mockClear();
+    fetchPostSpy.mockReset();
   });
 
 
@@ -48,32 +48,38 @@ describe("ColorClassSelect", () => {
     expect(fetchPostSpy).toHaveBeenCalledTimes(0);
 
     // Cleanup: To avoid that mocks are shared
-    fetchPostSpy.mockClear();
+    fetchPostSpy.mockReset();
   });
 
-  // xit("test hide 1 second", async () => {
-  //   // spy on fetch
-  //   // use this import => import * as FetchPost from '../shared/fetch-post';
-  //   const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
-  //   jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+  it("test hide 1 second", async () => {
+    jest.useFakeTimers();
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-  //   var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
-  //   console.log(wrapper.html());
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
 
-  //   // need to await this click
-  //   await act(async () => {
-  //     await wrapper.find('button.colorclass--3').simulate('click');
-  //   })
+    // need to await this click
+    await act(async () => {
+      await wrapper.find('button.colorclass--3').simulate('click');
+    })
 
-  //   wrapper.update();
+    wrapper.update();
 
+    expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
 
+    // need to await this
+    await act(async () => {
+      await jest.advanceTimersByTime(1200);
+    });
 
-  //   expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
-  //   jest.advanceTimersByTime(1000)
-  //   expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
+    wrapper.update();
 
-  // });
+    expect(wrapper.exists('button.colorclass--3.active')).toBeFalsy();
+
+    jest.useRealTimers();
+  });
 
   it("onClick readonly file", async () => {
     // spy on fetch
@@ -93,7 +99,7 @@ describe("ColorClassSelect", () => {
     expect(wrapper.exists(Notification)).toBeTruthy();
 
     wrapper.unmount();
-    fetchPostSpy.mockClear();
+    fetchPostSpy.mockReset();
   });
 
   // it("onClick value return keypress [FAIL]", () => {
