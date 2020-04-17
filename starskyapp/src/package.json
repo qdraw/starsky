@@ -1,0 +1,46 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": " electron-builder build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^8.2.3",
+    "electron-builder": "^22.5.1"
+  },
+  "dependencies": {
+    "portfinder": "^1.0.25"
+  },
+  "build": {
+   "appId": "yourappid",
+   "dmg": {
+     "contents": [
+       {
+         "x": 110,
+         "y": 150
+       },
+       {
+         "x": 240,
+         "y": 150,
+         "type": "link",
+         "path": "/Applications"
+       }
+     ]
+   },
+   "linux": {
+     "target": [
+       "AppImage",
+       "deb"
+     ]
+   },
+   "win": {
+     "target": "squirrel",
+     "icon": "build/icon.ico"
+   }
+ }
+}
