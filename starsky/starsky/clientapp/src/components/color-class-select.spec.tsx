@@ -56,7 +56,7 @@ describe("ColorClassSelect", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
-    jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
 
@@ -78,6 +78,8 @@ describe("ColorClassSelect", () => {
 
     expect(wrapper.exists('button.colorclass--3.active')).toBeFalsy();
 
+    wrapper.unmount();
+    fetchPostSpy.mockReset();
     jest.useRealTimers();
   });
 
@@ -98,52 +100,47 @@ describe("ColorClassSelect", () => {
 
     expect(wrapper.exists(Notification)).toBeTruthy();
 
-    wrapper.unmount();
+    act(() => {
+      wrapper.unmount();
+    })
+
     fetchPostSpy.mockReset();
   });
 
-  // it("onClick value return keypress [FAIL]", () => {
 
-  //   const mockDismissCallback = jest.fn();
-  //   document.addEventListener('keydown', mockDismissCallback)
+  it('Should change value when onChange was called', async () => {
+    // spy on fetch
+    // use this import => import * as FetchPost from '../shared/fetch-post';
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault)
 
-  //   const onToggle = jest.fn();
+    const component = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />);
 
-  //   const root = document.createElement('div');
-  //   document.body.appendChild(root);
-  //   const wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={onToggle}></ColorClassSelect>, { attachTo: root });
+    var event = new KeyboardEvent("keydown", {
+      bubbles: true,
+      cancelable: true,
+      key: "5",
+      shiftKey: true,
+    });
 
-  //   const event = new KeyboardEvent('keydown', { keyCode: 49, bubbles: true } as KeyboardEventInit);
-  //   const targetNode = wrapper.getDOMNode();
-  //   document.dispatchEvent(event);
+    // need to await this
+    await act(async () => {
+      await window.dispatchEvent(event);
+    })
 
-  //   console.log(document.body.innerHTML);
+    // expect
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=5&collections=true");
 
+    component.update();
+    expect(component.exists('button.colorclass--5.active')).toBeTruthy();
 
-  //   // expect(onToggle).toHaveBeenCalledTimes(1);
+    // clean
+    act(() => {
+      component.unmount();
+    })
 
-  //   // const KEYBOARD_ESCAPE_CODE = 49;
-  //   // const mockDismissCallback = jest.fn();
+    fetchPostSpy.mockReset();
+  });
 
-
-  //   // var wrapper = mount(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={mockDismissCallback}></ColorClassSelect>)
-
-  //   // var element = wrapper.getDOMNode() as HTMLElement;
-  //   // const event = new window.KeyboardEvent('keydown', { keyCode: 27, bubbles: true } as KeyboardEventInit);
-  //   // document.dispatchEvent(event);
-
-  //   // expect(mockDismissCallback).toHaveBeenCalled();
-
-  //   // // const mockFetchAsXml: Promise<IFileIndexItem[]> = Promise.resolve(newIFileIndexItemArray());
-  //   // // var spy = jest.spyOn(Query.prototype, 'queryUpdateApi').mockImplementationOnce(() => mockFetchAsXml);
-
-  //   // var wrapper = shallow(<ColorClassSelect clearAfter={true} isEnabled={true} filePath={"/test2"} onToggle={(value) => {
-  //   //   console.log(value);
-  //   //   done()
-  //   // }}></ColorClassSelect>)
-  //   // wrapper.simulate('keydown', { keyCode: 49 }); // keyCode 49 === 1
-
-  //   // // expect(spy).toHaveBeenCalledTimes(1);
-  //   // // expect(spy).toHaveBeenCalledWith("/test", "colorClass", "1");
-  // });
 });
