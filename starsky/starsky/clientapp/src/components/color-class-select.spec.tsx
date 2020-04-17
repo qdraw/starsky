@@ -1,5 +1,6 @@
 import { mount, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
@@ -18,8 +19,8 @@ describe("ColorClassSelect", () => {
   it("onClick value", () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-    var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+    var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var wrapper = shallow(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => {
     }} />)
@@ -27,11 +28,11 @@ describe("ColorClassSelect", () => {
     wrapper.find('button.colorclass--2').simulate('click');
 
     // expect
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
+    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+    expect(fetchPostSpy).toHaveBeenCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest1&colorclass=2&collections=true");
 
     // Cleanup: To avoid that mocks are shared
-    spy.mockClear();
+    fetchPostSpy.mockClear();
   });
 
 
@@ -50,8 +51,31 @@ describe("ColorClassSelect", () => {
     fetchPostSpy.mockClear();
   });
 
+  // xit("test hide 1 second", async () => {
+  //   // spy on fetch
+  //   // use this import => import * as FetchPost from '../shared/fetch-post';
+  //   const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
+  //   jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-  it("onClick readonly file", () => {
+  //   var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
+  //   console.log(wrapper.html());
+
+  //   // need to await this click
+  //   await act(async () => {
+  //     await wrapper.find('button.colorclass--3').simulate('click');
+  //   })
+
+  //   wrapper.update();
+
+
+
+  //   expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
+  //   jest.advanceTimersByTime(1000)
+  //   expect(wrapper.exists('button.colorclass--3.active')).toBeTruthy();
+
+  // });
+
+  it("onClick readonly file", async () => {
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 404, data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[] });
@@ -59,13 +83,17 @@ describe("ColorClassSelect", () => {
 
     var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
 
-    wrapper.find('button.colorclass--2').simulate('click');
+    // need to await this click
+    await act(async () => {
+      await wrapper.find('button.colorclass--2').simulate('click');
+    })
 
     wrapper.update();
 
-    console.log(wrapper.html());
-
     expect(wrapper.exists(Notification)).toBeTruthy();
+
+    wrapper.unmount();
+    fetchPostSpy.mockClear();
   });
 
   // it("onClick value return keypress [FAIL]", () => {
