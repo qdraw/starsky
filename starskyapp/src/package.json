@@ -1,11 +1,12 @@
 {
-  "name": "src",
-  "version": "1.0.0",
-  "description": "test",
+  "name": "starsky",
+  "version": "0.2.2",
+  "description": "starsky",
   "main": "index.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "dist": " electron-builder build"
+    "dist": " electron-builder build -m"
   },
   "author": "",
   "license": "ISC",
@@ -17,30 +18,40 @@
     "portfinder": "^1.0.25"
   },
   "build": {
-   "appId": "yourappid",
-   "dmg": {
-     "contents": [
-       {
-         "x": 110,
-         "y": 150
-       },
-       {
-         "x": 240,
-         "y": 150,
-         "type": "link",
-         "path": "/Applications"
-       }
-     ]
-   },
-   "linux": {
-     "target": [
-       "AppImage",
-       "deb"
-     ]
-   },
-   "win": {
-     "target": "squirrel",
-     "icon": "build/icon.ico"
-   }
- }
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+      "starsky-osx.10.12-x64.zip"
+    ],
+    "beforeBuild": "./scripts/beforeBuild.js",
+    "appId": "nl.qdraw.starsky",
+    "mac": {
+      "minimumSystemVersion": "10.12",
+      "target": [
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": [
+        "zip"
+      ],
+      "icon": "build/icon.ico"
+    }
+  }
 }
