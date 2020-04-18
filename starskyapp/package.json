@@ -6,7 +6,9 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "start": "electron .",
-    "dist": " electron-builder build -m"
+    "dist": "electron-builder build",
+    "mac": "electron-builder build -m",
+    "windows": "electron-builder build -w"
   },
   "author": "",
   "license": "ISC",
@@ -20,7 +22,7 @@
   },
   "build": {
     "extraResources": [
-      "include-starsky-${platform}.zip"
+      "include-starsky-${os}.zip"
     ],
     "beforeBuild": "./scripts/beforeBuild.js",
     "appId": "nl.qdraw.starsky",

@@ -4,12 +4,12 @@ const fs = require('fs');
 exports.default = context => {
   console.log(context);
 
-  switch (context.platform.nodeName) {
-    case "darwin":
-      copyFile('../starsky/starsky-osx.10.12-x64.zip', './include-starsky-darwin.zip')
+  switch (context.platform.buildConfigurationKey) {
+    case "mac":
+      copyFile('../starsky/starsky-osx.10.12-x64.zip', './include-starsky-mac.zip')
       break;
-    case "win32":
-      copyFile('../starsky/starsky-win7-x86.zip', './include-starsky-win32.zip')
+    case "win":
+      copyFile('../starsky/starsky-win7-x86.zip', './include-starsky-win.zip')
       break;
     default:
   }

@@ -35,9 +35,6 @@ function isPackaged() {
 
 function getStarskyPath() {
 
-  console.log(process.platform);
-
-  console.log(!isPackaged());
   if (!isPackaged()) { // dev
     var exeFilePath = "";
     switch (process.platform) {
@@ -50,9 +47,17 @@ function getStarskyPath() {
     }
   }
 
-  // prod
+  // osKey is used in the build script
+  var osKey = "";
+  switch (process.platform) {
+    case "darwin":
+      osKey = "mac"
+    case "win32":
+      osKey = "win"
+  }
 
-  var includedZipPath = path.join(process.resourcesPath, `include-starsky-${process.platform}.zip`);
+  // prod
+  var includedZipPath = path.join(process.resourcesPath, `include-starsky-${osKey}.zip`);
   var targetFilePath = path.join(process.resourcesPath, "include");
 
   var exeFilePath = path.join(targetFilePath, "starsky")
