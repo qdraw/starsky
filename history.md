@@ -24,6 +24,8 @@
 - [x]   (Fixed)  _Back-end_ New users could not sign up
 - [x]   (Fixed)  _Front-end_ Register page has wrong title
 - [x]   (Fixed)  _Front-end_ Login flow return url fixed
+- [x]   (Fixed)  _Front-end_ add bugfix for double slash on home while selecting files
+- [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
 
 # version 0.2.2 - 2020-04-17
 - [x]   (Added) _Front-end_ Timezone issues in Safari

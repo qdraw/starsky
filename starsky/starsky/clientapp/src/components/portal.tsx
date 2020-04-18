@@ -16,7 +16,7 @@ const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
     if (!modalRoot) {
       const tempEl = document.createElement('div');
       tempEl.id = PortalId;
-      document.body.append(tempEl);
+      document.body.appendChild(tempEl);
       modalRoot = tempEl;
     }
     // Append modal container to root
