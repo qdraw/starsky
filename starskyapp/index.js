@@ -44,7 +44,7 @@ function getStarskyPath() {
       case "darwin":
         return Promise.resolve(path.join(__dirname, "../", "starsky", "osx.10.12-x64", "starsky"));
       case "win32":
-        return Promise.resolve(exeFilePath);
+        return Promise.resolve(path.join(__dirname, "../", "starsky", "win7-x86", "starsky"));
       default:
         return Promise.resolve(exeFilePath);
     }

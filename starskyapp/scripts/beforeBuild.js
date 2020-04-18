@@ -9,7 +9,7 @@ exports.default = context => {
       copyFile('../starsky/starsky-osx.10.12-x64.zip', './include-starsky-darwin.zip')
       break;
     case "win32":
-      copyFile('../starsky/starsky-osx.10.12-x64.zip', './include-starsky-win32.zip')
+      copyFile('../starsky/starsky-win7-x86.zip', './include-starsky-win32.zip')
       break;
     default:
   }
@@ -18,7 +18,7 @@ exports.default = context => {
   return Promise.all(_promises);
 };
 
-function copyFile(src,dest) {
-  console.log(src,dest);
+function copyFile(src, dest) {
+  console.log(src, dest);
   fs.copyFileSync(src, dest);
 }
