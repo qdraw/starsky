@@ -284,7 +284,8 @@ export class URLPath {
 
     fileIndexItems.forEach(item => {
       if (select.indexOf(item.fileName) >= 0) {
-        subPaths.push(item.parentDirectory + "/" + item.fileName)
+        if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
+        subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName))
       }
     });
     return subPaths;
