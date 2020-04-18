@@ -1,10 +1,10 @@
 
 
 function warmupScript(count, maxCount) {
-  fetch('http://localhost:5000/api/health')
+  fetch('http://localhost:9609/api/health')
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
-        window.location.href = 'http://localhost:5000';
+        window.location.href = 'http://localhost:9609';
       }
     }).catch((error) => {
       console.log(error);

@@ -42,11 +42,11 @@ function getStarskyPath() {
     var exeFilePath = "";
     switch (process.platform) {
       case "darwin":
-        return Promise.resolve(path.join(__dirname, "../", "starsky", "osx.10.12-x64", "starsky" ));
+        return Promise.resolve(path.join(__dirname, "../", "starsky", "osx.10.12-x64", "starsky"));
       case "win32":
         return Promise.resolve(exeFilePath);
       default:
-      return Promise.resolve(exeFilePath);
+        return Promise.resolve(exeFilePath);
     }
   }
 
@@ -56,31 +56,34 @@ function getStarskyPath() {
   var targetFilePath = path.join(process.resourcesPath, "include");
 
   var exeFilePath = path.join(targetFilePath, "starsky")
-  if (process.platform ===  "win32") exeFilePath = path.join(targetFilePath, "starsky.exe");
+  if (process.platform === "win32") exeFilePath = path.join(targetFilePath, "starsky.exe");
 
-	return new Promise(function (resolve, reject) {
-      fs.promises.access(exeFilePath).then((status)=>{
-        console.log(status);
+  return new Promise(function (resolve, reject) {
+    fs.promises.access(exeFilePath).then((status) => {
+      console.log(status);
+      resolve(exeFilePath);
+    }).catch(() => {
+      extract(includedZipPath, { dir: targetFilePath }).then(() => {
+
+        // make chmod +x
+        if (process.platform !== "win32") fs.chmodSync(exeFilePath, 0o755);
         resolve(exeFilePath);
-      }).catch(()=>{
-        extract(includedZipPath, { dir: targetFilePath }).then(()=>{
-
-          // make chmod +x
-          if (process.platform !== "win32") fs.chmodSync(exeFilePath, 0o755);
-          resolve(exeFilePath);
-        }).catch((error)=>{
-          console.log('catch',error);
-        });
+      }).catch((error) => {
+        console.log('catch', error);
       });
-	});
+    });
+  });
 
 }
 
 var starskyChild;
-getStarskyPath().then((starskyPath) =>{
+getStarskyPath().then((starskyPath) => {
   starskyChild = spawn(starskyPath, {
     cwd: path.dirname(starskyPath),
-    detached: true
+    detached: true,
+    env: {
+      "ASPNETCORE_URLS": "http://localhost:9609"
+    }
   }, (error, stdout, stderr) => { });
 
   starskyChild.stdout.on('data', function (data) {
