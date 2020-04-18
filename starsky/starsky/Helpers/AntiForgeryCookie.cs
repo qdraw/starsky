@@ -10,11 +10,15 @@ namespace starsky.Helpers
 		public AntiForgeryCookie(IAntiforgery antiForgery)
 		{
 			_antiForgery = antiForgery;
-			
 		}
+		
+		/// <summary>
+		/// The request token can be sent as a JavaScript-readable cookie, 
+		/// </summary>
+		/// <param name="httpContext">current context</param>
 		public void SetAntiForgeryCookie(HttpContext httpContext)
 		{
-			// The request token can be sent as a JavaScript-readable cookie, 
+			if ( httpContext == null ) return;
 			var tokens = _antiForgery.GetAndStoreTokens(httpContext);
 
 			httpContext.Response.Cookies.Append(

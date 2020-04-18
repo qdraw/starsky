@@ -147,7 +147,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2Ftest.jpg");
 
       expect(dispatchedValues).toStrictEqual([{
         type: 'update',
@@ -248,7 +248,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2F%2Ftest.jpg%3B%2F%2F%2Ftest1.jpg");
+      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2F%2Ftest.jpg%3B%2F%2Ftest1.jpg");
 
       expect(dispatchedValues).toStrictEqual([{
         type: 'update',

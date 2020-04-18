@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import Button from '../components/Button';
+import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
 import { DocumentTitle } from '../shared/document-title';
-import FetchGet from '../shared/fetch-get';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
@@ -45,16 +45,16 @@ const Login: React.FC<ILoginProps> = () => {
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
 
+  var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), 'get');
+
   useEffect(() => {
-    FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
-      setLogin(status.statusCode === 401);
-      new DocumentTitle().SetDocumentTitlePrefix(status.statusCode === 401 ? MessageLogin : MessageLogout);
-      // to help new users find the register screen
-      if (status.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
-        history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
-      }
-    });
-  }, [history, history.location.search, MessageLogin, MessageLogout]);
+    setLogin(accountStatus.statusCode === 401);
+    new DocumentTitle().SetDocumentTitlePrefix(accountStatus.statusCode === 401 ? MessageLogin : MessageLogout);
+    // to help new users find the register screen
+    if (accountStatus.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
+      history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
+    }
+  }, [accountStatus.statusCode, history, MessageLogin, MessageLogout]);
 
   const authHandler = async () => {
     try {
@@ -165,8 +165,10 @@ const Login: React.FC<ILoginProps> = () => {
           <div className="content">
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
-              <a className="btn btn--default" href={new UrlQuery().UrlLogoutPage(new UrlQuery().GetReturnUrl(history.location.search))}>{MessageLogout}</a>
-              <a className="btn btn--info" href={new UrlQuery().GetReturnUrl(history.location.search)}>{MessageStayLoggedIn}</a>
+              <a className="btn btn--default" data-test="logout"
+                href={new UrlQuery().UrlLogoutPage(new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search)))}>{MessageLogout}</a>
+              <a className="btn btn--info" data-test="stayLoggedin"
+                href={new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search))}>{MessageStayLoggedIn}</a>
             </form>
           </div>
         </>

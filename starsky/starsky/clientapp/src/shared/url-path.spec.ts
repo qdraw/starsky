@@ -162,6 +162,14 @@ describe("url-path", () => {
       expect(test[0]).toStrictEqual("/test/test.jpg")
       expect(test.length).toStrictEqual(1)
     });
+
+    it("home - item already exist", () => {
+      var list = newIFileIndexItemArray();
+      list.push({ parentDirectory: '/', fileName: 'test.jpg' } as IFileIndexItem)
+      var test = urlPath.MergeSelectFileIndexItem(["test.jpg"], list);
+      expect(test[0]).toStrictEqual("/test.jpg")
+      expect(test.length).toStrictEqual(1)
+    });
   });
   describe("ArrayToCommaSeperatedStringOneParent", () => {
 
