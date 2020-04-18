@@ -46,6 +46,7 @@ describe("Login", () => {
 
     var login = mount(<Login />);
 
+    expect(useFetchSpy).toBeCalled();
     expect(login.exists('[data-test="logout"]')).toBeTruthy();
     expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
 
@@ -70,6 +71,7 @@ describe("Login", () => {
 
     var login = mount(<Login />);
 
+    expect(useFetchSpy).toBeCalled();
     expect(login.exists('[data-test="logout"]')).toBeTruthy();
     expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
 
@@ -198,6 +200,8 @@ describe("Login", () => {
     });
 
     expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    expect(useFetchSpy).toBeCalled();
+    expect(postSpy).toBeCalled();
 
     act(() => {
       globalHistory.navigate("/");
