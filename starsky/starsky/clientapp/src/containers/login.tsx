@@ -46,6 +46,7 @@ const Login: React.FC<ILoginProps> = () => {
   const [isLogin, setLogin] = React.useState(true);
 
   useEffect(() => {
+    console.log('-', new UrlQuery().UrlAccountStatus());
     FetchGet(new UrlQuery().UrlAccountStatus()).then((status) => {
       setLogin(status.statusCode === 401);
       new DocumentTitle().SetDocumentTitlePrefix(status.statusCode === 401 ? MessageLogin : MessageLogout);
@@ -59,6 +60,8 @@ const Login: React.FC<ILoginProps> = () => {
   const authHandler = async () => {
     try {
       setLoading(true);
+      console.log(new UrlQuery().UrlLoginPage(), 'Email=' + userEmail + '&Password=' + userPassword);
+
       const response = await FetchPost(new UrlQuery().UrlLoginPage(), 'Email=' + userEmail + '&Password=' + userPassword);
       if (!response || !response.data) {
         setError(MessageConnection);
