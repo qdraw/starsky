@@ -1,7 +1,6 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const portfinder = require('portfinder');
 const { spawn } = require('child_process');
 const URL = require('url').URL
 const readline = require('readline');
