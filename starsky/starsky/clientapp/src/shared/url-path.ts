@@ -180,7 +180,7 @@ export class URLPath {
     }
     if (filePathArray.length <= 3) return "/";
 
-    parentPath = this.startOnSlash(parentPath);
+    parentPath = this.StartOnSlash(parentPath);
     parentPath = this.removeEndOnSlash(parentPath);
     return parentPath;
   }
@@ -191,7 +191,7 @@ export class URLPath {
     return output;
   }
 
-  private startOnSlash(input: string): string {
+  public StartOnSlash(input: string): string {
     if (input.startsWith("/")) return input;
     return "/" + input;
   }

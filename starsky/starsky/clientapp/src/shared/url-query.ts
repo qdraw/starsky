@@ -10,12 +10,12 @@ export class UrlQuery {
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/${locationHash}` : `${this.prefix}/${locationHash}`;
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `${new URLPath().StartOnSlash(locationHash)}` : `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`;
   }
 
   /**
    * Parse the return url based on the query
-   * Does NOT add prefix ONLY for default situation
+   * Does NOT add prefix
    * @param locationHash location .search hash
    */
   public GetReturnUrl(locationHash: string): string {
@@ -23,11 +23,9 @@ export class UrlQuery {
     let hash = new URLPath().RemovePrefixUrl(locationHash);
     let search = new URLSearchParams(hash);
     let getReturnUrl = search.get("ReturnUrl");
-    var starskyPathIndex = document.location.pathname.indexOf(this.prefix);
-    
+
     // add only prefix for default situation
-    if (!getReturnUrl) return starskyPathIndex === -1
-      ? `/${new URLPath().AddPrefixUrl("f=/")}` : `${this.prefix}/${new URLPath().AddPrefixUrl("f=/")}`;
+    if (!getReturnUrl) return `/${new URLPath().AddPrefixUrl("f=/")}`;
     return getReturnUrl;
   }
 
