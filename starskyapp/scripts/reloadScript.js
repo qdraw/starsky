@@ -6,13 +6,13 @@ function warmupScript(count, maxCount) {
       if (response.status === 200 || response.status === 503) {
         window.location.href = 'http://localhost:5000';
       }
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log(error);
       if (count <= maxCount) {
         count++
         setTimeout(() => {
           warmupScript(count, maxCount)
-        }, 50);
+        }, 100);
       }
       else {
         alert("application failed to start")
@@ -20,4 +20,4 @@ function warmupScript(count, maxCount) {
     });
 }
 
-warmupScript(0, 100)
+warmupScript(0, 300)
