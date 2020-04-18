@@ -48,7 +48,6 @@ const Login: React.FC<ILoginProps> = () => {
   var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), 'get');
 
   useEffect(() => {
-    console.log('-fetch');
     setLogin(accountStatus.statusCode === 401);
     new DocumentTitle().SetDocumentTitlePrefix(accountStatus.statusCode === 401 ? MessageLogin : MessageLogout);
     // to help new users find the register screen
@@ -60,8 +59,6 @@ const Login: React.FC<ILoginProps> = () => {
   const authHandler = async () => {
     try {
       setLoading(true);
-      console.log(new UrlQuery().UrlLoginPage(), 'Email=' + userEmail + '&Password=' + userPassword);
-
       const response = await FetchPost(new UrlQuery().UrlLoginPage(), 'Email=' + userEmail + '&Password=' + userPassword);
       if (!response || !response.data) {
         setError(MessageConnection);
