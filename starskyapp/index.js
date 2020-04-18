@@ -5,6 +5,8 @@ const portfinder = require('portfinder');
 const { spawn } = require('child_process');
 const URL = require('url').URL
 const readline = require('readline');
+const extract = require('extract-zip');
+const fs = require('fs');
 
 app.allowRendererProcessReuse = true;
 
@@ -27,14 +29,64 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
 }
 
-var starskyChild = spawn('/data/git/starsky/starsky/osx.10.12-x64/starsky', {
-  cwd: '/data/git/starsky/starsky/osx.10.12-x64',
-  detached: true
-}, (error, stdout, stderr) => { });
+function isPackaged() {
+  return !!app.isPackaged;
+}
 
-starskyChild.stdout.on('data', function (data) {
-  console.log(data.toString());
-});
+function getStarskyPath() {
+
+  console.log(process.platform);
+
+  console.log(!isPackaged());
+  if (!isPackaged()) { // dev
+    var exeFilePath = "";
+    switch (process.platform) {
+      case "darwin":
+        return Promise.resolve(path.join(__dirname, "../", "starsky", "osx.10.12-x64", "starsky" ));
+      case "win32":
+        return Promise.resolve(exeFilePath);
+      default:
+      return Promise.resolve(exeFilePath);
+    }
+  }
+
+  // prod
+
+  var includedZipPath = path.join(process.resourcesPath, `include-starsky-${process.platform}.zip`);
+  var targetFilePath = path.join(process.resourcesPath, "include");
+
+  var exeFilePath = path.join(targetFilePath, "starsky")
+  if (process.platform ===  "win32") exeFilePath = path.join(targetFilePath, "starsky.exe");
+
+	return new Promise(function (resolve, reject) {
+      fs.promises.access(exeFilePath).then((status)=>{
+        console.log(status);
+        resolve(exeFilePath);
+      }).catch(()=>{
+        extract(includedZipPath, { dir: targetFilePath }).then(()=>{
+
+          // make chmod +x
+          if (process.platform !== "win32") fs.chmodSync(exeFilePath, 0o755);
+          resolve(exeFilePath);
+        }).catch((error)=>{
+          console.log('catch',error);
+        });
+      });
+	});
+
+}
+
+var starskyChild;
+getStarskyPath().then((starskyPath) =>{
+  starskyChild = spawn(starskyPath, {
+    cwd: path.dirname(starskyPath),
+    detached: true
+  }, (error, stdout, stderr) => { });
+
+  starskyChild.stdout.on('data', function (data) {
+    console.log(data.toString());
+  });
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -69,13 +121,18 @@ function setRawMode(modes) {
   process.stdin.setRawMode(modes)
 }
 
+function kill() {
+  setRawMode(false);
+  if (!starskyChild) return;
+  starskyChild.stdin.pause();
+  starskyChild.kill();
+}
+
 setRawMode(true);
 
 process.stdin.on('keypress', (str, key) => {
   if (key.ctrl && key.name === 'c') {
-    starskyChild.stdin.pause();
-    starskyChild.kill();
-    setRawMode(false);
+    kill();
     console.log('===> end of starsky');
     setTimeout(() => { process.exit(0); }, 400);
   }
@@ -84,12 +141,9 @@ process.stdin.on('keypress', (str, key) => {
 app.on("before-quit", function (event) {
   event.preventDefault();
   console.log('----> end');
-  starskyChild.stdin.pause();
-  starskyChild.kill();
-  setRawMode(false);
+  kill();
   setTimeout(() => { process.exit(0); }, 400);
 });
-
 
 
 app.on('activate', function () {
@@ -97,4 +151,3 @@ app.on('activate', function () {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
-
