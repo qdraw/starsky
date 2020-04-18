@@ -23,6 +23,7 @@
 # Unreleased - 2020-04-XX
 - [x]   (Fixed)  _Back-end_ New users could not sign up
 - [x]   (Fixed)  _Front-end_ Register page has wrong title
+- [x]   (Fixed)  _Front-end_ Login flow return url fixed
 
 # version 0.2.2 - 2020-04-17
 - [x]   (Added) _Front-end_ Timezone issues in Safari
