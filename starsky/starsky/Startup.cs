@@ -319,21 +319,29 @@ namespace starsky
 					 });
 #endif
 
-			// Run the latest migration on the database. 
-			// To start over with a SQLite database please remove it and
-			// it will add a new one
-			try
-			{
-				using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-					.CreateScope();
-				var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-				dbContext.Database.Migrate();
-			}
-            catch (MySql.Data.MySqlClient.MySqlException e)
-            {
-                Console.WriteLine(e);
-            }
+	        EfCoreMigrationsOnProject(app);
 
+        }
+
+
+        /// <summary>
+        /// Run the latest migration on the database. 
+        /// To start over with a SQLite database please remove it and
+        /// it will add a new one
+        /// </summary>
+        private void EfCoreMigrationsOnProject(IApplicationBuilder app)
+        {
+	        try
+	        {
+		        using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+			        .CreateScope();
+		        var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+		        dbContext.Database.Migrate();
+	        }
+	        catch (MySql.Data.MySqlClient.MySqlException e)
+	        {
+		        Console.WriteLine(e);
+	        }
         }
     }
 }
