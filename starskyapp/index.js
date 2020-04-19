@@ -32,31 +32,33 @@ function isPackaged() {
   return !!app.isPackaged;
 }
 
+function getOsKey() {
+  // osKey is used in the build script
+  switch (process.platform) {
+    case "darwin":
+      return "mac"
+    case "win32":
+      return "win"
+    default:
+      return "";
+  }
+}
+
 function getStarskyPath() {
 
   if (!isPackaged()) { // dev
-    var exeFilePath = "";
     switch (process.platform) {
       case "darwin":
         return Promise.resolve(path.join(__dirname, "../", "starsky", "osx.10.12-x64", "starsky"));
       case "win32":
         return Promise.resolve(path.join(__dirname, "../", "starsky", "win7-x86", "starsky"));
       default:
-        return Promise.resolve(exeFilePath);
+        return Promise.resolve("");
     }
   }
 
-  // osKey is used in the build script
-  var osKey = "";
-  switch (process.platform) {
-    case "darwin":
-      osKey = "mac"
-    case "win32":
-      osKey = "win"
-  }
-
   // prod
-  var includedZipPath = path.join(process.resourcesPath, `include-starsky-${osKey}.zip`);
+  var includedZipPath = path.join(process.resourcesPath, `include-starsky-${getOsKey()}.zip`);
   var targetFilePath = path.join(process.resourcesPath, "include");
 
   var exeFilePath = path.join(targetFilePath, "starsky")
@@ -64,9 +66,10 @@ function getStarskyPath() {
 
   return new Promise(function (resolve, reject) {
     fs.promises.access(exeFilePath).then((status) => {
-      console.log(status);
+      console.log('run', exeFilePath);
       resolve(exeFilePath);
     }).catch(() => {
+      console.log('--extract', includedZipPath);
       extract(includedZipPath, { dir: targetFilePath }).then(() => {
 
         // make chmod +x

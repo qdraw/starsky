@@ -1,7 +1,7 @@
 {
-  "name": "starsky",
+  "name": "Starsky",
   "version": "0.2.2",
-  "description": "starsky",
+  "description": "Starsky",
   "main": "index.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
@@ -17,8 +17,7 @@
     "electron-builder": "^22.5.1"
   },
   "dependencies": {
-    "extract-zip": "^2.0.0",
-    "portfinder": "^1.0.25"
+    "extract-zip": "^2.0.0"
   },
   "build": {
     "extraResources": [
@@ -28,6 +27,7 @@
     "appId": "nl.qdraw.starsky",
     "mac": {
       "minimumSystemVersion": "10.12",
+      "icon": "media/baseline-searcher-detective-263238__512px.icns",
       "target": [
         "zip"
       ]
@@ -42,7 +42,7 @@
       "target": [
         "zip"
       ],
-      "icon": "build/icon.ico"
+      "icon": "media/baseline-searcher-detective-263238__256px.ico"
     }
   }
 }
