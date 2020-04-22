@@ -105,7 +105,11 @@ export function archiveReducer(state: State, action: Action): State {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
       var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
-      var fileIndexItems = [...concattedFileIndexItems].sort((a, b) => (a.filePath > b.filePath) ? 1 : -1); // sort on filePath
+      // var fileIndexItems = [...concattedFileIndexItems].sort((a, b) => (a.fileName.toLowerCase() > b.fileName.toLowerCase() ? 1
+      //   : a.fileName.toLowerCase() < b.fileName.toLowerCase() ? -1 : 0)); // sort on fileName
+
+      var fileIndexItems = concattedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'nl', { sensitivity: 'base' }));
+
       fileIndexItems = fileIndexItems.filter((v, i, a) => a.findIndex(t => (t.filePath === v.filePath)) === i); // duplicate check
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       return { ...state, fileIndexItems, lastUpdated: new Date() };
