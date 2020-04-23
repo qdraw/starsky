@@ -73,7 +73,8 @@ namespace starsky.Controllers
                 CollectionsCount = _query.DisplayFileFolders(
 	                subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
                 ColorClassUsage = _query.DisplayFileFolders(
-	                subpath,null,false,hidedelete).Select( p => p.ColorClass).Distinct().ToList(),
+	                subpath,null,false,hidedelete)
+	                .Select( p => p.ColorClass).Distinct().ToList(),
                 IsReadOnly =  _appSettings.IsReadOnly(subpath)
             };
 

@@ -13,7 +13,7 @@ namespace starsky.foundation.database.Query
     {
 
         /// <summary>
-        /// Query all FileindexItems with the type folder
+        /// Query all FileIndexItems with the type folder
         /// </summary>
         /// <returns>List of all folders in database, including content</returns>
         public List<FileIndexItem> GetAllFolders()
@@ -85,13 +85,15 @@ namespace starsky.foundation.database.Query
                 return objectFileFolders as List<FileIndexItem>;
             
             objectFileFolders = QueryDisplayFileFolders(subPath);
-            CacheExtensions.Set<object>(_cache, queryCacheName, objectFileFolders, new TimeSpan(1,0,0));
+            CacheExtensions.Set<object>(_cache, queryCacheName, objectFileFolders, 
+	            new TimeSpan(1,0,0));
             return (List<FileIndexItem>) objectFileFolders;
         }
 
         private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
         {
-            var queryItems = Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.ParentDirectory == subPath)
+            var queryItems = Queryable.Where<FileIndexItem>(_context.FileIndex,
+		            p => p.ParentDirectory == subPath)
                 .OrderBy(p => p.FileName).ToList();
 
             return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
@@ -121,7 +123,8 @@ namespace starsky.foundation.database.Query
             // We use breadcrums to get the parent folder
             var parrentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
             
-            var itemsInSubFolder = Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.ParentDirectory == parrentFolderPath)
+            var itemsInSubFolder = Queryable.Where<FileIndexItem>(_context.FileIndex, 
+		            p => p.ParentDirectory == parrentFolderPath)
                 .OrderBy(p => p.FileName).ToList();
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);

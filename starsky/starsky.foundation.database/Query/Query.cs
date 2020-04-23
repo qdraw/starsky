@@ -99,7 +99,7 @@ namespace starsky.foundation.database.Query
 		}
 
 		/// <summary>
-		/// Remove fileHash from hashlist-cache
+		/// Remove fileHash from hash-list-cache
 		/// </summary>
 		/// <param name="fileHash">base32 filehash</param>
 	    public void ResetItemByHash(string fileHash)
