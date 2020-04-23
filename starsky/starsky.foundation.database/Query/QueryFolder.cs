@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Design.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -92,7 +94,7 @@ namespace starsky.foundation.database.Query
             var queryItems = Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.ParentDirectory == subPath)
                 .OrderBy(p => p.FileName).ToList();
 
-            return queryItems.OrderBy(p => p.FileName).ToList();
+            return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
         }
         
         // Hide Deleted items in folder
