@@ -10,6 +10,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Query
@@ -288,7 +289,7 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                directoryName);
+                PathHelper.RemoveLatestSlash(directoryName));
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
             _cache.Remove(queryCacheName);
