@@ -11,7 +11,8 @@ namespace starsky.foundation.database.Query
         {
             
             // Get a list of duplicate items
-            var stackItemsByFileCollectionName = databaseSubFolderList.GroupBy(item => item.FileCollectionName)
+            var stackItemsByFileCollectionName = databaseSubFolderList
+	            .GroupBy(item => item.FileCollectionName)
                 .SelectMany(grp => grp.Skip(1).Take(1)).ToList();
 			// databaseSubFolderList.ToList() > Collection was modified; enumeration operation may not execute.
             

@@ -120,6 +120,83 @@ describe("ArchiveContext", () => {
       }]);
   });
 
+  it("add -- and check if is orderd", () => {
+    // current state
+    var state = {
+      fileIndexItems: [
+        {
+          fileName: '2018.01.01.17.00.01.jpg',
+          filePath: '/__starsky/01-dif/2018.01.01.17.00.01.jpg',
+          status: IExifStatus.Ok
+        },
+      ]
+    } as IArchiveProps;
+
+    // to add this
+    var add = [{
+      fileName: '__20180101170001.jpg',
+      filePath: '/__starsky/01-dif/__20180101170001.jpg',
+      status: IExifStatus.Ok
+    },
+
+    ];
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(2);
+
+    expect(result.fileIndexItems[0].fileName).toBe('__20180101170001.jpg');
+
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        fileName: '__20180101170001.jpg',
+        filePath: '/__starsky/01-dif/__20180101170001.jpg',
+        status: IExifStatus.Ok
+      },
+      {
+        fileName: '2018.01.01.17.00.01.jpg',
+        filePath: '/__starsky/01-dif/2018.01.01.17.00.01.jpg',
+        status: IExifStatus.Ok
+      }]);
+  });
+
+  it("add -- duplicate", () => {
+    // current state
+    var state = {
+      fileIndexItems: [
+        {
+          fileName: '2018.01.01.17.00.01.jpg',
+          filePath: '/__starsky/01-dif/2018.01.01.17.00.01.jpg',
+          status: IExifStatus.Ok
+        },
+      ]
+    } as IArchiveProps;
+
+    // to add this
+    var add = [{
+      fileName: '2018.01.01.17.00.01.jpg',
+      filePath: '/__starsky/01-dif/2018.01.01.17.00.01.jpg',
+      status: IExifStatus.Ok,
+      tags: 'updated'
+    },
+
+    ];
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+
+    expect(result.fileIndexItems[0].fileName).toBe('2018.01.01.17.00.01.jpg');
+
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        fileName: '2018.01.01.17.00.01.jpg',
+        filePath: '/__starsky/01-dif/2018.01.01.17.00.01.jpg',
+        status: IExifStatus.Ok,
+        tags: 'updated'
+      }]);
+  });
+
   it("add -- duplicate", () => {
 
     // current state

@@ -169,7 +169,7 @@ namespace starskytest.Services
 	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
-            // Clean file after succesfull run;
+            // Clean file after successful run;
             var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(createAnImage.DbPath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
