@@ -54,11 +54,12 @@ namespace starskyimportercli
 					$"IndexMode {importSettings.IndexMode}");
 	        }
             
-            var result = startupHelper.ImportService().ImportTo(inputPath, importSettings);
+	        throw new NotImplementedException("sdfsd");
+            // var result = startupHelper.ImportService().Importer(inputPath, importSettings);
            
 	        // When legacy, insert here ExifToolLegacy().Run()
 	        
-            Console.WriteLine($"Done Importing {result.Count}");
+            // Console.WriteLine($"Done Importing {result.Count}");
             
         }
 

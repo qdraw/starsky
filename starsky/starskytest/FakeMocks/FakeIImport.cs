@@ -77,6 +77,11 @@ namespace starskytest.FakeMocks
 			return results;
 		}
 
+		public Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public List<ImportIndexItem> History()
 		{
 			throw new System.NotImplementedException();

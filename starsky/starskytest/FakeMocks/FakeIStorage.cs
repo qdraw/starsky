@@ -145,9 +145,10 @@ namespace starskytest.FakeMocks
 			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p)).AsEnumerable();
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string fullFilePath)
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
 		{
-			throw new NotImplementedException();
+			subPath = PathHelper.RemoveLatestSlash(subPath);
+			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
@@ -180,7 +181,7 @@ namespace starskytest.FakeMocks
 				MemoryStream stream = new MemoryStream(byteArray);
 				return stream;
 			}
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+			if ( !ExistFile(path) ) throw new FileNotFoundException($"{path} is not found in FakeStorage");
 
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 			MemoryStream stream1 = new MemoryStream(result);

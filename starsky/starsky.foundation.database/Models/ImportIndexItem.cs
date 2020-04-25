@@ -311,6 +311,7 @@ namespace starsky.foundation.database.Models
             // If command running twiche you will get /tr/tr (when tr is your single folder name)
             SubFolder = string.Empty;
 
+            // get the date form the DateTime attr (direct)
             var parsedList = ListParser();
             
             foreach (var parsedItem in parsedList)

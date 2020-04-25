@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,12 +53,12 @@ namespace starsky.feature.import.Services
 
 		public async Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, ImportSettingsModel importSettings)
 		{
+			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
+
 			var listOfTasks = new List<Task<ImportIndexItem>>();
-			AppendDirectoryFilePaths(fullFilePathsList, importSettings);
-			
-			foreach ( var fullFilePath in fullFilePathsList )
+			foreach ( var includedFilePath in includedDirectoryFilePaths )
 			{
-				listOfTasks.Add(PreflightPerFile(fullFilePath, importSettings));
+				listOfTasks.Add(PreflightPerFile(includedFilePath, importSettings));
 			}
 			var items = await Task.WhenAll(listOfTasks);
 			return items.ToList();
@@ -68,49 +69,60 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="fullFilePathsList">full file Path</param>
 		/// <param name="importSettings">settings to add recursive</param>
-		private void AppendDirectoryFilePaths(List<string> fullFilePathsList, ImportSettingsModel importSettings)
+		private List<KeyValuePair<string,bool>> AppendDirectoryFilePaths(List<string> fullFilePathsList, ImportSettingsModel importSettings)
 		{
+			var includedDirectoryFilePaths = new List<KeyValuePair<string,bool>>();
 			foreach ( var fullFilePath in fullFilePathsList )
 			{
 				if ( _filesystemStorage.ExistFolder(fullFilePath) && importSettings.RecursiveDirectory)
 				{
 					// recursive
-					fullFilePathsList.AddRange( 
-						_filesystemStorage.GetAllFilesInDirectoryRecursive(fullFilePath)
-							.Where(ExtensionRolesHelper.IsExtensionSyncSupported)
-					);
+					includedDirectoryFilePaths.AddRange(_filesystemStorage.GetAllFilesInDirectoryRecursive(fullFilePath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported)
+						.Select(syncedFiles => new KeyValuePair<string, bool>(syncedFiles, true)));
+					continue;
 				}
-				else if ( _filesystemStorage.ExistFolder(fullFilePath) && !importSettings.RecursiveDirectory)
+				if ( _filesystemStorage.ExistFolder(fullFilePath) && !importSettings.RecursiveDirectory)
 				{
 					// non-recursive
-					fullFilePathsList.AddRange(  
-						_filesystemStorage.GetAllFilesInDirectory(fullFilePath)
-							.Where(ExtensionRolesHelper.IsExtensionSyncSupported)
-					);
+					includedDirectoryFilePaths.AddRange(_filesystemStorage.GetAllFilesInDirectory(fullFilePath)
+						.Where(ExtensionRolesHelper.IsExtensionSyncSupported)
+						.Select(syncedFiles => new KeyValuePair<string, bool>(syncedFiles, true)));
+					continue;
 				}
+				
+				includedDirectoryFilePaths.Add(
+					new KeyValuePair<string, bool>(fullFilePath,_filesystemStorage.ExistFile(fullFilePath))
+				);
 			}
+
+			return includedDirectoryFilePaths;
 		}
 
-		internal async Task<ImportIndexItem> PreflightPerFile(string inputFileFullPath, ImportSettingsModel importSettings)
+		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, ImportSettingsModel importSettings)
 		{
-			if ( _filesystemStorage.ExistFile(inputFileFullPath) ) return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath};
+			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
+				return new ImportIndexItem{ 
+					Status = ImportStatus.FileError, 
+					FilePath = inputFileFullPath.Key
+				};
 
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
-				_filesystemStorage.ReadStream(inputFileFullPath, 
+				_filesystemStorage.ReadStream(inputFileFullPath.Key, 
 				160));
 			
 			// Check if extension is correct && Check if the file is correct
-			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath) ||
+			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath};
+				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
-			var hashList = await new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath);
+			var hashList = await new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
 				Console.WriteLine(">> FileHash error");
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath};
+				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
 			if (importSettings.IndexMode && await _importQuery.IsHashInImportDb(hashList.Key) )
@@ -118,17 +130,25 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
-					FilePath = inputFileFullPath,
+					FilePath = inputFileFullPath.Key,
 					FileHash = hashList.Key
 				};
 			}
 			
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
-			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath);
-			
+			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath.Key);
+
+
 			// Parse the filename and create a new importIndexItem object
-			return ObjectCreateIndexItem(inputFileFullPath, imageFormat, hashList.Key, fileIndexItem, importSettings.Structure);
+			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, hashList.Key, 
+				fileIndexItem, importSettings.Structure);
+			
+			// get information to move to (in the future)
+			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(imageFormat);
+			importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
+			importIndexItem.FileIndexItem.FileHash = hashList.Key;
+			return importIndexItem;
 		}
 
 		/// <summary>
@@ -151,7 +171,10 @@ namespace starsky.feature.import.Services
 			{
 				SourceFullFilePath = inputFileFullPath,
 				DateTime = fileIndexItem.DateTime,
-				FileHash = fileHashCode
+				FileHash = fileHashCode,
+				FileIndexItem = fileIndexItem,
+				Status = ImportStatus.Ok,
+				FilePath = fileIndexItem.FilePath,
 			};
 
 			// Feature to overwrite structures when importing using a header
@@ -166,14 +189,45 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 		
-		public List<string> ImportTo(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
-			throw new System.NotImplementedException();
+			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
+			
+			var listOfTasks = new List<Task<ImportIndexItem>>();
+			foreach ( var preflightItem in preflightItemList )
+			{
+				listOfTasks.Add(Importer(preflightItem, importSettings));
+			}
+			var items = await Task.WhenAll(listOfTasks);
+			return items.ToList();
+			
 		}
 
-		public List<string> ImportTo(string inputFullPathList, ImportSettingsModel importSettings)
+		private async Task<ImportIndexItem> Importer(ImportIndexItem preflightItem, ImportSettingsModel importSettings)
 		{
-			throw new System.NotImplementedException();
+			if ( preflightItem.Status != ImportStatus.Ok ) return preflightItem;
+
+			var path = GetDestinationPath(preflightItem.FileIndexItem.FilePath);
+			
+			return new ImportIndexItem();
 		}
+
+		private string GetDestinationPath(string destinationFullPath)
+		{
+			if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
+			for ( int i = 1; i < 100; i++ )
+			{
+				var tryAgainFileName =
+					FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{i}." +
+					FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
+				if ( !_filesystemStorage.ExistFile(tryAgainFileName) )
+				{
+					return tryAgainFileName;
+				}
+			}
+			throw new ApplicationException("tried after 100 times");
+		}
+
+
 	}
 }
