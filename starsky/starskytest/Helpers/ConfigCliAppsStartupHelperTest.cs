@@ -29,7 +29,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,name.Contains(nameof(ReadMeta)));
 			
 			name = cliHelper.ImportService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(ImportService)));
+			Assert.AreEqual(true,name.Contains(nameof(Import)));
 
 			name = cliHelper.UserManager().ToString();
 			Assert.AreEqual(true,name.Contains(nameof(UserManager)));		

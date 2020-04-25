@@ -23,7 +23,7 @@ namespace starskycore.Helpers
     public class ConfigCliAppsStartupHelper
     {
 
-        private readonly ImportService _import;
+        private readonly Import _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
@@ -156,7 +156,7 @@ namespace starskycore.Helpers
         /// Returns an filled ImportService Interface
         /// </summary>
         /// <returns>ImportService</returns>
-        public ImportService ImportService()
+        public Import ImportService()
         {
             return _import;
         }

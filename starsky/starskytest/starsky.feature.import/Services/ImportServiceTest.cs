@@ -31,7 +31,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var storage = new FakeIStorage();
 			var appSettings = new AppSettings();
-			var importService = new ImportService(new FakeSelectorStorage(), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(storage, appSettings), null);
 
 			var result = await importService.Preflight(new List<string> {"/test.jpg"},

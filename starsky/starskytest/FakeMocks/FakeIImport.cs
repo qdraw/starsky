@@ -22,11 +22,16 @@ namespace starskytest.FakeMocks
 			_selectorStorage = selectorStorage;
 		}
 		
-		public List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		public List<string> ImportTo(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
 			return Preflight(inputFullPathList.ToList(), importSettings).Result
 				.Where(p => p.FilePath != null)
 				.Select(p=> p.FilePath ).ToList();
+		}
+
+		public List<string> ImportTo(string inputFullPathList, ImportSettingsModel importSettings)
+		{
+			throw new System.NotImplementedException();
 		}
 
 		public List<string> Import(string inputFullPathList, ImportSettingsModel importSettings)

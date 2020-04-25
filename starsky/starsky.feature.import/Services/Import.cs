@@ -18,7 +18,7 @@ using starskycore.Models;
 
 namespace starsky.feature.import.Services
 {
-	public class ImportService : IImport
+	public class Import : IImport
 	{
 		private readonly IImportQuery _importQuery;
 		
@@ -32,7 +32,7 @@ namespace starsky.feature.import.Services
 
 		private readonly IReadMeta _readMetaHost;
 
-		public ImportService(
+		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
 			IImportQuery importQuery,
@@ -166,12 +166,12 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 		
-		public List<string> Import(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		public List<string> ImportTo(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public List<string> Import(string inputFullPathList, ImportSettingsModel importSettings)
+		public List<string> ImportTo(string inputFullPathList, ImportSettingsModel importSettings)
 		{
 			throw new System.NotImplementedException();
 		}
