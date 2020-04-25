@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
+using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
@@ -81,7 +82,7 @@ namespace starsky.Controllers
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			
 			
-			var fileIndexResultsList = _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
+			var fileIndexResultsList = await _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{

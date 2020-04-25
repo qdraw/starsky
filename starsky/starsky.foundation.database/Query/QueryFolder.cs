@@ -18,7 +18,6 @@ namespace starsky.foundation.database.Query
         /// <returns>List of all folders in database, including content</returns>
         public List<FileIndexItem> GetAllFolders()
         {
-            InjectServiceScope();
             return Queryable.Where<FileIndexItem>(_context.FileIndex, p => p.IsDirectory).ToList();
         }
 

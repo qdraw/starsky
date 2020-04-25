@@ -42,7 +42,8 @@ namespace starskycore.Services
 		private readonly ISync _iSync;
 		private readonly ISelectorStorage _selectorStorage;
 
-		public ImportService(ApplicationDbContext context, // <= for table import-index
+		public ImportService(
+			ApplicationDbContext context, // <= for table import-index
 			ISync iSync,
 			IExifTool exifTool,
 			AppSettings appSettings,

@@ -1,0 +1,63 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Interfaces;
+using starskycore.Models;
+using starskycore.Services;
+using starskytest.FakeMocks;
+using starskytest.Models;
+
+namespace starskytest.Services
+{
+	[TestClass]
+	public class ImportServiceTest2
+	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly Query _query;
+		private readonly IExifTool _fakeExifTool;
+
+		public ImportServiceTest2()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+
+			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builderDb.UseInMemoryDatabase("ImportServiceTest");
+			var options = builderDb.Options;
+			_dbContext = new ApplicationDbContext(options);
+			_query = new Query(_dbContext, memoryCache);
+			_fakeExifTool = new FakeExifTool(null,null);
+		}
+
+		[TestMethod]
+		public void ImportService_NoSubPath_slashyyyyMMdd_HHmmss_ImportTest()
+		{
+			var appSettings = new AppSettings
+			{
+				Structure = "/xx1xxx__yyyyMMdd_HHmmss.ext",
+			};
+			var importSettings =
+				new ImportSettingsModel {DeleteAfter = false, AgeFileFilterDisabled = false};
+			
+			// ApplicationDbContext context, // <= for table import-index
+			// 	ISync iSync,
+			// IExifTool exifTool,
+			// 	AppSettings appSettings,
+			// IServiceScopeFactory scopeFactory,
+			// 	ISelectorStorage selectorStorage
+
+				
+			var fakeStorageProvider = new FakeSelectorStorage(new FakeIStorage());
+			var fakeSync = new SyncService(_query,appSettings,fakeStorageProvider);
+			// var import1 = ImportService(			_dbContext, fakeSync, _fakeExifTool, appSettings);
+
+
+		}
+	}
+}

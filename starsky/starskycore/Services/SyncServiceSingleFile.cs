@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
-using starskycore.Models;
 
 namespace starskycore.Services
 {

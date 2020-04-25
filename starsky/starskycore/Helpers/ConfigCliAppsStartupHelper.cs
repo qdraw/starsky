@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
@@ -110,7 +111,7 @@ namespace starskycore.Helpers
             
             _isync = new SyncService(query, appSettings, _selectorStorage);
             
-            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _selectorStorage);
+            // _import = new ImportService(context, _exifTool, appSettings, null, _selectorStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(_thumbnailStorage, query, appSettings);
 	        

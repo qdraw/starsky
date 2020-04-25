@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Query
             AppSettings appSettings = null,
             IServiceScopeFactory scopeFactory = null)
         {
-            _context = context;
+	        _context = new InjectServiceScope(context, scopeFactory).Context();
             _cache = memoryCache;
             _appSettings = appSettings;
             _scopeFactory = scopeFactory;
@@ -70,7 +70,6 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
-            InjectServiceScope();
             filePath = SubPathSlashRemove(filePath);
             var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
             return query;
@@ -181,8 +180,6 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
-			InjectServiceScope();
-
 	        //  Update te last edited time manual
 	        updateStatusContent.SetLastEdited();
 	        
@@ -302,8 +299,6 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
-            InjectServiceScope();
-	        
 	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
 	            && !updateStatusContent.IsDirectory) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
@@ -332,8 +327,6 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-	        InjectServiceScope();
-
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();
 
@@ -344,16 +337,5 @@ namespace starsky.foundation.database.Query
 	        ResetItemByHash(updateStatusContent.FileHash);
             return updateStatusContent;
         }
-        
-        /// <summary>
-        /// Dependency injection, used in background tasks
-        /// </summary>
-        private void InjectServiceScope()
-        {
-            if (_scopeFactory == null) return;
-            var scope = _scopeFactory.CreateScope();
-            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        }
-
     }
 }

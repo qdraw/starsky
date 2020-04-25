@@ -42,10 +42,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
       <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
       <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
       <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="starsky.feature.import" />
     </ItemGroup>
 
 </Project>
