@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
+using starsky.feature.import.Services;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Services;
