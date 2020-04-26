@@ -60,6 +60,13 @@ namespace starsky.feature.import.Services
             _query = query;
 		}
 
+		/// <summary>
+		/// Check if the item can be add to the database
+		/// Run `importer` to perform the action
+		/// </summary>
+		/// <param name="fullFilePathsList">paths</param>
+		/// <param name="importSettings">settings</param>
+		/// <returns></returns>
 		public async Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, ImportSettingsModel importSettings)
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
@@ -78,7 +85,8 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="fullFilePathsList">full file Path</param>
 		/// <param name="importSettings">settings to add recursive</param>
-		private List<KeyValuePair<string,bool>> AppendDirectoryFilePaths(List<string> fullFilePathsList, ImportSettingsModel importSettings)
+		private List<KeyValuePair<string,bool>> AppendDirectoryFilePaths(List<string> fullFilePathsList, 
+			ImportSettingsModel importSettings)
 		{
 			var includedDirectoryFilePaths = new List<KeyValuePair<string,bool>>();
 			foreach ( var fullFilePath in fullFilePathsList )
@@ -108,7 +116,8 @@ namespace starsky.feature.import.Services
 			return includedDirectoryFilePaths;
 		}
 
-		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, ImportSettingsModel importSettings)
+		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, 
+			ImportSettingsModel importSettings)
 		{
 			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
 				return new ImportIndexItem{ 
@@ -163,11 +172,11 @@ namespace starsky.feature.import.Services
 		/// <summary>
 		/// Create a new import object
 		/// </summary>
-		/// <param name="inputFileFullPath"></param>
-		/// <param name="imageFormat"></param>
-		/// <param name="fileHashCode"></param>
-		/// <param name="fileIndexItem"></param>
-		/// <param name="overwriteStructure"></param>
+		/// <param name="inputFileFullPath">full file path</param>
+		/// <param name="imageFormat">is it jpeg or png or something different</param>
+		/// <param name="fileHashCode">file hash base32</param>
+		/// <param name="fileIndexItem">database item</param>
+		/// <param name="overwriteStructure">structure to overwite</param>
 		/// <returns></returns>
 		internal ImportIndexItem ObjectCreateIndexItem(
 				string inputFileFullPath,
@@ -198,6 +207,12 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 		
+		/// <summary>
+		/// Run import on list of files and folders (full path style)
+		/// </summary>
+		/// <param name="inputFullPathList">list of files and folders (full path style)</param>
+		/// <param name="importSettings">settings</param>
+		/// <returns>status object</returns>
 		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
@@ -209,9 +224,14 @@ namespace starsky.feature.import.Services
 			}
 			var items = await Task.WhenAll(listOfTasks);
 			return items.ToList();
-			
 		}
 
+		/// <summary>
+		/// Run the import on the config file
+		/// </summary>
+		/// <param name="importIndexItem">config file</param>
+		/// <param name="importSettings">optional settings</param>
+		/// <returns>status</returns>
 		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
@@ -273,8 +293,19 @@ namespace starsky.feature.import.Services
 
 	        return importIndexItem;
 		}
-		internal int MaxTryGetDestinationPath { get; set; } = 50;
+		
+		/// <summary>
+		/// Number of checks for files with the same filePath.
+		/// Change only to get Exceptions earlier
+		/// </summary>
+		internal int MaxTryGetDestinationPath { get; set; } = 100;
 
+		/// <summary>
+		/// Get a path with checking the fileName
+		/// </summary>
+		/// <param name="destinationFullPath">input file path</param>
+		/// <returns>full file path</returns>
+		/// <exception cref="ApplicationException">When there are to many files with the same name</exception>
 		private string GetDestinationPath(string destinationFullPath)
 		{
 			if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
@@ -301,7 +332,5 @@ namespace starsky.feature.import.Services
 			return FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
 			       FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
 		}
-
-
 	}
 }
