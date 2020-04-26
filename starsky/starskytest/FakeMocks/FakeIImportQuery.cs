@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 
 namespace starskytest.FakeMocks
 {
@@ -14,9 +15,19 @@ namespace starskytest.FakeMocks
 			if ( exist == null ) _exist = new List<string>();
 		}
 		
-		public async Task<bool> IsHashInImportDb(string fileHashCode)
+		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 			return _exist.Contains(fileHashCode);
+		}
+
+		public bool TestConnection()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

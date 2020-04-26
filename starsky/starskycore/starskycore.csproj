@@ -49,8 +49,4 @@
       <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="starsky.feature.import" />
-    </ItemGroup>
-
 </Project>

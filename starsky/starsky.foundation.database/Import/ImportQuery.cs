@@ -25,16 +25,42 @@ namespace starsky.foundation.database.Import
 			_isConnection = _dbContext.TestConnection();
 		}
 
-		public async Task<bool> IsHashInImportDb(string fileHashCode)
+		/// <summary>
+		/// Test if the database connection is there
+		/// </summary>
+		/// <returns>successful database connection</returns>
+		public bool TestConnection()
+		{
+			return !_isConnection ? _dbContext.TestConnection() : _isConnection;
+		}
+
+		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 
 			if ( _isConnection )
-				return await _dbContext.ImportIndex.CountAsync(p => p.FileHash == fileHashCode) != 0; 
+				return await _dbContext.ImportIndex.CountAsync(p => 
+					       p.FileHash == fileHashCode) != 0; 
 			// there is no any in ef core
 
 			// When there is no mysql connection continue
 			Console.WriteLine($">> _isConnection == false");
 			return false;
 		}
+
+		/// <summary>
+		/// Add a new item to the imported database
+		/// </summary>
+		/// <param name="updateStatusContent">import database item</param>
+		/// <returns>fail or success</returns>
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		{
+			updateStatusContent.AddToDatabase = DateTime.UtcNow;
+
+			await _dbContext.ImportIndex.AddAsync(updateStatusContent);
+			await _dbContext.SaveChangesAsync();
+			// removed MySqlException catch
+			return true;
+		}
+		
 	}
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -14,7 +15,9 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskycore.Models;
 
 namespace starsky.feature.import.Services
@@ -32,13 +35,15 @@ namespace starsky.feature.import.Services
 		private readonly AppSettings _appSettings;
 
 		private readonly IReadMeta _readMetaHost;
+		private readonly IExifTool _exifTool;
+		private IQuery _query;
 
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
 			IImportQuery importQuery,
 			IExifTool exifTool,
-			IServiceScopeFactory scopeFactory)
+			IQuery query)
 		{
 			_selectorStorage = selectorStorage;
 			_importQuery = importQuery;
@@ -49,6 +54,8 @@ namespace starsky.feature.import.Services
 
             _appSettings = appSettings;
             _readMetaHost = new ReadMeta(_filesystemStorage);
+            _exifTool = exifTool;
+            _query = query;
 		}
 
 		public async Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, ImportSettingsModel importSettings)
@@ -125,7 +132,7 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
-			if (importSettings.IndexMode && await _importQuery.IsHashInImportDb(hashList.Key) )
+			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
 			{
 				return new ImportIndexItem
 				{
@@ -203,13 +210,66 @@ namespace starsky.feature.import.Services
 			
 		}
 
-		private async Task<ImportIndexItem> Importer(ImportIndexItem preflightItem, ImportSettingsModel importSettings)
+		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
 		{
-			if ( preflightItem.Status != ImportStatus.Ok ) return preflightItem;
+			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
-			var path = GetDestinationPath(preflightItem.FileIndexItem.FilePath);
-			
-			return new ImportIndexItem();
+			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem.FilePath);
+			_filesystemStorage.FileCopy(importIndexItem.SourceFullFilePath, importIndexItem.FilePath);
+
+			 // Support for include sidecar files
+		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
+		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)  &&
+		         _filesystemStorage.ExistFile(xmpFullFilePath))
+		    {
+			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
+			    _filesystemStorage.FileCopy(xmpFullFilePath, destinationXmpFullPath);
+		    }
+		    
+		    // From here on the item is exit in the storage folder
+		    // Creation of a sidecar xmp file --> NET CORE <--
+		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
+		    {
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
+				    new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
+			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+		    }
+
+		    // Update the contents to the file the imported item
+            if (importSettings.NeedExiftoolSync && 
+                ExtensionRolesHelper.IsExtensionExifToolSupported(importIndexItem.FileIndexItem.FileName))
+            {
+	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
+
+                var comparedNamesList = new List<string>
+                {
+                    nameof(FileIndexItem.DateTime).ToLowerInvariant(),
+                    nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
+                    nameof(FileIndexItem.Description).ToLowerInvariant(),
+                };
+
+                new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
+	                new ReadMeta(_subPathStorage)).Update(importIndexItem.FileIndexItem, comparedNamesList);
+            }
+
+	        // Ignore the sync part if the connection is missing
+	        // or option enabled
+	        if ( importIndexItem.Status == ImportStatus.Ok && importSettings.IndexMode && _importQuery.TestConnection() )
+	        {
+		        await _query.AddItemAsync(importIndexItem.FileIndexItem);
+		        // To the list of imported folders
+		        await _importQuery.AddAsync(importIndexItem);
+	        }
+
+	        if ( _appSettings.Verbose ) Console.Write("+");
+	        
+			// to move files
+            if (importSettings.DeleteAfter)
+            {
+	            _filesystemStorage.FileDelete(importIndexItem.FilePath);
+            }
+
+	        return importIndexItem;
 		}
 
 		private string GetDestinationPath(string destinationFullPath)

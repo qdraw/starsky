@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -319,6 +320,31 @@ namespace starsky.foundation.database.Query
 
 			return updateStatusContent;
         }
+	    
+	    /// <summary>
+	    /// Add a new item to the database
+	    /// </summary>
+	    /// <param name="updateStatusContent">the item</param>
+	    /// <returns>item with id</returns>
+	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+	    {   
+		    try
+		    {
+			    await _context.FileIndex.AddAsync(updateStatusContent);
+			    await _context.SaveChangesAsync();
+		    }
+		    catch (MySqlException e)
+		    {
+			    Console.WriteLine(updateStatusContent.FilePath);
+			    Console.WriteLine(e);
+			    throw;
+		    }
+            
+		    AddCacheItem(updateStatusContent);
+
+		    return updateStatusContent;
+	    }
+
         
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)
