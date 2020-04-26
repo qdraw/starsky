@@ -207,6 +207,20 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual("/test/layer1.jpg", result[0].SourceFullFilePath);
 		}
 
+		[TestMethod]
+		public async Task AppendIndexerToFilePath_Unix()
+		{
+			var result = Import.AppendIndexerToFilePath("/test/test.jpg", 5);
+			Assert.AreEqual("/test/test_5.jpg",result);
+		}
+
+		[TestMethod]
+		public async Task AppendIndexerToFilePath_Win32()
+		{
+			var result = Import.AppendIndexerToFilePath("c:\\test\\test.jpg", 5);
+			Assert.AreEqual("c:\\test\\test_5.jpg",result);
+		}
+
 		private string GetExpectedFilePath(AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
 			var fileIndexItem = new ReadMeta(_iStorageFake).ReadExifAndXmpFromFile(inputFileFullPath);
@@ -238,22 +252,59 @@ namespace starskytest.starsky.feature.import.Services
 
 		[TestMethod]
 		[ExpectedException(typeof(ApplicationException))]
-		public async Task Importer_Over50Times()
+		public async Task Importer_Over100Times()
 		{
 
 			var appSettings = new AppSettings();
+			
+			var storage =new FakeIStorage();
+			// write source file
+			await storage.WriteStreamAsync(
+				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), "/test.jpg"
+			);
+			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
 			var path = GetExpectedFilePath(appSettings, "/test.jpg");
-			await _iStorageFake.WriteStreamAsync(
+			await storage.WriteStreamAsync(
 				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
 			);
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+				new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings), new FakeIQuery())
+			{
+				MaxTryGetDestinationPath = 1
+			};
+
+
+			await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel());
+		}
+		
+		[TestMethod]
+		public async Task Importer_DuplicateFileName()
+		{
+			var appSettings = new AppSettings();
 			
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings), new FakeIQuery());
-			
-			importService.MaxTryGetDestinationPath = 1;
-			
+			var storage =new FakeIStorage();
+			// write source file
+			await storage.WriteStreamAsync(
+				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), "/test.jpg"
+			);
+			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
+			var path = GetExpectedFilePath(appSettings, "/test.jpg");
+			await storage.WriteStreamAsync(
+				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
+			);
+
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
+				new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings), new FakeIQuery());
+
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
+			
+			// get something like  /2018/04/2018_04_22/20180422_161454_test_1.jpg
+			var expectedFilePath = GetExpectedFilePath(appSettings, "/test.jpg", 1);
+			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
 		}
 	}
 }

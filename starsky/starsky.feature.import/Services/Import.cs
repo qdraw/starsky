@@ -329,7 +329,9 @@ namespace starsky.feature.import.Services
 		internal static string AppendIndexerToFilePath(string destinationFullPath, int index)
 		{
 			if ( index <= 0 ) return destinationFullPath;
-			return FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
+			return FilenamesHelper.GetParentPath(destinationFullPath) + 
+			       Path.DirectorySeparatorChar + 
+			       FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
 			       FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
 		}
 	}
