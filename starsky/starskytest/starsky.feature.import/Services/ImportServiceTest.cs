@@ -49,7 +49,8 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageFake, appSettings), null);
 
-			var result = await importService.Preflight(new List<string> {"/test.jpg"},
+			var result = await importService.Preflight(
+				new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 			
 			Assert.IsNotNull(result.FirstOrDefault());
@@ -57,6 +58,48 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
+		}
+
+		[TestMethod]
+		public async Task Preflight_SingleImage_FileType_NotSupported()
+		{
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage(
+				new List<string>{"/"},
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{new byte[0]}
+			);
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings), null);
+			
+			var result = await importService.Preflight(
+				new List<string> {"/test.jpg"},
+				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(ImportStatus.FileError, result.FirstOrDefault().Status);
+		}
+		
+		[TestMethod]
+		public async Task Preflight_SingleImage_WrongExtension()
+		{
+			var appSettings = new AppSettings();
+			
+			var storage = new FakeIStorage(
+				new List<string>{"/"},
+				new List<string>{"/test.unknown"},
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+			);
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings), null);
+
+			var result = await importService.Preflight(
+				new List<string> {"/test.unknown"},
+				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(ImportStatus.FileError, result.FirstOrDefault().Status);
 		}
 
 		[TestMethod]
@@ -104,7 +147,7 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.IsNotNull(result.FirstOrDefault());
-			Assert.AreEqual(ImportStatus.FileError, result.FirstOrDefault().Status);
+			Assert.AreEqual(ImportStatus.NotFound, result.FirstOrDefault().Status);
 		}
 
 		[TestMethod]
@@ -118,7 +161,7 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.IsNotNull(result.FirstOrDefault());
-			Assert.AreEqual(ImportStatus.FileError, result.FirstOrDefault().Status);
+			Assert.AreEqual(ImportStatus.NotFound, result.FirstOrDefault().Status);
 		}
 
 		[TestMethod]

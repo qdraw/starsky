@@ -110,7 +110,7 @@ namespace starsky.feature.import.Services
 		{
 			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
 				return new ImportIndexItem{ 
-					Status = ImportStatus.FileError, 
+					Status = ImportStatus.NotFound, 
 					FilePath = inputFileFullPath.Key
 				};
 
