@@ -210,7 +210,7 @@ namespace starsky.foundation.database.Models
             // For the situation that the image has no exif date and there is an appendix used (in the config)
             if(structuredFileName.Length >= fileName.Length)  {
                 
-                structuredFileName = structuredFileName.Substring(0, fileName.Length);
+                structuredFileName = structuredFileName.Substring(0, fileName.Length-1);
                 
                 DateTime.TryParseExact(fileName, 
                     structuredFileName, 

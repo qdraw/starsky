@@ -61,6 +61,5 @@ namespace starsky.foundation.database.Import
 			// removed MySqlException catch
 			return true;
 		}
-		
 	}
 }
