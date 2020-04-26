@@ -8,10 +8,12 @@ namespace starskytest.FakeMocks
 	public class FakeIImportQuery : IImportQuery
 	{
 		private readonly List<string> _exist;
+		private readonly bool _isConnection;
 
-		public FakeIImportQuery(List<string> exist)
+		public FakeIImportQuery(List<string> exist, bool isConnection = true)
 		{
 			_exist = exist;
+			_isConnection = isConnection;
 			if ( exist == null ) _exist = new List<string>();
 		}
 		
@@ -22,12 +24,13 @@ namespace starskytest.FakeMocks
 
 		public bool TestConnection()
 		{
-			throw new System.NotImplementedException();
+			return _isConnection;
 		}
 
-		public Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
 		{
-			throw new System.NotImplementedException();
+			_exist.Add(updateStatusContent.FileHash);
+			return true;
 		}
 	}
 }

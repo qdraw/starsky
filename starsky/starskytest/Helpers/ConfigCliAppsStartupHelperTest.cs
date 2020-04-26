@@ -28,8 +28,8 @@ namespace starskytest.Helpers
 			name = cliHelper.ReadMeta().ToString();
 			Assert.AreEqual(true,name.Contains(nameof(ReadMeta)));
 			
-			name = cliHelper.ImportService().ToString();
-			Assert.AreEqual(true,name.Contains(nameof(Import)));
+			// name = cliHelper.ImportService().ToString();
+			// Assert.AreEqual(true,name.Contains(nameof(Import)));
 
 			name = cliHelper.UserManager().ToString();
 			Assert.AreEqual(true,name.Contains(nameof(UserManager)));		
@@ -38,12 +38,12 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,name.Contains(nameof(ThumbnailCleaner)));		
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException))]
-		public void ConfigCliAppsStartupHelperTestImportService_MysqlCrash()
-		{
-			Environment.SetEnvironmentVariable("app__DatabaseType","mysql");
-			new ConfigCliAppsStartupHelper();
-		}
+		// [TestMethod]
+		// [ExpectedException(typeof(Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException))]
+		// public void ConfigCliAppsStartupHelperTestImportService_MysqlCrash()
+		// {
+		// 	Environment.SetEnvironmentVariable("app__DatabaseType","mysql");
+		// 	new ConfigCliAppsStartupHelper();
+		// }
 	}
 }

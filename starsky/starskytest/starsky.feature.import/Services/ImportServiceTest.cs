@@ -182,7 +182,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings), null);
+				new FakeExifTool(_iStorageFake, appSettings), new FakeIQuery());
 
 			var expectedFilePath = GetExpectedFilePath(appSettings, "/test.jpg");
 			var result = await importService.Importer(new List<string> {"/test.jpg"},

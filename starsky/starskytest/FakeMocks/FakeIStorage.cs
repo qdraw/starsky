@@ -110,7 +110,12 @@ namespace starskytest.FakeMocks
 
 		public void FileCopy(string fromPath, string toPath)
 		{
-			throw new NotImplementedException();
+			fromPath = PathHelper.PrefixDbSlash(fromPath);
+			toPath = PathHelper.PrefixDbSlash(toPath);
+			if ( !ExistFile(fromPath) ) return;
+			
+			_outputSubPathFiles.Add(toPath);
+			_byteList.Add(toPath,_byteList[fromPath]);
 		}
 
 		public bool FileDelete(string path)

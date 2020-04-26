@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.database.Import
 			_memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("test");
+			builder.UseInMemoryDatabase(nameof(ImportQueryTest));
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 			_importQuery = new ImportQuery(_dbContext);
@@ -48,12 +48,13 @@ namespace starskytest.starsky.foundation.database.Import
 		[TestMethod]
 		public async Task IsHashInImportDbAsync_True()
 		{
-			_dbContext.ImportIndex.Add(new ImportIndexItem
+			await _dbContext.ImportIndex.AddAsync(new ImportIndexItem
 			{
-				Status = ImportStatus.Ok, FileHash = "TEST", AddToDatabase = DateTime.UtcNow,
+				Status = ImportStatus.Ok, FileHash = "TEST2", AddToDatabase = DateTime.UtcNow,
 			});
+			await _dbContext.SaveChangesAsync();
 
-			var result = await _importQuery.IsHashInImportDbAsync("TEST");
+			var result = await _importQuery.IsHashInImportDbAsync("TEST2");
 			Assert.IsTrue(result);
 		}
 		
