@@ -68,14 +68,16 @@ namespace starsky.foundation.storage.Services
         /// <param name="fullFileName">full filePath on disk to have the file</param>
         /// <param name="timeoutSeconds">number of seconds to be hashed</param>
         /// <returns></returns>
+#pragma warning disable 1998
         public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutSeconds = 20)
+#pragma warning restore 1998
         {
-	        var task = CalculateMd5Async(fullFileName);
-            if (await Task.WhenAny(task, Task.Delay(timeoutSeconds)) == task) {
-	            return new KeyValuePair<string,bool>(task.Result,true);
-            } 
-            
-            // Sometimes a Calc keeps waiting for days
+	        var task = Task.Run(() => CalculateMd5Async(fullFileName));
+			if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
+				return new KeyValuePair<string,bool>(task.Result,true);
+			}
+
+			// Sometimes a Calc keeps waiting for days
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
                               + fullFileName 
                               + "            <<<<<<<<<<<<");

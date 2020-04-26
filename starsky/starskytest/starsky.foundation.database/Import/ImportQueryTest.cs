@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -76,5 +77,18 @@ namespace starskytest.starsky.foundation.database.Import
 			var result = await new ImportQuery(null).IsHashInImportDbAsync("TEST");
 			Assert.IsFalse(result);
 		}
+		
+		[TestMethod]
+		public async Task AddAsync()
+		{
+			var expectedResult = new ImportIndexItem {FileHash = "TEST3"};
+			await new ImportQuery(_dbContext).AddAsync(expectedResult);
+
+			var queryFromDb = await _dbContext.ImportIndex.FirstOrDefaultAsync(
+				p => p.FileHash == expectedResult.FileHash);
+			
+			Assert.AreEqual(expectedResult,queryFromDb);
+		}
+		
 	}
 }
