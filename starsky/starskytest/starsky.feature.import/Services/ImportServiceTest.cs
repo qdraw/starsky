@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -206,7 +207,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual("/test/layer1.jpg", result[0].SourceFullFilePath);
 		}
 
-		private string GetExpectedFilePath(AppSettings appSettings, string inputFileFullPath)
+		private string GetExpectedFilePath(AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
 			var fileIndexItem = new ReadMeta(_iStorageFake).ReadExifAndXmpFromFile(inputFileFullPath);
 			var importIndexItem = new ImportIndexItem(appSettings)
@@ -215,9 +216,10 @@ namespace starskytest.starsky.feature.import.Services
 				DateTime = fileIndexItem.DateTime,
 				SourceFullFilePath = inputFileFullPath
 			};
+			
 			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
 			importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders(false);
-			return importIndexItem.FileIndexItem.FilePath;
+			return Import.AppendIndexerToFilePath(importIndexItem.FileIndexItem.FilePath, index) ;
 		}
 
 		[TestMethod]
@@ -235,12 +237,23 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		public async Task Importer_ToDefaultFolderStructure1()
+		[ExpectedException(typeof(ApplicationException))]
+		public async Task Importer_Over50Times()
 		{
+
+			var appSettings = new AppSettings();
+			var path = GetExpectedFilePath(appSettings, "/test.jpg");
+			await _iStorageFake.WriteStreamAsync(
+				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
+			);
 			
-			// await _iStorageFake.WriteStreamAsync(
-			// 	new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), GetExpectedFilePath(new AppSettings(), "/test.jpg")
-			// 	);
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings), new FakeIQuery());
+			
+			importService.MaxTryGetDestinationPath = 1;
+			
+			var result = await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel());
 		}
 	}
 }

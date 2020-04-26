@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
@@ -20,6 +21,7 @@ using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskycore.Models;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.import.Services
 {
 	public class Import : IImport
@@ -271,21 +273,33 @@ namespace starsky.feature.import.Services
 
 	        return importIndexItem;
 		}
+		internal int MaxTryGetDestinationPath { get; set; } = 50;
 
 		private string GetDestinationPath(string destinationFullPath)
 		{
 			if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
-			for ( int i = 1; i < 100; i++ )
+			for ( int i = 1; i < MaxTryGetDestinationPath; i++ )
 			{
-				var tryAgainFileName =
-					FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{i}." +
-					FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
+				var tryAgainFileName = AppendIndexerToFilePath(destinationFullPath, i);
 				if ( !_filesystemStorage.ExistFile(tryAgainFileName) )
 				{
 					return tryAgainFileName;
 				}
 			}
-			throw new ApplicationException("tried after 100 times");
+			throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
+		}
+
+		/// <summary>
+		/// Append test_1.jpg to filepath
+		/// </summary>
+		/// <param name="destinationFullPath">full filePath</param>
+		/// <param name="index">number</param>
+		/// <returns>test_1.jpg with complete filePath</returns>
+		internal static string AppendIndexerToFilePath(string destinationFullPath, int index)
+		{
+			if ( index <= 0 ) return destinationFullPath;
+			return FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
+			       FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
 		}
 
 
