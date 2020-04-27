@@ -169,7 +169,9 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_DirectoryRecursive()
 		{
 			var appSettings = new AppSettings();
-			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(
+				new FakeSelectorStorage(_iStorageDirectoryRecursive), 
+				appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null);
 			
 			var result = await importService.Preflight(new List<string> {"/"},
@@ -239,8 +241,11 @@ namespace starskytest.starsky.feature.import.Services
 				SourceFullFilePath = inputFileFullPath
 			};
 			
-			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
-			importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders(false);
+			importIndexItem.FileIndexItem.FileName = 
+				importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
+			
+			importIndexItem.FileIndexItem.ParentDirectory = 
+				importIndexItem.ParseSubfolders(false);
 			return Import.AppendIndexerToFilePath(
 				importIndexItem.FileIndexItem.ParentDirectory,
 				importIndexItem.FileIndexItem.FileName, 
