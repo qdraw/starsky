@@ -170,6 +170,11 @@ namespace starsky.feature.import.Services
 		}
 
 		/// <summary>
+		/// Used when File has no exif date in description
+		/// </summary>
+		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+
+		/// <summary>
 		/// Create a new import object
 		/// </summary>
 		/// <param name="inputFileFullPath">full file path</param>
@@ -198,7 +203,9 @@ namespace starsky.feature.import.Services
 			// used for files without a Exif Date for example WhatsApp images
 			if ( fileIndexItem.DateTime.Year == 1 )
 			{
-				fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
+				importIndexItem.FileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
+				// used to sync exifTool and to let the user know that the transformation has been applied
+				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
 
 			// Feature to overwrite structures when importing using a header
@@ -265,22 +272,7 @@ namespace starsky.feature.import.Services
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
-		    // Update the contents to the file the imported item
-            if (importSettings.NeedExiftoolSync && 
-                ExtensionRolesHelper.IsExtensionExifToolSupported(importIndexItem.FileIndexItem.FileName))
-            {
-	            if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
-
-                var comparedNamesList = new List<string>
-                {
-                    nameof(FileIndexItem.DateTime).ToLowerInvariant(),
-                    nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
-                    nameof(FileIndexItem.Description).ToLowerInvariant(),
-                };
-
-                new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-	                new ReadMeta(_subPathStorage)).Update(importIndexItem.FileIndexItem, comparedNamesList);
-            }
+			UpdateImportTransformations(importIndexItem.FileIndexItem, importSettings.ColorClass);
 
 	        // Ignore the sync part if the connection is missing
 	        // or option enabled
@@ -300,6 +292,34 @@ namespace starsky.feature.import.Services
             }
 
 	        return importIndexItem;
+		}
+
+		/// <summary>
+		/// Run Transformation on Import to the files in the database
+		/// </summary>
+		/// <param name="fileIndexItem">information</param>
+		/// <param name="colorClassTransformation">change colorClass</param>
+		private void UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
+		{
+			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return;
+
+			// Update the contents to the file the imported item
+			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
+			     colorClassTransformation == 0 ) return;
+			
+			if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
+
+			var comparedNamesList = new List<string>
+			{
+				nameof(FileIndexItem.DateTime).ToLowerInvariant(),
+				nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
+				nameof(FileIndexItem.Description).ToLowerInvariant(),
+			};
+
+			fileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
+
+			new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
+				new ReadMeta(_subPathStorage)).Update(fileIndexItem, comparedNamesList);
 		}
 		
 		/// <summary>

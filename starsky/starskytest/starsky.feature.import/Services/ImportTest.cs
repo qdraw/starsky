@@ -81,6 +81,9 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsNotNull(result.FirstOrDefault());
 			Assert.AreEqual(new DateTime(2020,04,27,11,07,00), 
 				result.FirstOrDefault().DateTime);
+
+			Assert.AreEqual(importService.MessageDateTimeBasedOnFilename,
+				result.FirstOrDefault().FileIndexItem.Description);
 		}
 		
 		[TestMethod]
