@@ -60,7 +60,29 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
 		}
-
+		
+		
+		[TestMethod]
+		public async Task Preflight_SingleImage_DateGetByFileNameNoExif()
+		{
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage(
+				new List<string>{"/"},
+				new List<string>{"/2020-04-27 11:07:00.jpg"},
+				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}
+			);
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings), null);
+			
+			var result = await importService.Preflight(
+				new List<string> {"/2020-04-27 11:07:00.jpg"},
+				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(new DateTime(2020,04,27,11,07,00), 
+				result.FirstOrDefault().DateTime);
+		}
+		
 		[TestMethod]
 		public async Task Preflight_SingleImage_FileType_NotSupported()
 		{
@@ -256,14 +278,18 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Importer_ToDefaultFolderStructure_default()
 		{
 			var appSettings = new AppSettings();
+			var query = new FakeIQuery();
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings), new FakeIQuery());
+				new FakeExifTool(_iStorageFake, appSettings),query);
 
 			var expectedFilePath = GetExpectedFilePath(appSettings, "/test.jpg");
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 			
 			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
+			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
+
+			_iStorageFake.FileDelete(expectedFilePath);
 		}
 
 		[TestMethod]
@@ -290,9 +316,10 @@ namespace starskytest.starsky.feature.import.Services
 				MaxTryGetDestinationPath = 1
 			};
 
-
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
+
+			// ExpectedException
 		}
 		
 		[TestMethod]
@@ -322,5 +349,30 @@ namespace starskytest.starsky.feature.import.Services
 			var expectedFilePath = GetExpectedFilePath(appSettings, "/test.jpg", 1);
 			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
 		}
+
+		
+		[TestMethod]
+		public async Task Importer_OverwriteColorClass()
+		{
+			var appSettings = new AppSettings();
+			var query = new FakeIQuery();
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings),query);
+
+			var expectedFilePath = GetExpectedFilePath(appSettings, "/test.jpg");
+			var result = await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel{
+					ColorClass = 5
+				});
+			
+			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
+			var queryResult = query.GetObjectByFilePath(expectedFilePath);
+			
+			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
+			Assert.AreEqual(ColorClassParser.Color.Typical,queryResult.ColorClass);
+
+			_iStorageFake.FileDelete(expectedFilePath);
+		}
+
 	}
 }

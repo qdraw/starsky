@@ -194,6 +194,12 @@ namespace starsky.feature.import.Services
 				Status = ImportStatus.Ok,
 				FilePath = fileIndexItem.FilePath,
 			};
+			
+			// used for files without a Exif Date for example WhatsApp images
+			if ( fileIndexItem.DateTime.Year == 1 )
+			{
+				fileIndexItem.DateTime = importIndexItem.ParseDateTimeFromFileName();
+			}
 
 			// Feature to overwrite structures when importing using a header
 			// Overwrite the structure in the ImportIndexItem
