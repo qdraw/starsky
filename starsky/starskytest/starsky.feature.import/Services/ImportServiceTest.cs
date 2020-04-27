@@ -208,17 +208,11 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		public async Task AppendIndexerToFilePath_Unix()
+		public async Task AppendIndexerToFilePath()
 		{
-			var result = Import.AppendIndexerToFilePath("/test/test.jpg", 5);
+			var import = new Import(null, new AppSettings(), null, null, null);
+			var result = Import.AppendIndexerToFilePath("/test", "test.jpg", 5);
 			Assert.AreEqual("/test/test_5.jpg",result);
-		}
-
-		[TestMethod]
-		public async Task AppendIndexerToFilePath_Win32()
-		{
-			var result = Import.AppendIndexerToFilePath("c:\\test\\test.jpg", 5);
-			Assert.AreEqual("c:\\test\\test_5.jpg",result);
 		}
 
 		private string GetExpectedFilePath(AppSettings appSettings, string inputFileFullPath, int index = 0)
@@ -233,7 +227,10 @@ namespace starskytest.starsky.feature.import.Services
 			
 			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
 			importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders(false);
-			return Import.AppendIndexerToFilePath(importIndexItem.FileIndexItem.FilePath, index) ;
+			return Import.AppendIndexerToFilePath(
+				importIndexItem.FileIndexItem.ParentDirectory,
+				importIndexItem.FileIndexItem.FileName, 
+				index) ;
 		}
 
 		[TestMethod]

@@ -236,8 +236,10 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
-			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem.FilePath);
-			_filesystemStorage.FileCopy(importIndexItem.SourceFullFilePath, importIndexItem.FilePath);
+			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
+			
+			_filesystemStorage.FileCopy(importIndexItem.SourceFullFilePath, 
+				_appSettings.DatabasePathToFilePath(importIndexItem.FilePath));
 
 			 // Support for include sidecar files
 		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
@@ -303,36 +305,46 @@ namespace starsky.feature.import.Services
 		/// <summary>
 		/// Get a path with checking the fileName
 		/// </summary>
-		/// <param name="destinationFullPath">input file path</param>
-		/// <returns>full file path</returns>
+		/// <param name="fileIndexItem">input file path</param>
+		/// <returns>subPath</returns>
 		/// <exception cref="ApplicationException">When there are to many files with the same name</exception>
-		private string GetDestinationPath(string destinationFullPath)
+		private string GetDestinationPath(FileIndexItem fileIndexItem)
 		{
-			if (!_filesystemStorage.ExistFile(destinationFullPath) ) return destinationFullPath;
-			for ( int i = 1; i < MaxTryGetDestinationPath; i++ )
+			if (!_subPathStorage.ExistFile(fileIndexItem.FilePath) ) return fileIndexItem.FilePath;
+			for ( var i = 1; i < MaxTryGetDestinationPath; i++ )
 			{
-				var tryAgainFileName = AppendIndexerToFilePath(destinationFullPath, i);
-				if ( !_filesystemStorage.ExistFile(tryAgainFileName) )
+				var tryAgainSubPath = AppendIndexerToFilePath(
+					fileIndexItem.ParentDirectory, 
+					fileIndexItem.FileName, i);
+				
+				if ( !_subPathStorage.ExistFile(tryAgainSubPath) )
 				{
-					return tryAgainFileName;
+					return tryAgainSubPath;
 				}
 			}
 			throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
 		}
 
 		/// <summary>
-		/// Append test_1.jpg to filepath
+		/// Append test_1.jpg to filepath (subPath style)
 		/// </summary>
-		/// <param name="destinationFullPath">full filePath</param>
+		/// <param name="fileName">the fileName</param>
 		/// <param name="index">number</param>
+		/// <param name="parentDirectory">subPath style</param>
 		/// <returns>test_1.jpg with complete filePath</returns>
-		internal static string AppendIndexerToFilePath(string destinationFullPath, int index)
+		internal static string AppendIndexerToFilePath(string parentDirectory, string fileName , int index)
 		{
-			if ( index <= 0 ) return destinationFullPath;
-			return FilenamesHelper.GetParentPath(destinationFullPath) + 
-			       Path.DirectorySeparatorChar + 
-			       FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
-			       FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
+			if ( index >= 0 )
+			{
+				fileName = string.Concat(
+					Path.GetFileNameWithoutExtension(fileName),
+					index,
+					Path.GetExtension(fileName)
+				);
+			}
+			
+			var destinationSubPath = parentDirectory + fileName;
+			return destinationSubPath;
 		}
 	}
 }
