@@ -18,13 +18,13 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.import.Services
 {
 	[TestClass]
-	public class ImportServiceTest
+	public class ImportTest
 	{
 		private readonly FakeIStorage _iStorageFake;
 		private readonly string _exampleHash;
 		private readonly FakeIStorage _iStorageDirectoryRecursive;
 
-		public ImportServiceTest()
+		public ImportTest()
 		{
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
@@ -192,7 +192,8 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_DirectoryNonRecursive()
 		{
 			var appSettings = new AppSettings();
-			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, 
+			new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null);
 			
 			var result = await importService.Preflight(new List<string> {"/test"},
