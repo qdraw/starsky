@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
-using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.platform.Helpers
 {
 	public class ArgsHelper
 	{
@@ -310,8 +308,8 @@ namespace starskycore.Helpers
 						$"MetaData: {publishProfiles.MetaData} " +
 						$"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
 						$"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
-				}
-				break;
+					}
+					break;
 			}
 			
 			var framework = Assembly
@@ -404,9 +402,9 @@ namespace starskycore.Helpers
 		/// Get subPathRelative, so a structured url based on relative datetime
 		/// </summary>
 		/// <param name="args">args[]</param>
-		/// <returns>relative subpath</returns>
-		/// <exception cref="FieldAccessException">missing appsettings</exception>
-		public string GetSubpathRelative(IReadOnlyList<string> args)
+		/// <returns>relative subPath</returns>
+		/// <exception cref="FieldAccessException">missing appSettings</exception>
+		public int? GetRelativeValue(IReadOnlyList<string> args)
 		{
 			if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
 			string subpathRelative = string.Empty;
@@ -420,23 +418,14 @@ namespace starskycore.Helpers
 				}
 			}
 			
-			if (string.IsNullOrWhiteSpace(subpathRelative)) return subpathRelative; // null
+			if (string.IsNullOrWhiteSpace(subpathRelative)) return null; // null
 			
 			int.TryParse(subpathRelative, out var subPathInt);
 			if(subPathInt >= 1) subPathInt = subPathInt * -1; //always in the past
 			
 			// Fallback for dates older than 24-11-1854 to avoid a exception.
-			if ( subPathInt < -60000 ) subPathInt = 0;
-
-			// the model to test
-			var importmodel = new ImportIndexItem(_appSettings)
-			{
-				DateTime = DateTime.Today.AddDays(subPathInt), 
-				SourceFullFilePath = "notimplemented.jpg"
-			};
-			
-			// expect something like this: /2018/09/2018_09_02/
-			return importmodel.ParseSubfolders(false);
+			if ( subPathInt < -60000 ) return null;
+			return subPathInt;
 		}
 		
 		/// <summary>
@@ -444,7 +433,7 @@ namespace starskycore.Helpers
 		/// </summary>
 		/// <param name="args">input[]</param>
 		/// <returns>bool --path(true), false --subpath</returns>
-		public bool IfSubpathOrPath(IReadOnlyList<string> args)
+		public bool IsSubPathOrPath(IReadOnlyList<string> args)
 		{
 			// To use only with -p or --path > current directory
 			if ( args.Any(arg => (arg.ToLower() == "--path" || arg.ToLower() == "-p")) )

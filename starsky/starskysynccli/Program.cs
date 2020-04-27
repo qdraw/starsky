@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -33,7 +34,7 @@ namespace starskysynccli
             // Using both options
             string subpath;
             // -s = ifsubpath || -p is path
-            if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
+            if (new ArgsHelper(appSettings).IsSubPathOrPath(args))
             {
                 subpath = new ArgsHelper(appSettings).GetSubpathFormArgs(args);
             }
@@ -45,11 +46,14 @@ namespace starskysynccli
             // overwrite subpath with relative days
             // use -g or --SubpathRelative to use it.
             // envs are not supported
-            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-			if (getSubpathRelative != string.Empty)
-            {
-                subpath = getSubpathRelative;
-            }
+            var getSubpathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
+            
+            // todo FIX 
+            throw new Exception("fix");
+			// if (getSubpathRelative != null)
+   //          {
+   //              subpath = getSubpathRelative;
+   //          }
 
             if (new ArgsHelper().GetIndexMode(args))
             {
