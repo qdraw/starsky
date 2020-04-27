@@ -321,7 +321,7 @@ namespace starsky.feature.import.Services
 		}
 
 		/// <summary>
-		/// Append test_1.jpg to filepath
+		/// Append test_1.jpg to filepath (OS style)
 		/// </summary>
 		/// <param name="destinationFullPath">full filePath</param>
 		/// <param name="index">number</param>
@@ -329,10 +329,14 @@ namespace starsky.feature.import.Services
 		internal static string AppendIndexerToFilePath(string destinationFullPath, int index)
 		{
 			if ( index <= 0 ) return destinationFullPath;
-			return FilenamesHelper.GetParentPath(destinationFullPath) + 
-			       Path.DirectorySeparatorChar + 
-			       FilenamesHelper.GetFileNameWithoutExtension(destinationFullPath) + $"_{index}." +
-			       FilenamesHelper.GetFileExtensionWithoutDot(destinationFullPath);
+			var t = Path.GetDirectoryName(destinationFullPath);
+			var t2 = Path.GetFileNameWithoutExtension(destinationFullPath);
+			
+			return Path.GetDirectoryName(destinationFullPath) +
+			       Path.DirectorySeparatorChar +
+			       Path.GetFileNameWithoutExtension(destinationFullPath) +
+			       $"_{index}" +
+			       Path.GetExtension(destinationFullPath);
 		}
 	}
 }
