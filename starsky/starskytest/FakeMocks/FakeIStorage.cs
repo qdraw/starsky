@@ -156,6 +156,11 @@ namespace starskytest.FakeMocks
 			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
 		}
 
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			return _outputSubPathFolders.Where(p => p.Contains(path));
+		}
+
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;

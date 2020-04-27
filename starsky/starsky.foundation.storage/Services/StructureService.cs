@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -22,8 +24,30 @@ namespace starsky.foundation.storage.Services
 		public string GetSubPaths(DateTime dateTime, string fileNameBase = "")
 		{
 			CheckStructureFormat();
-			var preflightStructure = PreflightStructure(dateTime, fileNameBase = "");
-			return "";
+			var parsedStructuredList = ParseStructure(dateTime, fileNameBase = "");
+
+			var outputParentFolderBuilder = new StringBuilder();
+			foreach ( var subStructureItem in 
+				parsedStructuredList.GetRange(0,parsedStructuredList.Count-1) )
+			{
+				outputParentFolderBuilder.Append("/");
+				foreach ( var structureItem in subStructureItem )
+				{
+					if ( structureItem.Pattern != "*" )
+					{
+						outputParentFolderBuilder.Append(structureItem.Output);
+						continue;
+					}
+					if ( _storage.ExistFolder(FilenamesHelper.GetParentPath(outputParentFolderBuilder.ToString())) )
+					{
+						var childDirectories = _storage
+							.GetDirectories(outputParentFolderBuilder.ToString()).ToList();
+						
+						childDirectories.Where(p => p.)
+					}
+				}
+			}
+			return outputParentFolderBuilder.ToString();
 		}
 
 		private void CheckStructureFormat()
@@ -31,18 +55,21 @@ namespace starsky.foundation.storage.Services
 			if ( _structure.StartsWith("/") && _structure.EndsWith(".ext") && _structure != "/.ext" ) return;
 			throw new FieldAccessException("use right format");
 		}
+		
+		const string DateRegexPattern = "d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3}";
 
-		private bool PreflightStructure(DateTime dateTime, string fileNameBase = "")
+		private List<List<StructureRange>> ParseStructure(DateTime dateTime, string fileNameBase = "")
 		{
 			var structureList = _structure.Split('/');
-			
+
+			var parsedStructuredList = new List<List<StructureRange>>();
 			foreach ( var structureItem in structureList )
 			{
 				if ( string.IsNullOrWhiteSpace(structureItem) ) continue;
 
-				var matchCollection = new Regex(
-						"d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3}|{filenamebase}|\\*")
-					.Matches(structureItem);
+				var matchCollection = new 
+						Regex(DateRegexPattern + "|{filenamebase}|\\*|.ext|.")
+							.Matches(structureItem);
 				
 				var matchList = new List<StructureRange>();
 				foreach ( Match match in matchCollection )
@@ -52,80 +79,38 @@ namespace starsky.foundation.storage.Services
 						Pattern = match.Value,
 						Start = match.Index,
 						End = match.Index + match.Length,
-						Output = OutputDateTimeParse(match.Value,dateTime)
+						Output = OutputParser(match.Value,dateTime, fileNameBase)
 					});
 				}
 
-				for ( int i = 0; i < structureItem.Length; i++ )
-				{
-					var isParsed = matchList.Any(p => p.Start >= i && p.End <= i+1);
-				}
-
-
-				Console.WriteLine();
-				// var item = dateTime.ToString(match.Value, CultureInfo.InvariantCulture);
-
+				parsedStructuredList.Add( matchList.OrderBy(p => p.Start).ToList());
 			}
 
-			return true;
+			return parsedStructuredList;
 		}
 
-		private string OutputDateTimeParse(string pattern, DateTime dateTime)
+		private string OutputParser(string pattern, DateTime dateTime, string fileNameBase)
 		{
-			if ( pattern == "{filenamebase}" || pattern == "*" )
+			// allow only full word matches (so .ext is no match)
+			MatchCollection matchCollection = new Regex(DateRegexPattern).Matches(pattern);
+			foreach ( Match match in matchCollection )
 			{
-				return string.Empty;
+				if ( match.Index == 0 && match.Length == pattern.Length )
+				{
+					return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
+				}
 			}
-			return dateTime.ToString(pattern, CultureInfo.InvariantCulture);
+			
+			// the other options
+			switch ( pattern )
+			{
+				case "{filenamebase}":
+					return fileNameBase;
+				case "*":
+					return string.Empty;
+				default:
+					return pattern;
+			}
 		}
-		
-
-		// private List<KeyValuePair<string,List<StructurePreflightRange>>> PreflightStructure()
-		// {
-		// 	var parsedStructure = new List<KeyValuePair<string,List<StructurePreflightRange>>>();
-		// 	
-		// 	var structureList = _structure.Split('/');
-		// 	foreach ( var structureItem in structureList )
-		// 	{
-		// 		AddItemToRangeKeyValuePairList(parsedStructure, structureItem, "{filenamebase}");
-		// 		AddItemToRangeKeyValuePairList(parsedStructure, structureItem, "\\*");
-		// 		AddItemToRangeKeyValuePairList(parsedStructure,structureItem, "d{1,4}|f{1,6}|F{1,6}|g{1,2}|h{1,2}|H{1,2}|K|m{1,2}|M{1,4}|s{1,2}|t{1,2}|y{1,5}|z{1,3}");
-		//
-		// 		// default situation
-		// 		var existItem = parsedStructure.
-		// 			FirstOrDefault(p => p.Key == structureItem);
-		// 		if ( existItem.Key == null )
-		// 		{
-		// 			parsedStructure.Add(new KeyValuePair<string, List<StructurePreflightRange>>(structureItem,null));
-		// 		}
-		// 	}
-		// 	return parsedStructure;
-		// }
-		//
-		// private void AddItemToRangeKeyValuePairList(List<KeyValuePair<string,List<StructurePreflightRange>>> parsedStructure, string structureItem, string pattern)
-		// {
-		//
-		// 	var matchCollection = new Regex(pattern).Matches(structureItem);
-		// 	foreach ( Match match in matchCollection )
-		// 	{
-		// 		var existItem = parsedStructure
-		// 			.FirstOrDefault(p => p.Key == structureItem);
-		// 		var updateRange = new StructurePreflightRange
-		// 		{
-		// 			Start = match.Index,
-		// 			End = match.Index + pattern.Length,
-		// 			Pattern = pattern
-		// 		};
-		// 		
-		// 		if ( existItem.Key != null )
-		// 		{
-		// 			existItem.Value.Add(updateRange);
-		// 			return;
-		// 		}
-		// 		parsedStructure.Add(new KeyValuePair<string, List<StructurePreflightRange>>(structureItem, new List<StructurePreflightRange>{updateRange}));
-		// 	}
-		// }
 	}
-
-
 }

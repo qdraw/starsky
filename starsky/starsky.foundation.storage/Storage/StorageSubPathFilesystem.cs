@@ -168,11 +168,27 @@ namespace starsky.foundation.storage.Storage
 			// convert back to subPath style
 			return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
 		}
-		
+
+		/// <summary>
+		/// Gets a non-Recursive list of child directories
+		/// </summary>
+		/// <param name="path">subPath</param>
+		/// <returns>list of Directories</returns>
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+			if (fullFilePath == null) return Enumerable.Empty<string>();
+			
+			var folders = new StorageHostFullPathFilesystem().GetDirectories(fullFilePath);
+			// Used For subfolders
+			// convert back to subPath style
+			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
+		}
+
 		/// <summary>
 		/// Returns a list of directories // Get list of child folders
 		/// </summary>
-		/// <param name="subPath">subpath in directory</param>
+		/// <param name="subPath">subPath in directory</param>
 		/// <returns></returns>
 		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
@@ -183,7 +199,7 @@ namespace starsky.foundation.storage.Storage
 			var folders = new StorageHostFullPathFilesystem().GetDirectoryRecursive(fullFilePath);
 
 			// Used For subfolders
-			// convert back to subpath style
+			// convert back to subPath style
 			return _appSettings.RenameListItemsToDbStyle(folders.ToList());
 		}
 

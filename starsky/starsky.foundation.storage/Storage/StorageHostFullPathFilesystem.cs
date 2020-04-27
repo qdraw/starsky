@@ -96,6 +96,11 @@ namespace starsky.foundation.storage.Storage
 			return imageFilesList;
 		}
 
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			return Directory.GetDirectories(path);
+		}
+
 		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
 			var folders = new Queue<string>();
