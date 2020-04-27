@@ -164,7 +164,8 @@ namespace starsky.feature.import.Services
 			
 			// get information to move to (in the future)
 			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(imageFormat);
-			importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
+			throw new NotImplementedException("to do fix");
+			// importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
 			importIndexItem.FileIndexItem.FileHash = hashList.Key;
 			return importIndexItem;
 		}

@@ -268,9 +268,10 @@ namespace starskytest.starsky.feature.import.Services
 			
 			importIndexItem.FileIndexItem.FileName = 
 				importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
-			
-			importIndexItem.FileIndexItem.ParentDirectory = 
-				importIndexItem.ParseSubfolders(false);
+
+			throw new NotImplementedException("fix");
+			// importIndexItem.FileIndexItem.ParentDirectory = 
+			// 	importIndexItem.ParseSubfolders(false);
 			return Import.AppendIndexerToFilePath(
 				importIndexItem.FileIndexItem.ParentDirectory,
 				importIndexItem.FileIndexItem.FileName, 

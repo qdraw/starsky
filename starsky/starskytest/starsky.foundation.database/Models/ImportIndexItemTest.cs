@@ -165,44 +165,6 @@ namespace starskytest.Models
 	    }
 
         [TestMethod]
-        public void ImportIndexItemParseSubfoldersTest()
-        {
-            var createAnImage = new CreateAnImage();
-            _appSettings.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
-            var importItem = new ImportIndexItem(_appSettings);
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            var s = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/0001/01/0001_01_01/",s);
-        }
-
-        [TestMethod]
-        public void ImportIndexItemParseSubfolders_TRslashABC_Test()
-        {
-            _appSettings.Structure = "/\\t\\r/\\a\\b\\c/\\t\\e\\s\\t.ext";
-            // file.ext is ignored but required
-            
-            var createAnImage = new CreateAnImage();
-            var importItem = new ImportIndexItem(_appSettings);
-
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            var s = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/tr/abc/",s);
-        }
-        
-        [TestMethod]
-        public void ImportIndexItemParseSubfolders_Tzzz_slashABC_Test()
-        {
-            _appSettings.Structure = "/\\t\\z/\\a\\b\\c/test.ext";
-            var createAnImage = new CreateAnImage();
-            var importItem = new ImportIndexItem(_appSettings);
-
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            _appSettings.StorageFolder = createAnImage.BasePath;
-            var s = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/tz/abc/",s);
-        }
-        
-        [TestMethod]
         public void ImportIndexItemParse_filenamebase_filename_Test()
         {
             _appSettings.Structure = "/\\t\\z/\\a\\b{filenamebase}/{filenamebase}.ext";
@@ -215,34 +177,7 @@ namespace starskytest.Models
             Assert.AreEqual(createAnImage.DbPath.Replace("/",string.Empty),fileName);
         }
         
-        [TestMethod]
-        public void ImportIndexItemParse_filenamebase_subfolder_Test()
-        {
-            _appSettings.Structure = "/{filenamebase}/{filenamebase}.ext";
-            var createAnImage = new CreateAnImage();
-            var importItem = new ImportIndexItem(_appSettings);
 
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            _appSettings.StorageFolder = createAnImage.BasePath;
-            var subfolders = importItem.ParseSubfolders(false);
-            Assert.AreEqual("/" + createAnImage.DbPath.Replace("/",string.Empty)
-	                            .Replace(".jpg",string.Empty) + "/",subfolders);
-        }
-	    
-	    [TestMethod]
-	    public void ImportIndexItemParse_xuxuxuxu_subfolder_Test()
-	    {
-		    _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
-
-		    var createAnImage = new CreateAnImage();
-		    var importItem = new ImportIndexItem(_appSettings);
-
-		    importItem.SourceFullFilePath = createAnImage.FullFilePath;
-		    _appSettings.StorageFolder = createAnImage.BasePath;
-		    var subfolders = importItem.ParseSubfolders(false);
-		    Assert.AreNotEqual(subfolders,"/cs");
-		    Assert.AreEqual(subfolders,string.Empty);
-	    }
 
         [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
@@ -395,13 +330,6 @@ namespace starskytest.Models
 
 	    [TestMethod]
 	    [ExpectedException(typeof(FieldAccessException))]
-	    public void ImportIndexItem_CtorRequest_ParseSubfolders()
-	    {
-		    new ImportIndexItem().ParseSubfolders(true);
-	    }
-	    
-	    [TestMethod]
-	    [ExpectedException(typeof(FieldAccessException))]
 	    public void ImportIndexItem_CtorRequest_SearchSubDirInDirectory()
 	    {
 		    new ImportIndexItem().SearchSubDirInDirectory(null, null);
@@ -445,10 +373,5 @@ namespace starskytest.Models
             var importSettings = new ImportSettingsModel {ColorClass = 999};
             Assert.AreEqual(0,importSettings.ColorClass);
         }
-
-        
-
-
-
     }
 }

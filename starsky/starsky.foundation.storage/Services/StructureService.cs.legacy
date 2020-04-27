@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+
+namespace starsky.foundation.storage.Services
+{
+	public class StructureService
+	{
+		private readonly AppSettings _appSettings;
+		private readonly IStorage _iStorage;
+		private readonly string _structure;
+
+		public StructureService(IStorage iStorage , string structure)
+		{
+			_iStorage = iStorage;
+			_structure = structure;
+		}
+		
+		 // Depends on App Settings /BasePathConfig
+        public string ParseSubfolders(DateTime dateTime, bool createFolder = true)
+        {
+            if (_appSettings == null) throw new FieldAccessException("use with _appSettings");
+
+            // If command running twice you will get /tr/tr (when tr is your single folder name)
+            var subFolder = string.Empty;
+
+            // get the date form the DateTime attr (direct)
+            var parsedList = StructureListParser(dateTime);
+            
+            foreach (var parsedItem in parsedList)
+            {
+                var parentItem = subFolder;
+                string childFullDirectory = null;
+
+                _iStorage.ExistFolder(parentItem)
+                if (Directory.Exists(_appSettings.DatabasePathToFilePath(parentItem)) &&
+                    Directory.GetDirectories(_appSettings.DatabasePathToFilePath(parentItem)).Length != 0)
+                {
+                    // add backslash
+                    var noSlashInParsedItem = parsedItem.Replace("/", string.Empty);
+                    
+                    childFullDirectory = PathHelper.AddBackslash(
+                        SearchSubDirInDirectory(parentItem, noSlashInParsedItem).FirstOrDefault());
+                    // only first item
+                    if (subFolder == string.Empty && childFullDirectory != null)
+                    {
+                        childFullDirectory = Path.DirectorySeparatorChar + childFullDirectory;
+                    }
+                }
+
+                if (childFullDirectory == null)
+                {
+                    var childDirectory = subFolder + parsedItem.Replace("*", string.Empty) + "/";
+                    childFullDirectory = _appSettings.DatabasePathToFilePath(childDirectory,false);
+
+                    if (createFolder)
+                    {
+						Console.Write("+");
+                        Directory.CreateDirectory(childFullDirectory);
+                    }
+                }
+                subFolder = _appSettings.FullPathToDatabaseStyle(childFullDirectory);
+            }
+
+            return subFolder;
+        }
+        
+        /// <summary>
+        /// Get an array of folders based on a structure string
+        /// </summary>
+        /// <param name="dateTime">The Date to parse</param>
+        /// <returns>list of folders</returns>
+        private IEnumerable<string> StructureListParser(DateTime dateTime)
+        {
+	        var patternList = _structure.Split("/".ToCharArray()).ToList();
+	        var parsedList = ParseListBasePathAndDateFormat(patternList, dateTime);
+
+	        if (parsedList.Count == 1)
+	        {
+		        return new List<string>();
+	        }
+                
+	        if (parsedList.Count >= 2)
+	        {
+		        parsedList.RemoveAt(parsedList.Count - 1);
+	        }
+
+	        // database slash to first item
+	        parsedList[0] = "/" + parsedList[0];
+	        return parsedList;
+        }
+
+
+        private List<string> ParseListBasePathAndDateFormat(List<string> patternList, DateTime fileDateTime)
+        {
+	        var parseListDate = new List<string>();
+
+	        patternList = PatternListInput(patternList, "*", "_!x_");
+	        patternList = PatternListInput(patternList, "{filenamebase}", "_!q_");
+
+	        foreach (var patternItem in patternList)
+	        {
+		        if (patternItem == "/" ) return patternList;
+
+		        if(!string.IsNullOrWhiteSpace(patternItem))
+		        {
+			        var item = fileDateTime.ToString(patternItem, CultureInfo.InvariantCulture);
+			        parseListDate.Add(item);
+		        }
+	        }
+
+	        parseListDate = PatternListInput(parseListDate, "_!x_", "*");
+	        parseListDate = PatternListInput(parseListDate, "_!q_", 
+		        Path.GetFileNameWithoutExtension(SourceFullFilePath));
+
+	        return parseListDate;
+        }
+        
+        // Escape feature
+        private List<string> PatternListInput(List<string> patternList, string search, string replace)
+        {
+	        var patternListReturn = new List<string>();
+	        foreach (var t in patternList)
+	        {
+		        patternListReturn.Add(t.Replace(search, replace));
+	        }
+	        return patternListReturn;
+        }
+
+	}
+}
