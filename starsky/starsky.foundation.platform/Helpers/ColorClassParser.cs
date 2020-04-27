@@ -11,51 +11,51 @@ namespace starsky.foundation.platform.Helpers
 		public enum Color
 		{
 			/// <summary>
-			/// Purple
+			/// Purple (1)
 			/// </summary>
 			[Display(Name = "Winner")] // <= Display, used in xmp label
 			Winner = 1, // Paars - purple
 			/// <summary>
-			/// Red
+			/// Red (2)
 			/// </summary>
 			[Display(Name = "Winner Alt")]
 			WinnerAlt = 2, // rood - Red -
 			/// <summary>
-			/// Orange
+			/// Orange (3)
 			/// </summary>
 			[Display(Name = "Superior")]
 			Superior = 3, // Oranje - orange
 			/// <summary>
-			/// Yellow
+			/// Yellow (4)
 			/// </summary>
 			[Display(Name = "Superior Alt")]
 			SuperiorAlt = 4, //Geel - yellow
 			/// <summary>
-			/// Green
+			/// Green (5)
 			/// </summary>
 			[Display(Name = "Typical")]
 			Typical = 5, // Groen - groen
 			/// <summary>
-			/// Turquoise
+			/// Turquoise (6)
 			/// </summary>
 			[Display(Name = "Typical Alt")]
 			TypicalAlt = 6, // Turquoise
 			/// <summary>
-			/// Blue
+			/// Blue (7)
 			/// </summary>
 			[Display(Name = "Extras")]
 			Extras = 7, // Blauw - blue
 			/// <summary>
-			/// Grey
+			/// Grey (8)
 			/// </summary>
 			[Display(Name = "")]
 			Trash = 8, // grijs - Grey
 			/// <summary>
-			/// No color
+			/// No color (0)
 			/// </summary>
 			None = 0, // donkergrijs Dark Grey
 			/// <summary>
-			/// Option not selected
+			/// Option not selected (-1)
 			/// </summary>
 			DoNotChange = -1
 		}
