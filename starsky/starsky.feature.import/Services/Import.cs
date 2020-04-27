@@ -334,17 +334,15 @@ namespace starsky.feature.import.Services
 		/// <returns>test_1.jpg with complete filePath</returns>
 		internal static string AppendIndexerToFilePath(string parentDirectory, string fileName , int index)
 		{
-			if ( index >= 0 )
+			if ( index >= 1 )
 			{
 				fileName = string.Concat(
-					Path.GetFileNameWithoutExtension(fileName),
-					index,
-					Path.GetExtension(fileName)
+					FilenamesHelper.GetFileNameWithoutExtension(fileName),
+					$"_{index}.",
+					FilenamesHelper.GetFileExtensionWithoutDot(fileName)
 				);
 			}
-			
-			var destinationSubPath = parentDirectory + fileName;
-			return destinationSubPath;
+			return PathHelper.AddSlash(parentDirectory) + fileName;;
 		}
 	}
 }

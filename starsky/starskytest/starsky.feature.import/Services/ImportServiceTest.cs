@@ -208,9 +208,22 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		public async Task AppendIndexerToFilePath()
+		public void AppendIndexerToFilePath_default()
 		{
-			var import = new Import(null, new AppSettings(), null, null, null);
+			var result = Import.AppendIndexerToFilePath("/test/", "test.jpg", 0);
+			Assert.AreEqual("/test/test.jpg",result);
+		}
+		
+		[TestMethod]
+		public void AppendIndexerToFilePath_minus10()
+		{
+			var result = Import.AppendIndexerToFilePath("/test/", "test.jpg", -10);
+			Assert.AreEqual("/test/test.jpg",result);
+		}
+		
+		[TestMethod]
+		public void AppendIndexerToFilePath_5()
+		{
 			var result = Import.AppendIndexerToFilePath("/test", "test.jpg", 5);
 			Assert.AreEqual("/test/test_5.jpg",result);
 		}
