@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Models;
 
-namespace starskytest.Models
+namespace starskytest.starsky.feature.import.Models
 {
     [TestClass]
     public class ImportSettingsModelTest
@@ -56,6 +56,5 @@ namespace starskytest.Models
 		    Assert.AreEqual(true, model.AgeFileFilterDisabled);
 		    
 	    }
-
     }
 }

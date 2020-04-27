@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -26,7 +27,8 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> colorClassActiveList = null,
+		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
+				colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
 			throw new System.NotImplementedException();
@@ -46,7 +48,7 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem GetObjectByFilePath(string filePath)
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
