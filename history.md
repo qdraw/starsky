@@ -28,6 +28,9 @@
 - [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
 - [x]   (Fixed)  _Front-end_ order when files are added does now match the backend (archive-context)
 
+todo fix issue delete next search
+todk video invalid datetime
+
 # version 0.2.2 - 2020-04-17
 - [x]   (Added) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
