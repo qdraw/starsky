@@ -1,8 +1,10 @@
 using System;
-using starskycore.Interfaces;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 
-namespace starskycore.Services
+namespace starsky.foundation.platform.Services
 {
+	[Service(typeof(IConsole), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ConsoleWrapper : IConsole
 	{
 		public void Write(string message)

@@ -13,7 +13,7 @@ using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Query;
-using starskycore.Middleware;
+using starsky.foundation.platform.Middleware;
 using starskycore.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -73,7 +73,7 @@ namespace starskytest.Controllers
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
-			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();

@@ -9,7 +9,6 @@ namespace starskycore.Models
         public ImportSettingsModel()
         {
             DeleteAfter = false;
-            AgeFileFilterDisabled = true;
             RecursiveDirectory = false;
 	        IndexMode = true;
 	        // ColorClass defaults in prop
@@ -22,11 +21,6 @@ namespace starskycore.Models
 	    /// <param name="request"></param>
         public ImportSettingsModel(HttpRequest request)
         {
-
-            AgeFileFilterDisabled = true;
-            if(request.Headers["AgeFileFilter"].ToString().ToLower() == "false")
-                AgeFileFilterDisabled = false;
-
             int.TryParse(request.Headers["ColorClass"], out var colorClass);
             ColorClass = colorClass;
 
@@ -59,9 +53,6 @@ namespace starskycore.Models
         }
 
         public bool DeleteAfter { get; set; }
-
-        public bool AgeFileFilterDisabled { get; set; } // default false
-        // used with the getall parameter
 
         public bool RecursiveDirectory { get; set; }
 

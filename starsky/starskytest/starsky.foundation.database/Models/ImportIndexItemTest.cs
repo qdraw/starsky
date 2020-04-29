@@ -8,11 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
-using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
 
@@ -44,117 +42,12 @@ namespace starskytest.Models
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             // build the service
             var serviceProvider = services.BuildServiceProvider();
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
         }
-	    
-        
-        [TestMethod]
-        public void ImportIndexItemParseFileNameTest()
-        {
-            var createAnImage = new CreateAnImage();
-
-            _appSettings.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss.ext";
-
-            var importItem = new ImportIndexItem(_appSettings);
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-
-            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-            Assert.AreEqual("00010101_000000.jpg", fileName);
-        }
-        
-        
-        [TestMethod]
-        public void ImportIndexItemParseFileNameTest_LotsOfEscapeChars()
-        {
-	        var createAnImage = new CreateAnImage();
-
-	        _appSettings.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\\\\\h\\\\\\m.ext";
-
-	        var importItem = new ImportIndexItem(_appSettings);
-	        importItem.SourceFullFilePath = createAnImage.FullFilePath;
-
-	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-	        Assert.AreEqual("00010101_000000_hm.jpg", fileName);
-        }
-
-        [TestMethod]
-        public void ImportIndexItemParseFileNameTest_StructureIsNull()
-        {
-	        var createAnImage = new CreateAnImage();
-
-	        var importItem = new ImportIndexItem
-	        {
-		        SourceFullFilePath = createAnImage.FullFilePath,
-		        Structure = null
-	        };
-	        Assert.AreEqual(null,importItem.Structure);
-	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-	        
-	        Assert.AreEqual(null,fileName);
-        }
-
-        [TestMethod]
-        public void ImportIndexItemParseFileNameTest_FileNameNull()
-        {
-	        var createAnImage = new CreateAnImage();
-
-	        var importItem = new ImportIndexItem
-	        {
-		        SourceFullFilePath = createAnImage.FullFilePath,
-		        Structure = "*"
-	        };
-	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-
-        }
-
-        [TestMethod]
-        public void ParseFileName_SourceFullFilePath_Null()
-        {
-	        var importItem = new ImportIndexItem {SourceFullFilePath = null};
-	        var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-			Assert.AreEqual(string.Empty,fileName);
-        }
-
-        [TestMethod]
-        public void ImportIndexItemParse_FileNameWithAppendix_Test()
-        {
-            var createAnImage = new CreateAnImageNoExif();
-
-            _appSettings.Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_\\d.ext"; // <<<----
-
-            var importItem = new ImportIndexItem(_appSettings);
-            importItem.SourceFullFilePath = createAnImage.FullFilePathWithDate;
-	        importItem.ParseDateTimeFromFileName();
-	        
-            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
-            Assert.AreEqual("00010101_000000_d.jpg", fileName);
-            
-            new StorageHostFullPathFilesystem().FileDelete(importItem.SourceFullFilePath);
-        }
-	    
-	    [TestMethod]
-	    public void ImportIndexItemParse_FileNameWithAppendixInFileName_Test()
-	    {
-		    var createAnImage = new CreateAnImageNoExif();
-
-		    var filPathWithAppendix = Path.Join(createAnImage.BasePath,"2018.01.01 02.02.02-test.jpg");
-		    if(!File.Exists(filPathWithAppendix)) File.Move(createAnImage.FullFilePathWithDate,filPathWithAppendix);
-		    
-		    _appSettings.Structure = "/yyyyMMdd_HHmmss_\\d.ext"; // <<<----
-
-		    var importItem = new ImportIndexItem(_appSettings);
-		    importItem.SourceFullFilePath = filPathWithAppendix;
-		    importItem.ParseDateTimeFromFileName();
-
-		    var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg,false);
-		    Assert.AreEqual("20180101_020202_d.jpg", fileName);
-            
-		    new StorageHostFullPathFilesystem().FileDelete(filPathWithAppendix);
-	    }
 
 	    [TestMethod]
 	    public void ImportIndexItemRemoveEscapedCharactersTest()
@@ -164,35 +57,6 @@ namespace starskytest.Models
 			Assert.AreEqual("yyyyMMdd_HHmmss_.ext",result);
 	    }
 
-        [TestMethod]
-        public void ImportIndexItemParse_filenamebase_filename_Test()
-        {
-            _appSettings.Structure = "/\\t\\z/\\a\\b{filenamebase}/{filenamebase}.ext";
-
-            var createAnImage = new CreateAnImage();
-            var importItem = new ImportIndexItem(_appSettings);
-            importItem.SourceFullFilePath = createAnImage.FullFilePath;
-            _appSettings.StorageFolder = createAnImage.BasePath;
-            var fileName = importItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
-            Assert.AreEqual(createAnImage.DbPath.Replace("/",string.Empty),fileName);
-        }
-        
-
-
-        [TestMethod]
-        [ExpectedException(typeof(FileNotFoundException))]
-        public void ImportIndexItemParse_FileNotExist_Test()
-        {
-            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-            var input = new ImportIndexItem(_appSettings)
-            {
-                SourceFullFilePath = Path.DirectorySeparatorChar + "20180101_011223.jpg"
-            };
-
-            input.ParseFileName(ExtensionRolesHelper.ImageFormat.notfound);
-            // ExpectedException
-        }
-	    
         [TestMethod]
         public void ParseDateTimeFromFileName_Null()
         {

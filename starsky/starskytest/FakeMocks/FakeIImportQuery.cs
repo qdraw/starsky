@@ -32,5 +32,11 @@ namespace starskytest.FakeMocks
 			_exist.Add(updateStatusContent.FileHash);
 			return true;
 		}
+
+		public async Task<bool> RemoveAsync(string fileHash)
+		{
+			_exist.Remove(fileHash);
+			return true;
+		}
 	}
 }

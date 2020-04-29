@@ -8,6 +8,7 @@ using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
@@ -15,7 +16,6 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
-using starskycore.Middleware;
 using starskycore.Services;
 
 namespace starskycore.Helpers
@@ -54,7 +54,7 @@ namespace starskycore.Helpers
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 	        
             new RegisterDependencies().Configure(services);
 

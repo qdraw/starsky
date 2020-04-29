@@ -103,66 +103,6 @@ namespace starsky.foundation.database.Models
         [JsonIgnore]
         public string Structure { get; set; }
 
-        
-		/// <summary>
-		/// Depends on App Settings for storing values
-		/// Depends on BasePathConfig for setting default values
-		/// Input required:
-		/// SourceFullFilePath= createAnImage.FullFilePath,  DateTime = fileIndexItem.DateTime
-		/// </summary>
-		/// <param name="imageFormatExtenstion">file extension by the first bytesr</param>
-		/// <param name="checkIfExist"></param>
-		/// <returns></returns>
-		/// <exception cref="FileNotFoundException"></exception>
-        public string ParseFileName(ExtensionRolesHelper.ImageFormat imageFormatExtenstion, bool checkIfExist = true)
-        {
-            if (string.IsNullOrWhiteSpace(SourceFullFilePath)) return string.Empty;
-          
-            var fileExtension = Path.GetExtension(SourceFullFilePath).Replace(".",string.Empty).ToLower();
-
-            if (imageFormatExtenstion == ExtensionRolesHelper.ImageFormat.notfound)
-            {
-                // Caching feature to have te Path and url after you deleted the orginal in the ImportIndexItem context
-                if (FileName != null) return FileName;
-                if(checkIfExist) throw new FileNotFoundException("source image not found");
-            }
-            
-            if (string.IsNullOrEmpty(Structure)) return null;
-
-            var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
-            if (string.IsNullOrEmpty(structuredFileName)) return null;
-
-            // Escape feature to replace asterisk
-            structuredFileName = structuredFileName.Replace("*", "");
-
-            if (structuredFileName.Contains(".ext"))
-            {
-                var extPosition = structuredFileName.IndexOf(".ext", StringComparison.Ordinal);
-                structuredFileName = structuredFileName.Substring(0, extPosition);
-            }
-
-            // Escape feature to {filenamebase} replace
-            structuredFileName = structuredFileName.Replace("{filenamebase}", "_!q_");
-
-            // Parse the DateTime to a string
-            var fileName = DateTime.ToString(structuredFileName, CultureInfo.InvariantCulture);
-            
-            fileName += "." + fileExtension;
-            
-            // Escape feature to Restore (fileNameBase)
-            if (fileName.Contains("_!q_")) // fileNameBase
-            {
-                fileName = fileName.Replace("_!q_", Path.GetFileNameWithoutExtension(SourceFullFilePath));
-            }
-
-            // replace duplicate escape characters from the output result
-            fileName = fileName.Replace("\\", string.Empty);
-            
-            // Caching to have it after you use the afterDelete flag
-            FileName = fileName;
-            return fileName;
-        }
-
         public DateTime ParseDateTimeFromFileName()
         {
             // Depends on 'AppSettingsProvider.Structure'

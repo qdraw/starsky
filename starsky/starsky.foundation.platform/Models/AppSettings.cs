@@ -214,7 +214,11 @@ namespace starsky.foundation.platform.Models
         [JsonIgnore]
         public TimeZoneInfo CameraTimeZoneInfo { get; set; }
 
-        // To Check if the structure is any good
+        /// <summary>
+        /// To Check if the structure is any good
+        /// </summary>
+        /// <param name="structure"></param>
+        /// <exception cref="ArgumentException"></exception>
         public static void StructureCheck(string structure)
         {
             // Unescaped regex:

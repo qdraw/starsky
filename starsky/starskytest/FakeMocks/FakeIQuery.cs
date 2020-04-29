@@ -37,7 +37,15 @@ namespace starskytest.FakeMocks
 		public DetailView SingleItem(string singleItemDbPath, List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new System.NotImplementedException();
+			if ( _fakeContext.All(p => p.FilePath != singleItemDbPath) )
+			{
+				return null;
+			}
+			
+			return new DetailView
+			{
+				FileIndexItem = _fakeContext.FirstOrDefault(p => p.FilePath == singleItemDbPath)
+			};
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using starsky.foundation.platform.Interfaces;
 using starskycore.Interfaces;
 
 namespace starskytest.FakeMocks

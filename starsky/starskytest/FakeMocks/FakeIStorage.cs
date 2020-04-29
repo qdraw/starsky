@@ -159,7 +159,8 @@ namespace starskytest.FakeMocks
 				Where(p => p.Contains(path) && p != path).
 				ToList();
 			
-			var folderFileListOutput = new AppSettings {StorageFolder = path}.RenameListItemsToDbStyle(folderFileList)
+			var pathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
+			var folderFileListOutput = new AppSettings {StorageFolder = pathWithSlash}.RenameListItemsToDbStyle(folderFileList)
 				.Where(p => !PathHelper.RemovePrefixDbSlash(p).Contains("/")).ToList();
 			return folderFileListOutput;
 		}

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.database.Query;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -24,6 +23,7 @@ using starskycore.Models;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.import.Services
 {
+	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Import : IImport
 	{
 		private readonly IImportQuery _importQuery;
@@ -38,8 +38,8 @@ namespace starsky.feature.import.Services
 
 		private readonly IReadMeta _readMetaHost;
 		private readonly IExifTool _exifTool;
-		private IQuery _query;
-
+		private readonly IQuery _query;
+		
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
@@ -160,13 +160,11 @@ namespace starsky.feature.import.Services
 
 			// Parse the filename and create a new importIndexItem object
 			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, hashList.Key, 
-				fileIndexItem, importSettings.Structure);
+				fileIndexItem);
 			
-			// get information to move to (in the future)
-			importIndexItem.FileIndexItem.FileName = importIndexItem.ParseFileName(imageFormat);
-			throw new NotImplementedException("to do fix");
-			// importIndexItem.FileIndexItem.ParentDirectory = importIndexItem.ParseSubfolders();
-			importIndexItem.FileIndexItem.FileHash = hashList.Key;
+			// Update the parent and filenames
+			importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
+		
 			return importIndexItem;
 		}
 
@@ -182,14 +180,12 @@ namespace starsky.feature.import.Services
 		/// <param name="imageFormat">is it jpeg or png or something different</param>
 		/// <param name="fileHashCode">file hash base32</param>
 		/// <param name="fileIndexItem">database item</param>
-		/// <param name="overwriteStructure">structure to overwite</param>
 		/// <returns></returns>
-		internal ImportIndexItem ObjectCreateIndexItem(
+		private ImportIndexItem ObjectCreateIndexItem(
 				string inputFileFullPath,
 				ExtensionRolesHelper.ImageFormat imageFormat,
 				string fileHashCode,
-				FileIndexItem fileIndexItem,
-				string overwriteStructure)
+				FileIndexItem fileIndexItem)
 		{
 			var importIndexItem = new ImportIndexItem(_appSettings)
 			{
@@ -208,7 +204,23 @@ namespace starsky.feature.import.Services
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
+			
+			importIndexItem.FileIndexItem.FileHash = fileHashCode;
+			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 
+			return importIndexItem;
+		}
+
+		/// <summary>
+		/// Overwrite structures when importing using a header
+		/// </summary>
+		/// <param name="importIndexItem"></param>
+		/// <param name="overwriteStructure">to overwrite, keep empty to ignore</param>
+		/// <returns>Names applied to FileIndexItem</returns>
+		private ImportIndexItem ApplyStructure(ImportIndexItem importIndexItem, string overwriteStructure)
+		{
+			importIndexItem.Structure = _appSettings.Structure;
+			
 			// Feature to overwrite structures when importing using a header
 			// Overwrite the structure in the ImportIndexItem
 			if (!string.IsNullOrWhiteSpace(overwriteStructure))
@@ -216,7 +228,14 @@ namespace starsky.feature.import.Services
 				importIndexItem.Structure = overwriteStructure;
 			}
 			
-			fileIndexItem.FileName = importIndexItem.ParseFileName(imageFormat);
+			var structureService = new StructureService(_subPathStorage, importIndexItem.Structure);
+			
+			importIndexItem.FileIndexItem.ParentDirectory = structureService.ParseSubfolders(
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.ImageFormat);
+			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
+				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
+				importIndexItem.FileIndexItem.ImageFormat);
 			
 			return importIndexItem;
 		}
@@ -250,12 +269,17 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
-			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
+			await CreateParentFolders(importIndexItem.FileIndexItem.ParentDirectory);
 			
-			_filesystemStorage.FileCopy(importIndexItem.SourceFullFilePath, 
-				_appSettings.DatabasePathToFilePath(importIndexItem.FilePath));
+			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
 
-			 // Support for include sidecar files
+			// Copy
+			var destinationFile = _appSettings.
+					DatabasePathToFilePath(importIndexItem.FilePath, false);
+			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
+				await _subPathStorage.WriteStreamAsync(sourceStream, destinationFile);
+	
+			// Support for include sidecar files
 		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
 		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)  &&
 		         _filesystemStorage.ExistFile(xmpFullFilePath))
@@ -369,7 +393,56 @@ namespace starsky.feature.import.Services
 					FilenamesHelper.GetFileExtensionWithoutDot(fileName)
 				);
 			}
-			return PathHelper.AddSlash(parentDirectory) + fileName;;
+			return PathHelper.AddSlash(parentDirectory) + fileName;
 		}
+
+		
+		/// <summary>
+		/// Create parent folders if the folder does not exist on disk
+		/// </summary>
+		/// <param name="parentDirectoryPath"></param>
+		private async Task CreateParentFolders(string parentDirectoryPath)
+		{
+			var parentDirectoriesList = parentDirectoryPath.Split('/');
+
+			var parentPath = new StringBuilder();
+			await CreateNewDatabaseDirectory("/");
+
+			foreach ( var folderName in parentDirectoriesList )
+			{
+				if ( string.IsNullOrEmpty(folderName) ) continue;
+				parentPath.Append($"/{folderName}");
+
+				await CreateNewDatabaseDirectory(parentPath.ToString());
+
+				if ( _subPathStorage.ExistFolder(parentPath.ToString()))
+				{
+					continue;
+				}
+				_subPathStorage.CreateDirectory(parentPath.ToString());
+			}
+		}
+		
+		/// <summary>
+		/// Temp place to store parent Directories to avoid lots of Database requests
+		/// </summary>
+		private List<string> AddedParentDirectories { get; set; } = new List<string>();
+
+		private async Task CreateNewDatabaseDirectory(string parentPath)
+		{
+			if ( AddedParentDirectories.Contains(parentPath) || 
+			     _query.SingleItem(parentPath) != null ) return;
+			
+			var item = new FileIndexItem(parentPath)
+			{
+				AddToDatabase = DateTime.UtcNow,
+				IsDirectory = true,
+				ColorClass = ColorClassParser.Color.None
+			};
+				
+			await _query.AddItemAsync(item);
+			AddedParentDirectories.Add(parentPath);
+		}
+
 	}
 }

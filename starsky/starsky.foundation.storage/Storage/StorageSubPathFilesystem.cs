@@ -226,7 +226,7 @@ namespace starsky.foundation.storage.Storage
 			else
 			{
 				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
-					FileShare.Read, maxRead, true);
+					FileShare.Read, maxRead, FileOptions.Asynchronous | FileOptions.SequentialScan);
 			}
 
 			return fileStream;

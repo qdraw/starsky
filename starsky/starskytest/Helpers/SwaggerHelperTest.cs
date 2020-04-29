@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.Helpers;
@@ -42,7 +43,7 @@ namespace starskytest.Helpers
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
-			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
 			_appSettings = new AppSettings

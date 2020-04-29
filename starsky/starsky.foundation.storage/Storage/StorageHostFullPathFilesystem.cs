@@ -214,7 +214,9 @@ namespace starsky.foundation.storage.Storage
 
 			stream.Seek(0, SeekOrigin.Begin);
 			
-			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			using (var fileStream = new FileStream(path, FileMode.Create, 
+				FileAccess.Write, FileShare.None, 4096, 
+				FileOptions.Asynchronous | FileOptions.SequentialScan))
 			{
 				stream.CopyTo(fileStream);
 			}
@@ -231,7 +233,9 @@ namespace starsky.foundation.storage.Storage
 		public async Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
-			using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write))
+			using (var fileStream = new FileStream(path, FileMode.Create, 
+				FileAccess.Write, FileShare.None, 4096, 
+				FileOptions.Asynchronous | FileOptions.SequentialScan))
 			{
 				await stream.CopyToAsync(fileStream);
 			}

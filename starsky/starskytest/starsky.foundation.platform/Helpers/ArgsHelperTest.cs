@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 using starskycore.Helpers;
@@ -40,7 +41,7 @@ namespace starskytest.Helpers
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             // build the service
             var serviceProvider = services.BuildServiceProvider();
             // get the service
