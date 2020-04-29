@@ -43,17 +43,16 @@ namespace starskysynccli
                 subpath = new ArgsHelper(appSettings).GetPathFormArgs(args);
             }
             
-            // overwrite subpath with relative days
-            // use -g or --SubpathRelative to use it.
+            // overwrite subPath with relative days
+            // use -g or --SubPathRelative to use it.
             // envs are not supported
-            var getSubpathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
-            
-            // todo FIX 
-            throw new Exception("fix");
-			// if (getSubpathRelative != null)
-   //          {
-   //              subpath = getSubpathRelative;
-   //          }
+            var getSubPathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
+            if (getSubPathRelative != null)
+            {
+	            var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+	            subpath = new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
+	                .ParseSubfolders(dateTime);
+            }
 
             if (new ArgsHelper().GetIndexMode(args))
             {

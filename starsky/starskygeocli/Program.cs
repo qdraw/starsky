@@ -28,7 +28,7 @@ namespace starskyGeoCli
 			if ( new ArgsHelper().NeedHelp(args) ||
 			     ( new ArgsHelper(appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1
-			       && new ArgsHelper(appSettings).GetRelativeValue(args) != 0 ) )
+			       && new ArgsHelper(appSettings).GetRelativeValue(args) == null ) )
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
@@ -37,7 +37,7 @@ namespace starskyGeoCli
 
 			// Using both options
 			string inputPath;
-			// -s = ifsubpath || -p is path
+			// -s = if subpath || -p is path
 			if ( new ArgsHelper(appSettings).IsSubPathOrPath(args) )
 			{
 				inputPath = appSettings.DatabasePathToFilePath(
@@ -53,16 +53,17 @@ namespace starskyGeoCli
 			// use -g or --SubPathRelative to use it.
 			// envs are not supported
 			var getSubPathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
-			throw new Exception("fix !");
-			// if ( getSubPathRelative != string.Empty )
-			// {
-			// 	inputPath = appSettings.DatabasePathToFilePath(getSubPathRelative);
-			// }
-
+			if (getSubPathRelative != null)
+			{
+				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+				inputPath = new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
+					.ParseSubfolders(dateTime);
+			}
+			
 			// used in this session to find the files back
 			appSettings.StorageFolder = inputPath;
 			var storage = startupHelper.SubPathStorage();
-
+			
 			if ( inputPath == null || storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine(

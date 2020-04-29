@@ -40,21 +40,5 @@ namespace starskytest.starsky.feature.import.Models
 		    model = new ImportSettingsModel(context.Request);
 		    Assert.AreEqual(true, model.IndexMode);
 	    }
-
-	    [TestMethod]
-	    public void ImportSettingsModel_AgeFileFilter_Test()
-	    {
-		    var context = new DefaultHttpContext();
-		    // false
-		    context.Request.Headers["AgeFileFilter"] = "false";
-		    var model = new ImportSettingsModel(context.Request);
-		    Assert.AreEqual(false, model.AgeFileFilterDisabled);
-		    
-		    // now true
-		    context.Request.Headers["AgeFileFilter"] = "true";
-		    model = new ImportSettingsModel(context.Request);
-		    Assert.AreEqual(true, model.AgeFileFilterDisabled);
-		    
-	    }
     }
 }

@@ -286,7 +286,15 @@ namespace starskytest.Helpers
         {
             var args = new List<string> {"--subpathrelative", "1"}.ToArray();
             var relative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-            Assert.AreEqual(1, relative);
+            Assert.AreEqual(-1, relative);
+        }
+        
+        [TestMethod]
+        public void ArgsHelper_GetSubPathRelativeTestMinusValue()
+        {
+	        var args = new List<string> {"--subpathrelative", "-1"}.ToArray();
+	        var relative = new ArgsHelper(_appSettings).GetRelativeValue(args);
+	        Assert.AreEqual(-1, relative);
         }
 	    
 	    [TestMethod]

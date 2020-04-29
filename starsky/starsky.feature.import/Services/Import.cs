@@ -274,10 +274,8 @@ namespace starsky.feature.import.Services
 			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
 
 			// Copy
-			var destinationFile = _appSettings.
-					DatabasePathToFilePath(importIndexItem.FilePath, false);
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
-				await _subPathStorage.WriteStreamAsync(sourceStream, destinationFile);
+				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
 	
 			// Support for include sidecar files
 		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
