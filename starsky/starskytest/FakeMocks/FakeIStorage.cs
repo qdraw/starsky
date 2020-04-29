@@ -6,14 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
-using starskytest.FakeCreateAn;
-using starskytest.Services;
 
 namespace starskytest.FakeMocks
 {
@@ -158,15 +153,20 @@ namespace starskytest.FakeMocks
 
 		public IEnumerable<string> GetDirectories(string path)
 		{
-			return _outputSubPathFolders.Where(p => p.Contains(path));
+			
+			path = PathHelper.RemoveLatestSlash(path);
+			var folderFileList = _outputSubPathFolders.
+				Where(p => p.Contains(path) && p != path).
+				ToList();
+			
+			var folderFileListOutput = new AppSettings {StorageFolder = path}.RenameListItemsToDbStyle(folderFileList)
+				.Where(p => !PathHelper.RemovePrefixDbSlash(p).Contains("/")).ToList();
+			return folderFileListOutput;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
-
-			var value = $"^{Regex.Escape(parentFolder)}" + "\\/\\w+.[a-z]{3}$";
-			
 			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "\\/\\w+.[a-z]{3}$").Success;
 		}
 
