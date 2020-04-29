@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public class ImportHistoryController : Controller
 	{
 		private readonly IImportQuery _importQuery;
