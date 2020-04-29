@@ -215,8 +215,7 @@ namespace starsky.foundation.storage.Storage
 			stream.Seek(0, SeekOrigin.Begin);
 			
 			using (var fileStream = new FileStream(path, FileMode.Create, 
-				FileAccess.Write, FileShare.None, 4096, 
-				FileOptions.Asynchronous | FileOptions.SequentialScan))
+				FileAccess.Write, FileShare.None))
 			{
 				stream.CopyTo(fileStream);
 			}

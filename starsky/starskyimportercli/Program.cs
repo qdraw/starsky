@@ -41,7 +41,5 @@ namespace starskyimportercli
 
             await new ImportCli().Importer(args, import, appSettings, console);
         }
-
-        
     }
 }

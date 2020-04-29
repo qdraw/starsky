@@ -33,6 +33,11 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
+		public List<ImportIndexItem> History()
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public async Task<bool> RemoveAsync(string fileHash)
 		{
 			_exist.Remove(fileHash);

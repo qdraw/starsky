@@ -22,11 +22,9 @@ namespace starskytest.FakeMocks
 			_selectorStorage = selectorStorage;
 		}
 		
-		public List<string> ImportTo(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
-			return Preflight(inputFullPathList.ToList(), importSettings).Result
-				.Where(p => p.FilePath != null)
-				.Select(p=> p.FilePath ).ToList();
+			return await Preflight(inputFullPathList.ToList(), importSettings);;
 		}
 
 		public List<string> ImportTo(string inputFullPathList, ImportSettingsModel importSettings)
@@ -77,10 +75,6 @@ namespace starskytest.FakeMocks
 			return results;
 		}
 
-		public Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
-		{
-			throw new System.NotImplementedException();
-		}
 
 		public List<ImportIndexItem> History()
 		{

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,16 @@ namespace starsky.foundation.database.Import
 			await _dbContext.SaveChangesAsync();
 			// removed MySqlException catch
 			return true;
+		}
+		
+		/// <summary>
+		/// Get imported items for today
+		/// </summary>
+		/// <returns>List of items</returns>
+		public List<ImportIndexItem> History()
+		{
+			return _dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 	}
 }

@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -39,7 +41,9 @@ namespace starsky.feature.import.Services
 			}
 
 			var result = await importService.Importer(new []{inputPath}, importSettings);
-			console.WriteLine($"Done Importing {result.Count}");
+			
+			console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
+			console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
 		}
 	}
 }
