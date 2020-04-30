@@ -391,7 +391,7 @@ namespace starsky.feature.import.Services
 					FilenamesHelper.GetFileExtensionWithoutDot(fileName)
 				);
 			}
-			return PathHelper.AddSlash(parentDirectory) + PathHelper.RemovePrefixDbSlash(fileName);
+			return parentDirectory + PathHelper.RemovePrefixDbSlash(fileName);
 		}
 
 		

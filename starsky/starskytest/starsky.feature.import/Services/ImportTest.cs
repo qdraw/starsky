@@ -283,10 +283,14 @@ namespace starskytest.starsky.feature.import.Services
 				fileIndexItem.DateTime, fileIndexItem.FileCollectionName,
 				fileIndexItem.ImageFormat);
 			
-			return Import.AppendIndexerToFilePath(
+			var result = Import.AppendIndexerToFilePath(
 				importIndexItem.FileIndexItem.ParentDirectory,
-				importIndexItem.FileIndexItem.FileName, 
-				index) ;
+				importIndexItem.FileIndexItem.FileName,
+				index);
+
+			Console.WriteLine(importIndexItem.FileIndexItem.FileName);
+			Console.WriteLine($"r: {result}");
+			return result;
 		}
 
 		[TestMethod]
