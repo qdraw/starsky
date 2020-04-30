@@ -173,7 +173,7 @@ namespace starsky.foundation.storage.Storage
 		/// Gets a non-Recursive list of child directories
 		/// </summary>
 		/// <param name="path">subPath</param>
-		/// <returns>list of Directories (example: /test)</returns>
+		/// <returns>list of Directories (example: /2020_01_01/test)</returns>
 		public IEnumerable<string> GetDirectories(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
