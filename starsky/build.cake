@@ -6,6 +6,8 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 // or:
  ./build.sh --runtime="linux-arm,linux-arm64"
 
+.\build.ps1 --Target=BuildTestOnlyNetCore
+
 Windows 32 bits: 'win7-x86'
 Mac: 'osx.10.12-x64'
 Raspberry Pi: 'linux-arm'
