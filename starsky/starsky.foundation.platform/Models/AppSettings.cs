@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.Models
         public string GetWebSafeReplacedName(string input)
         {
             // Included slash dd the end of this file
-            return PathHelper.AddBackslash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         
         /// <summary>
