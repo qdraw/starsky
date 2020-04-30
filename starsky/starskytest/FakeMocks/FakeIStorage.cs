@@ -151,6 +151,11 @@ namespace starskytest.FakeMocks
 			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
 		}
 
+		/// <summary>
+		/// Should output: ............
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public IEnumerable<string> GetDirectories(string path)
 		{
 			
@@ -159,10 +164,22 @@ namespace starskytest.FakeMocks
 				Where(p => p.Contains(path) && p != path).
 				ToList();
 			
-			var pathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
-			var folderFileListOutput = new AppSettings {StorageFolder = pathWithSlash}.RenameListItemsToDbStyle(folderFileList)
-				.Where(p => !PathHelper.RemovePrefixDbSlash(p).Contains("/")).ToList();
-			return folderFileListOutput;
+			var parentPathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
+
+			var folderFileListNotRecrusive = folderFileList.Where(p => CheckAndFixChildFolders(parentPathWithSlash, p)).ToList();
+
+			var outputFileList = new List<string>();
+			foreach ( var subPath in folderFileListNotRecrusive )
+			{
+				outputFileList.Add(subPath.Replace(parentPathWithSlash, string.Empty));
+			}
+
+			return outputFileList;
+		}
+
+		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
+		{
+			return Regex.Match(childFolder, $"^{Regex.Escape(PathHelper.AddSlash(parentFolder))}[^/]+$").Success;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)

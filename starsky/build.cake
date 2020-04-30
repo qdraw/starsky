@@ -272,7 +272,7 @@ Task("TestNetCore")
                           .Append("--nologo")
                           .Append("--logger trx")
                           .Append("--collect:\"XPlat Code Coverage\"")
-                          .Append("--settings build.vstest.runsettings.xml")
+                          .Append("--settings build.vstest.runsettings")
                 });
 
             var coverageEnum = GetFiles("./**/coverage.opencover.xml");

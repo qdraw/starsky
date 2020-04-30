@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.Models
         public string GetWebSafeReplacedName(string input)
         {
             // Included slash dd the end of this file
-            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddBackslash(input.Replace("{name}", GenerateSlug(Name,true)));
         }
         
         /// <summary>
@@ -376,6 +376,11 @@ namespace starsky.foundation.platform.Models
 		    return appSettings;
 	    }
 
+		/// <summary>
+		/// StorageFolders ends always with a backslash
+		/// </summary>
+		/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
+		/// <returns></returns>
 		public string FullPathToDatabaseStyle(string subpath)
 		{
 			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);
