@@ -100,16 +100,17 @@ namespace starsky.foundation.storage.Services
 		/// Match Direct name first if available and then check on regex
 		/// So: 2020_01_01 will be first matched and later will be checked for 2020_01_01_test
 		/// </summary>
+		/// <param name="parentFolderBuilder">Parent Directory</param>
 		/// <param name="currentChildFolderBuilder">the current folder name with asterisk </param>
 		/// <param name="p">other child folder items (item in loop of childDirectories)</param>
 		/// <returns>is match</returns>
-		private bool MatchChildFolderSearch(StringBuilder currentChildFolderBuilder, string p )
+		private bool MatchChildFolderSearch(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder, string p )
 		{
 			var matchDirectFolderName = RemoveAsteriskFromString(currentChildFolderBuilder);
-			if ( matchDirectFolderName != "/" && p == matchDirectFolderName ) return true;
+			if ( matchDirectFolderName != "/" && p == parentFolderBuilder + matchDirectFolderName ) return true;
 			
 			var matchRegex = new Regex(
-				currentChildFolderBuilder.ToString().Replace("*", ".+")
+				parentFolderBuilder + currentChildFolderBuilder.ToString().Replace("*", ".+")
 			);
 			return matchRegex.IsMatch(p);
 		}
@@ -122,12 +123,15 @@ namespace starsky.foundation.storage.Services
 		/// <returns>SubPath without asterisk</returns>
 		private StringBuilder MatchChildDirectories(StringBuilder parentFolderBuilder, StringBuilder currentChildFolderBuilder)
 		{
+			// should return a list of: </2019/10/2019_10_08>
 			var childDirectories = _storage.GetDirectories(parentFolderBuilder.ToString()).ToList();
 
-			var matchingFolders= childDirectories.FirstOrDefault(p => MatchChildFolderSearch(currentChildFolderBuilder,p) );
+			var matchingFoldersPath= childDirectories.FirstOrDefault(p => 
+				MatchChildFolderSearch(parentFolderBuilder,currentChildFolderBuilder,p) 
+				);
 			
 			// When a new folder with asterisk is created
-			if ( matchingFolders == null )
+			if ( matchingFoldersPath == null )
 			{
 				var defaultValue = RemoveAsteriskFromString(currentChildFolderBuilder);
 				// When only using Asterisk in structure
@@ -140,7 +144,11 @@ namespace starsky.foundation.storage.Services
 			}
 			
 			// When a regex folder is matched
-			parentFolderBuilder.Append(matchingFolders);
+			var childFolderName = 
+				PathHelper.PrefixDbSlash(
+			FilenamesHelper.GetFileName(matchingFoldersPath));
+			
+			parentFolderBuilder.Append(childFolderName);
 			return parentFolderBuilder;
 		}
 

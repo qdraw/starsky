@@ -152,7 +152,7 @@ namespace starskytest.FakeMocks
 		}
 
 		/// <summary>
-		/// Should output: ............
+		/// Should output: /2020/01/2020_01_01 and /2020/01/2020_01_01 test
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
@@ -167,14 +167,7 @@ namespace starskytest.FakeMocks
 			var parentPathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
 
 			var folderFileListNotRecrusive = folderFileList.Where(p => CheckAndFixChildFolders(parentPathWithSlash, p)).ToList();
-
-			var outputFileList = new List<string>();
-			foreach ( var subPath in folderFileListNotRecrusive )
-			{
-				outputFileList.Add(subPath.Replace(parentPathWithSlash, string.Empty));
-			}
-
-			return outputFileList;
+			return folderFileListNotRecrusive;
 		}
 
 		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
