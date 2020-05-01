@@ -49,6 +49,8 @@ namespace starsky
             // configs
             services.ConfigurePoCo<AppSettings>(_configuration.GetSection("App"));
             
+            // Need to rebuild for AppSettings
+            // ReSharper disable once ASP0000
             var serviceProvider = services.BuildServiceProvider();
             
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();

@@ -122,7 +122,8 @@ namespace starsky.feature.import.Services
 			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
 				return new ImportIndexItem{ 
 					Status = ImportStatus.NotFound, 
-					FilePath = inputFileFullPath.Key
+					FilePath = inputFileFullPath.Key,
+					AddToDatabase = DateTime.UtcNow
 				};
 
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
@@ -149,7 +150,8 @@ namespace starsky.feature.import.Services
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
 					FilePath = inputFileFullPath.Key,
-					FileHash = hashList.Key
+					FileHash = hashList.Key,
+					AddToDatabase = DateTime.UtcNow
 				};
 			}
 			
@@ -157,10 +159,9 @@ namespace starsky.feature.import.Services
 			// Check if there is a xmp file that contains data
 			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath.Key);
 
-
 			// Parse the filename and create a new importIndexItem object
-			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, hashList.Key, 
-				fileIndexItem);
+			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, 
+				hashList.Key, fileIndexItem);
 			
 			// Update the parent and filenames
 			importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
@@ -250,26 +251,13 @@ namespace starsky.feature.import.Services
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			
-			// var listOfTasks = new List<Task<ImportIndexItem>>();
-			// foreach ( var preflightItem in preflightItemList )
-			// {
-			// 	listOfTasks.Add(Importer(preflightItem, importSettings));
-			// }
-			// var items = await Task.WhenAll(listOfTasks);
-			
-			// var items = new List<ImportIndexItem>();
-			// Parallel.ForEach(preflightItemList, 
-			// 	new ParallelOptions {MaxDegreeOfParallelism = 1}, async preflightItem =>
-			// 	{
-			// 		items.Add(await Importer(preflightItem, importSettings)); ;
-			// 	});
-			
-			var items = new List<ImportIndexItem>();
+			var listOfTasks = new List<Task<ImportIndexItem>>();
 			foreach ( var preflightItem in preflightItemList )
 			{
-				items.Add(await Importer(preflightItem, importSettings));
+				listOfTasks.Add(Importer(preflightItem, importSettings));
 			}
-			return preflightItemList.ToList();
+			var items = await Task.WhenAll(listOfTasks);
+			return items.ToList();
 		}
 
 		/// <summary>
@@ -426,7 +414,7 @@ namespace starsky.feature.import.Services
 				if ( string.IsNullOrEmpty(folderName) ) continue;
 				parentPath.Append($"/{folderName}");
 
-				// await CreateNewDatabaseDirectory(parentPath.ToString());
+				await CreateNewDatabaseDirectory(parentPath.ToString());
 
 				if ( _subPathStorage.ExistFolder(parentPath.ToString()))
 				{

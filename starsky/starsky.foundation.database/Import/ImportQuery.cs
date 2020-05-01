@@ -19,6 +19,12 @@ namespace starsky.foundation.database.Import
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory _scopeFactory;
 
+		/// <summary>
+		/// Query Already imported Database
+		/// inject a scope to:
+		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
+		/// </summary>
+		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
 		public ImportQuery(IServiceScopeFactory scopeFactory)
 		{
 			_scopeFactory = scopeFactory;
@@ -31,7 +37,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-			// inject a scope to: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
+
 			var dbContext = new InjectServiceScope(null,_scopeFactory).Context();
 			return !_isConnection ? dbContext.TestConnection() : _isConnection;
 		}

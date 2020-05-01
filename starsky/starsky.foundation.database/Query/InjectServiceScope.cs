@@ -1,9 +1,9 @@
 using System;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
-using starsky.foundation.database.Extensions;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.database.Query
 {
 	public class InjectServiceScope

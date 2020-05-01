@@ -328,11 +328,11 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 	    {
-		    _context = new InjectServiceScope(_context, _scopeFactory).Context();
+		    var context = new InjectServiceScope(null, _scopeFactory).Context();
 		    try
 		    {
-			    await _context.FileIndex.AddAsync(updateStatusContent);
-			    await _context.SaveChangesAsync();
+			    await context.FileIndex.AddAsync(updateStatusContent);
+			    await context.SaveChangesAsync();
 		    }
 		    catch (MySqlException e)
 		    {
