@@ -327,7 +327,8 @@ namespace starsky.foundation.database.Query
 	    /// <param name="updateStatusContent">the item</param>
 	    /// <returns>item with id</returns>
 	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
-	    {   
+	    {
+		    _context = new InjectServiceScope(_context, _scopeFactory).Context();
 		    try
 		    {
 			    await _context.FileIndex.AddAsync(updateStatusContent);

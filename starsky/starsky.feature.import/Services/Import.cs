@@ -71,13 +71,13 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
 
-			var listOfTasks = new List<Task<ImportIndexItem>>();
-			foreach ( var includedFilePath in includedDirectoryFilePaths )
-			{
-				listOfTasks.Add(PreflightPerFile(includedFilePath, importSettings));
-			}
-			var items = await Task.WhenAll(listOfTasks);
-			return items.ToList();
+			var items = new List<ImportIndexItem>();
+			Parallel.ForEach(includedDirectoryFilePaths, 
+				new ParallelOptions {MaxDegreeOfParallelism = 6}, async includedFilePath =>
+				{
+					items.Add(await PreflightPerFile(includedFilePath, importSettings)); ;
+				});
+			return items;
 		}
 
 		/// <summary>
@@ -250,13 +250,26 @@ namespace starsky.feature.import.Services
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			
-			var listOfTasks = new List<Task<ImportIndexItem>>();
+			// var listOfTasks = new List<Task<ImportIndexItem>>();
+			// foreach ( var preflightItem in preflightItemList )
+			// {
+			// 	listOfTasks.Add(Importer(preflightItem, importSettings));
+			// }
+			// var items = await Task.WhenAll(listOfTasks);
+			
+			// var items = new List<ImportIndexItem>();
+			// Parallel.ForEach(preflightItemList, 
+			// 	new ParallelOptions {MaxDegreeOfParallelism = 1}, async preflightItem =>
+			// 	{
+			// 		items.Add(await Importer(preflightItem, importSettings)); ;
+			// 	});
+			
+			var items = new List<ImportIndexItem>();
 			foreach ( var preflightItem in preflightItemList )
 			{
-				listOfTasks.Add(Importer(preflightItem, importSettings));
+				items.Add(await Importer(preflightItem, importSettings));
 			}
-			var items = await Task.WhenAll(listOfTasks);
-			return items.ToList();
+			return preflightItemList.ToList();
 		}
 
 		/// <summary>
@@ -295,7 +308,7 @@ namespace starsky.feature.import.Services
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
-			UpdateImportTransformations(importIndexItem.FileIndexItem, importSettings.ColorClass);
+		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, importSettings.ColorClass);
 
 	        // Ignore the sync part if the connection is missing
 	        // or option enabled
@@ -322,13 +335,13 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
-		private void UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
+		private FileIndexItem UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
 		{
-			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return;
+			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
 			// Update the contents to the file the imported item
 			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
-			     colorClassTransformation == 0 ) return;
+			     colorClassTransformation == 0 ) return fileIndexItem;
 			
 			if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
 
@@ -343,6 +356,8 @@ namespace starsky.feature.import.Services
 
 			new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
 				new ReadMeta(_subPathStorage)).Update(fileIndexItem, comparedNamesList);
+			
+			return fileIndexItem.Clone();
 		}
 		
 		/// <summary>
@@ -391,8 +406,6 @@ namespace starsky.feature.import.Services
 					FilenamesHelper.GetFileExtensionWithoutDot(fileName)
 				);
 			}
-			var t = PathHelper.AddSlash(parentDirectory);
-			var t2 = PathHelper.RemovePrefixDbSlash(fileName);
 			return PathHelper.AddSlash(parentDirectory) + PathHelper.RemovePrefixDbSlash(fileName);
 		}
 
@@ -406,14 +419,14 @@ namespace starsky.feature.import.Services
 			var parentDirectoriesList = parentDirectoryPath.Split('/');
 
 			var parentPath = new StringBuilder();
-			await CreateNewDatabaseDirectory("/");
+			// await CreateNewDatabaseDirectory("/");
 
 			foreach ( var folderName in parentDirectoriesList )
 			{
 				if ( string.IsNullOrEmpty(folderName) ) continue;
 				parentPath.Append($"/{folderName}");
 
-				await CreateNewDatabaseDirectory(parentPath.ToString());
+				// await CreateNewDatabaseDirectory(parentPath.ToString());
 
 				if ( _subPathStorage.ExistFolder(parentPath.ToString()))
 				{

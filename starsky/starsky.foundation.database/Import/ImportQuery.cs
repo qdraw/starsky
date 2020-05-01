@@ -16,14 +16,13 @@ namespace starsky.foundation.database.Import
 	[Service(typeof(IImportQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ImportQuery : IImportQuery
 	{
-		private readonly ApplicationDbContext _dbContext;
 		private readonly bool _isConnection;
+		private readonly IServiceScopeFactory _scopeFactory;
 
-		public ImportQuery(ApplicationDbContext dbContext,
-			IServiceScopeFactory scopeFactory = null)
+		public ImportQuery(IServiceScopeFactory scopeFactory)
 		{
-			_dbContext = new InjectServiceScope(dbContext, scopeFactory).Context();
-			_isConnection = _dbContext.TestConnection();
+			_scopeFactory = scopeFactory;
+			_isConnection = TestConnection();
 		}
 
 		/// <summary>
@@ -32,14 +31,17 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-			return !_isConnection ? _dbContext.TestConnection() : _isConnection;
+			// inject a scope to: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
+			var dbContext = new InjectServiceScope(null,_scopeFactory).Context();
+			return !_isConnection ? dbContext.TestConnection() : _isConnection;
 		}
 
 		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
-
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			
 			if ( _isConnection )
-				return await _dbContext.ImportIndex.CountAsync(p => 
+				return await dbContext.ImportIndex.CountAsync(p => 
 					       p.FileHash == fileHashCode) != 0; 
 			// there is no any in ef core
 
@@ -55,10 +57,11 @@ namespace starsky.foundation.database.Import
 		/// <returns>fail or success</returns>
 		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
 		{
-			updateStatusContent.AddToDatabase = DateTime.UtcNow;
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 
-			await _dbContext.ImportIndex.AddAsync(updateStatusContent);
-			await _dbContext.SaveChangesAsync();
+			updateStatusContent.AddToDatabase = DateTime.UtcNow;
+			await dbContext.ImportIndex.AddAsync(updateStatusContent);
+			await dbContext.SaveChangesAsync();
 			// removed MySqlException catch
 			return true;
 		}
@@ -69,7 +72,8 @@ namespace starsky.foundation.database.Import
 		/// <returns>List of items</returns>
 		public List<ImportIndexItem> History()
 		{
-			return _dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 	}
