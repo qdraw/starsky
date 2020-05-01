@@ -71,14 +71,75 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
 
-			var items = new List<ImportIndexItem>();
-			await RunMultiThreading.RunWithMaxDegreeOfConcurrency(6, includedDirectoryFilePaths, 
-				async includedFilePath =>
+			var importIndexItemsList = new List<ImportIndexItem>();
+			var yourForeachTask =  Task.Run(() =>
 			{
-				items.Add(await PreflightPerFile(includedFilePath, importSettings)); ;
+				Parallel.ForEach(includedDirectoryFilePaths, 
+					new ParallelOptions { MaxDegreeOfParallelism = 4 },
+					async includedFilePath =>
+				{
+					importIndexItemsList.Add(await PreflightPerFile(includedFilePath, importSettings));
+				});
 			});
-			return items;
+			await yourForeachTask;
+			
+			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList);
+			return importIndexItemsList;
 		}
+
+		internal List<ImportIndexItem> CheckForDuplicateNaming(List<ImportIndexItem> importIndexItemsList )
+		{
+			var duplicateFirstItemsByFilePath = importIndexItemsList.
+				Where(p => p.Status == ImportStatus.Ok).
+				GroupBy(item => item.FileIndexItem.FilePath).
+				SelectMany(grp => grp.Skip(1).Take(1)).ToList();
+			// duplicateFirstItemsByFilePath is a list of the first item that is duplicate
+
+			// ForEach example: List of: "/0001/00010101_000000_d.png" and "/2020/20200501_120000_d.png"
+			foreach ( var duplicateFirstItem in duplicateFirstItemsByFilePath )
+			{
+				var parentDirectoryList =
+					_subPathStorage.GetAllFilesInDirectory(
+						duplicateFirstItem.FileIndexItem
+						.ParentDirectory).ToList();
+				
+				// Get all duplicates by filePath
+				var indexer = 0;
+				foreach ( var duplicatesByFilePath in importIndexItemsList.Where(p =>
+					p.FileIndexItem.FilePath == duplicateFirstItem.FileIndexItem.FilePath) )
+				{
+					// Try again until the max
+					for ( var i = 0; i < MaxTryGetDestinationPath; i++ )
+					{
+						var tryAgainSubPath = AppendIndexerToFilePath(
+							duplicatesByFilePath.FileIndexItem.ParentDirectory, 
+							duplicatesByFilePath.FileIndexItem.FileName, indexer);
+						if ( parentDirectoryList.Any(p => p == tryAgainSubPath)  )
+						{
+							indexer++;
+							continue;
+						}
+						parentDirectoryList.Add(tryAgainSubPath);
+						i = MaxTryGetDestinationPath;
+					}
+
+					if ( indexer >= MaxTryGetDestinationPath )
+					{
+						throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
+					}
+
+					var updatedFilePath = AppendIndexerToFilePath(
+						duplicatesByFilePath.FileIndexItem.ParentDirectory, 
+						duplicatesByFilePath.FileIndexItem.FileName, indexer);
+
+					duplicatesByFilePath.FileIndexItem.FilePath = updatedFilePath;
+					duplicatesByFilePath.FileIndexItem.FileName = PathHelper.GetFileName(updatedFilePath);
+					duplicatesByFilePath.FilePath = updatedFilePath;
+				}
+			}
+			return importIndexItemsList;
+		}
+	
 
 		/// <summary>
 		/// To Add files form directory to list
@@ -145,8 +206,9 @@ namespace starsky.feature.import.Services
 				Console.WriteLine(">> FileHash error");
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
-			
-			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
+
+			var isNewItemInDatabase = await _importQuery.IsHashInImportDbAsync(hashList.Key);
+			if (importSettings.IndexMode && isNewItemInDatabase )
 			{
 				return new ImportIndexItem
 				{
@@ -155,6 +217,11 @@ namespace starsky.feature.import.Services
 					FileHash = hashList.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
+			}
+
+			if ( !isNewItemInDatabase && _appSettings.Verbose )
+			{
+				Console.WriteLine($">> new Item {hashList.Key}");
 			}
 			
 			// Only accept files with correct meta data
@@ -239,6 +306,7 @@ namespace starsky.feature.import.Services
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
 				importIndexItem.FileIndexItem.ImageFormat);
+			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
 			return importIndexItem;
 		}
@@ -254,11 +322,17 @@ namespace starsky.feature.import.Services
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			
 			var items = new List<ImportIndexItem>();
-			await RunMultiThreading.RunWithMaxDegreeOfConcurrency(6, preflightItemList, 
-				async preflightItem =>
+			var yourForeachTask =  Task.Run(() =>
+			{
+				Parallel.ForEach(preflightItemList, 
+					new ParallelOptions { MaxDegreeOfParallelism = 4 },
+					async preflightItem =>
 				{
-					items.Add(await Importer(preflightItem, importSettings)); ;
+					items.Add(await Importer(preflightItem, importSettings));
 				});
+			});
+			await yourForeachTask;
+			
 			return items.ToList();
 		}
 
@@ -271,23 +345,15 @@ namespace starsky.feature.import.Services
 		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
-			
-			try
-			{
-				importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
-			}
-			catch ( ApplicationException)
-			{
-				importIndexItem.Status = ImportStatus.FileError;
-				return importIndexItem;
-			}
-			
+
 			await CreateParentFolders(importIndexItem.FileIndexItem.ParentDirectory);
 
 			// Copy
+			if ( _appSettings.Verbose ) Console.WriteLine("Next Action = Copy" +
+			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
-	
+			
 			// Support for include sidecar files
 		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
 		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)  &&
@@ -316,6 +382,11 @@ namespace starsky.feature.import.Services
 		        // To the list of imported folders
 		        await _importQuery.AddAsync(importIndexItem);
 	        }
+	        else if ( _appSettings.Verbose )
+	        {
+		        Console.WriteLine($">> Not added to Database {importIndexItem.FilePath}");
+	        }
+
 
 	        if ( _appSettings.Verbose ) Console.Write("+");
 	        
@@ -365,29 +436,6 @@ namespace starsky.feature.import.Services
 		internal int MaxTryGetDestinationPath { get; set; } = 100;
 
 		/// <summary>
-		/// Get a path with checking the fileName
-		/// </summary>
-		/// <param name="fileIndexItem">input file path</param>
-		/// <returns>subPath</returns>
-		/// <exception cref="ApplicationException">When there are to many files with the same name</exception>
-		private string GetDestinationPath(FileIndexItem fileIndexItem)
-		{
-			if (!_subPathStorage.ExistFile(fileIndexItem.FilePath) ) return fileIndexItem.FilePath;
-			for ( var i = 1; i < MaxTryGetDestinationPath; i++ )
-			{
-				var tryAgainSubPath = AppendIndexerToFilePath(
-					fileIndexItem.ParentDirectory, 
-					fileIndexItem.FileName, i);
-				
-				if ( !_subPathStorage.ExistFile(tryAgainSubPath) )
-				{
-					return tryAgainSubPath;
-				}
-			}
-			throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
-		}
-
-		/// <summary>
 		/// Append test_1.jpg to filepath (subPath style)
 		/// </summary>
 		/// <param name="fileName">the fileName</param>
@@ -414,6 +462,7 @@ namespace starsky.feature.import.Services
 		/// <param name="parentDirectoryPath"></param>
 		private async Task CreateParentFolders(string parentDirectoryPath)
 		{
+			return;
 			var parentDirectoriesList = parentDirectoryPath.Split('/');
 
 			var parentPath = new StringBuilder();

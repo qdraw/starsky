@@ -346,16 +346,10 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			
-			var storage =new FakeIStorage();
-			// write source file
-			await storage.WriteStreamAsync(
-				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), "/test.jpg"
-			);
-			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
-			var path = GetExpectedFilePath(storage, appSettings, "/test.jpg");
-			await storage.WriteStreamAsync(
-				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
-			);
+			var storage = new FakeIStorage(
+				new List<string>{"/", "/2018", "/2018/04","/2018/04/2018_04_22"}, 
+				new List<string>{"/2018/04/2018_04_22/20180422_161454_test.jpg"},
+				new List<byte[]>{new byte[0]});
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(null),
@@ -525,6 +519,64 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 
 			var items = storage.GetDirectories("/");
+		}
+
+
+		[TestMethod]
+		public void Preflight_Predict_Duplicates()
+		{
+			var appSettings = new AppSettings
+			{
+				Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext"
+			};
+			var query = new FakeIQuery();
+			var importQuery = new FakeIImportQuery(null);
+			var storage = new FakeIStorage(
+				new List<string>{"/","/0001","/2020"},
+				new List<string>{"/test.jpg","/0001/00010101_000000_d.png", 
+					"/0001/00010101_000000_d_2.png", "/2020/20200501_120000_1.png"},
+				new List<byte[]>{new byte[0], new byte[0], new byte[0], new byte[0]}
+			);
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
+				new FakeExifTool(storage, appSettings),query);
+			
+			var duplicatesExampleList = new List<ImportIndexItem>
+			{
+				new ImportIndexItem
+				{
+					FilePath = "/0001/00010101_000000_d.png",
+					Status = ImportStatus.Ok,
+					FileIndexItem = new FileIndexItem("/0001/00010101_000000_d.png")
+				},
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FilePath = "/0001/00010101_000000_d.png",
+					FileIndexItem = new FileIndexItem("/0001/00010101_000000_d.png")
+				},
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FilePath = "/2020/20200501_120000_d.png",
+					FileIndexItem = new FileIndexItem("/2020/20200501_120000_d.png")
+				},
+				new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FilePath = "/2020/20200501_120000_d.png",
+					FileIndexItem = new FileIndexItem("/2020/20200501_120000_d.png")
+				}
+			};
+
+			var result = importService.CheckForDuplicateNaming(duplicatesExampleList);
+
+			var fileIndexItemFilePathList = result.Select(x => x.FileIndexItem.FilePath).ToList();
+			Assert.AreEqual(4,fileIndexItemFilePathList.Count);
+			Assert.AreEqual("/0001/00010101_000000_d_1.png", fileIndexItemFilePathList[0]);
+			Assert.AreEqual("/0001/00010101_000000_d_3.png", fileIndexItemFilePathList[1]);
+			Assert.AreEqual("/2020/20200501_120000_d.png", fileIndexItemFilePathList[2]);
+			Assert.AreEqual("/2020/20200501_120000_d_1.png", fileIndexItemFilePathList[3]);
+
 		}
 
 	}

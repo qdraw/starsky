@@ -68,6 +68,7 @@ namespace starsky.foundation.database.Import
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
+			Console.Write("⬇️");
 			// removed MySqlException catch
 			return true;
 		}
