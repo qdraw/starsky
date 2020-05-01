@@ -51,10 +51,10 @@ namespace starsky.foundation.storage.Services
 		{
 			CheckStructureFormat();
 			var parsedStructuredList = ParseStructure(_structure, dateTime, fileNameBase, imageFormat);
-			
-			return PathHelper.AddSlash(
-				ApplyStructureRangeToStorage(parsedStructuredList.GetRange(0,parsedStructuredList.Count-1))
-				);
+
+			return ApplyStructureRangeToStorage(
+				parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
+
 		}
 		
 		/// <summary>

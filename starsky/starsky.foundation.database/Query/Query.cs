@@ -72,7 +72,17 @@ namespace starsky.foundation.database.Query
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
             filePath = SubPathSlashRemove(filePath);
-            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            FileIndexItem query;
+            try
+            {
+	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
+            catch (ObjectDisposedException)
+            {
+	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
             return query;
         }
 	    

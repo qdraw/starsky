@@ -74,12 +74,13 @@ namespace starsky.Controllers
                 
                 if ( _appSettings.Verbose )
                 {
-	                foreach (var file in importedFiles)
+	                foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
 	                {
 		                Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
 	                }
                 }
-
+                
+				// Remove source files
                 foreach ( var toDelPath in tempImportPaths )
                 {
 	                _hostFileSystemStorage.FileDelete(toDelPath);
@@ -156,7 +157,6 @@ namespace starsky.Controllers
 
 		    return Json(thumbnailNames);
 	    }
-
 
 	    /// <summary>
 	    /// Import file from web-url (only whitelisted domains) and import this file into the application

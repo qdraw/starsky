@@ -82,8 +82,18 @@ namespace starsky.foundation.database.Query
             if (_cache.TryGetValue(queryCacheName, out var objectFileFolders))
                 return objectFileFolders as List<FileIndexItem>;
             
-            objectFileFolders = QueryDisplayFileFolders(subPath);
-            CacheExtensions.Set<object>(_cache, queryCacheName, objectFileFolders, 
+            try
+            {
+	            objectFileFolders = QueryDisplayFileFolders(subPath);
+            }
+            catch (ObjectDisposedException)
+            {
+	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            objectFileFolders = QueryDisplayFileFolders(subPath);
+            }
+            
+            _cache.Set(queryCacheName, objectFileFolders, 
 	            new TimeSpan(1,0,0));
             return (List<FileIndexItem>) objectFileFolders;
         }

@@ -324,6 +324,7 @@ namespace starsky.feature.import.Services
 			importIndexItem.FileIndexItem.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
 				importIndexItem.FileIndexItem.ImageFormat);
+			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
 				importIndexItem.FileIndexItem.ImageFormat);
@@ -338,7 +339,8 @@ namespace starsky.feature.import.Services
 		/// <param name="inputFullPathList">list of files and folders (full path style)</param>
 		/// <param name="importSettings">settings</param>
 		/// <returns>status object</returns>
-		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
+		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, 
+			ImportSettingsModel importSettings)
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
@@ -364,7 +366,8 @@ namespace starsky.feature.import.Services
 		/// <param name="importIndexItem">config file</param>
 		/// <param name="importSettings">optional settings</param>
 		/// <returns>status</returns>
-		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
+		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, 
+			ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
@@ -392,7 +395,8 @@ namespace starsky.feature.import.Services
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
-		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, importSettings.ColorClass);
+		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
+			    importSettings.ColorClass);
 
 	        // Ignore the sync part if the connection is missing
 	        // or option enabled
@@ -474,7 +478,6 @@ namespace starsky.feature.import.Services
 			}
 			return PathHelper.AddSlash(parentDirectory) + PathHelper.RemovePrefixDbSlash(fileName);
 		}
-
 		
 		/// <summary>
 		/// Create parent folders if the folder does not exist on disk
@@ -510,12 +513,17 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		private List<string> AddedParentDirectories { get; set; } = new List<string>();
 
+		/// <summary>
+		/// Create a directory in the database
+		/// </summary>
+		/// <param name="parentPath">path to create</param>
+		/// <returns>async task</returns>
 		private async Task CreateNewDatabaseDirectory(string parentPath)
 		{
 			if ( AddedParentDirectories.Contains(parentPath) || 
 			     _query.SingleItem(parentPath) != null ) return;
 			
-			var item = new FileIndexItem(parentPath)
+			var item = new FileIndexItem(PathHelper.RemoveLatestSlash(parentPath))
 			{
 				AddToDatabase = DateTime.UtcNow,
 				IsDirectory = true,
@@ -525,6 +533,5 @@ namespace starsky.feature.import.Services
 			await _query.AddItemAsync(item);
 			AddedParentDirectories.Add(parentPath);
 		}
-
 	}
 }
