@@ -67,9 +67,12 @@ namespace starsky.feature.import.Services
 		/// <param name="fullFilePathsList">paths</param>
 		/// <param name="importSettings">settings</param>
 		/// <returns></returns>
-		public async Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, ImportSettingsModel importSettings)
+		public async Task<List<ImportIndexItem>> Preflight(List<string> fullFilePathsList, 
+			ImportSettingsModel importSettings)
 		{
-			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
+			var includedDirectoryFilePaths = AppendDirectoryFilePaths(
+				fullFilePathsList, 
+				importSettings);
 
 			var importIndexItemsList = new List<ImportIndexItem>();
 			var yourForeachTask =  Task.Run(() =>
@@ -82,60 +85,78 @@ namespace starsky.feature.import.Services
 				});
 			});
 			await yourForeachTask;
-			
-			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList);
+
+			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
+			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList, directoriesContent);
 			return importIndexItemsList;
 		}
 
-		internal List<ImportIndexItem> CheckForDuplicateNaming(List<ImportIndexItem> importIndexItemsList )
+		/// <summary>
+		/// Get a Dictionary with all the content of the parent folders
+		/// Used to scan for duplicate names
+		/// </summary>
+		/// <param name="importIndexItemsList">files to import, use FileIndexItem.ParentDirectory and status Ok</param>
+		/// <returns>All parent folders with content</returns>
+		internal Dictionary<string,List<string>> ParentFoldersDictionary(List<ImportIndexItem> importIndexItemsList)
 		{
-			var duplicateFirstItemsByFilePath = importIndexItemsList.
-				Where(p => p.Status == ImportStatus.Ok).
-				GroupBy(item => item.FileIndexItem.FilePath).
-				SelectMany(grp => grp.Skip(1).Take(1)).ToList();
-			// duplicateFirstItemsByFilePath is a list of the first item that is duplicate
-
-			// ForEach example: List of: "/0001/00010101_000000_d.png" and "/2020/20200501_120000_d.png"
-			foreach ( var duplicateFirstItem in duplicateFirstItemsByFilePath )
+			var directoriesContent = new Dictionary<string,List<string>>();
+			foreach ( var importIndexItem in importIndexItemsList.Where(p =>
+				p.Status == ImportStatus.Ok) )
 			{
+				if ( directoriesContent.ContainsKey(importIndexItem.FileIndexItem.ParentDirectory) )
+					continue;
+				
 				var parentDirectoryList =
 					_subPathStorage.GetAllFilesInDirectory(
-						duplicateFirstItem.FileIndexItem
-						.ParentDirectory).ToList();
-				
-				// Get all duplicates by filePath
+						importIndexItem.FileIndexItem
+							.ParentDirectory).ToList();
+				directoriesContent.Add(importIndexItem.FileIndexItem.ParentDirectory, parentDirectoryList);
+			}
+
+			return directoriesContent;
+		}
+
+		/// <summary>
+		/// Preflight for duplicate fileNames
+		/// </summary>
+		/// <param name="importIndexItemsList">list of files to be imported</param>
+		/// <param name="directoriesContent">Dictionary of all parent folders</param>
+		/// <returns>updated ImportIndexItem list</returns>
+		/// <exception cref="ApplicationException">when there are to many files with the same name</exception>
+		internal List<ImportIndexItem> CheckForDuplicateNaming(List<ImportIndexItem> importIndexItemsList,
+			Dictionary<string,List<string>> directoriesContent)
+		{
+			foreach ( var importIndexItem in importIndexItemsList.Where(p => p.Status == ImportStatus.Ok) )
+			{
+				// Try again until the max
+				var updatedFilePath = "";
 				var indexer = 0;
-				foreach ( var duplicatesByFilePath in importIndexItemsList.Where(p =>
-					p.FileIndexItem.FilePath == duplicateFirstItem.FileIndexItem.FilePath) )
+				for ( var i = 0; i < MaxTryGetDestinationPath; i++ )
 				{
-					// Try again until the max
-					for ( var i = 0; i < MaxTryGetDestinationPath; i++ )
+					updatedFilePath = AppendIndexerToFilePath(
+						importIndexItem.FileIndexItem.ParentDirectory, 
+						importIndexItem.FileIndexItem.FileName, indexer);
+					
+					var currentDirectoryContent =
+						directoriesContent[importIndexItem.FileIndexItem.ParentDirectory];
+					
+					if ( currentDirectoryContent.Any(p => p == updatedFilePath)  )
 					{
-						var tryAgainSubPath = AppendIndexerToFilePath(
-							duplicatesByFilePath.FileIndexItem.ParentDirectory, 
-							duplicatesByFilePath.FileIndexItem.FileName, indexer);
-						if ( parentDirectoryList.Any(p => p == tryAgainSubPath)  )
-						{
-							indexer++;
-							continue;
-						}
-						parentDirectoryList.Add(tryAgainSubPath);
-						i = MaxTryGetDestinationPath;
+						indexer++;
+						continue;
 					}
-
-					if ( indexer >= MaxTryGetDestinationPath )
-					{
-						throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
-					}
-
-					var updatedFilePath = AppendIndexerToFilePath(
-						duplicatesByFilePath.FileIndexItem.ParentDirectory, 
-						duplicatesByFilePath.FileIndexItem.FileName, indexer);
-
-					duplicatesByFilePath.FileIndexItem.FilePath = updatedFilePath;
-					duplicatesByFilePath.FileIndexItem.FileName = PathHelper.GetFileName(updatedFilePath);
-					duplicatesByFilePath.FilePath = updatedFilePath;
+					currentDirectoryContent.Add(updatedFilePath);
+					break;
 				}
+		
+				if ( indexer >= MaxTryGetDestinationPath || string.IsNullOrEmpty(updatedFilePath) )
+				{
+					throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
+				}
+		
+				importIndexItem.FileIndexItem.FilePath = updatedFilePath;
+				importIndexItem.FileIndexItem.FileName = PathHelper.GetFileName(updatedFilePath);
+				importIndexItem.FilePath = updatedFilePath;
 			}
 			return importIndexItemsList;
 		}
@@ -320,6 +341,8 @@ namespace starsky.feature.import.Services
 		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
+			var directoriesContent = ParentFoldersDictionary(preflightItemList);
+			await CreateParentFolders(directoriesContent);
 			
 			var items = new List<ImportIndexItem>();
 			var yourForeachTask =  Task.Run(() =>
@@ -332,7 +355,6 @@ namespace starsky.feature.import.Services
 				});
 			});
 			await yourForeachTask;
-			
 			return items.ToList();
 		}
 
@@ -345,8 +367,6 @@ namespace starsky.feature.import.Services
 		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
-
-			await CreateParentFolders(importIndexItem.FileIndexItem.ParentDirectory);
 
 			// Copy
 			if ( _appSettings.Verbose ) Console.WriteLine("Next Action = Copy" +
@@ -459,27 +479,29 @@ namespace starsky.feature.import.Services
 		/// <summary>
 		/// Create parent folders if the folder does not exist on disk
 		/// </summary>
-		/// <param name="parentDirectoryPath"></param>
-		private async Task CreateParentFolders(string parentDirectoryPath)
+		/// <param name="directoriesContent">List of all ParentFolders</param>
+		private async Task CreateParentFolders(Dictionary<string,List<string>> directoriesContent)
 		{
-			return;
-			var parentDirectoriesList = parentDirectoryPath.Split('/');
-
-			var parentPath = new StringBuilder();
-			await CreateNewDatabaseDirectory("/");
-
-			foreach ( var folderName in parentDirectoriesList )
+			foreach ( var parentDirectoryPath in directoriesContent )
 			{
-				if ( string.IsNullOrEmpty(folderName) ) continue;
-				parentPath.Append($"/{folderName}");
+				var parentDirectoriesList = parentDirectoryPath.Key.Split('/');
 
-				await CreateNewDatabaseDirectory(parentPath.ToString());
+				var parentPath = new StringBuilder();
+				await CreateNewDatabaseDirectory("/");
 
-				if ( _subPathStorage.ExistFolder(parentPath.ToString()))
+				foreach ( var folderName in parentDirectoriesList )
 				{
-					continue;
+					if ( string.IsNullOrEmpty(folderName) ) continue;
+					parentPath.Append($"/{folderName}");
+
+					await CreateNewDatabaseDirectory(parentPath.ToString());
+
+					if ( _subPathStorage.ExistFolder(parentPath.ToString()))
+					{
+						continue;
+					}
+					_subPathStorage.CreateDirectory(parentPath.ToString());
 				}
-				_subPathStorage.CreateDirectory(parentPath.ToString());
 			}
 		}
 		

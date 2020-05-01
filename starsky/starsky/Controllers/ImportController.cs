@@ -76,7 +76,7 @@ namespace starsky.Controllers
                 {
 	                foreach (var file in importedFiles)
 	                {
-		                Console.WriteLine($">> import => {file}");
+		                Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
 	                }
                 }
 

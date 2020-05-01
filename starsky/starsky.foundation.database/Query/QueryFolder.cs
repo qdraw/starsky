@@ -47,7 +47,6 @@ namespace starsky.foundation.database.Query
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            
             if (colorClassActiveList == null) colorClassActiveList = new List<ColorClassParser.Color>();
             if (colorClassActiveList.Any())
             {
@@ -91,9 +90,9 @@ namespace starsky.foundation.database.Query
 
         private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
         {
-            var queryItems = Queryable.Where<FileIndexItem>(_context.FileIndex,
-		            p => p.ParentDirectory == subPath)
-                .OrderBy(p => p.FileName).ToList();
+            var queryItems = _context.FileIndex.
+	            Where(p => p.ParentDirectory == subPath).
+	            OrderBy(p => p.FileName).ToList();
 
             return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
         }

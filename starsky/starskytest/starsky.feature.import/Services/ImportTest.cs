@@ -316,6 +316,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
+		[ExpectedException(typeof(ApplicationException))]
 		public async Task Importer_Over100Times()
 		{
 			var appSettings = new AppSettings();
@@ -333,11 +334,12 @@ namespace starskytest.starsky.feature.import.Services
 				new FakeIImportQuery(null),
 				new FakeExifTool(storage, appSettings), new FakeIQuery())
 			{
-				MaxTryGetDestinationPath = 1
+				MaxTryGetDestinationPath = 0
 			};
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
+			// System.ApplicationException
 			Assert.AreEqual(ImportStatus.FileError,result.FirstOrDefault().Status);
 		}
 		
@@ -348,8 +350,8 @@ namespace starskytest.starsky.feature.import.Services
 			
 			var storage = new FakeIStorage(
 				new List<string>{"/", "/2018", "/2018/04","/2018/04/2018_04_22"}, 
-				new List<string>{"/2018/04/2018_04_22/20180422_161454_test.jpg"},
-				new List<byte[]>{new byte[0]});
+				new List<string>{"/test.jpg","/2018/04/2018_04_22/20180422_161454_test.jpg"},
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, new byte[0]});
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(null),
@@ -358,6 +360,8 @@ namespace starskytest.starsky.feature.import.Services
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 			
+			Assert.AreEqual(ImportStatus.Ok,result.FirstOrDefault().Status);
+
 			// get something like  /2018/04/2018_04_22/20180422_161454_test_1.jpg
 			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.jpg", 1);
 			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
@@ -568,7 +572,8 @@ namespace starskytest.starsky.feature.import.Services
 				}
 			};
 
-			var result = importService.CheckForDuplicateNaming(duplicatesExampleList);
+			var directoriesContent = importService.ParentFoldersDictionary(duplicatesExampleList);
+			var result = importService.CheckForDuplicateNaming(duplicatesExampleList,directoriesContent);
 
 			var fileIndexItemFilePathList = result.Select(x => x.FileIndexItem.FilePath).ToList();
 			Assert.AreEqual(4,fileIndexItemFilePathList.Count);
@@ -576,7 +581,6 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual("/0001/00010101_000000_d_3.png", fileIndexItemFilePathList[1]);
 			Assert.AreEqual("/2020/20200501_120000_d.png", fileIndexItemFilePathList[2]);
 			Assert.AreEqual("/2020/20200501_120000_d_1.png", fileIndexItemFilePathList[3]);
-
 		}
 
 	}

@@ -103,16 +103,18 @@ namespace starsky
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)),
+	                    ServiceLifetime.Transient);
                     services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"),
+	                    ServiceLifetime.Transient);
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-	                
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)),
+	                    ServiceLifetime.Transient);
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
