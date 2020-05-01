@@ -333,6 +333,9 @@ namespace starsky.foundation.database.Query
 		    {
 			    await context.FileIndex.AddAsync(updateStatusContent);
 			    await context.SaveChangesAsync();
+			    // Fix for: The instance of entity type 'Item' cannot be tracked because
+			    // another instance with the same key value for {'Id'} is already being tracked
+			    _context.Entry(updateStatusContent).State = EntityState.Unchanged;
 		    }
 		    catch (MySqlException e)
 		    {

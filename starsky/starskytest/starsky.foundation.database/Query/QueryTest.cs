@@ -8,12 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
-using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.database.Query
 {
     [TestClass]
     public class QueryTest
@@ -24,15 +23,21 @@ namespace starskytest.Services
                 .AddMemoryCache()
                 .BuildServiceProvider();
             _memoryCache = provider.GetService<IMemoryCache>();
-            
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
-            var options = builder.Options;
-            var context = new ApplicationDbContext(options);
-            _query = new Query(context,_memoryCache, new AppSettings());
+            var serviceScope = CreateNewScope();
+            var scope = serviceScope.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
         }
 
-        private readonly Query _query;
+        private IServiceScopeFactory CreateNewScope()
+        {
+	        var services = new ServiceCollection();
+	        services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
+	        var serviceProvider = services.BuildServiceProvider();
+	        return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        }
+
+        private readonly global::starsky.foundation.database.Query.Query _query;
 
         private static FileIndexItem _insertSearchDatahiJpgInput;
         private static FileIndexItem _insertSearchDatahi2JpgInput;
@@ -614,11 +619,12 @@ namespace starskytest.Services
 	    [TestMethod]
 	    public async Task AddItemAsync()
 	    {
-		    var item = await _query.AddItemAsync(new FileIndexItem("test/test.jpg"));
-		    var result = _query.SingleItem("test/test.jpg");
+		    var item = await _query.AddItemAsync(new FileIndexItem("/test/test.jpg"));
+		    
+		    var result = _query.SingleItem("/test/test.jpg");
 
 		    Assert.IsNotNull(result.FileIndexItem);
-		    Assert.AreEqual("test/test.jpg", result.FileIndexItem.FilePath);
+		    Assert.AreEqual("/test/test.jpg", result.FileIndexItem.FilePath);
 		    
 		    _query.RemoveItem(item);
 	    }

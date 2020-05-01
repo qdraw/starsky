@@ -72,11 +72,11 @@ namespace starsky.feature.import.Services
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(fullFilePathsList, importSettings);
 
 			var items = new List<ImportIndexItem>();
-			Parallel.ForEach(includedDirectoryFilePaths, 
-				new ParallelOptions {MaxDegreeOfParallelism = 6}, async includedFilePath =>
-				{
-					items.Add(await PreflightPerFile(includedFilePath, importSettings)); ;
-				});
+			await RunMultiThreading.RunWithMaxDegreeOfConcurrency(6, includedDirectoryFilePaths, 
+				async includedFilePath =>
+			{
+				items.Add(await PreflightPerFile(includedFilePath, importSettings)); ;
+			});
 			return items;
 		}
 
@@ -94,7 +94,8 @@ namespace starsky.feature.import.Services
 				if ( _filesystemStorage.ExistFolder(fullFilePath) && importSettings.RecursiveDirectory)
 				{
 					// recursive
-					includedDirectoryFilePaths.AddRange(_filesystemStorage.GetAllFilesInDirectoryRecursive(fullFilePath)
+					includedDirectoryFilePaths.AddRange(_filesystemStorage.
+						GetAllFilesInDirectoryRecursive(fullFilePath)
 						.Where(ExtensionRolesHelper.IsExtensionSyncSupported)
 						.Select(syncedFiles => new KeyValuePair<string, bool>(syncedFiles, true)));
 					continue;
@@ -137,7 +138,8 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
-			var hashList = await new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
+			var hashList = await 
+				new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
 				Console.WriteLine(">> FileHash error");
@@ -251,12 +253,12 @@ namespace starsky.feature.import.Services
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			
-			var listOfTasks = new List<Task<ImportIndexItem>>();
-			foreach ( var preflightItem in preflightItemList )
-			{
-				listOfTasks.Add(Importer(preflightItem, importSettings));
-			}
-			var items = await Task.WhenAll(listOfTasks);
+			var items = new List<ImportIndexItem>();
+			await RunMultiThreading.RunWithMaxDegreeOfConcurrency(6, preflightItemList, 
+				async preflightItem =>
+				{
+					items.Add(await Importer(preflightItem, importSettings)); ;
+				});
 			return items.ToList();
 		}
 
@@ -269,10 +271,18 @@ namespace starsky.feature.import.Services
 		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
-
-			await CreateParentFolders(importIndexItem.FileIndexItem.ParentDirectory);
 			
-			importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
+			try
+			{
+				importIndexItem.FilePath  = GetDestinationPath(importIndexItem.FileIndexItem);
+			}
+			catch ( ApplicationException)
+			{
+				importIndexItem.Status = ImportStatus.FileError;
+				return importIndexItem;
+			}
+			
+			await CreateParentFolders(importIndexItem.FileIndexItem.ParentDirectory);
 
 			// Copy
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
@@ -407,7 +417,7 @@ namespace starsky.feature.import.Services
 			var parentDirectoriesList = parentDirectoryPath.Split('/');
 
 			var parentPath = new StringBuilder();
-			// await CreateNewDatabaseDirectory("/");
+			await CreateNewDatabaseDirectory("/");
 
 			foreach ( var folderName in parentDirectoriesList )
 			{

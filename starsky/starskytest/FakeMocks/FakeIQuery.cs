@@ -9,6 +9,12 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIQuery : IQuery
 	{
+		public FakeIQuery(List<FileIndexItem> fakeContext = null)
+		{
+			if ( fakeContext == null ) return;
+			_fakeContext = fakeContext;
+		}
+		
 		private List<FileIndexItem> _fakeContext = new List<FileIndexItem>();
 		
 		public List<FileIndexItem> GetAllFiles(string subPath)
@@ -41,11 +47,12 @@ namespace starskytest.FakeMocks
 			{
 				return null;
 			}
-			
-			return new DetailView
-			{
-				FileIndexItem = _fakeContext.FirstOrDefault(p => p.FilePath == singleItemDbPath)
-			};
+
+			var fileIndexItem = _fakeContext.FirstOrDefault(p => p.FilePath == singleItemDbPath);
+			if ( fileIndexItem == null ) return null;
+			fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
+			return new DetailView {FileIndexItem = fileIndexItem,};
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,

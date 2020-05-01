@@ -132,7 +132,8 @@ namespace starskytest.Controllers
 		public async Task ExportController_TestZipping() {
 			
 			// to avoid skip of adding zip
-			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
+			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, 
+					"*.*", SearchOption.AllDirectories)
 				.Where(p => ".zip" == Path.GetExtension(p) );
 			
 			foreach ( var toDelPath in zipFilesList )
@@ -155,10 +156,19 @@ namespace starskytest.Controllers
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{createAnImage.FilePath},new List<byte[]>{CreateAnImage.Bytes});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{createAnImage.FilePath},new List<byte[]>{CreateAnImage.Bytes});
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new ExportController(_query, _appSettings, backgroundQueue, storageSelector);
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem
+			{
+				FileName = _createAnImage.FileName,
+				ParentDirectory = "/",
+				FileHash = "t",
+				ColorClass = ColorClassParser.Color.Winner, // 1
+			}});
+				
+			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
