@@ -153,11 +153,11 @@ namespace starskytest.Controllers
 			await service.StartAsync(CancellationToken.None);
 
 			// the test
-			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{createAnImage.FilePath},new List<byte[]>{CreateAnImage.Bytes});
+				new List<string>{_createAnImage.FileName},new List<byte[]>{CreateAnImage.Bytes});
+			
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem
@@ -171,7 +171,7 @@ namespace starskytest.Controllers
 			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
+			var actionResult = controller.CreateZip(_createAnImage.DbPath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 
