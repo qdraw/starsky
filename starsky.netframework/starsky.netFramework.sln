@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyImporterNetFramework
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.import", "..\starsky\starsky.feature.import\starsky.feature.import.csproj", "{E9C60BF0-09B6-40C9-95B5-25C7A185365E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.ref", "starsky.ref", "{41C73FC4-D83B-4A35-9F34-33A0FB040D1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.database", "..\starsky\starsky.foundation.database\starsky.foundation.database.csproj", "{46588BF9-D745-460D-A22D-D8FDFC698809}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +43,20 @@ Global
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46588BF9-D745-460D-A22D-D8FDFC698809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46588BF9-D745-460D-A22D-D8FDFC698809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46588BF9-D745-460D-A22D-D8FDFC698809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46588BF9-D745-460D-A22D-D8FDFC698809}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BE68D644-E212-42C0-B77F-C5159D6A6A24}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
+		{11E98077-F12D-4F4A-A6A2-29A1B72D2757} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
+		{46588BF9-D745-460D-A22D-D8FDFC698809} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
 	EndGlobalSection
 EndGlobal
