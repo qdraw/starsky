@@ -18,6 +18,11 @@
     <ItemGroup>
        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
+<!--    https://stackoverflow.com/questions/44907819/microsoft-aspnetcore-hosting-abstractions-manifest-definition-does-not-match-the-->
+    <PropertyGroup>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.1.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="3.1.1" />
