@@ -3,19 +3,27 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using starskycore.Data;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 using SQLitePCL;
+using starsky.feature.import.Services;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Services;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 
 namespace starskyNetFrameworkShared
 {
     public class ConfigCliAppsStartupHelperNetFramework
     {
 
-        private readonly ImportService _import;
+        private readonly Import _import;
         private readonly SyncService _isync;
         private readonly ReadMeta _readmeta;
         private readonly IExifTool _exiftool;
@@ -79,8 +87,7 @@ namespace starskyNetFrameworkShared
 			Console.WriteLine(_appSettings.DatabaseConnection);
 
 #if DEBUG
-		    if ( _appSettings.DatabaseType ==
-		         starskycore.Models.AppSettings.DatabaseTypeList.Sqlite )
+		    if ( _appSettings.DatabaseType == starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Sqlite )
 		    {
 			    raw.SetProvider(new SQLite3Provider_e_sqlite3());
 		    }
@@ -102,13 +109,13 @@ namespace starskyNetFrameworkShared
             // Select database type
             switch ( _appSettings.DatabaseType)
             {
-                case starskycore.Models.AppSettings.DatabaseTypeList.Mysql:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Mysql:
                     builderDb.UseMySql(_appSettings.DatabaseConnection);
                     break;
-                case starskycore.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.InMemoryDatabase:
                     builderDb.UseInMemoryDatabase("Starsky");
                     break;
-                case starskycore.Models.AppSettings.DatabaseTypeList.Sqlite:
+                case starsky.foundation.platform.Models.AppSettings.DatabaseTypeList.Sqlite:
                     builderDb.UseSqlite(_appSettings.DatabaseConnection);
                     break;
                 default:
@@ -134,7 +141,7 @@ namespace starskyNetFrameworkShared
             //   _exiftool = exiftool
             //   _appSettingsJsonSettings = appSettings
             //   _readmeta = readmeta
-			_import = new ImportService(context, _isync, _exiftool, _appSettings, null, _iStorage);
+			_import = new Import()
 
 	        _thumbnailCleaner = new ThumbnailCleaner(query, _appSettings);
         }

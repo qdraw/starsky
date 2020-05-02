@@ -1,4 +1,6 @@
 ﻿using System;
+using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
@@ -29,7 +31,7 @@ namespace starskySyncNetFramework
             // Using both options
             string subpath;
             // -s = ifsubpath || -p is path
-            if (new ArgsHelper(appSettings).IfSubpathOrPath(args))
+            if (new ArgsHelper(appSettings).IfSubPathOrPath(args))
             {
                 subpath = new ArgsHelper(appSettings).GetSubpathFormArgs(args);
             }
@@ -41,7 +43,7 @@ namespace starskySyncNetFramework
             // overwrite subpath with relative days
             // use -g or --SubpathRelative to use it.
             // envs are not supported
-            var getSubpathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
+            var getSubpathRelative = new ArgsHelper(appSettings).GetSubPathRelative(args);
 			if (getSubpathRelative != string.Empty)
             {
                 subpath = getSubpathRelative;

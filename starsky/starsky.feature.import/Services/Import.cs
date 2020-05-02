@@ -8,6 +8,7 @@ using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -72,22 +73,16 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(
 				fullFilePathsList, 
-				importSettings);
+				importSettings).AsEnumerable();
 
-			var importIndexItemsList = new List<ImportIndexItem>();
-			var yourForeachTask =  Task.Run(() =>
-			{
-				Parallel.ForEach(includedDirectoryFilePaths, 
-					new ParallelOptions { MaxDegreeOfParallelism = 4 },
-					async includedFilePath =>
-				{
-					importIndexItemsList.Add(await PreflightPerFile(includedFilePath, importSettings));
-				});
-			});
-			await yourForeachTask;
+			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
+				.ForEachAsync<KeyValuePair<string,bool>,ImportIndexItem>(
+					async (includedFilePath) 
+						=> await PreflightPerFile(includedFilePath, importSettings));
 
+			var importIndexItemsList = importIndexItemsIEnumerable.ToList();
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
-			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList, directoriesContent);
+			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList.ToList(), directoriesContent);
 			return importIndexItemsList;
 		}
 
@@ -228,8 +223,8 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 
-			var isNewItemInDatabase = await _importQuery.IsHashInImportDbAsync(hashList.Key);
-			if (importSettings.IndexMode && isNewItemInDatabase )
+			
+			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
 			{
 				return new ImportIndexItem
 				{
@@ -238,12 +233,7 @@ namespace starsky.feature.import.Services
 					FileHash = hashList.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
-			}
-
-			if ( !isNewItemInDatabase && _appSettings.Verbose )
-			{
-				Console.WriteLine($">> new Item {hashList.Key}");
-			}
+			} 
 			
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
@@ -345,19 +335,13 @@ namespace starsky.feature.import.Services
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
 			await CreateParentFolders(directoriesContent);
-			
-			var items = new List<ImportIndexItem>();
-			var yourForeachTask =  Task.Run(() =>
-			{
-				Parallel.ForEach(preflightItemList, 
-					new ParallelOptions { MaxDegreeOfParallelism = 4 },
-					async preflightItem =>
-				{
-					items.Add(await Importer(preflightItem, importSettings));
-				});
-			});
-			await yourForeachTask;
-			return items.ToList();
+
+			var importIndexItemsIEnumerable = await preflightItemList.AsEnumerable()
+				.ForEachAsync(
+					async (preflightItem) 
+						=> await Importer(preflightItem, importSettings));
+
+			return importIndexItemsIEnumerable.ToList();
 		}
 
 		/// <summary>
