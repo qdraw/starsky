@@ -45,11 +45,13 @@ namespace starsky.foundation.database.Import
 		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
-			
+
 			if ( _isConnection )
-				return await dbContext.ImportIndex.CountAsync(p => 
-					       p.FileHash == fileHashCode) != 0; 
-			// there is no any in ef core
+			{
+				var value = await dbContext.ImportIndex.CountAsync(p => 
+					p.FileHash == fileHashCode) != 0; 			// there is no any in ef core
+				return value;
+			}
 
 			// When there is no mysql connection continue
 			Console.WriteLine($">> _isConnection == false");

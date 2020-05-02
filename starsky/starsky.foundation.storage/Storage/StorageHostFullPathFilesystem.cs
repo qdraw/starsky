@@ -234,7 +234,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !stream.CanRead ) return false;
 			using (var fileStream = new FileStream(path, FileMode.Create, 
-				FileAccess.Write, FileShare.None, 4096, 
+				FileAccess.Write, FileShare.Read, 4096, 
 				FileOptions.Asynchronous | FileOptions.SequentialScan))
 			{
 				await stream.CopyToAsync(fileStream);
