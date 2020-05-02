@@ -195,7 +195,17 @@ namespace starsky.foundation.database.Query
 	        updateStatusContent.SetLastEdited();
 	        
             _context.Attach(updateStatusContent).State = EntityState.Modified;
-            _context.SaveChanges();
+            
+            try
+            {
+	            _context.SaveChanges();
+            }
+            catch ( ObjectDisposedException)
+            {
+	            if ( _appSettings.Verbose ) Console.WriteLine("Retry ObjectDisposedException");
+	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            _context.SaveChanges();
+            }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 			
