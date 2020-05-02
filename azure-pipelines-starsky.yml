@@ -55,7 +55,7 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Cake Client'
-  enabled: false
+  enabled: true
   inputs:
     filePath: 'starsky\build.ps1'
     arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
