@@ -45,9 +45,14 @@ while [ $COUNTER -lt $MAXCOUNTER ]; do
 		let COUNTER=COUNTER+1
 	else
 		echo "$COUNTER - $CURLOUTPUT - done"
-		COUNTER=$MAXCOUNTER
+    let COUNTER=MAXCOUNTER+1 # to exit the while loop
 	fi
 done
+
+if [[ $COUNTER == $MAXCOUNTER  ]]; then
+ echo "!> FAIL Tried more than "$MAXCOUNTER" Times"
+ exit 1
+fi
 
 # To make Search Suggestions at start faster
 CURLSUGGESTOUTPUT=`curl -X GET -LI "$URL"/api/suggest/inflate -o /dev/null -w '%{http_code}\n' -s`
