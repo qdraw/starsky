@@ -226,8 +226,6 @@ namespace starsky.foundation.platform.Helpers
 					Console.WriteLine("--path or -p == parameter: (string) ; full path");
 					Console.WriteLine("                can be an folder or file, use '-p' for current directory");
 					Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
-					Console.WriteLine("--all or -a == import all files including files older than 2 years" +
-						" (default: false / ignore old files) ");
 					Console.WriteLine("--recursive or -r == Import Directory recursive " +
 						"(default: false / only the selected folder) ");
 					Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+

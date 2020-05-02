@@ -85,7 +85,6 @@ Starksy Importer Cli ~ Help:
 --path or -p == parameter: (string) ; full path
                 can be an folder or file, use '-p' for current directory
 --move or -m == delete file after importing (default false / copy file)
---all or -a == import all files including files older than 2 years (default: false / ignore old files)
 --recursive or -r == Import Directory recursive (default: false / only the selected folder)
 --structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
 --index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true

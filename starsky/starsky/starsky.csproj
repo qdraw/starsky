@@ -14,6 +14,8 @@
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+        <!-- include to avoid on linux-arm Unhandled exception. 
+        System.IO.FileLoadException: Could not load file or assembly 'Microsoft.AspNetCore.Hosting.Abstractions -->
       <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
