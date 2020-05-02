@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using RazorLight;
+using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -18,7 +19,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	        _hostFileSystemStorage = fileSystemStorage;
             _engine = new RazorLightEngineBuilder()
                 .UseEmbeddedResourcesProject(typeof(Helpers.PublishManifest))
-				.UseEmbeddedResourcesProject(typeof(starskywebhtmlcli.ViewModels.WebHtmlViewModel))
+				.UseEmbeddedResourcesProject(typeof(WebHtmlViewModel))
 				.UseEmbeddedResourcesProject(typeof(AppSettings))
 				.UseEmbeddedResourcesProject(typeof(FileIndexItem))
                 .UseEmbeddedResourcesProject(typeof(System.Linq.Enumerable))

@@ -9,15 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
-      <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
-      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="RazorLight" Version="2.0.0-beta4" />
+      <PackageReference Include="RazorLight" Version="2.0.0-beta7" />
       <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
       <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0005" />
     </ItemGroup>
@@ -29,6 +21,14 @@
     
     <ItemGroup>
       <Folder Include="WebHtmlPublish" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+      <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     </ItemGroup>
 
 </Project>
