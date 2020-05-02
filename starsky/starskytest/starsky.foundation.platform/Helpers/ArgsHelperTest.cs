@@ -9,12 +9,9 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
-using starskycore.Helpers;
-using starskycore.Middleware;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.foundation.platform.Helpers
 {
     [TestClass]
     public class ArgsHelperTest
