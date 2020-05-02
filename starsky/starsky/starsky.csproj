@@ -14,7 +14,7 @@
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-<!--      <FrameworkReference Include="Microsoft.AspNetCore.App" />-->
+      <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.0.0" />

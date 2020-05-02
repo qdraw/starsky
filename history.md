@@ -27,11 +27,14 @@
 - [x]   (Fixed)  _Front-end_ add bugfix for double slash on home while selecting files
 - [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
 - [x]   (Fixed)  _Front-end_ order when files are added does now match the backend (archive-context)
-
-todo fix issue delete next search
-todk video invalid datetime
+- [x]   (Removed) _Back-end_ Import to filter on files older than 2 years
+- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
+- [x]   (feature) _Back-end_ Import to async function refactor
+- [x]   (Fixed)  _Front-end_ Fix issue delete next search __not implemented__
+- [x]   (Fixed)  _Front-end_ video invalid datetime __not implemented__
 
 # version 0.2.2 - 2020-04-17
+__Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
 - [x]   (Added) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
 - [x]   (Fixed)  _Front-end_ Collection support in update tags / ColorClassSelect
