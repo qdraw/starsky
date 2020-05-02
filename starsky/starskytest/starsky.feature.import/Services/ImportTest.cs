@@ -202,7 +202,7 @@ namespace starskytest.starsky.feature.import.Services
 				appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null);
 			
-			var result = await importService.Preflight(
+			var importIndexItems = await importService.Preflight(
 				new List<string> {"/"},
 				new ImportSettingsModel
 				{
@@ -210,17 +210,23 @@ namespace starskytest.starsky.feature.import.Services
 					IndexMode = false
 				});
 			
-			Assert.IsNotNull(result.FirstOrDefault());
-			Assert.AreEqual(3,result.Count);
+			Assert.IsNotNull(importIndexItems.FirstOrDefault());
 
-			Assert.AreEqual(ImportStatus.Ok, result[0].Status);
-			Assert.AreEqual(ImportStatus.Ok, result[1].Status);
-			Assert.AreEqual(ImportStatus.Ok, result[2].Status);
+			foreach ( var item in importIndexItems )
+			{
+				Console.WriteLine(item.FilePath);
+			}
+			
+			Assert.AreEqual(3,importIndexItems.Count);
+
+			Assert.AreEqual(ImportStatus.Ok, importIndexItems[0].Status);
+			Assert.AreEqual(ImportStatus.Ok, importIndexItems[1].Status);
+			Assert.AreEqual(ImportStatus.Ok, importIndexItems[2].Status);
 
 			// "/layer0.jpg","/test/layer1.jpg", "/test/test/layer2.jpg" (order is random)
-			Assert.IsTrue(result.Any(p => p.SourceFullFilePath == "/layer0.jpg"));
-			Assert.IsTrue(result.Any(p => p.SourceFullFilePath == "/test/layer1.jpg"));
-			Assert.IsTrue(result.Any(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
+			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/layer0.jpg"));
+			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/layer1.jpg"));
+			Assert.IsTrue(importIndexItems.Any(p => p.SourceFullFilePath == "/test/test/layer2.jpg"));
 		}
 		
 		[TestMethod]

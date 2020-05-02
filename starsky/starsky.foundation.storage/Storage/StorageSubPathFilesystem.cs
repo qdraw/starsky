@@ -99,7 +99,6 @@ namespace starsky.foundation.storage.Storage
 		/// Create an Directory 
 		/// </summary>
 		/// <param name="subPath">location</param>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public void CreateDirectory(string subPath)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
@@ -111,7 +110,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">subPath</param>
 		/// <returns>bool</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool FolderDelete(string path)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);

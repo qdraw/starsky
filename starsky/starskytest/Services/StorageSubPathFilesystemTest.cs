@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,9 +22,12 @@ namespace starskytest.Services
             
 			// Used For subfolders
 			var newImage = new CreateAnImage();
-			var filesInFolder = new StorageSubPathFilesystem(new AppSettings{StorageFolder = newImage.BasePath}).GetDirectoryRecursive("/").ToList();
+			var appSettings = new AppSettings {StorageFolder = newImage.BasePath};
+			var storage = new StorageSubPathFilesystem(appSettings);
+			storage.CreateDirectory("test");
+			var filesInFolder = storage.GetDirectoryRecursive("/").ToList();
+			
 			Assert.AreEqual(true,filesInFolder.Any());
-            
 		}
 	}
 }

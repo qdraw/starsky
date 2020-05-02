@@ -64,16 +64,20 @@ namespace starskytest.starsky.foundation.storage.Services
 		}
 
 		[TestMethod]
-		public void ParseSubfolders_TrFolder_RealFs()
+		public void ParseSubfolders_TestFolder_RealFs()
 		{
-			var structure = "/\\t*/yyyyMMdd_HHmmss_{filenamebase}.ext";
-			var result = new StructureService(new StorageSubPathFilesystem(new AppSettings
+			var structure = "/\\te\\s*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+
+			var storage = new StorageSubPathFilesystem(new AppSettings
 			{
 				StorageFolder = new CreateAnImage().BasePath
-			}), structure).ParseSubfolders(
+			});
+			storage.CreateDirectory("test");
+			
+			var result = new StructureService(storage, structure).ParseSubfolders(
 				new DateTime(2020, 01, 01, 01, 01, 01));
 			
-			Assert.AreEqual("/tr",result);
+			Assert.AreEqual("/test",result);
 		}
 		
 		[TestMethod]
