@@ -8,6 +8,7 @@ using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -72,22 +73,17 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(
 				fullFilePathsList, 
-				importSettings);
+				importSettings).AsEnumerable();
 
-			var importIndexItemsList = new List<ImportIndexItem>();
-			var yourForeachTask =  Task.Run(() =>
-			{
-				Parallel.ForEach(includedDirectoryFilePaths, 
-					new ParallelOptions { MaxDegreeOfParallelism = 4 },
-					async includedFilePath =>
-				{
-					importIndexItemsList.Add(await PreflightPerFile(includedFilePath, importSettings));
-				});
-			});
-			await yourForeachTask;
+			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
+				.ForEachAsync<KeyValuePair<string,bool>,ImportIndexItem>(
+					async (includedFilePath) 
+						=> await PreflightPerFile(includedFilePath, importSettings), 
+					4);
 
+			var importIndexItemsList = importIndexItemsIEnumerable.ToList();
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
-			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList, directoriesContent);
+			importIndexItemsList = CheckForDuplicateNaming(importIndexItemsList.ToList(), directoriesContent);
 			return importIndexItemsList;
 		}
 

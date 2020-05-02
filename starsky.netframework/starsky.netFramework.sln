@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyNetFrameworkShared",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyImporterNetFrameworkCli", "starskyImporterNetFrameworkCli\starskyImporterNetFrameworkCli.csproj", "{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.import", "..\starsky\starsky.feature.import\starsky.feature.import.csproj", "{E9C60BF0-09B6-40C9-95B5-25C7A185365E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
