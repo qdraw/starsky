@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
+using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
@@ -28,12 +29,12 @@ namespace starsky.Controllers
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
 
-		public UploadController(IImport import, AppSettings appSettings, 
-			ISync sync, ISelectorStorage selectorStorage, IQuery query)
+		public UploadController(IImport import, AppSettings appSettings, ISync sync, 
+			ISelectorStorage selectorStorage, IQuery query)
 		{
 			_appSettings = appSettings;
-			_import = import;
 			_iSync = sync;
+			_import = import;
 			_query = query;
 			_selectorStorage = selectorStorage;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -81,7 +82,7 @@ namespace starsky.Controllers
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			
 			
-			var fileIndexResultsList = _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
+			var fileIndexResultsList = await _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
@@ -91,9 +92,8 @@ namespace starsky.Controllers
 				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
-				_iStorage.WriteStream(tempFileStream, parentDirectory + fileName);
-				
-				tempFileStream.Dispose();
+				await _iStorage.WriteStreamAsync(tempFileStream, parentDirectory + fileName);
+				await tempFileStream.DisposeAsync();
 				
 				_iSync.SyncFiles(parentDirectory + fileName,false);
 				

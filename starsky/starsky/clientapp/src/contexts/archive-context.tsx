@@ -5,6 +5,7 @@ import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { IRelativeObjects, newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import ArrayHelper from '../shared/array-helper';
 
 const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContext)
 
@@ -104,9 +105,13 @@ export function archiveReducer(state: State, action: Action): State {
       var filterOkCondition = (value: IFileIndexItem) => {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
-      var concattedFileIndexItems = state.fileIndexItems.concat(action.add);
-      var fileIndexItems = [...concattedFileIndexItems].sort((a, b) => (a.filePath > b.filePath) ? 1 : -1); // sort on filePath
-      fileIndexItems = fileIndexItems.filter((v, i, a) => a.findIndex(t => (t.filePath === v.filePath)) === i); // duplicate check
+
+      var concattedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
+      concattedFileIndexItems = new ArrayHelper().UniqueResults(concattedFileIndexItems, 'filePath');
+
+      // order by this to match c#
+      var fileIndexItems = concattedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
+
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       return { ...state, fileIndexItems, lastUpdated: new Date() };
   }

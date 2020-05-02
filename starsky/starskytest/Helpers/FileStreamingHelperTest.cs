@@ -1,19 +1,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Streaming;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
-using starsky.Helpers;
-using starskycore.Middleware;
-using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -45,7 +41,7 @@ namespace starskytest.Helpers
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             // build the service
             var serviceProvider = services.BuildServiceProvider();
             // get the service

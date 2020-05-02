@@ -3,17 +3,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.Controllers
 {
 	[Authorize]
 	public class RedirectController : Controller
 	{
-		private readonly AppSettings _appsettings;
+		private readonly StructureService _structureService;
 
-		public RedirectController(AppSettings appsettings = null)
+		public RedirectController(ISelectorStorage selectorStorage, AppSettings appSettings)
 		{
-			_appsettings = appsettings;
+			var storage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_structureService = new StructureService(storage, appSettings.Structure);
 		}
 			    
 		/// <summary>
@@ -34,15 +38,10 @@ namespace starsky.Controllers
 			// Fallback for dates older than 24-11-1854 to avoid a exception.
 			if ( value < -60000 ) value = 0;
 			
-			var importmodel = new ImportIndexItem(_appsettings)
-			{
-				DateTime = DateTime.Today.AddDays(value), 
-				SourceFullFilePath = "notimplemented.jpg"
-			};
 			// expect something like this: /2018/09/2018_09_02/
-			var subpath = importmodel.ParseSubfolders(false);
-			if(json) return Json(subpath);
-			return RedirectToAction("Index", "Home", new { f = subpath });
+			var subPath = _structureService.ParseSubfolders(DateTime.Today.AddDays(value));
+			if(json) return Json(subPath);
+			return RedirectToAction("Index", "Home", new { f = subPath });
 		}
 
 	}

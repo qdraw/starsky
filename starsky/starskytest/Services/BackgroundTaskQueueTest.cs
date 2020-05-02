@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starskycore.Middleware;
 using starskycore.Models;
@@ -35,7 +36,7 @@ namespace starskytest.Services
             var services = new ServiceCollection();
 
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
             // Add Background services
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();

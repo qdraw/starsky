@@ -59,29 +59,36 @@ namespace starsky.foundation.storage.Services
         private async Task<KeyValuePair<string,bool>> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
         {
             //adding .ConfigureAwait(false) may NOT be what you want but google it.
-            return await Task.Run(() => Md5Timeout(fullFileName,timeoutSeconds)).ConfigureAwait(false);
+            return await Task.Run(() => GetHashCodeAsync(fullFileName,timeoutSeconds)).ConfigureAwait(false);
         }
 
-        // Yes I know that I don't use the class propper, I use it in a sync way.
-        #pragma warning disable 1998
-        private async Task<KeyValuePair<string,bool>> Md5Timeout(string fullFileName, int timeoutSeconds){
-        #pragma warning restore 1998
-
-            var task = Task.Run(() => CalculateMd5Async(fullFileName));
-            
-            if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
+        /// <summary>
+        /// Get FileHash Async in the timeoutSeconds time
+        /// </summary>
+        /// <param name="fullFileName">full filePath on disk to have the file</param>
+        /// <param name="timeoutSeconds">number of seconds to be hashed</param>
+        /// <returns></returns>
+#pragma warning disable 1998
+        public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutSeconds = 20)
+#pragma warning restore 1998
+        {
+	        var task = Task.Run(() => CalculateMd5Async(fullFileName));
+			if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
 				return new KeyValuePair<string,bool>(task.Result,true);
-            }
+			}
 
-            // Sometimes a Calc keeps waiting for days
+			// Sometimes a Calc keeps waiting for days
             Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
                               + fullFileName 
                               + "            <<<<<<<<<<<<");
-            
             return new KeyValuePair<string,bool>(Base32.Encode(GenerateRandomBytes(27)) + "_T", false);
-            }
+        }
 
-        // Create a random string
+        /// <summary>
+        /// Create a random string
+        /// </summary>
+        /// <param name="length">number of chars</param>
+        /// <returns>random string</returns>
         public static byte[] GenerateRandomBytes(int length)
         {
             // Create a buffer
@@ -108,18 +115,19 @@ namespace starsky.foundation.storage.Services
         }
 
         /// <summary>
-        ///  Calculate the hash based on the first 8 Kilobytes of the file
+        /// Calculate the hash based on the first 8 Kilobytes of the file
+        /// @see https://stackoverflow.com/a/45573180
         /// </summary>
-        /// <param name="subPath"></param>
-        /// <returns></returns>
-        private async Task<string> CalculateMd5Async(string subPath)
+        /// <param name="fullFilePath">full File Path on disk</param>
+        /// <returns>Task with a md5 hash</returns>
+        private async Task<string> CalculateMd5Async(string fullFilePath)
         {
             var block = ArrayPool<byte>.Shared.Rent(8192); // 8 Kilobytes
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.ReadStream(subPath,8192)) // reading 8 Kilobytes
+                    using (var stream = _iStorage.ReadStream(fullFilePath,8192)) // reading 8 Kilobytes
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length).ConfigureAwait(false)) > 0)
@@ -136,7 +144,6 @@ namespace starsky.foundation.storage.Services
             {
                 ArrayPool<byte>.Shared.Return(block);
             }
-	        // Source: https://stackoverflow.com/a/45573180
         }
     }
 }

@@ -129,10 +129,8 @@ namespace starskytest.Services
             // This is not to be the first file in the test directory
             // => otherwise SyncServiceFirstItemDirectoryTest() will fail
             _appSettings.StorageFolder = createAnImage.BasePath;
-            var importSettings = new ImportSettingsModel();
-            importSettings.DeleteAfter = false;
-            importSettings.AgeFileFilterDisabled = false;
-            
+            var importSettings = new ImportSettingsModel {DeleteAfter = false, AgeFileFilterDisabled = true};
+
             _import.Import(createAnImage.FullFilePath,importSettings);
             
             var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
@@ -158,23 +156,22 @@ namespace starskytest.Services
             _appSettings.Structure = "/\\t\\r*/HHmmss_\\d.ext";
             _appSettings.StorageFolder = createAnImage.BasePath;
 
-            Console.WriteLine(createAnImage.FullFilePath);
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             _import.Import(createAnImage.FullFilePath,importSettings);
             
 	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
 
-            // Clean file after succesfull run;
+            // Clean file after successful run;
             var fileIndexItem = _readmeta.ReadExifAndXmpFromFile(createAnImage.DbPath);
             var importIndexItem = new ImportIndexItem(_appSettings)
             {
                 SourceFullFilePath = createAnImage.FullFilePath,  
-                DateTime = fileIndexItem.DateTime
+                DateTime = fileIndexItem.DateTime,
             };
 
             Console.WriteLine("---");
@@ -183,6 +180,18 @@ namespace starskytest.Services
             var path = _appSettings.DatabasePathToFilePath(
                 importIndexItem.ParseSubfolders() + importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg)
             );
+
+            if ( path == null )
+            {
+	            throw new 
+		            Exception($"Path "+
+		            _appSettings.DatabasePathToFilePath(importIndexItem.ParseSubfolders() + 
+		            importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg),
+			        false) + " is not found");
+            }
+
+            var t = importIndexItem.ParseSubfolders() +
+                    importIndexItem.ParseFileName(ExtensionRolesHelper.ImageFormat.jpg);
 
             File.Delete(path);
 
@@ -210,7 +219,7 @@ namespace starskytest.Services
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             
             _appSettings.Structure = "/\\e\\x\\i\\s\\t/\\a\\b\\c/HHmmss.ext";
@@ -281,7 +290,7 @@ namespace starskytest.Services
         {
 	        RemoveFromQuery();
 
-            var createAnImage = new CreateAnImage();
+            var createAnImage = new CreateAnImage{};
             _appSettings.StorageFolder = createAnImage.BasePath;
             
             Console.WriteLine(_appSettings.StorageFolder);
@@ -289,9 +298,11 @@ namespace starskytest.Services
             _appSettings.Structure = "/xuxuxuxu_ssHHmm.ext";
 
 
-            var importSettings = new ImportSettingsModel();
-            importSettings.DeleteAfter = false;
-            importSettings.AgeFileFilterDisabled = false;
+            var importSettings = new ImportSettingsModel {
+		            DeleteAfter = false, 
+		            AgeFileFilterDisabled = true
+	            };
+            
             Assert.AreNotEqual(string.Empty,_import.Import(createAnImage.BasePath,importSettings).FirstOrDefault());  
 	        var fileHashCode = new FileHash(_iStorage).GetHashCode(createAnImage.DbPath).Key;
             Assert.AreEqual(true, _import.IsHashInImportDb(fileHashCode));
@@ -332,7 +343,7 @@ namespace starskytest.Services
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             var createAnImage = new CreateAnImage();
 	        var t = _query.GetAllRecursive().Where(p => p.FileHash == _fileHashCreateAnImage);
@@ -445,7 +456,7 @@ namespace starskytest.Services
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = true,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             _import.Import(fullFilePath, importSettings);
 
@@ -500,7 +511,7 @@ namespace starskytest.Services
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             Assert.AreNotEqual(string.Empty,_import.Import(
                 createAnImage.BasePath,importSettings).FirstOrDefault());  // So testing the folder feature
@@ -549,7 +560,7 @@ namespace starskytest.Services
             var importSettings = new ImportSettingsModel
             {
                 DeleteAfter = false,
-                AgeFileFilterDisabled = false
+                AgeFileFilterDisabled = true
             };
             _import.Import(storeItemInList,importSettings);
             
@@ -629,7 +640,7 @@ namespace starskytest.Services
 		    var importSettings = new ImportSettingsModel
 		    {
 			    DeleteAfter = false,
-			    AgeFileFilterDisabled = false,
+			    AgeFileFilterDisabled = true,
 			    Structure = "/HHmmss_yyyyMMdd_\\2.ext",
 			    IndexMode = false // <=================== disable check
 		    };

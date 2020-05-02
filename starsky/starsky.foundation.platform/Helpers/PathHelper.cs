@@ -79,20 +79,19 @@ namespace starsky.foundation.platform.Helpers
             return thumbnailTempFolder;
         }
 
-	    /// <summary>
-	    /// Add slash / => always
-	    /// </summary>
-	    /// <param name="thumbnailTempFolder"></param>
-	    /// <returns>value +/</returns>
-        public static string AddSlash(string thumbnailTempFolder) { 
-            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return thumbnailTempFolder;
+		/// <summary>
+		/// Add / to end of file
+		/// </summary>
+		/// <param name="inputFolder">Input folder path</param>
+		/// <returns>value +/</returns>
+		public static string AddSlash(string inputFolder) { 
+            if (string.IsNullOrWhiteSpace(inputFolder) ) return inputFolder;
             
-            if (thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-                    1) != Path.DirectorySeparatorChar.ToString())
+            if ( inputFolder.Substring(inputFolder.Length - 1, 1) != "/")
             {
-                thumbnailTempFolder += "/";
+				inputFolder += "/";
             }
-            return thumbnailTempFolder;
+            return inputFolder;
         }
         
 

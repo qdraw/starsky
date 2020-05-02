@@ -65,8 +65,8 @@ for (var i = 0; i < blobPathList.length; i++) {
 	var filePath = blobPathList[i];
 	var relativeSource = path.join(__dirname, prefixPath, filePath);
 	var outputPath = path.join(__dirname, filePath);
-	console.log(outputPath);
-	fs.copyFileSync(relativeSource, outputPath, { flag: 'w' })
+	console.log(relativeSource, outputPath);
+	fs.copyFileSync(relativeSource, outputPath)
 }
 
 for (var i = 0; i < htmlFullPathList.length; i++) {

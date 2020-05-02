@@ -2,7 +2,7 @@
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 
-namespace starskywebhtmlcli.ViewModels
+namespace starsky.feature.webhtmlpublish.ViewModels
 {
     public class WebHtmlViewModel
     {

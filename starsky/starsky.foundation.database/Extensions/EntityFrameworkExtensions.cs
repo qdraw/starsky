@@ -14,6 +14,8 @@ namespace starsky.foundation.database.Extensions
 		/// <exception cref="ArgumentNullException">When AppSettings is null</exception>
 		public static bool TestConnection(this DbContext context)
 		{
+			if ( context?.Database == null ) return false;
+			
 			try
 			{
 				context.Database.CanConnect();

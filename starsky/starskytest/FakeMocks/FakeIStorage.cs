@@ -6,14 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
-using starskytest.FakeCreateAn;
-using starskytest.Services;
 
 namespace starskytest.FakeMocks
 {
@@ -110,7 +105,12 @@ namespace starskytest.FakeMocks
 
 		public void FileCopy(string fromPath, string toPath)
 		{
-			throw new NotImplementedException();
+			fromPath = PathHelper.PrefixDbSlash(fromPath);
+			toPath = PathHelper.PrefixDbSlash(toPath);
+			if ( !ExistFile(fromPath) ) return;
+			
+			_outputSubPathFiles.Add(toPath);
+			_byteList.Add(toPath,_byteList[fromPath]);
 		}
 
 		public bool FileDelete(string path)
@@ -145,17 +145,39 @@ namespace starskytest.FakeMocks
 			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p)).AsEnumerable();
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string fullFilePath)
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
 		{
-			throw new NotImplementedException();
+			subPath = PathHelper.RemoveLatestSlash(subPath);
+			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
+		}
+
+		/// <summary>
+		/// Should output: /2020/01/2020_01_01 and /2020/01/2020_01_01 test
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			
+			path = PathHelper.RemoveLatestSlash(path);
+			var folderFileList = _outputSubPathFolders.
+				Where(p => p.Contains(path) && p != path).
+				ToList();
+			
+			var parentPathWithSlash = string.IsNullOrEmpty(path) ? "/" : path;
+
+			var folderFileListNotRecrusive = folderFileList.Where(p => CheckAndFixChildFolders(parentPathWithSlash, p)).ToList();
+			return folderFileListNotRecrusive;
+		}
+
+		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
+		{
+			return Regex.Match(childFolder, $"^{Regex.Escape(PathHelper.AddSlash(parentFolder))}[^/]+$").Success;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
-
-			var value = $"^{Regex.Escape(parentFolder)}" + "\\/\\w+.[a-z]{3}$";
-			
 			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "\\/\\w+.[a-z]{3}$").Success;
 		}
 
@@ -180,7 +202,7 @@ namespace starskytest.FakeMocks
 				MemoryStream stream = new MemoryStream(byteArray);
 				return stream;
 			}
-			if ( !ExistFile(path) ) throw new FileNotFoundException(path);
+			if ( !ExistFile(path) ) throw new FileNotFoundException($"{path} is not found in FakeStorage");
 
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 			MemoryStream stream1 = new MemoryStream(result);

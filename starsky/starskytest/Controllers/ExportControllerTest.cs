@@ -18,13 +18,13 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Middleware;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -78,7 +78,7 @@ namespace starskytest.Controllers
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
-			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
@@ -132,7 +132,8 @@ namespace starskytest.Controllers
 		public async Task ExportController_TestZipping() {
 			
 			// to avoid skip of adding zip
-			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, "*.*", SearchOption.AllDirectories)
+			var zipFilesList = Directory.GetFiles(_createAnImage.BasePath, 
+					"*.*", SearchOption.AllDirectories)
 				.Where(p => ".zip" == Path.GetExtension(p) );
 			
 			foreach ( var toDelPath in zipFilesList )
@@ -152,16 +153,25 @@ namespace starskytest.Controllers
 			await service.StartAsync(CancellationToken.None);
 
 			// the test
-			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{createAnImage.FilePath},new List<byte[]>{CreateAnImage.Bytes});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{_createAnImage.FileName},new List<byte[]>{CreateAnImage.Bytes});
+			
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new ExportController(_query, _appSettings, backgroundQueue, storageSelector);
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem
+			{
+				FileName = _createAnImage.FileName,
+				ParentDirectory = "/",
+				FileHash = "t",
+				ColorClass = ColorClassParser.Color.Winner, // 1
+			}});
+				
+			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.CreateZip(createAnImage.FilePath,true,false) as JsonResult;
+			var actionResult = controller.CreateZip(_createAnImage.DbPath,true,false) as JsonResult;
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 

@@ -214,7 +214,11 @@ namespace starsky.foundation.platform.Models
         [JsonIgnore]
         public TimeZoneInfo CameraTimeZoneInfo { get; set; }
 
-        // To Check if the structure is any good
+        /// <summary>
+        /// To Check if the structure is any good
+        /// </summary>
+        /// <param name="structure"></param>
+        /// <exception cref="ArgumentException"></exception>
         public static void StructureCheck(string structure)
         {
             // Unescaped regex:
@@ -372,6 +376,11 @@ namespace starsky.foundation.platform.Models
 		    return appSettings;
 	    }
 
+		/// <summary>
+		/// StorageFolders ends always with a backslash
+		/// </summary>
+		/// <param name="subpath">in OS Style, StorageFolder ends with backslash</param>
+		/// <returns></returns>
 		public string FullPathToDatabaseStyle(string subpath)
 		{
 			var databaseFilePath = subpath.Replace(StorageFolder, string.Empty);

@@ -17,13 +17,23 @@
  * [starskyapp](starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
 
-
-
 ## Starsky   
-Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud.
+Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a cloud service. You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
 
-### Install instructions
-The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first. The subapplications [starskysynccli](starsky/starskysynccli/readme.md)  and [starskyimportercli](starsky/starskyimportercli/readme.md) uses the same configuation files. These projects are separately compiled using the build script.
+### Install instructions for the server
+This section deals with how to set up a Starsky system on-premises. You will find guides to all Starsky software for installation on-premises here. 
+
+### General Project
+The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first. 
+
+### Command line tools
+The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured. 
+
+To reverse geo code location information in images use the UI or the [Geo CLI](starsky/starskygeocli/readme.md). Use your photo to track location and match this with your camera.With this tool you add a location trail (gpx) to a folder and match the datetime to images in the folder.
+
+To publish files generate markup and images with a logo use the [Web Html CLI](starsky/starskywebhtmlcli/readme.md). This publish web images to a content package. And when this is done you could copy a content package to a ftp service.
+
+All these projects are separately compiled using the build script and using the same `appsettings` configuration.
 
 ## Build status
 
@@ -42,5 +52,3 @@ There is a version log and backlog available on the [history and changelog page]
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=code_smells)](https://sonarcloud.io/dashboard?id=starsky)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=starsky)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=starsky)
-
-

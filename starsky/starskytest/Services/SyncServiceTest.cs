@@ -12,6 +12,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Services;
@@ -58,7 +59,7 @@ namespace starskytest.Services
             builder.AddInMemoryCollection(dict);
             var configuration = builder.Build();
             // Inject as Poco Plain old cl class
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             // build the config service
             var serviceProvider = services.BuildServiceProvider();
             // copy config to AppSettings as service to inject

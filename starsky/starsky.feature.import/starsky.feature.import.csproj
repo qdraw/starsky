@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{e9c60bf0-09b6-40c9-95b5-25c7a185365e}</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+      <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    </ItemGroup>
+
+</Project>
