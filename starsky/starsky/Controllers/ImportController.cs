@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
+using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
@@ -15,7 +16,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
 
@@ -65,21 +65,22 @@ namespace starsky.Controllers
             var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
             var importSettings = new ImportSettingsModel(Request);
 
-	        var fileIndexResultsList = _import.Preflight(tempImportPaths, importSettings);
+	        var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
 
             // Import files >
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
             {    
-                var importedFiles = _import.Import(tempImportPaths, importSettings);
+                var importedFiles = await _import.Importer(tempImportPaths, importSettings);
                 
                 if ( _appSettings.Verbose )
                 {
-	                foreach (var file in importedFiles)
+	                foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
 	                {
-		                Console.WriteLine($">> import => {file}");
+		                Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
 	                }
                 }
-
+                
+				// Remove source files
                 foreach ( var toDelPath in tempImportPaths )
                 {
 	                _hostFileSystemStorage.FileDelete(toDelPath);
@@ -157,7 +158,6 @@ namespace starsky.Controllers
 		    return Json(thumbnailNames);
 	    }
 
-
 	    /// <summary>
 	    /// Import file from web-url (only whitelisted domains) and import this file into the application
 	    /// </summary>
@@ -188,24 +188,10 @@ namespace starsky.Controllers
 	        var isDownloaded = await _httpClientHelper.Download(fileUrl,tempImportFullPath);
             if (!isDownloaded) return NotFound("'file url' not found or domain not allowed " + fileUrl);
 
-	        var importedFiles = _import.Import(new List<string>{tempImportFullPath}, importSettings);
+	        var importedFiles = await _import.Importer(new List<string>{tempImportFullPath}, importSettings);
 	        _hostFileSystemStorage.FileDelete(tempImportFullPath);
             if(importedFiles.Count == 0) Response.StatusCode = 206;
             return Json(importedFiles);
         }
-
-	    /// <summary>
-	    /// Today's imported files
-	    /// </summary>
-	    /// <returns>list of files</returns>
-	    /// <response code="200">done</response>
-	    [HttpGet("/api/import/history")]
-	    [ProducesResponseType(typeof(List<ImportIndexItem>),200)] // yes
-	    [Produces("application/json")]
-	    public IActionResult History()
-	    {
-		    return Json(_import.History());
-	    }
-
     }
 }

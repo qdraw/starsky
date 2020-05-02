@@ -1,4 +1,4 @@
-namespace starskycore.Interfaces
+namespace starsky.foundation.platform.Interfaces
 {
 	public interface IConsole
 	{

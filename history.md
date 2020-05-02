@@ -26,8 +26,15 @@
 - [x]   (Fixed)  _Front-end_ Login flow return url fixed
 - [x]   (Fixed)  _Front-end_ add bugfix for double slash on home while selecting files
 - [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
+- [x]   (Fixed)  _Front-end_ order when files are added does now match the backend (archive-context)
+- [x]   (Removed) _Back-end_ Import to filter on files older than 2 years
+- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
+- [x]   (feature) _Back-end_ Import to async function refactor
+- [x]   (Fixed)  _Front-end_ Fix issue delete next search __not implemented__
+- [x]   (Fixed)  _Front-end_ video invalid datetime __not implemented__
 
 # version 0.2.2 - 2020-04-17
+__Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
 - [x]   (Added) _Front-end_ Timezone issues in Safari
 - [x]   (Feature) _Front-end_ Add menu for search
 - [x]   (Fixed)  _Front-end_ Collection support in update tags / ColorClassSelect
@@ -63,7 +70,7 @@
 - [x] 	(rename) _Back-end_ Feature renaming and docs updates
 - [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon `.NEF`
 - [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon, `orf`:olympus, `rw2`:panasonic, `pef`:pentax,
-- [x]   (bugfix) _Back-end_ allow underscore import/upload
+- [x]   (bugfix) _Back-end_ allow underscore import/upload (api name changed in later version)
 - [x]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/history`
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/thumbnail`

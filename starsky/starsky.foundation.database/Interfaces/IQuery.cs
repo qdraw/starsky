@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -56,6 +57,8 @@ namespace starsky.foundation.database.Interfaces
         List<FileIndexItem> GetAllFolders();
 
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
+        Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent);
+
 
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);

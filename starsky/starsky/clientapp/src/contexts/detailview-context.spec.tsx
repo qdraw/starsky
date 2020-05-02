@@ -12,6 +12,7 @@ describe("DetailViewContext", () => {
       subPath: "/",
       pageType: PageType.DetailView,
       colorClassActiveList: [],
+      isReadOnly: false,
     } as IDetailView;
     var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', status: IExifStatus.Ok } as any;
 
@@ -31,6 +32,7 @@ describe("DetailViewContext", () => {
       subPath: "/",
       pageType: PageType.DetailView,
       colorClassActiveList: [],
+      isReadOnly: false,
     } as IDetailView;
     var action = { type: 'append', tags: 'tags' } as any
 
@@ -46,6 +48,7 @@ describe("DetailViewContext", () => {
       subPath: "/",
       pageType: PageType.DetailView,
       colorClassActiveList: [],
+      isReadOnly: false,
     } as IDetailView;
     state.fileIndexItem.tags = "!delete!"
 

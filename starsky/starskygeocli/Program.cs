@@ -28,7 +28,7 @@ namespace starskyGeoCli
 			if ( new ArgsHelper().NeedHelp(args) ||
 			     ( new ArgsHelper(appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1
-			       && new ArgsHelper(appSettings).GetSubpathRelative(args).Length <= 1 ) )
+			       && new ArgsHelper(appSettings).GetRelativeValue(args) == null ) )
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
@@ -37,8 +37,8 @@ namespace starskyGeoCli
 
 			// Using both options
 			string inputPath;
-			// -s = ifsubpath || -p is path
-			if ( new ArgsHelper(appSettings).IfSubpathOrPath(args) )
+			// -s = if subpath || -p is path
+			if ( new ArgsHelper(appSettings).IsSubPathOrPath(args) )
 			{
 				inputPath = appSettings.DatabasePathToFilePath(
 					new ArgsHelper(appSettings).GetSubpathFormArgs(args)
@@ -49,19 +49,21 @@ namespace starskyGeoCli
 				inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args, false);
 			}
 
-			// overwrite subpath with relative days
-			// use -g or --SubpathRelative to use it.
+			// overwrite subPath with relative days
+			// use -g or --SubPathRelative to use it.
 			// envs are not supported
-			var getSubPathRelative = new ArgsHelper(appSettings).GetSubpathRelative(args);
-			if ( getSubPathRelative != string.Empty )
+			var getSubPathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
+			if (getSubPathRelative != null)
 			{
-				inputPath = appSettings.DatabasePathToFilePath(getSubPathRelative);
+				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+				inputPath = new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
+					.ParseSubfolders(dateTime);
 			}
-
+			
 			// used in this session to find the files back
 			appSettings.StorageFolder = inputPath;
 			var storage = startupHelper.SubPathStorage();
-
+			
 			if ( inputPath == null || storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine(
@@ -87,8 +89,11 @@ namespace starskyGeoCli
 												.LoopFolder(fileIndexList);
 				
 				Console.Write("¬");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SubPathStorage(), startupHelper.ThumbnailStorage()).LoopFolder(
-					toMetaFilesUpdate, false);
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), 
+					startupHelper.SubPathStorage(), startupHelper.ThumbnailStorage()).
+					LoopFolder(toMetaFilesUpdate, 
+					false
+					);
 				Console.Write("(gps added)");
 			}
 
@@ -98,7 +103,8 @@ namespace starskyGeoCli
 			if ( fileIndexList.Count >= 1 )
 			{
 				Console.Write("~ Add city, state and country info ~");
-				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SubPathStorage(), startupHelper.ThumbnailStorage()).LoopFolder(
+				new GeoLocationWrite(appSettings, startupHelper.ExifTool(), startupHelper.SubPathStorage(), 
+					startupHelper.ThumbnailStorage()).LoopFolder(
 					fileIndexList, true);
 			}
 

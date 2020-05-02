@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
@@ -154,9 +155,9 @@ namespace starskytest.Controllers
 	        };
 
 	        var actionResult = await importController.FromUrl("https://qdraw.nl","example_image.tiff",null) as JsonResult;
-	        var list = actionResult.Value as List<string>;
+	        var list = actionResult.Value as List<ImportIndexItem>;
 
-	        Assert.IsTrue(list.FirstOrDefault().Contains("example_image.tiff"));
+	        Assert.IsTrue(list.FirstOrDefault().FilePath.Contains("example_image.tiff"));
         }
         
         [TestMethod]

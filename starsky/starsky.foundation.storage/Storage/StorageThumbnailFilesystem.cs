@@ -99,6 +99,11 @@ namespace starsky.foundation.storage.Storage
 			throw new System.NotImplementedException();
 		}
 
+		public IEnumerable<string> GetDirectories(string path)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
 			throw new System.NotImplementedException();

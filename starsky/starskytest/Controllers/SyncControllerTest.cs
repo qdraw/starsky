@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +14,13 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
-using starskycore.Middleware;
 using starskycore.Services;
 using starskycore.ViewModels;
 using starskytest.FakeCreateAn;
@@ -85,7 +84,7 @@ namespace starskytest.Controllers
 			// build config
 			var configuration = builder.Build();
 			// inject config as object to a service
-			services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();

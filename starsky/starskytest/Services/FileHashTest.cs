@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
@@ -26,8 +27,13 @@ namespace starskytest.Services
         public void FileHash_Md5TimeoutAsyncWrapper_Fail_Test()
         {
             // Give the hasher 0 seconds to calc a hash; so timeout is activated
-	        var iStorage = new FakeIStorage();
-	        var fileHashCode = new FileHash(iStorage).GetHashCode("/test",0);
+            var iStorageFake = new FakeIStorage(
+		        new List<string>{"/"},
+		        new List<string>{"/test.jpg"},
+		        new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+	        );
+	        var fileHashCode = new FileHash(iStorageFake).GetHashCode("/test.jpg",0);
+	        
 	        Assert.IsFalse(fileHashCode.Value);
             Assert.AreEqual(true, fileHashCode.Key.Contains("_T"));
         }

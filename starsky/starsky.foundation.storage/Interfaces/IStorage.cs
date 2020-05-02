@@ -28,6 +28,13 @@ namespace starsky.foundation.storage.Interfaces
 		/// <returns></returns>
 		IEnumerable<string> GetAllFilesInDirectory(string path);
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
+
+		/// <summary>
+		/// Returns a NON-Recursive list of child directories
+		/// </summary>
+		/// <param name="path">filePath</param>
+		/// <returns>list of NON-Recursive child directories</returns>
+		IEnumerable<string> GetDirectories(string path);
 		
 		/// <summary>
 		/// Returns a list of directories // Get list of child folders

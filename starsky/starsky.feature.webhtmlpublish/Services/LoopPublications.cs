@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -13,7 +14,6 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
 using starskywebhtmlcli.Services;
-using starskywebhtmlcli.ViewModels;
 
 namespace starsky.feature.webhtmlpublish.Services
 {

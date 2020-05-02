@@ -4,9 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
@@ -14,7 +16,6 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
-using starskycore.Middleware;
 using starskycore.Services;
 
 namespace starskycore.Helpers
@@ -22,7 +23,7 @@ namespace starskycore.Helpers
     public class ConfigCliAppsStartupHelper
     {
 
-        private readonly ImportService _import;
+        private readonly Import _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
@@ -53,7 +54,7 @@ namespace starskycore.Helpers
             // build config
             var configuration = builder.Build();
             // inject config as object to a service
-            services.ConfigurePoco<AppSettings>(configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 	        
             new RegisterDependencies().Configure(services);
 
@@ -110,7 +111,7 @@ namespace starskycore.Helpers
             
             _isync = new SyncService(query, appSettings, _selectorStorage);
             
-            _import = new ImportService(context, _isync, _exifTool, appSettings, null, _selectorStorage);
+            // _import = new ImportService(context, _exifTool, appSettings, null, _selectorStorage);
 
 	        _thumbnailCleaner = new ThumbnailCleaner(_thumbnailStorage, query, appSettings);
 	        
@@ -155,7 +156,7 @@ namespace starskycore.Helpers
         /// Returns an filled ImportService Interface
         /// </summary>
         /// <returns>ImportService</returns>
-        public ImportService ImportService()
+        public Import ImportService()
         {
             return _import;
         }

@@ -22,7 +22,9 @@ using Microsoft.Net.Http.Headers;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.Health;
 using starsky.Helpers;
 using starskycore.Helpers;
@@ -38,15 +40,17 @@ namespace starsky
 
 		public Startup()
 		{
-			var builder = ConfigCliAppsStartupHelper.AppSettingsToBuilder();
-			_configuration = builder.Build();
+			_configuration = SetupAppSettings.AppSettingsToBuilder();
 		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // configs
-            services.ConfigurePoco<AppSettings>(_configuration.GetSection("App"));
+            services.ConfigurePoCo<AppSettings>(_configuration.GetSection("App"));
+            
+            // Need to rebuild for AppSettings
+            // ReSharper disable once ASP0000
             var serviceProvider = services.BuildServiceProvider();
             
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
@@ -99,16 +103,18 @@ namespace starsky
             {
                 case (AppSettings.DatabaseTypeList.Mysql):
                     services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)),
+	                    ServiceLifetime.Transient);
                     services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
                     break;
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
+                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"),
+	                    ServiceLifetime.Transient);
                     break;
                 case AppSettings.DatabaseTypeList.Sqlite:
-	                
                     services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
+	                    b => b.MigrationsAssembly(foundationDatabaseName)),
+	                    ServiceLifetime.Transient);
                     services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
                     break;
             }
@@ -319,21 +325,29 @@ namespace starsky
 					 });
 #endif
 
-			// Run the latest migration on the database. 
-			// To start over with a SQLite database please remove it and
-			// it will add a new one
-			try
-			{
-				using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-					.CreateScope();
-				var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-				dbContext.Database.Migrate();
-			}
-            catch (MySql.Data.MySqlClient.MySqlException e)
-            {
-                Console.WriteLine(e);
-            }
+	        EfCoreMigrationsOnProject(app);
 
+        }
+
+
+        /// <summary>
+        /// Run the latest migration on the database. 
+        /// To start over with a SQLite database please remove it and
+        /// it will add a new one
+        /// </summary>
+        private void EfCoreMigrationsOnProject(IApplicationBuilder app)
+        {
+	        try
+	        {
+		        using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
+			        .CreateScope();
+		        var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+		        dbContext.Database.Migrate();
+	        }
+	        catch (MySql.Data.MySqlClient.MySqlException e)
+	        {
+		        Console.WriteLine(e);
+	        }
         }
     }
 }

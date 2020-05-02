@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Query
@@ -28,7 +30,7 @@ namespace starsky.foundation.database.Query
             AppSettings appSettings = null,
             IServiceScopeFactory scopeFactory = null)
         {
-            _context = context;
+	        _context = new InjectServiceScope(context, scopeFactory).Context();
             _cache = memoryCache;
             _appSettings = appSettings;
             _scopeFactory = scopeFactory;
@@ -69,9 +71,18 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
         {
-            InjectServiceScope();
             filePath = SubPathSlashRemove(filePath);
-            var query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            FileIndexItem query;
+            try
+            {
+	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
+            catch (ObjectDisposedException)
+            {
+	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
             return query;
         }
 	    
@@ -99,7 +110,7 @@ namespace starsky.foundation.database.Query
 		}
 
 		/// <summary>
-		/// Remove fileHash from hashlist-cache
+		/// Remove fileHash from hash-list-cache
 		/// </summary>
 		/// <param name="fileHash">base32 filehash</param>
 	    public void ResetItemByHash(string fileHash)
@@ -180,8 +191,6 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
         {
-			InjectServiceScope();
-
 	        //  Update te last edited time manual
 	        updateStatusContent.SetLastEdited();
 	        
@@ -288,7 +297,7 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                directoryName);
+                PathHelper.RemoveLatestSlash(directoryName));
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
             
             _cache.Remove(queryCacheName);
@@ -301,8 +310,6 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
-            InjectServiceScope();
-	        
 	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
 	            && !updateStatusContent.IsDirectory) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
@@ -323,6 +330,35 @@ namespace starsky.foundation.database.Query
 
 			return updateStatusContent;
         }
+	    
+	    /// <summary>
+	    /// Add a new item to the database
+	    /// </summary>
+	    /// <param name="updateStatusContent">the item</param>
+	    /// <returns>item with id</returns>
+	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+	    {
+		    var context = new InjectServiceScope(null, _scopeFactory).Context();
+		    try
+		    {
+			    await context.FileIndex.AddAsync(updateStatusContent);
+			    await context.SaveChangesAsync();
+			    // Fix for: The instance of entity type 'Item' cannot be tracked because
+			    // another instance with the same key value for {'Id'} is already being tracked
+			    _context.Entry(updateStatusContent).State = EntityState.Unchanged;
+		    }
+		    catch (MySqlException e)
+		    {
+			    Console.WriteLine(updateStatusContent.FilePath);
+			    Console.WriteLine(e);
+			    throw;
+		    }
+            
+		    AddCacheItem(updateStatusContent);
+
+		    return updateStatusContent;
+	    }
+
         
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)
@@ -331,8 +367,6 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-	        InjectServiceScope();
-
             _context.FileIndex.Remove(updateStatusContent);
             _context.SaveChanges();
 
@@ -343,16 +377,5 @@ namespace starsky.foundation.database.Query
 	        ResetItemByHash(updateStatusContent.FileHash);
             return updateStatusContent;
         }
-        
-        /// <summary>
-        /// Dependency injection, used in background tasks
-        /// </summary>
-        private void InjectServiceScope()
-        {
-            if (_scopeFactory == null) return;
-            var scope = _scopeFactory.CreateScope();
-            _context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        }
-
     }
 }
