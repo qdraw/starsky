@@ -189,21 +189,20 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="updateStatusContent">content to updated</param>
         /// <returns>this item</returns>
-        public FileIndexItem UpdateItem( FileIndexItem updateStatusContent)
+        public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
 	        //  Update te last edited time manual
 	        updateStatusContent.SetLastEdited();
-	        
-            _context.Attach(updateStatusContent).State = EntityState.Modified;
-            
-            try
-            {
+	        try
+	        {
+				_context.Attach(updateStatusContent).State = EntityState.Modified;
 	            _context.SaveChanges();
             }
             catch ( ObjectDisposedException)
             {
 	            if ( _appSettings.Verbose ) Console.WriteLine("Retry ObjectDisposedException");
 	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            _context.Attach(updateStatusContent).State = EntityState.Modified;
 	            _context.SaveChanges();
             }
             
