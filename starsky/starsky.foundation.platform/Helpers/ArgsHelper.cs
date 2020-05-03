@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.platform.Helpers
 {
@@ -47,18 +49,26 @@ namespace starsky.foundation.platform.Helpers
 		public ArgsHelper()
 		{
 		}
-		
+
 		/// <summary>
-		/// Use with appsettings
+		/// Use with appSettings
 		/// </summary>
-		/// <param name="appSettings">appsettings</param>
-		public ArgsHelper(AppSettings appSettings)
+		/// <param name="appSettings">appSettings</param>
+		/// <param name="console">Console log</param>
+		public ArgsHelper(AppSettings appSettings, IConsole console = null)
 		{
 			_appSettings = appSettings;
+			_console = console;
+			if ( console == null ) _console = new ConsoleWrapper();
 		}
 		
 		/// <summary>
-		/// Appsettings
+		/// Console abstraction, use this instead of Console
+		/// </summary>
+		private readonly IConsole _console;
+
+		/// <summary>
+		/// AppSettings
 		/// </summary>
 		private readonly AppSettings _appSettings;
 		
@@ -197,115 +207,115 @@ namespace starsky.foundation.platform.Helpers
 		{
 			if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
 			
-			Console.WriteLine("Starksy " + _appSettings.ApplicationType + " Cli ~ Help:");
-			Console.WriteLine("--help or -h == help (this window)");
+			_console.WriteLine("Starksy " + _appSettings.ApplicationType + " Cli ~ Help:");
+			_console.WriteLine("--help or -h == help (this window)");
 			
 			switch (_appSettings.ApplicationType)
 			{
 				case AppSettings.StarskyAppType.Admin:
-					Console.WriteLine("--name or -n == string ; username / email");
+					_console.WriteLine("--name or -n == string ; username / email");
 					break;
 				case AppSettings.StarskyAppType.Geo:
 					// When this change please update ./readme.md
-					Console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
-					Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
-					Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-						", use for example '1' to select yesterday. (structure is required)");
-					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
-					Console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
-						"(default: false / ignore already taged files) ");
-					Console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
+					_console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
+					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
+					_console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+					                   ", use for example '1' to select yesterday. (structure is required)");
+					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					_console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
+					                   "(default: false / ignore already taged files) ");
+					_console.WriteLine("--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 				break;
 				case AppSettings.StarskyAppType.WebHtml:
 					// When this change please update ./readme.md
-					Console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory");
-					Console.WriteLine("--name or -n == parameter: (string) ; name of blogitem ");
+					_console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory");
+					_console.WriteLine("--name or -n == parameter: (string) ; name of blogitem ");
 				break;
 				case AppSettings.StarskyAppType.Importer:
 					// When this change please update ./readme.md
-					Console.WriteLine("--path or -p == parameter: (string) ; full path");
-					Console.WriteLine("                can be an folder or file, use '-p' for current directory");
-					Console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
-					Console.WriteLine("--recursive or -r == Import Directory recursive " +
-						"(default: false / only the selected folder) ");
-					Console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
-						"based on exif and filename create datetime");
-					Console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
-					Console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
-					Console.WriteLine("--colorclass == update colorclass to this number value, default don't change");
+					_console.WriteLine("--path or -p == parameter: (string) ; full path");
+					_console.WriteLine("                can be an folder or file, use '-p' for current directory");
+					_console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
+					_console.WriteLine("--recursive or -r == Import Directory recursive " +
+					                   "(default: false / only the selected folder) ");
+					_console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
+					                   "based on exif and filename create datetime");
+					_console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+					_console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
+					_console.WriteLine("--colorclass == update colorclass to this number value, default don't change");
 				break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
-					Console.WriteLine("--path or -p == parameter: (string) ; " +
-					"'full path', only child items of the database folder are supported," +
-					"search and replace first part of the filename, '/', use '-p' for current directory ");
-					Console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
-					Console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
-						", use for example '1' to select yesterday. (structure is required)");
-					Console.WriteLine("-p, -s, -g == you need to select one of those tags");
-					Console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
-					Console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					Console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
-					Console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
-						"(heavy cpu usage), default false");
-					Console.WriteLine("--verbose or -v == verbose, more detailed info");
-					Console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
-					Console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
-					Console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
-					Console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
-					Console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
+					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+					                   ", use for example '1' to select yesterday. (structure is required)");
+					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					_console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
+					_console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
+					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
+					_console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
+					                   "(heavy cpu usage), default false");
+					_console.WriteLine("--verbose or -v == verbose, more detailed info");
+					_console.WriteLine("--databasetype or -d == Overwrite EnvironmentVariable for DatabaseType");
+					_console.WriteLine("--basepath or -b == Overwrite EnvironmentVariable for StorageFolder");
+					_console.WriteLine("--connection or -c == Overwrite EnvironmentVariable for DatabaseConnection");
+					_console.WriteLine("--thumbnailtempfolder or -f == Overwrite EnvironmentVariable for ThumbnailTempFolder");
+					_console.WriteLine("--exiftoolpath or -e == Overwrite EnvironmentVariable for ExifToolPath");
 				break;
 			}
 			
-			Console.WriteLine("--verbose or -v == verbose, more detailed info");
-			Console.WriteLine("  use -v -help to show settings: ");
+			_console.WriteLine("--verbose or -v == verbose, more detailed info");
+			_console.WriteLine("  use -v -help to show settings: ");
 			
 			if (!_appSettings.Verbose) return;
 			
-			Console.WriteLine("");
-			Console.WriteLine("AppSettings:");
-			Console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
-			Console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
-			Console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");
-			Console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
-			Console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
-			Console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
-			Console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
-			Console.WriteLine("Name " + _appSettings.Name);
+			_console.WriteLine("");
+			_console.WriteLine("AppSettings:");
+			_console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
+			_console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
+			_console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");
+			_console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
+			_console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
+			_console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
+			_console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
+			_console.WriteLine("Name " + _appSettings.Name);
 
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
-				Console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
+				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
 			
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp) 
-				Console.WriteLine("WebFtp " + _appSettings.WebFtp);
+				_console.WriteLine("WebFtp " + _appSettings.WebFtp);
 			
-			Console.WriteLine("-- Appsettings.json locations -- ");
+			_console.WriteLine("-- Appsettings.json locations -- ");
 			
 			var machineName = Environment.MachineName.ToLowerInvariant();
 			
-			Console.WriteLine("Config is read in this order: \n" +
-				$"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
-				$"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
-			Console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
-				$"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
+			_console.WriteLine("Config is read in this order: \n" +
+			                   $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
+			                   $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
+			_console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
+			                   $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
 			
 			switch ( _appSettings.ApplicationType )
 			{
 				case AppSettings.StarskyAppType.WebHtml:
-					Console.WriteLine($"Config for {_appSettings.ApplicationType}");
+					_console.WriteLine($"Config for {_appSettings.ApplicationType}");
 					foreach ( var publishProfiles in _appSettings.PublishProfiles )
 					{
-						Console.WriteLine("--- " +
-						$"Path: {publishProfiles.Path} " +
-						$"Append: {publishProfiles.Append} " +
-						$"Copy: {publishProfiles.Copy} " +
-						$"Folder: {publishProfiles.Folder} " +
-						$"Prepend: {publishProfiles.Prepend} " +
-						$"Template: {publishProfiles.Template} " +
-						$"ContentType: {publishProfiles.ContentType} " +
-						$"MetaData: {publishProfiles.MetaData} " +
-						$"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
-						$"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
+						_console.WriteLine("--- " +
+						                   $"Path: {publishProfiles.Path} " +
+						                   $"Append: {publishProfiles.Append} " +
+						                   $"Copy: {publishProfiles.Copy} " +
+						                   $"Folder: {publishProfiles.Folder} " +
+						                   $"Prepend: {publishProfiles.Prepend} " +
+						                   $"Template: {publishProfiles.Template} " +
+						                   $"ContentType: {publishProfiles.ContentType} " +
+						                   $"MetaData: {publishProfiles.MetaData} " +
+						                   $"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
+						                   $"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
 					}
 					break;
 			}
@@ -314,7 +324,7 @@ namespace starsky.foundation.platform.Helpers
 				.GetEntryAssembly()?
 				.GetCustomAttribute<TargetFrameworkAttribute>()?
 				.FrameworkName;
-			Console.WriteLine($".NET Version - {framework}");
+			_console.WriteLine($".NET Version - {framework}");
 		}
 		
 		/// <summary>

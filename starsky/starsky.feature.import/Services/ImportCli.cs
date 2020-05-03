@@ -16,7 +16,7 @@ namespace starsky.feature.import.Services
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(appSettings).GetPathFormArgs(args,false).Length <= 1)
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
-				new ArgsHelper(appSettings).NeedHelpShowDialog();
+				new ArgsHelper(appSettings, console).NeedHelpShowDialog();
 				return;
 			}
             

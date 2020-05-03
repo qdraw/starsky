@@ -20,7 +20,7 @@ namespace starskycore.Services
 			if (new ArgsHelper().NeedHelp(args))
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
-				new ArgsHelper(appSettings).NeedHelpShowDialog();
+				new ArgsHelper(appSettings, console).NeedHelpShowDialog();
 				return;
 			}
 			

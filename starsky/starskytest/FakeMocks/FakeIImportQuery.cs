@@ -36,7 +36,16 @@ namespace starskytest.FakeMocks
 
 		public List<ImportIndexItem> History()
 		{
-			throw new System.NotImplementedException();
+			var newFakeList = new List<ImportIndexItem>();
+			foreach ( var exist in _exist )
+			{
+				newFakeList.Add(new ImportIndexItem
+				{
+					Status = ImportStatus.Ok,
+					FilePath = exist
+				});
+			}
+			return newFakeList;
 		}
 
 		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
