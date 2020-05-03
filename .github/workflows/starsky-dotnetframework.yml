@@ -7,8 +7,6 @@ on:
     - 'starsky.netframework/**'
   pull_request:
     branches: [ master ]
-    paths:
-    - 'starsky.netframework/**'
 
 jobs:
   build:
