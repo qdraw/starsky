@@ -411,8 +411,11 @@ namespace starsky.feature.import.Services
 		private async Task<List<ImportIndexItem>> AddToQueryAndImportDatabaseAsync(
 			List<ImportIndexItem> importIndexItemList, ImportSettingsModel importSettings)
 		{
-			if ( !importSettings.IndexMode && !_importQuery.TestConnection() )
+			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
+				                                               $"IndexMode {importSettings.IndexMode} " +
+				                                               $"TestConnection {_importQuery.TestConnection()}");
 				return importIndexItemList;
 			}
 			
