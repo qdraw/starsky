@@ -23,4 +23,5 @@ jobs:
       run: bash build.sh --Target=BuildNetCore
     - name: TestNetCore
       shell: bash
+      working-directory: ./starsky
       run: bash build.sh --Target=TestNetCore
