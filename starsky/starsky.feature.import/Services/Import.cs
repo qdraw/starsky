@@ -389,20 +389,6 @@ namespace starsky.feature.import.Services
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass);
 
-		    // todo remove
-		    // // Ignore the sync part if the connection is missing
-		    // // or option enabled
-		    // if ( importIndexItem.Status == ImportStatus.Ok && importSettings.IndexMode && _importQuery.TestConnection() )
-		    // {
-			   //  await _query.AddItemAsync(importIndexItem.FileIndexItem);
-			   //  // To the list of imported folders
-			   //  await _importQuery.AddAsync(importIndexItem);
-		    // }
-		    // else if ( _appSettings.Verbose )
-		    // {
-			   //  Console.WriteLine($">> Not added to Database {importIndexItem.FilePath}");
-		    // }
-
 			// to move files
             if (importSettings.DeleteAfter)
             {
