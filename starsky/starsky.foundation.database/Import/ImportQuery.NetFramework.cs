@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ namespace starsky.foundation.database.Import
 	{
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly ImportQuery _importQuery;
 
 		/// <summary>
 		/// Query Already imported Database
@@ -23,6 +25,7 @@ namespace starsky.foundation.database.Import
 		{
 			_scopeFactory = scopeFactory;
 			_isConnection = TestConnection();
+			_importQuery = new ImportQuery(scopeFactory);
 		}
 
 		/// <summary>
@@ -47,22 +50,14 @@ namespace starsky.foundation.database.Import
 		}
 
 		/// <summary>
-		/// Non-async Add a new item to the imported database
+		/// (Sync) Add Range Item
 		/// </summary>
-		/// <param name="updateStatusContent">import database item</param>
-		/// <returns>fail or success</returns>
-		public override async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		/// <param name="importIndexItemList">list of items to import</param>
+		/// <returns></returns>
+		public override async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
-
-			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			// ReSharper disable once MethodHasAsyncOverload
-			dbContext.ImportIndex.Add(updateStatusContent);
-			// ReSharper disable once MethodHasAsyncOverload
-			dbContext.SaveChanges();
-			Console.Write(">️"); //arrow down
-			// removed MySqlException catch
-			return true;
+			return _importQuery.AddRange(importIndexItemList);
 		}
 	}
 }

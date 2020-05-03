@@ -84,11 +84,20 @@ namespace starsky.foundation.database.Import
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
-		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		public virtual async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
 		{
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
+			Console.Write($"⬇️{importIndexItemList.Count}");
+			return importIndexItemList;
+		}
+
+		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
+		{
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			dbContext.ImportIndex.AddRange(importIndexItemList);
+			dbContext.SaveChanges();
 			Console.Write($"⬇️{importIndexItemList.Count}");
 			return importIndexItemList;
 		}

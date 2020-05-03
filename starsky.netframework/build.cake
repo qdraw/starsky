@@ -15,10 +15,10 @@ var runtime = "netframework-msbuild";
 var distDirectory = Directory($"./{runtime}");
 
 var projectNames = new List<string>{
-    "starskyImporterNetFrameworkCli",
-    "starskyNetFrameworkShared",
-    "starskySyncNetFrameworkCli"
+    "starskyImporterNetFrameworkCli"
 };
+/* ,
+"starskySyncNetFrameworkCli" */
 
 var solutionName = "./starsky.netFramework.sln";
 
