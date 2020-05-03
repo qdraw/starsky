@@ -20,6 +20,13 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: starsky
+      run: ls -lah
+    - name: BuildNetCore
+      shell: bash
+      run: ls -lah
+    - name: BuildNetCore
+      shell: bash
+      working-directory: starsky
       run: build.sh --Target=BuildNetCore
     - name: BuildNetCore
       shell: bash
