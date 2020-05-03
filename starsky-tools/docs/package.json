@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "showdown": "^1.8.6"
+    "showdown": "^1.9.1"
   }
 }
