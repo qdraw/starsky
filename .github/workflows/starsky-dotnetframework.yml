@@ -17,7 +17,11 @@ jobs:
       uses: maxim-lobanov/setup-xamarin@v1.1
       with:
         mono-version: 6.8 # specify version in '<major>.<minor>' format
-    - name: BuildNetCore
+    - name: ls
       shell: bash
-      working-directory: ./starsky.netframework
+      working-directory: ./starsky.netframework/
+      run: ls
+    - name: BuildNetFramework
+      shell: bash
+      working-directory: ./starsky.netframework/
       run: bash build.sh
