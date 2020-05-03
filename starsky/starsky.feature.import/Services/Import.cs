@@ -401,7 +401,8 @@ namespace starsky.feature.import.Services
 			// to move files
             if (importSettings.DeleteAfter)
             {
-	            _filesystemStorage.FileDelete(importIndexItem.FilePath);
+	            if ( _appSettings.Verbose ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
             }
 
             if ( _appSettings.Verbose ) Console.Write("+");
