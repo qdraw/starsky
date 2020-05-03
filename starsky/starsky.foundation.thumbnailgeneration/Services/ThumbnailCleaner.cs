@@ -2,12 +2,15 @@ using System;
 using System.IO;
 using System.Linq;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.Services
 {
-	public class ThumbnailCleaner
+	[Service(typeof(IThumbnailCleaner), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class ThumbnailCleaner : IThumbnailCleaner
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
@@ -37,6 +40,5 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				Console.Write("$");
 			}
 		}
-
 	}
 }

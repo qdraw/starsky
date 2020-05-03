@@ -27,6 +27,8 @@
         <ProjectReference Include="..\..\starsky\starsky.foundation.platform\starsky.foundation.platform.csproj" />
         <ProjectReference Include="..\..\starsky\starsky.feature.import\starsky.feature.import.csproj" />
         <ProjectReference Include="..\..\starsky\starsky.foundation.database\starsky.foundation.database.csproj" />
+        <ProjectReference Include="..\..\starsky\starskycore\starskycore.csproj" />
+        <ProjectReference Include="..\..\starsky\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
     </ItemGroup>
     <PropertyGroup Condition="$(TargetFramework.StartsWith('net4')) and '$(OS)' == 'Unix'">
         <!-- When compiling .NET SDK 2.0 projects targeting .NET 4.x on Mono using 'dotnet build' you -->
