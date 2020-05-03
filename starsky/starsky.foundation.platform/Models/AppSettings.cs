@@ -340,6 +340,8 @@ namespace starsky.foundation.platform.Models
 		    set => ApplicationInsightsInstrumentationKeyPrivate = value;
 	    }
 
+	    public int MaxDegreesOfParallelism => 6; // AddLegacyOverwrite ? 1 : 
+
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------

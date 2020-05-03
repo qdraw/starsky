@@ -367,38 +367,6 @@ namespace starsky.foundation.database.Query
 
 		    return updateStatusContent;
 	    }
-
-	    /// <summary>
-	    /// Add a new item to the database
-	    /// </summary>
-	    /// <param name="fileIndexItemList"></param>
-	    /// <returns>items with id</returns>
-	    public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
-	    {
-		    try
-		    {
-			    await _context.FileIndex.AddRangeAsync(fileIndexItemList);
-			    await _context.SaveChangesAsync();
-			    // Fix for: The instance of entity type 'Item' cannot be tracked because
-			    // another instance with the same key value for {'Id'} is already being tracked
-			    // _context.Entry(fileIndexItemList).State = EntityState.Unchanged;
-		    }
-		    catch (ObjectDisposedException)
-		    {
-			    var context = new InjectServiceScope(null, _scopeFactory).Context();
-			    await context.FileIndex.AddRangeAsync(fileIndexItemList);
-			    await context.SaveChangesAsync();
-			    // context.Entry(fileIndexItemList).State = EntityState.Unchanged;
-		    }
-
-		    foreach ( var fileIndexItem in fileIndexItemList )
-		    {
-			    AddCacheItem(fileIndexItem);
-		    }
-
-		    return fileIndexItemList;
-	    }
-
         
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)
