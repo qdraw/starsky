@@ -1,0 +1,25 @@
+name: Starsky.netframework
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky.netframework/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky.netframework/**'
+
+jobs:
+  build:
+    name: Setup Xamarin and Mono versions
+    runs-on: macos-latest
+    steps:
+    - name: setup-xamarin
+      uses: maxim-lobanov/setup-xamarin@v1.1
+      with:
+        mono-version: 6.8 # specify version in '<major>.<minor>' format
+    - name: BuildNetCore
+      shell: bash
+      working-directory: ./starsky.netframework
+      run: bash build.sh
