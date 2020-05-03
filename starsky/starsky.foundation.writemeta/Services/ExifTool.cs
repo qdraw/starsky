@@ -37,10 +37,12 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns>true=success</returns>
 		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
-			var runner = new StreamToStreamRunner(_appSettings, _iStorage.ReadStream(subPath));
+			var inputStream = _iStorage.ReadStream(subPath);
+			var runner = new StreamToStreamRunner(_appSettings, inputStream);
 			var stream = await runner.RunProcessAsync(command);
+			inputStream.Dispose();
 			Console.Write("‘");
-			return _iStorage.WriteStream(stream, subPath);
+			return await _iStorage.WriteStreamAsync(stream, subPath);
 		}
 
 		/// <summary>

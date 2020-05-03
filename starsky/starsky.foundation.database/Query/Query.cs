@@ -323,17 +323,17 @@ namespace starsky.foundation.database.Query
 	            && !updateStatusContent.IsDirectory) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
 
-            try
-            {
-                _context.FileIndex.Add(updateStatusContent);
-                _context.SaveChanges();
-			}
-            catch (MySqlException e)
-            {
-                Console.WriteLine(updateStatusContent.FilePath);
-                Console.WriteLine(e);
-                throw;
-            }
+	        try
+	        {
+		        _context.FileIndex.Add(updateStatusContent);
+		        _context.SaveChanges();
+	        }
+	        catch (ObjectDisposedException)
+	        {
+		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        context.FileIndex.Add(updateStatusContent);
+		        context.SaveChanges();
+	        }
             
             AddCacheItem(updateStatusContent);
 
@@ -345,27 +345,58 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="updateStatusContent">the item</param>
 	    /// <returns>item with id</returns>
-	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 	    {
-		    var context = new InjectServiceScope(null, _scopeFactory).Context();
 		    try
 		    {
-			    await context.FileIndex.AddAsync(updateStatusContent);
-			    await context.SaveChangesAsync();
+			    await _context.FileIndex.AddAsync(updateStatusContent);
+			    await _context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
 			    _context.Entry(updateStatusContent).State = EntityState.Unchanged;
 		    }
-		    catch (MySqlException e)
+		    catch (ObjectDisposedException)
 		    {
-			    Console.WriteLine(updateStatusContent.FilePath);
-			    Console.WriteLine(e);
-			    throw;
+			    var context = new InjectServiceScope(null, _scopeFactory).Context();
+			    await context.FileIndex.AddAsync(updateStatusContent);
+			    await context.SaveChangesAsync();
+			    context.Entry(updateStatusContent).State = EntityState.Unchanged;
 		    }
             
 		    AddCacheItem(updateStatusContent);
 
 		    return updateStatusContent;
+	    }
+
+	    /// <summary>
+	    /// Add a new item to the database
+	    /// </summary>
+	    /// <param name="fileIndexItemList"></param>
+	    /// <returns>items with id</returns>
+	    public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
+	    {
+		    try
+		    {
+			    await _context.FileIndex.AddRangeAsync(fileIndexItemList);
+			    await _context.SaveChangesAsync();
+			    // Fix for: The instance of entity type 'Item' cannot be tracked because
+			    // another instance with the same key value for {'Id'} is already being tracked
+			    // _context.Entry(fileIndexItemList).State = EntityState.Unchanged;
+		    }
+		    catch (ObjectDisposedException)
+		    {
+			    var context = new InjectServiceScope(null, _scopeFactory).Context();
+			    await context.FileIndex.AddRangeAsync(fileIndexItemList);
+			    await context.SaveChangesAsync();
+			    // context.Entry(fileIndexItemList).State = EntityState.Unchanged;
+		    }
+
+		    foreach ( var fileIndexItem in fileIndexItemList )
+		    {
+			    AddCacheItem(fileIndexItem);
+		    }
+
+		    return fileIndexItemList;
 	    }
 
         

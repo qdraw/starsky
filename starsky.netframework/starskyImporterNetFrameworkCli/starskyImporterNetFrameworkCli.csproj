@@ -3,17 +3,11 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net471</TargetFramework>
         <!-- SonarQube needs this -->
-        <ProjectGuid>{23e4ea86-970a-4de1-badc-8d7e9d3d4dd6}</ProjectGuid>
+        <ProjectGuid>{f2f7f769-d1c7-46d8-8b77-e440adf6fcb4}</ProjectGuid>
         <DebugType>Full</DebugType>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="netstandard" />
-        <Reference Include="starsky.foundation.injection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\starsky\starsky.foundation.injection\bin\Debug\netstandard2.0\starsky.foundation.injection.dll</HintPath>
-        </Reference>
-        <Reference Include="starsky.foundation.platform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\starsky\starsky.foundation.platform\bin\Debug\netstandard2.0\starsky.foundation.platform.dll</HintPath>
-        </Reference>
     </ItemGroup>
     <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
         <Reference Include="System.Runtime" />
@@ -29,6 +23,8 @@
       <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\starsky\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+      <ProjectReference Include="..\..\starsky\starsky.foundation.platform\starsky.foundation.platform.csproj" />
       <ProjectReference Include="..\..\starsky\starsky.feature.import\starsky.feature.import.csproj" />
       <ProjectReference Include="..\..\starsky\starsky.foundation.database\starsky.foundation.database.csproj" />
     </ItemGroup>

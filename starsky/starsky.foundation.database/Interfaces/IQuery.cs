@@ -59,7 +59,8 @@ namespace starsky.foundation.database.Interfaces
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent);
 
-
+        Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList);
+        
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
