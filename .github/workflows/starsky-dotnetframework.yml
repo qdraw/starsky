@@ -1,0 +1,30 @@
+name: Starsky.netframework
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky.netframework/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky.netframework/**'
+    - '.github/workflows/**'
+
+jobs:
+  build:
+    name: Run Starsky.netframework
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup mono
+      uses: maxim-lobanov/setup-xamarin@v1.1
+      with:
+        mono-version: 6.8 # specify version in '<major>.<minor>' format
+    - name: ls
+      shell: bash
+      run: ls
+    - name: BuildNetFramework
+      shell: bash
+      working-directory: ./starsky.netframework/
+      run: bash build.sh
