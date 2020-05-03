@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -36,6 +37,15 @@ namespace starskytest.FakeMocks
 		public List<ImportIndexItem> History()
 		{
 			throw new System.NotImplementedException();
+		}
+
+		public async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		{
+			foreach ( var importIndexItem in importIndexItemList )
+			{
+				await AddAsync(importIndexItem);
+			}
+			return importIndexItemList;
 		}
 
 		public async Task<bool> RemoveAsync(string fileHash)
