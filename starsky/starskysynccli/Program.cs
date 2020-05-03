@@ -1,9 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.feature.import.Interfaces;
-using starsky.feature.import.Services;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -11,14 +7,8 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
-using starsky.foundation.thumbnailgeneration.Services;
-using starskycore.Helpers;
 using starskycore.Interfaces;
-using starskycore.Models;
 using starskycore.Services;
 
 namespace starskysynccli
