@@ -19,7 +19,6 @@ jobs:
         mono-version: 6.8 # specify version in '<major>.<minor>' format
     - name: ls
       shell: bash
-      working-directory: ./starsky.netframework/
       run: ls
     - name: BuildNetFramework
       shell: bash
