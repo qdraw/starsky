@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 3.1.201
     - name: BuildNetCore
       shell: bash
-      run: build.sh --Target=BuildNetCore
+      run: bash build.sh --Target=BuildNetCore
     - name: TestNetCore
       shell: bash
-      run: build.sh --Target=TestNetCore
+      run: bash build.sh --Target=TestNetCore
