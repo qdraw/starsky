@@ -10,10 +10,11 @@ on:
 
 jobs:
   build:
-    name: Setup Xamarin and Mono versions
+    name: Run Starsky.netframework
     runs-on: macos-latest
     steps:
-    - name: setup-xamarin
+    - uses: actions/checkout@v2
+    - name: setup mono
       uses: maxim-lobanov/setup-xamarin@v1.1
       with:
         mono-version: 6.8 # specify version in '<major>.<minor>' format
