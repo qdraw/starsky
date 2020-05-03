@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -323,17 +322,17 @@ namespace starsky.foundation.database.Query
 	            && !updateStatusContent.IsDirectory) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
 
-            try
-            {
-                _context.FileIndex.Add(updateStatusContent);
-                _context.SaveChanges();
-			}
-            catch (MySqlException e)
-            {
-                Console.WriteLine(updateStatusContent.FilePath);
-                Console.WriteLine(e);
-                throw;
-            }
+	        try
+	        {
+		        _context.FileIndex.Add(updateStatusContent);
+		        _context.SaveChanges();
+	        }
+	        catch (ObjectDisposedException)
+	        {
+		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        context.FileIndex.Add(updateStatusContent);
+		        context.SaveChanges();
+	        }
             
             AddCacheItem(updateStatusContent);
 
@@ -345,29 +344,28 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="updateStatusContent">the item</param>
 	    /// <returns>item with id</returns>
-	    public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 	    {
-		    var context = new InjectServiceScope(null, _scopeFactory).Context();
 		    try
 		    {
-			    await context.FileIndex.AddAsync(updateStatusContent);
-			    await context.SaveChangesAsync();
+			    await _context.FileIndex.AddAsync(updateStatusContent);
+			    await _context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
 			    _context.Entry(updateStatusContent).State = EntityState.Unchanged;
 		    }
-		    catch (MySqlException e)
+		    catch (ObjectDisposedException)
 		    {
-			    Console.WriteLine(updateStatusContent.FilePath);
-			    Console.WriteLine(e);
-			    throw;
+			    var context = new InjectServiceScope(null, _scopeFactory).Context();
+			    await context.FileIndex.AddAsync(updateStatusContent);
+			    await context.SaveChangesAsync();
+			    context.Entry(updateStatusContent).State = EntityState.Unchanged;
 		    }
             
 		    AddCacheItem(updateStatusContent);
 
 		    return updateStatusContent;
 	    }
-
         
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)

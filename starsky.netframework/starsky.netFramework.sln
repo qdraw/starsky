@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskySyncNetFrameworkCli"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskycore", "..\starsky\starskycore\starskycore.csproj", "{11E98077-F12D-4F4A-A6A2-29A1B72D2757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyNetFrameworkShared", "starskyNetFrameworkShared\starskyNetFrameworkShared.csproj", "{F2F01AC7-08EF-4689-976E-17A3DE2773F4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyImporterNetFrameworkCli", "starskyImporterNetFrameworkCli\starskyImporterNetFrameworkCli.csproj", "{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.import", "..\starsky\starsky.feature.import\starsky.feature.import.csproj", "{E9C60BF0-09B6-40C9-95B5-25C7A185365E}"
@@ -16,6 +14,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.ref", "starsky.ref", "{41C73FC4-D83B-4A35-9F34-33A0FB040D1A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.database", "..\starsky\starsky.foundation.database\starsky.foundation.database.csproj", "{46588BF9-D745-460D-A22D-D8FDFC698809}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.platform", "..\starsky\starsky.foundation.platform\starsky.foundation.platform.csproj", "{10A49647-83AB-43C4-A3FF-8B0767518023}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.writemeta", "..\starsky\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj", "{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Feature", "Feature", "{0E2F5097-13A9-4F61-9664-9C501F23F31A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Foundation", "Foundation", "{DD19F560-82EF-434D-9087-72F911FC7EFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +37,6 @@ Global
 		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11E98077-F12D-4F4A-A6A2-29A1B72D2757}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2F01AC7-08EF-4689-976E-17A3DE2773F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4931AE69-2B61-43AD-B7C7-8B322ABC0C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,10 +45,14 @@ Global
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9C60BF0-09B6-40C9-95B5-25C7A185365E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46588BF9-D745-460D-A22D-D8FDFC698809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46588BF9-D745-460D-A22D-D8FDFC698809}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46588BF9-D745-460D-A22D-D8FDFC698809}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46588BF9-D745-460D-A22D-D8FDFC698809}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10A49647-83AB-43C4-A3FF-8B0767518023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,8 +61,12 @@ Global
 		SolutionGuid = {BE68D644-E212-42C0-B77F-C5159D6A6A24}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E9C60BF0-09B6-40C9-95B5-25C7A185365E} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
 		{11E98077-F12D-4F4A-A6A2-29A1B72D2757} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
-		{46588BF9-D745-460D-A22D-D8FDFC698809} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
+		{0E2F5097-13A9-4F61-9664-9C501F23F31A} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
+		{E9C60BF0-09B6-40C9-95B5-25C7A185365E} = {0E2F5097-13A9-4F61-9664-9C501F23F31A}
+		{DD19F560-82EF-434D-9087-72F911FC7EFC} = {41C73FC4-D83B-4A35-9F34-33A0FB040D1A}
+		{46588BF9-D745-460D-A22D-D8FDFC698809} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
+		{10A49647-83AB-43C4-A3FF-8B0767518023} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
+		{BC265F9E-E0F1-46DA-9C40-0BABE44DE9EE} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
 	EndGlobalSection
 EndGlobal

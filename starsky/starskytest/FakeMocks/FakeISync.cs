@@ -14,5 +14,10 @@ namespace starskytest.FakeMocks
 		{
 			
 		}
+
+		public IEnumerable<string> OrphanFolder(string subPath, int maxNumberOfItems = 3000)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

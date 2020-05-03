@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -37,12 +36,11 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-
 			var dbContext = new InjectServiceScope(null,_scopeFactory).Context();
 			return !_isConnection ? dbContext.TestConnection() : _isConnection;
 		}
 
-		public async Task<bool> IsHashInImportDbAsync(string fileHashCode)
+		public virtual async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 
@@ -63,7 +61,7 @@ namespace starsky.foundation.database.Import
 		/// </summary>
 		/// <param name="updateStatusContent">import database item</param>
 		/// <returns>fail or success</returns>
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
 		{
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 
@@ -84,6 +82,24 @@ namespace starsky.foundation.database.Import
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
+		}
+
+		public virtual async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
+		{
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
+			await dbContext.SaveChangesAsync();
+			Console.Write($"⬇️{importIndexItemList.Count}");
+			return importIndexItemList;
+		}
+
+		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
+		{
+			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			dbContext.ImportIndex.AddRange(importIndexItemList);
+			dbContext.SaveChanges();
+			Console.Write($"⬇️{importIndexItemList.Count}");
+			return importIndexItemList;
 		}
 	}
 }

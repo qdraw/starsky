@@ -1,99 +1,50 @@
-﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
-using starskycore.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.thumbnailgeneration.Interfaces;
+using starsky.foundation.thumbnailgeneration.Services;
+using starskycore.Interfaces;
 using starskycore.Services;
-using starskyNetFrameworkShared;
 
-namespace starskySyncNetFramework
+namespace starskySyncNetFrameworkCli
 {
-    public static class Program
-    {
-        public static void Main(string[] args)
-        {
-            // Use args in application
+	static class Program
+	{
+		static async Task Main(string[] args)
+		{
+			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
+
+			var services = new ServiceCollection();
+
+			// Setup AppSettings
+			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+			var configurationRoot = SetupAppSettings.AppSettingsToBuilder();
+			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
+
+			// Inject services
+			new RegisterDependencies().Configure(services);
+			var serviceProvider = services.BuildServiceProvider();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-            var startupHelper = new ConfigCliAppsStartupHelperNetFramework();
-	        
-	        // Todo: make feature of this -->
-            var appSettings = startupHelper.AppSettings();
-            appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-            
-            if (new ArgsHelper().NeedHelp(args))
-            {
-                appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
-                new ArgsHelper(appSettings).NeedHelpShowDialog();
-                return;
-            }
-            
-            // Using both options
-            string subpath;
-            // -s = ifsubpath || -p is path
-            if (new ArgsHelper(appSettings).IfSubPathOrPath(args))
-            {
-                subpath = new ArgsHelper(appSettings).GetSubpathFormArgs(args);
-            }
-            else
-            {
-                subpath = new ArgsHelper(appSettings).GetPathFormArgs(args);
-            }
-            
-            // overwrite subpath with relative days
-            // use -g or --SubpathRelative to use it.
-            // envs are not supported
-            var getSubpathRelative = new ArgsHelper(appSettings).GetSubPathRelative(args);
-			if (getSubpathRelative != string.Empty)
-            {
-                subpath = getSubpathRelative;
-            }
+			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
-            if (new ArgsHelper().GetIndexMode(args))
-            {
-                Console.WriteLine($"Start indexing {subpath}");
-                startupHelper.SyncService().SyncFiles(subpath);
-                Console.WriteLine("Done SyncFiles!");
-            }
+			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			serviceProvider = services.BuildServiceProvider();
 
-            if (new ArgsHelper(appSettings).GetThumbnail(args))
-            {
-	            var storage = startupHelper.Storage();
+			var syncService = serviceProvider.GetService<ISync>();
+			var console = serviceProvider.GetRequiredService<IConsole>();
+			var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
+			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
-				var isFolderOrFile = storage.IsFolderOrFile(subpath);
-
-                if (appSettings.Verbose) Console.WriteLine(isFolderOrFile);
-                
-                if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
-                {
-                    // If single file => create thumbnail
-	                var fileHash = new FileHash(storage).GetHashCode(subpath);
-                    new Thumbnail(storage).CreateThumb(subpath,fileHash); // <= this uses subpath
-                }
-                else
-                {
-	                new Thumbnail(storage).CreateThumb(subpath);
-                }
-                
-                Console.WriteLine("Thumbnail Done!");
-            }
-            
-            if (new ArgsHelper(appSettings).GetOrphanFolderCheck(args))
-            {
-                Console.WriteLine(">>>>> Heavy CPU Feature => Use with care <<<<< ");
-                startupHelper.SyncService().OrphanFolder(subpath);
-            }
-
-	        if ( new ArgsHelper(appSettings).NeedCleanup(args) )
-	        {
-		        Console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
-		        startupHelper.ThumbnailCleaner().CleanAllUnusedFiles();
-
-	        }
-
-	        Console.WriteLine("Done!");
-
-        }
-
-    }
+			new SyncServiceCli().Sync(args, syncService, appSettings,console, thumbnailCleaner, selectorStorage);
+		}
+	}
 }

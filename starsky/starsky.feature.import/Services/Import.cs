@@ -76,9 +76,10 @@ namespace starsky.feature.import.Services
 				importSettings).AsEnumerable();
 
 			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
-				.ForEachAsync<KeyValuePair<string,bool>,ImportIndexItem>(
+				.ForEachAsync(
 					async (includedFilePath) 
-						=> await PreflightPerFile(includedFilePath, importSettings));
+						=> await PreflightPerFile(includedFilePath, importSettings),
+					_appSettings.MaxDegreesOfParallelism);
 
 			var importIndexItemsList = importIndexItemsIEnumerable.ToList();
 			var directoriesContent = ParentFoldersDictionary(importIndexItemsList);
@@ -241,7 +242,7 @@ namespace starsky.feature.import.Services
 
 			// Parse the filename and create a new importIndexItem object
 			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, 
-				hashList.Key, fileIndexItem);
+				hashList.Key, fileIndexItem, importSettings.ColorClass);
 			
 			// Update the parent and filenames
 			importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
@@ -261,12 +262,14 @@ namespace starsky.feature.import.Services
 		/// <param name="imageFormat">is it jpeg or png or something different</param>
 		/// <param name="fileHashCode">file hash base32</param>
 		/// <param name="fileIndexItem">database item</param>
+		/// <param name="colorClassTransformation">Force to update colorclass</param>
 		/// <returns></returns>
 		private ImportIndexItem ObjectCreateIndexItem(
 				string inputFileFullPath,
 				ExtensionRolesHelper.ImageFormat imageFormat,
 				string fileHashCode,
-				FileIndexItem fileIndexItem)
+				FileIndexItem fileIndexItem,
+				int colorClassTransformation)
 		{
 			var importIndexItem = new ImportIndexItem(_appSettings)
 			{
@@ -285,9 +288,11 @@ namespace starsky.feature.import.Services
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
-			
+
+			importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
+			importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
 
 			return importIndexItem;
 		}
@@ -339,13 +344,15 @@ namespace starsky.feature.import.Services
 			var importIndexItemsIEnumerable = await preflightItemList.AsEnumerable()
 				.ForEachAsync(
 					async (preflightItem) 
-						=> await Importer(preflightItem, importSettings));
+						=> await Importer(preflightItem, importSettings),
+					_appSettings.MaxDegreesOfParallelism);
 
-			return importIndexItemsIEnumerable.ToList();
+			return await AddToQueryAndImportDatabaseAsync(importIndexItemsIEnumerable.ToList(), importSettings);
 		}
 
 		/// <summary>
 		/// Run the import on the config file
+		/// Does NOT add anything to the database
 		/// </summary>
 		/// <param name="importIndexItem">config file</param>
 		/// <param name="importSettings">optional settings</param>
@@ -371,8 +378,8 @@ namespace starsky.feature.import.Services
 		    }
 		    
 		    // From here on the item is exit in the storage folder
-		    // Creation of a sidecar xmp file --> NET CORE <--
-		    if ( _appSettings.ExifToolImportXmpCreate && !_appSettings.AddLegacyOverwrite )
+		    // Creation of a sidecar xmp file
+		    if ( _appSettings.ExifToolImportXmpCreate)
 		    {
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
 				    new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
@@ -382,29 +389,37 @@ namespace starsky.feature.import.Services
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass);
 
-	        // Ignore the sync part if the connection is missing
-	        // or option enabled
-	        if ( importIndexItem.Status == ImportStatus.Ok && importSettings.IndexMode && _importQuery.TestConnection() )
-	        {
-		        await _query.AddItemAsync(importIndexItem.FileIndexItem);
-		        // To the list of imported folders
-		        await _importQuery.AddAsync(importIndexItem);
-	        }
-	        else if ( _appSettings.Verbose )
-	        {
-		        Console.WriteLine($">> Not added to Database {importIndexItem.FilePath}");
-	        }
-
-
-	        if ( _appSettings.Verbose ) Console.Write("+");
-	        
 			// to move files
             if (importSettings.DeleteAfter)
             {
 	            _filesystemStorage.FileDelete(importIndexItem.FilePath);
             }
 
+            if ( _appSettings.Verbose ) Console.Write("+");
 	        return importIndexItem;
+		}
+
+		private async Task<List<ImportIndexItem>> AddToQueryAndImportDatabaseAsync(
+			List<ImportIndexItem> importIndexItemList, ImportSettingsModel importSettings)
+		{
+			if ( !importSettings.IndexMode && !_importQuery.TestConnection() )
+			{
+				return importIndexItemList;
+			}
+			
+			var fileIndexItems = importIndexItemList.Where(p
+				=> p.Status == ImportStatus.Ok).
+				Select(importIndexItem => importIndexItem.FileIndexItem).
+				ToList();
+			
+			await _query.AddRangeAsync(fileIndexItems);
+			
+			// To the list of imported folders
+			await _importQuery.AddRangeAsync(
+				importIndexItemList.Where(p => p.Status == ImportStatus.Ok).ToList()
+				);
+			
+			return importIndexItemList; 
 		}
 
 		/// <summary>
@@ -428,8 +443,6 @@ namespace starsky.feature.import.Services
 				nameof(FileIndexItem.ColorClass).ToLowerInvariant(),
 				nameof(FileIndexItem.Description).ToLowerInvariant(),
 			};
-
-			fileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
 
 			new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
 				new ReadMeta(_subPathStorage)).Update(fileIndexItem, comparedNamesList);

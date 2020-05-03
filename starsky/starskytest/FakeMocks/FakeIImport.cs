@@ -24,7 +24,7 @@ namespace starskytest.FakeMocks
 		
 		public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList, ImportSettingsModel importSettings)
 		{
-			return await Preflight(inputFullPathList.ToList(), importSettings);;
+			return await Preflight(inputFullPathList.ToList(), importSettings);
 		}
 
 		public List<string> ImportTo(string inputFullPathList, ImportSettingsModel importSettings)

@@ -1,16 +1,20 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Import;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 
-namespace starskyimportercliNetFramework
+namespace starskyImporterNetFrameworkCli
 {
 	static class Program
 	{
@@ -34,6 +38,17 @@ namespace starskyimportercliNetFramework
 			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			
+			// remove ImportQuery and use legacy class
+			var serviceDescriptorImportQuery = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IImportQuery));
+			services.Remove(serviceDescriptorImportQuery);
+			services.AddScoped<IImportQuery,ImportQueryNetFramework>();
+			
+			// remove Query and use legacy class
+			var serviceDescriptorQuery = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IQuery));
+			services.Remove(serviceDescriptorQuery);
+			services.AddScoped<IQuery,QueryNetFramework>();
+			
 			serviceProvider = services.BuildServiceProvider();
 
 			var import = serviceProvider.GetService<IImport>();

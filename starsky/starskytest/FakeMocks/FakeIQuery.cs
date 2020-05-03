@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,9 +98,21 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
+#pragma warning disable 1998
 		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+#pragma warning restore 1998
 		{
+			// ReSharper disable once MethodHasAsyncOverload
 			return AddItem(updateStatusContent);
+		}
+
+		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
+		{
+			foreach ( var fileIndexItem in fileIndexItemList )
+			{
+				await AddItemAsync(fileIndexItem);
+			}
+			return fileIndexItemList;
 		}
 
 		public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)

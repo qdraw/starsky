@@ -16,7 +16,6 @@ var distDirectory = Directory($"./{runtime}");
 
 var projectNames = new List<string>{
     "starskyImporterNetFrameworkCli",
-    "starskyNetFrameworkShared",
     "starskySyncNetFrameworkCli"
 };
 
@@ -82,7 +81,7 @@ Task("PublishWeb")
     {
         foreach (var projectName in projectNames)
         {
-            var binReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/*")).ToString();
+            var binReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/net471/*")).ToString();
             var distDirectoryAbsolute = MakeAbsolute(Directory($"./{distDirectory}")).ToString();
 
             // no child items
@@ -91,7 +90,7 @@ Task("PublishWeb")
             System.Console.WriteLine($"{binReleaseDir}");
             System.Console.WriteLine($"{distDirectoryAbsolute}");
 
-            var fromRuntimeBinReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/runtimes/osx-x64/native")).ToString();
+            var fromRuntimeBinReleaseDir = MakeAbsolute(Directory($"./{projectName}/bin/{configuration}/net471/runtimes/osx-x64/native")).ToString();
             var toRunTimeDistFolder = MakeAbsolute(Directory($"./{distDirectory}/runtimes/osx-x64/native")).ToString();
 
 

@@ -10,5 +10,6 @@ namespace starsky.foundation.database.Interfaces
 		bool TestConnection();
 		Task<bool> AddAsync(ImportIndexItem updateStatusContent);
 		List<ImportIndexItem> History();
+		Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList);
 	}
 }

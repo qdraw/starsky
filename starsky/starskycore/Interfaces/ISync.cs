@@ -11,5 +11,8 @@ namespace starskycore.Interfaces
 	    /// </summary>
 	    /// <param name="subPath">relative urls</param>
 	    void AddSubPathFolder(string subPath);
+
+	    IEnumerable<string>
+		    OrphanFolder(string subPath, int maxNumberOfItems = 3000);
     }
 }
