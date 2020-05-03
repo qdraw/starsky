@@ -27,15 +27,16 @@ namespace starsky.foundation.storage.Services
 		/// </summary>
 		/// <param name="dateTime">DateTime to parse</param>
 		/// <param name="fileNameBase">include fileName if requested in structure</param>
-		/// <param name="imageFormat">include imageFormat at the end of the structure</param>
+		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>filename without starting slash</returns>
-		public string ParseFileName(DateTime dateTime, string fileNameBase = "", 
-			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.unknown)
+		public string ParseFileName(DateTime dateTime, 
+			string fileNameBase = "", 
+			string extensionWithoutDot = "")
 		{
 			CheckStructureFormat();
 			var fileNameStructure =
 				PathHelper.PrefixDbSlash(FilenamesHelper.GetFileName(_structure));
-			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase, imageFormat);
+			var parsedStructuredList = ParseStructure(fileNameStructure, dateTime, fileNameBase, extensionWithoutDot);
 			return PathHelper.RemovePrefixDbSlash(ApplyStructureRangeToStorage(parsedStructuredList));
 		}
 
@@ -44,13 +45,13 @@ namespace starsky.foundation.storage.Services
 		/// </summary>
 		/// <param name="dateTime">DateTime to parse</param>
 		/// <param name="fileNameBase">include fileName if requested in structure</param>
-		/// <param name="imageFormat">include parentFolder if requested in structure (not recommend)</param>
+		/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
 		/// <returns></returns>
 		public string ParseSubfolders(DateTime dateTime, string fileNameBase = "", 
-			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.unknown)
+			string extensionWithoutDot = "")
 		{
 			CheckStructureFormat();
-			var parsedStructuredList = ParseStructure(_structure, dateTime, fileNameBase, imageFormat);
+			var parsedStructuredList = ParseStructure(_structure, dateTime, fileNameBase, extensionWithoutDot);
 
 			return ApplyStructureRangeToStorage(
 				parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
@@ -185,10 +186,10 @@ namespace starsky.foundation.storage.Services
 		/// <param name="structure">Structure</param>
 		/// <param name="dateTime">Where to parse to</param>
 		/// <param name="fileNameBase">source name, can be used in the options</param>
-		/// <param name="imageFormat"></param>
+		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Object with Structure Range output</returns>
 		private List<List<StructureRange>> ParseStructure(string structure, DateTime dateTime,
-			string fileNameBase = "", ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.unknown)
+			string fileNameBase = "", string extensionWithoutDot = "")
 		{
 			var structureList = structure.Split('/');
 
@@ -209,7 +210,7 @@ namespace starsky.foundation.storage.Services
 						Pattern = match.Value,
 						Start = match.Index,
 						End = match.Index + match.Length,
-						Output = OutputStructureRangeItemParser(match.Value, dateTime, fileNameBase, imageFormat)
+						Output = OutputStructureRangeItemParser(match.Value, dateTime, fileNameBase, extensionWithoutDot)
 					});
 				}
 
@@ -225,10 +226,10 @@ namespace starsky.foundation.storage.Services
 		/// <param name="pattern">Split pattern item. For example yyyy or dd</param>
 		/// <param name="dateTime">Date and Time</param>
 		/// <param name="fileNameBase">source file name without extension</param>
-		/// <param name="imageFormat"></param>
+		/// <param name="extensionWithoutDot">fileExtension without dot</param>
 		/// <returns>Current item name, with parsed DateTime and without escape signs</returns>
 		private string OutputStructureRangeItemParser(string pattern, DateTime dateTime,
-			string fileNameBase, ExtensionRolesHelper.ImageFormat imageFormat)
+			string fileNameBase, string extensionWithoutDot = "")
 		{
 			// allow only full word matches (so .ext is no match)
 			MatchCollection matchCollection = new Regex(DateRegexPattern).Matches(pattern);
@@ -247,7 +248,7 @@ namespace starsky.foundation.storage.Services
 				case "{filenamebase}":
 					return fileNameBase;
 				case ".ext":
-					return $".{imageFormat}";
+					return string.IsNullOrEmpty(extensionWithoutDot) ? ".unknown" : $".{extensionWithoutDot}";
 				default:
 					return pattern.Replace("\\",string.Empty);
 			}

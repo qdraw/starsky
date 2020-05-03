@@ -10,6 +10,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
@@ -41,12 +42,15 @@ namespace starsky.feature.import.Services
 		private readonly IExifTool _exifTool;
 		private readonly IQuery _query;
 		
+		private readonly IConsole _console;
+
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
 			IImportQuery importQuery,
 			IExifTool exifTool,
-			IQuery query)
+			IQuery query,
+			IConsole console)
 		{
 			_selectorStorage = selectorStorage;
 			_importQuery = importQuery;
@@ -59,6 +63,7 @@ namespace starsky.feature.import.Services
             _readMetaHost = new ReadMeta(_filesystemStorage);
             _exifTool = exifTool;
             _query = query;
+            _console = console;
 		}
 
 		/// <summary>
@@ -198,12 +203,15 @@ namespace starsky.feature.import.Services
 		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, 
 			ImportSettingsModel importSettings)
 		{
-			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
+			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) )
+			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ not found: {inputFileFullPath.Key}");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.NotFound, 
 					FilePath = inputFileFullPath.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
+			}
 
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
 				_filesystemStorage.ReadStream(inputFileFullPath.Key, 
@@ -213,6 +221,7 @@ namespace starsky.feature.import.Services
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
@@ -220,13 +229,13 @@ namespace starsky.feature.import.Services
 				new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
-				Console.WriteLine(">> FileHash error");
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
-
 			
 			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
@@ -318,11 +327,11 @@ namespace starsky.feature.import.Services
 			
 			importIndexItem.FileIndexItem.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
-				importIndexItem.FileIndexItem.ImageFormat);
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
-				importIndexItem.FileIndexItem.ImageFormat);
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
 			return importIndexItem;

@@ -174,7 +174,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>true, </returns>
 		public static bool IsExtensionSyncSupported(string filename)
 		{
-			return IsExtensionForce(filename, ExtensionSyncSupportedList);
+			return IsExtensionForce(filename.ToLowerInvariant(), ExtensionSyncSupportedList);
 		}
 		
 		/// <summary>
