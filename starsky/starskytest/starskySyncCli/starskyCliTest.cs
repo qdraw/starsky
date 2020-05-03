@@ -10,7 +10,6 @@ namespace starskytest.starskySyncCli
     [TestClass]
     public class StarskyCliTest
     {
-        [ExcludeFromCoverage]
         [TestMethod]
         public void StarskyCliHelpVerbose()
         {

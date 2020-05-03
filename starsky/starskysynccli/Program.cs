@@ -14,6 +14,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Interfaces;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -48,7 +49,7 @@ namespace starskysynccli
 
 	        var syncService = serviceProvider.GetService<ISync>();
 	        var console = serviceProvider.GetRequiredService<IConsole>();
-			var thumbnailCleaner = serviceProvider.GetRequiredService<ThumbnailCleaner>();
+			var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
             new SyncServiceCli().Sync(args, syncService, appSettings,console, thumbnailCleaner, selectorStorage);
