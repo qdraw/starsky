@@ -19,7 +19,8 @@ jobs:
         dotnet-version: 3.1.201
     - name: BuildNetCore
       shell: bash
-      run: bash starsky/build.sh --Target=BuildNetCore
+      working-directory: starsky
+      run: bash build.sh --Target=BuildNetCore
     - name: TestNetCore
       shell: bash
       run: bash build.sh --Target=TestNetCore
