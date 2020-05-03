@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -104,6 +105,57 @@ namespace starskytest.starsky.foundation.database.Import
 				p => p.FileHash == expectedResult.FileHash);
 			
 			Assert.AreEqual(expectedResult.FileHash,queryFromDb.FileHash);
+		}
+		
+		[TestMethod]
+		public async Task History()
+		{
+			var expectedResult = new ImportIndexItem { AddToDatabase = DateTime.UtcNow, FileHash = "TEST8"};
+			var serviceScopeFactory = CreateNewScope();
+			
+			await new ImportQuery(serviceScopeFactory).AddAsync(expectedResult);
+
+			var historyResult = new ImportQuery(serviceScopeFactory).History();
+
+			Assert.IsTrue(historyResult.Any(p => p.FileHash == "TEST8"));
+		}
+		
+		[TestMethod]
+		public async Task AddRangeAsync()
+		{
+			var expectedResult = new List<ImportIndexItem>
+			{
+				new ImportIndexItem {FileHash = "TEST4"},
+				new ImportIndexItem {FileHash = "TEST5"}
+			};
+			var serviceScopeFactory = CreateNewScope();
+			var scope = serviceScopeFactory.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			await new ImportQuery(serviceScopeFactory).AddRangeAsync(expectedResult);
+			
+			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
+		}
+		
+		[TestMethod]
+		public void AddRange()
+		{
+			var expectedResult = new List<ImportIndexItem>
+			{
+				new ImportIndexItem {FileHash = "TEST4"},
+				new ImportIndexItem {FileHash = "TEST5"}
+			};
+			var serviceScopeFactory = CreateNewScope();
+			var scope = serviceScopeFactory.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			new ImportQuery(serviceScopeFactory).AddRange(expectedResult);
+			
+			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
 		
 	}
