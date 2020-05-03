@@ -297,9 +297,11 @@ namespace starsky.feature.import.Services
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
-
+			
+			// AddToDatabase is Used by the importer History agent
 			importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
 			importIndexItem.AddToDatabase = DateTime.UtcNow;
+
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 			importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;

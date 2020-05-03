@@ -401,7 +401,24 @@ namespace starskytest.starsky.feature.import.Services
 
 			_iStorageFake.FileDelete(expectedFilePath);
 		}
-		
+
+		[TestMethod]
+		public async Task Importer_CheckIfAddToDatabaseTime()
+		{
+			var appSettings = new AppSettings();
+			var query = new FakeIQuery();
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings),query, _console);
+			
+			var result = await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel());
+			
+			// AddToDatabase is Used by the importer History agent
+
+			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+			Assert.IsTrue(result.FirstOrDefault().AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+		}
+
 		[TestMethod]
 		public async Task Importer_OverwriteStructure_HappyFlow()
 		{
