@@ -5,6 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{f2f7f769-d1c7-46d8-8b77-e440adf6fcb4}</ProjectGuid>
         <DebugType>Full</DebugType>
+        <LangVersion>7.1</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="netstandard" />
