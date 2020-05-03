@@ -9,7 +9,7 @@ on:
     branches: [ master ]
     paths:
     - 'starsky.netframework/**'
-    - '.github/workflow/**'
+    - '.github/workflows/**'
 
 jobs:
   build:
