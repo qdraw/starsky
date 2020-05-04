@@ -124,7 +124,6 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
   var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'numeric' });
-  console.log(numberValue);
   return Number(numberValue);
 }
 
