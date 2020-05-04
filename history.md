@@ -22,6 +22,7 @@
 
 # Unreleased - 2020-04-XX
 - no changes
+raw tags change dng not updated
 
 # version 0.2.3 - 2020-05-04
 - [x]   (Fixed)  _Back-end_ New users could not sign up
