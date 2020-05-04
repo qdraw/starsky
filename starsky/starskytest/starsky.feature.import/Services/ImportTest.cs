@@ -66,6 +66,22 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
 		}
+
+		[TestMethod]
+		public async Task Importer_EmptyDirectory()
+		{
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings), null, _console);
+
+			var result = await importService.Importer(
+				new List<string> {"/"},
+				new ImportSettingsModel());
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(!result.Any());
+		}
 		
 		[TestMethod]
 		public async Task Preflight_SingleImage_DateGetByFileNameNoExif()
