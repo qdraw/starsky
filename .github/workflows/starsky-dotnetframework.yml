@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Run Starsky.netframework
+    name: build
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
