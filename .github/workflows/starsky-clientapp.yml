@@ -6,8 +6,13 @@ name: Starsky ClientApp
 on:
   push:
     branches: [ master ]
+    paths:
+    - 'starsky/starsky/clientapp/**'
   pull_request:
     branches: [ master ]
+    paths:
+    - 'starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
 
 jobs:
   build:
