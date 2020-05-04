@@ -54,7 +54,7 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
 
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
-  var dateTimeObject = new Date(`${dateTime}Z`);
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // We prefer British English, uses day-month-year order
   var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
@@ -66,7 +66,7 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-
+  // unescaped: (?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)
   var regexMatch = new RegExp('(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)');
   var matchTime = dateTime.match(regexMatch);
   return matchTime ? matchTime[0] : "";

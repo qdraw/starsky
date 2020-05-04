@@ -35,7 +35,7 @@
 - [x]   (Fixed)  _Back-end_ Delete After now works
 - [x]   (Fixed)  _Back-end_ Import IndexMode works
 - [x]   (Fixed)  _Back-end_ Import File Extension issue
-- [x]   (Fixed)  _Back-end_ Import Empty string import nice warning  __not implemented__
+- [x]   (Fixed)  _Back-end_ Import Empty string import nice warning (0 results)
 - [x]   (Fixed)  _Front-end_ Fix issue delete next search __not implemented__
 - [x]   (Fixed)  _Front-end_ video invalid datetime __not implemented__
 - [x]   (Fixed)  _Back-end_ Force Sync fail __not implemented__

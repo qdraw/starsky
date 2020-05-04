@@ -45,9 +45,19 @@ namespace starsky.foundation.database.Query
         {
             subPath = SubPathSlashRemove(subPath);
 
-            return _context.FileIndex.Where
-                    (p => !p.IsDirectory && p.ParentDirectory == subPath)
-                .OrderBy(r => r.FileName).ToList();
+            try
+            {
+	            return _context.FileIndex.Where
+			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+		            .OrderBy(r => r.FileName).ToList();
+            }
+            catch ( ObjectDisposedException )
+            {
+	            var context = new InjectServiceScope(null, _scopeFactory).Context();
+	            return context.FileIndex.Where
+			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+		            .OrderBy(r => r.FileName).ToList();
+            }
         }
         
         // Includes sub items in file

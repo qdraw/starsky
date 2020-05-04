@@ -78,8 +78,11 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(
 				fullFilePathsList, 
-				importSettings).AsEnumerable();
-
+				importSettings).ToList();
+			
+			// When Directory is Empty
+			if ( !includedDirectoryFilePaths.Any() ) return new List<ImportIndexItem>();
+			
 			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
 				.ForEachAsync(
 					async (includedFilePath) 
@@ -350,6 +353,10 @@ namespace starsky.feature.import.Services
 			ImportSettingsModel importSettings)
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
+			
+			// When directory is empty 
+			if ( !preflightItemList.Any() ) return new List<ImportIndexItem>();
+
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
 			await CreateParentFolders(directoriesContent);
 
