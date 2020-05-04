@@ -10,6 +10,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
@@ -41,12 +42,15 @@ namespace starsky.feature.import.Services
 		private readonly IExifTool _exifTool;
 		private readonly IQuery _query;
 		
+		private readonly IConsole _console;
+
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
 			IImportQuery importQuery,
 			IExifTool exifTool,
-			IQuery query)
+			IQuery query,
+			IConsole console)
 		{
 			_selectorStorage = selectorStorage;
 			_importQuery = importQuery;
@@ -59,6 +63,7 @@ namespace starsky.feature.import.Services
             _readMetaHost = new ReadMeta(_filesystemStorage);
             _exifTool = exifTool;
             _query = query;
+            _console = console;
 		}
 
 		/// <summary>
@@ -73,8 +78,11 @@ namespace starsky.feature.import.Services
 		{
 			var includedDirectoryFilePaths = AppendDirectoryFilePaths(
 				fullFilePathsList, 
-				importSettings).AsEnumerable();
-
+				importSettings).ToList();
+			
+			// When Directory is Empty
+			if ( !includedDirectoryFilePaths.Any() ) return new List<ImportIndexItem>();
+			
 			var importIndexItemsIEnumerable = await includedDirectoryFilePaths
 				.ForEachAsync(
 					async (includedFilePath) 
@@ -198,12 +206,15 @@ namespace starsky.feature.import.Services
 		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, 
 			ImportSettingsModel importSettings)
 		{
-			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) ) 
+			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) )
+			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ not found: {inputFileFullPath.Key}");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.NotFound, 
 					FilePath = inputFileFullPath.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
+			}
 
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(
 				_filesystemStorage.ReadStream(inputFileFullPath.Key, 
@@ -213,6 +224,7 @@ namespace starsky.feature.import.Services
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(inputFileFullPath.Key) ||
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
 			
@@ -220,13 +232,13 @@ namespace starsky.feature.import.Services
 				new FileHash(_filesystemStorage).GetHashCodeAsync(inputFileFullPath.Key);
 			if ( !hashList.Value )
 			{
-				Console.WriteLine(">> FileHash error");
+				if ( _appSettings.Verbose ) _console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
 				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
 			}
-
 			
 			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($"🤷 Ignored, exist already {inputFileFullPath.Key}");
 				return new ImportIndexItem
 				{
 					Status = ImportStatus.IgnoredAlreadyImported, 
@@ -288,8 +300,11 @@ namespace starsky.feature.import.Services
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
-
+			
+			// AddToDatabase is Used by the importer History agent
 			importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
+			importIndexItem.AddToDatabase = DateTime.UtcNow;
+
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 			importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
@@ -318,11 +333,11 @@ namespace starsky.feature.import.Services
 			
 			importIndexItem.FileIndexItem.ParentDirectory = structureService.ParseSubfolders(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
-				importIndexItem.FileIndexItem.ImageFormat);
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			
 			importIndexItem.FileIndexItem.FileName = structureService.ParseFileName(
 				importIndexItem.FileIndexItem.DateTime, importIndexItem.FileIndexItem.FileCollectionName,
-				importIndexItem.FileIndexItem.ImageFormat);
+				FilenamesHelper.GetFileExtensionWithoutDot(importIndexItem.FileIndexItem.FileName));
 			importIndexItem.FilePath = importIndexItem.FileIndexItem.FilePath;
 			
 			return importIndexItem;
@@ -338,6 +353,10 @@ namespace starsky.feature.import.Services
 			ImportSettingsModel importSettings)
 		{
 			var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
+			
+			// When directory is empty 
+			if ( !preflightItemList.Any() ) return new List<ImportIndexItem>();
+
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
 			await CreateParentFolders(directoriesContent);
 
@@ -392,7 +411,8 @@ namespace starsky.feature.import.Services
 			// to move files
             if (importSettings.DeleteAfter)
             {
-	            _filesystemStorage.FileDelete(importIndexItem.FilePath);
+	            if ( _appSettings.Verbose ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
+	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
             }
 
             if ( _appSettings.Verbose ) Console.Write("+");
@@ -402,8 +422,11 @@ namespace starsky.feature.import.Services
 		private async Task<List<ImportIndexItem>> AddToQueryAndImportDatabaseAsync(
 			List<ImportIndexItem> importIndexItemList, ImportSettingsModel importSettings)
 		{
-			if ( !importSettings.IndexMode && !_importQuery.TestConnection() )
+			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
 			{
+				if ( _appSettings.Verbose ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
+				                                               $"IndexMode {importSettings.IndexMode} " +
+				                                               $"TestConnection {_importQuery.TestConnection()}");
 				return importIndexItemList;
 			}
 			

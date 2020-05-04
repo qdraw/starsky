@@ -19,6 +19,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
@@ -74,7 +75,8 @@ namespace starskytest.Controllers
 	        var selectorStorage = new FakeSelectorStorage(_iStorage);
 	        _iSync = new SyncService(_query,_appSettings, selectorStorage);
 
-			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(null), new FakeExifTool(_iStorage,_appSettings), _query);
+			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(null),
+			 new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper());
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();

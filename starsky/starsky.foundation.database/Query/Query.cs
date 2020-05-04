@@ -45,9 +45,19 @@ namespace starsky.foundation.database.Query
         {
             subPath = SubPathSlashRemove(subPath);
 
-            return _context.FileIndex.Where
-                    (p => !p.IsDirectory && p.ParentDirectory == subPath)
-                .OrderBy(r => r.FileName).ToList();
+            try
+            {
+	            return _context.FileIndex.Where
+			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+		            .OrderBy(r => r.FileName).ToList();
+            }
+            catch ( ObjectDisposedException )
+            {
+	            var context = new InjectServiceScope(null, _scopeFactory).Context();
+	            return context.FileIndex.Where
+			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+		            .OrderBy(r => r.FileName).ToList();
+            }
         }
         
         // Includes sub items in file
@@ -127,12 +137,22 @@ namespace starsky.foundation.database.Query
 	    // Return a File Item By it Hash value
         // New added, directory hash now also hashes
         private string QueryGetItemByHash(string fileHash)
-        {            
-			var query = _context.FileIndex.FirstOrDefault(
-				p => p.FileHash == fileHash 
-				&& !p.IsDirectory
-			);
-			return query?.FilePath;
+        {   
+	        try
+	        {
+		       return _context.FileIndex.FirstOrDefault(
+			        p => p.FileHash == fileHash 
+			             && !p.IsDirectory
+		        )?.FilePath;
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        return context.FileIndex.FirstOrDefault(
+			        p => p.FileHash == fileHash 
+			             && !p.IsDirectory
+		        )?.FilePath;;
+	        }
         }
 
 	    // Remove the '/' from the end of the url

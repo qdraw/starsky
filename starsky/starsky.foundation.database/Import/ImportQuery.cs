@@ -68,7 +68,7 @@ namespace starsky.foundation.database.Import
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
-			Console.Write("⬇️");
+			Console.Write("⬆️");
 			// removed MySqlException catch
 			return true;
 		}
@@ -89,7 +89,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
-			Console.Write($"⬇️{importIndexItemList.Count}");
+			Console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
 			return importIndexItemList;
 		}
 
@@ -98,7 +98,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
 			dbContext.ImportIndex.AddRange(importIndexItemList);
 			dbContext.SaveChanges();
-			Console.Write($"⬇️{importIndexItemList.Count}");
+			Console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
 			return importIndexItemList;
 		}
 	}

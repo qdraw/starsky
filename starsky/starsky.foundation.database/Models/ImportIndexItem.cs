@@ -90,9 +90,6 @@ namespace starsky.foundation.database.Models
 	    [NotMapped]
 		public FileIndexItem FileIndexItem { get; set; }
         
-        // Caching to have it after you use the afterDelete flag
-        private string FileName { get; set; }
-
         [NotMapped]
         [JsonIgnore]
         public string SourceFullFilePath { get; set; }

@@ -1,7 +1,7 @@
 import React from 'react';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import { isValidDate, leftPad, parseDate, parseTime } from '../shared/date';
+import { isValidDate, leftPad, parseDate, parseDateDate, parseDateMonth, parseDateYear, parseTime, parseTimeHour } from '../shared/date';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
@@ -29,10 +29,10 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
 
   const [isFormEnabled] = React.useState(true);
 
-  const [fullYear, setFullYear] = React.useState(props.dateTime ? new Date(props.dateTime).getFullYear() : 1);
-  const [month, setMonth] = React.useState(props.dateTime ? new Date(props.dateTime).getMonth() + 1 : 1);
-  const [date, setDate] = React.useState(props.dateTime ? new Date(props.dateTime).getDate() : 1);
-  const [hour, setHour] = React.useState(props.dateTime ? new Date(props.dateTime + "Z").getUTCHours() : 1);
+  const [fullYear, setFullYear] = React.useState(parseDateYear(props.dateTime));
+  const [month, setMonth] = React.useState(parseDateMonth(props.dateTime));
+  const [date, setDate] = React.useState(parseDateDate(props.dateTime));
+  const [hour, setHour] = React.useState(parseTimeHour(props.dateTime));
   const [minute, setMinute] = React.useState(props.dateTime ? new Date(props.dateTime).getMinutes() : 1);
   const [seconds, setSeconds] = React.useState(props.dateTime ? new Date(props.dateTime).getSeconds() : 1);
 
