@@ -9,6 +9,11 @@ describe("date", () => {
       expect(result).toBeFalsy()
     });
 
+    it("utc time (ends with Z)", () => {
+      var result = parseDate("2020-04-28T10:44:11Z", SupportedLanguages.nl);
+      //                   NOT Invalid!
+      expect(result).not.toBe("Invalid Date");
+    });
     it("wrong format", () => {
       var result = parseDate("2020-30", SupportedLanguages.nl);
       expect(result).toBe("Invalid Date");

@@ -54,9 +54,13 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
 
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
+  // UTC DateTime already ends with Z
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // We prefer British English, uses day-month-year order
   var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
+  if (dateTime.endsWith("Z")) {
+    return dateTimeObject.toLocaleDateString(locateString, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
   return dateTimeObject.toLocaleDateString(locateString, { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
@@ -66,10 +70,12 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-  // unescaped: (?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d)
-  var regexMatch = new RegExp('(?:[01]\\d|2[0-3]):(?:[0-5]\\d):(?:[0-5]\\d)');
-  var matchTime = dateTime.match(regexMatch);
-  return matchTime ? matchTime[0] : "";
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  if (dateTime.endsWith("Z")) {
+    return dateTimeObject.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  return dateTimeObject.toLocaleTimeString([], { timeZone: 'UTC', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
 }
 
 const secondsToHours = (seconds: number): string => {

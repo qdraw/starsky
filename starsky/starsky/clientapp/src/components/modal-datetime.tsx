@@ -32,7 +32,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   const [fullYear, setFullYear] = React.useState(props.dateTime ? new Date(props.dateTime).getFullYear() : 1);
   const [month, setMonth] = React.useState(props.dateTime ? new Date(props.dateTime).getMonth() + 1 : 1);
   const [date, setDate] = React.useState(props.dateTime ? new Date(props.dateTime).getDate() : 1);
-  const [hour, setHour] = React.useState(props.dateTime ? new Date(props.dateTime + "Z").getUTCHours() : 1);
+  const [hour, setHour] = React.useState(props.dateTime ? new Date(props.dateTime).getHours() : 1);
   const [minute, setMinute] = React.useState(props.dateTime ? new Date(props.dateTime).getMinutes() : 1);
   const [seconds, setSeconds] = React.useState(props.dateTime ? new Date(props.dateTime).getSeconds() : 1);
 
