@@ -65,17 +65,57 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
   return dateTimeObject.toLocaleDateString(locateString, { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-const parseTime = (dateTime: string | undefined): string => {
+const parseDateDate = (dateTime: string | undefined): number => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return 1;
+  }
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, day: 'numeric' });
+  return Number(numberValue);
+}
 
+const parseDateYear = (dateTime: string | undefined): number => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return 1;
+  }
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'long' });
+  return Number(numberValue);
+}
+
+const parseDateMonth = (dateTime: string | undefined): number => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return 1;
+  }
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'long' });
+  return Number(numberValue);
+}
+
+const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
-  if (dateTime.endsWith("Z")) {
-    return dateTimeObject.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
+
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  return dateTimeObject.toLocaleTimeString([], { timeZone: 'UTC', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  return dateTimeObject.toLocaleTimeString([], {
+    timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, hour12: false,
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+}
+
+const parseTimeHour = (dateTime: string | undefined): number => {
+  if (!isValidDate(dateTime) || !dateTime) {
+    return 1;
+  }
+  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, hour12: false, hour: '2-digit' });
+  return Number(numberValue);
 }
 
 const secondsToHours = (seconds: number): string => {
@@ -86,5 +126,5 @@ const secondsToHours = (seconds: number): string => {
   return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
 }
 
-export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours };
+export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours, parseTimeHour, parseDateDate, parseDateMonth, parseDateYear };
 
