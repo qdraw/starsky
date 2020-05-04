@@ -11,6 +11,7 @@ on:
     paths:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
 
 jobs:
   build:
