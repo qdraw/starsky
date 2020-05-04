@@ -71,7 +71,7 @@ const parseDateDate = (dateTime: string | undefined): number => {
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, day: 'numeric' });
+  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, day: 'numeric' });
   console.log(numberValue);
   return Number(numberValue);
 }
@@ -82,7 +82,7 @@ const parseDateYear = (dateTime: string | undefined): number => {
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'long' });
+  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'long' });
   return Number(numberValue);
 }
 
@@ -92,7 +92,7 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'long' });
+  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'long' });
   return Number(numberValue);
 }
 
