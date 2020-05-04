@@ -21,6 +21,9 @@
 - []   (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
 # Unreleased - 2020-04-XX
+- no changes
+
+# version 0.2.3 - 2020-05-04
 - [x]   (Fixed)  _Back-end_ New users could not sign up
 - [x]   (Fixed)  _Front-end_ Register page has wrong title
 - [x]   (Fixed)  _Front-end_ Login flow return url fixed
@@ -36,9 +39,9 @@
 - [x]   (Fixed)  _Back-end_ Import IndexMode works
 - [x]   (Fixed)  _Back-end_ Import File Extension issue
 - [x]   (Fixed)  _Back-end_ Import Empty string import nice warning (0 results)
-- [x]   (Fixed)  _Front-end_ Fix issue delete next search __not implemented__
-- [x]   (Fixed)  _Front-end_ video invalid datetime __not implemented__
-- [x]   (Fixed)  _Back-end_ Force Sync fail __not implemented__
+- [x]   (Fixed)  _Front-end_ video invalid datetime (UTC Time issues)
+- [x]   (Fixed)  _Back-end_ Force Sync fail (Object Disposed)
+- [x]   (Fixed)  _Back-end_ Export fail (Object Disposed)
 
 # version 0.2.2 - 2020-04-17
 __Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__

@@ -1,4 +1,4 @@
-import { isValidDate, leftPad, parseDate, parseRelativeDate, parseTime, secondsToHours } from './date';
+import { isValidDate, leftPad, parseDate, parseDateDate, parseDateMonth, parseDateYear, parseRelativeDate, parseTime, parseTimeHour, secondsToHours } from './date';
 import { SupportedLanguages } from './language';
 
 describe("date", () => {
@@ -47,6 +47,94 @@ describe("date", () => {
       expect(result).toBe("23:40:33");
     });
 
+  });
+
+  describe("parseTimeHour", () => {
+    it("undefined", () => {
+      var result = parseTimeHour("");
+      expect(result).toBe(1);
+    });
+
+    it("wrong format", () => {
+      var result = parseTimeHour("2020-30");
+      expect(result).toBe(1);
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseTimeHour("2020-01-01T01:01:01");
+      expect(result).toBe(1);
+    });
+
+    it("right formated summer time (nl)", () => {
+      var result = parseTimeHour("2020-04-10T23:40:33");
+      expect(result).toBe(23);
+    });
+  });
+
+  describe("parseDateDate", () => {
+    it("undefined", () => {
+      var result = parseDateDate("");
+      expect(result).toBe(1);
+    });
+
+    it("wrong format", () => {
+      var result = parseDateDate("2020-30");
+      expect(result).toBe(1);
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseDateDate("2020-01-01T01:01:01");
+      expect(result).toBe(1);
+    });
+
+    it("right formated summer time (nl)", () => {
+      var result = parseDateDate("2020-04-10T23:40:33");
+      expect(result).toBe(10);
+    });
+  });
+
+  describe("parseDateMonth", () => {
+    it("undefined", () => {
+      var result = parseDateMonth("");
+      expect(result).toBe(1);
+    });
+
+    it("wrong format", () => {
+      var result = parseDateMonth("2020-30");
+      expect(result).toBe(1);
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseDateMonth("2020-01-01T01:01:01");
+      expect(result).toBe(1);
+    });
+
+    it("right formated summer time (nl)", () => {
+      var result = parseDateMonth("2020-12-10T23:40:33");
+      expect(result).toBe(12);
+    });
+  });
+
+  describe("parseDateYear", () => {
+    it("undefined", () => {
+      var result = parseDateYear("");
+      expect(result).toBe(1);
+    });
+
+    it("wrong format", () => {
+      var result = parseDateYear("2020-30");
+      expect(result).toBe(1);
+    });
+
+    it("right formated (nl)", () => {
+      var result = parseDateYear("2020-01-01T01:01:01");
+      expect(result).toBe(2020);
+    });
+
+    it("right formated summer time (nl)", () => {
+      var result = parseDateYear("2020-12-10T23:40:33");
+      expect(result).toBe(2020);
+    });
   });
 
   describe("isValidDate", () => {

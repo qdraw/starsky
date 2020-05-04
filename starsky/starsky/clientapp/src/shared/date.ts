@@ -1,5 +1,9 @@
 import { SupportedLanguages } from './language';
 
+/**
+ * Is the date Valid? 
+ * @param inputDateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const isValidDate = (inputDateTime: string | undefined): boolean => {
   if (inputDateTime) {
     let input = new Date(inputDateTime).valueOf();
@@ -8,7 +12,10 @@ const isValidDate = (inputDateTime: string | undefined): boolean => {
   return false;
 }
 
-
+/**
+ * Add 0 + 1 left Pad
+ * @param n number
+ */
 const leftPad = (n: number) => {
   return n > 9 ? "" + n : "0" + n;
 };
@@ -22,6 +29,10 @@ const differenceInDate = (date: number, now: number = new Date().valueOf()): num
   return (now - date) / 60000;
 };
 
+/**
+ * Is the file Edited within a minute
+ * @param inputDateTime Date
+ */
 const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!inputDateTime) return null;
   let input = new Date(inputDateTime).valueOf();
@@ -30,6 +41,11 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   return difference <= 0.2;
 };
 
+/**
+ * Get the relative date, for example 6 hour ago
+ * @param inputDateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ * @param locate Language
+ */
 const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedLanguages): string => {
   let date = "";
 
@@ -51,7 +67,11 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
       return parseDate(inputDateTime, locate);
   }
 }
-
+/**
+ * Get Date complete parsed for example: Monday, 4 May 2020
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ * @param locate Language
+ */
 const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
   if (!dateTime) return "";
   // UTC DateTime already ends with Z
@@ -65,6 +85,10 @@ const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): st
   return dateTimeObject.toLocaleDateString(locateString, { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+/**
+ * Get Day of the month (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const parseDateDate = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
@@ -75,27 +99,39 @@ const parseDateDate = (dateTime: string | undefined): number => {
   return Number(numberValue);
 }
 
+/**
+ * Get Year (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const parseDateYear = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'long' });
+  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'numeric' });
   return Number(numberValue);
 }
 
+/**
+ * Get Month 1-12 (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const parseDateMonth = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
   var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'long' });
+  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'numeric' });
   console.log(numberValue);
   return Number(numberValue);
 }
 
+/**
+ * Get Time (for example 23:02:03)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
@@ -109,6 +145,10 @@ const parseTime = (dateTime: string | undefined): string => {
   });
 }
 
+/**
+ * Get Hour (for example 23) (int)
+ * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
+ */
 const parseTimeHour = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
@@ -119,6 +159,10 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   return Number(numberValue);
 }
 
+/**
+ * Convert seconds to hours
+ * @param seconds number of seconds
+ */
 const secondsToHours = (seconds: number): string => {
   if (isNaN(seconds)) return '0:00';
   const time = new Date(0);
