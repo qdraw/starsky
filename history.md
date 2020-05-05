@@ -26,8 +26,9 @@ node starsky/build-tools/app-version-update.js
 - [ ]   (Added) _Back-end_ Realtime Files API
 
 # Unreleased - 2020-04-XX
+- [x]   (Added)  _Tools_ Easy version upgrade Starsky Version
+- [x]   (Added)  _Tools_ add check for ProjectGuids to be valid/exist and non-duplicate
 - [ ]   (Fixed)  _Back-end_ Show version number in command line __not implemented__
-- [ ]   (Fixed)  _Tools_ Easy version update SDK + Starsky Version __not implemented__
 - [ ]   (Added) _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added) _Back-end_ Import backup (what todo with structure) __not implemented__
 
