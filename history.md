@@ -2,13 +2,19 @@
 
 # History Changelog
 
-# The following statuses are used
+## The following statuses are used
 - Added _for new features_
 - Changed _for changes in existing functionality_
 - Deprecated _for soon-to-be removed features_
 - Removed _for now removed features_
 - Fixed _for any bug fixes_
 - Security _in case of vulnerabilities_
+
+## Update app version in child projects
+To update all child projects to have the same version run the following script
+```
+node starsky/build-tools/app-version-update.js
+```
 
 # Features todo (in random order)
 - [ ]   (Added) _Back-end_ Docker support,
