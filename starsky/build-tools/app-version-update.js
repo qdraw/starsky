@@ -1,4 +1,8 @@
 
+/**
+ * Update the project versions to have the same version
+ */
+
 const { resolve, join } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
 
@@ -23,7 +27,7 @@ async function getFiles(dir) {
 
 getFiles(join(__dirname, prefixPath, "starsky")).then(async (filePathList) => {
   await filePathList.forEach(async filePath => {
-    if (filePath.match(new RegExp("starsky((\.feature|\.foundation)|core)?(\.[a-z]+)?\.csproj$", "i"))) {
+    if (filePath.match(new RegExp("[a-z]((\.feature|\.foundation)|core)?(\.[a-z]+)?\.csproj$", "i"))) {
       let buffer = await readFile(filePath);
       let fileContent = buffer.toString('utf8');
 
@@ -57,9 +61,4 @@ getFiles(join(__dirname, prefixPath, "starsky")).then(async (filePathList) => {
 
 }).catch((err) => {
   console.log(err);
-
 });
-
-
-
-// (?!<Version>)([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(?=<\/Version>)
