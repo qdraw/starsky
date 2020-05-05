@@ -46,8 +46,10 @@ getFiles(join(__dirname, prefixPath, "starsky")).then(async (filePathList) => {
       }
     } catch (e) {
       console.error(e);
+      process.exit(1);
     }
   });
 }).catch((err) => {
   console.log(err);
+  process.exit(1);
 });
