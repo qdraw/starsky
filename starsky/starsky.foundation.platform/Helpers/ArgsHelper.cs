@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -319,12 +320,24 @@ namespace starsky.foundation.platform.Helpers
 					}
 					break;
 			}
-			
+
+			ShowVersions();
+		}
+
+		/// <summary>
+		/// Show in Console the .NET Version (Runtime) and Starsky Version
+		/// </summary>
+		private void ShowVersions()
+		{
 			var framework = Assembly
 				.GetEntryAssembly()?
 				.GetCustomAttribute<TargetFrameworkAttribute>()?
 				.FrameworkName;
 			_console.WriteLine($".NET Version - {framework}");
+
+			var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			assemblyVersion = new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
+			_console.WriteLine($"Starsky Version - {assemblyVersion}");
 		}
 		
 		/// <summary>

@@ -4,11 +4,11 @@
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">3.0.2</RuntimeFrameworkVersion>
     <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.3</RuntimeFrameworkVersion>
     <Description>An attempt to create a database driven photo library</Description>
-	<Version>0.2.4</Version>
+    <!-- use node script to update version -->
+    <Version>0.2.4</Version>
     <!-- SonarQube needs this -->
     <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
     <DefineConstants>_not_enabled__SYSTEM_TEXT_ENABLED</DefineConstants>
-    <DefineConstants>EFCORE_ASYNC</DefineConstants>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
