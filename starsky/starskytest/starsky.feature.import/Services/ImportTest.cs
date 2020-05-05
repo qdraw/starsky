@@ -343,7 +343,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ApplicationException))]
+		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public async Task Importer_Over100Times()
 		{
 			var appSettings = new AppSettings();

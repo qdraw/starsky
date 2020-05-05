@@ -155,7 +155,7 @@ namespace starsky.feature.import.Services
 		
 				if ( indexer >= MaxTryGetDestinationPath || string.IsNullOrEmpty(updatedFilePath) )
 				{
-					throw new ApplicationException($"tried after {MaxTryGetDestinationPath} times");
+					throw new IndexOutOfRangeException($"tried after {MaxTryGetDestinationPath} times");
 				}
 		
 				importIndexItem.FileIndexItem.FilePath = updatedFilePath;
