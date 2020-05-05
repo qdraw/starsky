@@ -11,18 +11,19 @@
 - Security _in case of vulnerabilities_
 
 # Features todo (in random order)
-- []   (feature) _Back-end_ Realtime Files API
-- []   (feature) _Back-end_ Docker support,
-- []   (feature) _Frond-end_  Search details show exact query behind modal
-- []   (feature) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
-- []   (feature) _Front-end_ Zoom in picture
-- []   (feature) Creating thumbnails from Web Interface (including status)
-- []   (bug) _Back-end_ XMP Rotation __not implemented__
-- []   (bug) _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
+- [ ]   (Added) _Back-end_ Docker support,
+- [ ]   (Added) _Frond-end_  Search details show exact query behind modal
+- [ ]   (Added) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
+- [ ]   (Added) _Front-end_ Zoom in picture
+- [ ]   (Added) Creating thumbnails from Web Interface (including status)
+- [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
+- [ ]   (Added) _Back-end_ Realtime Files API
 
 # Unreleased - 2020-04-XX
-- no changes
-raw tags change dng not updated
+- [ ]   (Fixed)  _Back-end_ Show version number in command line __not implemented__
+- [ ]   (Fixed)  _Tools_ Easy version update SDK + Starsky Version __not implemented__
+- [ ]   (Added) _Back-end_ Watcher for import __not implemented__
+- [ ]   (Added) _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # version 0.2.3 - 2020-05-04
 - [x]   (Fixed)  _Back-end_ New users could not sign up
@@ -43,6 +44,7 @@ raw tags change dng not updated
 - [x]   (Fixed)  _Front-end_ video invalid datetime (UTC Time issues)
 - [x]   (Fixed)  _Back-end_ Force Sync fail (Object Disposed)
 - [x]   (Fixed)  _Back-end_ Export fail (Object Disposed)
+- [x]   (Fixed)  _Back-end_ Upload with filename the same name does add item to cache + should update thumbnail cache
 
 # version 0.2.2 - 2020-04-17
 __Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
@@ -63,6 +65,7 @@ __Should build before 2020-04-22, Import UnitTests have a date bug. For all vers
 - [x]   (Added) _Front-end_ 'Scroll to Top' when to next search result page
 
 # version 0.2.1 - 2020-04-08
+_Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 - [x]   (Fixed) _Front-end_ Readonly mode and modals
 - [x]   (Added) _Back-end_ ReadOnly status to DetailView
 - [x]   (Added) _Back-end_ mp4/h.264 video support
@@ -74,6 +77,7 @@ __Should build before 2020-04-22, Import UnitTests have a date bug. For all vers
 - [x]   (Changed) _Back-end_ Use vstest instead of mstest
 
 # version 0.2.0 - 2020-03-20
+_Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 - [x] 	(feature) _Front-end_ icons for xmp and raw (tiff-based) in archive mode
 - [x] 	(feature) _Back-end_ support for Canon's way of reading ISO-Speed
 - [x]	(feature) _Back-end_ abstractions to get the filesystem data
@@ -90,6 +94,7 @@ __Should build before 2020-04-22, Import UnitTests have a date bug. For all vers
 - [x]   (version) _Back-end_ __namespace changes__ Introduction of feature/foundation projects
 
 # version 0.1.17 - 2020-03-07
+_Should build before 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2_
 - [x]  (feature) _Front-end_ DateTime editing in detailView
 - [x]  (feature) _Front-end_ change DateTime layout
 - [x]  (feature) _Back-end_ tags XMP in file read/write support
