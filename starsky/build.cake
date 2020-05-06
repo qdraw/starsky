@@ -535,7 +535,7 @@ Task("ProjectCheckNetCore")
     .Does(() =>
     {
         /* Checks for valid Project GUIDs in csproj files */
-        NpmRunScript("project-guid", s => s.FromPath("./build-tools/"));
+        NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
   });
 
 // React app build steps
