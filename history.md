@@ -30,6 +30,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
 - [x]   (Added)  _Tools_ add check for ProjectGuids to be valid/exist and non-duplicate
 - [x]   (Added)  _Back-end_ Show version number in command line
+- [ ]           Importer allow comma sperated file/folder input __not implemented__
 - [ ]   (Added) _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added) _Back-end_ Import backup (what todo with structure) __not implemented__
 - [ ]   (Fixed) _Front-end_ In Detailview click on colorclass move to next item, the colorclass should match the file
