@@ -26,15 +26,15 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API
 
-# Unreleased - 2020-04-XX
+# Unreleased - 2020-05-XX
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
 - [x]   (Added)  _Tools_ add check for ProjectGuids to be valid/exist and non-duplicate
 - [x]   (Added)  _Back-end_ Show version number in command line
-- [ ]   (Added)  _Back-end_ Unknown issue with file: 20200505_113203.gpx __not implemented__
-- [ ]           Importer allow comma sperated file/folder input __not implemented__
-- [ ]   (Added) _Back-end_ Watcher for import __not implemented__
-- [ ]   (Added) _Back-end_ Import backup (what todo with structure) __not implemented__
-- [ ]   (Fixed) _Front-end_ In Detailview click on colorclass move to next item, the colorclass should match the file
+- [x]   (Added)  _Back-end_ Fix for import Gpx
+- [x]   (Fixed)  _Front-end_ In DetailView click on colorClass move to next item, the colorClass should match the file
+- [ ]   (Added)  _Back-end_  Importer allow comma sperated file/folder input __not implemented__
+- [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
+- [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # version 0.2.3 - 2020-05-04
 - [x]   (Fixed)  _Back-end_ New users could not sign up
