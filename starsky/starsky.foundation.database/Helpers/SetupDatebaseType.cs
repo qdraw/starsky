@@ -30,7 +30,7 @@ namespace starsky.foundation.database.Helpers
 					_services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
 					break;
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException(nameof(_appSettings.DatabaseType));
 			}
 		}
 	}

@@ -70,7 +70,7 @@ namespace starsky.feature.geolookup.Services
 	        // Not supported by TimeZoneInfo convert
 	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
 	        {
-		        throw new ArgumentException("DateTime Kind should be Unspecified", nameof(DateTime));
+		        throw new ArgumentException("valueDateTime DateTime-Kind should be Unspecified", nameof(DateTime));
 	        }
 	        
 	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 

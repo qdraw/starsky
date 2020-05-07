@@ -16,15 +16,15 @@ namespace starsky.foundation.readmeta.Services
     {
 	    private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1"; 
 	    
-        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream stream)
+        public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream stream, string subPath)
         {
-            if (stream == null) return new FileIndexItem();
+            if (stream == null) return new FileIndexItem(subPath);
 
 	        var readGpxFile = ReadGpxFile(stream, null, 1);
 	        
 	        if ( readGpxFile.Any() )
 	        {
-		        return new FileIndexItem
+		        return new FileIndexItem(subPath)
 		        {
 			        Title = readGpxFile.FirstOrDefault().Title,
 			        DateTime = readGpxFile.FirstOrDefault().DateTime,
@@ -36,7 +36,7 @@ namespace starsky.foundation.readmeta.Services
 		        }; 
 	        }
 	        
-	        return new FileIndexItem
+	        return new FileIndexItem(subPath)
 	        {
 		        Tags = "SystemXmlXmlException",
 		        ColorClass = ColorClassParser.Color.None

@@ -15,13 +15,13 @@ namespace starskytest.Services
     {
         
         [TestMethod]
-        public void ReadGpxFromFileTest_ReturnAfterFirstFieldreadfile()
+        public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile()
         {
             var gpxBytes = CreateAnGpx.Bytes;
 	        MemoryStream stream = new MemoryStream(gpxBytes);
 
 	        
-            var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream);
+            var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
             Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
             Assert.AreEqual(51.809360,returnItem.Latitude,0.001);
             Assert.AreEqual("_20180905-fietsen-oss",returnItem.Title);
@@ -35,7 +35,19 @@ namespace starskytest.Services
             // gpx is always utc
             Assert.AreEqual(expectDateTime,returnItem.DateTime);
         }
-        
+
+        [TestMethod]
+        public void ReadGpxFromFileTest_TestFileName()
+        {
+	        var gpxBytes = CreateAnGpx.Bytes;
+	        MemoryStream stream = new MemoryStream(gpxBytes);
+
+	        var returnItem =
+		        new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream, "/test.gpx");
+	        Assert.AreEqual("test.gpx",returnItem.FileName);
+	        Assert.AreEqual("/",returnItem.ParentDirectory);
+        }
+
         [TestMethod]
         public void ReadGpxFromFileTest_ReadFile()
         {

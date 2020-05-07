@@ -530,6 +530,14 @@ Task("DocsGenerate")
 
   });
 
+
+Task("ProjectCheckNetCore")
+    .Does(() =>
+    {
+        /* Checks for valid Project GUIDs in csproj files */
+        NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
+  });
+
 // React app build steps
 Task("Client")
   .IsDependentOn("TestEnv")
@@ -539,6 +547,7 @@ Task("Client")
 
 // A meta-task that runs all the steps to Build and Test the app
 Task("BuildNetCore")
+    .IsDependentOn("ProjectCheckNetCore")
     .IsDependentOn("CleanNetCore")
     .IsDependentOn("RestoreNetCore")
     .IsDependentOn("BuildNetCoreGeneric");

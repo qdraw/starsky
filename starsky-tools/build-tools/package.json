@@ -1,0 +1,12 @@
+{
+  "name": "build-tools",
+  "version": "0.2.4",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "app-version-update": "node app-version-update.js",
+    "project-guid": "node project-guid.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

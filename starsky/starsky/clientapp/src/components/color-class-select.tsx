@@ -51,7 +51,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
   /** re-render when switching page */
   useEffect(() => {
     setCurrentColorClass(props.currentColorClass)
-  }, [props.currentColorClass]);
+  }, [props.currentColorClass, props.filePath]);
 
   // for showing a notification
   const [isError, setIsError] = useState("");

@@ -4,8 +4,8 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{46588bf9-d745-460d-a22d-d8fdfc698809}</ProjectGuid>
-<!--        <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>-->
         <DebugType>Full</DebugType>
+        <Version>0.2.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
