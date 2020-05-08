@@ -121,18 +121,18 @@ Task("ClientRestore")
     .Does(() =>
     {
         var isProduction = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI"));
-        
+
         Information($">> Running Npm as IsProduction = {isProduction}");
 
         Environment.SetEnvironmentVariable("DISABLE_OPENCOLLECTIVE","true"); // core-js
-        
+
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             Information("npm ci restore for ./starsky/clientapp");
-            var settings = 
-                new NpmCiSettings 
+            var settings =
+                new NpmCiSettings
                 {
-                    Production = isProduction                    
+                    Production = isProduction
                 };
             settings.FromPath("./starsky/clientapp");
             NpmCi(settings);
@@ -471,8 +471,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 
