@@ -9,16 +9,59 @@
     * [starskyGeoCli](../../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskyCore](../../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyGeoCore](../../../starsky/starskygeocore/readme.md) _business geolocation logic (netstandard 2.0)_
+    * [starskyAdminCli](../../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
+ * [starskyapp](../../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## starsky/starsky/clientapp docs
 
 On top of the Starsky API there is React front-end
+
+## Project structure
+
+```
+•
+└── src
+    └── components
+    |   └── atoms
+    |   |    |    Atoms are the basic building blocks of matter.
+    |   |    └── button-styled
+    |   |       ├── button-styled.tsx
+    |   |       └── button-styled.stories.tsx
+    |   |       └── button-styled.spec.tsx
+    |   |      Folder has .tsx for component
+    |   |      Folder has stories.tsx for storybook
+    |   |      Folder has spec.tsx for unit-tests
+    |   |         
+    |   └── molecules
+    |   |     Molecules are groups of atoms bonded together
+    |   └── organisms
+    |         Molecules are building blocks 
+    └── containers
+    |     large containers that contain parts of the UI
+    └── contexts
+    |   └── archive-context
+    |   |     React Context for lists of files
+    |   └── detailview-context
+    |         React Context for viewing a detailed file
+    └── contexts-wrapper
+    |      Combine contexts with input from the API
+    └── hooks
+    |      React hooks to handle API/Keyboard calls
+    └── interfaces
+    |      Typescript interfaces
+    └── pages
+    |      Full pages
+    └── routes
+    |      Routes based on the browser url
+    └── shared
+    |      Business logic that is shared between multiple components
+    └── style
+           CSS Styling
+```
 
 ## Available Scripts
 
@@ -52,6 +95,23 @@ The build is minified and the filenames include the hashes.<br>
 Your app is ready to be deployed!
 
 In this application we use the `build.sh` or `build.ps1` to combine the frontend application with the .NET Core backend.
+
+### `npm run storybook`
+
+Storybook is an open source tool for developing UI components in isolation for React and other platfoms. It makes building stunning UIs organized and efficient.
+
+A Storybook is a collection of stories. Each story represents a single visual state of a component.
+    Technically, a story is a function that returns something that can be rendered to screen.
+
+```
+•
+└── src
+    └── components
+        └── atoms
+            └── button-styled
+                ├── button-styled.tsx
+                └── button-styled.stories.tsx
+```
 
 ### Upgrade `Create React App` to a newer version
 

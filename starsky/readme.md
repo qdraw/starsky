@@ -9,22 +9,22 @@
     * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskyCore](../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyGeoCore](../starsky/starskygeocore/readme.md) _business geolocation logic (netstandard 2.0)_
+    * [starskyAdminCli](../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
+ * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## Build instructions
 
-1.  Clone the repo
+1.  To get started clone the repository
 
 ```sh
 git clone "https://bitbucket.org/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 3.1.1 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.1.201 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3.  Download and install [ExifTool by Phil Harvey](https://www.sno.phy.queensu.ca/~phil/exiftool/)
 
@@ -86,13 +86,13 @@ http://localhost:64556/account/register
 
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.1.1
+From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.1.201
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
 1.  Clone the repo on your x86/x64 machine
 
 ```sh
-git clone "https://bitbucket.org/qdraw/starsky.git"
+git clone "https://github.com/qdraw/starsky.git"
 ```
 
 2.  On your laptop (x86/x64 machine). Get the `dotnet` 3.0.1 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download

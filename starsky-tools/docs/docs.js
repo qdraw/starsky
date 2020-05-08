@@ -17,9 +17,10 @@ var filePathList = [
 	"starsky/readme.md",
 	"starsky/starsky/readme.md",
 	"starsky/starsky/clientapp/readme.md",
-	"starsky/starskycore/readme.md",
+	"starsky/starskybusinesslogic/readme.md",
 	"starsky/starsky.feature.geolookup/readme.md",
 	"starsky/starsky.foundation.injection/readme.md",
+	"starsky/starskyadmincli/readme.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
 	"starsky/starskysynccli/readme.md",
@@ -33,7 +34,8 @@ var filePathList = [
 	"starsky-tools/thumbnail/readme.md",
 	"starsky-tools/localtunnel/readme.md",
 	"starsky-tools/sync/readme.md",
-	"starsky-tools/dropbox-import/readme.md"
+	"starsky-tools/dropbox-import/readme.md",
+	"starsky-tools/build-tools/readme.md"
 ];
 
 var blobPathList = [
@@ -87,14 +89,14 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 	}
 
 	var menuHtml = `<div class="head">
-		<div id="menu"> 
-			<ul> 
+		<div id="menu">
+			<ul>
 				<li>
 					<a href="` + relativeCssPath + `readme.html">Home</a>
-				</li> 
-			</ul> 
-		</div> 
-		<a href="#hamburger" id="hamburger" class="hamburger">Menu</a> 
+				</li>
+			</ul>
+		</div>
+		<a href="#hamburger" id="hamburger" class="hamburger">Menu</a>
 		<a href="` + relativeCssPath + `readme.html" class="logo">
 		Docs
 		</a>
