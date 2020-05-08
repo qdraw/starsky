@@ -96,7 +96,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
   }
 
   return (
-    <>
+    <div className="menu-inline-search">
       <div className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
         <li className="menu-item menu-item--half-extra">
           <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
@@ -125,7 +125,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
           </li> : null
         ))}
       </div>
-    </>
+    </div>
   );
 
 });

@@ -57,6 +57,15 @@ In this application we use the `build.sh` or `build.ps1` to combine the frontend
 
 The default Create React App package is used to keep future upgrades less painfull.
 
+#### To keep all CRA dependencies in place 
+
+```
+npx create-react-app my-app --template typescript
+```
+
+- copy the `package.json` + `package-lock.json` from the `my-app` folder
+
+
 The following packages are added:
 ```
 npm install --save abortcontroller-polyfill
@@ -65,15 +74,19 @@ npm install --save intersection-observer
 npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
-npm install --save-dev enzyme
-npm install --save-dev @types/enzyme
-npm install --save-dev enzyme-adapter-react-16
+npm install --save @types/storybook__react
+npm install --save enzyme
+npm install --save @types/enzyme
+npm install --save enzyme-adapter-react-16
 npm install --save-dev @storybook/react
 npm install --save-dev @storybook/preset-create-react-app
-npm install --save-dev @types/storybook__react
 ```
 
 #### Proxy tag for backend services:
+```json
+ "name": "clientapp",
+```
+
 ```json
 "proxy": "http://localhost:5000",
 ```
@@ -124,7 +137,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
       "statements": 75
     }
   }
-}
+},
 ```
 
 ## Learn More

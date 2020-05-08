@@ -146,7 +146,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
 
   // noinspection HtmlUnknownAttribute
-  return (<div className="sidebar">
+  return (<div className="detailview-sidebar">
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
       || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <>
         <div className="content--header">

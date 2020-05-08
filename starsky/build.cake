@@ -121,12 +121,13 @@ Task("ClientRestore")
     .Does(() =>
     {
         Environment.SetEnvironmentVariable("CI","true");
+        Environment.GetEnvironmentVariable("CI")
         Environment.SetEnvironmentVariable("DISABLE_OPENCOLLECTIVE","true"); // core-js
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
             // Running `npm ci` instead of `npm install`
             Information("npm ci restore for ./starsky/clientapp");
-            NpmCi(s => s.FromPath("./starsky/clientapp"));
+            NpmCi(s => s.FromPath("./starsky/clientapp"), new NpmCiSettings{}); // npm ci --production --no-audit
         }
         else {
             Information("Restore skipped for ./starsky/clientapp");
@@ -138,7 +139,7 @@ Task("ClientBuild")
     .Does(() =>
     {
         /* with CI=true eslint errors will break the build */
-        /* Environment.SetEnvironmentVariable("CI","false"); */
+        Environment.SetEnvironmentVariable("CI","true");
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 

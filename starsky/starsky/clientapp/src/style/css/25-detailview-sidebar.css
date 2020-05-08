@@ -1,5 +1,5 @@
 
-.detailview .sidebar {
+.detailview-sidebar {
   width: 320px;
   height: 100%;
   overflow-y: auto;
@@ -9,37 +9,37 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .detailview .sidebar {
+  .detailview-sidebar {
     background-color: #37474F;
     color: #fff;
   }
-  .detailview .sidebar a {
+  .detailview-sidebar a {
     color: #fff;
   }
 }
 
-.detailview .box {
+.detailview-sidebar .box {
   display: block;
   margin-top: 10px;
   width: 100%;
 }
 
-.detailview .box:first-child {
+.detailview-sidebar .box:first-child {
   margin-top:0px;
 }
 
-.detailview .box.box--child {
+.detailview-sidebar .box.box--child {
   padding-left: 30px;
   margin-top: 10px;
 }
 
-.detailview .box p,
-.detailview .box b{
+.detailview-sidebar .box p,
+.detailview-sidebar .box b{
   line-height: 1.3;
   font-size: 14px;
 }
 
-.detailview .box b {
+.detailview-sidebar .box b {
   font-weight: 300;
     display: inline-block;
   white-space: nowrap;
@@ -48,7 +48,7 @@
   max-width: calc(100% - 35px);
 }
 
-.detailview .box .icon {
+.detailview-sidebar .box .icon {
   float: left;
   height: 35px;
   width: 24px;
@@ -57,36 +57,36 @@
   margin-right: 5px;
 }
 
-.detailview .box .icon.icon--right {
+.detailview-sidebar .box .icon.icon--right {
   float: right;
 }
 
-.detailview .box .icon.icon--edit {
+.detailview-sidebar .box .icon.icon--edit {
   background-image: url('../images/s-edit.svg')
 }
 
-.detailview .box .icon.icon--date {
+.detailview-sidebar .box .icon.icon--date {
   background-image: url('../images/baseline-date_range-24px.svg')
 }
 
-.detailview .box .icon.icon--last-edited {
+.detailview-sidebar .box .icon.icon--last-edited {
   background-image: url('../images/baseline-fingerprint-24px.svg')
 }
 
-.detailview .box .icon.icon--shutter-speed {
+.detailview-sidebar .box .icon.icon--shutter-speed {
   background-image: url('../images/baseline-shutter_speed-24px.svg');
 }
 
-.detailview .box .icon.icon--location {
+.detailview-sidebar .box .icon.icon--location {
   background-image: url('../images/baseline-location_on-24px.svg');
 }
 
-.detailview .box .icon.icon--photo {
+.detailview-sidebar .box .icon.icon--photo {
   background-image: url('../images/baseline-photo-24px.svg');
 }
 
 @media (prefers-color-scheme: dark) {
-  .detailview .box .icon {
+  .detailview-sidebar .box .icon {
     filter: invert(100%);
   }
 }

@@ -74,7 +74,8 @@ namespace starsky.Controllers
 	                subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
                 ColorClassUsage = _query.DisplayFileFolders(
 	                subpath,null,false,hidedelete)
-	                .Select( p => p.ColorClass).Distinct().ToList(),
+	                .Select( p => p.ColorClass).Distinct()
+	                .OrderBy(p => (int) (p)).ToList(),
                 IsReadOnly =  _appSettings.IsReadOnly(subpath)
             };
 

@@ -98,7 +98,7 @@ describe("DetailView", () => {
     });
 
     it("check if Details exist", () => {
-      expect(Component.exists('.sidebar')).toBeTruthy()
+      expect(Component.exists('.detailview-sidebar')).toBeTruthy()
     });
 
 
