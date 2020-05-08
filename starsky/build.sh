@@ -37,4 +37,5 @@ fi
 
 dotnet tool run dotnet-cake  "--" "$SCRIPT" "$@"
 
+echo $CURRENT_DIR
 popd $CURRENT_DIR
