@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import DetailViewGpx from '../components/detail-view-gpx';
-import DetailViewMp4 from '../components/detail-view-mp4';
-import DetailViewSidebar from '../components/detail-view-sidebar';
-import MenuDetailView from '../components/menu-detailview';
-import Preloader from '../components/preloader';
+import Preloader from '../components/atoms/preloader/preloader';
+import DetailViewGpx from '../components/organisms/detail-view-media/detail-view-gpx';
+import DetailViewMp4 from '../components/organisms/detail-view-media/detail-view-mp4';
+import DetailViewSidebar from '../components/organisms/detail-view-sidebar/detail-view-sidebar';
+import MenuDetailView from '../components/organisms/menu-detail-view/menu-detail-view';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';

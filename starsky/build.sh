@@ -7,6 +7,8 @@
 
 #  Source: Simplifying the Cake global tool bootstrapper scripts with .NET Core 3 local tools (https://andrewlock.net/simplifying-the-cake-global-tool-bootstrapper-scripts-in-netcore3-with-local-tools/)
 
+pushd $(dirname "$0")
+
 # Define default arguments.
 SCRIPT="build.cake"
 CAKE_ARGUMENTS=""
@@ -34,4 +36,4 @@ fi
 
 dotnet tool run dotnet-cake  "--" "$SCRIPT" "$@"
 
-
+popd

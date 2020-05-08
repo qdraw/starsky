@@ -120,13 +120,22 @@ Task("CleanNetCore")
 Task("ClientRestore")
     .Does(() =>
     {
-        Environment.SetEnvironmentVariable("CI","true");
+        var isProduction = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI"));
+
+        Information($">> Running Npm as IsProduction = {isProduction}");
+
         Environment.SetEnvironmentVariable("DISABLE_OPENCOLLECTIVE","true"); // core-js
+
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
-            // Running `npm ci` instead of `npm install`
             Information("npm ci restore for ./starsky/clientapp");
-            NpmCi(s => s.FromPath("./starsky/clientapp"));
+            var settings =
+                new NpmCiSettings
+                {
+                    Production = isProduction
+                };
+            settings.FromPath("./starsky/clientapp");
+            NpmCi(settings);
         }
         else {
             Information("Restore skipped for ./starsky/clientapp");
@@ -138,7 +147,7 @@ Task("ClientBuild")
     .Does(() =>
     {
         /* with CI=true eslint errors will break the build */
-        /* Environment.SetEnvironmentVariable("CI","false"); */
+        Environment.SetEnvironmentVariable("CI","true");
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 
@@ -462,8 +471,8 @@ Task("SonarBegin")
             OpenCoverReportsPath = netCoreCoverageFile,
             ArgumentCustomization = args => args
                 .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx\"")
+                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
         });
   });
 

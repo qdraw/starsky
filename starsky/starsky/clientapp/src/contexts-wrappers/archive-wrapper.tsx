@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Preloader from '../components/preloader';
+import Preloader from '../components/atoms/preloader/preloader';
 import Archive from '../containers/archive';
 import Login from '../containers/login';
 import Search from '../containers/search';

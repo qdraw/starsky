@@ -9,12 +9,12 @@
     * __[starskyGeoCli](../../starsky/starskygeocli/readme.md)  gpx sync and reverse 'geo tagging'__
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskyCore](../../starsky/starskycore/readme.md) _business logic (netstandard 2.0)_
-    * [starskyGeoCore](../../starsky/starskygeocore/readme.md) _business geolocation logic (netstandard 2.0)_
+    * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## starskyGeoSync docs
 

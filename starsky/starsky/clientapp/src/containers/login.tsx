@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Button from '../components/Button';
+import ButtonStyled from '../components/atoms/button-styled/button-styled';
 import useFetch from '../hooks/use-fetch';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
@@ -145,9 +145,9 @@ const Login: React.FC<ILoginProps> = () => {
                   Internet Explorer is not supported, please try Firefox or Chrome
                 </div> : null}
 
-              <Button className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
+              <ButtonStyled className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
                 {loading ? "Loading..." : MessageLogin}
-              </Button>
+              </ButtonStyled>
             </form>
           </div>
         </>

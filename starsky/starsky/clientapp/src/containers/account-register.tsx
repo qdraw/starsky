@@ -1,6 +1,6 @@
 
 import React, { FunctionComponent, useEffect } from 'react';
-import Button from '../components/Button';
+import ButtonStyled from '../components/atoms/button-styled/button-styled';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import DocumentTitle from '../shared/document-title';
@@ -166,9 +166,9 @@ const AccountRegister: FunctionComponent = () => {
 
         {error && <div className="content--error-true">{error}</div>}
 
-        <Button className="btn btn--default" type="submit" disabled={loading || !isFormEnabled} onClick={e => { }}>
+        <ButtonStyled className="btn btn--default" type="submit" disabled={loading || !isFormEnabled} onClick={e => { }}>
           {loading ? "Loading..." : MessageCreateNewAccount}
-        </Button>
+        </ButtonStyled>
       </form>
     </div>
   </>)
