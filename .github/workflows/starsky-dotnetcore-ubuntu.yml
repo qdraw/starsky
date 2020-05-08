@@ -1,4 +1,4 @@
-name: Starsky .NET Core
+name: Starsky .NET Core (Ubuntu)
 
 on:
   push:
