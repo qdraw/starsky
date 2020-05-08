@@ -7,7 +7,6 @@
 
 #  Source: Simplifying the Cake global tool bootstrapper scripts with .NET Core 3 local tools (https://andrewlock.net/simplifying-the-cake-global-tool-bootstrapper-scripts-in-netcore3-with-local-tools/)
 
-CURRENT_DIR=$(pwd)
 pushd $(dirname "$0")
 
 # Define default arguments.
@@ -37,5 +36,4 @@ fi
 
 dotnet tool run dotnet-cake  "--" "$SCRIPT" "$@"
 
-echo $CURRENT_DIR
-popd $CURRENT_DIR
+popd
