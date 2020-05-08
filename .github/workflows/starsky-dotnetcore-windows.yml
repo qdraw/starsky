@@ -1,0 +1,34 @@
+name: Starsky .NET Core (Windows)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+    - name: BuildNetCore
+      shell: pwsh
+      working-directory: ./starsky
+      run: pwsh build.ps1 --Target=BuildNetCore
+    - name: TestNetCore
+      shell: pwsh
+      working-directory: ./starsky
+      run: pwsh build.ps1 --Target=TestNetCore
