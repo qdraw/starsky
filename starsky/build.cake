@@ -120,14 +120,22 @@ Task("CleanNetCore")
 Task("ClientRestore")
     .Does(() =>
     {
-        Environment.SetEnvironmentVariable("CI","true");
-        Environment.GetEnvironmentVariable("CI")
+        var isProduction = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI"));
+        
+        Information($">> Running Npm as IsProduction = {isProduction}");
+
         Environment.SetEnvironmentVariable("DISABLE_OPENCOLLECTIVE","true"); // core-js
+        
         if (!DirectoryExists($"./starsky/clientapp/node_modules/react"))
         {
-            // Running `npm ci` instead of `npm install`
             Information("npm ci restore for ./starsky/clientapp");
-            NpmCi(s => s.FromPath("./starsky/clientapp"), new NpmCiSettings{}); // npm ci --production --no-audit
+            var settings = 
+                new NpmCiSettings 
+                {
+                    Production = isProduction                    
+                };
+            settings.FromPath("./starsky/clientapp");
+            NpmCi(settings);
         }
         else {
             Information("Restore skipped for ./starsky/clientapp");
