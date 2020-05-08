@@ -26,6 +26,7 @@
     "test": "react-scripts test",
     "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+    "storybook": "start-storybook",
     "upgrade": "echo 'check readme.md 20200406 3.4.1 (2020-03-20)'"
   },
   "eslintConfig": {
@@ -36,6 +37,7 @@
     "collectCoverageFrom": [
       "**/*.{ts,tsx}",
       "!coverage/**",
+      "!**/*.stories.{ts,tsx}",
       "!node_modules/**",
       "!src/index.*ts*",
       "!src/service-worker.ts",
@@ -72,9 +74,12 @@
     ]
   },
   "devDependencies": {
+    "@storybook/preset-create-react-app": "^2.1.1",
+    "@storybook/react": "^5.3.18",
     "@types/enzyme": "^3.10.5",
     "@types/leaflet": "^1.5.12",
     "@types/reach__router": "^1.3.4",
+    "@types/storybook__react": "^5.2.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2"
   }

@@ -1,6 +1,6 @@
 import { Link, RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
-import MenuDefault from '../components/menu-default';
+import MenuDefault from '../components/organisms/menu-default/menu-default';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';

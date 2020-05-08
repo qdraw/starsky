@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import ArchiveSidebar from '../components/archive-sidebar';
-import Breadcrumb from '../components/breadcrumbs';
-import ColorClassFilter from '../components/color-class-filter';
-import ItemListView from '../components/item-list-view';
-import MenuArchive from '../components/menu-archive';
-import RelativeLink from '../components/relative-link';
+import ArchivePagination from '../components/molecules/archive-pagination/archive-pagination';
+import Breadcrumb from '../components/molecules/breadcrumbs/breadcrumbs';
+import ColorClassFilter from '../components/molecules/color-class-filter/color-class-filter';
+import ItemListView from '../components/molecules/item-list-view/item-list-view';
+import ArchiveSidebar from '../components/organisms/archive-sidebar/archive-sidebar';
+import MenuArchive from '../components/organisms/menu-archive/menu-archive';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { URLPath } from '../shared/url-path';
@@ -30,7 +30,7 @@ function Archive(archive: IArchiveProps) {
 
         <div className="content">
           <Breadcrumb breadcrumb={archive.breadcrumb} subPath={archive.subPath} />
-          <RelativeLink relativeObjects={archive.relativeObjects} />
+          <ArchivePagination relativeObjects={archive.relativeObjects} />
 
           <ColorClassFilter itemsCount={archive.collectionsCount} subPath={archive.subPath}
             colorClassActiveList={archive.colorClassActiveList}

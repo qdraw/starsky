@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import ArchiveSidebar from '../components/archive-sidebar';
-import ItemListView from '../components/item-list-view';
-import MenuSearch from '../components/menu-search';
-import MenuSearchBar from '../components/menu.searchbar';
-import SearchPagination from '../components/search-pagination';
+import ItemListView from '../components/molecules/item-list-view/item-list-view';
+import MenuSearchBar from '../components/molecules/menu-inline-search/menu-inline-search';
+import SearchPagination from '../components/molecules/search-pagination/search-pagination';
+import ArchiveSidebar from '../components/organisms/archive-sidebar/archive-sidebar';
+import MenuSearch from '../components/organisms/menu-search/menu-search';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IArchiveProps } from '../interfaces/IArchiveProps';

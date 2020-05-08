@@ -1,6 +1,6 @@
 import { mount, shallow } from "enzyme";
 import React from 'react';
-import * as HealthStatusError from '../components/health-status-error';
+import * as HealthStatusError from '../components/molecules/health-status-error/health-status-error';
 import * as useFileList from '../hooks/use-filelist';
 import MediaContent from './media-content';
 

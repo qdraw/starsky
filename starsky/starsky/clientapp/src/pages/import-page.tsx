@@ -1,9 +1,9 @@
 
 import { RouteComponentProps } from '@reach/router';
 import React, { FunctionComponent } from 'react';
-import DropArea from '../components/drop-area';
-import MenuDefault from '../components/menu-default';
-import ModalDropAreaFilesAdded from '../components/modal-drop-area-files-added';
+import DropArea from '../components/atoms/drop-area/drop-area';
+import MenuDefault from '../components/organisms/menu-default/menu-default';
+import ModalDropAreaFilesAdded from '../components/organisms/modal-drop-area-files-added/modal-drop-area-files-added';
 import useGlobalSettings from '../hooks/use-global-settings';
 import { newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import DocumentTitle from '../shared/document-title';

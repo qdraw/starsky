@@ -59,15 +59,18 @@ The default Create React App package is used to keep future upgrades less painfu
 
 The following packages are added:
 ```
-npm install abortcontroller-polyfill --save
-npm install @reach/router --save
-npm install intersection-observer --save
-npm install @types/reach__router --save-dev
+npm install --save abortcontroller-polyfill
+npm install --save @reach/router
+npm install --save intersection-observer
+npm install --save @types/reach__router
+npm install --save leaflet
+npm install --save @types/leaflet
 npm install --save-dev enzyme
 npm install --save-dev @types/enzyme
 npm install --save-dev enzyme-adapter-react-16
-npm install --save leaflet
-npm install --save-dev @types/leaflet
+npm install --save-dev @storybook/react
+npm install --save-dev @storybook/preset-create-react-app
+npm install --save-dev @types/storybook__react
 ```
 
 #### Proxy tag for backend services:
@@ -86,6 +89,7 @@ This is added to the `package.json`
 ```json
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
+"storybook": "start-storybook",
 "upgrade": "echo 'check readme.md 20200406 3.4.1 (2020-03-20)'"
 ```
 
@@ -97,6 +101,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
   "collectCoverageFrom": [
     "**/*.{ts,tsx}",
     "!coverage/**",
+    "!**/*.stories.{ts,tsx}",
     "!node_modules/**",
     "!src/index.*ts*",
     "!src/service-worker.ts",

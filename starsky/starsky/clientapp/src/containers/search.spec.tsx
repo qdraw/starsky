@@ -1,6 +1,6 @@
 import { shallow } from "enzyme";
 import React from 'react';
-import SearchPagination from '../components/search-pagination';
+import SearchPagination from '../components/molecules/search-pagination/search-pagination';
 import { newIArchive } from '../interfaces/IArchive';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import Search from './search';

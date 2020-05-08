@@ -4,13 +4,13 @@
   flex-flow: row wrap;
 }
 
-.folder > .box {
+.list-image-box {
   width: 300px;
   height: 300px;
   padding: 10px;
 }
 
-.folder > .box > .box-content {
+.list-image-box > .box-content {
   display: block;
   background-color: #ECEFF1;
   height: 100%;
@@ -21,20 +21,20 @@
   transition: background ease-in-out .5s;
 }
 
-.folder > .box.box--select > .box-content {
+.list-image-box--select > .box-content {
   cursor: grabbing;
 }
 
 
 @media (prefers-color-scheme: dark) {
-  .folder > .box > .box-content {
+  .list-image-box > .box-content {
     background-color: #78909C;
   }
 }
 
 /* center for phones */
 @media  screen and (max-width: 500px) {
-  .folder > .box {
+  .list-image-box {
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -46,7 +46,7 @@ large phones and disabled in collapsed mode
 between 1 and 2 items
 */
 @media screen and (min-width: 500px) and (max-width: 799px) {
-  .folder > .box {
+  .list-image-box {
     width: 50%;
   }
 }
@@ -60,28 +60,28 @@ between 1 and 2 items
 
 /* between 3 and 4 items */
 @media  screen and (min-width: 971px) and (max-width: 1279px) {
-  .folder > .box {
+  .list-image-box {
     width: 25%;
   }
 }
 
 /* between 5 and 6 items */
 @media  screen and (min-width: 1280px) and (max-width: 1559px) {
-  .folder > .box {
+  .list-image-box {
     width: 20%;
   }
 }
 
 /* between 6 and 7 items */
 @media  screen and (min-width: 1560px) and (max-width: 1870px) {
-  .folder > .box {
+  .list-image-box {
     width: 16.6%;
   }
 }
 
 /* select */
-.folder > .box--select > .isDirectory-true.box-content:before,
-.folder > .box--select > .isDirectory-false.box-content:before {
+.list-image-box--select > .isDirectory-true.box-content:before,
+.list-image-box--select > .isDirectory-false.box-content:before {
  position: absolute;
  margin-left:10px;
  margin-top:10px;
@@ -95,8 +95,8 @@ between 1 and 2 items
 }
 
 /* select */
-.folder > .box--select > .isDirectory-true.box-content--selected:before,
-.folder > .box--select > .isDirectory-false.box-content--selected:before {
+.list-image-box--select > .isDirectory-true.box-content--selected:before,
+.list-image-box--select > .isDirectory-false.box-content--selected:before {
   background-color: #283593;
   width: 45px;
   height: 45px;
@@ -106,7 +106,7 @@ between 1 and 2 items
   border: 5px solid #283593;
 }
 
-.folder > .box > .box-content > .caption {
+.list-image-box > .box-content > .caption {
   display: block;
   height: 31%;
   border-bottom-left-radius: 5px;
@@ -117,70 +117,69 @@ between 1 and 2 items
   transition: background ease-in-out .5s
 }
 
-.folder > .box--view > .box-content:hover .caption {
+.list-image-box--view > .box-content:hover .caption {
   background-color:#B0BEC5;
 }
 
-.folder > .box--view > .box-content:hover {
+.list-image-box--view > .box-content:hover {
   background-color:#CFD8DC;
 }
 
 /* should not exist */
-.folder > .box > .box-content.colorclass---1 .caption{
+.list-image-boxx > .box-content.colorclass---1 .caption{
   border-top: #90A4AE solid 12px;
 }
 
 /* geen/kleurloos */
-.folder > .box > .box-content.colorclass--0 .caption{
+.list-image-box > .box-content.colorclass--0 .caption{
   border-top: #90A4AE solid 12px;
   /* background-color: #CFD8DC; */
 }
 
 /* pink */
-.folder > .box > .box-content.colorclass--1 .caption{
+.list-image-box > .box-content.colorclass--1 .caption{
   border-top: #F06292 solid 12px;
   /* background-color: #F48FB1; */
 }
 
 /* red */
-.folder > .box > .box-content.colorclass--2 .caption{
+.list-image-box > .box-content.colorclass--2 .caption{
   border-top: #EF5350 solid 12px;
   /* background-color: #E57373; */
 }
 
 /* Orange */
-.folder > .box > .box-content.colorclass--3 .caption{
+.list-image-box > .box-content.colorclass--3 .caption{
   border-top: #FFB74D solid 12px;
   /* background-color: #FFE0B2; */
 }
 
 /* yellow */
-.folder > .box > .box-content.colorclass--4 .caption{
+.list-image-box > .box-content.colorclass--4 .caption{
   border-top: #FFEB3B solid 12px;
   /* background-color: #FFF59D; */
 }
 
 /* green */
-.folder > .box > .box-content.colorclass--5 .caption{
+.list-image-box > .box-content.colorclass--5 .caption{
   border-top: #66BB6A solid 12px;
   /* background-color: #C8E6C9; */
 }
 
 /* azure */
-.folder > .box > .box-content.colorclass--6 .caption{
+.list-image-box > .box-content.colorclass--6 .caption{
     border-top: #26C6DA solid 12px;
   /* background-color: #B2EBF2; */
-
 }
 
 /* blue */
-.folder > .box > .box-content.colorclass--7 .caption{
+.list-image-box > .box-content.colorclass--7 .caption{
   border-top: #5C6BC0 solid 12px;
   /* background-color: #BBDEFB; */
 }
 
 /* grey = 8*/
-.folder > .box > .box-content.colorclass--8 .caption{
+.list-image-box > .box-content.colorclass--8 .caption{
   border-top: #455A64 solid 12px;
 }
 
@@ -193,7 +192,7 @@ between 1 and 2 items
 }
 
 /* // .tags */
-.folder > .box > .box-content > .caption > div {
+.list-image-box > .box-content > .caption > div {
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 5px;
@@ -202,13 +201,13 @@ between 1 and 2 items
   text-overflow: ellipsis; /* ... */
 }
 
-.folder > .box > .box-content > .caption > .name {
+.list-image-box > .box-content > .caption > .name {
   padding-top: 8px;
   font-weight: 300;
   white-space: nowrap;
 }
 
-.folder > .box > .box-content > .caption > .tags {
+.list-image-box > .box-content > .caption > .tags {
   padding-top: 5px;
   font-size: 16px;
   display: block; /* Fallback for non-webkit */
@@ -221,7 +220,7 @@ between 1 and 2 items
   overflow: hidden;
 }
 
-.folder > .box > .box-content.isDirectory-true > .caption > .name:before {
+.list-image-box > .box-content.isDirectory-true > .caption > .name:before {
   background-image: url("../images/baseline-folder-24px.svg");
   background-size: cover;
   height: 14px;
@@ -232,12 +231,12 @@ between 1 and 2 items
 }
 
 
-.folder > .box > .box-content > .img-box {
+.list-image-box > .box-content > .img-box {
   height: 69%;
   width: 100%;
 }
 
-.folder > .box > .box-content > .img-box > img{
+.list-image-box > .box-content > .img-box > img{
   width: 100%;
   height: 100%;
   border-top-left-radius: 5px;
@@ -248,7 +247,7 @@ between 1 and 2 items
 }
 
 
-.folder > .box > .box-content.isDirectory-true > .img-box > img{
+.list-image-box > .box-content.isDirectory-true > .img-box > img{
   width: 60%;
   height: 49%;
   margin-left:20%;
@@ -257,18 +256,18 @@ between 1 and 2 items
   transition: opacity ease-in-out .15s
 }
 
-.folder > .box > .box-content.isDirectory-true:hover > .img-box > img {
+.list-image-box > .box-content.isDirectory-true:hover > .img-box > img {
   opacity: 1.0;
 }
 
-.folder > .box > .box-content > .img-box--error > img {
+.list-image-box > .box-content > .img-box--error > img {
   display: none;
 }
 
 
-.folder > .box .box-content .img-box--loading,
-.folder > .box > .box-content.isDirectory-true > .img-box,
-.folder > .box > .box-content > .img-box--error {
+.list-image-box .box-content .img-box--loading,
+.list-image-box > .box-content.isDirectory-true > .img-box,
+.list-image-box > .box-content > .img-box--error {
   height: 70%;
   background-repeat: no-repeat;
   background-position: center center;
@@ -276,35 +275,35 @@ between 1 and 2 items
 }
 
 
-.folder > .box > .box-content.isDirectory-true > .img-box--error {
+.list-image-box > .box-content.isDirectory-true > .img-box--error {
   background-image: url("../images/folder-no-child-styled.svg");
 }
 
-.folder > .box > .box-content.isDirectory-true > .img-box--error:hover {
+.list-image-box > .box-content.isDirectory-true > .img-box--error:hover {
   background-image: url("../images/folder-no-child-styled-hover.svg");
 }
 
-.folder > .box > .box-content.isDirectory-false > .img-box--error {
+.list-image-box > .box-content.isDirectory-false > .img-box--error {
   background-image: url("../images/baseline-broken_image-24px.svg");
 }
 
-.folder > .box > .box-content.isDirectory-false > .img-box--gpx {
+.list-image-box > .box-content.isDirectory-false > .img-box--gpx {
   background-image: url("../images/baseline-file-gpx-24px.svg");
 }
 
-.folder > .box > .box-content.isDirectory-false > .img-box--tiff {
+.list-image-box > .box-content.isDirectory-false > .img-box--tiff {
   background-image: url("../images/baseline-file-raw-24px.svg");
 }
 
-.folder > .box > .box-content.isDirectory-false > .img-box--mp4 {
+.list-image-box > .box-content.isDirectory-false > .img-box--mp4 {
   background-image: url("../images/baseline-file-mp4-24px.svg");
 }
 
-.folder > .box > .box-content > .img-box--loading > img {
+.list-image-box > .box-content > .img-box--loading > img {
   width: 0px;
   height: 0px;
 }
 
-.folder > .box .box-content .img-box--loading {
+.list-image-box .box-content .img-box--loading {
   background-image: url('../images/preloader-fancy.svg');
 }

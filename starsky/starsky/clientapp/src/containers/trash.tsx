@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import ArchiveSidebar from '../components/archive-sidebar';
-import ItemListView from '../components/item-list-view';
-import MenuTrash from '../components/menu-trash';
-import SearchPagination from '../components/search-pagination';
+import ItemListView from '../components/molecules/item-list-view/item-list-view';
+import SearchPagination from '../components/molecules/search-pagination/search-pagination';
+import ArchiveSidebar from '../components/organisms/archive-sidebar/archive-sidebar';
+import MenuTrash from '../components/organisms/menu-trash/menu-trash';
 import { ArchiveContext, defaultStateFallback } from '../contexts/archive-context';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';

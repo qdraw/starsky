@@ -1,7 +1,7 @@
 import { mount } from 'enzyme';
 import React from 'react';
-import * as DropArea from '../components/drop-area';
-import * as MenuDefault from '../components/menu-default';
+import * as DropArea from '../components/atoms/drop-area/drop-area';
+import * as MenuDefault from '../components/organisms/menu-default/menu-default';
 import ImportPage from './import-page';
 
 describe("ImportPage", () => {
