@@ -6,7 +6,6 @@ import ListImageBox from './list-image-box';
 storiesOf("components/molecules/list-image-box", module)
   .add("default", () => {
     var fileIndexItem = {
-
       fileName: 'test.jpg',
       colorClass: 1
     } as IFileIndexItem;

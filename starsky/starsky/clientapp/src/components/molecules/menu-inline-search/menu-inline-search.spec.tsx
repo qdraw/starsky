@@ -2,12 +2,12 @@ import { mount, shallow } from 'enzyme';
 import React from 'react';
 import * as useFetch from '../../../hooks/use-fetch';
 import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import MenuSearchBar from './menu-inline-search';
+import MenuInlineSearch from './menu-inline-search';
 
 describe("Menu.SearchBar", () => {
 
   it("renders", () => {
-    shallow(<MenuSearchBar />)
+    shallow(<MenuInlineSearch />)
   });
 
   describe("with Context", () => {
@@ -20,7 +20,7 @@ describe("Menu.SearchBar", () => {
         return { ...newIConnectionDefault(), statusCode: 200, };
       })
 
-      var menuBar = mount(<MenuSearchBar />);
+      var menuBar = mount(<MenuInlineSearch />);
 
       // default
       expect(menuBar.find('label').hasClass('icon-addon--search'))
@@ -41,7 +41,7 @@ describe("Menu.SearchBar", () => {
         return newIConnectionDefault();
       })
 
-      var menuBar = mount(<MenuSearchBar />);
+      var menuBar = mount(<MenuInlineSearch />);
 
       // go to focus
       menuBar.find('input').simulate('focus');
@@ -70,7 +70,7 @@ describe("Menu.SearchBar", () => {
         })
 
       var callback = jest.fn();
-      var menuBar = mount(<MenuSearchBar defaultText={"tes"} callback={callback} />);
+      var menuBar = mount(<MenuInlineSearch defaultText={"tes"} callback={callback} />);
 
       (menuBar.find('input').getDOMNode() as HTMLInputElement).value = "test"
       menuBar.find('input').simulate('change');
@@ -102,7 +102,7 @@ describe("Menu.SearchBar", () => {
         })
 
       var callback = jest.fn();
-      var menuBar = mount(<MenuSearchBar defaultText={"tes"} callback={callback} />);
+      var menuBar = mount(<MenuInlineSearch defaultText={"tes"} callback={callback} />);
 
       (menuBar.find('input').getDOMNode() as HTMLInputElement).value = "test"
       menuBar.find('input').simulate('change');
