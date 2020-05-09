@@ -362,12 +362,42 @@ namespace starsky.foundation.platform.Helpers
 		}
 	 
 		/// <summary>
+		/// Get multiple path from args
+		/// </summary>
+		/// <param name="args">args</param>
+		/// <returns>list of fullFilePaths</returns>
+		/// <exception cref="FieldAccessException">_appSettings is missing</exception>
+		public string GetPathListFormArgs(IReadOnlyList<string> args)
+		{
+			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
+			var path = string.Empty;
+			
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
+				{
+					path = args[arg + 1];
+				}
+			}
+			
+			// To use only with -p or --path > current directory
+			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-"[0]))
+			{
+				path = Directory.GetCurrentDirectory();
+			}
+			
+			new Regex(";")
+
+			return path;
+		}
+		
+		/// <summary>
 		/// Get path from args
 		/// </summary>
 		/// <param name="args">args</param>
 		/// <param name="dbStyle">convert to subpath style, default=true</param>
 		/// <returns>string path</returns>
-		/// <exception cref="ArgumentNullException">appsettings is missing</exception>
+		/// <exception cref="FieldAccessException">appsettings is missing</exception>
 		public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
