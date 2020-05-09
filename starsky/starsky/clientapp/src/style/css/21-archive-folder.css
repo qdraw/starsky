@@ -53,7 +53,7 @@ between 1 and 2 items
 
 /* between 2 and 3 items */
 @media  screen and (min-width: 800px) and (max-width: 970px) {
-  .folder > .box {
+  .list-image-box {
     width: 33%;
   }
 }
@@ -126,7 +126,7 @@ between 1 and 2 items
 }
 
 /* should not exist */
-.list-image-boxx > .box-content.colorclass---1 .caption{
+.list-image-box > .box-content.colorclass---1 .caption{
   border-top: #90A4AE solid 12px;
 }
 

@@ -9,5 +9,6 @@ storiesOf("components/molecules/list-image-box", module)
       fileName: 'test.jpg',
       colorClass: 1
     } as IFileIndexItem;
-    return <ListImageBox item={fileIndexItem} />
+    return <><ListImageBox item={fileIndexItem} /></>
+    // for multiple items on page see: components/molecules/item-list-view
   })
