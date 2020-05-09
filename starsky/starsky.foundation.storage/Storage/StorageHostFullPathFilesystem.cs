@@ -61,17 +61,22 @@ namespace starsky.foundation.storage.Storage
 			return true;
 		}
 
-		public IEnumerable<string> GetAllFilesInDirectory(string fullFilePath)
+		/// <summary>
+		/// Get All files from the directory
+		/// </summary>
+		/// <param name="path">fullFilePath</param>
+		/// <returns></returns>
+		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
-			var allFiles = new string[]{};
+			string[] allFiles;
 			try
 			{
-				 allFiles = Directory.GetFiles(fullFilePath);
+				 allFiles = Directory.GetFiles(path);
 			}
 			catch ( UnauthorizedAccessException e )
 			{
 				Console.WriteLine(e);
-				return allFiles;
+				return new string[]{};
 			}
 
 			var imageFilesList = new List<string>();
