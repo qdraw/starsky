@@ -390,7 +390,7 @@ namespace starsky.foundation.platform.Helpers
 			// split every dot comma but ignore escaped
 			// non escaped: (?<!\\);
 			var dotCommaRegex = new Regex("(?<!\\\\);");
-			return dotCommaRegex.Split(path).ToList();
+			return dotCommaRegex.Split(path).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
 		}
 		
 		/// <summary>

@@ -88,13 +88,13 @@ module.exports = class Dropbox {
 
     /**
      * Get a list of all files in the selected folder
-     * @param {string} dropboxfolder the path to the remote dropbox folder
+     * @param {string} dropboxFolder the path to the remote dropbox folder
      */
-    listFiles(dropboxfolder) {
+    listFiles(dropboxFolder) {
         this.getRights();
         return new Promise((resolve, reject) => {
             (async () => {
-                var response = await this.listQuery(dropboxfolder);
+                var response = await this.listQuery(dropboxFolder);
                 if (!response.data.has_more) {
                     resolve(response.data.entries);
                 }
@@ -130,14 +130,14 @@ module.exports = class Dropbox {
 
     /**
      * Do the first request to the folder to get the first results (can ben complete or incomplete)
-     * @param {string} dropboxfolder the path of the folder
+     * @param {string} dropboxFolder the path of the folder
      */
-    listQuery(dropboxfolder) {
-        var formquery = '{"path":"' + dropboxfolder + '"}';
+    listQuery(dropboxFolder) {
+        var formQuery = '{"path":"' + dropboxFolder + '"}';
         var listQueryRequestOptions = this.requestOptions();
         listQueryRequestOptions.url = "https://api.dropboxapi.com/2/files/list_folder";
         listQueryRequestOptions.method = "POST";
-        listQueryRequestOptions.data = JSON.parse(formquery);
+        listQueryRequestOptions.data = JSON.parse(formQuery);
 
         return new Promise((resolve, reject) => {
             axios(listQueryRequestOptions).then((response) => {
@@ -211,23 +211,29 @@ module.exports = class Dropbox {
      * @param {structure} to set the structure
      */
     runStarskyList(entries, colorClassString, structure) {
+
+        var multipleFilePathsCsv = "";
+        entries.forEach(entry => {
+            var filePath = path.join(this.getTempFolder(), entry.name);
+            if (multipleFilePathsCsv.length <= 8000) {
+                multipleFilePathsCsv += filePath + ";"
+            }
+            else {
+                console.log(`.. ${filePath} is skipped`)
+            }
+        });
+
+        var exe = this.starskyCli + ' -v -p \"' + multipleFilePathsCsv + "\"" + " --colorclass " + colorClassString;
+        if (structure) exe += " --structure " + structure;
+
         return new Promise((resolve, reject) => {
             (async () => {
-                var index = 0;
-                while (index != entries.length) {
-                    var filePath = path.join(this.getTempFolder(), entries[index].name);
-
-                    var exe = this.starskyCli + ' -v -p \"' + filePath + "\"" + " --colorclass " + colorClassString;
-                    if (structure) exe += " --structure " + structure;
-
-                    const { stdout, stderr } = await exec(exe);
-                    if (stderr) {
-                        console.log(stderr);
-                        reject();
-                    }
-                    console.log(stdout);
-                    index++;
+                const { stdout, stderr } = await exec(exe);
+                if (stderr) {
+                    console.log(stderr);
+                    reject();
                 }
+                console.log(stdout);
                 resolve(entries);
             })()
         })
