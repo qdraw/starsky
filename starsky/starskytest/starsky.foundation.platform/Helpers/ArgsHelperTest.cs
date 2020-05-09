@@ -120,7 +120,33 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		    var args = new List<string> {"-p", "/"}.ToArray();
 		    new ArgsHelper(null).GetPathFormArgs(args);
 	    }
+	    
+	    [TestMethod]
+	    public void GetPathListFormArgsTest_SingleItem()
+	    {
+		    var args = new List<string> {"-p", "/"}.ToArray();
+		    Assert.AreEqual("/",new ArgsHelper(_appSettings).GetPathListFormArgs(args).FirstOrDefault());
+	    }
+	    
+	    [TestMethod]
+	    public void GetPathListFormArgsTest_MultipleItems()
+	    {
+		    var args = new List<string> {"-p", "\"/;/test\""}.ToArray();
+		    var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
+		    
+		    Assert.AreEqual("/",result.FirstOrDefault());
+		    Assert.AreEqual("/test",result[1]);
+	    }
 
+	    [TestMethod]
+	    [ExpectedException(typeof(FieldAccessException))]
+	    public void GetPathListFormArgsTest__FieldAccessException()
+	    {
+		    // inject appSettings!
+		    var args = new List<string> {"-p", "/"}.ToArray();
+		    new ArgsHelper(null).GetPathListFormArgs(args);
+	    }
+	    
 	    [TestMethod]
 	    public void ArgsHelper_GetPath_WithHelp_CurrentDirectory_Test()
 	    {

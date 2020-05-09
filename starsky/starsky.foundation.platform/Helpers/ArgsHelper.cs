@@ -236,6 +236,7 @@ namespace starsky.foundation.platform.Helpers
 					// When this change please update ./readme.md
 					_console.WriteLine("--path or -p == parameter: (string) ; full path");
 					_console.WriteLine("                can be an folder or file, use '-p' for current directory");
+					_console.WriteLine("                for multiple items use dot comma (;) to split and quotes (\") around the input string");
 					_console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
 					_console.WriteLine("--recursive or -r == Import Directory recursive " +
 					                   "(default: false / only the selected folder) ");
@@ -334,10 +335,7 @@ namespace starsky.foundation.platform.Helpers
 				.GetCustomAttribute<TargetFrameworkAttribute>()?
 				.FrameworkName;
 			_console.WriteLine($".NET Version - {framework}");
-
-			var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			assemblyVersion = new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
-			_console.WriteLine($"Starsky Version - {assemblyVersion}");
+			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion}");
 		}
 		
 		/// <summary>
@@ -367,7 +365,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <param name="args">args</param>
 		/// <returns>list of fullFilePaths</returns>
 		/// <exception cref="FieldAccessException">_appSettings is missing</exception>
-		public string GetPathListFormArgs(IReadOnlyList<string> args)
+		public List<string> GetPathListFormArgs(IReadOnlyList<string> args)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
 			var path = string.Empty;
@@ -385,10 +383,14 @@ namespace starsky.foundation.platform.Helpers
 			{
 				path = Directory.GetCurrentDirectory();
 			}
-			
-			new Regex(";")
 
-			return path;
+			// Ignore quotes at beginning: unescaped ^"|"$
+			path = new Regex("^\"|\"$").Replace(path, string.Empty);
+			
+			// split every dot comma but ignore escaped
+			// non escaped: (?<!\\);
+			var dotCommaRegex = new Regex("(?<!\\\\);");
+			return dotCommaRegex.Split(path).ToList();
 		}
 		
 		/// <summary>

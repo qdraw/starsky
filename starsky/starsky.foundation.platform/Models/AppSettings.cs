@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.foundation.platform.Helpers;
@@ -65,6 +66,18 @@ namespace starsky.foundation.platform.Models
 	        WebFtp = 5,
 	        Admin = 6,
         }
+		
+		/// <summary>
+		/// Get the Application Version of Starsky
+		/// </summary>
+		public string AppVersion
+		{
+			get
+			{
+				var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+				return new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
+			}
+		}
 
         // Can be used in the cli session to select files out of the file database system
         private string _storageFolder; // in old versions: basePath 
@@ -340,7 +353,7 @@ namespace starsky.foundation.platform.Models
 		    set => ApplicationInsightsInstrumentationKeyPrivate = value;
 	    }
 
-	    public int MaxDegreesOfParallelism => 6; // AddLegacyOverwrite ? 1 : 
+	    public int MaxDegreesOfParallelism => 6;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
@@ -352,10 +365,11 @@ namespace starsky.foundation.platform.Models
 	    public const string CloneToDisplaySecurityWarning =
 		    "warning: The field is not empty but for security reasons it is not shown";
 	    
-	    /// <summary>
-	    /// Duplicate this item in memory. AND remove _databaseConnection 
-	    /// </summary>
 	    /// <returns>AppSettings duplicated</returns>
+		/// <summary>
+		/// Duplicate this item in memory. AND remove _databaseConnection 
+		/// </summary>
+		/// <returns>AppSettings duplicated></returns>
 	    public AppSettings CloneToDisplay()
 	    {
 

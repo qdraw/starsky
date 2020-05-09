@@ -44,7 +44,7 @@ namespace starsky.Controllers
         }
 
 	    /// <summary>
-        /// Show the runtime settings (allow AllowAnonymous)
+        /// Show the runtime settings (dont allow AllowAnonymous)
         /// </summary>
         /// <returns>config data, except connection strings</returns>
 	    /// <response code="200">returns the runtime settings of Starsky</response>
@@ -53,11 +53,11 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
 	    [Produces("application/json")]
 	    [ProducesResponseType(typeof(AppSettings),200)]
-        [AllowAnonymous] // <----------------------------------------
-        public IActionResult Env()
+	    [ProducesResponseType(typeof(AppSettings),401)]
+	    public IActionResult Env()
 	    {
 		    var appSettings = _appSettings.CloneToDisplay();
-            return Json(appSettings);
+		    return Json(appSettings);
         }
         
         /// <summary>
@@ -105,7 +105,7 @@ namespace starsky.Controllers
 				// if one item fails, the status will added
 				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
 
-				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
+				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				
 				
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);

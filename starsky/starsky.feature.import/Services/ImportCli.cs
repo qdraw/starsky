@@ -20,10 +20,13 @@ namespace starsky.feature.import.Services
 				return;
 			}
             
-			var inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
-            
-			if(appSettings.Verbose) console.WriteLine("inputPath " + inputPath);
-	        
+			var inputPathListFormArgs = new ArgsHelper(appSettings).GetPathListFormArgs(args);
+			
+			if ( appSettings.Verbose ) foreach ( var inputPath in inputPathListFormArgs )
+			{
+				console.WriteLine($">> import: {inputPath}");
+			}
+			
 			var importSettings = new ImportSettingsModel {
 					DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
 					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
@@ -40,7 +43,7 @@ namespace starsky.feature.import.Services
 				                  $"IndexMode {importSettings.IndexMode}");
 			}
 
-			var result = await importService.Importer(new []{inputPath}, importSettings);
+			var result = await importService.Importer(inputPathListFormArgs, importSettings);
 			
 			console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
 			console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");

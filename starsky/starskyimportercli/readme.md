@@ -84,6 +84,7 @@ Starksy Importer Cli ~ Help:
 --help or -h == help (this window)
 --path or -p == parameter: (string) ; full path
                 can be an folder or file, use '-p' for current directory
+                for multiple items use dot comma (;) to split and quotes (") around the input string
 --move or -m == delete file after importing (default false / copy file)
 --recursive or -r == Import Directory recursive (default: false / only the selected folder)
 --structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
