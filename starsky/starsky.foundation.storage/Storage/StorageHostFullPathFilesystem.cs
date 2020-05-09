@@ -190,9 +190,14 @@ namespace starsky.foundation.storage.Storage
 			return FolderOrFileModel.FolderOrFileTypeList.Deleted;
 		}
 		
-		public void FolderMove(string inputFileFullPath, string toFileFullPath)
+		/// <summary>
+		/// Move folder on disk
+		/// </summary>
+		/// <param name="fromPath">inputFileFullPath</param>
+		/// <param name="toPath">toFileFullPath</param>
+		public void FolderMove(string fromPath, string toPath)
 		{
-			Directory.Move(inputFileFullPath,toFileFullPath);
+			Directory.Move(fromPath,toPath);
 		}
 
 	
