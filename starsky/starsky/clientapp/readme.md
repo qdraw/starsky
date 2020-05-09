@@ -142,11 +142,13 @@ npm install --save-dev @storybook/react
 npm install --save-dev @storybook/preset-create-react-app
 ```
 
-#### Proxy tag for backend services:
+#### Update the name of the project
 ```json
  "name": "clientapp",
 ```
 
+#### Proxy tag for backend services
+used when running npm start
 ```json
 "proxy": "http://localhost:5000",
 ```
