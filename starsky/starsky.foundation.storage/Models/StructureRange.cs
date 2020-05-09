@@ -1,5 +1,3 @@
-using System;
-
 namespace starsky.foundation.storage.Models
 {
 	public class StructureRange

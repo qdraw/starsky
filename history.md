@@ -33,7 +33,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _Back-end_ Fix for import Gpx
 - [x]   (Fixed)  _Front-end_ In DetailView click on colorClass move to next item, the colorClass should match the file
 - [x]   (Added)  _Front-end_ Add Storybook for keep components easier to manage.
-- [ ]   (Added)  _Back-end_  Importer allow comma sperated file/folder input __not implemented__
+- [x]   (Changed) _Back-end_ /env/api behind login
+- [x]   (Added) _Back-end_ allow multiple inputs in importer CLI (dot comma ; separated )
+- [x]   (Added) _Tools_ allow multiple inputs in `dropbox-importer`
+
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
