@@ -211,22 +211,30 @@ module.exports = class Dropbox {
      * @param {structure} to set the structure
      */
     runStarskyList(entries, colorClassString, structure) {
-
-        var multipleFilePathsCsv = "";
-        entries.forEach(entry => {
-            var filePath = path.join(this.getTempFolder(), entry.name);
-            if (multipleFilePathsCsv.length <= 8000) {
-                multipleFilePathsCsv += filePath + ";"
-            }
-            else {
-                console.log(`.. ${filePath} is skipped`)
-            }
-        });
-
-        var exe = this.starskyCli + ' -v -p \"' + multipleFilePathsCsv + "\"" + " --colorclass " + colorClassString;
-        if (structure) exe += " --structure " + structure;
-
         return new Promise((resolve, reject) => {
+
+            if (entries.length === 0) {
+                console.log("entries.length === 0");
+                resolve(entries);
+                return;
+            }
+
+            var multipleFilePathsCsv = "";
+            entries.forEach(entry => {
+                var filePath = path.join(this.getTempFolder(), entry.name);
+                if (multipleFilePathsCsv.length <= 8000) {
+                    multipleFilePathsCsv += filePath + ";"
+                }
+                else {
+                    console.log(`.. ${filePath} is skipped`)
+                }
+            });
+
+            var exe = this.starskyCli + ' -v -p \"' + multipleFilePathsCsv + "\"" + " --colorclass " + colorClassString;
+            if (structure) exe += " --structure " + structure;
+
+            console.log(exe);
+        
             (async () => {
                 const { stdout, stderr } = await exec(exe);
                 if (stderr) {
