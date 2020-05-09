@@ -18,50 +18,7 @@
 
 ## starsky/starsky/clientapp docs
 
-On top of the Starsky API there is React front-end
-
-## Project structure
-
-```
-•
-└── src
-    └── components
-    |   └── atoms
-    |   |    |    Atoms are the basic building blocks of matter.
-    |   |    └── button-styled
-    |   |       ├── button-styled.tsx
-    |   |       └── button-styled.stories.tsx
-    |   |       └── button-styled.spec.tsx
-    |   |      Folder has .tsx for component
-    |   |      Folder has stories.tsx for storybook
-    |   |      Folder has spec.tsx for unit-tests
-    |   |         
-    |   └── molecules
-    |   |     Molecules are groups of atoms bonded together
-    |   └── organisms
-    |         Molecules are building blocks 
-    └── containers
-    |     large containers that contain parts of the UI
-    └── contexts
-    |   └── archive-context
-    |   |     React Context for lists of files
-    |   └── detailview-context
-    |         React Context for viewing a detailed file
-    └── contexts-wrapper
-    |      Combine contexts with input from the API
-    └── hooks
-    |      React hooks to handle API/Keyboard calls
-    └── interfaces
-    |      Typescript interfaces
-    └── pages
-    |      Full pages
-    └── routes
-    |      Routes based on the browser url
-    └── shared
-    |      Business logic that is shared between multiple components
-    └── style
-           CSS Styling
-```
+On top of the Starsky API there is React front-end. This is required to run the web application
 
 ## Available Scripts
 
@@ -75,7 +32,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
 
-Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `./starsky-tools`)
+Make sure you run the Starsky API on http://localhost:5000 or us a localtunnel proxy (which you can find in `./starsky-tools/localtunnel`)
 
 ### `npm test`
 
@@ -113,17 +70,67 @@ A Storybook is a collection of stories. Each story represents a single visual st
                 └── button-styled.stories.tsx
 ```
 
+
+
+## Project structure
+
+The clientapp uses the following folder structure
+
+```
+•
+└── src
+    └── components
+    |   └── atoms
+    |   |    |    Atoms are the basic building blocks of matter.
+    |   |    └── button-styled
+    |   |       ├── button-styled.tsx
+    |   |       └── button-styled.stories.tsx
+    |   |       └── button-styled.spec.tsx
+    |   |      Folder has .tsx for component
+    |   |      Folder has stories.tsx for storybook
+    |   |      Folder has spec.tsx for unit-tests
+    |   |         
+    |   └── molecules
+    |   |     Molecules are groups of atoms bonded together
+    |   └── organisms
+    |         Molecules are building blocks
+    └── containers
+    |     large containers that contain parts of the UI
+    └── contexts
+    |   └── archive-context
+    |   |     React Context for lists of files
+    |   └── detailview-context
+    |         React Context for viewing a detailed file
+    └── contexts-wrapper
+    |      Combine contexts with input from the API
+    └── hooks
+    |      React hooks to handle API/Keyboard calls
+    └── interfaces
+    |      Typescript interfaces
+    └── pages
+    |      Full pages
+    └── routes
+    |      Routes based on the browser url
+    └── shared
+    |      Business logic that is shared between multiple components
+    └── style
+           CSS Styling
+```
+
+
 ### Upgrade `Create React App` to a newer version
 
 The default Create React App package is used to keep future upgrades less painfull.
+In the repository of [Create React App releases](https://github.com/facebook/create-react-app/releases) you can find if we are using the latest version.
 
-#### To keep all CRA dependencies in place 
+
+#### To keep all CRA dependencies in place
 
 ```
 npx create-react-app my-app --template typescript
 ```
 
-- copy the `package.json` + `package-lock.json` from the `my-app` folder
+- copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
 
 
 The following packages are added:
@@ -148,7 +155,8 @@ npm install --save-dev @storybook/preset-create-react-app
 ```
 
 #### Proxy tag for backend services
-used when running npm start
+Used when running `npm start`
+
 ```json
 "proxy": "http://localhost:5000",
 ```
