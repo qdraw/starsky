@@ -6,7 +6,7 @@
 const { resolve, join } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
 
-var newVersion = "0.2.4";
+var newVersion = "0.2.5";
 
 console.log(`\nUpgrade version in csproj-files and package.json to ${newVersion}\n`);
 
