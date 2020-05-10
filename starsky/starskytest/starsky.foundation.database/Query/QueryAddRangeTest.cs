@@ -50,6 +50,34 @@ namespace starskytest.starsky.foundation.database.Query
 		}
 		
 		[TestMethod]
+		public async Task AddRangeAsync_Disposed()
+		{
+			var expectedResult = new List<FileIndexItem>
+			{
+				new FileIndexItem {FileHash = "TEST4"},
+				new FileIndexItem {FileHash = "TEST5"}
+			};
+			
+			var serviceScopeFactory = CreateNewScope();
+			var scope = serviceScopeFactory.CreateScope();
+			var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			// Dispose here
+			await dbContextDisposed.DisposeAsync();
+			
+			await new global::starsky.foundation.database.Query.Query(dbContextDisposed, new FakeMemoryCache(),
+				new AppSettings {
+					AddMemoryCache = false 
+				}, serviceScopeFactory).AddRangeAsync(expectedResult);
+			
+			var context = new InjectServiceScope(serviceScopeFactory).Context();
+			var queryFromDb = context.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
+
+			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
+			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
+		}
+		
+		[TestMethod]
 		public void AddRange()
 		{
 			var expectedResult = new List<FileIndexItem>
