@@ -36,6 +36,6 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
         timeout-minutes: 10 
-        file: ./starsky/starskytest/netcore-coverage.opencover.xml
+        file: ./starsky/starsky/starskytest/netcore-coverage.opencover.xml
         flags: netcore # flags must match pattern ^[\w\,]+$
         name: codecov # optional
