@@ -25,23 +25,24 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added) Creating thumbnails from Web Interface (including status)
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API
+- [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
+- [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # Unreleased - 2020-05-XX
+
+# version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
 - [x]   (Added)  _Tools_ add check for ProjectGuids to be valid/exist and non-duplicate
 - [x]   (Added)  _Back-end_ Show version number in command line
 - [x]   (Added)  _Back-end_ Fix for import Gpx
 - [x]   (Fixed)  _Front-end_ In DetailView click on colorClass move to next item, the colorClass should match the file
 - [x]   (Added)  _Front-end_ Add Storybook for keep components easier to manage.
-- [x]   (Changed) _Back-end_ /env/api behind login
+- [x]   (Changed) _Back-end_ `/api/env` behind login
 - [x]   (Added) _Back-end_ allow multiple inputs in importer CLI (dot comma ; separated )
 - [x]   (Added) _Tools_ allow multiple inputs in `dropbox-importer`
-- [x]   (Fixed) _Back-end_  QueueBackgroundWorkItem has now Application Insights tracking for exceptions
-- [x]   (Fixed) _Back-end_ Fix for imageformat GPX. does now support wihout xml prefix
+- [x]   (Fixed) _Back-end_ QueueBackgroundWorkItem has now Application Insights Telemetry tracking for exceptions
+- [x]   (Fixed) _Back-end_ Fix for imageFormat GPX. does now support wihout xml prefix
 - [x]   (Fixed) _Back-end_ Bugfix for Importer to allow .XMP files read and copy
-
-- [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
-- [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # version 0.2.3 - 2020-05-04
 - [x]   (Fixed)  _Back-end_ New users could not sign up
