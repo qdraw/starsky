@@ -3,9 +3,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.readmeta.Services;
-using starskycore.Helpers;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.Services
@@ -13,8 +12,15 @@ namespace starskytest.Services
     [TestClass]
     public class ReadGpxFromFileTest
     {
-        
-        [TestMethod]
+	    [TestMethod]
+	    public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile_Null()
+	    {
+		    var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(null,"/test.gpx");
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,returnItem.Status);
+			Assert.AreEqual("/test.gpx",returnItem.FilePath);
+	    }
+
+	    [TestMethod]
         public void ReadGpxFromFileTest_ReturnAfterFirstFieldReadFile()
         {
             var gpxBytes = CreateAnGpx.Bytes;
@@ -33,6 +39,7 @@ namespace starskytest.Services
                 out var expectDateTime);
             // gpx is always utc
             Assert.AreEqual(expectDateTime,returnItem.DateTime);
+            Assert.AreEqual("/test.gpx",returnItem.FilePath);
         }
 
         [TestMethod]
@@ -43,6 +50,7 @@ namespace starskytest.Services
 	        
 	        var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
 	        Assert.AreEqual(new DateTime(),returnItem.DateTime );
+	        Assert.AreEqual("/test.gpx",returnItem.FilePath);
         }
         
         [TestMethod]
