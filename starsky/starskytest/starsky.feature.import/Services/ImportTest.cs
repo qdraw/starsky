@@ -52,7 +52,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Preflight_SingleImage_HappyFlow()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 
@@ -70,7 +70,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Importer_EmptyDirectory()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(storage, appSettings), null, _console);
@@ -110,7 +110,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Preflight_SingleImage_FileType_NotSupported()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
@@ -131,7 +131,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Preflight_SingleImage_WrongExtension()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
@@ -340,6 +340,26 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
 
 			_iStorageFake.FileDelete(expectedFilePath);
+		}
+		
+		[TestMethod]
+		public async Task Importer_DeleteAfter()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel{DeleteAfter = true});
+			
+			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
+			Assert.IsFalse(storage.ExistFile("/test.jpg"));			
 		}
 
 		[TestMethod]
