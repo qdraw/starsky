@@ -15,6 +15,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Models;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -362,6 +363,27 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));			
 		}
 
+		[TestMethod]
+		public async Task Importer_Gpx()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.gpx"},
+				new List<byte[]>{FakeCreateAn.CreateAnGpx.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.gpx"},
+				new ImportSettingsModel());
+			
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.gpx");
+			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
+			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
+		}
+		
 		[TestMethod]
 		[ExpectedException(typeof(IndexOutOfRangeException))]
 		public async Task Importer_Over100Times()
