@@ -156,7 +156,8 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Preflight_SingleImage_HashAlreadyInImportDb()
 		{
-			var appSettings = new AppSettings();
+			// Exist already
+			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
 				new FakeIImportQuery(new List<string>{_exampleHash}),
 
@@ -190,7 +191,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Preflight_SingleImage_NonExist()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 			
@@ -382,6 +383,29 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
+		}
+		
+		[TestMethod]
+		public async Task Importer_XmpChecked()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(storage, appSettings),query,_console);
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng");
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
+			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
+			// Apple is read from XMP
+			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
 		}
 		
 		[TestMethod]
@@ -611,7 +635,6 @@ namespace starskytest.starsky.feature.import.Services
 			var items = storage.GetDirectories("/");
 		}
 
-
 		[TestMethod]
 		public void Preflight_Predict_Duplicates()
 		{
@@ -667,6 +690,17 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual("/0001/00010101_000000_d_3.png", fileIndexItemFilePathList[1]);
 			Assert.AreEqual("/2020/20200501_120000_d.png", fileIndexItemFilePathList[2]);
 			Assert.AreEqual("/2020/20200501_120000_d_1.png", fileIndexItemFilePathList[3]);
+		}
+		
+		[TestMethod]
+		public async Task InternalImporter_IgnoreWrongInput()
+		{
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(), new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, new AppSettings()),new FakeIQuery(), _console);
+
+			var result = await importService.Importer(new ImportIndexItem {Status = ImportStatus.FileError},
+				new ImportSettingsModel());
+			Assert.AreEqual(ImportStatus.FileError, result.Status);
 		}
 
 	}

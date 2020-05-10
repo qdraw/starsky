@@ -36,6 +36,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ /env/api behind login
 - [x]   (Added) _Back-end_ allow multiple inputs in importer CLI (dot comma ; separated )
 - [x]   (Added) _Tools_ allow multiple inputs in `dropbox-importer`
+- [x]   (Fixed) _Back-end_  QueueBackgroundWorkItem has now Application Insights tracking for exceptions
+- [x]   (Fixed) _Back-end_ Fix for imageformat GPX. does now support wihout xml prefix
+- [x]   (Fixed) _Back-end_ Bugfix for Importer to allow .XMP files read and copy
 
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__

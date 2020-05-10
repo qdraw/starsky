@@ -8,15 +8,15 @@ namespace starskycore.Helpers
 	{
 		/// <summary>
 		/// input a base64-formated-string return base64-formated-byte array
+		/// @see: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
 		/// </summary>
-		/// <param name="inputstring">base64 string</param>
+		/// <param name="inputString">base64 string</param>
 		/// <returns>byte array</returns>
-		public static byte[] TryParse(string inputstring)
+		public static byte[] TryParse(string inputString)
 		{
-			if ( inputstring?.Length % 4 != 0 || !Base64Regex.IsMatch(inputstring) )
+			if ( inputString?.Length % 4 != 0 || !Base64Regex.IsMatch(inputString) )
 				return new byte[0];
-			return Convert.FromBase64String(inputstring);
-			// Source: https://stackoverflow.com/questions/7686585/something-like-tryparse-from-convert-frombase64string
+			return Convert.FromBase64String(inputString);
 		}
 
 		/// <summary>
@@ -27,7 +27,7 @@ namespace starskycore.Helpers
 		public static string EncodeToString(string plainText)
 		{
 			var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-			return System.Convert.ToBase64String(plainTextBytes);
+			return Convert.ToBase64String(plainTextBytes);
 		}
 
 		/// <summary>
@@ -50,7 +50,7 @@ namespace starskycore.Helpers
 			RegexOptions.Compiled);
 
 		/// <summary>
-		/// Memorystring to base64 string
+		/// MemoryString to base64 string
 		/// </summary>
 		/// <param name="outputStream">input stream</param>
 		/// <returns>base64 string</returns>

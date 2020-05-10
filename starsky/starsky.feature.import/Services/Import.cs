@@ -376,7 +376,7 @@ namespace starsky.feature.import.Services
 		/// <param name="importIndexItem">config file</param>
 		/// <param name="importSettings">optional settings</param>
 		/// <returns>status</returns>
-		private async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, 
+		internal async Task<ImportIndexItem> Importer(ImportIndexItem importIndexItem, 
 			ImportSettingsModel importSettings)
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
@@ -388,12 +388,12 @@ namespace starsky.feature.import.Services
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
 			
 			// Support for include sidecar files
-		    var xmpFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
-		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)  &&
-		         _filesystemStorage.ExistFile(xmpFullFilePath))
+		    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
+		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.SourceFullFilePath)  &&
+		         _filesystemStorage.ExistFile(xmpSourceFullFilePath))
 		    {
 			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
-			    _filesystemStorage.FileCopy(xmpFullFilePath, destinationXmpFullPath);
+			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
 		    // From here on the item is exit in the storage folder
