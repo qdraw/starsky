@@ -302,7 +302,7 @@ namespace starskytest.starsky.feature.import.Services
 		/// <returns>expected result</returns>
 		private string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
-			var fileIndexItem = new ReadMeta(_iStorageFake).ReadExifAndXmpFromFile(inputFileFullPath);
+			var fileIndexItem = new ReadMeta(storage).ReadExifAndXmpFromFile(inputFileFullPath);
 			var importIndexItem = new ImportIndexItem(appSettings)
 			{
 				FileIndexItem = fileIndexItem,
@@ -375,11 +375,11 @@ namespace starskytest.starsky.feature.import.Services
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(storage, appSettings),query,_console);
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.gpx");
 
 			var result = await importService.Importer(new List<string> {"/test.gpx"},
 				new ImportSettingsModel());
 			
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.gpx");
 			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
 		}

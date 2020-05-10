@@ -100,8 +100,13 @@ namespace starsky.foundation.readmeta.Services
         }
 
 
-	    // Cached view >> IMemoryCache
-        // Short living cache Max 15. minutes
+	    /// <summary>
+	    /// Different types including GPX
+	    /// Cached view >> IMemoryCache
+	    /// Short living cache Max 15. minutes
+	    /// </summary>
+	    /// <param name="subPath">path</param>
+	    /// <returns>metaData</returns>
         public FileIndexItem ReadExifAndXmpFromFile(string subPath)
         {
             // The CLI programs uses no cache
