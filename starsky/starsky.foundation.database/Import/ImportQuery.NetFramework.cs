@@ -35,7 +35,7 @@ namespace starsky.foundation.database.Import
 		/// <returns></returns>
 		public override async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope(_scopeFactory).Context();
 
 			if ( _isConnection )
 			{

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 
 namespace starskycore.Services
 {
@@ -11,9 +12,11 @@ namespace starskycore.Services
     [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundQueuedHostedService : BackgroundService
     {
-        public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue)
+	    private readonly ITelemetryService _telemetryService;
+	    public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, ITelemetryService telemetryService = null)
         {
             TaskQueue = taskQueue;
+            _telemetryService = telemetryService;
         }
 
         private IBackgroundTaskQueue TaskQueue { get; }
@@ -32,10 +35,11 @@ namespace starskycore.Services
                 {
                     await workItem(stoppingToken);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
                     Console.WriteLine($"Error occurred executing {nameof(workItem)}.");
-	                Console.WriteLine(ex);
+	                Console.WriteLine(exception);
+	                _telemetryService?.TrackException(exception);
                 }
             }
 

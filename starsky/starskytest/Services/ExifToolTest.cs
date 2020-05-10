@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Models;
-using starskycore.Services;
+using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -9,19 +12,38 @@ namespace starskytest.Services
 	public class ExifToolTest
 	{
 
-//		[TestMethod]
-//		public async Task ExifToolTest_()
-//		{
-//			var appSettings = new AppSettings
-//			{
-//				ExifToolPath = "/usr/local/bin/exiftool",
-//				StorageFolder = "/data/isight/__starsky/01-dif"
-//			};
-//			var subPathStorage = new StorageSubPathFilesystem(appSettings);
-//
-//			var stream = await new ExifTool(subPathStorage, appSettings).WriteTagsAsync("/2018.01.01.17.00.01 kopie.jpg","-Software=\"Qdraw 2.0\"");
-//			
-//			
-//		}
+		[TestMethod]
+		[ExpectedException(typeof(System.ArgumentException))]
+		public async Task ExifTool_NotFound_Exception()
+		{
+			var appSettings = new AppSettings
+			{
+				ExifToolPath = "Z://Non-exist",
+			};
+
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			
+			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(System.ArgumentException))]
+		public async Task ExifTool_WriteTagsThumbnailAsync_NotFound_Exception()
+		{
+			var appSettings = new AppSettings
+			{
+				ExifToolPath = "Z://Non-exist",
+			};
+
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			
+			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+		}
 	}
 }

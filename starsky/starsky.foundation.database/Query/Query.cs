@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Query
             AppSettings appSettings = null,
             IServiceScopeFactory scopeFactory = null)
         {
-	        _context = new InjectServiceScope(context, scopeFactory).Context();
+	        _context = context;
             _cache = memoryCache;
             _appSettings = appSettings;
             _scopeFactory = scopeFactory;
@@ -53,7 +53,7 @@ namespace starsky.foundation.database.Query
             }
             catch ( ObjectDisposedException )
             {
-	            var context = new InjectServiceScope(null, _scopeFactory).Context();
+	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            return context.FileIndex.Where
 			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
@@ -89,7 +89,7 @@ namespace starsky.foundation.database.Query
             catch (ObjectDisposedException)
             {
 	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
-	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            _context = new InjectServiceScope(_scopeFactory).Context();
 	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
             }
             return query;
@@ -147,7 +147,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException )
 	        {
-		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && !p.IsDirectory
@@ -220,7 +220,7 @@ namespace starsky.foundation.database.Query
             catch ( ObjectDisposedException)
             {
 	            if ( _appSettings.Verbose ) Console.WriteLine("Retry ObjectDisposedException");
-	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            _context = new InjectServiceScope(_scopeFactory).Context();
 	            _context.Attach(updateStatusContent).State = EntityState.Modified;
 	            _context.SaveChanges();
             }
@@ -349,7 +349,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (ObjectDisposedException)
 	        {
-		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.FileIndex.Add(updateStatusContent);
 		        context.SaveChanges();
 	        }
@@ -376,7 +376,7 @@ namespace starsky.foundation.database.Query
 		    }
 		    catch (ObjectDisposedException)
 		    {
-			    var context = new InjectServiceScope(null, _scopeFactory).Context();
+			    var context = new InjectServiceScope( _scopeFactory).Context();
 			    await context.FileIndex.AddAsync(fileIndexItem);
 			    await context.SaveChangesAsync();
 			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
@@ -394,15 +394,24 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-            _context.FileIndex.Remove(updateStatusContent);
-            _context.SaveChanges();
+	        try
+	        {
+		        _context.FileIndex.Remove(updateStatusContent);
+		        _context.SaveChanges();
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        context.FileIndex.Remove(updateStatusContent);
+		        context.SaveChanges();
+	        }
 
-	        // remove parent directory cache
-            RemoveCacheItem(updateStatusContent);
+			// remove parent directory cache
+			RemoveCacheItem(updateStatusContent);
 
-	        // remove getFileHash Cache
-	        ResetItemByHash(updateStatusContent.FileHash);
-            return updateStatusContent;
-        }
+			// remove getFileHash Cache
+			ResetItemByHash(updateStatusContent.FileHash);
+			return updateStatusContent;
+	    }
     }
 }

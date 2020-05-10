@@ -22,7 +22,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException )
 	        {
-		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        var context = new InjectServiceScope( _scopeFactory).Context();
 		        return context.FileIndex.Where(p => p.IsDirectory).ToList();
 	        }
         }
@@ -95,7 +95,7 @@ namespace starsky.foundation.database.Query
             catch (ObjectDisposedException)
             {
 	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
-	            _context = new InjectServiceScope(null, _scopeFactory).Context();
+	            _context = new InjectServiceScope(_scopeFactory).Context();
 	            objectFileFolders = QueryDisplayFileFolders(subPath);
             }
             

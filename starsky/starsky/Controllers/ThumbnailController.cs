@@ -67,7 +67,7 @@ namespace starsky.Controllers
             if (_thumbnailStorage.ExistFile(f))
             {
                 // When a file is corrupt show error
-                var stream = _thumbnailStorage.ReadStream(f,100);
+                var stream = _thumbnailStorage.ReadStream(f,50);
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
                 if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
                 {

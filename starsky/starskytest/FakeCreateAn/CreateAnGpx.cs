@@ -156,6 +156,6 @@ namespace starskytest.FakeCreateAn
             {
                 File.WriteAllBytes(FullFileGpxPath, Convert.FromBase64String(Base64GpxString));
             }
-         }
+        }
     }
 }

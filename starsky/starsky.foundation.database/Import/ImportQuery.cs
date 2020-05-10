@@ -36,13 +36,13 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-			var dbContext = new InjectServiceScope(null,_scopeFactory).Context();
+			var dbContext = new InjectServiceScope(_scopeFactory).Context();
 			return !_isConnection ? dbContext.TestConnection() : _isConnection;
 		}
 
 		public virtual async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope(_scopeFactory).Context();
 
 			if ( _isConnection )
 			{
@@ -63,7 +63,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>fail or success</returns>
 		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope(_scopeFactory).Context();
 
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
@@ -79,14 +79,14 @@ namespace starsky.foundation.database.Import
 		/// <returns>List of items</returns>
 		public List<ImportIndexItem> History()
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope( _scopeFactory).Context();
 			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
 		public virtual async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope( _scopeFactory).Context();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
 			Console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
@@ -95,7 +95,7 @@ namespace starsky.foundation.database.Import
 
 		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
 		{
-			var dbContext = new InjectServiceScope(null, _scopeFactory).Context();
+			var dbContext = new InjectServiceScope(_scopeFactory).Context();
 			dbContext.ImportIndex.AddRange(importIndexItemList);
 			dbContext.SaveChanges();
 			Console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up

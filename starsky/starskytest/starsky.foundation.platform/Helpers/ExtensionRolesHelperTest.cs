@@ -2,10 +2,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
-using starskycore.Helpers;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
 	public class ExtensionRolesHelperTest
@@ -166,6 +165,34 @@ namespace starskytest.Helpers
 			var newImage = CreateAnQuickTimeMp4.Bytes.Take(15).ToArray();
 			var result = ExtensionRolesHelper.GetImageFormat(newImage);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.mp4,result);
+		}
+		
+		[TestMethod]
+		public void Gpx_WithXmlPrefix()
+		{
+			var test = Encoding.ASCII.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
+			
+			var gpxExample = Encoding.ASCII.GetBytes(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
+			
+			var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
+		}
+
+		[TestMethod]
+		public void Gpx_WithXmlNoPrefix()
+		{
+			var gpxExample = Encoding.ASCII.GetBytes("<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:gpxx=\"h");
+			
+			var result = ExtensionRolesHelper.GetImageFormat(gpxExample);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
+		}
+
+		[TestMethod]
+		public void Gpx_CreateAnGpx()
+		{
+			var result = ExtensionRolesHelper.GetImageFormat(CreateAnGpx.Bytes);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
 		}
 
 		[TestMethod]

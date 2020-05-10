@@ -8,11 +8,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starskycore.Middleware;
-using starskycore.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -41,29 +41,29 @@ namespace starskytest.Services
             // Add Background services
             services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            
+            services.AddSingleton<ITelemetryService, FakeTelemetryService>();
+
             // build the service
             var serviceProvider = services.BuildServiceProvider();
-            _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();;
+            _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
         }
         
         [TestMethod]
         public void BackgroundTaskQueueTest_DequeueAsync()
         {
-            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-            {
-                for (int delayLoop = 0; delayLoop < 3; delayLoop++)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(1), token);
-                    Console.WriteLine(delayLoop);
-                    // Cancel request > not tested very good
-                    await _bgTaskQueue.DequeueAsync(token);
-                }
-            });
-
+	        _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+	        {
+		        for (int delayLoop = 0; delayLoop < 3; delayLoop++)
+		        {
+			        await Task.Delay(TimeSpan.FromSeconds(1), token);
+			        Console.WriteLine(delayLoop);
+			        // Cancel request > not tested very good
+			        await _bgTaskQueue.DequeueAsync(token);
+		        }
+	        });
         }
-	    
-	    // https://stackoverflow.com/a/51224556
+
+        // https://stackoverflow.com/a/51224556
 	    [TestMethod]
 	    public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
 		    IServiceCollection services = new ServiceCollection();
