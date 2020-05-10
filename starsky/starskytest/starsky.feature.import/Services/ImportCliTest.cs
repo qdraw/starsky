@@ -36,5 +36,19 @@ namespace starskytest.starsky.feature.import.Services
 				new FakeIImport(new FakeSelectorStorage(storage)), new AppSettings(), fakeConsole);
 			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
 		}
+		
+		[TestMethod]
+        public async Task ImporterCli_ArgPath_Verbose()
+        {
+        	var fakeConsole = new FakeConsoleWrapper(new List<string>());
+        	var storage = new FakeIStorage(new List<string>{"/"}, 
+        		new List<string>{"/test"}, 
+        		new List<byte[]>(new byte[0][]));
+        	
+        	await new ImportCli().Importer(new List<string>{"-p", "/test"}.ToArray(), 
+        		new FakeIImport(new FakeSelectorStorage(storage)), new AppSettings{Verbose = true}, fakeConsole);
+        	Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
+        }
+        		
 	}
 }

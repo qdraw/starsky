@@ -19,7 +19,6 @@ namespace starskytest.Services
         {
             var gpxBytes = CreateAnGpx.Bytes;
 	        MemoryStream stream = new MemoryStream(gpxBytes);
-
 	        
             var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
             Assert.AreEqual(5.485941,returnItem.Longitude,0.001);
@@ -36,6 +35,16 @@ namespace starskytest.Services
             Assert.AreEqual(expectDateTime,returnItem.DateTime);
         }
 
+        [TestMethod]
+        public void ReadGpxFromFileTest_NonValidInput()
+        {
+	        var gpxBytes = new byte[0];
+	        MemoryStream stream = new MemoryStream(gpxBytes);
+	        
+	        var returnItem = new ReadMetaGpx().ReadGpxFromFileReturnAfterFirstField(stream,"/test.gpx");
+	        Assert.AreEqual(new DateTime(),returnItem.DateTime );
+        }
+        
         [TestMethod]
         public void ReadGpxFromFileTest_TestFileName()
         {
