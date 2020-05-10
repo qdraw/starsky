@@ -12,8 +12,7 @@ namespace starskycore.Services
     [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundQueuedHostedService : BackgroundService
     {
-	    private ITelemetryService _telemetryService;
-
+	    private readonly ITelemetryService _telemetryService;
 	    public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, ITelemetryService telemetryService = null)
         {
             TaskQueue = taskQueue;
