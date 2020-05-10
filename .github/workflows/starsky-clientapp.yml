@@ -38,10 +38,7 @@ jobs:
     - name: NpmTest
       working-directory: ./starsky/starsky/clientapp
       run: npm run test:ci
-    - name: Ls
-      working-directory: ./starsky/starsky/clientapp/coverage
-      run: ls
-    - uses: codecov/codecov-action@v1.0.6
+    - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
         file: ./starsky/starsky/clientapp/coverage/coverage-final.json
