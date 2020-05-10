@@ -70,9 +70,10 @@ namespace starskycore.Models
         }
 
 	    /// <summary>
-	    /// indexing, false is always copy, true is check if exist in db, default true
+	    /// indexing, false is always copy, true is check if exist in db,
+	    ///         default true
 	    /// </summary>
-	    public bool IndexMode { get; set; } = true;
+	    public bool IndexMode { get; set; }
 
 	    /// <summary>
 	    /// Default false, when Exiftool need to sync content

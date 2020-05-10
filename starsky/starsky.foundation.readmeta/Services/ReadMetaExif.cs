@@ -738,7 +738,7 @@ namespace starsky.foundation.readmeta.Services
         
 	    public double GetAperture(Directory exifItem)
 	    {
-		    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;;
+		    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
 
 		    if (string.IsNullOrEmpty(apertureString))
 		    {
@@ -764,7 +764,7 @@ namespace starsky.foundation.readmeta.Services
 	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	    public string GetShutterSpeedValue(Directory exifItem)
 	    {
-		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;;
+		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
 
 		    if (string.IsNullOrEmpty(shutterSpeedString))
 		    {

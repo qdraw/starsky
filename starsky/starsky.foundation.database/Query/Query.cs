@@ -151,7 +151,7 @@ namespace starsky.foundation.database.Query
 		        return context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && !p.IsDirectory
-		        )?.FilePath;;
+		        )?.FilePath;
 	        }
         }
 
@@ -362,29 +362,29 @@ namespace starsky.foundation.database.Query
 	    /// <summary>
 	    /// Add a new item to the database
 	    /// </summary>
-	    /// <param name="updateStatusContent">the item</param>
+	    /// <param name="fileIndexItem">the item</param>
 	    /// <returns>item with id</returns>
-	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
 		    try
 		    {
-			    await _context.FileIndex.AddAsync(updateStatusContent);
+			    await _context.FileIndex.AddAsync(fileIndexItem);
 			    await _context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
-			    _context.Entry(updateStatusContent).State = EntityState.Unchanged;
+			    _context.Entry(fileIndexItem).State = EntityState.Unchanged;
 		    }
 		    catch (ObjectDisposedException)
 		    {
 			    var context = new InjectServiceScope(null, _scopeFactory).Context();
-			    await context.FileIndex.AddAsync(updateStatusContent);
+			    await context.FileIndex.AddAsync(fileIndexItem);
 			    await context.SaveChangesAsync();
-			    context.Entry(updateStatusContent).State = EntityState.Unchanged;
+			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
 		    }
             
-		    AddCacheItem(updateStatusContent);
+		    AddCacheItem(fileIndexItem);
 
-		    return updateStatusContent;
+		    return fileIndexItem;
 	    }
         
 	    /// <summary>

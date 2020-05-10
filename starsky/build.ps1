@@ -6,6 +6,8 @@ Param(
     [string[]]$ScriptArgs
 )
 
+Push-Location $PSScriptRoot
+
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = "true"
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
 
@@ -18,4 +20,7 @@ if ($Target) { $cakeArguments += "--target=$Target" }
 $cakeArguments += $ScriptArgs
 
 & dotnet tool run dotnet-cake -- $cakeArguments --verbosity=Normal
+
+Pop-Location
+
 exit $LASTEXITCODE
