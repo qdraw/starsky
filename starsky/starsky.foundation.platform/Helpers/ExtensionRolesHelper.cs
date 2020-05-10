@@ -363,7 +363,7 @@ namespace starsky.foundation.platform.Helpers
 			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
 
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
-			var gpx = new byte[] {60, 63, 120}; // gpx
+			var gpx = new byte[] {60, 103, 112}; // <gpx
 			
 			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]  66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
@@ -410,9 +410,11 @@ namespace starsky.foundation.platform.Helpers
 			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
 				return ImageFormat.xmp;
 
-			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) )
+			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) || 
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) || 
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length))  )
 				return ImageFormat.gpx;
-
+			
 			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 				return ImageFormat.mp4;
 			

@@ -394,15 +394,24 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
-            _context.FileIndex.Remove(updateStatusContent);
-            _context.SaveChanges();
+	        try
+	        {
+		        _context.FileIndex.Remove(updateStatusContent);
+		        _context.SaveChanges();
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope(null, _scopeFactory).Context();
+		        context.FileIndex.Remove(updateStatusContent);
+		        context.SaveChanges();
+	        }
 
-	        // remove parent directory cache
-            RemoveCacheItem(updateStatusContent);
+			// remove parent directory cache
+			RemoveCacheItem(updateStatusContent);
 
-	        // remove getFileHash Cache
-	        ResetItemByHash(updateStatusContent.FileHash);
-            return updateStatusContent;
-        }
+			// remove getFileHash Cache
+			ResetItemByHash(updateStatusContent.FileHash);
+			return updateStatusContent;
+	    }
     }
 }

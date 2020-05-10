@@ -371,7 +371,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.gpx"},
-				new List<byte[]>{FakeCreateAn.CreateAnGpx.Bytes});
+				new List<byte[]>{CreateAnGpx.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
 				new FakeExifTool(storage, appSettings),query,_console);

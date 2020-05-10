@@ -97,7 +97,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		{
 			if (!_thumbnailStorage.ExistFile(fileHash)) return;
             
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash));
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash,160));
 			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
 			{
 				_thumbnailStorage.FileDelete(fileHash);
