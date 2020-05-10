@@ -74,7 +74,7 @@ namespace starsky.foundation.writemeta.Services
 
 
 			/// <summary>
-			/// Run Command async - (Does NOT work with mono/legacy)
+			/// Run Command async
 			/// </summary>
 			/// <param name="optionsArgs">exifTool args</param>
 			/// <returns>bool if success</returns>
@@ -96,7 +96,8 @@ namespace starsky.foundation.writemeta.Services
 					var result = await cmd.Task.ConfigureAwait(false);
 
 					// option without pipes:
-					//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
+					//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await
+					// cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
 					
 					if ( _appSettings.Verbose ) Console.WriteLine($"exifTool {optionsArgs} run with result: {result.Success}");
 	

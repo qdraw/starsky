@@ -368,15 +368,7 @@ namespace starsky.foundation.platform.Helpers
 		public List<string> GetPathListFormArgs(IReadOnlyList<string> args)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
-			var path = string.Empty;
-			
-			for (int arg = 0; arg < args.Count; arg++)
-			{
-				if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
-				{
-					path = args[arg + 1];
-				}
-			}
+			var path = GetUserInputPathFromArg(args);
 			
 			// To use only with -p or --path > current directory
 			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-"[0]))
@@ -392,6 +384,24 @@ namespace starsky.foundation.platform.Helpers
 			var dotCommaRegex = new Regex("(?<!\\\\);");
 			return dotCommaRegex.Split(path).Where(p => !string.IsNullOrWhiteSpace(p)).ToList();
 		}
+
+		/// <summary>
+		/// Get the user input from -p or --path
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>path</returns>
+		private string GetUserInputPathFromArg(IReadOnlyList<string> args)
+		{
+			var path = string.Empty;
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
+				{
+					path = args[arg + 1];
+				}
+			}
+			return path;
+		}
 		
 		/// <summary>
 		/// Get path from args
@@ -403,15 +413,8 @@ namespace starsky.foundation.platform.Helpers
 		public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
 		{
 			if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
-			var path = string.Empty;
-			
-			for (int arg = 0; arg < args.Count; arg++)
-			{
-				if ((args[arg].ToLower() == "--path" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
-				{
-					path = args[arg + 1];
-				}
-			}
+
+			var path = GetUserInputPathFromArg(args);
 			
 			// To use only with -p or --path > current directory
 			if ( (args.Contains("-p") || args.Contains("--path") ) && (path == string.Empty || path[0] == "-"[0]))
