@@ -8,9 +8,6 @@ using System.Web;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
-using starskycore.Interfaces;
-using starskycore.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starskywebftpcli.Services
@@ -147,8 +144,9 @@ namespace starskywebftpcli.Services
 		{
 			foreach ( var item in copyThisFilesSubPaths )
 			{
-				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + "/" +
-				                 _appSettings.GenerateSlug(_appSettings.Name,true) + "/" +
+				const string pathDelimiter = "/";
+				var toFtpPath =  PathHelper.RemoveLatestSlash(_webFtpNoLogin) + pathDelimiter +
+				                 _appSettings.GenerateSlug(_appSettings.Name,true) + pathDelimiter +
 				                 item;
 
 				Console.Write(".");
