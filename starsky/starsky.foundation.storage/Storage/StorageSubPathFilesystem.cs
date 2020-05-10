@@ -35,60 +35,78 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// Does file exist (true == exist)
 		/// </summary>
-		/// <param name="subPath">full file path</param>
+		/// <param name="path">subPath</param>
 		/// <returns>bool true = exist</returns>
-		public bool ExistFile(string subPath)
+		public bool ExistFile(string path)
 		{
-			if ( string.IsNullOrEmpty(subPath) ) return false;
-			var isFolderOrFile = IsFolderOrFile(subPath);
+			if ( string.IsNullOrEmpty(path) ) return false;
+			var isFolderOrFile = IsFolderOrFile(path);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File;
 		}
 
-		public bool ExistFolder(string subPath)
+		/// <summary>
+		/// Check if folder exist
+		/// </summary>
+		/// <param name="path">subPath style</param>
+		/// <returns>true if exist</returns>
+		public bool ExistFolder(string path)
 		{
-			var isFolderOrFile = IsFolderOrFile(subPath);
+			var isFolderOrFile = IsFolderOrFile(path);
 			return isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.Folder;
 		}
 
 		/// <summary>
 		/// is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 		/// </summary>
-		/// <param name="subPath">path of the database</param>
+		/// <param name="path">path of the database</param>
 		/// <returns>is file, folder or deleted</returns>
-		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath)
+		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath,false);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 			return new StorageHostFullPathFilesystem().IsFolderOrFile(fullFilePath);
 		}
 
-		public void FolderMove(string inputSubPath, string toSubPath)
+		/// <summary>
+		/// Move a entire folder
+		/// </summary>
+		/// <param name="fromPath">inputSubPath</param>
+		/// <param name="toPath">toSubPath</param>
+		public void FolderMove(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false);
 			new StorageHostFullPathFilesystem().FolderMove(inputFileFullPath,toFileFullPath);
 		}
 
-		public void FileMove(string inputSubPath, string toSubPath)
+		/// <summary>
+		/// Move a file
+		/// </summary>
+		/// <param name="fromPath">inputSubPath</param>
+		/// <param name="toPath">toSubPath</param>
+		public void FileMove(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false);
 			new StorageHostFullPathFilesystem().FileMove(inputFileFullPath,toFileFullPath);
 		}
 		
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public void FileCopy(string inputSubPath, string toSubPath)
+		/// <summary>
+		/// Copy a single file
+		/// </summary>
+		/// <param name="fromPath">inputSubPath</param>
+		/// <param name="toPath">toSubPath</param>
+		public void FileCopy(string fromPath, string toPath)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(inputSubPath, false);
-			var toFileFullPath = _appSettings.DatabasePathToFilePath(toSubPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath, false);
+			var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath, false);
 			new StorageHostFullPathFilesystem().FileCopy(inputFileFullPath,toFileFullPath);
 		}
 		
 		/// <summary>
-		/// Check if file exist
+		/// Delete a file
 		/// </summary>
 		/// <param name="path">subPath</param>
 		/// <returns>bool</returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public bool FileDelete(string path)
 		{
 			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
@@ -98,10 +116,10 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// Create an Directory 
 		/// </summary>
-		/// <param name="subPath">location</param>
-		public void CreateDirectory(string subPath)
+		/// <param name="path">subPath location</param>
+		public void CreateDirectory(string path)
 		{
-			var inputFileFullPath = _appSettings.DatabasePathToFilePath(subPath, false);
+			var inputFileFullPath = _appSettings.DatabasePathToFilePath(path, false);
 			Directory.CreateDirectory(inputFileFullPath);
 		}
 		
@@ -122,12 +140,11 @@ namespace starsky.foundation.storage.Storage
 		/// ..etAllFilesInDirectory(subPath)
 		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
-		/// <param name="subPath">path relative to the database</param>
+		/// <param name="path">subPath path relative to the database</param>
 		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
+		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
 			var imageFilesList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(fullFilePath);
@@ -147,12 +164,11 @@ namespace starsky.foundation.storage.Storage
 		/// ..etAllFilesInDirectory(subPath)
 		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
-		/// <param name="subPath">path relative to the database</param>
-		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
+		/// <param name="path">subPath, path relative to the database</param>
+		/// <returns>list of files</returns>
+		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
 			var imageFilesList = new StorageHostFullPathFilesystem().GetAllFilesInDirectoryRecursive(fullFilePath);
@@ -186,12 +202,12 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// Returns a list of directories // Get list of child folders
 		/// </summary>
-		/// <param name="subPath">subPath in directory</param>
+		/// <param name="path">subPath in directory</param>
 		/// <returns></returns>
 		[Obsolete("do not include direct, only using ISelectorStorage")]
-		public IEnumerable<string> GetDirectoryRecursive(string subPath)
+		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(subPath);
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 			
 			var folders = new StorageHostFullPathFilesystem().GetDirectoryRecursive(fullFilePath);
