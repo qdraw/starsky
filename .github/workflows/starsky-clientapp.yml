@@ -45,5 +45,5 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
         file: ./starsky/starsky/clientapp/coverage/coverage-final.json
-        flags: starsky-clientapp
+        flags: clientapp # flags must match pattern ^[\w\,]+$
         name: codecov # optional
