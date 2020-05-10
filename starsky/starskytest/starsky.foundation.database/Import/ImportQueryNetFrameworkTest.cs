@@ -39,7 +39,7 @@ namespace starskytest.starsky.foundation.database.Import
 		[TestMethod]
 		public async Task IsHashInImportDbAsync_True()
 		{
-			var dbContext = new InjectServiceScope(null,_serviceScope).Context();
+			var dbContext = new InjectServiceScope(_serviceScope).Context();
 
 			await dbContext.ImportIndex.AddAsync(new ImportIndexItem
 			{

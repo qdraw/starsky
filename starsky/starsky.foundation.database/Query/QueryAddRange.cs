@@ -21,7 +21,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch (ObjectDisposedException)
 			{
-				var context = new InjectServiceScope(null, _scopeFactory).Context();
+				var context = new InjectServiceScope(_scopeFactory).Context();
 				await context.FileIndex.AddRangeAsync(fileIndexItemList);
 				await context.SaveChangesAsync();
 			}
@@ -48,7 +48,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch (ObjectDisposedException)
 			{
-				var context = new InjectServiceScope(null, _scopeFactory).Context();
+				var context = new InjectServiceScope(_scopeFactory).Context();
 				context.FileIndex.AddRange(fileIndexItemList);
 				context.SaveChanges();
 			}
