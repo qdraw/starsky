@@ -51,12 +51,6 @@ steps:
     script: |
       curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output starsky/starsky-osx.10.12-x64.zip:
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      pushd $(Build.SourcesDirectory)/starsky && ls && popd:
-
 - task: Npm@1
   displayName: 'Electron npm ci'
   enabled: true
