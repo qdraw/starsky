@@ -55,20 +55,20 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      pushd starsky && ls && popd:
+      pushd $(Build.SourcesDirectory)/starsky && ls && popd:
 
 - task: Npm@1
   displayName: 'Electron npm ci'
   enabled: true
   inputs:
     command: 'ci'
-    workingDir: 'starskyapp'
+    workingDir: '$(Build.SourcesDirectory)/starskyapp'
 
 - task: Npm@1
   displayName: 'Electron run macwindows'
   inputs:
     command: 'custom'
-    workingDir: 'starskyapp'
+    workingDir: '$(Build.SourcesDirectory)/starskyapp'
     customCommand: 'run macwindows'
 
 - task: PublishBuildArtifacts@1
