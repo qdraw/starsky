@@ -1,6 +1,6 @@
 {
   "name": "Starsky",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "description": "Starsky",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "start": "electron .",
     "dist": "electron-builder build",
     "mac": "electron-builder build -m",
-    "windows": "electron-builder build -w"
+    "windows": "electron-builder build -w",
+    "macwindows": "electron-builder build -mw"
   },
   "author": "",
   "license": "ISC",
