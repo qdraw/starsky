@@ -26,7 +26,8 @@
     ],
     "beforeBuild": "./scripts/beforeBuild.js",
     "appId": "nl.qdraw.starsky",
-    "artifactName": "${productName}-${os}-desktop.${ext}",
+    "productName": "Starsky",
+    "artifactName": "starsky-${os}-desktop.${ext}",
     "mac": {
       "minimumSystemVersion": "10.12",
       "icon": "media/baseline-searcher-detective-263238__512px.icns",
