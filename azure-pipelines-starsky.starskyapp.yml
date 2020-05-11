@@ -6,7 +6,8 @@ variables:
 
 pool:
   vmImage: ubuntu-latest
-  container: electronuserland/builder:wine
+
+container: electronuserland/builder:wine
 
 trigger:
   branches:
