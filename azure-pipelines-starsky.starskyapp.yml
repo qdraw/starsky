@@ -6,6 +6,7 @@ variables:
 
 pool:
   vmImage: ubuntu-latest
+  container: electronuserland/builder:wine
 
 trigger:
   branches:
@@ -36,60 +37,28 @@ pr:
     - starsky.netframework/*
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.201'
-  enabled: true
-  inputs:
-    packageType: sdk
-    version: 3.1.201
-    installationPath: $(Agent.ToolsDirectory)/dotnet
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet tool restore'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
 
 - task: Bash@3
-  displayName: 'Cake'
-  enabled: true
   inputs:
-    filePath: 'starsky/build.sh'
-    arguments: '--Target=default -runtime="win7-x86,osx.10.12-x64"'
+    targetType: 'inline'
+    script: |
+      curl https://media.qdraw.nl/temp/include-starsky-win.zip --output starskyapp/include-starsky-win.zip':
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: win7-x86'
+- task: Bash@3
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
-    ArtifactName: 'win7-x86'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: osx.10.12-x64'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip'
-    ArtifactName: 'osx.10.12-x64'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: generic-netcore'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
-    ArtifactName: 'generic-netcore'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: coverage.report zip'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-    ArtifactName: coverage.report
+    targetType: 'inline'
+    script: |
+      curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output starskyapp/include-starsky-mac.zip':
 
 - task: Npm@1
-  displayName: 'Electron'
+  displayName: 'Electron npm ci'
   enabled: true
   inputs:
     command: 'ci'
     workingDir: 'starskyapp'
 
 - task: Npm@1
+  displayName: 'Electron run macwindows'
   inputs:
     command: 'custom'
     workingDir: 'starskyapp'
