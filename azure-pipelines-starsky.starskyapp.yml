@@ -54,7 +54,8 @@ steps:
 - task: Bash@3
   inputs:
     targetType: 'inline'
-    script: | pushd starsky && ls && popd:
+    script: |
+      pushd starsky && ls && popd:
 
 - task: Npm@1
   displayName: 'Electron npm ci'
