@@ -74,7 +74,7 @@ async function updateVersions(filePathList) {
         console.log(`✓ ${filePath} - Version is updated to ${newVersion}`);
       }
     }
-    else if (filePath.match(new RegExp("package(-lock).json?$", "i"))) {
+    else if (filePath.match(new RegExp("package.json?$", "i"))) {
       let buffer = await readFile(filePath);
       let fileJsonContent = buffer.toString('utf8');
       var versionJsonRegex = new RegExp("\"version\": ?\"([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?(\s?)\"(\s?)", "g");
