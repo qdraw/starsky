@@ -43,13 +43,13 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      curl https://media.qdraw.nl/temp/include-starsky-win.zip --output $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip:
+      curl https://media.qdraw.nl/temp/include-starsky-win.zip --output $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
 
 - task: Bash@3
   inputs:
     targetType: 'inline'
     script: |
-      curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip:
+      curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
 
 - task: Npm@1
   displayName: 'Electron npm ci'
