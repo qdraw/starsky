@@ -101,19 +101,28 @@ stages:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'win7-x86'
-        downloadPath: '$(Build.SourcesDirectory)/starsky'
+        downloadPath: '$(Build.SourcesDirectory)'
+
     - task: DownloadBuildArtifacts@0
       inputs:
         buildType: 'current'
         downloadType: 'single'
         artifactName: 'osx.10.12-x64'
-        downloadPath: '$(Build.SourcesDirectory)/starsky'
+        downloadPath: '$(Build.SourcesDirectory)'
+
     - task: Bash@3
       enabled: true
       inputs:
         targetType: 'inline'
         script: |
-          cd starsky && ls
+          mv $(Build.SourcesDirectory)/osx.10.12-x64/starsky-osx.10.12-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
+
+    - task: Bash@3
+      enabled: true
+      inputs:
+        targetType: 'inline'
+        script: |
+          mv $(Build.SourcesDirectory)/win7-x86/starsky-win7-x86.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
 
     - task: Bash@3
       enabled: false
