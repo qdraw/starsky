@@ -1,15 +1,16 @@
 'use strict';
 const fs = require('fs');
+const path = require('path');
 
 exports.default = context => {
   console.log(context);
 
   switch (context.platform.buildConfigurationKey) {
     case "mac":
-      copyFile('../starsky/starsky-osx.10.12-x64.zip', './include-starsky-mac.zip')
+      copyFile(path.join(__dirname, '..', '..', 'starsky', 'starsky-osx.10.12-x64.zip'), path.join(__dirname, 'include-starsky-mac.zip'))
       break;
     case "win":
-      copyFile('../starsky/starsky-win7-x86.zip', './include-starsky-win.zip')
+      copyFile(path.join(__dirname, '..', '..', 'starsky', 'starsky-win7-x86.zip'), path.join(__dirname, 'include-starsky-win.zip'))
       break;
     default:
   }
@@ -19,13 +20,6 @@ exports.default = context => {
 };
 
 function copyFile(src, dest) {
-
-  console.log('source')
-  console.log(fs.readdirSync(src));
-
-  console.log('dest')
-  console.log(fs.readdirSync(dest));
-  
   console.log(src, dest);
   fs.copyFileSync(src, dest);
 }
