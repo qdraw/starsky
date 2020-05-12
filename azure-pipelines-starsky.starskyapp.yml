@@ -40,7 +40,7 @@ pr:
 steps:
 - task: Bash@3
   displayName: 'install tzdata'
-  enabled: false
+  enabled: true
   inputs:
     targetType: 'inline'
     script: |
