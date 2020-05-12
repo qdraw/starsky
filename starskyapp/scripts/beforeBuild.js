@@ -19,6 +19,13 @@ exports.default = context => {
 };
 
 function copyFile(src, dest) {
+
+  console.log('source')
+  console.log(fs.readdirSync(src));
+
+  console.log('dest')
+  console.log(fs.readdirSync(dest));
+  
   console.log(src, dest);
   fs.copyFileSync(src, dest);
 }
