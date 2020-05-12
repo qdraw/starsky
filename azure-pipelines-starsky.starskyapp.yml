@@ -34,10 +34,10 @@ pr:
 
 stages:
 - stage: buildnetcore
-  displayName: 'Provision resources to feature environment'
+  displayName: 'Build .NET Core'
   jobs:
   - job: buildnetcore
-    displayName: 'Feature env provisioning job'
+    displayName: 'Build .NET Core'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -87,11 +87,11 @@ stages:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
         ArtifactName: coverage.report
 
-- stage: provision_to_feature_env
-  displayName: 'Provision resources to feature environment'
+- stage: buildelectron
+  displayName: 'Build Electron'
   jobs:
-  - job: feature_provisioning
-    displayName: 'Feature env provisioning job'
+  - job: build
+    displayName: 'Build Electron'
     pool:
       vmImage: 'ubuntu-latest'
     container: electronuserland/builder:wine
