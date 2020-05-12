@@ -96,6 +96,25 @@ stages:
       vmImage: 'ubuntu-latest'
     container: electronuserland/builder:wine
     steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'win7-x86'
+        downloadPath: '$(Build.SourcesDirectory)/starsky'
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'osx.10.12-x64'
+        downloadPath: '$(Build.SourcesDirectory)/starsky'
+    - task: Bash@3
+      enabled: true
+      inputs:
+        targetType: 'inline'
+        script: |
+          cd starsky && ls
+
     - task: Bash@3
       enabled: false
       inputs:
