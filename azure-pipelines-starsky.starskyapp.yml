@@ -44,7 +44,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      sudo apt-get install tzdata
+      apt-get install tzdata
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 3.1.201'
