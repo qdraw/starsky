@@ -4,11 +4,6 @@ variables:
   NUGET_XMLDOC_MODE: skip
   CI: true
 
-pool:
-  vmImage: ubuntu-latest
-
-container: electronuserland/builder:wine
-
 trigger:
   branches:
     include:
@@ -37,97 +32,106 @@ pr:
     - starsky-tools/*
     - starsky.netframework/*
 
-steps:
-- task: Bash@3
-  displayName: 'install tzdata'
-  enabled: true
-  inputs:
-    targetType: 'inline'
-    script: |
-      apt-get install tzdata
+stages:
+- stage: buildnetcore
+  displayName: 'Provision resources to feature environment'
+  jobs:
+  - job: buildnetcore
+    displayName: 'Feature env provisioning job'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 3.1.201'
+      enabled: true
+      inputs:
+        packageType: sdk
+        version: 3.1.201
+        installationPath: $(Agent.ToolsDirectory)/dotnet
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.201'
-  enabled: true
-  inputs:
-    packageType: sdk
-    version: 3.1.201
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet tool restore'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet tool restore'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+    - task: Bash@3
+      displayName: 'Cake'
+      enabled: true
+      inputs:
+        filePath: 'starsky/build.sh'
+        arguments: '--Target=default -runtime="win7-x86,osx.10.12-x64"'
 
-- task: Bash@3
-  displayName: 'Cake'
-  enabled: true
-  inputs:
-    filePath: 'starsky/build.sh'
-    arguments: '--Target=default -runtime="win7-x86,osx.10.12-x64"'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: win7-x86'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
+        ArtifactName: 'win7-x86'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: win7-x86'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
-    ArtifactName: 'win7-x86'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: osx.10.12-x64'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip'
+        ArtifactName: 'osx.10.12-x64'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: osx.10.12-x64'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip'
-    ArtifactName: 'osx.10.12-x64'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: generic-netcore'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
+        ArtifactName: 'generic-netcore'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: generic-netcore'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
-    ArtifactName: 'generic-netcore'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: coverage.report zip'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+        ArtifactName: coverage.report
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: coverage.report zip'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-    ArtifactName: coverage.report
+- stage: provision_to_feature_env
+  displayName: 'Provision resources to feature environment'
+  jobs:
+  - job: feature_provisioning
+    displayName: 'Feature env provisioning job'
+    pool:
+      vmImage: 'ubuntu-latest'
+    container: electronuserland/builder:wine
+    steps:
+    - task: Bash@3
+      enabled: false
+      inputs:
+        targetType: 'inline'
+        script: |
+          curl https://media.qdraw.nl/temp/include-starsky-win.zip --output $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
 
-- task: Bash@3
-  enabled: false
-  inputs:
-    targetType: 'inline'
-    script: |
-      curl https://media.qdraw.nl/temp/include-starsky-win.zip --output $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
+    - task: Bash@3
+      enabled: false
+      inputs:
+        targetType: 'inline'
+        script: |
+          curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
 
-- task: Bash@3
-  enabled: false
-  inputs:
-    targetType: 'inline'
-    script: |
-      curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
+    - task: Npm@1
+      displayName: 'Electron npm ci'
+      enabled: true
+      inputs:
+        command: 'ci'
+        workingDir: '$(Build.SourcesDirectory)/starskyapp'
 
-- task: Npm@1
-  displayName: 'Electron npm ci'
-  enabled: true
-  inputs:
-    command: 'ci'
-    workingDir: '$(Build.SourcesDirectory)/starskyapp'
+    - task: Npm@1
+      displayName: 'Electron run macwindows'
+      inputs:
+        command: 'custom'
+        workingDir: '$(Build.SourcesDirectory)/starskyapp'
+        customCommand: 'run macwindows'
 
-- task: Npm@1
-  displayName: 'Electron run macwindows'
-  inputs:
-    command: 'custom'
-    workingDir: '$(Build.SourcesDirectory)/starskyapp'
-    customCommand: 'run macwindows'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starsky-win-desktop'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
+        ArtifactName: 'starsky-win-desktop'
 
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: starsky-win-desktop'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
-    ArtifactName: 'starsky-win-desktop'
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: starsky-mac-desktop'
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
-    ArtifactName: 'starsky-mac-desktop'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starsky-mac-desktop'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
+        ArtifactName: 'starsky-mac-desktop'
