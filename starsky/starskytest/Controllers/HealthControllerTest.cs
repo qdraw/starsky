@@ -36,7 +36,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task HealthControllerTest_Index()
+		public async Task HealthControllerTest_Index_True()
 		{
 			var fakeHealthCheckService = new FakeHealthCheckService(true);
 			var controller = new HealthController(fakeHealthCheckService,new FakeTelemetryService())
@@ -47,6 +47,21 @@ namespace starskytest.Controllers
 			var actionResult = await controller.Index() as ContentResult;
 			
 			Assert.AreEqual("Healthy",actionResult.Content);
+		}
+		
+				
+		[TestMethod]
+		public async Task HealthControllerTest_Index_False()
+		{
+			var fakeHealthCheckService = new FakeHealthCheckService(false);
+			var controller = new HealthController(fakeHealthCheckService,new FakeTelemetryService())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = await controller.Index() as ContentResult;
+
+			Assert.AreEqual("Unhealthy",actionResult.Content);
 		}
 		
 		[TestMethod]
