@@ -147,3 +147,20 @@ This is the default location of the swagger documentation
 ```
 http://localhost:5000/swagger
 ```
+
+### Known 'There are critical errors in the following components:'
+When the UI starts there is an Health API check to make sure that some important components works good
+
+#### Disk Space errors
+- __Storage_StorageFolder__ There is not enough disk space available on the storage folder location 
+- __Storage_ThumbnailTempFolder__ There is not enough disk space available on the thumbnails folder location 
+- __Storage_TempFolder__ There is not enough disk space available on the temp folder location 
+
+#### Not exist errors
+- __Exist_StorageFolder__ The Storage Folder does not exist, please create it first.
+- __Exist_TempFolder__ The Temp Folder does not exist, please create it first.
+- __Exist_ExifToolPath__ ExifTool is not linked, you need this to write meta data to files
+- __Exist_ThumbnailTempFolder__ The Thumbnail cache Folder does not exist, please create it first.
+
+#### DbContext, Mysql or Sqlite
+There is also a check to make sure the database runs good

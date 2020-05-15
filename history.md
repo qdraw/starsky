@@ -25,8 +25,15 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added) Creating thumbnails from Web Interface (including status)
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API
+
+# Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
+
+# StarskyApp, Epic (Work in Progress)
+- [ ]   (Added)  _Back-end_ Fix for `Exist_ExifToolPath` on first run
+- [ ]   (Added)  _Back-end_ Option for shared `AppSettings`
+- [ ]   (Added)  _Back-end_ API to update some `appSettings` from the UI
 
 # Unreleased - 2020-05-XX
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
