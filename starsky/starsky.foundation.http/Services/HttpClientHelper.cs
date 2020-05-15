@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.http.Interfaces;
@@ -25,6 +26,8 @@ namespace starsky.foundation.http.Services
 	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory)
 	    {
 		    _httpProvider = httpProvider;
+		    
+		    if ( serviceScopeFactory == null )  return;
 
 		    using ( var scope = serviceScopeFactory.CreateScope() )
 		    {
@@ -47,8 +50,27 @@ namespace starsky.foundation.http.Services
             "dl.dropboxusercontent.com", 
             "qdraw.nl", // < used by test
             "locker.ifttt.com",
-			"download.geonames.org"
+			"download.geonames.org",
+			"exiftool.org"
 		};
+
+		public async Task<KeyValuePair<bool,string>> ReadString(string sourceHttpUrl)
+		{
+			Uri sourceUri = new Uri(sourceHttpUrl);
+
+			Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+
+			// allow whitelist and https only
+			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return new KeyValuePair<bool, string>(false,string.Empty);
+            
+			using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
+			using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+			{
+				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
+				var result = await reader.ReadToEndAsync();
+				return new KeyValuePair<bool, string>(response.StatusCode != HttpStatusCode.OK,result);
+			}
+		}
 
 		/// <summary>
 		/// Downloads the specified source HTTPS URL.
