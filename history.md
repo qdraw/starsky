@@ -29,6 +29,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # Unreleased - 2020-05-XX
+- [x]   (Added)  _Tools_ Azure pipeline for starskyApp
+- [x]   (Added)  _Tools_ app-version-update.js, add more folders and check input for matching semver
+- [x]   (Added)  _Tools_ docs.js styling update
+- [x]   (Added)  _Tools_ show `/api/health` results in Application Insights when it fails
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
