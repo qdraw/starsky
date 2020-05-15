@@ -19,7 +19,7 @@ namespace starskytest.Controllers
 		public async Task HealthControllerTest_Details()
 		{
 			var fakeHealthCheckService = new FakeHealthCheckService(true);
-			var controller = new HealthController(fakeHealthCheckService)
+			var controller = new HealthController(fakeHealthCheckService, new FakeTelemetryService())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -36,10 +36,10 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task HealthControllerTest_Index()
+		public async Task HealthControllerTest_Index_True()
 		{
 			var fakeHealthCheckService = new FakeHealthCheckService(true);
-			var controller = new HealthController(fakeHealthCheckService)
+			var controller = new HealthController(fakeHealthCheckService,new FakeTelemetryService())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -49,16 +49,33 @@ namespace starskytest.Controllers
 			Assert.AreEqual("Healthy",actionResult.Content);
 		}
 		
+				
+		[TestMethod]
+		public async Task HealthControllerTest_Index_False()
+		{
+			var fakeHealthCheckService = new FakeHealthCheckService(false);
+			var controller = new HealthController(fakeHealthCheckService,new FakeTelemetryService())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = await controller.Index() as ContentResult;
+
+			Assert.AreEqual("Unhealthy",actionResult.Content);
+		}
+		
 		[TestMethod]
 		public void HealthControllerTest_ApplicationInsights()
 		{
-			var controller = new HealthController(null, new ApplicationInsightsJsHelper(null,null))
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
 			var actionResult = controller.ApplicationInsights() as ContentResult;
-			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",actionResult.Content);
+			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",
+				actionResult.Content);
 		}
 	}
 }

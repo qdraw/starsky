@@ -1,6 +1,6 @@
 {
   "name": "mock",
-  "version": "1.0.0",
+  "version": "0.2.5",
   "description": "",
   "main": "mock.js",
   "scripts": {

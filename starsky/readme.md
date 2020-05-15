@@ -114,7 +114,7 @@ powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
 5.  On the Raspi, install the dependency packages first. Those are required by .NET Core
 
 ```sh
-sudo apt-get install curl libunwind8 gettext apt-transport-https
+sudo apt-get install curl libunwind8 gettext apt-transport-https tzdata
 ```
 
 6.  On the Raspi, install Exiftool

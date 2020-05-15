@@ -1,7 +1,11 @@
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using starsky.foundation.platform.Exceptions;
+using starsky.foundation.platform.Interfaces;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 
@@ -11,11 +15,14 @@ namespace starsky.Controllers
 	{
 		private readonly HealthCheckService _service;
 		private readonly ApplicationInsightsJsHelper _applicationInsightsJsHelper;
+		private readonly ITelemetryService _telemetryService;
 
-		public HealthController(HealthCheckService service, ApplicationInsightsJsHelper applicationInsightsJsHelper = null)
+		public HealthController(HealthCheckService service, ITelemetryService telemetryService, 
+			ApplicationInsightsJsHelper applicationInsightsJsHelper = null)
 		{
 			_service = service;
 			_applicationInsightsJsHelper = applicationInsightsJsHelper;
+			_telemetryService = telemetryService;
 		}
 
 		/// <summary>
@@ -32,7 +39,16 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var result = await _service.CheckHealthAsync();
-			if ( result.Status != HealthStatus.Healthy ) Response.StatusCode = 503;
+			if ( result.Status == HealthStatus.Healthy ) return Content(result.Status.ToString());
+
+			Response.StatusCode = 503;
+			_telemetryService.TrackException(
+				new TelemetryServiceException(JsonSerializer.Serialize(
+					result.Entries.Where(
+						p => p.Value.Status != HealthStatus.Healthy
+					)
+				))
+			);
 			return Content(result.Status.ToString());
 		}
 
