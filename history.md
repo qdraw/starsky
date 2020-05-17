@@ -27,7 +27,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added) _Back-end_ Realtime Files API  __not implemented__
 - [ ]   (Fixed) Bug rename unknown file does not work __not implemented__
 - [ ]   (Fixed) Bug upload or import gpx fails FileError __not implemented__
-
+- [ ]   (Fixed) starskygeocli -g 0 Not found __not implemented__
 
 # Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
