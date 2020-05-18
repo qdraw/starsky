@@ -36,7 +36,7 @@ namespace starsky.foundation.storage.Storage
 		
 		public void CreateDirectory(string path)
 		{
-			throw new System.NotImplementedException();
+			Directory.CreateDirectory(path);
 		}
 
 		public bool FolderDelete(string path)

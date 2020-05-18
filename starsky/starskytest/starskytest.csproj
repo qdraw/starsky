@@ -74,4 +74,10 @@
       <None Remove="coverage-report.zip" />
       <None Remove="TestResults\**" />
     </ItemGroup>
+    <ItemGroup>
+      <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
+      <Content Include="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

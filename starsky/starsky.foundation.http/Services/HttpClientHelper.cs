@@ -22,7 +22,7 @@ namespace starsky.foundation.http.Services
 	    /// Set Http Provider
 	    /// </summary>
 	    /// <param name="httpProvider">IHttpProvider</param>
-	    /// <param name="serviceScopeFactory">Scope contains a IStorageSelector</param>
+	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
 	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory)
 	    {
 		    _httpProvider = httpProvider;
@@ -68,7 +68,7 @@ namespace starsky.foundation.http.Services
 			{
 				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
 				var result = await reader.ReadToEndAsync();
-				return new KeyValuePair<bool, string>(response.StatusCode != HttpStatusCode.OK,result);
+				return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,result);
 			}
 		}
 
@@ -78,8 +78,10 @@ namespace starsky.foundation.http.Services
 		/// <param name="sourceHttpUrl">The source HTTPS URL.</param>
 		/// <param name="fullLocalPath">The full local path.</param>
 		/// <returns></returns>
-		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath) 
-        {
+		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath)
+		{
+			if ( _storage == null ) throw new ArgumentNullException(nameof(_storage));
+
             Uri sourceUri = new Uri(sourceHttpUrl);
 
             Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
