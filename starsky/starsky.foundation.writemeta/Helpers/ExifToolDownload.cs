@@ -129,7 +129,7 @@ namespace starsky.foundation.writemeta.Helpers
 				var hash = BitConverter
 					.ToString(cryptoProvider.ComputeHash(buffer)).Replace("-","").ToLowerInvariant();
 
-				return checkSumOptions.ToList().Any(p => p.ToLowerInvariant() == hash);
+				return checkSumOptions.AsEnumerable().Any(p => p.ToLowerInvariant() == hash);
 			}
 		}
 

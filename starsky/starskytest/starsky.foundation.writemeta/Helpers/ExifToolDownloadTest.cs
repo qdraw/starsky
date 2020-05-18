@@ -35,6 +35,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			"MD5 (exiftool-11.99.zip) = 19b53eede582e809c115b69e83dbac5e\n" +
 			"MD5 (ExifTool-11.99.dmg) = d063809eb7ac35e0d6c6cea6e829f75a";
 		
+		private string ExifToolUnixTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
+			"exiftool-unix");
+		
+		private string ExifToolWindowsTempPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
+			"exiftool-windows");
+		
 		public ExifToolDownloadTest()
 		{
 			var services = new ServiceCollection();
@@ -76,6 +82,15 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).DownloadExifTool();
 			Assert.IsTrue(result);
+
+			if ( _hostFileSystem.ExistFolder(ExifToolWindowsTempPath) )
+			{
+				_hostFileSystem.FolderDelete(ExifToolWindowsTempPath);
+			}
+			if ( _hostFileSystem.ExistFolder(ExifToolUnixTempPath) )
+			{
+				_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
+			}
 		}
 
 		[TestMethod]
@@ -101,9 +116,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
 			Assert.IsTrue(result2);
 			
-			_hostFileSystem.FolderDelete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
-				"exiftool-windows"));
-			
+			_hostFileSystem.FolderDelete(ExifToolWindowsTempPath);
+
 		}
 		
 		[TestMethod]
@@ -128,8 +142,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForUnix(ExampleCheckSum);
 			Assert.IsTrue(result2);
 
-			_hostFileSystem.FolderDelete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "temp",
-				"exiftool-unix"));
+			_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
 		}
 	}
 }
