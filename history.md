@@ -28,6 +28,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Fixed) Bug rename unknown file does not work __not implemented__
 - [ ]   (Fixed) Bug upload or import gpx fails FileError __not implemented__
 - [ ]   (Fixed) starskygeocli -g 0 Not found __not implemented__
+- [ ]   (Fixed) Files that already are deleted is not shown visualy  Issue #26 __not implemented__
 
 # Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
