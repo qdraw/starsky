@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express()
-const port = 5000
+const port = 5000;
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+
 var accountStatus = require('./account/status/index.json')
 var apiHealthDetails = require('./api/health/details/index.json')
 var apiIndexIndex = require('./api/index/index.json')
@@ -13,6 +17,8 @@ var apiSearchTrash = require('./api/search/trash/index.json')
 var apiSearch = require('./api/search/index.json')
 var apiSearchTest = require('./api/search/test.json')
 var apiSearchTest1 = require('./api/search/test1.json')
+var apiUpdate__Starsky01dif20180101170001_Deleted = require('./api/update/__starsky_01-dif-2018.01.01.17.00.01_Deleted.json')
+var apiUpdate__Starsky01dif20180101170001_Ok = require('./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json')
 
 var prefix = "/starsky";
 
@@ -52,6 +58,38 @@ app.get(prefix + '/api/index', (req, res) => {
   return res.json("not found");
 });
 
+var isDeleted = true;
+app.post(prefix + '/api/update', (req, res) => {
+
+  if (!req.body) {
+    res.statusCode = 500;
+    return res.json("no body, please include body");
+  }
+
+  if (req.body.f.startsWith("/__starsky/01-dif/")) {
+    isDeleted = !isDeleted;
+    res.statusCode = !isDeleted ? 404 : 200;
+    return res.json(!isDeleted ? apiUpdate__Starsky01dif20180101170001_Deleted : apiUpdate__Starsky01dif20180101170001_Ok);
+  }
+  res.statusCode = 404;
+  return res.json("not found");
+});
+
+app.post(prefix + '/api/replace', (req, res) => {
+
+  if (!req.body) {
+    res.statusCode = 500;
+    return res.json("no body, please include body");
+  }
+
+  if (req.body.f.startsWith("/__starsky/01-dif/")) {
+    isDeleted = !isDeleted;
+    res.statusCode = !isDeleted ? 404 : 200;
+    return res.json(!isDeleted ? apiUpdate__Starsky01dif20180101170001_Deleted : apiUpdate__Starsky01dif20180101170001_Ok);
+  }
+  res.statusCode = 404;
+  return res.json("not found");
+});
 
 app.get(prefix + '/api/search/trash', (req, res) => {
   return res.json(apiSearchTrash)
