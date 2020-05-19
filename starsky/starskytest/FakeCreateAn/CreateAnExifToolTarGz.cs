@@ -13,6 +13,8 @@ namespace starskytest.FakeCreateAn
 			"Q+e7kAAAAAAAAAAAAAAAAAAAAoJAXspDxGwAoAAA=";
 
 		public static readonly byte[] Bytes = Base64Helper.TryParse(ImageExifToolTarGzUnix);
+		
+		public static readonly string Sha1 = "b386a6849ed5f911085cc56f37d20f127162b21c";
 
 	}
 }

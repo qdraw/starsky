@@ -27,9 +27,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		/// <summary>
 		/// shasum -a 1 file.zip
 		/// </summary>
-		private const string ExampleCheckSum =
-			"SHA1(Image-ExifTool-11.99.tar.gz)= b386a6849ed5f911085cc56f37d20f127162b21c\n" +
-			"SHA1(exiftool-11.99.zip)= 681f38f9db269c1278441bf8362fee7dc11be77f\n" +
+		private static readonly string ExampleCheckSum =
+			"SHA1(Image-ExifTool-11.99.tar.gz)= "+ CreateAnExifToolTarGz.Sha1 + "\n" +
+			"SHA1(exiftool-11.99.zip)= " + CreateAnExifToolWindows.Sha1 +"\n" +
 			"SHA1(ExifTool-11.99.dmg)= 3d30a4846eab278387be51b91ef4121916375ded\n" +
 			"MD5 (Image-ExifTool-11.99.tar.gz) = 06b97602e0d71dc413863a905708f0c9\n" +
 			"MD5 (exiftool-11.99.zip) = 19b53eede582e809c115b69e83dbac5e\n" +

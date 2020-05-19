@@ -65,7 +65,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private string ExeExifToolUnixFullFilePath()
 		{
-			return Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-unix"), "exiftool");
+			var path = Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-unix"), "exiftool");
+			return path;
 		}
 		
 		private async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
