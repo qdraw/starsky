@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -31,15 +30,15 @@ namespace starsky.foundation.writemeta.Helpers
 			_hostFileSystemStorage = new StorageHostFullPathFilesystem();
 		}
 
-		public async Task<bool> DownloadExifTool()
+		public async Task<bool> DownloadExifTool(bool isWindows)
 		{
-			if ( _appSettings.IsWindows &&
+			if ( isWindows &&
 			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) )
 			{
 				return await StartDownloadForWindows();
 			}
 
-			if ( !_appSettings.IsWindows &&
+			if ( !isWindows &&
 			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()))
 			{
 				return await StartDownloadForUnix();
@@ -78,7 +77,10 @@ namespace starsky.foundation.writemeta.Helpers
 			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
 			var unixDownloaded = await _httpClientHelper.Download(
 				$"https://exiftool.org/{matchExifToolForUnixName}", tarGzArchiveFullFilePath);
-			if ( !unixDownloaded ) return false;
+			if ( !unixDownloaded )
+			{
+				throw new HttpRequestException($"file is not downloaded {matchExifToolForUnixName}");
+			}
 			if ( !CheckSha1(tarGzArchiveFullFilePath, getChecksumsFromTextFile) ) 
 			{
 				throw new HttpRequestException($"checksum for {tarGzArchiveFullFilePath} is not valid");
@@ -157,7 +159,11 @@ namespace starsky.foundation.writemeta.Helpers
 			
 			var windowsDownloaded = await _httpClientHelper.Download(
 				$"https://exiftool.org/{matchExifToolForWindowsName}", zipArchiveFullFilePath);
-			if ( !windowsDownloaded ) return false;
+			if ( !windowsDownloaded )
+			{
+				throw new HttpRequestException($"file is not downloaded {matchExifToolForWindowsName}");
+			}
+			
 			if ( !CheckSha1(zipArchiveFullFilePath, getChecksumsFromTextFile) ) 
 			{
 				throw new HttpRequestException($"checksum for {zipArchiveFullFilePath} is not valid");
@@ -168,8 +174,6 @@ namespace starsky.foundation.writemeta.Helpers
 			new Zipper().ExtractZip(zipArchiveFullFilePath, windowsExifToolFolder);
 			MoveFileIfExist(Path.Combine(windowsExifToolFolder, "exiftool(-k).exe"),
 				Path.Combine(windowsExifToolFolder, "exiftool.exe"));
-			MoveFileIfExist(Path.Combine(windowsExifToolFolder, "exiftool(-k).obj"),
-				Path.Combine(windowsExifToolFolder, "exiftool.obj"));
 
 			return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 				"exiftool.exe"));

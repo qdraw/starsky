@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -79,7 +78,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).DownloadExifTool();
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).DownloadExifTool(_appSettings.IsWindows);
 			Assert.IsTrue(result);
 
 			if ( _hostFileSystem.ExistFolder(ExifToolWindowsTempPath) )
@@ -90,6 +89,24 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			{
 				_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
 			}
+		}
+
+		[TestMethod]
+		public async Task DownloadExifTool_Windows()
+		{
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory);
+
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).DownloadExifTool(true);
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public async Task DownloadExifTool_Unix()
+		{
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory);
+
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).DownloadExifTool(false);
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
@@ -117,9 +134,36 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.IsTrue(result2);
 			
 			_hostFileSystem.FolderDelete(ExifToolWindowsTempPath);
+		}
 
+		[TestMethod]
+		[ExpectedException(typeof(HttpRequestException))]
+		public async Task StartDownloadForWindows_Fail()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			await new ExifToolDownload(httpClientHelper, _appSettings).
+				StartDownloadForWindows();
 		}
 		
+		[TestMethod]
+		[ExpectedException(typeof(HttpRequestException))]
+		public async Task StartDownloadForUnix_Fail()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			await new ExifToolDownload(httpClientHelper, _appSettings).
+				StartDownloadForUnix();
+		}
+
 		[TestMethod]
 		public async Task StartDownloadForUnix_2Times()
 		{

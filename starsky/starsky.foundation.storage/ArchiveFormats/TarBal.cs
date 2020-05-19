@@ -72,13 +72,6 @@ namespace starsky.foundation.storage.ArchiveFormats
 	                stream.Read(buf, 0, buf.Length);
 	                str.Write(buf, 0, buf.Length);
 	                _storage.WriteStreamOpenOrCreate(str, output);
-	                
-                    // using (var str = File.Open(output, FileMode.OpenOrCreate, FileAccess.Write))
-                    // {
-                    //     var buf = new byte[size];
-                    //     stream.Read(buf, 0, buf.Length);
-                    //     str.Write(buf, 0, buf.Length);
-                    // }
                 }
 
                 var pos = stream.Position;

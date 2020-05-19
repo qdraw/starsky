@@ -32,7 +32,7 @@ namespace starsky.foundation.writemeta.Services
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-				await new ExifToolDownload(httpClientHelper, appSettings).DownloadExifTool();
+				await new ExifToolDownload(httpClientHelper, appSettings).DownloadExifTool(appSettings.IsWindows);
 			}
 		}
 	}
