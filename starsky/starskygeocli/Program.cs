@@ -56,8 +56,8 @@ namespace starskyGeoCli
 			if (getSubPathRelative != null)
 			{
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-				inputPath = new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
-					.ParseSubfolders(dateTime);
+				inputPath = appSettings.DatabasePathToFilePath(new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
+					.ParseSubfolders(dateTime),false);
 			}
 			
 			// used in this session to find the files back
@@ -67,7 +67,7 @@ namespace starskyGeoCli
 			if ( inputPath == null || storage.IsFolderOrFile("/") == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				Console.WriteLine(
-					$"Folder location is not found \nPlease try the `-h` command to get help ");
+					$"Folder location is not found \nPlease try the `-h` command to get help \nDid search for: {inputPath}");
 				return;
 			}
 
@@ -115,7 +115,8 @@ namespace starskyGeoCli
 			fileIndexList.AddRange(toMetaFilesUpdate);
 
 			// update thumbs to avoid unnecessary re-generation
-			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
+			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).
+				Select(g => g.First())
 				.ToList() )
 			{
 				var newThumb = new FileHash(storage).GetHashCode(item.FilePath).Key;
