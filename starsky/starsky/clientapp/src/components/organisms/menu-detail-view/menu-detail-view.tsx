@@ -125,7 +125,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
-      if (resultDo.statusCode !== 200) {
+      if (resultDo.statusCode !== 200 && resultDo.statusCode !== 404) {
         console.error(resultDo);
         setIsLoading(false);
         return;
