@@ -33,13 +33,13 @@ namespace starsky.foundation.writemeta.Helpers
 		public async Task<bool> DownloadExifTool(bool isWindows)
 		{
 			if ( isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) )
+			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath ()) )
 			{
 				return await StartDownloadForWindows();
 			}
 
 			if ( !isWindows &&
-			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()))
+			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()))
 			{
 				return await StartDownloadForUnix();
 			}
