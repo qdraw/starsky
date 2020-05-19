@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.thumbnai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.readmeta", "..\starsky\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj", "{82BA730F-0ACA-470D-AD0E-AF046D422F8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.http", "..\starsky\starsky.foundation.http\starsky.foundation.http.csproj", "{60193D91-0D92-4FC2-B469-D7691CB0E986}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{82BA730F-0ACA-470D-AD0E-AF046D422F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82BA730F-0ACA-470D-AD0E-AF046D422F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82BA730F-0ACA-470D-AD0E-AF046D422F8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60193D91-0D92-4FC2-B469-D7691CB0E986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60193D91-0D92-4FC2-B469-D7691CB0E986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60193D91-0D92-4FC2-B469-D7691CB0E986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60193D91-0D92-4FC2-B469-D7691CB0E986}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,5 +105,6 @@ Global
 		{12F5AE66-8D7F-4D81-86C5-E3E3864F44A1} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
 		{4B3990C9-171B-4D53-A821-F458E8AC072F} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
 		{82BA730F-0ACA-470D-AD0E-AF046D422F8C} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
+		{60193D91-0D92-4FC2-B469-D7691CB0E986} = {DD19F560-82EF-434D-9087-72F911FC7EFC}
 	EndGlobalSection
 EndGlobal
