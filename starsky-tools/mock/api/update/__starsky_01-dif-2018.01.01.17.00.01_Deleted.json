@@ -1,0 +1,43 @@
+[
+  {
+    "filePath": "/__starsky/01-dif/2018.01.01.17.00.01.jpg",
+    "fileName": "2018.01.01.17.00.01.jpg",
+    "fileHash": "XLMDPBLIR3NLZ7SHSPDAAKI5OA",
+    "fileCollectionName": "2018.01.01.17.00.01",
+    "parentDirectory": "/__starsky/01-dif",
+    "isDirectory": false,
+    "keywords": [
+      "Koeien",
+      "!delete!"
+    ],
+    "tags": "Koeien, !delete!",
+    "status": "Deleted",
+    "description": "",
+    "title": "",
+    "dateTime": "2020-05-18T14:29:09",
+    "addToDatabase": "2020-05-18T15:03:47.209705",
+    "lastEdited": "2020-05-19T17:24:50.9450481Z",
+    "latitude": 52.2288027777,
+    "longitude": 6.0953805555,
+    "locationAltitude": 0,
+    "locationCity": "",
+    "locationState": "",
+    "locationCountry": "",
+    "colorClass": 7,
+    "orientation": "Horizontal",
+    "imageWidth": 4032,
+    "imageHeight": 3024,
+    "imageFormat": "jpg",
+    "collectionPaths": [
+      "/__starsky/01-dif/2018.01.01.17.00.01.jpg"
+    ],
+    "aperture": 2.2,
+    "shutterSpeed": "1/1748",
+    "isoSpeed": 25,
+    "software": "15.2.1",
+    "makeModel": "Apple|iPhone X|",
+    "make": "Apple",
+    "model": "iPhone X",
+    "focalLength": 4.199999809265137
+  }
+]
