@@ -232,10 +232,28 @@ namespace starsky.foundation.storage.Storage
 			{
 				stream.CopyTo(fileStream);
 			}
+
 			stream.Dispose();
 			return true;
 		}
-		
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			if ( !stream.CanRead ) return false;
+
+			stream.Seek(0, SeekOrigin.Begin);
+			
+			using (var fileStream = new FileStream(path, 
+				FileMode.OpenOrCreate, 
+				FileAccess.Write,FileShare.ReadWrite,
+				4096, 
+				FileOptions.Asynchronous))
+			{
+				stream.CopyTo(fileStream);
+			}
+			return true;
+		}
+
 		/// <summary>
 		/// Write async and disposed after
 		/// </summary>

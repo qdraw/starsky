@@ -78,7 +78,7 @@ namespace starsky.foundation.writemeta.Helpers
 				_hostFileSystemStorage.ExistFile(exeExifToolUnixFullFilePath);
 			if ( existExeExifToolUnixFullFilePath ) return true;
 			
-			TarBal.ExtractTarGz(tarGzArchiveFullFilePath, _appSettings.TempFolder);
+			new TarBal(_hostFileSystemStorage).ExtractTarGz(_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.TempFolder);
 			
 			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.TempFolder)
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
@@ -128,7 +128,6 @@ namespace starsky.foundation.writemeta.Helpers
 			{
 				var hash = BitConverter
 					.ToString(cryptoProvider.ComputeHash(buffer)).Replace("-","").ToLowerInvariant();
-
 				return checkSumOptions.AsEnumerable().Any(p => p.ToLowerInvariant() == hash);
 			}
 		}

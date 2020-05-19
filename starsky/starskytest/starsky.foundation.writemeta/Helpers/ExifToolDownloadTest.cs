@@ -28,8 +28,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		/// shasum -a 1 file.zip
 		/// </summary>
 		private const string ExampleCheckSum =
-			"SHA1(Image-ExifTool-11.99.tar.gz)= 650b7a50c57793f5842948e6e965b23b1e3e94fa\n" +
-			"SHA1(exiftool-11.99.zip)= ce31e257ce939b0006b48cb94d2761b27a051b8c\n" +
+			"SHA1(Image-ExifTool-11.99.tar.gz)= b386a6849ed5f911085cc56f37d20f127162b21c\n" +
+			"SHA1(exiftool-11.99.zip)= 681f38f9db269c1278441bf8362fee7dc11be77f\n" +
 			"SHA1(ExifTool-11.99.dmg)= 3d30a4846eab278387be51b91ef4121916375ded\n" +
 			"MD5 (Image-ExifTool-11.99.tar.gz) = 06b97602e0d71dc413863a905708f0c9\n" +
 			"MD5 (exiftool-11.99.zip) = 19b53eede582e809c115b69e83dbac5e\n" +
@@ -71,11 +71,10 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public async Task GetExifToolByOs()
 		{
-			var createAnExifToolWindows = new CreateAnExifToolWindows();
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(createAnExifToolWindows.StreamByteArray)},
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolUnix.BytesUnix)},
+				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
 				{"https://exiftool.org/checksums.txt", new ByteArrayContent(Encoding.ASCII.GetBytes(ExampleCheckSum))}
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
@@ -96,10 +95,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		[TestMethod]
 		public async Task StartDownloadForWindows_2Times()
 		{
-			var createAnExifToolWindows = new CreateAnExifToolWindows();
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(createAnExifToolWindows.StreamByteArray)}
+				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
@@ -110,7 +108,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// ByteArray content is Disposed afterwards
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(createAnExifToolWindows.StreamByteArray)}
+				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory);
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
@@ -125,7 +123,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolUnix.BytesUnix)}
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
@@ -136,7 +134,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			// ByteArray content is Disposed afterwards
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolUnix.BytesUnix)}
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory);
 			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForUnix(ExampleCheckSum);

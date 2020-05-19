@@ -2,28 +2,24 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.ArchiveFormats
 {
-    public static class TarBal
+    public class TarBal
     {
-        /// <summary>
-        /// Extracts a <i>.tar.gz</i> archive to the specified directory.
-        /// </summary>
-        /// <param name="filename">The <i>.tar.gz</i> to decompress and extract.</param>
-        /// <param name="outputDir">Output directory to write the files.</param>
-        public static void ExtractTarGz(string filename, string outputDir)
-        {
-            using (var stream = File.OpenRead(filename))
-                ExtractTarGz(stream, outputDir);
-        }
-
+	    private readonly IStorage _storage;
+	    public TarBal(IStorage storage)
+	    {
+		    _storage = storage;
+	    }
+	    
         /// <summary>
         /// Extracts a <i>.tar.gz</i> archive stream to the specified directory.
         /// </summary>
         /// <param name="stream">The <i>.tar.gz</i> to decompress and extract.</param>
         /// <param name="outputDir">Output directory to write the files.</param>
-        public static void ExtractTarGz(Stream stream, string outputDir)
+        public void ExtractTarGz(Stream stream, string outputDir)
         {
             // A GZipStream is not seekable, so copy it first to a MemoryStream
             using (var gzip = new GZipStream(stream, CompressionMode.Decompress))
@@ -48,20 +44,9 @@ namespace starsky.foundation.storage.ArchiveFormats
         /// <summary>
         /// Extractes a <c>tar</c> archive to the specified directory.
         /// </summary>
-        /// <param name="filename">The <i>.tar</i> to extract.</param>
-        /// <param name="outputDir">Output directory to write the files.</param>
-        public static void ExtractTar(string filename, string outputDir)
-        {
-            using (var stream = File.OpenRead(filename))
-                ExtractTar(stream, outputDir);
-        }
-
-        /// <summary>
-        /// Extractes a <c>tar</c> archive to the specified directory.
-        /// </summary>
         /// <param name="stream">The <i>.tar</i> to extract.</param>
         /// <param name="outputDir">Output directory to write the files.</param>
-        public static void ExtractTar(Stream stream, string outputDir)
+        public void ExtractTar(Stream stream, string outputDir)
         {
             var buffer = new byte[100];
             while (true)
@@ -78,16 +63,22 @@ namespace starsky.foundation.storage.ArchiveFormats
                 stream.Seek(376L, SeekOrigin.Current);
 
                 var output = Path.Combine(outputDir, name);
-                if (!Directory.Exists(Path.GetDirectoryName(output)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(output));
+                if (!_storage.ExistFolder(Path.GetDirectoryName(output)))
+	                _storage.CreateDirectory(Path.GetDirectoryName(output));
                 if (!name.EndsWith("/"))
                 {
-                    using (var str = File.Open(output, FileMode.OpenOrCreate, FileAccess.Write))
-                    {
-                        var buf = new byte[size];
-                        stream.Read(buf, 0, buf.Length);
-                        str.Write(buf, 0, buf.Length);
-                    }
+	                var str = new MemoryStream();
+	                var buf = new byte[size];
+	                stream.Read(buf, 0, buf.Length);
+	                str.Write(buf, 0, buf.Length);
+	                _storage.WriteStreamOpenOrCreate(str, output);
+	                
+                    // using (var str = File.Open(output, FileMode.OpenOrCreate, FileAccess.Write))
+                    // {
+                    //     var buf = new byte[size];
+                    //     stream.Read(buf, 0, buf.Length);
+                    //     str.Write(buf, 0, buf.Length);
+                    // }
                 }
 
                 var pos = stream.Position;

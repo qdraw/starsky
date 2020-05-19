@@ -76,8 +76,5 @@
     </ItemGroup>
     <ItemGroup>
       <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
-      <Content Include="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 </Project>

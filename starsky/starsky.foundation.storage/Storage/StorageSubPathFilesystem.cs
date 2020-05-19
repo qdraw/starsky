@@ -262,6 +262,11 @@ namespace starsky.foundation.storage.Storage
 			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
 		}
 
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			throw new NotImplementedException();
+		}
+
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);

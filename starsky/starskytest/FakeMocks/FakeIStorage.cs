@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -207,6 +206,11 @@ namespace starskytest.FakeMocks
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
 			MemoryStream stream1 = new MemoryStream(result);
 			return stream1;
+		}
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			throw new NotImplementedException();
 		}
 
 		public bool WriteStream(Stream stream, string path)
