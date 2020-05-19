@@ -90,7 +90,7 @@ describe("MenuDetailView", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       var component = mount(<MenuDetailView />)
       var item = component.find('[data-test="trash"]');
@@ -99,7 +99,7 @@ describe("MenuDetailView", () => {
         item.simulate('click');
       });
 
-      expect(spy).toBeCalledTimes(0);
+      expect(fetchPostSpy).toBeCalledTimes(0);
 
       act(() => {
         component.unmount();
@@ -339,8 +339,8 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
       });
-
     });
+
 
     it("rotate click", async () => {
       jest.useFakeTimers();
