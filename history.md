@@ -26,7 +26,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API  __not implemented__
 - [ ]   (Fixed) Bug rename unknown file does not work __not implemented__
-- [ ]   (Fixed) Bug upload or import gpx fails FileError __not implemented__
 - [ ]   (Fixed) starskygeocli -g 0 Not found __not implemented__
 
 # Importer, Epic (Work in Progress)
@@ -45,6 +44,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _Back-end_ Fix for `Exist_ExifToolPath` on first run
 - [x]   (Added)  _Back-end_ Include ExifTool on first run for Windows and Unix (Perl is needed on *nix)
 - [x]   (Fixed)  _Front-end_ Files that already are deleted is not shown visualy  Issue #26
+- [x]   (Fixed)  _Back-end_ Bug upload or import gpx fails FileError 
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version

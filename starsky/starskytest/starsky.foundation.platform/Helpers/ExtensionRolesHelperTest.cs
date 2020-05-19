@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -170,7 +171,6 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void Gpx_WithXmlPrefix()
 		{
-			var test = Encoding.ASCII.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 			
 			var gpxExample = Encoding.ASCII.GetBytes(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
@@ -179,6 +179,17 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
 		}
 
+		[TestMethod]
+		public void Gpx_Stream_WithXmlPrefix()
+		{
+			
+			var gpxExample = Encoding.ASCII.GetBytes(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\" ?><gpx version=\"1.1\" creator=\"Trails 4.06 - https://www.trails.io\"");
+			var ms = new MemoryStream(gpxExample);
+			var result = ExtensionRolesHelper.GetImageFormat(ms);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx,result);
+		}
+		
 		[TestMethod]
 		public void Gpx_WithXmlNoPrefix()
 		{
