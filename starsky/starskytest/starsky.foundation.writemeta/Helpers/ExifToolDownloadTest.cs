@@ -73,9 +73,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
-				{"https://exiftool.org/checksums.txt", new ByteArrayContent(Encoding.ASCII.GetBytes(ExampleCheckSum))}
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
@@ -97,21 +97,23 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForWindows();
 			Assert.IsTrue(result);
 			
 			// And run again
 			// ByteArray content is Disposed afterwards
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory);
-			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
+			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForWindows();
 			Assert.IsTrue(result2);
 			
 			_hostFileSystem.FolderDelete(ExifToolWindowsTempPath);
@@ -123,21 +125,23 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
 
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForUnix(ExampleCheckSum);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForUnix();
 			Assert.IsTrue(result);
 			
 			// And run again
 			// ByteArray content is Disposed afterwards
 			var fakeIHttpProvider2 = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
 			var httpClientHelper2 = new HttpClientHelper(fakeIHttpProvider2, _serviceScopeFactory);
-			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForUnix(ExampleCheckSum);
+			var result2 = await new ExifToolDownload(httpClientHelper2,_appSettings ).StartDownloadForUnix();
 			Assert.IsTrue(result2);
 
 			_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
@@ -149,10 +153,11 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForUnix(ExampleCheckSum);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForUnix();
 			Assert.IsFalse(result);
 		}
 
@@ -162,12 +167,13 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
 				{
 					"https://exiftool.org/exiftool-11.99.zip", new StringContent("FAIL")
 				}
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForWindows();
 			Assert.IsFalse(result);
 		}
 	}

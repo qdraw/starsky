@@ -22,6 +22,8 @@ namespace starsky.foundation.writemeta.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
 
+		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
+		
 		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings)
 		{
 			_httpClientHelper = httpClientHelper;
@@ -31,22 +33,27 @@ namespace starsky.foundation.writemeta.Helpers
 
 		public async Task<bool> DownloadExifTool()
 		{
-			var checksums = await _httpClientHelper.ReadString("https://exiftool.org/checksums.txt");
-			if ( !checksums.Key )
+			if ( _appSettings.IsWindows &&
+			     !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) )
 			{
-				return false;
+				return await StartDownloadForWindows();
 			}
-			if ( _appSettings.IsWindows )
+
+			if ( !_appSettings.IsWindows &&
+			     !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()))
 			{
-				return await StartDownloadForWindows(checksums.Value);
+				return await StartDownloadForUnix();
 			}
-			return await StartDownloadForUnix(checksums.Value);
+
+			return true;
 		}
 
-		internal async Task<bool> StartDownloadForUnix(string checksumsValue)
+		internal async Task<bool> StartDownloadForUnix()
 		{
-			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksumsValue);
-			return await DownloadForUnix(matchExifToolForUnixName, GetChecksumsFromTextFile(checksumsValue));
+			var checksums = await _httpClientHelper.ReadString(CheckSumLocation);
+			if ( !checksums.Key ) return false;
+			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value);
+			return await DownloadForUnix(matchExifToolForUnixName, GetChecksumsFromTextFile(checksums.Value));
 		}
 		
 		internal string GetUnixTarGzFromChecksum(string checksumsValue)
@@ -55,13 +62,19 @@ namespace starsky.foundation.writemeta.Helpers
 			var regexExifToolForWindowsName = new Regex(@"(?<=SHA1\()Image-ExifTool-[0-9\.]+\.tar.gz");
 			return regexExifToolForWindowsName.Match(checksumsValue).Value;
 		}
+
+		private string ExeExifToolUnixFullFilePath()
+		{
+			return Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-unix"), "exiftool");
+		}
 		
 		private async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
 			string[] getChecksumsFromTextFile)
 		{
 
+			if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return true;
+			
 			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
-
 			var unixDownloaded = await _httpClientHelper.Download(
 				$"https://exiftool.org/{matchExifToolForUnixName}", tarGzArchiveFullFilePath);
 			if ( !unixDownloaded ) return false;
@@ -70,38 +83,34 @@ namespace starsky.foundation.writemeta.Helpers
 				throw new HttpRequestException($"checksum for {tarGzArchiveFullFilePath} is not valid");
 			}
 			
-			var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder,"exiftool-unix");
-			var exeExifToolUnixFullFilePath =
-				Path.Combine(exifToolUnixFolderFullFilePath, "exiftool");
-
-			var existExeExifToolUnixFullFilePath =
-				_hostFileSystemStorage.ExistFile(exeExifToolUnixFullFilePath);
-			if ( existExeExifToolUnixFullFilePath ) return true;
-			
 			new TarBal(_hostFileSystemStorage).ExtractTarGz(_hostFileSystemStorage.ReadStream(tarGzArchiveFullFilePath), _appSettings.TempFolder);
 			
 			var imageExifToolVersionFolder = _hostFileSystemStorage.GetDirectories(_appSettings.TempFolder)
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
 			if ( imageExifToolVersionFolder != null )
 			{
+				var exifToolUnixFolderFullFilePath =
+					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
 
 			// need to check again
-			if ( !_hostFileSystemStorage.ExistFile(exeExifToolUnixFullFilePath) ) return false;
+			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 
 			if ( _appSettings.IsWindows ) return true;
 			
-			var result = await Command.Run("chmod","0755", $"{exeExifToolUnixFullFilePath}").Task;
+			var result = await Command.Run("chmod","0755", $"{ExeExifToolUnixFullFilePath()}").Task;
 			if ( result.Success ) return true;
 			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
 			return false;
 		}
 
-		internal async Task<bool> StartDownloadForWindows(string checksumsValue)
+		internal async Task<bool> StartDownloadForWindows()
 		{
-			var matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksumsValue);
-			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksumsValue));
+			var checksums = await _httpClientHelper.ReadString(CheckSumLocation);
+			if ( !checksums.Key ) return false;
+			var matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value);
+			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksums.Value));
 		}
 
 		internal string GetWindowsZipFromChecksum(string checksumsValue)
@@ -132,13 +141,18 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 		}
 
+		private string ExeExifToolWindowsFullFilePath()
+		{
+			return Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-windows"), "exiftool.exe");
+		}
+		
 		private async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
 			string[] getChecksumsFromTextFile)
 		{
+			if ( _hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ) return true;
+
 			var zipArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.zip");
 			var windowsExifToolFolder = Path.Combine(_appSettings.TempFolder, "exiftool-windows");
-
-			if ( _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder, "exiftool.exe")) ) return true;
 			
 			var windowsDownloaded = await _httpClientHelper.Download(
 				$"https://exiftool.org/{matchExifToolForWindowsName}", zipArchiveFullFilePath);

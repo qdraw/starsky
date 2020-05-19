@@ -10,8 +10,9 @@ namespace starskytest.FakeMocks
 	{
 		private readonly Dictionary<string, HttpContent> _inputDictionary;
 		
-		public FakeIHttpProvider(Dictionary<string,HttpContent> inputDictionary)
+		public FakeIHttpProvider(Dictionary<string,HttpContent> inputDictionary = null)
 		{
+			if ( inputDictionary == null ) inputDictionary = new Dictionary<string, HttpContent>();
 			_inputDictionary = inputDictionary;
 		}
 		
@@ -21,7 +22,9 @@ namespace starskytest.FakeMocks
 		{
 			if ( !_inputDictionary.ContainsKey(requestUri) )
 			{
-				return new HttpResponseMessage(HttpStatusCode.NotFound);
+				return new HttpResponseMessage(HttpStatusCode.NotFound){
+					Content = new StringContent("Not Found")
+				};
 			}
 
 			var response =
