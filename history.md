@@ -31,7 +31,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # StarskyApp, Epic (Work in Progress)
-- [ ]   (Added)  _Back-end_ Fix for `Exist_ExifToolPath` on first run
 - [ ]   (Added)  _Back-end_ Option for shared `AppSettings`
 - [ ]   (Added)  _Back-end_ API to update some `appSettings` from the UI
 
@@ -40,6 +39,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _Tools_ app-version-update.js, add more folders and check input for matching semver
 - [x]   (Added)  _Tools_ docs.js styling update
 - [x]   (Added)  _Tools_ show `/api/health` results in Application Insights when it fails
+- [x]   (Added)  _Back-end_ Fix for `Exist_ExifToolPath` on first run
+- [x]   (Added)  _Back-end_ Include ExifTool on first run for Windows and Unix (Perl is needed on *nix)
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version

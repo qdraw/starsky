@@ -18,7 +18,6 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	[TestClass]
 	public class ExifToolDownloadTest
 	{
-		private readonly IServiceScope _serviceScope;
 		private IServiceScopeFactory _serviceScopeFactory;
 		private AppSettings _appSettings;
 		private IStorage _hostFileSystem;
