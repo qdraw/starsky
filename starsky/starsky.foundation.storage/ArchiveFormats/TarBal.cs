@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.ArchiveFormats
@@ -53,18 +54,17 @@ namespace starsky.foundation.storage.ArchiveFormats
             {
                 stream.Read(buffer, 0, 100);
                 var name = Encoding.ASCII.GetString(buffer).Trim('\0');
-                if (name == null || name == "")
+                if (string.IsNullOrEmpty(name))
                     break;
                 stream.Seek(24, SeekOrigin.Current);
                 stream.Read(buffer, 0, 12);
                 var size = Convert.ToInt64(Encoding.UTF8.GetString(buffer, 0, 12).Trim('\0').Trim(), 8);
 
-
                 stream.Seek(376L, SeekOrigin.Current);
 
-                var output = Path.Combine(outputDir, name);
-                if (!_storage.ExistFolder(Path.GetDirectoryName(output)))
-	                _storage.CreateDirectory(Path.GetDirectoryName(output));
+                var output = $"{outputDir}/{name}";
+                if (!_storage.ExistFolder(FilenamesHelper.GetParentPath(output)))
+	                _storage.CreateDirectory(FilenamesHelper.GetParentPath(output));
                 if (!name.EndsWith("/"))
                 {
 	                var str = new MemoryStream();
