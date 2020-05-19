@@ -47,6 +47,9 @@ namespace starsky.foundation.storage.Interfaces
 		Stream ReadStream(string path, int maxRead = -1);
 		
 		bool WriteStream(Stream stream, string path);
+		bool WriteStreamOpenOrCreate(Stream stream, string path);
+
+		
 		Task<bool> WriteStreamAsync(Stream stream, string path);
 	}
 }

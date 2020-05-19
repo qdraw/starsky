@@ -14,7 +14,7 @@ using starskycore.Helpers;
 
 namespace starsky.foundation.writemeta.Helpers
 {
-    public partial class ExifToolCmdHelper
+    public class ExifToolCmdHelper
     {
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
@@ -287,7 +287,8 @@ namespace starsky.foundation.writemeta.Helpers
 		    {
 				// add space before
 			    command +=
-				    " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" -HistoryParameters=\"\" -PMVersion=\"\" ";
+				    " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" " +
+				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
 		    }
 		    return command;
 	    }
@@ -306,7 +307,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 	    private static string UpdateColorClassCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) && updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
+			if (comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) && 
+			    updateModel.ColorClass != ColorClassParser.Color.DoNotChange)
 			{
 				var intColorClass = (int) updateModel.ColorClass;
 	
@@ -322,7 +324,8 @@ namespace starsky.foundation.writemeta.Helpers
 		    FileIndexItem updateModel)
 	    {
 		    // // exiftool -Orientation#=5
-		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation).ToLowerInvariant() ) && updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
+		    if (comparedNames.Contains( nameof(FileIndexItem.Orientation).ToLowerInvariant() ) && 
+		        updateModel.Orientation != FileIndexItem.Rotation.DoNotChange)
 		    {
 			    var intOrientation = (int) updateModel.Orientation;
 			    command += " \"-Orientation#="+ intOrientation +"\" ";

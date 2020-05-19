@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using starsky.foundation.platform.Helpers;
@@ -34,9 +35,10 @@ namespace starsky.foundation.platform.Models
             if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
             
             // AddMemoryCache defaults in prop
+            SetDefaultExifToolPath();
         }
 
-	    public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
+        public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskyadmincli", "starsky")
 		    .Replace("starskysynccli", "starsky")
 		    .Replace("starsky.foundation.database", "starsky")
@@ -260,7 +262,28 @@ namespace starsky.foundation.platform.Models
 	        set => _tempFolder = PathHelper.AddBackslash(value);
         }
 
+        /// <summary>
+        /// Is the host of the Application Windows
+        /// </summary>
+        public bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+        /// <summary>
+        /// Set the default location to ExifTool
+        /// Run in the ctor of AppSettings
+        /// </summary>
+        private void SetDefaultExifToolPath()
+        {
+	        // ReSharper disable StringLiteralTypo
+	        if (IsWindows && string.IsNullOrEmpty(ExifToolPath)  )
+	        {
+		        ExifToolPath = Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
+	        }
+	        else if (!IsWindows && string.IsNullOrEmpty(ExifToolPath) )
+	        {
+		        ExifToolPath = Path.Combine(TempFolder, "exiftool-unix", "exiftool");
+	        }
+	        // ReSharper restore StringLiteralTypo
+        }
         public string ExifToolPath { get; set; }
         
         // C# 6+ required for this

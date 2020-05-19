@@ -26,19 +26,7 @@ git clone "https://bitbucket.org/qdraw/starsky.git"
 
 2.  Get the `dotnet` 3.1.201 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
-3.  Download and install [ExifTool by Phil Harvey](https://www.sno.phy.queensu.ca/~phil/exiftool/)
-
-```sh
-brew install exiftool
-```
-
-Or using Chocolatey under Windows:
-
-```cmd
-choco install exiftool
-```   
-
-4. Make a build of all the projects and run the tests
+3. Make a build of all the projects and run the tests
 from the root folder of the repository
 
 _When using powershell:_
@@ -52,17 +40,7 @@ _Or using bash (on Linux and Mac OS)_
     ./build.sh
 ```
 
-4.  Link `starsky/starsky/appsettings.json` to the exiftool executable
-
->>   Windows: use double escape `\\` in config directory paths
-
-```json
-{
-    "App": {
-        "ExifToolPath": "/usr/bin/exiftool",
-    }
-}   
-```
+4.  Check configuation `starsky/starsky/appsettings.json` 
 
 >>   Tip: You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 
@@ -117,20 +95,12 @@ powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
 sudo apt-get install curl libunwind8 gettext apt-transport-https tzdata
 ```
 
-6.  On the Raspi, install Exiftool
+6. (Optional) On the Raspi, install Exiftool
+
+ExifTool is installed on the first run. When you use system ExifTool you need to update the AppSettings
 
 ```sh
 sudo apt-get install libimage-exiftool-perl
-```
-
-7.  Setup `appsettings.json` configuration. This is the most basic configuration. There are more options available
-
-```json
-{
-    "App": {
-        "ExifToolPath": "/usr/bin/exiftool",
-    }
-}   
 ```
 
 8.  Run the Starsky web interface

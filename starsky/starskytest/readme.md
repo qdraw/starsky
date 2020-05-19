@@ -20,7 +20,7 @@
 
 To know that the application is working like expected, there are test create.  Starksy has unit tests for the C# application.
 Those unit test does not require any configuration or external dependencies like a webservice.
-The main application has Exiftool as external dependency, but you don't need this for the starskyTest.
+The main application has Exiftool as external dependency that is installed automatically, but you don't need this for the starskyTest.
 
 ### With Cake
 

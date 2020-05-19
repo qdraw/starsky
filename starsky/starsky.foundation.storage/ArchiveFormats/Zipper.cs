@@ -4,7 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using starsky.foundation.platform.Helpers;
 
-namespace starskycore.Helpers
+namespace starsky.foundation.storage.ArchiveFormats
 {
 	public class Zipper
 	{

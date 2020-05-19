@@ -39,7 +39,6 @@ The default structure in `appsettings.json` is:
     "StorageFolder": "/data/photodirectory/storage",
     "DatabaseType": "sqlite",
     "DatabaseConnection": "Data Source=data.db",
-    "ExifToolPath": "/usr/local/bin/exiftool",
     "Structure": "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
     "ExifToolImportXmpCreate": "true"

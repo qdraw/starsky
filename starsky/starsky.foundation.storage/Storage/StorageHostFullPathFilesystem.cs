@@ -36,7 +36,7 @@ namespace starsky.foundation.storage.Storage
 		
 		public void CreateDirectory(string path)
 		{
-			throw new System.NotImplementedException();
+			Directory.CreateDirectory(path);
 		}
 
 		public bool FolderDelete(string path)
@@ -232,10 +232,28 @@ namespace starsky.foundation.storage.Storage
 			{
 				stream.CopyTo(fileStream);
 			}
+
 			stream.Dispose();
 			return true;
 		}
-		
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			if ( !stream.CanRead ) return false;
+
+			stream.Seek(0, SeekOrigin.Begin);
+			
+			using (var fileStream = new FileStream(path, 
+				FileMode.OpenOrCreate, 
+				FileAccess.Write,FileShare.ReadWrite,
+				4096, 
+				FileOptions.Asynchronous))
+			{
+				stream.CopyTo(fileStream);
+			}
+			return true;
+		}
+
 		/// <summary>
 		/// Write async and disposed after
 		/// </summary>

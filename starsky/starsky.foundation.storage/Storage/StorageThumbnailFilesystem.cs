@@ -128,6 +128,11 @@ namespace starsky.foundation.storage.Storage
 				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg"));
 		}
 
+		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		{
+			throw new System.NotImplementedException();
+		}
+
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			var fullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");

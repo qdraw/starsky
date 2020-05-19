@@ -37,13 +37,13 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  Command line argumements in the Cli applications to set in-app environment variables
 
 ### Required settings to start
-1.  `ExifToolPath` - A path to Exiftool.exe
+1. There are __no__ settings required
 ### Recommend settings
-2.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
-3.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
-4.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
-5.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
-6.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
+1.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
+2.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
+3.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
+4.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
+5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
@@ -56,6 +56,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 9.  `Verbose` - show more console logging  _(default false)_
 10. `WebFtp` - used by starskyWebFtpCli
 11. `PublishProfiles` - used by starskyWebHtmlCli
+12.  `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 
 ### Appsettings.json example
 ```json
@@ -65,7 +66,6 @@ You could use machine specific configuration files: appsettings.{machinename}.js
     "StorageFolder": "Y:\\data\\photodirectory\\storage",
     "DatabaseType": "mysql",
     "DatabaseConnection": "Server=mysqlserver.nl;database=dbname;uid=username;pwd=password;",
-    "ExifToolPath": "C:\\exiftool.exe",
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
     "AddMemoryCache": "true",
@@ -159,7 +159,8 @@ When the UI starts there is an Health API check to make sure that some important
 #### Not exist errors
 - __Exist_StorageFolder__ The Storage Folder does not exist, please create it first.
 - __Exist_TempFolder__ The Temp Folder does not exist, please create it first.
-- __Exist_ExifToolPath__ ExifTool is not linked, you need this to write meta data to files
+- __Exist_ExifToolPath__ ExifTool is not linked, you need this to write meta data to files.ExifTool.
+    Try to remove the _temp folder_ and run the Application again.
 - __Exist_ThumbnailTempFolder__ The Thumbnail cache Folder does not exist, please create it first.
 
 #### DbContext, Mysql or Sqlite
