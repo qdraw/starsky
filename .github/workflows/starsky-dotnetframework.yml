@@ -5,9 +5,13 @@ on:
     branches: [ master ]
     paths:
     - 'starsky.netframework/**'
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
   pull_request:
     branches: [ master ]
     paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
     - 'starsky.netframework/**'
     - '.github/workflows/**'
 
