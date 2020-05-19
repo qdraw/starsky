@@ -142,5 +142,33 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 
 			_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(HttpRequestException))]
+		public async Task StartDownloadForUnix_WrongHash()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForUnix(ExampleCheckSum);
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(HttpRequestException))]
+		public async Task StartDownloadForWindows_WrongHash()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{
+					"https://exiftool.org/exiftool-11.99.zip", new StringContent("FAIL")
+				}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings ).StartDownloadForWindows(ExampleCheckSum);
+			Assert.IsFalse(result);
+		}
 	}
 }
