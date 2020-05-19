@@ -167,5 +167,11 @@ namespace starskytest.Helpers
 			Assert.AreEqual(false,output.Key);
 		}
 
+		[TestMethod]
+		[ExpectedException(typeof(EndOfStreamException))]
+		public async Task HttpClientHelper_Download_NoStorage()
+		{
+			await new HttpClientHelper(new FakeIHttpProvider(), null).Download("t","T");
+		}
 	}
 }
