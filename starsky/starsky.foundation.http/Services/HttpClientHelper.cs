@@ -80,7 +80,7 @@ namespace starsky.foundation.http.Services
 		/// <returns></returns>
 		public async Task<bool> Download(string sourceHttpUrl, string fullLocalPath)
 		{
-			if ( _storage == null ) throw new ArgumentNullException(nameof(_storage));
+			if ( _storage == null ) throw new EndOfStreamException("is null " + nameof(_storage) );
 
             Uri sourceUri = new Uri(sourceHttpUrl);
 

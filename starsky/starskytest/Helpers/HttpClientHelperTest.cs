@@ -106,7 +106,66 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,storageProvider.IsFolderOrFile(path));
 			storageProvider.FileDelete(path);
 		}
+		
+		[TestMethod]
+		public async Task HttpClientHelper_ReadString()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
 
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+
+			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
+			
+			Assert.AreEqual(true,output.Key);
+		}
+
+		[TestMethod]
+		public async Task HttpClientHelper_HTTP_Not_ReadString()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+
+			// http is not used anymore
+			var output = await httpClientHelper.ReadString("http://qdraw.nl");
+			Assert.AreEqual(false,output.Key);
+		}
+		
+		[TestMethod]
+		public async Task HttpClientHelper_404NotFound_ReadString_Test()
+		{
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+
+			var output = await httpClientHelper.ReadString("https://download.geonames.org/404");
+			Assert.AreEqual(false,output.Key);
+		}
 
 	}
 }
