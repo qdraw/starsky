@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Internal;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -210,7 +211,30 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)
 		{
-			throw new NotImplementedException();
+			path = PathHelper.PrefixDbSlash(path);
+
+			if ( !_outputSubPathFiles.Contains(path) )
+			{
+				_outputSubPathFiles.Add(path);
+			}
+			
+			stream.Seek(0, SeekOrigin.Begin);
+
+			using ( MemoryStream ms = new MemoryStream() )
+			{
+				stream.CopyTo(ms);
+				var byteArray =  ms.ToArray();
+
+				if ( _byteList.Any(p => p.Key == path) )
+				{
+					_byteList[path] = byteArray;
+					return true;
+				}
+				
+				_byteList.Add(path, byteArray);
+				if ( byteArray.Length == 0 ) throw new FileLoadException($"FakeIStorage WriteStream => path {path} is 0 bytes");
+			}
+			return true;
 		}
 
 		public bool WriteStream(Stream stream, string path)
