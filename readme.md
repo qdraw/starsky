@@ -1,4 +1,4 @@
-# Starsky
+# Technical Readme
 ## List of __[Starsky](readme.md)__ Projects
  * [inotify-settings](inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
@@ -16,18 +16,19 @@
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
-
-## Starsky   
+# What is Starsky?
 Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a cloud service. You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
 
+## Technical Readme   
+
 ### Install instructions for the server
-This section deals with how to set up a Starsky system on-premises. You will find guides to all Starsky software for installation on-premises here. 
+This section deals with how to set up a Starsky system on-premises. You will find guides to all Starsky software for installation on-premises here.
 
 ### General Project
-The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first. 
+The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first.
 
 ### Command line tools
-The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured. 
+The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
 
 To reverse geo code location information in images use the UI or the [Geo CLI](starsky/starskygeocli/readme.md). Use your photo to track location and match this with your camera.With this tool you add a location trail (gpx) to a folder and match the datetime to images in the folder.
 

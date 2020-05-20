@@ -4,11 +4,11 @@
   "description": "",
   "main": "docs.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm ci && node docs.js",
-    "start": "node docs.js"
+    "start": "node docs.js && node server-develop.js",
+    "build:dev": "node docs.js"
   },
-  "author": "",
+  "author": "Starsky",
   "license": "ISC",
   "dependencies": {
     "showdown": "^1.9.1"

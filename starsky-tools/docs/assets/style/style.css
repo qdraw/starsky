@@ -40,7 +40,7 @@ q:before, q:after {
 
 table {
   border-collapse: collapse;
-  border-spacing: 0; 
+  border-spacing: 0;
 }
 
 em, i {
@@ -143,7 +143,7 @@ body {
   width: 25px;
   margin-top:5px;
   height: 25px;
-  background-image: url('images/baseline-searcher-detective-white.svg');
+  background-image: url('../images/baseline-searcher-detective-white.svg');
 }
 
 .docs-header .wrapper .name {
@@ -160,6 +160,17 @@ body {
   font-family: "Gloriola Std", sans-serif;
   font-weight: 100;
   font-size: 16px;
+}
+
+
+.breadcrumb {
+  color: #888;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ccc;
+}
+
+.breadcrumb a {
+  color: #888;
 }
 
 
@@ -185,6 +196,9 @@ body {
 	}
 }
 
+.container img {
+  max-width: 100%;
+}
 
 .container .entry-content {
     margin-top: 80px;
@@ -308,7 +322,7 @@ table th {
   table caption {
     font-size: 1.3em;
   }
-  
+
   table thead {
     border: none;
     clip: rect(0 0 0 0);
@@ -319,20 +333,20 @@ table th {
     position: absolute;
     width: 1px;
   }
-  
+
   table tr {
     border-bottom: 3px solid #ddd;
     display: block;
     margin-bottom: .625em;
   }
-  
+
   table td {
     border-bottom: 1px solid #ddd;
     display: block;
     /* font-size: .8em; */
     text-align: left;
   }
-  
+
   table td::before {
     /*
     * aria-label has no advantage, it won't be read inside a table
@@ -343,7 +357,7 @@ table th {
     font-weight: bold;
     text-transform: uppercase;
   }
-  
+
   table td:last-child {
     border-bottom: 0;
   }
