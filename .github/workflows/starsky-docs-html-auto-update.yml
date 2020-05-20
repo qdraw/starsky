@@ -1,9 +1,9 @@
-name: Lint source code
+name: Docs Update
 on: push
 
 jobs: 
   run:
-    name: Update html docs
+    name: Generate HTML
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
@@ -27,7 +27,7 @@ jobs:
       with:
         author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
-        message: "Docs html update"
+        message: "[DocsUpdateBot] Auto commited html update"
         add: "docs/**"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
