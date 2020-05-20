@@ -4,7 +4,7 @@
   "description": "",
   "main": "docs.js",
   "scripts": {
-    "build": "npm ci && node docs.js",
+    "build": "npm ci && node docs.js && node copy.js",
     "start": "node docs.js && node server-develop.js",
     "build:dev": "node docs.js"
   },
