@@ -1,0 +1,134 @@
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NUGET_XMLDOC_MODE: skip
+  CI: true
+
+pool:
+  vmImage: windows-2019
+  demands:
+  - msbuild
+  - java
+
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - feature/*
+  paths:
+      include:
+      - starsky/*
+      exclude:
+      - starskyapp/*
+      - starsky-tools/*
+      - starsky.netframework/*
+
+# specific path build
+pr:
+  branches:
+    exclude:
+    - master
+  paths:
+    include:
+    - starsky/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky.netframework/*
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 3.1.201'
+  enabled: true
+  inputs:
+    packageType: sdk
+    version: 3.1.201
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet tool restore'
+  inputs:
+    command: custom
+    custom: tool
+    arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+
+- task: PowerShell@2
+  displayName: 'Cake Client'
+  enabled: true
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake SonarBuildTest'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="SonarBuildTest"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake BuildNetCoreRuntimeSpecific'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="BuildNetCoreRuntimeSpecific"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake PublishWeb'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="PublishWeb"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake CoverageDocs'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="CoverageDocs"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PowerShell@2
+  displayName: 'Cake Zip'
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-runtime="linux-arm,linux-arm64" -target="Zip"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage from $(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: linux-arm'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm.zip'
+    ArtifactName: 'linux-arm'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: linux-arm64'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm64.zip'
+    ArtifactName: 'linux-arm64'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: generic-netcore'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-generic-netcore.zip'
+    ArtifactName: 'generic-netcore'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: coverage.report zip'
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-report.zip'
+    ArtifactName: coverage.report

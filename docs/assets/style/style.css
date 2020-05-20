@@ -1,0 +1,364 @@
+/* HTML RESET */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, picture {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+em, i {
+  font-style: italic; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; }
+
+a {
+  color:#263238
+}
+
+
+@font-face {
+  font-family: 'Gloriola Std';
+  font-style: normal;
+  font-weight: 100;
+  font-display: auto;
+  src: local("Gloriola Std Light"), local("Gloriola-Std-Light"), url(../fonts/GloriolaStd-Light.woff2) format("woff2"), url(../fonts/GloriolaStd-Light.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+@font-face {
+  font-family: 'Gloriola Std';
+  font-style: normal;
+  font-weight: 300;
+  font-display: auto;
+  src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"), url(../fonts/GloriolaStd-Medium.woff2) format("woff2"), url(../fonts/GloriolaStd-Medium.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+@font-face {
+  font-family: 'Gloriola Std';
+  font-style: normal;
+  font-weight: 800;
+  font-display: auto;
+  src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"), url(../fonts/GloriolaStd-Bold.woff2) format("woff2"), url(../fonts/GloriolaStd-Bold.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  font-family: 'Gloriola Std', sans-serif;
+  /* only for firefox*/
+  scrollbar-color: #263238 #ECEFF1;
+}
+
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  line-height: 1;
+  font-family: "Gloriola Std", sans-serif;
+  font-weight: 100;
+  font-size: 16px;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+}
+
+
+#root,
+#app {
+    margin-top: 50px;
+}
+
+
+
+/* HEADER */
+/* MENU */
+
+.docs-header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 50px;
+  z-index: 500;
+  background: #263238;
+  background-color: rgb(38, 50, 56);
+  color: #fff;
+  transition: background .4s ease-in-out;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+}
+
+.docs-header.header--bluegray700 {
+  background-color: #455a64;
+}
+
+.docs-header .wrapper {
+  height: 100%;
+  line-height: 46px;
+  margin-top:4px;
+}
+
+.docs-header .wrapper .detective{
+  margin-left:25px;
+  display: inline-block;
+  width: 25px;
+  margin-top:5px;
+  height: 25px;
+  background-image: url('../images/baseline-searcher-detective-white.svg');
+}
+
+.docs-header .wrapper .name {
+  display: inline-block;
+  margin-top:-6px;
+  vertical-align: middle;
+  color: white;
+  text-decoration: none;
+}
+
+/* CONTAINER */
+body {
+  margin-top: 30px;
+  font-family: "Gloriola Std", sans-serif;
+  font-weight: 100;
+  font-size: 16px;
+}
+
+
+.breadcrumb {
+  color: #888;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ccc;
+}
+
+.breadcrumb a {
+  color: #888;
+}
+
+
+.container {
+    width: 960px;
+    margin: 0px auto 0px auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1000px) {
+	.container{
+		width: 97%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+@media (max-width: 415px) {
+	.container{
+		width: 96%;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
+}
+
+.container img {
+  max-width: 100%;
+}
+
+.container .entry-content {
+    margin-top: 80px;
+    line-height: 1.6;
+}
+
+.container .entry-content strong {
+  font-weight: 300;
+  /* font-weight: bold; */
+}
+.container .entry-content ul > li {
+  list-style: square;
+  margin-left: 16px;
+  padding-left: 5px;
+}
+
+.container .entry-content ol > li {
+  list-style: decimal;
+  margin-left: 16px;
+  padding-left: 5px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    margin-top: 20px;
+}
+
+h1 {
+    overflow-wrap: break-word;
+    color: #263238;
+    font-size: 25pt;
+    text-decoration: none;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+h2 {
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 27px;
+    line-height: 1.4;
+}
+h3 {
+    font-weight: 300;
+    font-size: 22px;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+
+h4 {
+    font-weight: 300;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    font-size: 18px;
+}
+
+.container .entry-content code {
+  font-family: monospace,monospace;
+	word-break: break-all;
+}
+
+pre {
+	padding: .66001rem 9.5px 9.5px;
+  line-height: 2rem;
+  font-size: 12px;
+	margin: 0 0 10px;
+	background: linear-gradient(to bottom,#fff 0,#fff .75rem,#f5f7fa .75rem,#f5f7fa 2.75rem,#fff 2.75rem,#fff 4rem);
+	background-size: 100% 4rem;
+	border-color: #D3DAEA;
+	border: 1px solid #ccc;
+	word-break: break-all;
+	word-wrap: break-word;
+	color: #333;
+}
+pre code {
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+
+
+/* tables */
+table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+}
+
+table th {
+  text-transform: uppercase;
+  text-align: left;
+}
+
+@media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    /* font-size: .8em; */
+    text-align: left;
+  }
+
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
