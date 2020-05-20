@@ -344,6 +344,10 @@ starsky-tools/docs/*.html
 starsky-tools/docs/*/*.html
 starsky-tools/docs/*/*/*.html
 starsky-tools/docs/*/*/*/*.html
+starsky-tools/docs/*.jpg
+starsky-tools/docs/*/*.jpg
+starsky-tools/docs/*/*/*.jpg
+starsky-tools/docs/*/*/*/*.jpg
 
 **/osx.10.12-x64/*
 **/linux-arm/*
