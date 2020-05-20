@@ -17,24 +17,25 @@
  * __[starskyapp](../starskyapp/readme.md) Desktop Application (Pre-alpha code)__
 
 
-## Pre alpha docs,
-please add build and install instructions
+## Build instructions
 
-# Install Node packages
+The following steps are needed to compile the desktop application
+
+## Install Node packages
 ```
 npm ci
 ```
 
-# Building Starsky as dependency first
+## Building Starsky as dependency first
 
-## For Windows
+### For Windows
 
 _When running bash_
 ```bash
 ../starsky/build.sh --Runtime=win7-x86
 ```
 
-## For Mac OS
+### For Mac OS
 
 _When running bash_
 ```bash
@@ -42,16 +43,16 @@ _When running bash_
 ```
 
 
-# Build Electron
+## Build Electron
 
-## For Windows
+### For Windows
 
 _When running bash_
 ```bash
 npm run windows
 ```
 
-## For Mac OS
+### For Mac OS
 
 _When running bash_
 ```bash
