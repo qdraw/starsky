@@ -1,0 +1,31 @@
+name: Lint source code
+on: push
+
+jobs: 
+  run:
+    name: Update html docs
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    
+    - name: Install dependencies
+      run: npm install
+
+    - name: Update source code
+      run: eslint "src/**" --fix
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v4
+      with:
+        author_name: Docs update bot
+        author_email: qdraw@users.noreply.github.com
+        message: "Your commit message"
+        add: "docs/**"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
