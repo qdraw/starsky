@@ -14,16 +14,18 @@ jobs:
       with:
         node-version: 12.x
     
-    - name: Install dependencies
-      run: npm install
-
-    - name: Update source code
-      run: eslint "src/**" --fix
+    - name: NpmCi
+      working-directory: ./starsky-tools/docs
+      run: npm ci
+      
+    - name: NpmBuild
+      working-directory: ./starsky-tools/docs
+      run: npm run build
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
-        author_name: Docs update bot
+        author_name: Docs html update
         author_email: qdraw@users.noreply.github.com
         message: "Your commit message"
         add: "docs/**"
