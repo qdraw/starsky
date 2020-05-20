@@ -25,9 +25,9 @@ jobs:
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
-        author_name: Docs html update
+        author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
-        message: "Your commit message"
+        message: "Docs html update"
         add: "docs/**"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
