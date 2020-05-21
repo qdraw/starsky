@@ -6,6 +6,7 @@ const getOsKey = require('./os-type').getOsKey
 const isPackaged = require('./os-type').isPackaged
 const readline = require('readline');
 const { app } = require('electron')
+const isLegacyMacOS = require('./os-type').isLegacyMacOS
 
 function getStarskyPath() {
 
@@ -44,6 +45,12 @@ function getStarskyPath() {
 }
 
 function setupChildProcess() {
+
+    if ( isLegacyMacOS() ) {
+        console.log("OS Not supported, only in remote mode");
+        return;
+    }
+
     var starskyChild;
     getStarskyPath().then((starskyPath) => {
       starskyChild = spawn(starskyPath, {
