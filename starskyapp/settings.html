@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title>Settings</title>
+</head>
+<body>
+
+    <form class="switch-field">
+        <input type="radio" id="switch_local" name="switchToggle" value="Local" checked="" onchange="changeRemoteToggle(false)">
+        <label for="switch_local">Local</label>
+        <input type="radio" id="switch_remote" name="switchToggle" value="Remote" onchange="changeRemoteToggle(true)">
+        <label for="switch_remote">Remote</label>
+    </form>
+
+    <br />
+
+    <form>
+        <label for="remote_location">Url:</label><br />
+        <input type="text" id="remote_location" disabled name="lname" onchange="changeRemoteLocation(this.value)">
+        <div id="locationOk"></div>
+        <span>Do enter the main domain starsky is running on</span>
+    </form>
+
+
+    <script>
+
+        function changeRemoteToggle(isRemote) {
+            window.api.send("settings", {
+                "remote": isRemote,
+                "location": document.querySelector("#remote_location").value
+            });
+        }
+        function changeRemoteLocation(location) {
+            window.api.send("settings", {
+                "remote": document.querySelector("#switch_remote").checked,
+                "location": location
+            });
+        }
+
+        window.api.receive("settings", (data) => {
+            console.log(data);
+
+            if(data && data.remote !== undefined) {
+                console.log(data);
+
+                if (data.remote) {
+                    document.querySelector("#switch_local").checked = false;
+                    document.querySelector("#switch_remote").checked = true;
+                    document.querySelector("#remote_location").disabled = false;
+                }
+                else {
+                    document.querySelector("#switch_local").checked = true;
+                    document.querySelector("#switch_remote").checked = false;
+                    document.querySelector("#remote_location").disabled = true;
+                }
+
+                document.querySelector("#remote_location").value = data.location;
+            }
+            if(data && data.locationOk !== undefined) {
+                document.querySelector("#locationOk").innerHTML = data.locationOk ? "OK" : "FAIL";
+            }
+
+            console.log(`Received ${data} from main process`);
+        });
+
+        window.api.send("settings",null);
+    </script>
+</body>
+</html>

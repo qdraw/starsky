@@ -29,5 +29,21 @@ describe("document-title", () => {
       new DocumentTitle().SetDocumentTitle(state)
       expect(document.title).toContain("search");
     });
+
+    it("GetDocumentTitle title Electron", () => {
+      const url = "https://dummy.com/";
+      Object.defineProperty(window, "location", {
+        value: new URL(url)
+      });
+
+      Object.defineProperty(navigator, "userAgent", {
+        value: "Electron starsky/"
+      });
+
+      var title = new DocumentTitle().GetDocumentTitle("test");
+
+      expect(title).toContain("dummy.com")
+    });
+
   });
 });
