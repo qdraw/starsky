@@ -42,7 +42,9 @@ var filePathList = [
 var blobPathList = [
 	"starsky/starsky/pm2-new-instance.sh",
 	"azure-pipelines-starsky.yml",
-	"starsky/docs/starsky-windows-v024-home-en.jpg"
+	"starsky/docs/starsky-windows-v024-home-en.jpg",
+	"starskyapp/docs-assets/starskyapp-versions.jpg",
+	"starskyapp/docs-assets/starskyapp-remote-options-v025.jpg"
 ];
 
 // create dirs

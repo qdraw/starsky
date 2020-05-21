@@ -16,6 +16,25 @@
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * __[starskyapp](../starskyapp/readme.md) Desktop Application (Pre-alpha code)__
 
+## Usage instructions
+
+There are currently no binary releases but if you have followed the build instructions.
+
+The following versions are available:
+
+![Starsky App versions](docs-assets/starskyapp-versions.jpg)
+
+> Mac OS 10.10 and 10.11 Are only supported in remote mode
+
+The application bundle can run portable
+
+## Remote mode
+
+Use the settings menu to update the server settings
+
+![Starsky App versions](docs-assets/starskyapp-remote-options-v025.jpg)
+_In a future release this ugly layout will change_
+
 
 ## Build instructions
 
@@ -35,6 +54,8 @@ _When running bash_
 ../starsky/build.sh --Runtime=win7-x86
 ```
 
+For Windows there is a bundle created: `starsky/starsky-win7-x86.zip` and this is coppied to the desktop application
+
 ### For Mac OS
 
 _When running bash_
@@ -42,6 +63,7 @@ _When running bash_
 ../starsky/build.sh --Runtime=osx.10.12-x64
 ```
 
+For Mac OS there is a bundle created: `starsky/starsky-osx.10.12-x64.zip` and this is coppied to the desktop application
 
 ## Build Electron
 
