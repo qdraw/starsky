@@ -13,12 +13,12 @@ function warmupScript(domainUrl, count, maxCount) {
         window.location.href = domainUrl;
       }
     }).catch((error) => {
-      console.log(error);
+      console.log('error', error);
       if (count <= maxCount) {
         count++
         setTimeout(() => {
-          warmupScript(count, maxCount)
-        }, 100);
+          warmupScript(domainUrl, count, maxCount)
+        }, 200);
       }
       else {
         alert("application failed to start")
@@ -34,7 +34,7 @@ function warmupLocalOrRemote() {
 
     if (!data || !data.remote) {
       console.log('default');
-      warmupScript('http://localhost:9609',0, 300)
+      warmupScript('http://localhost:9609', 0, 300)
       return;
     }
 
