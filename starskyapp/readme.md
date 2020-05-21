@@ -35,6 +35,19 @@ Use the settings menu to update the server settings
 ![Starsky App versions](docs-assets/starskyapp-remote-options-v025.jpg)
 _In a future release this ugly layout will change_
 
+## Cache
+
+The Electron stores it's cache in these folders: 
+
+Windows:
+`C:\Users\<user>\AppData\Roaming\starsky\Cache`
+
+Linux:
+`~/.config/starsky/Cache`
+
+OS X:
+`~/Library/Application Support/starsky/Cache`
+
 
 ## Build instructions
 
