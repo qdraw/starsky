@@ -45,7 +45,11 @@ exports.createMainWindow = () => {
 
     var currentSettings = appConfig.get("settings");
     var localhost = "http://localhost:9609 "; // with space
-    var whitelistDomain = !currentSettings.location ? localhost : localhost + new URL(currentSettings.location).origin;
+
+    whitelistDomain = localhost;
+    if (currentSettings && currentSettings.location) {
+      whitelistDomain = !currentSettings.location ? localhost : localhost + new URL(currentSettings.location).origin;
+    }
     
     // When change also check if CSPMiddleware needs to be updated
     var csp = "default-src 'none'; img-src file://* https://*.tile.openstreetmap.org " + whitelistDomain + "; " + 

@@ -32,7 +32,7 @@ app.on('web-contents-created', (event, contents) => {
 
     // to allow remote connections
     var currentSettings = appConfig.get("settings");
-    if (currentSettings.remote && currentSettings.location && parsedUrl.origin.startsWith(new URL(currentSettings.location).origin)) {
+    if (currentSettings && currentSettings.remote && currentSettings.location && parsedUrl.origin.startsWith(new URL(currentSettings.location).origin)) {
       return;
     }
 

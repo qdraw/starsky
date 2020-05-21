@@ -27,7 +27,7 @@ export class DocumentTitle {
     if (!prefix) return "Starsky App";
     prefix += " - Starsky App";
     if (new BrowserDetect().IsElectronApp() && window.location.hostname !== 'localhost') {
-      prefix += ` ${window.location.hostname}`;
+      prefix += ` - ${window.location.hostname}`;
     }
     return prefix;
   }
