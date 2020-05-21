@@ -1,5 +1,6 @@
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
+import BrowserDetect from './browser-detect';
 
 export class DocumentTitle {
   public SetDocumentTitle = (archive: IArchiveProps | IDetailView): void => {
@@ -24,7 +25,11 @@ export class DocumentTitle {
 
   public GetDocumentTitle = (prefix: string): string => {
     if (!prefix) return "Starsky App";
-    return prefix + " - Starsky App";
+    prefix += " - Starsky App";
+    if (new BrowserDetect().IsElectronApp() && window.location.hostname !== 'localhost') {
+      prefix += ` ${window.location.hostname}`;
+    }
+    return prefix;
   }
 }
 export default DocumentTitle;

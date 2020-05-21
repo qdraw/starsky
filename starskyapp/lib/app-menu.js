@@ -1,8 +1,8 @@
 const {app, Menu, shell ,remote } = require('electron')
-const createWindow = require('./create-window').createWindow
+const createMainWindow = require('./main-window').createMainWindow
 const createSettingsWindow = require('./settings-window').createSettingsWindow
 
-const mainWindows = require('./create-window').mainWindows
+const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
 
 function AppMenu() {
@@ -28,11 +28,23 @@ function AppMenu() {
         {
           label: "New Window",
           click: () => {
-            createWindow()
+            createMainWindow()
           },
           accelerator: 'CmdOrCtrl+N'
         },
         isMac ? { role: 'close' } : { role: 'quit' },
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+          { type: "separator" },
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
       ]
     },
     {
@@ -43,6 +55,24 @@ function AppMenu() {
           click: () => {
             createSettingsWindow()
           },
+          accelerator: 'CmdOrCtrl+,'
+        },
+      ]
+    },
+    {
+      label: 'Develop',
+      submenu: [
+        {
+          label: "Refresh",
+          click: () => {
+            mainWindows.forEach(window => {
+              window.webContents.reload()
+            });
+            settingsWindows.forEach(window => {
+              window.webContents.reload()
+            });
+          },
+          accelerator: 'CmdOrCtrl+R'
         },
         {
           label: "Dev Tools",
@@ -54,6 +84,7 @@ function AppMenu() {
               window.webContents.openDevTools()
             });
           },
+          accelerator: 'CmdOrCtrl+Alt+I'
         },
       ]
     },

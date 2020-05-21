@@ -11,6 +11,10 @@ export class BrowserDetect {
       && '-ms-ime-align' in document.documentElement.style
       && navigator.userAgent.indexOf("Trident") > -1;
   }
+
+  public IsElectronApp = () => {
+    return navigator.userAgent.indexOf("Electron") > -1 && navigator.userAgent.indexOf("starsky/") > -1;
+  }
 }
 export default BrowserDetect;
 

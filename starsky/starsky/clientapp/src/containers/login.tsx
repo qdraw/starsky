@@ -99,7 +99,7 @@ const Login: React.FC<ILoginProps> = () => {
             </div>
           </header>
           <div className="content">
-            <div className="content--header">{MessageLogin}</div>
+            <div className="content--header">{MessageLogin} {new BrowserDetect().IsElectronApp() ? window.location.hostname : null}</div>
             <form
               className="content--login-form form-inline form-nav"
               onSubmit={e => {

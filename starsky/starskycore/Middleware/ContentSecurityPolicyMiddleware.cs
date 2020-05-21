@@ -24,6 +24,7 @@ namespace starskycore.Middleware
 				var nonce = Guid.NewGuid().ToString("N");
 				httpContext.Items["csp-nonce"] = nonce;
 
+				// When change also update in Electron
 				httpContext.Response.Headers
 					.Add("Content-Security-Policy",
 						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +

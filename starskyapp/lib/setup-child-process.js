@@ -43,7 +43,7 @@ function getStarskyPath() {
     });
 }
 
-function setStarskyPath() {
+function setupChildProcess() {
     var starskyChild;
     getStarskyPath().then((starskyPath) => {
       starskyChild = spawn(starskyPath, {
@@ -96,6 +96,6 @@ function setStarskyPath() {
 }
 
 module.exports = {
-    setStarskyPath
+    setupChildProcess
 }
   
