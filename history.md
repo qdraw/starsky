@@ -46,6 +46,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed)  _Front-end_ Files that already are deleted is not shown visualy  Issue #26
 - [x]   (Fixed)  _Back-end_ starskygeocli -g 0 Not found
 - [x]   (Fixed)  _Back-end_ Bug upload or import gpx fails FileError
+- [x]   (Added)  _App_  Starsky App Allow Remote connections
+- [x]   (Added)  _App_  Starsky App Menu Cleanup
+- [x]   (Added)  _App_  Starsky App Multiple window support
+- [x]   (Added)  _App_  Starsky App WindowStateKeeper
+- [x]   (Added)  _App_  Starsky App Settings window
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
