@@ -72,6 +72,7 @@ exports.ipcBridge = () => {
         }
 
         var currentSettings = appConfig.get("settings");
+        if (!currentSettings) currentSettings = {};
         currentSettings.apiVersion = app.getVersion().match(new RegExp("^[0-9]+\\.[0-9]+","ig"));
         console.log(currentSettings.apiVersion);
 
