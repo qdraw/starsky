@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _App_  Starsky App Multiple window support
 - [x]   (Added)  _App_  Starsky App WindowStateKeeper
 - [x]   (Added)  _App_  Starsky App Settings window
+- [x]   (Changed) _App_ First version of the Starsky Desktop App, required a build for at least v0.2.5
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
