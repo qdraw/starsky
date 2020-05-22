@@ -1,0 +1,29 @@
+name: StarskyApp Electron
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starskyapp/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starskyapp/**'
+    - '.github/workflows/**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+      strategy:
+        matrix:
+          os: [macos-latest, ubuntu-latest, windows-latest]
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: NpmCi
+        working-directory: ./starskyapp
+        run: npm ci
+      - name: NpmBuild
+        working-directory: ./starskyapp
+        run: npm run build
