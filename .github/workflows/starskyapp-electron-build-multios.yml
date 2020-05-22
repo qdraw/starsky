@@ -17,10 +17,14 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, windows-latest]
     
     steps:
       - uses: actions/checkout@v2
+      - name: BuildForRuntime
+        shell: pwsh
+        working-directory: ./starsky
+        run: pwsh build.ps1 --runtime=win7-x64,osx.10.12-x64
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
