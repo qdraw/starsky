@@ -102,30 +102,30 @@ namespace starsky.Controllers
 
 		/// <summary>
 		/// Check if Client/App version has a match with the API-version
-		/// uses X-API-Version header
+		/// uses ApiVersion header
 		/// </summary>
 		/// <returns>AI script</returns>
 		/// <response code="200">Ok</response>
 		/// <response code="405">Version mismatch</response>
-		/// <response code="400">Missing X-API-Version header or bad formated version in header</response>
+		/// <response code="400">Missing ApiVersion header or bad formated version in header</response>
 		[HttpPost("/api/health/version")]
 		public IActionResult Version()
 		{
-			if ( Request.Headers.All(p => p.Key != "X-API-Version") 
-			     || string.IsNullOrWhiteSpace(Request.Headers["X-API-Version"])  )
+			if ( Request.Headers.All(p => p.Key != "ApiVersion") 
+			     || string.IsNullOrWhiteSpace(Request.Headers["ApiVersion"])  )
 			{
 				HeaderFailLogging();
 				return BadRequest("Missing version data");
 			}
 
-			return Ok(Request.Headers["X-API-Version"]);
+			return Ok(Request.Headers["ApiVersion"]);
 		}
 
 		private void HeaderFailLogging()
 		{
 			Console.WriteLine("/api/health/version Header Check general Fail");
-			if ( string.IsNullOrWhiteSpace(Request.Headers["X-API-Version"]) )
-				Console.WriteLine($"IsNullOrWhiteSpace: {Request.Headers["X-API-Version"]}");
+			if ( string.IsNullOrWhiteSpace(Request.Headers["ApiVersion"]) )
+				Console.WriteLine($"IsNullOrWhiteSpace: {Request.Headers["ApiVersion"]}");
 		}
 	}
 }
