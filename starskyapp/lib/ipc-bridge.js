@@ -1,4 +1,4 @@
-const { ipcMain , net } = require('electron')
+const { ipcMain , net, app } = require('electron')
 const appConfig = require('electron-settings');
 const mainWindows = require('./main-window').mainWindows
 
@@ -23,8 +23,7 @@ exports.ipcBridge = () => {
     ipcMain.on("settings", (event, args) => {
 
         var currentSettings = appConfig.get("settings");
-
-
+        
         if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) && args.location != currentSettings.location) {
             console.log(args.location);
             
@@ -72,6 +71,10 @@ exports.ipcBridge = () => {
             });
         }
 
-        event.reply('settings', appConfig.get("settings"))
+        var currentSettings = appConfig.get("settings");
+        currentSettings.apiVersion = app.getVersion().match(new RegExp("^[0-9]+\\.[0-9]+","ig"));
+        console.log(currentSettings.apiVersion);
+
+        event.reply('settings', currentSettings)
     });
 }

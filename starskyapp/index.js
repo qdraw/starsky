@@ -30,11 +30,17 @@ app.on('web-contents-created', (event, contents) => {
   contents.on('will-navigate', (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl)
 
+    // for example the upgrade page
+    if (navigationUrl.startsWith('file://')) {
+      return;      
+    }
+
     // to allow remote connections
     var currentSettings = appConfig.get("settings");
     if (currentSettings && currentSettings.remote && currentSettings.location && parsedUrl.origin.startsWith(new URL(currentSettings.location).origin)) {
       return;
     }
+    
 
     if (!parsedUrl.origin.startsWith('http://localhost:')) {
       event.preventDefault()
