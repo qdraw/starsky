@@ -8,10 +8,11 @@ powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 
 .\build.ps1 --Target=BuildTestOnlyNetCore
 
-Windows 32 bits: 'win7-x86'
+Windows 64 bits: 'win7-x64'
 Mac: 'osx.10.12-x64'
-Raspberry Pi: 'linux-arm'
 ARM64: 'linux-arm64'
+Raspberry Pi: 'linux-arm'
+Windows 32 bits: 'win7-x86'
 */
 
 // For the step CoverageReport

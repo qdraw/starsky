@@ -10,7 +10,7 @@ exports.default = context => {
       copyFile(path.join(__dirname, '..', '..', 'starsky', 'starsky-osx.10.12-x64.zip'), path.join(__dirname, '..', 'include-starsky-mac.zip'))
       break;
     case "win":
-      copyFile(path.join(__dirname, '..', '..', 'starsky', 'starsky-win7-x86.zip'), path.join(__dirname, '..' ,'include-starsky-win.zip'))
+      copyFile(path.join(__dirname, '..', '..', 'starsky', 'starsky-win7-x64.zip'), path.join(__dirname, '..' ,'include-starsky-win.zip'))
       break;
     default:
   }
