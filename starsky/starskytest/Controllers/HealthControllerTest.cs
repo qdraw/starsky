@@ -98,7 +98,7 @@ namespace starskytest.Controllers
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			controller.ControllerContext.HttpContext.Request.Headers["ApiVersion"] = "0.1";
+			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0.1";
 			var noVersion = controller.Version() as OkObjectResult;
 			Assert.AreEqual(200, noVersion.StatusCode);
 		}

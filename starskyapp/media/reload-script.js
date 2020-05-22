@@ -10,7 +10,7 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
   fetch(domainUrl + '/api/health')
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
-        fetch(domainUrl + '/api/health/version', { method: 'POST',  headers: {"ApiVersion": apiVersion}})
+        fetch(domainUrl + '/api/health/version', { method: 'POST',  headers: {"x-api-version": `${apiVersion}`}})
           .then((versionResponse) => {
             if (versionResponse.status === 200) {
               window.location.href = domainUrl;
