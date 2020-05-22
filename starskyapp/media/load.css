@@ -27,3 +27,7 @@
   background-image:url('preloader-fancy.svg');
   background-size: contain;
 }
+
+.upgrade {
+  display: none;
+}

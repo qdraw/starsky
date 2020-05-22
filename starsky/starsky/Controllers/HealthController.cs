@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -97,6 +98,35 @@ namespace starsky.Controllers
 		public IActionResult ApplicationInsights()
 		{
 			return Content(_applicationInsightsJsHelper.ScriptPlain, "application/javascript");
+		}
+
+		/// <summary>
+		/// Check if Client/App version has a match with the API-version
+		/// uses x-api-version header
+		/// </summary>
+		/// <returns>AI script</returns>
+		/// <response code="200">Ok</response>
+		/// <response code="405">Version mismatch</response>
+		/// <response code="400">Missing x-api-version header or bad formated version in header</response>
+		[HttpPost("/api/health/version")]
+		public IActionResult Version()
+		{
+			var headerName = "x-api-version";
+			
+			if ( Request.Headers.All(p => p.Key != headerName) 
+			     || string.IsNullOrWhiteSpace(Request.Headers[headerName])  )
+			{
+				HeaderFailLogging(headerName);
+				return BadRequest("Missing version data");
+			}
+			return Ok(Request.Headers[headerName]);
+		}
+
+		private void HeaderFailLogging(string headerName)
+		{
+			Console.WriteLine($"/api/health/version {headerName} Header Check Fail");
+			if ( string.IsNullOrWhiteSpace(Request.Headers[headerName]) )
+				Console.WriteLine($"IsNullOrWhiteSpace: {Request.Headers[headerName]}");
 		}
 	}
 }

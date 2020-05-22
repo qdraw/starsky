@@ -37,7 +37,7 @@ _In a future release this ugly layout will change_
 
 ## Cache
 
-The Electron stores it's cache in these folders: 
+The Electron stores it's cache in these folders:
 
 Windows:
 `C:\Users\<user>\AppData\Roaming\starsky\Cache`
@@ -62,12 +62,14 @@ npm ci
 
 ### For Windows
 
+We assume that you run on a 64 bits windows version
+
 _When running bash_
 ```bash
-../starsky/build.sh --Runtime=win7-x86
+../starsky/build.sh --Runtime=win7-x64
 ```
 
-For Windows there is a bundle created: `starsky/starsky-win7-x86.zip` and this is coppied to the desktop application
+For Windows there is a bundle created: `starsky/starsky-win7-x64.zip` and this is coppied to the desktop application
 
 ### For Mac OS
 
@@ -81,6 +83,8 @@ For Mac OS there is a bundle created: `starsky/starsky-osx.10.12-x64.zip` and th
 ## Build Electron
 
 ### For Windows
+
+We assume that you run on a 64 bits windows version
 
 _When running bash_
 ```bash

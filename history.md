@@ -2,6 +2,8 @@
 
 # History Changelog
 
+Semantic Versioning 2.0.0 is from version 0.1.6+
+
 ## The following statuses are used
 - Added _for new features_
 - Breaking change _fix or feature that would cause existing functionality to change_
@@ -51,6 +53,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _App_  Starsky App Multiple window support
 - [x]   (Added)  _App_  Starsky App WindowStateKeeper
 - [x]   (Added)  _App_  Starsky App Settings window
+- [x]   (Changed) _App_ First version of the Starsky Desktop App, required a build for at least v0.2.5
+- [x]   (Added)  _Back-end_ Version Health API to match MAJOR and MINOR version for example 0.2
 
 # version 0.2.4 - 2020-05-10
 - [x]   (Added)  _Tools_ Easy internal version upgrade Starsky Version
