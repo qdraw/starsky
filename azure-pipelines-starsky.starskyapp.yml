@@ -61,14 +61,20 @@ stages:
       enabled: true
       inputs:
         filePath: 'starsky/build.sh'
-        arguments: '--Target=default -runtime="win7-x86,osx.10.12-x64"'
+        arguments: '--Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: win7-x86'
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
         ArtifactName: 'win7-x86'
-
+        
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: win7-x64'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip'
+        ArtifactName: 'win7-x64'
+        
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: osx.10.12-x64'
       inputs:
@@ -100,7 +106,7 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'win7-x86'
+        artifactName: 'win7-x64'
         downloadPath: '$(Build.SourcesDirectory)'
 
     - task: DownloadBuildArtifacts@0
@@ -122,21 +128,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/win7-x86/starsky-win7-x86.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
-
-    - task: Bash@3
-      enabled: false
-      inputs:
-        targetType: 'inline'
-        script: |
-          curl https://media.qdraw.nl/temp/include-starsky-win.zip --output $(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip
-
-    - task: Bash@3
-      enabled: false
-      inputs:
-        targetType: 'inline'
-        script: |
-          curl https://media.qdraw.nl/temp/include-starsky-mac.zip --output $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
+          mv $(Build.SourcesDirectory)/win7-x64/starsky-win7-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip
 
     - task: Npm@1
       displayName: 'Electron npm ci'

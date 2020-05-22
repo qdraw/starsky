@@ -10,19 +10,20 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
   fetch(domainUrl + '/api/health')
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
-        fetch(domainUrl + '/api/health/version', {headers: {"X-API-Version": apiVersion}})
-          .then((response2) => {
-            if (status === 200) {
+        fetch(domainUrl + '/api/health/version', { method: 'POST',  headers: {"X-API-Version": apiVersion}})
+          .then((versionResponse) => {
+            if (versionResponse.status === 200) {
               window.location.href = domainUrl;
+              return;
             }
-            if (status === 400) {
+            if (versionResponse.status === 400) {
               window.location.href = "upgrade.html";
+              return;
             }
+            alert(`#${versionResponse.status} - Version check failed, please try to restart the application`);
             
-            alert("application failed to start");
-
           }).catch((error) => {
-            alert("application failed to start");
+            alert("no connection to version check, please restart the application");
           });
       }
     }).catch((error) => {
@@ -34,7 +35,7 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
         }, 200);
       }
       else {
-        alert("application failed to start")
+        alert("no connection to the internal component, please restart the application")
       }
     });
 }
