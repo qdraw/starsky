@@ -98,5 +98,23 @@ namespace starsky.Controllers
 		{
 			return Content(_applicationInsightsJsHelper.ScriptPlain, "application/javascript");
 		}
+
+		/// <summary>
+		/// Check if Client/App version has a match with the API-version
+		/// uses X-API-Version header
+		/// </summary>
+		/// <returns>AI script</returns>
+		/// <response code="200">Ok</response>
+		/// <response code="405">Version mismatch</response>
+		/// <response code="400">Missing X-API-Version header or bad formated version in header</response>
+		[HttpPost("/api/health/version")]
+		public IActionResult Version()
+		{
+			if ( Request.Headers.All(p => p.Key != "X-API-Version") )
+			{
+				return BadRequest("missing version data");
+			}
+			return Ok();
+		}
 	}
 }

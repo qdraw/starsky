@@ -77,5 +77,30 @@ namespace starskytest.Controllers
 			Assert.AreEqual("/* ApplicationInsights JavaScriptSnippet disabled */",
 				actionResult.Content);
 		}
+
+		[TestMethod]
+		public void Version_NoVersion()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var noVersion = controller.Version() as BadRequestObjectResult;
+			Assert.AreEqual(400, noVersion.StatusCode);
+		}
+		
+		[TestMethod]
+		public void Version_Version()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			controller.ControllerContext.HttpContext.Request.Headers["X-API-Version"] = "0.1";
+			var noVersion = controller.Version() as OkResult;
+			Assert.AreEqual(200, noVersion.StatusCode);
+		}
 	}
 }
