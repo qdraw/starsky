@@ -39,6 +39,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added)  _Back-end_ API to update some `appSettings` from the UI
 
 # Unreleased - 2020-05-XX
+- no items
+
+# version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
 - [x]   (Added)  _Tools_ app-version-update.js, add more folders and check input for matching sem-ver
 - [x]   (Added)  _Tools_ docs.js styling update
