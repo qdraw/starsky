@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -113,10 +114,18 @@ namespace starsky.Controllers
 			if ( Request.Headers.All(p => p.Key != "X-API-Version") 
 			     || string.IsNullOrWhiteSpace(Request.Headers["X-API-Version"])  )
 			{
+				HeaderFailLogging();
 				return BadRequest("Missing version data");
 			}
 
 			return Ok(Request.Headers["X-API-Version"]);
+		}
+
+		private void HeaderFailLogging()
+		{
+			Console.WriteLine("/api/health/version Header Check general Fail");
+			if ( string.IsNullOrWhiteSpace(Request.Headers["X-API-Version"]) )
+				Console.WriteLine($"IsNullOrWhiteSpace: {Request.Headers["X-API-Version"]}");
 		}
 	}
 }
