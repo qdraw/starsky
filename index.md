@@ -31,8 +31,8 @@ The application includes security controls ensuring relevant people have access 
 ## Workflow
 Export smaller images and generation of templates is one of the features
 
-## Starsky on Windows
-![Starsky App on Windows 10](starsky/docs/starsky-windows-v024-home-en.jpg)
+## Starsky on Mac OS
+![Starsky App on Mac OS](starsky/docs/starsky-mac-v025-home-nl.jpg)
 
 
 # Open Source project
