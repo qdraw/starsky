@@ -16,12 +16,13 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
               window.location.href = domainUrl;
               return;
             }
-            if (versionResponse.status === 400) {
-              window.location.href = "upgrade.html";
+            if (versionResponse.status === 400 && document.querySelectorAll('.upgrade').length === 1) {
+              document.querySelector('.upgrade').style.display = 'block';
+              document.querySelector('.preloader').style.display = 'none';
               return;
             }
             alert(`#${versionResponse.status} - Version check failed, please try to restart the application`);
-            
+
           }).catch((error) => {
             alert("no connection to version check, please restart the application");
           });

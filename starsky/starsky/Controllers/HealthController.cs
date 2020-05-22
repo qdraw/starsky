@@ -110,11 +110,12 @@ namespace starsky.Controllers
 		[HttpPost("/api/health/version")]
 		public IActionResult Version()
 		{
-			if ( Request.Headers.All(p => p.Key != "X-API-Version" || 
-			                              (p.Key == "X-API-Version" && string.IsNullOrWhiteSpace(p.Value)) ) )
+			if ( Request.Headers.All(p => p.Key != "X-API-Version") 
+			     || string.IsNullOrWhiteSpace(Request.Headers["X-API-Version"])  )
 			{
-				return BadRequest("missing version data");
+				return BadRequest("Missing version data");
 			}
+
 			return Ok(Request.Headers["X-API-Version"]);
 		}
 	}
