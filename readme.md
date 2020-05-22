@@ -1,4 +1,4 @@
-# Technical Readme
+# Project Readme
 ## List of __[Starsky](readme.md)__ Projects
  * [inotify-settings](inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
