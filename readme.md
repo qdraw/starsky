@@ -16,11 +16,12 @@
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
-# What is Starsky?
-Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a cloud service. You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
+## What is Starsky?
+> [Check the introduction page to learn more about the scope of the application](index.md)
 
 ## Demo app
-There is a online demo of the Starsky Application. You can create unlimited accounts but all input and data will be deleted after restarting. Heroku quits the application after 30 minutes of inactivity. Email addresses in the demo environment are not stored. [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
+Starsky has a demo application online. To get started make a temperary account
+> [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
 
 ## Project Readme   
 
@@ -28,7 +29,7 @@ There is a online demo of the Starsky Application. You can create unlimited acco
 This section deals with how to set up a Starsky system on-premises. You will find guides to all Starsky software for installation on-premises here.
 
 ### General Project
-The general application is Starsky (sln). You need to [install the solution](starsky/readme.md) first.
+The general application is Starsky solution (sln). You need to [install the solution](starsky/readme.md) first.
 
 ### Command line tools
 The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
