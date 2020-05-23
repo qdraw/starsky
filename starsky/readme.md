@@ -52,7 +52,7 @@ dotnet run --project starsky/starsky
 ```
 
 6.  Create a account in the Starsky application. Those credentials are only required by the web application
-> Security issue: Please be aware that this endpoint is always open to everyone
+> Security issue: After creating the first account this endpoint is closed, do not set the env variable `app__isAccountRegisterOpen` to `true`
 
 ```
 http://localhost:64556/account/register
