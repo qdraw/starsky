@@ -1,4 +1,4 @@
-name: CI
+name: Starsky Demo Env
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
     - '.github/workflows/**'
     
 jobs:
-  build_icolors:
+  Deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
