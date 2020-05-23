@@ -56,7 +56,9 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 9.  `Verbose` - show more console logging  _(default false)_
 10. `WebFtp` - used by starskyWebFtpCli
 11. `PublishProfiles` - used by starskyWebHtmlCli
-12.  `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
+12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
+13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
 
 ### Appsettings.json example
 ```json
