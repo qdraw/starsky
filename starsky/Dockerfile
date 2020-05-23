@@ -1,5 +1,12 @@
+# Stage 1
+FROM node:14 as react-build
+WORKDIR /app/starsky/clientapp
+COPY starsky/clientapp/. ./
+RUN npm ci
+RUN npm run build
+RUN echo "react done"
 
-FROM microsoft/aspnetcore-build:2.0 AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 WORKDIR /app
 
@@ -12,16 +19,14 @@ RUN dotnet restore
 RUN dotnet publish -c Release -o out
 
 
-
 # build runtime image
-FROM microsoft/aspnetcore:2.0 AS release
-
-# exiftool is required, nano is optinal
-RUN apt-get install libimage-exiftool-perl -y
-RUN apt-get install -y nano
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
+#RUN apt-get install -y nano
 
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
+COPY --from=react-build /app/starsky/clientapp .
+RUN ls -lah
 ENTRYPOINT ["dotnet", "starsky.dll"]
 
 

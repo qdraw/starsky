@@ -7,7 +7,7 @@ eval "$(docker-machine env default)"
 # build from starky folder
 
 ```sh
-docker build -t aspnetapp .
+docker build -t starsky .
 ```
 
 # run
