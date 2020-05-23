@@ -66,7 +66,7 @@ from the root folder of the repository</p></li>
 <li>Create a account in the Starsky application. Those credentials are only required by the web application</li>
 </ol>
 <blockquote>
-  <p>Security issue: Please be aware that this endpoint is always open to everyone</p>
+  <p>Security issue: After creating the first account this endpoint is closed, do not set the env variable <code>app__isAccountRegisterOpen</code> to <code>true</code></p>
 </blockquote>
 <pre><code>http://localhost:64556/account/register</code></pre>
 <h2 id="dev-dependencies">Dev-dependencies:</h2>

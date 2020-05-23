@@ -40,14 +40,19 @@ _In a future release this ugly layout will change_
 The Electron stores it's cache in these folders:
 
 Windows:
-`C:\Users\<user>\AppData\Roaming\starsky\Cache`
+```
+C:\Users\<user>\AppData\Roaming\starsky\Cache
+```
 
 Linux:
-`~/.config/starsky/Cache`
+```
+~/.config/starsky/Cache
+```
 
 OS X:
-`~/Library/Application Support/starsky/Cache`
-
+```
+~/Library/Application Support/starsky/Cache
+```
 
 ## Build instructions
 
