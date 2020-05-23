@@ -1,4 +1,4 @@
-name: Starsky Demo Env
+name: Starsky Deploy Demo
 
 on:
   push:
@@ -8,10 +8,10 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-    - '.github/workflows/**'
+    - '.github/workflows/starsky-deploy-demo-env.yml'
     
 jobs:
-  Deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
