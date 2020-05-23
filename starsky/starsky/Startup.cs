@@ -46,14 +46,7 @@ namespace starsky
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // configs
-            services.ConfigurePoCo<AppSettings>(_configuration.GetSection("App"));
-            
-            // Need to rebuild for AppSettings
-            // ReSharper disable once ASP0000
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+	        _appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, _configuration);
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache

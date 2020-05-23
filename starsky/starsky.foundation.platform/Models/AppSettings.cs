@@ -263,6 +263,12 @@ namespace starsky.foundation.platform.Models
         }
 
         /// <summary>
+        /// To store the settings by user in the AppData folder
+        /// Used by the Desktop App
+        /// </summary>
+        public bool IsAppDataSettings { get; set; } = false;
+
+        /// <summary>
         /// Is the host of the Application Windows
         /// </summary>
         public bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -289,7 +295,7 @@ namespace starsky.foundation.platform.Models
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
-	    // fallback in contructor
+	    // fallback in constructor
 	    // use env variable: app__ReadOnlyFolders__0 - value
         public List<string> ReadOnlyFolders { get; set; }
 
