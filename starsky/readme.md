@@ -16,12 +16,15 @@
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
-## Build instructions
+## Build instructions for docker
+See the [Docker instructions](docker-instructions.md) for more details about how to install
+
+## Build instructions (without docker)
 
 1.  To get started clone the repository
 
 ```sh
-git clone "https://bitbucket.org/qdraw/starsky.git"
+git clone "https://github.com/qdraw/starsky.git"
 ```
 
 2.  Get the `dotnet` 3.1.201 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
@@ -40,7 +43,7 @@ _Or using bash (on Linux and Mac OS)_
     ./build.sh
 ```
 
-4.  Check configuation `starsky/starsky/appsettings.json` 
+4.  Check configuation `starsky/starsky/appsettings.json`
 
 >>   Tip: You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 
@@ -195,11 +198,11 @@ _Using powershell_
 ```powershell
 powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 ```
-### To build for 32 bits Windows
+### To build for 64 bits Windows
 
 _Using bash_
 ```sh
-./build.sh --runtime="win7-x86"
+./build.sh --runtime="win7-x64"
 ```
 
 _Using powershell_

@@ -16,6 +16,7 @@ var filePathList = [
 	"starsky-tools/readme.md",
 	"inotify-settings/readme.md",
 	"starsky/readme.md",
+	"starsky/docker-instructions.md",
 	"starsky/starsky/readme.md",
 	"starsky/starsky/clientapp/readme.md",
 	"starsky/starskybusinesslogic/readme.md",
