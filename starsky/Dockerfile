@@ -27,6 +27,5 @@ WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
 
+ENV ASPNETCORE_URLS http://*:$PORT
 ENTRYPOINT ["dotnet", "starsky.dll"]
-
-
