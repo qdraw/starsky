@@ -9,6 +9,7 @@ on:
     branches: [ master ]
     paths:
     - '.github/workflows/starsky-deploy-demo-env.yml'
+    - 'starsky/Dockerfile'
     
 jobs:
   deploy:
