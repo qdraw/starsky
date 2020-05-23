@@ -1,13 +1,12 @@
-> Go to the [project details](readme.md)
+> Browse directly to the [project details](readme.md) or [changelog](history.md)
 
 # What is Starsky? (an introduction)
 
 Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a web service.
 You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
 
-Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database.
-
-This Digital asset management-tool offers an effective solution for people to store, organize, find, retrieve and share digital content. Quick to deploy and easy-to-use, a centralized digital library access to digital assets—including images, photos, creative files, video and more. [Read more about the install options](readme.md)
+## Get more value
+Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database.  The goal is to have a application that store, organize, find, retrieve and share digital content. [Read more about how to get started](readme.md)
 
 ## Demo app
 There is a online demo of the Starsky Application. You can create unlimited accounts but all input and data will be deleted after restarting. Heroku quits the application after 30 minutes of inactivity. Email addresses in the demo environment are not stored. [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
