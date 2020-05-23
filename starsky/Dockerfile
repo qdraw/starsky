@@ -25,8 +25,8 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
 
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
-COPY --from=react-build /app/starsky/clientapp .
-RUN ls -lah
+COPY --from=react-build /app/starsky/clientapp ./clientapp
+
 ENTRYPOINT ["dotnet", "starsky.dll"]
 
 
