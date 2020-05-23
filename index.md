@@ -9,6 +9,8 @@ The term digital asset management actually covers a large array of software solu
 
 This Digital asset management-tool offers an effective solution for people to store, organize, find, retrieve and share digital content. Quick to deploy and easy-to-use, a centralized digital library access to digital assets—including images, photos, creative files, video and more. [.. Read more about the options](readme.md)
 
+## Demo app
+There is a online demo of the Starsky Application. You can create unlimited accounts but all input and data will be deleted after restarting. Heroku quits the application after 30 minutes of inactivity. Email addresses in the demo environment are not stored. [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
 
 # Main features
 

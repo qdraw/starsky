@@ -19,6 +19,9 @@
 # What is Starsky?
 Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a cloud service. You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
 
+## Demo app
+There is a online demo of the Starsky Application. You can create unlimited accounts but all input and data will be deleted after restarting. Heroku quits the application after 30 minutes of inactivity. Email addresses in the demo environment are not stored. [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
+
 ## Project Readme   
 
 ### Install instructions for the server
