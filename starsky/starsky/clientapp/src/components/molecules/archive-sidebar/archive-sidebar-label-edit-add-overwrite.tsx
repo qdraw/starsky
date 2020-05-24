@@ -116,15 +116,15 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
-      <FormControl onInput={handleUpdateChange} name="tags" contentEditable={!state.isReadOnly && select.length !== 0}>
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="tags" contentEditable={!state.isReadOnly && select.length !== 0}>
       </FormControl>
 
       <h4>Info:</h4>
-      <FormControl onInput={handleUpdateChange} name="description" contentEditable={!state.isReadOnly && select.length !== 0}>
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="description" contentEditable={!state.isReadOnly && select.length !== 0}>
       </FormControl>
 
       <h4>{MessageTitleName}:</h4>
-      <FormControl onInput={handleUpdateChange} name="title" contentEditable={!state.isReadOnly && select.length !== 0}>
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="title" contentEditable={!state.isReadOnly && select.length !== 0}>
       </FormControl>
 
       {isInputEnabled && select.length !== 0 ? <button

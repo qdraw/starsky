@@ -144,7 +144,9 @@ export class Query {
 			}
 			if (response.data.searchCount >= 1) {
 				response.data.fileIndexItems.forEach(fileIndexItem => {
-					fileHashList.push(fileIndexItem.fileHash);
+					if (fileIndexItem.imageFormat === 'jpg') {
+						fileHashList.push(fileIndexItem.fileHash);
+					}
 				});
 			}
 			// SUPPORT FOR PAGINATION
@@ -171,7 +173,9 @@ export class Query {
 				axiosMultiResponses.forEach((multiPageResponse: AxiosResponse<IResults>) => {
 
 					multiPageResponse.data.fileIndexItems.forEach(fileIndexItem => {
-						fileHashList.push(fileIndexItem.fileHash);
+						if (fileIndexItem.imageFormat === 'jpg') {
+							fileHashList.push(fileIndexItem.fileHash);
+						}
 					});
 				});
 			}

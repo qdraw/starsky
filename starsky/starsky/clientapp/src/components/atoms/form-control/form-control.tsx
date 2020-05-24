@@ -12,6 +12,7 @@ export interface IFormControlProps {
   maxlength?: number;
   children: React.ReactNode;
   warning?: boolean;
+  spellcheck?: boolean;
 }
 
 const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
@@ -84,6 +85,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
       onKeyDown={limitLengthKey}
       onInput={props.onInput}
       onPaste={limitLengthPaste}
+      spellCheck={props.spellcheck}
       ref={props.reference}
       suppressContentEditableWarning={true}
       contentEditable={props.contentEditable}
