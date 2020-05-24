@@ -89,6 +89,29 @@ function AppMenu() {
       ]
     },
     {
+      label: 'View',
+      submenu: [
+        { role: 'resetzoom' },
+        { role: 'zoomin' },
+        { role: 'zoomout' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' },
+        { role: 'zoom' },
+        ...(isMac ? [
+          { type: 'separator' },
+          { role: 'front' },
+        ] : [
+          { role: 'close' }
+        ])
+      ]
+    },
+    {
       role: 'help',
       submenu: [
         {
