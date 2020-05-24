@@ -57,31 +57,25 @@ namespace starsky.foundation.platform.Helpers
             
 			return serviceProvider.GetRequiredService<AppSettings>();
 		}
-
-		/// <summary>
-		/// Location of the settings folder
-		/// </summary>
-		internal static string AppDataFolderFullPath = Path.Combine(
-			Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
-			"starsky");
-		
+	
 		/// <summary>
 		/// In the OS there is a folder to read and write,
 		/// when you replace the entire application settings should not be overwritten
-		/// Only if env variable app__isAppDataSettings exist
+		/// Only if env variable app__AppSettingsPath exist
 		/// </summary>
 		/// <param name="builder">ConfigBuilder</param>
-		/// <returns>Set the env variable `app__isAppDataSettings` to enable this feature</returns>
+		/// <returns>Set the env variable `app__AppSettingsPath` to enable this feature</returns>
 		private static ConfigurationBuilder SetLocalAppData(ConfigurationBuilder builder)
 		{
-			if ( Environment.GetEnvironmentVariable("app__isAppDataSettings")?.ToLowerInvariant() != "true" ||
-			     !File.Exists(Path.Combine(AppDataFolderFullPath, "appsettings.json")))
+			var appSettingsPath = Environment.GetEnvironmentVariable("app__AppSettingsPath");
+			
+			if ( appSettingsPath == null || !File.Exists(appSettingsPath))
 			{
 				return builder;
 			}
 			
 			builder
-				.SetBasePath(AppDataFolderFullPath)
+				.SetBasePath(Directory.GetParent(appSettingsPath).FullName)
 				.AddJsonFile("appsettings.json");
 			
 			return builder;

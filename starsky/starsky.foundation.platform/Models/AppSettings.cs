@@ -266,7 +266,7 @@ namespace starsky.foundation.platform.Models
         /// To store the settings by user in the AppData folder
         /// Used by the Desktop App
         /// </summary>
-        public bool IsAppDataSettings { get; set; } = false;
+        public string AppSettingsPath { get; set; } = "";
 
         /// <summary>
         /// Is the host of the Application Windows
