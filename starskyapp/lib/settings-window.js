@@ -11,9 +11,10 @@ exports.createSettingsWindow = () => {
     let newWindow = new BrowserWindow({ 
         x: mainWindowStateKeeper.x,
         y: mainWindowStateKeeper.y,
-        width: 800,
-        height: 400,
+        width: 400,
+        height: 200,
         show: true,
+        resizable: true,
         webPreferences: {
             enableRemoteModule: false,
             partition: 'persist:main',
