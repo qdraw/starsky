@@ -122,7 +122,7 @@ namespace starskytest.Helpers
 			    "DateTime"
 		    });
 		    Assert.AreEqual(update.DateTime, result.DateTime);
-
+	    
 	    }
 	
 	    [TestMethod]

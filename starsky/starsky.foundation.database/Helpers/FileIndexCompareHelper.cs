@@ -172,7 +172,7 @@ namespace starsky.foundation.database.Helpers
 		    if(updateObject == null) updateObject = new FileIndexItem();
 		    PropertyInfo[] propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 		    PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
+	    
 		    int count = propertiesA.Length;
 		    for ( int i = 0; i < count; i++ )
 		    {
@@ -183,7 +183,7 @@ namespace starsky.foundation.database.Helpers
 			    
 			    sourceIndexItem.GetType().GetProperty(propertiesA[i].Name).SetValue(sourceIndexItem, newRotationValue, null);
 		    }
-
+	    
 		    return sourceIndexItem;
 	    }
 

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using starsky.foundation.storage.Exceptions;
 
 namespace starsky.foundation.storage.Services
 {
@@ -122,7 +123,6 @@ namespace starsky.foundation.storage.Services
             return result;
         }
 
-
         public static string Encode(byte[] data, bool padOutput = false)
         {
             if (data.Length == 0)
@@ -178,13 +178,6 @@ namespace starsky.foundation.storage.Services
             if (padding > 0) result.Append(new string('=', padding == 8 ? 0 : padding));
             return result.ToString();
         }
-        
-        // ReSharper disable once MemberCanBePrivate.Global
-        public class DecodingException : Exception
-        {
-            public DecodingException(string message) : base(message)
-            {
-            }
-        }
+       
     }
 }
