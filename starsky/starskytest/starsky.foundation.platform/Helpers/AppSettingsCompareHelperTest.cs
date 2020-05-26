@@ -78,13 +78,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			{
 				ReadOnlyFolders = new List<string>{"/same"}
 			};
-			
+
 			var to = new AppSettings
 			{
 				ReadOnlyFolders = new List<string>{"/same"}
 			};
 
-			AppSettingsCompareHelper.Compare(source, to);
+			AppSettingsCompareHelper.Compare(source, source);
 			Assert.AreEqual(source.ReadOnlyFolders.FirstOrDefault(), to.ReadOnlyFolders.FirstOrDefault());
 		}
 		

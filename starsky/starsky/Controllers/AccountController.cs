@@ -3,6 +3,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.Helpers;
 using starskycore.Interfaces;
+using starskycore.Services;
 using starskycore.ViewModels.Account;
 
 namespace starsky.Controllers
@@ -222,7 +224,24 @@ namespace starsky.Controllers
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }
-       
+        
+        
+        /// <summary>
+        /// List of current permissions
+        /// </summary>
+        /// <returns>isAdministrator</returns>
+        /// <response code="200">yes im admin</response>
+        /// <response code="203">nope im not admin</response>
+        /// <response code="401"> please login first</response>
+        [HttpGet("/api/account/permissions")]
+        [Authorize]
+        [ProducesResponseType(typeof(bool),200)]
+        [ProducesResponseType(typeof(bool),203)]
+        public IActionResult Permissions()
+        {
+	        var claims = User.Claims.Where(p=> p.Type == "Permission").Select( p=>  p.Value);
+	        return Json(claims);
+        }
 
     }
 }

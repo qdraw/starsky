@@ -167,15 +167,6 @@ namespace starskytest.Controllers
 
             _query.RemoveItem(_query.SingleItem(createAnImage.FilePath).FileIndexItem);
         }
-
-
-        [TestMethod]
-        public void ApiController_ENV_starskyTestEnv()
-        {
-	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-	        var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-            controller.Env();
-        }
         
         [TestMethod]
         public void ApiController_Update_AllDataIncluded_WithFakeExiftool()

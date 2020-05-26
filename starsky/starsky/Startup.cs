@@ -22,12 +22,9 @@ using Microsoft.Net.Http.Headers;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.Health;
 using starsky.Helpers;
-using starskycore.Helpers;
 using starskycore.Middleware;
 
 namespace starsky

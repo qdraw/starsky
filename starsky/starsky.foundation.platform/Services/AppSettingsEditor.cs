@@ -1,9 +1,12 @@
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.platform.Services
 {
-	public class AppSettingsEditor
+	[Service(typeof(IAppSettingsEditor), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class AppSettingsEditor : IAppSettingsEditor
 	{
 		private AppSettings _sourceAppSettings;
 

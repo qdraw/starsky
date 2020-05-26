@@ -103,7 +103,6 @@ namespace starsky.foundation.database.Helpers
             return differenceList;
         }
 
-
 	    /// <summary>
 	    /// Set values by string name. fieldContent must by the right type
 	    /// wrong types are ignored by default
@@ -147,7 +146,6 @@ namespace starsky.foundation.database.Helpers
 		    }
 		    return null;
 	    }
-	    
 	    
 	    /// <summary>
 	    /// Check if property exist in FileIndexItem
@@ -218,7 +216,6 @@ namespace starsky.foundation.database.Helpers
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDoubleValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
-
 	    
 	    /// <summary>
 	    /// Compare ushort type 
@@ -235,7 +232,6 @@ namespace starsky.foundation.database.Helpers
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newUshortValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
-	    
 	    
 	    /// <summary>
 	    /// Compare imageFormat type
