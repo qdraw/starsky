@@ -1,63 +1,64 @@
-name: Starsky SonarQube ClientApp NetCore 
+name: Starsky SonarQube ClientApp NetCore Analyze PR
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-    - 'starsky/**'
-    - '!starsky/starsky/clientapp/**'
   pull_request:
-    branches: [ master ]
+    types: [opened, edited, reopened, synchronize]
+    branches:
+      - master
     paths:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
     - '.github/workflows/**'
-
+    
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
-        fetch-depth: 0
+      - name: 'Checkout repository on branch: ${{ github.REF }}'
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.HEAD_REF }}
 
-    - name: Setup .NET Core 2.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 2.1.202
-      
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.201
-            
-    - name: Setup side by side .NET SDKs on Windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        SET DOTNET_21_ROOT=%DOTNET_ROOT:3.1.201=2.1.202%
-        xcopy /s /y /d %DOTNET_31_ROOT% %DOTNET_ROOT%
-      shell: cmd
+      - name: Retrieve entire repository history
+        run: |
+          git fetch --prune --unshallow
 
-    - name: Setup side by side .NET SDKs on *nix
-      if: matrix.os != 'windows-latest'
-      run: |
-        rsync -a ${DOTNET_ROOT/3.1.201/2.1.202}/* $DOTNET_ROOT/
+      - name: Setup .NET Core 2.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 2.1.202
+        
+      - name: Setup .NET Core 3.1
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.201
+              
+      - name: Setup side by side .NET SDKs on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          SET DOTNET_21_ROOT=%DOTNET_ROOT:3.1.201=2.1.202%
+          xcopy /s /y /d %DOTNET_31_ROOT% %DOTNET_ROOT%
+        shell: cmd
 
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      
-    - name: Build
-      shell: bash
-      env:
-        STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
-        STARSKY_SONAR_LOGIN: ${{ secrets.STARSKY_SONAR_LOGIN }}
-        STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
-        STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
-      working-directory: ./starsky
-      run: bash build.sh --branch=${{ steps.vars.outputs.branch }}
+      - name: Setup side by side .NET SDKs on *nix
+        if: matrix.os != 'windows-latest'
+        run: |
+          rsync -a ${DOTNET_ROOT/3.1.201/2.1.202}/* $DOTNET_ROOT/
+
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        
+      - name: Build
+        shell: bash
+        env:
+          STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
+          STARSKY_SONAR_LOGIN: ${{ secrets.STARSKY_SONAR_LOGIN }}
+          STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
+          STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
+        working-directory: ./starsky
+        run: bash build.sh --branch=${{ steps.vars.outputs.branch }}          
