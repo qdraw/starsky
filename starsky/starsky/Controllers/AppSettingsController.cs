@@ -10,7 +10,7 @@ namespace starsky.Controllers
 	[Authorize]
 	public class AppSettingsController : Controller
 	{
-		private readonly AppSettings _appSettings;
+		private AppSettings _appSettings;
 		private readonly IAppSettingsEditor _appSettingsEditor;
 
 		public AppSettingsController(AppSettings appSettings ,IAppSettingsEditor appSettingsEditor)
@@ -49,6 +49,7 @@ namespace starsky.Controllers
 		public IActionResult UpdateAppSettings(AppSettings toAppSettings)
 		{
 			_appSettingsEditor.Update(toAppSettings);
+			_appSettings = toAppSettings;
 			return Env();
 		}
 	}
