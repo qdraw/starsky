@@ -27,7 +27,7 @@ jobs:
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=BuildNetCore
+      run: bash build.sh --Target=BuildNetCore --no-sonar
     - name: TestNetCore
       shell: bash
       working-directory: ./starsky

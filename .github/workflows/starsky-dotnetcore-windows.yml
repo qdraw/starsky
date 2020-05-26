@@ -27,8 +27,8 @@ jobs:
     - name: BuildNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=BuildNetCore
+      run: pwsh build.ps1 --Target=BuildNetCore --no-sonar
     - name: TestNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=TestNetCore
+      run: pwsh build.ps1 --Target=TestNetCore --no-sonar
