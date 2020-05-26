@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starskytest.Controllers
 {
@@ -19,9 +20,12 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void T()
+		public void UpdateAppSettings()
 		{
-			
+			var controller = new AppSettingsController(new AppSettings(), new AppSettingsEditor(new AppSettings()));
+			var actionResult = controller.UpdateAppSettings(new AppSettings {Verbose = true}) as JsonResult;
+			var result = actionResult.Value as AppSettings;
+			Assert.IsTrue(result.Verbose);
 		}
 
 	}
