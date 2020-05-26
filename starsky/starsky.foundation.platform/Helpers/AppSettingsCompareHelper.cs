@@ -147,7 +147,7 @@ namespace starsky.foundation.platform.Helpers
 		    List<string> differenceList)
         {
             if (oldStringValue == newStringValue ||
-                (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
+                (string.IsNullOrEmpty(newStringValue) )) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         

@@ -42,7 +42,9 @@ namespace starsky.Attributes
 			if ( collectedPermissions.Count == 0 )
 			{
 				context.Result =  new ForbidResult();
+				return;
 			}
+			context.HttpContext.Response.Headers.TryAdd("x-permission", "true");
 		}
 	}
 
