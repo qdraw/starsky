@@ -31,4 +31,4 @@ jobs:
     - name: TestNetCore
       shell: pwsh
       working-directory: ./starsky
-      run: pwsh build.ps1 --Target=TestNetCore
+      run: pwsh build.ps1 --Target=TestNetCore --no-sonar
