@@ -35,6 +35,7 @@ var configuration = Argument("Configuration", "Release");
 var genericName = "generic-netcore";
 var runtimeInput = Argument("runtime", genericName);
 var branchName = Argument("branch", "");
+var noSonar = HasArgument("no-sonar") || HasArgument("nosonar");
 
 /* to get a list with the generic item */
 var runtimes = runtimeInput.Split(",").ToList();
@@ -438,6 +439,11 @@ Task("SonarBegin")
             return;
         }
 
+        if( noSonar ) {
+          Information($">> SonarQube is disable due the --no-sonar flag");
+          return;
+        }
+
         // get first test project
         var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
         string netCoreCoverageFile = System.IO.Path.Combine(firstTestProject, "netcore-coverage.opencover.xml");
@@ -485,6 +491,12 @@ Task("SonarEnd")
         Information($">> SonarQube is disabled $ login={login}");
         return;
     }
+
+    if( noSonar ) {
+      Information($">> SonarQube is disable due the --no-sonar flag");
+      return;
+    }
+
     SonarEnd(new SonarEndSettings {
         Login = login,
         Silent = true,
