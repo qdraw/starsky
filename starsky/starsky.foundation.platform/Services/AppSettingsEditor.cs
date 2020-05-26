@@ -8,8 +8,7 @@ namespace starsky.foundation.platform.Services
 	[Service(typeof(IAppSettingsEditor), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class AppSettingsEditor : IAppSettingsEditor
 	{
-		private AppSettings _sourceAppSettings;
-
+		private readonly AppSettings _sourceAppSettings;
 		public AppSettingsEditor(AppSettings appSettings)
 		{
 			_sourceAppSettings = appSettings;
