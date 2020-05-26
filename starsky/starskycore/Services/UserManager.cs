@@ -33,17 +33,8 @@ namespace starskycore.Services
             _dbContext = dbContext;
 	        _cache = memoryCache;
         }
-	    
-	    // public static readonly Action<AuthorizationOptions> Policies = options =>
-	    // {
-		   //  foreach(var permission in AllPermissions) 
-		   //  {
-			  //   options.AddPolicy(permission.ToString(),
-				 //    policy => policy.Requirements.Add(new PermissionRequirement(permission)));
-		   //  }
-	    // };
-	    
-	    public static readonly string AdministratorRoleName = "Administrator";
+
+	    private static readonly string AdministratorRoleName = "Administrator";
 	    
 	    private static readonly string UserRoleName = "User";
 	    
@@ -553,52 +544,42 @@ namespace starskycore.Services
             return claims;
         }
 
-        public enum PermissionEnum
+        public enum AppPermissions
         {
 	        AppSettingsWrite = 10,
         }
         
-        private static readonly List<PermissionEnum> AllPermissions = new List<PermissionEnum>
+        private static readonly List<AppPermissions> AllPermissions = new List<AppPermissions>
         {
-	        PermissionEnum.AppSettingsWrite,
+	        AppPermissions.AppSettingsWrite,
         };
         
-        private IEnumerable<Permission> AddDefaultPermissions()
+        private void AddDefaultPermissions()
         {
-	        var permissions = new List<Permission>();
 	        foreach ( var permissionEnum in AllPermissions )
 	        {
 		        var permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == permissionEnum.ToString());
 
-		        if ( permission == null )
+		        if ( permission != null ) continue;
+		        
+		        permission = new Permission()
 		        {
-			        permission = new Permission()
-			        {
-				        Name = permissionEnum.ToString(),
-				        Code = permissionEnum.ToString(),
-				        Position = (int) permissionEnum,
-			        };
-			        _dbContext.Permissions.Add(permission);
-			        _dbContext.SaveChanges();
-		        }
-
-		        // Get the Int Ids from the database
-		        permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == permissionEnum.ToString());
-			    
-		        permissions.Add(permission);
+			        Name = permissionEnum.ToString(),
+			        Code = permissionEnum.ToString(),
+			        Position = (int) permissionEnum,
+		        };
+		        _dbContext.Permissions.Add(permission);
+		        _dbContext.SaveChanges();
 	        }
-			
-	        return permissions;
         }
 
-        private IEnumerable<RolePermission> AddDefaultRolePermissions()
+        private void AddDefaultRolePermissions()
         {
-	        var existingRolePermissions = new List<KeyValuePair<string,PermissionEnum>>
+	        var existingRolePermissions = new List<KeyValuePair<string,AppPermissions>>
 	        {
-		        new KeyValuePair<string, PermissionEnum>(AdministratorRoleName, PermissionEnum.AppSettingsWrite),
+		        new KeyValuePair<string, AppPermissions>(AdministratorRoleName, AppPermissions.AppSettingsWrite),
 	        };
 	        
-	        var rolePermissions = new List<RolePermission>();
 	        foreach ( var rolePermissionsDictionary in existingRolePermissions )
 	        {
 		        var role = _dbContext.Roles.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
@@ -610,7 +591,6 @@ namespace starskycore.Services
 
 		        if ( rolePermission != null )
 		        {
-			        rolePermissions.Add(rolePermission);
 			        continue;
 		        }
 
@@ -622,11 +602,7 @@ namespace starskycore.Services
 		        
 		        _dbContext.RolePermissions.Add(rolePermission);
 		        _dbContext.SaveChanges();
-		        
-		        rolePermissions.Add(rolePermission);
-	        }
-			
-	        return rolePermissions;
+		    }
         }
     }
 }

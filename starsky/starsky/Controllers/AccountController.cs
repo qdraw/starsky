@@ -1,9 +1,9 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +12,6 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.Helpers;
 using starskycore.Interfaces;
-using starskycore.Services;
 using starskycore.ViewModels.Account;
 
 namespace starsky.Controllers
@@ -225,18 +224,16 @@ namespace starsky.Controllers
 	        return Json("Account Register page is closed");
         }
         
-        
         /// <summary>
         /// List of current permissions
         /// </summary>
-        /// <returns>isAdministrator</returns>
-        /// <response code="200">yes im admin</response>
-        /// <response code="203">nope im not admin</response>
+        /// <returns>list of current permissions</returns>
+        /// <response code="200">list of permissions</response>
         /// <response code="401"> please login first</response>
         [HttpGet("/api/account/permissions")]
         [Authorize]
-        [ProducesResponseType(typeof(bool),200)]
-        [ProducesResponseType(typeof(bool),203)]
+        [ProducesResponseType(typeof(List<string>),200)]
+        [ProducesResponseType(401)]
         public IActionResult Permissions()
         {
 	        var claims = User.Claims.Where(p=> p.Type == "Permission").Select( p=>  p.Value);

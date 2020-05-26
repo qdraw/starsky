@@ -11,8 +11,8 @@ namespace starsky.Attributes
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 	public class PermissionAttribute : AuthorizeAttribute, IAuthorizationFilter
 	{
-		private readonly UserManager.PermissionEnum[] _permissions;
-		public PermissionAttribute(params UserManager.PermissionEnum[] permission)
+		private readonly UserManager.AppPermissions[] _permissions;
+		public PermissionAttribute(params UserManager.AppPermissions[] permission)
 		{
 			_permissions = permission;
 		}
@@ -26,7 +26,7 @@ namespace starsky.Attributes
 				context.Result =  new ForbidResult();
 			}
 
-			var collectedPermissions = new List<UserManager.PermissionEnum>();
+			var collectedPermissions = new List<UserManager.AppPermissions>();
 			foreach ( var permission in _permissions )
 			{
 				var claim = user.Claims.FirstOrDefault(p =>

@@ -20,17 +20,9 @@ namespace starsky.foundation.platform.Helpers
             PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             var differenceList = new List<string>();
-	        int count = propertiesA.Length;
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < propertiesA.Length; i++)
             {
                 if ((!propertiesA[i].CanRead) || (!propertiesB[i].CanRead)) continue;
-                
-                if (propertiesA[i].PropertyType == typeof(string))
-                {
-                    var oldStringValue = (string)propertiesA[i].GetValue(sourceIndexItem, null);
-                    var newStringValue = (string)propertiesB[i].GetValue(updateObject, null);
-                    CompareString(propertiesB[i].Name, sourceIndexItem, oldStringValue, newStringValue, differenceList);
-                }
 
                 if (propertiesA [i].PropertyType == typeof(bool))
                 {
@@ -38,7 +30,14 @@ namespace starsky.foundation.platform.Helpers
                     var newBoolValue = (bool)propertiesB [i].GetValue(updateObject, null);
                     CompareBool(propertiesB[i].Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
                 }
-
+                
+                if (propertiesA[i].PropertyType == typeof(string))
+                {
+	                var oldStringValue = (string)propertiesA[i].GetValue(sourceIndexItem, null);
+	                var newStringValue = (string)propertiesB[i].GetValue(updateObject, null);
+	                CompareString(propertiesB[i].Name, sourceIndexItem, oldStringValue, newStringValue, differenceList);
+                }
+                
 	            if ( propertiesA[i].PropertyType == typeof(List<string>) )
 	            {
 		            var oldListStringValue = ( List<string> ) propertiesA[i].GetValue(sourceIndexItem, null);

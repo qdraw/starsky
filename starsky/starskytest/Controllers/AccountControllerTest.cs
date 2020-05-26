@@ -100,6 +100,7 @@ namespace starskytest.Controllers
 		    {
 			    new Claim(ClaimTypes.Name, name),
 			    new Claim(ClaimTypes.NameIdentifier, id),
+			    new Claim("Permission", "fakePermission"),
 		    };
 		    var identity = new ClaimsIdentity(claims, "Test");
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
@@ -500,6 +501,27 @@ namespace starskytest.Controllers
 	        var actionResult = controller.Status() as JsonResult;
             
 	        Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
+        }
+        
+        [TestMethod]
+        public void Permissions()
+        {
+
+	        var claims = SetTestClaimsSet("test", "1");
+	        var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = claims
+		        }}
+	        };
+
+	        var actionResult = controller.Permissions() as JsonResult;
+	        var list = actionResult.Value as IEnumerable<string>;
+
+	        var expectedPermission =
+		        claims.Claims.Where(p => p.Type == "Permission").FirstOrDefault().Value;
+	        Assert.AreEqual(expectedPermission,list.FirstOrDefault());
         }
     }
 }
