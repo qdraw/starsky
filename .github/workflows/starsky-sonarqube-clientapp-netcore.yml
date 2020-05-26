@@ -54,4 +54,4 @@ jobs:
         STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
         STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
       working-directory: ./starsky
-      run: bash build.sh
+      run: bash build.sh --branch=$GITHUB_REF
