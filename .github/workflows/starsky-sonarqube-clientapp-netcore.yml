@@ -1,4 +1,4 @@
-name: Starsky ClientApp NetCore SonarQube
+name: Starsky SonarQube ClientApp NetCore 
 
 on:
   push:
@@ -27,4 +27,4 @@ jobs:
     - name: Build
       shell: bash
       working-directory: ./starsky
-      run: bash build.sh --Target=Build
+      run: bash build.sh
