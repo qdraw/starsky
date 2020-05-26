@@ -29,5 +29,10 @@ jobs:
         dotnet-version: 3.1.201
     - name: Build
       shell: bash
+      env:
+        STARSKY_SONAR_KEY: ${{ secrets.STARSKY_SONAR_KEY }}
+        STARSKY_SONAR_LOGIN: ${{ secrets.STARSKY_SONAR_LOGIN }}
+        STARSKY_SONAR_ORGANISATION: ${{ secrets.STARSKY_SONAR_ORGANISATION }}
+        STARSKY_SONAR_URL:  ${{ secrets.STARSKY_SONAR_URL }}
       working-directory: ./starsky
       run: bash build.sh
