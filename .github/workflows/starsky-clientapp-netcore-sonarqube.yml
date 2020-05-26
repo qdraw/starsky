@@ -1,0 +1,30 @@
+name: Starsky ClientApp NetCore SonarQube
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/**'
+    - '!starsky/starsky/clientapp/**'
+    - '.github/workflows/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+    - name: Build
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target=Build
