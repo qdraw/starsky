@@ -13,7 +13,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ENV_StarskyTestEnv()
 		{
-			var controller = new AppSettingsController(new AppSettings(),null);
+			var controller = new AppSettingsController(new AppSettings());
 			var actionResult = controller.Env() as JsonResult;
 			var resultAppSettings = actionResult.Value as AppSettings;
 			Assert.AreEqual("Starsky", resultAppSettings.Name);
@@ -22,7 +22,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void UpdateAppSettings()
 		{
-			var controller = new AppSettingsController(new AppSettings(), new AppSettingsEditor(new AppSettings()));
+			var controller = new AppSettingsController(new AppSettings());
 			var actionResult = controller.UpdateAppSettings(new AppSettings {Verbose = true}) as JsonResult;
 			var result = actionResult.Value as AppSettings;
 			Assert.IsTrue(result.Verbose);

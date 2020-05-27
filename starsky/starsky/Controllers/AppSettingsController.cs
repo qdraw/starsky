@@ -1,8 +1,10 @@
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -10,13 +12,11 @@ namespace starsky.Controllers
 	[Authorize]
 	public class AppSettingsController : Controller
 	{
-		private AppSettings _appSettings;
-		private readonly IAppSettingsEditor _appSettingsEditor;
+		private readonly AppSettings _appSettings;
 
-		public AppSettingsController(AppSettings appSettings ,IAppSettingsEditor appSettingsEditor)
+		public AppSettingsController(AppSettings appSettings)
 		{
 			_appSettings = appSettings;
-			_appSettingsEditor = appSettingsEditor;
 		}
 		
 		/// <summary>
@@ -48,8 +48,7 @@ namespace starsky.Controllers
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
 		public IActionResult UpdateAppSettings(AppSettings toAppSettings)
 		{
-			_appSettingsEditor.Update(toAppSettings);
-			_appSettings = toAppSettings;
+			new AppSettingsEditor(_appSettings).Update(toAppSettings);
 			return Env();
 		}
 	}
