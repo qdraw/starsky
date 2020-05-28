@@ -8,7 +8,7 @@
     <Version>0.2.5</Version>
     <!-- SonarQube needs this -->
     <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
-    <DefineConstants>_not_enabled__SYSTEM_TEXT_ENABLED</DefineConstants>
+    <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

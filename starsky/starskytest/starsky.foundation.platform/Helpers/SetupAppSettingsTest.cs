@@ -47,13 +47,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-		public void SetLocalAppData_ShouldIgnore()
+		public void SetLocalAppData_ShouldTakeDefault()
 		{
 			var builder = SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
 			var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, builder);
 			
-			Assert.IsTrue(string.IsNullOrEmpty(appSettings.AppSettingsPath));
+			var expectedPath = Path.Combine(appSettings.BaseDirectoryProject, "appsettings.patch.json");
+			Assert.AreEqual(expectedPath, appSettings.AppSettingsPath);
 			Assert.IsFalse(appSettings.IsAccountRegisterOpen);
 		}
 		

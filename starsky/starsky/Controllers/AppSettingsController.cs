@@ -1,10 +1,16 @@
 using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -13,10 +19,12 @@ namespace starsky.Controllers
 	public class AppSettingsController : Controller
 	{
 		private readonly AppSettings _appSettings;
+		private readonly IStorage _hostStorage;
 
-		public AppSettingsController(AppSettings appSettings)
+		public AppSettingsController(AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
+			_hostStorage = selectorStorage.Get( SelectorStorage.StorageServices.HostFilesystem);
 		}
 		
 		/// <summary>
@@ -46,9 +54,13 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(AppSettings),200)]
 		[ProducesResponseType(typeof(AppSettings),401)]
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
-		public IActionResult UpdateAppSettings(AppSettings toAppSettings)
+		public async Task<IActionResult> UpdateAppSettings(AppSettings toAppSettings)
 		{
-			new AppSettingsEditor(_appSettings).Update(toAppSettings);
+			AppSettingsCompareHelper.Compare(_appSettings, toAppSettings);
+			var output = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions { WriteIndented = true });
+			await _hostStorage.WriteStreamAsync(
+				new PlainTextFileHelper().StringToStream(output),
+				_appSettings.AppSettingsPath);
 			return Env();
 		}
 	}

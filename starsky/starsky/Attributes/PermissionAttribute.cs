@@ -23,7 +23,7 @@ namespace starsky.Attributes
 
 			if (!user.Identity.IsAuthenticated)
 			{
-				context.Result =  new ForbidResult();
+				context.Result = new UnauthorizedResult();
 			}
 
 			var collectedPermissions = new List<UserManager.AppPermissions>();
@@ -41,7 +41,7 @@ namespace starsky.Attributes
 
 			if ( collectedPermissions.Count == 0 )
 			{
-				context.Result =  new ForbidResult();
+				context.Result =  new UnauthorizedResult();
 				return;
 			}
 			context.HttpContext.Response.Headers.TryAdd("x-permission", "true");

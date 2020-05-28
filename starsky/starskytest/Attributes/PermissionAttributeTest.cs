@@ -27,7 +27,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new ForbidResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]
@@ -49,7 +49,7 @@ namespace starskytest.Attributes
 			
 			permissionAttribute.OnAuthorization(authorizationFilterContext);
 			
-			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new ForbidResult().GetType());
+			Assert.AreEqual(authorizationFilterContext.Result.GetType(), new UnauthorizedResult().GetType());
 		}
 		
 		[TestMethod]

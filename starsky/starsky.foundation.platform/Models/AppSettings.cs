@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 #else
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 #endif
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using starsky.foundation.platform.Helpers;
 using TimeZoneConverter;
 
@@ -33,6 +33,9 @@ namespace starsky.foundation.platform.Models
             // may be cleaned after restart (not implemented)
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
             if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+            
+            // Set the default write to appSsettings file
+            AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
             SetDefaultExifToolPath();
@@ -266,7 +269,7 @@ namespace starsky.foundation.platform.Models
         /// To store the settings by user in the AppData folder
         /// Used by the Desktop App
         /// </summary>
-        public string AppSettingsPath { get; set; } = "";
+        public string AppSettingsPath { get; set; } // set by ctor
 
         /// <summary>
         /// Is the host of the Application Windows
