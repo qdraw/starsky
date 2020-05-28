@@ -190,8 +190,21 @@ namespace starsky.foundation.platform.Helpers
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList)
         {
+	        var propertyInfos = new AppSettings().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+	        var t= propertyInfos.FirstOrDefault(p => 
+		        string.Equals(p.Name, propertyName, StringComparison.InvariantCultureIgnoreCase)
+		        );
+		        
+	        
+	        var defaultValue = (string)t.GetValue(propertyInfos, null);
+
+	        
+	        
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) )) return;
+
+
+
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         
