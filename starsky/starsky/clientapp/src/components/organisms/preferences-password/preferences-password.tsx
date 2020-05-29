@@ -54,6 +54,10 @@ export const PreferencesPassword: React.FunctionComponent<any> = (_) => {
       setError(MessagePasswordChanged)
       return;
     }
+    if (response.statusCode === 401) {
+      setError(MessageCurrentPassword)
+      return;
+    }
     setError(MessagePasswordModalError)
   }
 
