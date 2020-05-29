@@ -1,13 +1,12 @@
-using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -57,7 +56,15 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAppSettings(AppSettings toAppSettings)
 		{
 			AppSettingsCompareHelper.Compare(_appSettings, toAppSettings);
-			var output = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions { WriteIndented = true });
+			var output = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions
+			{
+				WriteIndented = true, 
+				Converters =
+				{
+					new JsonBoolQuotedConverter(),
+				}
+			});
+			
 			await _hostStorage.WriteStreamAsync(
 				new PlainTextFileHelper().StringToStream(output),
 				_appSettings.AppSettingsPath);
