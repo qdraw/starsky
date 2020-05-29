@@ -30,7 +30,8 @@
 		"typescript.preferences.quoteStyle": "single",
 		"typescript.updateImportsOnFileMove.enabled": "always",
 		"cSpell.words": [
-			"Starsky"
+			"Starsky",
+			"unmount"
 		],
 	}
 }
