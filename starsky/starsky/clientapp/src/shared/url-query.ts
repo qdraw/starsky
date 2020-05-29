@@ -53,6 +53,10 @@ export class UrlQuery {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/import` : `${this.prefix}/import`;
   }
 
+  public UrlPreferencesPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/preferences` : `${this.prefix}/preferences`;
+  }
+
   public UrlLoginPage(): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
   }
@@ -99,6 +103,10 @@ export class UrlQuery {
 
   public UrlAccountRegisterStatus = (): string => {
     return this.prefix + "/account/register/status";
+  }
+
+  public UrlAccountChangeSecret = (): string => {
+    return this.prefix + "/api/account/change-secret";
   }
 
   /**

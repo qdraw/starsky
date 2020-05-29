@@ -272,8 +272,8 @@ namespace starskytest.Controllers
 
 	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
-	        var actionResult = controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
-	        Assert.AreEqual(400,actionResult.StatusCode);
+	        var actionResult = controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+	        Assert.AreEqual(401,actionResult.StatusCode);
         }
         
 

@@ -110,5 +110,33 @@ namespace starskytest.Controllers
 			};
 			controller.Register();
 		}
+		
+		[TestMethod]
+		public void Preferences()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/preferences");
+
+			var actionResult = controller.Preferences() as PhysicalFileResult;
+			Assert.AreEqual("text/html", actionResult.ContentType);
+		}
+		
+				
+		[TestMethod]
+		public void Preferences_Expect_Capital()
+		{
+			var controller = new HomeController(_antiForgery)
+			{
+				ControllerContext = {HttpContext = _httpContext}
+			};
+			controller.ControllerContext.HttpContext.Request.Path = new PathString("/Preferences");
+
+			var actionResult = controller.Preferences() as RedirectResult;
+			Assert.AreEqual("/preferences", actionResult.Url);
+		}
+
 	}
 }

@@ -101,10 +101,12 @@
   margin-bottom: 4px;
 }
 
+.content--text label, 
 .content--text .btn,
 .content--text h4 {
   margin-top: 10px;
   margin-bottom: 5px;
+  display: inline-block;
 }
 
 .content--header .btn,

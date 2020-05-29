@@ -127,9 +127,9 @@ namespace starsky.Controllers
         /// <param name="model">Password, ChangedPassword and ChangedConfirmPassword</param>
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
-        /// <response code="400">old password is not correct or Model is not correct</response>
-        /// <response code="401"> please login first</response>
-        [HttpPost("/account/change-secret")]
+        /// <response code="400">Model is not correct</response>
+        /// <response code="401"> please login first or your current password is not correct</response>
+        [HttpPost("/api/account/change-secret")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),401)]
@@ -152,7 +152,7 @@ namespace starsky.Controllers
 		        _userManager.Validate("Email", credential.Identifier, model.Password);
 	        if ( !validateResult.Success )
 	        {
-		        return BadRequest("Password is not correct");
+		        return Unauthorized("Password is not correct");
 	        }
 
 	        var changeSecretResult =
