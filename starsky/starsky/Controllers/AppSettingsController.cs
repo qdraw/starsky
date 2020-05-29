@@ -56,7 +56,8 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAppSettings(AppSettings toAppSettings)
 		{
 			AppSettingsCompareHelper.Compare(_appSettings, toAppSettings);
-			var output = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions
+			
+			var json = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions
 			{
 				WriteIndented = true, 
 				Converters =
@@ -65,8 +66,10 @@ namespace starsky.Controllers
 				}
 			});
 			
+			var jsonOutput = json.Replace(new AppSettings().BaseDirectoryProject, "{AssemblyDirectory}");
+
 			await _hostStorage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream(output),
+				new PlainTextFileHelper().StringToStream(jsonOutput),
 				_appSettings.AppSettingsPath);
 			return Env();
 		}

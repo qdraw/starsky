@@ -34,7 +34,7 @@ namespace starsky.foundation.platform.Models
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
             if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
             
-            // Set the default write to appSsettings file
+            // Set the default write to appSettings file
             AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
@@ -261,16 +261,24 @@ namespace starsky.foundation.platform.Models
         private string _tempFolder;
         public string TempFolder
         {
-            get => _tempFolder;
+            get => AssemblyDirectoryReplacer(_tempFolder);
 	        set => _tempFolder = PathHelper.AddBackslash(value);
         }
 
+        private string _appSettingsPathPrivate;
+        
         /// <summary>
         /// To store the settings by user in the AppData folder
         /// Used by the Desktop App
         /// </summary>
-        public string AppSettingsPath { get; set; } // set by ctor
-
+        public string AppSettingsPath
+        {
+	        get => AssemblyDirectoryReplacer(_appSettingsPathPrivate); 
+	        // ReSharper disable once MemberCanBePrivate.Global
+	        set => _appSettingsPathPrivate = value; // set by ctor
+        }
+        
+        
         /// <summary>
         /// Is the host of the Application Windows
         /// </summary>
@@ -390,6 +398,11 @@ namespace starsky.foundation.platform.Models
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------
+
+	    private string AssemblyDirectoryReplacer(string value)
+	    {
+		    return value.Replace("{AssemblyDirectory}", BaseDirectoryProject);
+	    }
 	    
 	    /// <summary>
 	    /// Used for CloneToDisplay

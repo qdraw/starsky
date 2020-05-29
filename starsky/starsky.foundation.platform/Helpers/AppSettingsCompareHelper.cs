@@ -8,7 +8,8 @@ namespace starsky.foundation.platform.Helpers
 {
     public static class AppSettingsCompareHelper
     {
-        /// <summary>
+
+	    /// <summary>
         /// Compare a fileIndex item and update items if there are changed in the updateObject
         /// append => (propertyName == "Tags" add it with comma space or with single space)
         /// </summary>
@@ -190,28 +191,33 @@ namespace starsky.foundation.platform.Helpers
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList)
         {
-	        var propertyInfos = new AppSettings().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-	        var t= propertyInfos.FirstOrDefault(p => 
-		        string.Equals(p.Name, propertyName, StringComparison.InvariantCultureIgnoreCase)
-		        );
-		        
-	        
-	        var defaultValue = (string)t.GetValue(propertyInfos, null);
+	        var newAppSettings = new AppSettings();
 
-	        
+	        var defaultValue = GetPropertyValue(newAppSettings, propertyName) as string;
+	        if ( newStringValue == defaultValue ) return;
 	        
             if (oldStringValue == newStringValue ||
                 (string.IsNullOrEmpty(newStringValue) )) return;
-
-
-
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
-                        
+            
 	        propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             
             differenceList.Add(propertyName.ToLowerInvariant());
         }
+	    
+	    /// <summary>
+	    /// @see: https://stackoverflow.com/a/5508068
+	    /// </summary>
+	    /// <param name="car"></param>
+	    /// <param name="propertyName"></param>
+	    /// <returns></returns>
+	    private static object GetPropertyValue(object car, string propertyName)
+	    {
+		    return car.GetType().GetProperties()
+			    .Single(pi => pi.Name == propertyName)
+			    .GetValue(car, null);
+	    }
 
     }
 }
