@@ -35,5 +35,9 @@ fi
 # Start Cake
 
 dotnet tool run dotnet-cake  "--" "$SCRIPT" "$@"
+EXITSTATUS=$?
 
 popd
+
+[ $EXITSTATUS -eq 0 ] && echo "build was successful" || echo "build failed"
+exit $EXITSTATUS
