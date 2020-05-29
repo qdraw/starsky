@@ -109,6 +109,10 @@ export class UrlQuery {
     return this.prefix + "/api/account/change-secret";
   }
 
+  public UrlAccountPermissions = (): string => {
+    return this.prefix + "/api/account/permissions";
+  }
+
   /**
    * Keep colorClass in URL
    */
@@ -202,6 +206,10 @@ export class UrlQuery {
   // http://localhost:5000/api/downloadPhoto?f=%2F__starsky%2F0001-readonly%2F4.jpg&isThumbnail=True
   public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true): string => {
     return this.prefix + "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
+  }
+
+  public UrlApiAppSettings = (): string => {
+    return this.prefix + "/api/env/"
   }
 
   /**

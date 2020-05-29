@@ -63,7 +63,7 @@ export const PreferencesPassword: React.FunctionComponent<any> = (_) => {
 
   return <>
     <form
-      className="preferences-password form-inline"
+      className="preferences preferences--password form-inline"
       onSubmit={async e => {
         e.preventDefault();
         setError(null);

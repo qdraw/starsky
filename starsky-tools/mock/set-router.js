@@ -1,4 +1,5 @@
 var apiAccountChangeSecretIndex = require('./api/account/change-secret/index.json')
+var apiAccountPermissionsIndex = require('./api/account/permissions/index.json');
 
 var accountStatus = require('./account/status/index.json')
 var apiHealthDetails = require('./api/health/details/index.json')
@@ -43,6 +44,9 @@ function setRouter(app) {
     return res.json("Account Created");
   });
 
+  app.get(prefix + '/api/account/permissions', (req, res) => {
+    res.json(apiAccountPermissionsIndex)
+  });
 
   app.get(prefix + '/api/health/details', (req, res) => {
     res.status(503);

@@ -7,6 +7,7 @@ import { UrlQuery } from '../../../shared/url-query';
 import PreferencesPassword from './preferences-password';
 
 describe("PreferencesPassword", () => {
+
   it("renders", () => {
     shallow(<PreferencesPassword />)
   });
