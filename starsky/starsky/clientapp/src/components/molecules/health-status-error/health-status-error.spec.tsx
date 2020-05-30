@@ -14,7 +14,7 @@ describe("ItemListView", () => {
 
   describe("with Context", () => {
     it("Ok ", () => {
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
       });
@@ -24,7 +24,7 @@ describe("ItemListView", () => {
     });
 
     it("Error 500", () => {
-      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return { ...newIConnectionDefault(), statusCode: 500 };
       });

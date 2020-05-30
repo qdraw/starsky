@@ -55,7 +55,7 @@ describe("PreferencesPassword", () => {
     it("Your password has been successfully changed", async () => {
       var component = mount(<PreferencesPassword />);
       // spy on fetch
-      // use this using => import * as FetchPost from '../shared/fetch-post';
+      // use this using => import * as FetchPost from '../../../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: { success: true } });
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
