@@ -51,7 +51,7 @@ Linux:
 
 OS X:
 ```
-~/Library/Application Support/starsky/Cache
+~/Library/Application\ Support/starsky/Cache
 ```
 
 ## Build instructions
