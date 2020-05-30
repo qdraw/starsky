@@ -6,7 +6,7 @@ namespace starsky.foundation.platform.JsonConverter
 {
 	public class JsonBoolQuotedConverter : JsonConverter<bool>
 	{
-		public override bool Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+		public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 		{
 			return reader.GetBoolean();
 		}
