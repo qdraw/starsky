@@ -6,7 +6,7 @@
         <ProjectGuid>{10a49647-83ab-43c4-a3ff-8b0767518023}</ProjectGuid>
         <DebugType>Full</DebugType>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
-        <Version>0.2.5</Version>
+        <Version>0.2.6</Version>
     </PropertyGroup>
 
     <ItemGroup>
