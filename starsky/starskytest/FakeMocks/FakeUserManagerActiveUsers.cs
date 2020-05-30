@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
 
 namespace starskytest.FakeMocks
@@ -19,10 +20,12 @@ namespace starskytest.FakeMocks
 				Extra = "TgBCDRHGklOMqJ/mAJYqHg==",
 				CredentialTypeId = 1
 			};
+			Role = new Role {Code = AccountRoles.AppAccountRoles.User.ToString()};
 		}
 		
 		public User CurrentUser => new User {Name = "t1", Id = 99};
 		public Credential Credentials { get; set; }
+		public Role Role { get; set; }
 
 		public List<User> AllUsers()
 		{
@@ -37,6 +40,26 @@ namespace starskytest.FakeMocks
 		public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
 		{
 			throw new System.NotImplementedException();
+		}
+
+		public void AddToRole(User user, string roleCode)
+		{
+			AddToRole(user,new Role{Code = roleCode});
+		}
+
+		public void AddToRole(User user, Role role)
+		{
+			Role = role;
+		}
+
+		public void RemoveFromRole(User user, string roleCode)
+		{
+			Role = null;
+		}
+
+		public void RemoveFromRole(User user, Role role)
+		{
+			Role = null;
 		}
 
 		public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
@@ -72,6 +95,11 @@ namespace starskytest.FakeMocks
 			return CurrentUser;
 		}
 
+		public User GetUser(string credentialTypeCode, string identifier)
+		{
+			return CurrentUser;
+		}
+
 		public Credential GetCredentialsByUserId(int userId)
 		{
 			return Credentials;
@@ -89,6 +117,11 @@ namespace starskytest.FakeMocks
 				return CurrentUser;
 			}
 			return null;
+		}
+
+		public Role GetRole(string credentialTypeCode, string identifier)
+		{
+			return Role;
 		}
 	}
 }

@@ -73,7 +73,7 @@ namespace starsky.foundation.storage.Services
 #pragma warning restore 1998
         {
 	        var task = Task.Run(() => CalculateMd5Async(fullFileName));
-			if (task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
+			if (timeoutSeconds >= 1 && task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
 				return new KeyValuePair<string,bool>(task.Result,true);
 			}
 

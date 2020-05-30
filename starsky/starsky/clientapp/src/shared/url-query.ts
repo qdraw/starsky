@@ -53,6 +53,10 @@ export class UrlQuery {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/import` : `${this.prefix}/import`;
   }
 
+  public UrlPreferencesPage(): string {
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/preferences` : `${this.prefix}/preferences`;
+  }
+
   public UrlLoginPage(): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
   }
@@ -99,6 +103,14 @@ export class UrlQuery {
 
   public UrlAccountRegisterStatus = (): string => {
     return this.prefix + "/account/register/status";
+  }
+
+  public UrlAccountChangeSecret = (): string => {
+    return this.prefix + "/api/account/change-secret";
+  }
+
+  public UrlAccountPermissions = (): string => {
+    return this.prefix + "/api/account/permissions";
   }
 
   /**
@@ -194,6 +206,10 @@ export class UrlQuery {
   // http://localhost:5000/api/downloadPhoto?f=%2F__starsky%2F0001-readonly%2F4.jpg&isThumbnail=True
   public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true): string => {
     return this.prefix + "/api/downloadPhoto?f=" + f + "&isThumbnail=" + isThumbnail;
+  }
+
+  public UrlApiAppSettings = (): string => {
+    return this.prefix + "/api/env/"
   }
 
   /**

@@ -1,6 +1,7 @@
 ﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -126,9 +127,9 @@ namespace starsky.Controllers
         /// <param name="model">Password, ChangedPassword and ChangedConfirmPassword</param>
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
-        /// <response code="400">old password is not correct or Model is not correct</response>
-        /// <response code="401"> please login first</response>
-        [HttpPost("/account/change-secret")]
+        /// <response code="400">Model is not correct</response>
+        /// <response code="401"> please login first or your current password is not correct</response>
+        [HttpPost("/api/account/change-secret")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),401)]
@@ -151,7 +152,7 @@ namespace starsky.Controllers
 		        _userManager.Validate("Email", credential.Identifier, model.Password);
 	        if ( !validateResult.Success )
 	        {
-		        return BadRequest("Password is not correct");
+		        return Unauthorized("Password is not correct");
 	        }
 
 	        var changeSecretResult =
@@ -222,7 +223,22 @@ namespace starsky.Controllers
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }
-       
+        
+        /// <summary>
+        /// List of current permissions
+        /// </summary>
+        /// <returns>list of current permissions</returns>
+        /// <response code="200">list of permissions</response>
+        /// <response code="401"> please login first</response>
+        [HttpGet("/api/account/permissions")]
+        [Authorize]
+        [ProducesResponseType(typeof(List<string>),200)]
+        [ProducesResponseType(401)]
+        public IActionResult Permissions()
+        {
+	        var claims = User.Claims.Where(p=> p.Type == "Permission").Select( p=>  p.Value);
+	        return Json(claims);
+        }
 
     }
 }

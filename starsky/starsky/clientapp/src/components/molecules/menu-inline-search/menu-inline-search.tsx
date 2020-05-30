@@ -21,6 +21,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
     { "name": language.text("Foto's van deze week", "Photos of this week"), "url": new UrlQuery().UrlSearchPage('-Datetime%3E7%20-ImageFormat-%22tiff%22') },
     { "name": language.text("Prullenmand", "Trash"), url: new UrlQuery().UrlTrashPage() },
     { "name": language.text("Importeren", "Import"), url: new UrlQuery().UrlImportPage() },
+    { "name": language.text("Voorkeuren", "Preferences"), url: new UrlQuery().UrlPreferencesPage() },
     { "name": language.text("Uitloggen", "Logout"), url: new UrlQuery().UrlLoginPage() }
   ];
   var history = useLocation();

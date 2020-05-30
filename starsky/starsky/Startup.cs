@@ -22,12 +22,9 @@ using Microsoft.Net.Http.Headers;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.Health;
 using starsky.Helpers;
-using starskycore.Helpers;
 using starskycore.Middleware;
 
 namespace starsky
@@ -46,14 +43,7 @@ namespace starsky
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // configs
-            services.ConfigurePoCo<AppSettings>(_configuration.GetSection("App"));
-            
-            // Need to rebuild for AppSettings
-            // ReSharper disable once ASP0000
-            var serviceProvider = services.BuildServiceProvider();
-            
-            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+	        _appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, _configuration);
 
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache

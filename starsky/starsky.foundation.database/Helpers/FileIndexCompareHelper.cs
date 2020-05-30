@@ -103,7 +103,6 @@ namespace starsky.foundation.database.Helpers
             return differenceList;
         }
 
-
 	    /// <summary>
 	    /// Set values by string name. fieldContent must by the right type
 	    /// wrong types are ignored by default
@@ -148,7 +147,6 @@ namespace starsky.foundation.database.Helpers
 		    return null;
 	    }
 	    
-	    
 	    /// <summary>
 	    /// Check if property exist in FileIndexItem
 	    /// </summary>
@@ -172,7 +170,7 @@ namespace starsky.foundation.database.Helpers
 		    if(updateObject == null) updateObject = new FileIndexItem();
 		    PropertyInfo[] propertiesA = sourceIndexItem.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 		    PropertyInfo[] propertiesB = updateObject.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
+	    
 		    int count = propertiesA.Length;
 		    for ( int i = 0; i < count; i++ )
 		    {
@@ -183,7 +181,7 @@ namespace starsky.foundation.database.Helpers
 			    
 			    sourceIndexItem.GetType().GetProperty(propertiesA[i].Name).SetValue(sourceIndexItem, newRotationValue, null);
 		    }
-
+	    
 		    return sourceIndexItem;
 	    }
 
@@ -218,7 +216,6 @@ namespace starsky.foundation.database.Helpers
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newDoubleValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
-
 	    
 	    /// <summary>
 	    /// Compare ushort type 
@@ -235,7 +232,6 @@ namespace starsky.foundation.database.Helpers
 		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newUshortValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
-	    
 	    
 	    /// <summary>
 	    /// Compare imageFormat type

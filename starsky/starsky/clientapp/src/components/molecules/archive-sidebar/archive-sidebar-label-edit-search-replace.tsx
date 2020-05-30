@@ -131,34 +131,34 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
-      <FormControl onInput={handleUpdateChange} name="tags" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="tags" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>
       <span className="arrow-to"></span>
-      <FormControl onInput={handleUpdateChange} name="replace-tags" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-tags" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>
 
       <h4>Info:</h4>
-      <FormControl onInput={handleUpdateChange} name="description" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="description" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>
       <span className="arrow-to"></span>
-      <FormControl onInput={handleUpdateChange} name="replace-description" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-description" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>
 
       <h4>{MessageTitleName}:</h4>
-      <FormControl onInput={handleUpdateChange} name="title" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="title" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>
       <span className="arrow-to"></span>
-      <FormControl onInput={handleUpdateChange} name="replace-title" className="form-control--half inline-block"
+      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-title" className="form-control--half inline-block"
         contentEditable={!state.isReadOnly && select.length !== 0}>
         &nbsp;
       </FormControl>

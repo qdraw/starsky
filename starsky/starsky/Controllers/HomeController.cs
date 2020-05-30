@@ -146,6 +146,25 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
+		/// Preferences page
+		/// </summary>
+		/// <returns>client app html</returns>
+		/// <response code="200">client app html</response>
+		/// <response code="301">Is Case Sensitive Redirect</response>
+		[Produces("text/html")]
+		[ProducesResponseType(200)]
+		[ProducesResponseType(301)]
+		[HttpGet("/preferences")]
+		public IActionResult Preferences()
+		{
+			if ( IsCaseSensitiveRedirect("/preferences", Request.Path.Value) )
+			{
+				return Redirect($"/preferences");
+			}
+			return PhysicalFile(_clientApp, "text/html");
+		}
+		
+		/// <summary>
 		/// View the Register form
 		/// </summary>
 		/// <param name="returnUrl">when successful continue</param>

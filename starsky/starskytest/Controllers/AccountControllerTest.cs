@@ -68,6 +68,7 @@ namespace starskytest.Controllers
             services.AddSingleton<IAuthenticationService, NoOpAuth>();
             
             services.AddSingleton<IUserManager, UserManager>();
+            services.AddSingleton<AppSettings, AppSettings>();
 
             services.AddLogging();
 
@@ -81,17 +82,16 @@ namespace starskytest.Controllers
 
             _serviceProvider = services.BuildServiceProvider();
             
+            _appSettings = new AppSettings();
             
             // InMemory
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test123");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
-            _userManager = new UserManager(_dbContext);
+            _userManager = new UserManager(_dbContext,_appSettings);
 
-            _appSettings = new AppSettings();
             _antiForgery = new FakeAntiforgery();
-
         }
 
 	    private ClaimsPrincipal SetTestClaimsSet(string name, string id)
@@ -100,6 +100,7 @@ namespace starskytest.Controllers
 		    {
 			    new Claim(ClaimTypes.Name, name),
 			    new Claim(ClaimTypes.NameIdentifier, id),
+			    new Claim("Permission", "fakePermission"),
 		    };
 		    var identity = new ClaimsIdentity(claims, "Test");
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
@@ -179,7 +180,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_is_not_correct_NoUsersActive()
         {
-            var controller = new AccountController(new UserManager(_dbContext), _appSettings,_antiForgery);
+            var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 
@@ -271,8 +272,8 @@ namespace starskytest.Controllers
 
 	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
-	        var actionResult = controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
-	        Assert.AreEqual(400,actionResult.StatusCode);
+	        var actionResult = controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+	        Assert.AreEqual(401,actionResult.StatusCode);
         }
         
 
@@ -500,6 +501,27 @@ namespace starskytest.Controllers
 	        var actionResult = controller.Status() as JsonResult;
             
 	        Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
+        }
+        
+        [TestMethod]
+        public void Permissions()
+        {
+
+	        var claims = SetTestClaimsSet("test", "1");
+	        var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext
+		        {
+			        User = claims
+		        }}
+	        };
+
+	        var actionResult = controller.Permissions() as JsonResult;
+	        var list = actionResult.Value as IEnumerable<string>;
+
+	        var expectedPermission =
+		        claims.Claims.Where(p => p.Type == "Permission").FirstOrDefault().Value;
+	        Assert.AreEqual(expectedPermission,list.FirstOrDefault());
         }
     }
 }

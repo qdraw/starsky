@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 
@@ -25,12 +26,14 @@ namespace starskycore.Services
     {
         private readonly ApplicationDbContext _dbContext;
 	    private readonly IMemoryCache _cache;
+	    private readonly AppSettings _appSettings;
 
-	    public UserManager(ApplicationDbContext dbContext,
+	    public UserManager(ApplicationDbContext dbContext, AppSettings appSettings,
 	        IMemoryCache memoryCache = null )
         {
             _dbContext = dbContext;
 	        _cache = memoryCache;
+	        _appSettings = appSettings;
         }
 	    
 	    private bool IsCacheEnabled()
@@ -39,8 +42,7 @@ namespace starskycore.Services
 		    if( _cache == null ) return false;
 		    return true;
 	    }
-	    
-	    
+
 	    /// <summary>
 	    /// Add the roles 'User' and 'Administrator' to an empty database (and checks this list)
 	    /// </summary>
@@ -51,9 +53,10 @@ namespace starskycore.Services
 
 			var existingRoleNames = new List<string>
 			{
-				"User",
-				"Administrator",
+				AccountRoles.AppAccountRoles.User.ToString(),
+				AccountRoles.AppAccountRoles.Administrator.ToString(),
 			};
+			
 		    var roles = new List<Role>();
 		    foreach ( var roleName in existingRoleNames )
 		    {
@@ -67,8 +70,8 @@ namespace starskycore.Services
 					    Name = roleName,
 				    };
 				    _dbContext.Roles.Add(role);
+				    _dbContext.SaveChanges();
 			    }
-			    _dbContext.SaveChanges();
 
 			    // Get the Int Ids from the database
 			    role = _dbContext.Roles.FirstOrDefault(p => p.Code.ToLower().Equals(roleName.ToLower()));
@@ -177,6 +180,8 @@ namespace starskycore.Services
         {
 	        var credentialType = AddDefaultCredentialType(credentialTypeCode);
 	        var roles = AddDefaultRoles();
+	        AddDefaultPermissions();
+	        AddDefaultRolePermissions();
 	        
 	        if ( string.IsNullOrEmpty(identifier) || string.IsNullOrEmpty(secret))
 	        {
@@ -204,7 +209,7 @@ namespace starskycore.Services
 	        }
 
 			// Add a user role based on a user id
-			AddToRole(user, roles.FirstOrDefault());
+			AddToRole(user, roles.FirstOrDefault( p=> p.Code == _appSettings.AccountRegisterDefaultRole.ToString()));
 
             if (credentialType == null)
             {
@@ -232,11 +237,14 @@ namespace starskycore.Services
             return new SignUpResult(user: user, success: true);
         }
        
-        
+	    /// <summary>
+	    ///  Add a link between the user and the role (for example Admin)
+	    /// </summary>
+	    /// <param name="user">AccountUser object</param>
+	    /// <param name="roleCode">RoleCode</param>
         public void AddToRole(User user, string roleCode)
         {
-            Role role = _dbContext.Roles.FirstOrDefault(r => 
-                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+            Role role = _dbContext.Roles.FirstOrDefault(r => r.Code == roleCode);
 
             if (role == null)
             {
@@ -252,8 +260,8 @@ namespace starskycore.Services
 	    /// <param name="user">AccountUser object</param>
 	    /// <param name="role">Role object</param>
         public void AddToRole(User user, Role role)
-        {
-			UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
+	    {
+		    UserRole userRole = _dbContext.UserRoles.FirstOrDefault(p => p.User.Id == user.Id);
 			
 			if (userRole != null)
 			{
@@ -269,33 +277,31 @@ namespace starskycore.Services
 			_dbContext.UserRoles.Add(userRole);
 			_dbContext.SaveChanges();
         }
+        public void RemoveFromRole(User user, string roleCode)
+        {
+            Role role = _dbContext.Roles.FirstOrDefault(
+                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+            
+            if (role == null)
+            {
+                return;                
+            }
+            
+            RemoveFromRole(user, role);
+        }
         
-	    //  // Features are temp off // keep in code 
-//        public void RemoveFromRole(User user, string roleCode)
-//        {
-//            Role role = _dbContext.Roles.FirstOrDefault(
-//                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-//            
-//            if (role == null)
-//            {
-//                return;                
-//            }
-//            
-//            RemoveFromRole(user, role);
-//        }
-//        
-//        public void RemoveFromRole(User user, Role role)
-//        {
-//            UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
-//            
-//            if (userRole == null)
-//            {
-//                return;
-//            }
-//            
-//            _dbContext.UserRoles.Remove(userRole);
-//            _dbContext.SaveChanges();
-//        }
+        public void RemoveFromRole(User user, Role role)
+        {
+            UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
+            
+            if (userRole == null)
+            {
+                return;
+            }
+            
+            _dbContext.UserRoles.Remove(userRole);
+            _dbContext.SaveChanges();
+        }
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
@@ -485,6 +491,23 @@ namespace starskycore.Services
 	        return _dbContext.Users.Find(currentUserId);
         }
 
+        public User GetUser(string credentialTypeCode, string identifier)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
+	        Credential credential = _dbContext.Credentials.FirstOrDefault(
+		        c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+	        return _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+        }
+
+        public Role GetRole(string credentialTypeCode, string identifier)
+        {
+	        var user = GetUser(credentialTypeCode, identifier);
+	        var role = _dbContext.UserRoles.FirstOrDefault(p => p.User.Id == user.Id);
+	        if ( role == null ) return new Role();
+	        var roleId = role.RoleId;
+	        return _dbContext.Roles.FirstOrDefault(p=> p.Id == roleId);
+        }
+
         public Credential GetCredentialsByUserId(int userId)
         {
 	        return _dbContext.Credentials.FirstOrDefault(p => p.UserId == userId);
@@ -535,6 +558,67 @@ namespace starskycore.Services
             }
         
             return claims;
+        }
+
+        public enum AppPermissions
+        {
+	        AppSettingsWrite = 10,
+        }
+        
+        private static readonly List<AppPermissions> AllPermissions = new List<AppPermissions>
+        {
+	        AppPermissions.AppSettingsWrite,
+        };
+        
+        private void AddDefaultPermissions()
+        {
+	        foreach ( var permissionEnum in AllPermissions )
+	        {
+		        var permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == permissionEnum.ToString());
+
+		        if ( permission != null ) continue;
+		        
+		        permission = new Permission()
+		        {
+			        Name = permissionEnum.ToString(),
+			        Code = permissionEnum.ToString(),
+			        Position = (int) permissionEnum,
+		        };
+		        _dbContext.Permissions.Add(permission);
+		        _dbContext.SaveChanges();
+	        }
+        }
+
+        private void AddDefaultRolePermissions()
+        {
+	        var existingRolePermissions = new List<KeyValuePair<string,AppPermissions>>
+	        {
+		        new KeyValuePair<string, AppPermissions>(AccountRoles.AppAccountRoles.Administrator.ToString(), AppPermissions.AppSettingsWrite),
+	        };
+	        
+	        foreach ( var rolePermissionsDictionary in existingRolePermissions )
+	        {
+		        var role = _dbContext.Roles.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
+		        var permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Value.ToString());
+
+		        if ( permission == null || role == null ) continue;
+		        var rolePermission = _dbContext.RolePermissions.FirstOrDefault(p =>
+			        p.RoleId == role.Id && p.PermissionId == permission.Id);
+
+		        if ( rolePermission != null )
+		        {
+			        continue;
+		        }
+
+		        rolePermission = new RolePermission
+		        {
+			        RoleId = role.Id,
+			        PermissionId = permission.Id
+		        };
+		        
+		        _dbContext.RolePermissions.Add(rolePermission);
+		        _dbContext.SaveChanges();
+		    }
         }
     }
 }

@@ -1,6 +1,12 @@
 using System;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Helpers;
+#if SYSTEM_TEXT_ENABLED
+using System.Text.Json.Serialization;
+#else
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
+#endif
 
 namespace starsky.foundation.platform.Models
 {
@@ -14,8 +20,13 @@ namespace starsky.foundation.platform.Models
     
     public class AppSettingsPublishProfiles
     {
+	    
+#if SYSTEM_TEXT_ENABLED
+	    [JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
         public TemplateContentType ContentType { get; set; } = TemplateContentType.None;
-        
 
         private int _sourceMaxWith;
         public int SourceMaxWidth

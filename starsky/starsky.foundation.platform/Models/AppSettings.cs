@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 #else
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json;
 #endif
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using starsky.foundation.platform.Helpers;
 using TimeZoneConverter;
 
@@ -33,6 +33,9 @@ namespace starsky.foundation.platform.Models
             // may be cleaned after restart (not implemented)
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
             if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+            
+            // Set the default write to appSettings file
+            AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
             SetDefaultExifToolPath();
@@ -258,10 +261,24 @@ namespace starsky.foundation.platform.Models
         private string _tempFolder;
         public string TempFolder
         {
-            get => _tempFolder;
+            get => AssemblyDirectoryReplacer(_tempFolder);
 	        set => _tempFolder = PathHelper.AddBackslash(value);
         }
 
+        private string _appSettingsPathPrivate;
+        
+        /// <summary>
+        /// To store the settings by user in the AppData folder
+        /// Used by the Desktop App
+        /// </summary>
+        public string AppSettingsPath
+        {
+	        get => AssemblyDirectoryReplacer(_appSettingsPathPrivate); 
+	        // ReSharper disable once MemberCanBePrivate.Global
+	        set => _appSettingsPathPrivate = value; // set by ctor
+        }
+        
+        
         /// <summary>
         /// Is the host of the Application Windows
         /// </summary>
@@ -289,7 +306,7 @@ namespace starsky.foundation.platform.Models
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
-	    // fallback in contructor
+	    // fallback in constructor
 	    // use env variable: app__ReadOnlyFolders__0 - value
         public List<string> ReadOnlyFolders { get; set; }
 
@@ -357,6 +374,16 @@ namespace starsky.foundation.platform.Models
 	    public bool IsAccountRegisterOpen { get; set; } = false;
 
 	    /// <summary>
+	    /// When a new account is created, which Account Role is assigned 
+	    /// </summary>
+#if SYSTEM_TEXT_ENABLED
+	    [JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
+	    public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
+	    
+	    /// <summary>
 	    /// Private storage for Application Insights InstrumentationKey
 	    /// </summary>
 	    private string ApplicationInsightsInstrumentationKeyPrivate { get; set; } = "";
@@ -381,6 +408,11 @@ namespace starsky.foundation.platform.Models
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------
+
+	    private string AssemblyDirectoryReplacer(string value)
+	    {
+		    return value.Replace("{AssemblyDirectory}", BaseDirectoryProject);
+	    }
 	    
 	    /// <summary>
 	    /// Used for CloneToDisplay

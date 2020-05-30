@@ -7,6 +7,7 @@ const isPackaged = require('./os-type').isPackaged
 const readline = require('readline');
 const { app } = require('electron')
 const isLegacyMacOS = require('./os-type').isLegacyMacOS
+const os = require('os');
 
 function getStarskyPath() {
 
@@ -44,6 +45,19 @@ function getStarskyPath() {
     });
 }
 
+function electronCacheLocation() {
+    switch (process.platform) {
+        case "darwin":
+            // ~/Library/Application\ Support/starsky/Cache
+            return path.join(os.homedir(), "Library", "Application Support", "starsky");
+        case "win32":
+            // C:\Users\<user>\AppData\Roaming\starsky\Cache
+            return path.join(os.homedir(),  "AppData", "Roaming", "starsky");
+        default:
+            return path.join(os.homedir(), '.config','starsky');
+        }
+}
+
 function setupChildProcess() {
 
     if ( isLegacyMacOS() ) {
@@ -51,13 +65,31 @@ function setupChildProcess() {
         return;
     }
 
+    var thumbnailTempFolder = path.join(electronCacheLocation(),"thumbnailTempFolder");
+    if (!fs.existsSync(thumbnailTempFolder)) {
+        fs.mkdirSync(thumbnailTempFolder)
+    }
+
+    var tempFolder = path.join(electronCacheLocation(),"tempFolder");
+    if (!fs.existsSync(tempFolder)) {
+        fs.mkdirSync(tempFolder)
+    }
+
+    var appSettingsPath = path.join(electronCacheLocation(),"appsettings.json");
+    var databaseConnection = "Data Source="+ path.join(electronCacheLocation(),"starsky.db") ;
+
     var starskyChild;
     getStarskyPath().then((starskyPath) => {
       starskyChild = spawn(starskyPath, {
         cwd: path.dirname(starskyPath),
         detached: true,
         env: {
-          "ASPNETCORE_URLS": "http://localhost:9609"
+          "ASPNETCORE_URLS": "http://localhost:9609",
+          "app__thumbnailTempFolder": thumbnailTempFolder,
+          "app__tempFolder": tempFolder,
+          "app__appSettingsPath" : appSettingsPath,
+          "app__databaseConnection": databaseConnection,
+          "app__AccountRegisterDefaultRole": "Administrator",
         }
       }, (error, stdout, stderr) => { });
     

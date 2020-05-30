@@ -23,7 +23,6 @@ namespace starskycore.Helpers
     public class ConfigCliAppsStartupHelper
     {
 
-        private readonly Import _import;
         private readonly SyncService _isync;
         private readonly ServiceProvider _serviceProvider;
         private readonly ReadMeta _readmeta;
@@ -107,14 +106,11 @@ namespace starskycore.Helpers
 		        _selectorStorage.Get(starsky.foundation.storage.Storage.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
-            _userManager = new UserManager(context);
+            _userManager = new UserManager(context,appSettings);
             
             _isync = new SyncService(query, appSettings, _selectorStorage);
             
-            // _import = new ImportService(context, _exifTool, appSettings, null, _selectorStorage);
-
 	        _thumbnailCleaner = new ThumbnailCleaner(_thumbnailStorage, query, appSettings);
-	        
         }
 
 	    /// <summary>
@@ -150,15 +146,6 @@ namespace starskycore.Helpers
         public AppSettings AppSettings()
         {
             return _serviceProvider.GetRequiredService<AppSettings>();
-        }
-        
-        /// <summary>
-        /// Returns an filled ImportService Interface
-        /// </summary>
-        /// <returns>ImportService</returns>
-        public Import ImportService()
-        {
-            return _import;
         }
         
         /// <summary>

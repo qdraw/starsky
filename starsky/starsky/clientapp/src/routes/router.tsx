@@ -5,6 +5,7 @@ import ContentPage from '../pages/content-page';
 import ImportPage from '../pages/import-page';
 import LoginPage from '../pages/login-page';
 import NotFoundPage from '../pages/not-found-page';
+import PreferencesPage from '../pages/preferences-page';
 import SearchPage from '../pages/search-page';
 import TrashPage from '../pages/trash-page';
 
@@ -27,6 +28,9 @@ const RouterApp = () => (
 
     <AccountRegisterPage path="account/register" />
     <AccountRegisterPage path="starsky/account/register" />
+
+    <PreferencesPage path="preferences" />
+    <PreferencesPage path="starsky/preferences" />
 
     <NotFoundPage default />
   </Router>

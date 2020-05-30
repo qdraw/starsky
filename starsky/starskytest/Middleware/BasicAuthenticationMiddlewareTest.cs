@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
 using starskycore.Middleware;
@@ -51,6 +52,7 @@ namespace starskytest.Middleware
             services.AddMvc();
             services.AddSingleton<IAuthenticationService, NoOpAuth>();
             services.AddSingleton<IUserManager, UserManager>();
+            services.AddSingleton<AppSettings, AppSettings>();
 
             services.AddLogging();
 
@@ -75,7 +77,7 @@ namespace starskytest.Middleware
             builder.UseInMemoryDatabase("123456789");
             var options = builder.Options;
             var context2 = new ApplicationDbContext(options);
-            _userManager = new UserManager(context2);
+            _userManager = new UserManager(context2,new AppSettings());
             
         }
 

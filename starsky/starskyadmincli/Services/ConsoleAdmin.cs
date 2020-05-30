@@ -3,7 +3,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
 using starskycore.Interfaces;
-using starskycore.Models;
 
 namespace starskyAdminCli.Services
 {
@@ -39,7 +38,7 @@ namespace starskyAdminCli.Services
 				return;
 			}
 			
-			_console.WriteLine("\nDo you want to \n2. remove account \n \n(Enter only the number)");
+			_console.WriteLine("\nDo you want to \n2. remove account \n3. Toggle User Role \n \n(Enter only the number)");
 			var option = _console.ReadLine();
 
 			Enum.TryParse<ManageAdminOptions>(option, out var selectedOption);
@@ -50,7 +49,26 @@ namespace starskyAdminCli.Services
 					_userManager.RemoveUser("Email", _appSettings.Name);
 					_console.WriteLine($"User {_appSettings.Name} is removed");
 					return;
+				case ManageAdminOptions.ToggleUserAdminRole:
+					ToggleUserAdminRole();
+					return;
 			}
+		}
+
+		private void ToggleUserAdminRole()
+		{
+			var user = _userManager.GetUser("Email", _appSettings.Name);
+			var currentRole = _userManager.GetRole("Email", _appSettings.Name);
+
+			_userManager.RemoveFromRole(user,currentRole);
+			if ( currentRole.Code == AccountRoles.AppAccountRoles.User.ToString() )
+			{
+				_userManager.AddToRole(user,AccountRoles.AppAccountRoles.Administrator.ToString());
+				_console.WriteLine($"User {_appSettings.Name} has now the role Administrator");
+				return;
+			}
+			_userManager.AddToRole(user,AccountRoles.AppAccountRoles.User.ToString());
+			_console.WriteLine($"User {_appSettings.Name} has now the role User");
 		}
 	}
 }

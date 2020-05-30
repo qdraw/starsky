@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Services;
@@ -22,7 +23,7 @@ namespace starskytest.Middleware
             builder.UseInMemoryDatabase("test");
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
-            _userManager = new UserManager(context);
+            _userManager = new UserManager(context,new AppSettings());
         }
 
         

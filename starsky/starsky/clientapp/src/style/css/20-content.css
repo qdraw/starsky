@@ -101,10 +101,12 @@
   margin-bottom: 4px;
 }
 
+.content--text label, 
 .content--text .btn,
 .content--text h4 {
   margin-top: 10px;
   margin-bottom: 5px;
+  display: inline-block;
 }
 
 .content--header .btn,
@@ -161,6 +163,13 @@
     -webkit-mask-image: url("../images/baseline-error-24px.svg");
     mask-image: url("../images/baseline-error-24px.svg");
 }
+
+.content--text .warning-box.warning-box--optional,
+.content .warning-box.warning-box--optional,
+.content > form > .content--error-true.warning-box--optional {
+  background-color: #78909C;
+}
+
 
 .content > .content--login-form > button,
 .content > .content--login-form > label {

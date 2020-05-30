@@ -42,24 +42,7 @@ namespace starsky.Controllers
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
             _readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
         }
-
-	    /// <summary>
-        /// Show the runtime settings (dont allow AllowAnonymous)
-        /// </summary>
-        /// <returns>config data, except connection strings</returns>
-	    /// <response code="200">returns the runtime settings of Starsky</response>
-	    [HttpHead("/api/env")]
-        [HttpGet("/api/env")]
-        [IgnoreAntiforgeryToken]
-	    [Produces("application/json")]
-	    [ProducesResponseType(typeof(AppSettings),200)]
-	    [ProducesResponseType(typeof(AppSettings),401)]
-	    public IActionResult Env()
-	    {
-		    var appSettings = _appSettings.CloneToDisplay();
-		    return Json(appSettings);
-        }
-        
+       
         /// <summary>
         /// Update Exif and Rotation API
         /// </summary>

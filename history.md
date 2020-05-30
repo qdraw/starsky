@@ -34,12 +34,20 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
-# StarskyApp, Epic (Work in Progress)
-- [ ]   (Added)  _Back-end_ Option for shared `AppSettings`
-- [ ]   (Added)  _Back-end_ API to update some `appSettings` from the UI
 
 # Unreleased - 2020-05-XX
-- no items
+- [x]   (Added)  _Back-end_ Option for shared `AppSettings`
+- [x]   (Added)  _Back-end_ API to update some `appSettings` from the UI
+- [x]   (Fixed)  _Tools_ Ignore non-jpeg files for thumbnail tool
+- [x]   (Fixed)  _Tools_ ./build.sh `--no-sonar` build flag, to ignore sonarQube
+- [x]   (Added)  _Back-end_ Add Permissions `UserManager.AppPermissions.AppSettingsWrite` in Admin scope.
+- [x]   (Added)  _Back-end_  `SYSTEM_TEXT_ENABLED` flag is enabled
+- [x]   (Changed) _App_ update Electron to 9.0
+- [x]   (Changed) _App_ remove inline javascript
+- [x]   (Changed) _Back-end_ rename to "/api/account/change-secret"
+- [x]   (Added) _Front-end_ Add preferences pane
+- [x]   (Added) _Front-end_ Add first version of preferences-app-settings
+- [x]   (Added) _Front-end_ Add first version of preferences-password
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp

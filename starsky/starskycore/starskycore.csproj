@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>An attempt to create a database driven photo library</Description>
-        <Version>0.2.5</Version>
+        <Version>0.2.6</Version>
         <IsPackable>true</IsPackable>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e6d8f456-859f-479d-bffa-3e78f1b27315}</ProjectGuid>
@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.4" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
         <!-- version beta0006 gives errors on raspi -->
         <!-- <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-dev002459" />
