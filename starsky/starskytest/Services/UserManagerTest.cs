@@ -9,7 +9,6 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starskycore.Services;
 
-[assembly: InternalsVisibleTo("starskytest")]
 namespace starskytest.Services
 {
 	[TestClass]
