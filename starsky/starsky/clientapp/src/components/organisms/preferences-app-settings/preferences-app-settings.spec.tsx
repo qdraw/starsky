@@ -1,5 +1,7 @@
 import { mount, shallow } from "enzyme";
 import React from 'react';
+import * as useFetch from '../../../hooks/use-fetch';
+import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import PreferencesAppSettings from './preferences-app-settings';
 
 describe("PreferencesAppSettings", () => {
@@ -10,14 +12,57 @@ describe("PreferencesAppSettings", () => {
 
   describe("context", () => {
 
-    it("default nothing entered", () => {
+    it("disabled by default", () => {
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => newIConnectionDefault()).
+        mockImplementationOnce(() => newIConnectionDefault());
+
       var component = mount(<PreferencesAppSettings />);
 
-      component.find('form [type="submit"]').first().simulate('submit');
+      console.log(component.html());
 
-      expect(component.find('.warning-box').text()).toBe("Enter the current and new password");
+      expect((component.find('input[name="verbose"]').first().getDOMNode() as HTMLInputElement).disabled).toBeTruthy();
 
-      component.unmount();
+      component.unmount()
+    });
+
+    it("not disabled when admin", () => {
+      var connectionDefault = { statusCode: 200, data: ["AppSettingsWrite"] } as IConnectionDefault;
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').
+        mockImplementationOnce(() => connectionDefault).
+        mockImplementationOnce(() => connectionDefault).
+        mockImplementationOnce(() => connectionDefault).
+        mockImplementationOnce(() => connectionDefault)
+
+      var component = mount(<PreferencesAppSettings />);
+
+      expect((component.find('input[name="verbose"]').first().getDOMNode() as HTMLInputElement).disabled).toBeFalsy();
+
+      component.unmount()
+    });
+
+    it("filled right data", () => {
+      var permissions = { statusCode: 200, data: ["AppSettingsWrite"] } as IConnectionDefault;
+      var appSettings = {
+        statusCode: 200, data: {
+          verbose: true,
+          storageFolder: 'test'
+        }
+      } as IConnectionDefault;
+
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default').
+        mockImplementationOnce(() => permissions).
+        mockImplementationOnce(() => appSettings).
+        mockImplementationOnce(() => permissions).
+        mockImplementationOnce(() => appSettings)
+
+      var component = mount(<PreferencesAppSettings />);
+
+      expect(component.find('[data-name="storageFolder"]').text()).toBe('test');
+
+      component.unmount()
     });
 
   });
