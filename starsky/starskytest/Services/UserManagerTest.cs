@@ -113,9 +113,9 @@ namespace starskytest.Services
 		public void AddToRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			userManager.SignUp("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
 			
-			var user = userManager.GetUser("email", "to_remove@mail.us");
+			var user = userManager.GetUser("email", "AddToRole@mail.us");
 			
 			// Default role is User
 			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
@@ -123,7 +123,7 @@ namespace starskytest.Services
 			// Now add the Admin role
 			userManager.AddToRole(user, AccountRoles.AppAccountRoles.Administrator.ToString());
 
-			var result = userManager.GetRole("email", "to_remove@mail.us");
+			var result = userManager.GetRole("email", "AddToRole@mail.us");
 			
 			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
 		}
@@ -133,14 +133,14 @@ namespace starskytest.Services
 		public void RemoveFromRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			userManager.SignUp("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
 			
-			var user = userManager.GetUser("email", "to_remove@mail.us");
+			var user = userManager.GetUser("email", "RemoveFromRole@mail.us");
 			
 			// Default role is User
 			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
 
-			var result = userManager.GetRole("email", "to_remove@mail.us");
+			var result = userManager.GetRole("email", "RemoveFromRole@mail.us");
 			
 			Assert.IsNull(result.Code);
 		}
@@ -149,11 +149,11 @@ namespace starskytest.Services
 		public void GetUser()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
-			userManager.SignUp("getUser", "email", "to_remove@mail.us", "pass123456789");
+			userManager.SignUp("GetUser", "email", "GetUser@mail.us", "pass123456789");
 
-			var user = userManager.GetUser("email", "to_remove@mail.us");
+			var user = userManager.GetUser("email", "GetUser@mail.us");
 
-			Assert.AreEqual("getUser",user.Name);
+			Assert.AreEqual("GetUser",user.Name);
 		}
 	}
 }
