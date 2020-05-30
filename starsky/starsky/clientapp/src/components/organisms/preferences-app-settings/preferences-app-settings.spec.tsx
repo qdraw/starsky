@@ -14,8 +14,8 @@ describe("PreferencesAppSettings", () => {
 
     it("disabled by default", () => {
       // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => newIConnectionDefault()).
-        mockImplementationOnce(() => newIConnectionDefault());
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => newIConnectionDefault())
+        .mockImplementationOnce(() => newIConnectionDefault());
 
       var component = mount(<PreferencesAppSettings />);
 
@@ -29,11 +29,11 @@ describe("PreferencesAppSettings", () => {
     it("not disabled when admin", () => {
       var connectionDefault = { statusCode: 200, data: ["AppSettingsWrite"] } as IConnectionDefault;
       // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').
-        mockImplementationOnce(() => connectionDefault).
-        mockImplementationOnce(() => connectionDefault).
-        mockImplementationOnce(() => connectionDefault).
-        mockImplementationOnce(() => connectionDefault)
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => connectionDefault)
+        .mockImplementationOnce(() => connectionDefault)
+        .mockImplementationOnce(() => connectionDefault)
+        .mockImplementationOnce(() => connectionDefault)
 
       var component = mount(<PreferencesAppSettings />);
 
@@ -52,11 +52,11 @@ describe("PreferencesAppSettings", () => {
       } as IConnectionDefault;
 
       // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      jest.spyOn(useFetch, 'default').
-        mockImplementationOnce(() => permissions).
-        mockImplementationOnce(() => appSettings).
-        mockImplementationOnce(() => permissions).
-        mockImplementationOnce(() => appSettings)
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
 
       var component = mount(<PreferencesAppSettings />);
 
