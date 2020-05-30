@@ -16,6 +16,8 @@ var apiSearchTest1 = require('./api/search/test1.json')
 var apiUpdate__Starsky01dif20180101170001_Deleted = require('./api/update/__starsky_01-dif-2018.01.01.17.00.01_Deleted.json')
 var apiUpdate__Starsky01dif20180101170001_Ok = require('./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json')
 
+var apiEnvIndex = require('./api/env/index.json');
+
 function setRouter(app) {
   var prefix = "/starsky";
 
@@ -126,6 +128,29 @@ function setRouter(app) {
       return res.json(["test", "testung"]);
     }
     return res.json([])
+  });
+
+  app.get(prefix + '/api/env', (req, res) => {
+    return res.json(apiEnvIndex)
+  });
+
+  app.post(prefix + '/api/env', (req, res) => {
+    if (!req.body) {
+      return res.json("no body ~ the normal api does ignore it");
+    }
+
+    const keys = Object.keys(req.body)
+    keys.forEach(key => {
+      apiEnvIndex[key] = req.body[key];
+      if (req.body[key] === "true") {
+        apiEnvIndex[key] = true;
+      }
+      if (req.body[key] === "false") {
+        apiEnvIndex[key] = false;
+      }
+    });
+
+    return res.json(apiEnvIndex)
   });
 }
 

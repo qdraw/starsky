@@ -13,6 +13,9 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+  const MessageAppSettingsEntireAppScope = language.text("De AppSettings mogen alleen worden aangepast door Administrators. " +
+    "Deze instellingen worden toegepast voor de gehele applicatie ",
+    "The AppSettings may only be modified by Administrators. These settings are applied for the entire application");
   const MessageChangeNeedReSync = language.text("Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren",
     "You have changed this setting, now you need to perform a full sync");
 
@@ -48,12 +51,15 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
 
     <div className="content--subheader">AppSettings</div>
     <div className="content--text">
+      <div className="warning-box warning-box--optional">
+        {MessageAppSettingsEntireAppScope}
+      </div>
 
       <h4>Verbose logging</h4>
 
       <SwitchButton isEnabled={enabled} isOn={!verbose} onToggle={(toggle, name) => {
         changeSetting((!toggle).toString(), name)
-      }} leftLabel={"on"} name="Verbose" rightLabel={"off"} />
+      }} leftLabel={"on"} name="verbose" rightLabel={"off"} />
 
       <h4>Storage Folder</h4>
       <FormControl name="storageFolder" onBlur={e => {

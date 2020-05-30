@@ -164,6 +164,13 @@
     mask-image: url("../images/baseline-error-24px.svg");
 }
 
+.content--text .warning-box.warning-box--optional,
+.content .warning-box.warning-box--optional,
+.content > form > .content--error-true.warning-box--optional {
+  background-color: #78909C;
+}
+
+
 .content > .content--login-form > button,
 .content > .content--login-form > label {
   display: block;
