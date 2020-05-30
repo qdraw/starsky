@@ -44,6 +44,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)  _Back-end_  `SYSTEM_TEXT_ENABLED` flag is enabled
 - [x]   (Changed) _App_ update Electron to 9.0
 - [x]   (Changed) _App_ remove inline javascript
+- [x]   (Changed) _Back-end_ rename to "/api/account/change-secret"
+- [x]   (Added) _Front-end_ Add preferences pane
+- [x]   (Added) _Front-end_ Add first version of preferences-app-settings
+- [x]   (Added) _Front-end_ Add first version of preferences-password
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
