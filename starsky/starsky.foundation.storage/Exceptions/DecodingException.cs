@@ -8,7 +8,14 @@ namespace starsky.foundation.storage.Exceptions
 	[Serializable]
 	public class DecodingException : Exception
 	{
-            
+		/// <summary>
+		/// The default options used
+		/// </summary>
+		/// <param name="message">wrong?</param>
+		public DecodingException(string message) : base(message)
+		{
+		}
+		
 		/// <summary>
 		/// Without this constructor, deserialization will fail
 		/// </summary>
