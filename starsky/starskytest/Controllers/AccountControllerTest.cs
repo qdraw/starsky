@@ -68,6 +68,7 @@ namespace starskytest.Controllers
             services.AddSingleton<IAuthenticationService, NoOpAuth>();
             
             services.AddSingleton<IUserManager, UserManager>();
+            services.AddSingleton<AppSettings, AppSettings>();
 
             services.AddLogging();
 
@@ -81,17 +82,16 @@ namespace starskytest.Controllers
 
             _serviceProvider = services.BuildServiceProvider();
             
+            _appSettings = new AppSettings();
             
             // InMemory
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseInMemoryDatabase("test123");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
-            _userManager = new UserManager(_dbContext);
+            _userManager = new UserManager(_dbContext,_appSettings);
 
-            _appSettings = new AppSettings();
             _antiForgery = new FakeAntiforgery();
-
         }
 
 	    private ClaimsPrincipal SetTestClaimsSet(string name, string id)
@@ -180,7 +180,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_is_not_correct_NoUsersActive()
         {
-            var controller = new AccountController(new UserManager(_dbContext), _appSettings,_antiForgery);
+            var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 

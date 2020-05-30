@@ -14,6 +14,7 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
 
@@ -25,17 +26,15 @@ namespace starskycore.Services
     {
         private readonly ApplicationDbContext _dbContext;
 	    private readonly IMemoryCache _cache;
+	    private readonly AppSettings _appSettings;
 
-	    public UserManager(ApplicationDbContext dbContext,
+	    public UserManager(ApplicationDbContext dbContext, AppSettings appSettings,
 	        IMemoryCache memoryCache = null )
         {
             _dbContext = dbContext;
 	        _cache = memoryCache;
+	        _appSettings = appSettings;
         }
-
-	    private static readonly string AdministratorRoleName = "Administrator";
-	    
-	    private static readonly string UserRoleName = "User";
 	    
 	    private bool IsCacheEnabled()
 	    {
@@ -54,8 +53,8 @@ namespace starskycore.Services
 
 			var existingRoleNames = new List<string>
 			{
-				UserRoleName,
-				AdministratorRoleName,
+				AccountRoles.AppAccountRoles.User.ToString(),
+				AccountRoles.AppAccountRoles.Administrator.ToString(),
 			};
 			
 		    var roles = new List<Role>();
@@ -210,7 +209,7 @@ namespace starskycore.Services
 	        }
 
 			// Add a user role based on a user id
-			AddToRole(user, roles.FirstOrDefault());
+			AddToRole(user, roles.FirstOrDefault( p=> p.Code == _appSettings.AccountRegisterDefaultRole.ToString()));
 
             if (credentialType == null)
             {
@@ -238,11 +237,14 @@ namespace starskycore.Services
             return new SignUpResult(user: user, success: true);
         }
        
-        
+	    /// <summary>
+	    ///  Add a link between the user and the role (for example Admin)
+	    /// </summary>
+	    /// <param name="user">AccountUser object</param>
+	    /// <param name="roleCode">RoleCode</param>
         public void AddToRole(User user, string roleCode)
         {
-            Role role = _dbContext.Roles.FirstOrDefault(r => 
-                string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+            Role role = _dbContext.Roles.FirstOrDefault(r => r.Code == roleCode);
 
             if (role == null)
             {
@@ -275,33 +277,31 @@ namespace starskycore.Services
 			_dbContext.UserRoles.Add(userRole);
 			_dbContext.SaveChanges();
         }
+        public void RemoveFromRole(User user, string roleCode)
+        {
+            Role role = _dbContext.Roles.FirstOrDefault(
+                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
+            
+            if (role == null)
+            {
+                return;                
+            }
+            
+            RemoveFromRole(user, role);
+        }
         
-	    //  // Features are temp off // keep in code 
-//        public void RemoveFromRole(User user, string roleCode)
-//        {
-//            Role role = _dbContext.Roles.FirstOrDefault(
-//                r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
-//            
-//            if (role == null)
-//            {
-//                return;                
-//            }
-//            
-//            RemoveFromRole(user, role);
-//        }
-//        
-//        public void RemoveFromRole(User user, Role role)
-//        {
-//            UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
-//            
-//            if (userRole == null)
-//            {
-//                return;
-//            }
-//            
-//            _dbContext.UserRoles.Remove(userRole);
-//            _dbContext.SaveChanges();
-//        }
+        public void RemoveFromRole(User user, Role role)
+        {
+            UserRole userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
+            
+            if (userRole == null)
+            {
+                return;
+            }
+            
+            _dbContext.UserRoles.Remove(userRole);
+            _dbContext.SaveChanges();
+        }
         
         public ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret)
         {
@@ -491,6 +491,23 @@ namespace starskycore.Services
 	        return _dbContext.Users.Find(currentUserId);
         }
 
+        public User GetUser(string credentialTypeCode, string identifier)
+        {
+	        var credentialType = CachedCredentialType(credentialTypeCode);
+	        Credential credential = _dbContext.Credentials.FirstOrDefault(
+		        c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+	        return _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+        }
+
+        public Role GetRole(string credentialTypeCode, string identifier)
+        {
+	        var user = GetUser(credentialTypeCode, identifier);
+	        var role = _dbContext.UserRoles.FirstOrDefault(p => p.User.Id == user.Id);
+	        if ( role == null ) return new Role();
+	        var roleId = role.RoleId;
+	        return _dbContext.Roles.FirstOrDefault(p=> p.Id == roleId);
+        }
+
         public Credential GetCredentialsByUserId(int userId)
         {
 	        return _dbContext.Credentials.FirstOrDefault(p => p.UserId == userId);
@@ -576,7 +593,7 @@ namespace starskycore.Services
         {
 	        var existingRolePermissions = new List<KeyValuePair<string,AppPermissions>>
 	        {
-		        new KeyValuePair<string, AppPermissions>(AdministratorRoleName, AppPermissions.AppSettingsWrite),
+		        new KeyValuePair<string, AppPermissions>(AccountRoles.AppAccountRoles.Administrator.ToString(), AppPermissions.AppSettingsWrite),
 	        };
 	        
 	        foreach ( var rolePermissionsDictionary in existingRolePermissions )

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Models;
 using starskycore.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -33,17 +34,16 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_Test_Non_Exist_Account()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
 			var result = userManager.Validate("email", "test", "test");
 			Assert.AreEqual(false, result.Success);
-			
 		}
 		
 		[TestMethod]
 		public void UserManager_WrongPassword()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 
 			userManager.SignUp("user01", "email", "test@google.com", "pass");
 
@@ -54,7 +54,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_LoginPassword()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
 			userManager.SignUp("user01", "email", "dont@mail.us", "pass");
 
@@ -65,7 +65,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_ChangePassword_ChangeSecret()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
 			userManager.SignUp("user01", "email", "dont@mail.us", "pass123456789");
 
@@ -77,7 +77,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_NoPassword_ExistingAccount()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 			userManager.SignUp("user02", "email", "dont@mail.us", "pass");
 			
 			var result = userManager.Validate("email", "dont@mail.us", null);
@@ -87,7 +87,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_AllUsers_testCache()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 			userManager.AddUserToCache(new User{Name = "cachedUser"});
 
 			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "cachedUser");
@@ -97,7 +97,7 @@ namespace starskytest.Services
 		[TestMethod]
 		public void UserManager_RemoveUser()
 		{
-			var userManager = new UserManager(_dbContext, _memoryCache);
+			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
 			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
 
@@ -109,6 +109,51 @@ namespace starskytest.Services
 			Assert.IsNull(user);
 		}
 		
+		[TestMethod]
+		public void AddToRole()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			
+			var user = userManager.GetUser("email", "to_remove@mail.us");
+			
+			// Default role is User
+			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
 
+			// Now add the Admin role
+			userManager.AddToRole(user, AccountRoles.AppAccountRoles.Administrator.ToString());
+
+			var result = userManager.GetRole("email", "to_remove@mail.us");
+			
+			Assert.AreEqual(AccountRoles.AppAccountRoles.Administrator.ToString(), result.Code);
+		}
+		
+		
+		[TestMethod]
+		public void RemoveFromRole()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			
+			var user = userManager.GetUser("email", "to_remove@mail.us");
+			
+			// Default role is User
+			userManager.RemoveFromRole(user, AccountRoles.AppAccountRoles.User.ToString());
+
+			var result = userManager.GetRole("email", "to_remove@mail.us");
+			
+			Assert.IsNull(result.Code);
+		}
+
+		[TestMethod]
+		public void GetUser()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			userManager.SignUp("getUser", "email", "to_remove@mail.us", "pass123456789");
+
+			var user = userManager.GetUser("email", "to_remove@mail.us");
+
+			Assert.AreEqual("getUser",user.Name);
+		}
 	}
 }

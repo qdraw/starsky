@@ -107,7 +107,7 @@ namespace starskycore.Helpers
 		        _selectorStorage.Get(starsky.foundation.storage.Storage.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
             
-            _userManager = new UserManager(context);
+            _userManager = new UserManager(context,appSettings);
             
             _isync = new SyncService(query, appSettings, _selectorStorage);
             

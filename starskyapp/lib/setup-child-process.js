@@ -88,7 +88,8 @@ function setupChildProcess() {
           "app__thumbnailTempFolder": thumbnailTempFolder,
           "app__tempFolder": tempFolder,
           "app__appSettingsPath" : appSettingsPath,
-          "app__databaseConnection": databaseConnection
+          "app__databaseConnection": databaseConnection,
+          "app__AccountRegisterDefaultRole": "Administrator",
         }
       }, (error, stdout, stderr) => { });
     

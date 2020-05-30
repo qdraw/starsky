@@ -71,18 +71,20 @@ namespace starskycore.Interfaces
 	    
         SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret);
         
-//        void AddToRole(User user, string roleCode);
-//        void AddToRole(User user, Role role);
-//        void RemoveFromRole(User user, string roleCode);
-//        void RemoveFromRole(User user, Role role);
+        void AddToRole(User user, string roleCode);
+        void AddToRole(User user, Role role);
+        void RemoveFromRole(User user, string roleCode);
+        void RemoveFromRole(User user, Role role);
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
         ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
         Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);
         User GetCurrentUser(HttpContext httpContext);
+        User GetUser(string credentialTypeCode, string identifier);
         Credential GetCredentialsByUserId(int userId);
         ValidateResult RemoveUser(string credentialTypeCode, string identifier);
         User Exist(string identifier);
+        Role GetRole(string credentialTypeCode, string identifier);
     }
 }

@@ -374,6 +374,16 @@ namespace starsky.foundation.platform.Models
 	    public bool IsAccountRegisterOpen { get; set; } = false;
 
 	    /// <summary>
+	    /// When a new account is created, which Account Role is assigned 
+	    /// </summary>
+#if SYSTEM_TEXT_ENABLED
+	    [JsonConverter(typeof(JsonStringEnumConverter))]
+#else
+	    [JsonConverter(typeof(StringEnumConverter))]
+#endif
+	    public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
+	    
+	    /// <summary>
 	    /// Private storage for Application Insights InstrumentationKey
 	    /// </summary>
 	    private string ApplicationInsightsInstrumentationKeyPrivate { get; set; } = "";
