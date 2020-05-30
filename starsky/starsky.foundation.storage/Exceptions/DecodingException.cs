@@ -1,8 +1,6 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
-[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.storage.Exceptions
 {
 	[Serializable]
@@ -21,7 +19,7 @@ namespace starsky.foundation.storage.Exceptions
 		/// </summary>
 		/// <param name="info"></param>
 		/// <param name="context"></param>
-		protected internal DecodingException(SerializationInfo info, StreamingContext context) 
+		protected DecodingException(SerializationInfo info, StreamingContext context) 
 			: base(info, context)
 		{
 		}
