@@ -17,8 +17,10 @@
   color: #263238;
   margin-right: 10px;
   margin-top: 10px;
+  padding: 0px;
   padding-left: 5.5px;
   padding-right: 5px;
+  height: 35px;
 }
 
 .colorclass > div.colorclass label,
@@ -29,6 +31,7 @@
     background-color: rgba(255, 255, 255, 0.7);
     display: inline-block;
     vertical-align: middle;
+    margin: 0px;
     margin-right: 5px;
     cursor: pointer;
 }
@@ -42,6 +45,11 @@
     border-left: 2px solid; /* check icon */
     border-bottom: 2px solid;
     transform: translate(0px, -2px) rotate(-45deg);
+}
+
+.colorclass > a.btn.colorclass span {
+  	margin-top: 5px;
+    display: inline-block;
 }
 
 /* disabled state **/
@@ -60,12 +68,12 @@
     background: #263238;
     height: 14px;
     width: 14px;
-    margin-top:5px;
     border-radius: 100%;
 }
 
 
 .colorclass > .btn.colorclass--reset {
+    padding-top: 5px;
     background-color: #90A4AE;
 }
 
