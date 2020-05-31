@@ -72,7 +72,7 @@ function setRouter(app) {
     if (req.query.f.startsWith("/__starsky/01-dif/")) {
       return res.json(apiIndex__Starsky01dif20180101170001);
     }
-
+    res.statusCode = 404;
     return res.json("not found");
   });
 
@@ -151,6 +151,11 @@ function setRouter(app) {
     });
 
     return res.json(apiEnvIndex)
+  });
+
+  app.get(prefix + '/api/health/application-insights', (req, res) => {
+    res.set('Content-Type', 'application/javascript');
+    return res.send("");
   });
 }
 
