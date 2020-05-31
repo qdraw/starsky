@@ -106,7 +106,10 @@
 .content--text h4 {
   margin-top: 10px;
   margin-bottom: 5px;
-  display: inline-block;
+}
+
+.content--text label {
+  display: block;
 }
 
 .content--header .btn,
