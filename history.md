@@ -27,7 +27,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added) Creating thumbnails from Web Interface (including status)
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API  __not implemented__
-- [ ]   (Fixed) Bug rename unknown file does not work __not implemented__
 
 
 # Importer, Epic (Work in Progress)
@@ -48,6 +47,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Add preferences pane
 - [x]   (Added) _Front-end_ Add first version of preferences-app-settings
 - [x]   (Added) _Front-end_ Add first version of preferences-password
+- [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
