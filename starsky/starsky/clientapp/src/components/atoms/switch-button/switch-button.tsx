@@ -20,7 +20,8 @@ function SwitchButton(props: ISwitchButtonProps) {
   const [checked, setChecked] = React.useState(props.isOn ? props.isOn : false);
 
   useEffect(() => {
-    setChecked(props.isOn ? props.isOn : false);
+    if (props.isOn === undefined) return;
+    setChecked(props.isOn);
   }, [props])
 
   return (

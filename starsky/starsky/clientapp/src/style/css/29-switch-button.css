@@ -36,6 +36,10 @@
   color: #263238;
 }
 
+.switch-field.disabled label {
+  cursor: not-allowed;
+}
+
 .switch-field label:first-of-type {
   border-radius: 16px 0 0 16px;
 }

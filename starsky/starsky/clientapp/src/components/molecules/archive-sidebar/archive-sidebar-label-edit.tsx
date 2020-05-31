@@ -23,7 +23,7 @@ const ArchiveSidebarLabelEdit: React.FunctionComponent = () => {
   state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
   return (
-    <div className="content--text">
+    <div className="content--text archive-sidebar-label-edit">
       <SwitchButton isEnabled={!state.isReadOnly} leftLabel={MessageModifyName}
         rightLabel={MessageSearchAndReplaceName} onToggle={(value) => setReplaceMode(value)} />
       {!isReplaceMode ? <ArchiveSidebarLabelEditAddOverwrite /> : null}
