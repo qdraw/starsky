@@ -339,6 +339,7 @@ namespace starsky.foundation.database.Helpers
 	        
             if (!append)
             {
+	            newStringValue = StringHelper.AsciiNullReplacer(newStringValue);
 	            propertyObject.SetValue(sourceIndexItem, newStringValue, null);
             }
             // only for appending tags: ==>
