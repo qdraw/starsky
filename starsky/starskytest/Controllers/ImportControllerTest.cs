@@ -86,7 +86,7 @@ namespace starskytest.Controllers
 	        var fakeStorageSelector = new FakeSelectorStorage(new FakeIStorage());
 
 	        var importController = new ImportController(new FakeIImport(fakeStorageSelector), _appSettings, 
-		        _bgTaskQueue, null, fakeStorageSelector)
+		        _bgTaskQueue, null, fakeStorageSelector,_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -101,7 +101,7 @@ namespace starskytest.Controllers
         public async Task FromUrl_PathInjection()
         {
 	        var importController = new ImportController(_import, _appSettings, 
-		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()))
+		        _bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()),_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -124,7 +124,7 @@ namespace starskytest.Controllers
 	        var httpClientHelper = new HttpClientHelper(httpProvider, serviceProvider.GetRequiredService<IServiceScopeFactory>());
 	        
 	        var importController = new ImportController(_import, _appSettings, 
-		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()))
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -149,7 +149,7 @@ namespace starskytest.Controllers
 	        var httpClientHelper = new HttpClientHelper(httpProvider, serviceProvider.GetRequiredService<IServiceScopeFactory>());
 	        
 	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
-		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider))
+		        _bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -170,7 +170,7 @@ namespace starskytest.Controllers
 	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 	        
 	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
-		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider))
+		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider),_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
@@ -192,7 +192,7 @@ namespace starskytest.Controllers
 	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 	        
 	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
-		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider))
+		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider),_scopeFactory)
 	        {
 		        ControllerContext = RequestWithFile(),
 	        };
