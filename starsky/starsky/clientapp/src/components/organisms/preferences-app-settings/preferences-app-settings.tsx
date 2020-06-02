@@ -58,7 +58,8 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
       <h4>Verbose logging</h4>
 
       <SwitchButton isEnabled={enabled} isOn={!verbose} onToggle={(toggle, name) => {
-        changeSetting((!toggle).toString(), name)
+        changeSetting((!toggle).toString(), name);
+        setIsVerbose(!toggle);
       }} leftLabel={"on"} name="verbose" rightLabel={"off"} />
 
       <h4>Storage Folder</h4>
