@@ -64,7 +64,8 @@
 
 .colorclass--select > .btn.colorclass.active label:before {
     content: '';
-    border:0px;
+    border: 0px;
+    margin-top: 4px;
     background: #263238;
     height: 14px;
     width: 14px;
