@@ -53,7 +53,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   useEffect(() => {
     if (!state) return;
     setFileIndexItem(state.fileIndexItem);
-    console.log('-->', fileIndexItem);
   }, [state]);
 
   const [collections, setCollections] = React.useState([] as string[]);
