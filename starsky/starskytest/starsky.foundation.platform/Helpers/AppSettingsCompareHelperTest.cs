@@ -38,16 +38,16 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-		public void BoolCompare()
+		public void NullableBoolCompare()
 		{
 			var source = new AppSettings
 			{
 				Verbose = true
 			};
 			
-			var to = new AppSettings
+			var to = new AppSettingsTransferObject()
 			{
-				Verbose = false
+				Verbose = false // or null
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
