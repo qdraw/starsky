@@ -52,9 +52,9 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(AppSettings),200)]
 		[ProducesResponseType(typeof(AppSettings),401)]
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
-		public async Task<IActionResult> UpdateAppSettings(AppSettings toAppSettings)
+		public async Task<IActionResult> UpdateAppSettings(AppSettingsTransferObject appSettingTransferObject  )
 		{
-			AppSettingsCompareHelper.Compare(_appSettings, toAppSettings);
+			AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
 			
 			var json = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions
 			{
