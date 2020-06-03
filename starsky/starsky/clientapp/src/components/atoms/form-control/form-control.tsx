@@ -65,6 +65,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   var limitLengthBlur = function (element: React.FocusEvent<HTMLDivElement>) {
     if (!element.currentTarget.textContent) {
       setChildLength(0);
+      if (!props.onBlur) return;
+      props.onBlur(element)
       return;
     }
 

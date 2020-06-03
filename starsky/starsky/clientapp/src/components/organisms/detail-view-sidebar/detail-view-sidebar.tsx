@@ -104,7 +104,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     let name = event.currentTarget.dataset["name"];
 
     if (!name) return;
-    if (!value) return;
+
+    // allow emthy requests
+    var nullChar = "\0";
+    if (!value) value = nullChar;
 
     // compare
     var fileIndexObject: any = fileIndexItem;
@@ -117,13 +120,15 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var updateObject: any = { f: fileIndexItem.filePath };
     updateObject[name] = value.trim();
 
-    var bodyParams = new URLPath().ObjectToSearchParams(updateObject);
+    var bodyParams = new URLPath().ObjectToSearchParams(updateObject).toString().replace(/%00/ig, nullChar);
+    console.log(bodyParams);
 
-    FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString()).then(item => {
+    FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then(item => {
       if (item.statusCode !== 200 || !item.data) return;
 
       var currentItem = item.data[0] as IFileIndexItem;
       currentItem.lastEdited = new Date().toISOString();
+
       setFileIndexItem(currentItem);
       dispatch({ 'type': 'update', ...currentItem });
 

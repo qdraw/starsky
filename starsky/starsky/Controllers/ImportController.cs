@@ -6,16 +6,21 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.feature.import.Services;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 using starskycore.Models;
 using starskycore.Services;
 
@@ -31,10 +36,12 @@ namespace starsky.Controllers
 	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IStorage _thumbnailStorage;
+	    private readonly IServiceScopeFactory _scopeFactory;
 
 	    public ImportController(IImport import, AppSettings appSettings,
 		    IBackgroundTaskQueue queue, 
-            IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage)
+            IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
+		    IServiceScopeFactory scopeFactory)
         {
             _appSettings = appSettings;
             _import = import;
@@ -43,6 +50,7 @@ namespace starsky.Controllers
 	        _selectorStorage = selectorStorage; 
 	        _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+	        _scopeFactory = scopeFactory;
         }
         
 		/// <summary>
@@ -69,22 +77,34 @@ namespace starsky.Controllers
 
             // Import files >
             _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-            {    
-                var importedFiles = await _import.Importer(tempImportPaths, importSettings);
+            {
+	            List<ImportIndexItem> importedFiles;
+	            
+	            using ( var scope = _scopeFactory.CreateScope() )
+	            {
+		            var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
+		            var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
+		            var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
+		            var query = scope.ServiceProvider.GetRequiredService<IQuery>();
+		            var console = scope.ServiceProvider.GetRequiredService<IConsole>();
+
+		            importedFiles = await new Import(selectorStorage,_appSettings,
+			            importQuery, exifTool, query,console).Importer(tempImportPaths, importSettings);
+	            }
+	            
+	            if ( _appSettings.Verbose )
+	            {
+		            foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
+		            {
+			            Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
+		            }
+	            }
                 
-                if ( _appSettings.Verbose )
-                {
-	                foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
-	                {
-		                Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
-	                }
-                }
-                
-				// Remove source files
-                foreach ( var toDelPath in tempImportPaths )
-                {
-	                _hostFileSystemStorage.FileDelete(toDelPath);
-                }
+	            // Remove source files
+	            foreach ( var toDelPath in tempImportPaths )
+	            {
+		            _hostFileSystemStorage.FileDelete(toDelPath);
+	            }
             });
             
             // When all items are already imported

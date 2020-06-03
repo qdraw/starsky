@@ -64,9 +64,9 @@ export function detailviewReducer(state: State, action: Action): State {
       /* eslint-disable-next-line no-redeclare */
       var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
 
-      if (tags) state.fileIndexItem.tags = tags;
-      if (description) state.fileIndexItem.description = description;
-      if (title) state.fileIndexItem.title = title;
+      if (tags !== undefined) state.fileIndexItem.tags = tags;
+      if (description !== undefined) state.fileIndexItem.description = description;
+      if (title !== undefined) state.fileIndexItem.title = title;
       if (colorclass) state.fileIndexItem.colorClass = colorclass;
       if (status) state.fileIndexItem.status = status;
       if (fileHash) state.fileIndexItem.fileHash = fileHash;
