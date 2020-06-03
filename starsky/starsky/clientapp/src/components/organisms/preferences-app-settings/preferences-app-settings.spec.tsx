@@ -95,8 +95,35 @@ describe("PreferencesAppSettings", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlApiAppSettings(), "storageFolder=12345");
+    });
+
+    it("toggle verbose", () => {
+      var permissions = { statusCode: 200, data: ["AppSettingsWrite"] } as IConnectionDefault;
+      var appSettings = {
+        statusCode: 200, data: {
+          verbose: true,
+          storageFolder: 'test'
+        }
+      } as IConnectionDefault;
+
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      var component = mount(<PreferencesAppSettings />);
+
+      var verboseInput = component.find('input[name="verbose"]').first();
+
+      verboseInput.simulate('change');
+
+      console.log(component.html());
 
 
+
+      component.unmount()
     });
 
   });
