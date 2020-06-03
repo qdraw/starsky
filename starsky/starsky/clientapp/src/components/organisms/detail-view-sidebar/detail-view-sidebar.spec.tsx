@@ -200,6 +200,32 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
+    it("When there is nothing in the tags field a null char is send", () => {
+      var nullChar = "\0";
+
+      // spy on fetch
+      // use this => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      var tagsField = Component.find('[data-name="tags"]');
+
+      act(() => {
+        tagsField.getDOMNode().textContent = "";
+        tagsField.simulate('blur');
+      })
+
+      expect(fetchPostSpy).toBeCalled();
+
+      var expectedBodyParams = new URLSearchParams();
+      expectedBodyParams.append("tags", "\0");
+      var expectedBodyString = expectedBodyParams.toString().replace(/%00/ig, nullChar);
+
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyString);
+
+      fetchPostSpy.mockClear();
+    });
+
     it("Deleted status (from FileIndexItem)", () => {
 
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
