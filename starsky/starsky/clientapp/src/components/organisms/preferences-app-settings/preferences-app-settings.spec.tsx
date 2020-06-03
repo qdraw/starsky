@@ -111,17 +111,15 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings)
         .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
       var component = mount(<PreferencesAppSettings />);
 
-      var verboseInput = component.find('input[name="verbose"]').first();
+      var verboseFirstInput = component.find('input[name="verbose"]').first();
 
-      verboseInput.simulate('change');
-
-      console.log(component.html());
-
-
+      verboseFirstInput.simulate('change', { currentTarget: { checked: false } });
 
       component.unmount()
     });
