@@ -143,7 +143,9 @@ describe("DetailView", () => {
           fileIndexItem: { orientation: Orientation.Rotate270Cw, fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
         } as IDetailView
       } as IConnectionDefault);
-      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+      var spyGet = jest.spyOn(FetchGet, 'default')
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       var detailview = mount(<TestComponent />);
 

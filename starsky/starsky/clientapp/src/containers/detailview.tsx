@@ -10,10 +10,10 @@ import useLocation from '../hooks/use-location';
 import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
 import { ImageFormat, Orientation } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
-import BrowserDetect from '../shared/browser-detect';
 import DocumentTitle from '../shared/document-title';
 import FetchGet from '../shared/fetch-get';
 import { Keyboard } from '../shared/keyboard';
+import { OrientationHelper } from '../shared/orientation-helper';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -49,13 +49,20 @@ const DetailView: React.FC<IDetailView> = () => {
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
+  const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
+  useEffect(() => {
+    new OrientationHelper().DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
+  }, []);
+
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   useEffect(() => {
     if (!state) return;
     if (!state.fileIndexItem.orientation) return;
-    // Safari for iOS I don't need thumbnail rotation (for Mac it require rotation)
-    if (new BrowserDetect().IsIOS()) {
+
+    console.log('isAutomaticRotated', isAutomaticRotated);
+
+    if (isAutomaticRotated) {
       return;
     }
     // know if the thumbnail is ready, if not rotate the image clientside
@@ -75,7 +82,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
     // disable to prevent duplicate api calls
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.fileIndexItem.fileHash]);
+  }, [state.fileIndexItem.fileHash, isAutomaticRotated]);
 
   // know if you searching ?t= in url
   const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
