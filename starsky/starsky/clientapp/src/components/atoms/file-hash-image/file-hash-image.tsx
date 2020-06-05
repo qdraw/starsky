@@ -17,16 +17,16 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
   const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
   useEffect(() => {
-    console.log('--eff');
+    DetectAutomaticRotation().then((result) => console.log(result))
     DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
   }, []);
 
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   useEffect(() => {
-    if (!props.orientation) return;
-
     console.log('isAutomaticRotated', isAutomaticRotated);
+
+    if (!props.orientation) return;
 
     if (isAutomaticRotated) {
       return;
