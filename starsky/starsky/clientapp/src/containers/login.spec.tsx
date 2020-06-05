@@ -17,7 +17,7 @@ describe("Login", () => {
     globalHistory.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    const connectionDefaultExample = { statusCode: 200 } as IConnectionDefault;
+    const connectionDefaultExample = { statusCode: 200, data: 'true' } as IConnectionDefault;
 
     var useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -39,7 +39,7 @@ describe("Login", () => {
     globalHistory.navigate("/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    const connectionDefaultExample = { statusCode: 200 } as IConnectionDefault;
+    const connectionDefaultExample = { statusCode: 200, data: 'true' } as IConnectionDefault;
 
     var useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -64,7 +64,7 @@ describe("Login", () => {
     globalHistory.navigate("/starsky/?ReturnUrl=/test");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
-    const connectionDefaultExample = { statusCode: 200 } as IConnectionDefault;
+    const connectionDefaultExample = { statusCode: 200, data: 'true' } as IConnectionDefault;
 
     var useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)

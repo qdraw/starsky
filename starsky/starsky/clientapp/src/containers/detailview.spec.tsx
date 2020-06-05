@@ -131,38 +131,6 @@ describe("DetailView", () => {
       jest.spyOn(useFetch, 'default').mockImplementationOnce(() => {
         return newIConnectionDefault();
       })
-
-    });
-
-    it("Rotation API is called return 202", () => {
-
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-        statusCode: 202, data: {
-          subPath: "/test/image.jpg",
-          pageType: PageType.DetailView,
-          fileIndexItem: { orientation: Orientation.Rotate270Cw, fileHash: 'needed', status: IExifStatus.Ok, filePath: "/test/image.jpg", fileName: "image.jpg" }
-        } as IDetailView
-      } as IConnectionDefault);
-      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-
-      var detailview = mount(<TestComponent />);
-
-      expect(spyGet).toBeCalled();
-      expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
-
-      detailview.unmount();
-    });
-
-    it("Rotation API is called return 200", () => {
-
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var spyGet = jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-
-      var detailview = mount(<TestComponent />);
-
-      expect(spyGet).toBeCalled();
-      expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));
-      detailview.unmount();
     });
 
     it("Next Click", () => {

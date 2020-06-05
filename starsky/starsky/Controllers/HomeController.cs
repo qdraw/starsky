@@ -63,7 +63,7 @@ namespace starsky.Controllers
 			{
 				return BadRequest("`t` is not allowed");
 			}
-			return Redirect($"/search?t={t}&p={p}");
+			return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search?t={t}&p={p}"));
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace starsky.Controllers
 			// if not case sensitive is already served
 			if (string.IsNullOrEmpty(t))
 			{
-				return Redirect($"/search");
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search"));
 			}
 
 			// Added filter to prevent redirects based on tainted, user-controlled data
@@ -101,7 +101,7 @@ namespace starsky.Controllers
 			{
 				return BadRequest("`t` is not allowed");
 			}
-			return Redirect($"/search?t={t}&p={p}");
+			return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/search?t={t}&p={p}"));
 		}
 		
 		/// <summary>
@@ -121,7 +121,7 @@ namespace starsky.Controllers
 		{
 			if ( IsCaseSensitiveRedirect("/trash", Request.Path.Value) )
 			{
-				return Redirect($"/trash?p={p}");
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/trash?p={p}"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
@@ -140,7 +140,7 @@ namespace starsky.Controllers
 		{
 			if ( IsCaseSensitiveRedirect("/import", Request.Path.Value) )
 			{
-				return Redirect($"/import");
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/import"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
@@ -159,7 +159,7 @@ namespace starsky.Controllers
 		{
 			if ( IsCaseSensitiveRedirect("/preferences", Request.Path.Value) )
 			{
-				return Redirect($"/preferences");
+				return Redirect(AppendPathBasePrefix(Request.PathBase.Value,$"/preferences"));
 			}
 			return PhysicalFile(_clientApp, "text/html");
 		}
@@ -179,6 +179,11 @@ namespace starsky.Controllers
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			return PhysicalFile(_clientApp, "text/html");
+		}
+
+		private string AppendPathBasePrefix(string requestPathBase, string url)
+		{
+			return $"{requestPathBase}{url}";
 		}
 
 		internal bool IsCaseSensitiveRedirect(string expectedRequestPath, string requestPathValue)

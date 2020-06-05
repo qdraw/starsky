@@ -79,25 +79,22 @@ const Login: React.FC<ILoginProps> = () => {
     }
   };
 
-  /**
-   * If you use a starsky.local address in Safari then the cookies are not shared, so your login will fail
-   */
-  useEffect(() => {
-    if (history.location.hostname && history.location.hostname.match(/\.local$/ig) && new BrowserDetect().IsIOS()) {
-      setError("Probeer in te loggen via een ip-adres of een echt domein, local adressen werken niet in Safari op iOS");
-    }
-  }, [history.location.hostname]);
-
   return (
     <>
+      <header className="header header--main header--bluegray700">
+        <div className="wrapper">
+          <div className="item item--first item--detective">{MessageApplicationName}
+          </div>
+        </div>
+      </header>
+
+      {!accountStatus.data && new BrowserDetect().IsLegacy() ? <div className="content"><div className="warning-box">
+        Your browser is not supported, please try the latest version of Firefox or Chrome
+        </div></div> : null}
+
       {isLogin ?
         <>
-          <header className="header header--main header--bluegray700">
-            <div className="wrapper">
-              <div className="item item--first item--detective">{MessageApplicationName}
-              </div>
-            </div>
-          </header>
+
           <div className="content">
             <div className="content--header">{MessageLogin}</div>
             <form
@@ -140,11 +137,6 @@ const Login: React.FC<ILoginProps> = () => {
               />
               {error && <div className="content--error-true">{error}</div>}
 
-              {new BrowserDetect().IsLegacy() ?
-                <div className="content--error-true">
-                  Internet Explorer is not supported, please try Firefox or Chrome
-                </div> : null}
-
               <ButtonStyled className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
                 {loading ? "Loading..." : MessageLogin}
               </ButtonStyled>
@@ -152,15 +144,10 @@ const Login: React.FC<ILoginProps> = () => {
           </div>
         </>
         : null}
-      {!isLogin ?
+      {!isLogin && accountStatus.data ?
         <>
-          <header className="header header--main header--bluegray700">
-            <div className="wrapper">
-              <div className="item item--first item--detective">{MessageApplicationName}
-              </div>
-            </div>
-          </header>
-          <div className="content"><div className="content--header">{MessageLogin}</div>
+          <div className="content">
+            <div className="content--header">{MessageLogin}</div>
           </div>
           <div className="content">
             <form className="content--login-form">
