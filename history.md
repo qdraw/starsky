@@ -51,6 +51,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_  Importer disposed object #46 
 - [x]   (Fixed) _Back-end_ In /api/update allow null `\\0` to support emthy overwrites
 - [x]   (Fixed) _Front-end_ Send null `\\0` value when a user the content in detailView a tags/description field removes
+- [x]   (Fixed) _Front-end_ Chrome 81+ Exif rotation on non-thumbnail images #48
+- [x]   (Fixed) _Back-end_  Redirect with Prefix issu #49
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 
 # version 0.2.5 - 2020-05-22
