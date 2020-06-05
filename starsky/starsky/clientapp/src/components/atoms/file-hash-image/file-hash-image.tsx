@@ -17,6 +17,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
   const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
   useEffect(() => {
+    console.log('--eff');
     new OrientationHelper().DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
   }, []);
 
