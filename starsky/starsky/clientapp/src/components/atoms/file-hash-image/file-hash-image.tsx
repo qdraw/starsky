@@ -25,6 +25,8 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   useEffect(() => {
     if (!props.orientation) return;
 
+    console.log('isAutomaticRotated', isAutomaticRotated);
+
     if (isAutomaticRotated) {
       return;
     }
@@ -44,7 +46,6 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     });
 
   }, [props.fileHash, props.orientation, isAutomaticRotated]);
-
 
   return <><img alt={props.tags}
     className={"image--default " + translateRotation}
