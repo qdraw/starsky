@@ -14,15 +14,16 @@ export const testAutoOrientationImageURL = 'data:image/jpeg;base64,/9j/4QAiRXhpZ
   'ABKAAEAAAAAAAAAAAAAAAAAAAALEAEAAAAAAAAAAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAA' +
   'AAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8H//2Q=='
 
+/**
+ * check if browser supports automatic image orientation
+ * Supported: Chrome 81+ and Safari (Desktop) 13.1 and Safari Mobile (?)
+ */
 const DetectAutomaticRotation = async (): Promise<boolean> => {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
       // Check if browser supports automatic image orientation:
       const supported = img.width === 1 && img.height === 2;
-
-      console.log(supported);
-
       resolve(supported);
     };
     img.src = detectAutomaticRotationJpeg;
