@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import FileHashImage from '../components/atoms/file-hash-image/file-hash-image';
 import Preloader from '../components/atoms/preloader/preloader';
 import DetailViewGpx from '../components/organisms/detail-view-media/detail-view-gpx';
 import DetailViewMp4 from '../components/organisms/detail-view-media/detail-view-mp4';
@@ -8,12 +9,11 @@ import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
 import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
-import { ImageFormat, Orientation } from '../interfaces/IFileIndexItem';
+import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import DocumentTitle from '../shared/document-title';
 import FetchGet from '../shared/fetch-get';
 import { Keyboard } from '../shared/keyboard';
-import { OrientationHelper } from '../shared/orientation-helper';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -48,41 +48,6 @@ const DetailView: React.FC<IDetailView> = () => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
-
-  const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
-  useEffect(() => {
-    new OrientationHelper().DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
-  }, []);
-
-  // To Get the rotation update
-  const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
-  useEffect(() => {
-    if (!state) return;
-    if (!state.fileIndexItem.orientation) return;
-
-    console.log('isAutomaticRotated', isAutomaticRotated);
-
-    if (isAutomaticRotated) {
-      return;
-    }
-    // know if the thumbnail is ready, if not rotate the image clientside
-    FetchGet(new UrlQuery().UrlThumbnailJsonApi(state.fileIndexItem.fileHash)).then((result) => {
-      if (!state.fileIndexItem.orientation) return;
-      if (result.statusCode === 202) {
-        // result from API is: "Thumbnail is not ready yet"
-        setTranslateRotation(state.fileIndexItem.orientation);
-      }
-      else if (result.statusCode === 200) {
-        // thumbnail is alreay rotated (but need to be called due change of image)
-        setTranslateRotation(Orientation.Horizontal);
-      }
-    }).catch((e) => {
-      console.log(e);
-    });
-
-    // disable to prevent duplicate api calls
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.fileIndexItem.fileHash, isAutomaticRotated]);
 
   // know if you searching ?t= in url
   const [isSearchQuery, setIsSearchQuery] = React.useState(!!new URLPath().StringToIUrl(history.location.search).t);
@@ -201,16 +166,12 @@ const DetailView: React.FC<IDetailView> = () => {
 
       <div className={isError ? "main main--error main--" + state.fileIndexItem.imageFormat : "main main--" + state.fileIndexItem.imageFormat}>
 
-        {!isError && state.fileIndexItem.fileHash ? <img alt={state.fileIndexItem.tags}
-          className={"image--default " + translateRotation}
-          onLoad={() => {
-            setError(false);
-            setIsLoading(false);
-          }}
-          onError={() => {
-            setError(true);
-            setIsLoading(false);
-          }} src={new UrlQuery().UrlThumbnailImage(state.fileIndexItem.fileHash, true)} /> : null}
+        {!isError ? <FileHashImage
+          setError={setError}
+          isError={isError}
+          setIsLoading={setIsLoading}
+          fileHash={state.fileIndexItem.fileHash}
+          orientation={state.fileIndexItem.orientation} /> : null}
 
         {relativeObjects.nextFilePath ?
           <div onClick={() => next()} className="nextprev nextprev--next"><div className="icon" /></div>
