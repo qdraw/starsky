@@ -1,4 +1,4 @@
-import { OrientationHelper } from './orientation-helper';
+import DetectAutomaticRotation, { testAutoOrientationImageURL } from './detect-automatic-rotation';
 
 describe("select", () => {
   describe("removeSidebarSelection", () => {
@@ -14,9 +14,9 @@ describe("select", () => {
           }, 1);
         }
       }
-      expect(new OrientationHelper().testAutoOrientationImageURL).toContain('data:image');
+      expect(testAutoOrientationImageURL).toContain('data:image');
 
-      var result = await new OrientationHelper().DetectAutomaticRotation();
+      var result = await DetectAutomaticRotation();
       expect(result).toBeFalsy();
     });
   });

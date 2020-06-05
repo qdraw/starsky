@@ -4,6 +4,7 @@ import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import { IDetailView, PageType } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { Orientation } from '../../../interfaces/IFileIndexItem';
+import * as DetectAutomaticRotation from '../../../shared/detect-automatic-rotation';
 import * as FetchGet from '../../../shared/fetch-get';
 import { UrlQuery } from '../../../shared/url-query';
 import FileHashImage from './file-hash-image';
@@ -24,11 +25,22 @@ describe("FileHashImage", () => {
       } as IDetailView
     } as IConnectionDefault);
 
+
+    let trackEventSpy = jest.spyOn(DetectAutomaticRotation, 'default').mockImplementationOnce(() => {
+      return Promise.resolve(false);
+    });
+
+
+    // new OrientationHelper().DetectAutomaticRotation() = jet
+
+
     var spyGet = jest.spyOn(FetchGet, 'default')
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var component = mount(<FileHashImage />);
+    var component = mount(<FileHashImage isError={false} fileHash="" orientation={Orientation.Horizontal} />);
+
+    component.update();
 
     expect(spyGet).toBeCalled();
     expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi('hash'));

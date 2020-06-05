@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Orientation } from '../../../interfaces/IFileIndexItem';
+import DetectAutomaticRotation from '../../../shared/detect-automatic-rotation';
 import FetchGet from '../../../shared/fetch-get';
-import { OrientationHelper } from '../../../shared/orientation-helper';
 import { UrlQuery } from '../../../shared/url-query';
 
 export interface IFileHashImageProps {
@@ -18,7 +18,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
   useEffect(() => {
     console.log('--eff');
-    new OrientationHelper().DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
+    DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
   }, []);
 
   // To Get the rotation update
