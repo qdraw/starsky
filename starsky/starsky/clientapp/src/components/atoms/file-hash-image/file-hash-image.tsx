@@ -20,10 +20,16 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   useEffect(() => {
     (async () => {
       var isAutomaticRotated = await DetectAutomaticRotation();
+
+      console.log('isAutomaticRotated', isAutomaticRotated);
+
       if (isAutomaticRotated) {
         return;
       }
       var result = await FetchGet(new UrlQuery().UrlThumbnailJsonApi(props.fileHash));
+
+      console.log('result', result);
+
       if (!props.orientation) return;
       if (result.statusCode === 202) {
         // result from API is: "Thumbnail is not ready yet"
