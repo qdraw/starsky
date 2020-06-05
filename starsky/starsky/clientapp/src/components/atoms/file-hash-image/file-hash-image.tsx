@@ -19,6 +19,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   useEffect(() => {
     (async () => {
+      if (!props.orientation) return;
       var isAutomaticRotated = await DetectAutomaticRotation();
 
       console.log('isAutomaticRotated', isAutomaticRotated);
@@ -30,7 +31,6 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
       console.log('result', result);
 
-      if (!props.orientation) return;
       if (result.statusCode === 202) {
         // result from API is: "Thumbnail is not ready yet"
         setTranslateRotation(props.orientation);
