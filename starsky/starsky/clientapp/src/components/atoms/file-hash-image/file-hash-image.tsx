@@ -15,24 +15,15 @@ export interface IFileHashImageProps {
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
-  const [isAutomaticRotated, setAutomaticRotated] = React.useState(true);
-  useEffect(() => {
-    DetectAutomaticRotation().then((result) => console.log(result))
-    DetectAutomaticRotation().then((result) => setAutomaticRotated(result))
-  }, []);
-
   // To Get the rotation update
   const [translateRotation, setTranslateRotation] = React.useState(Orientation.Horizontal);
   useEffect(() => {
-    console.log('isAutomaticRotated', isAutomaticRotated);
-
-    if (!props.orientation) return;
-
-    if (isAutomaticRotated) {
-      return;
-    }
-    // know if the thumbnail is ready, if not rotate the image clientside
-    FetchGet(new UrlQuery().UrlThumbnailJsonApi(props.fileHash)).then((result) => {
+    (async () => {
+      var isAutomaticRotated = await DetectAutomaticRotation();
+      if (isAutomaticRotated) {
+        return;
+      }
+      var result = await FetchGet(new UrlQuery().UrlThumbnailJsonApi(props.fileHash));
       if (!props.orientation) return;
       if (result.statusCode === 202) {
         // result from API is: "Thumbnail is not ready yet"
@@ -42,11 +33,8 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         // thumbnail is alreay rotated (but need to be called due change of image)
         setTranslateRotation(Orientation.Horizontal);
       }
-    }).catch((e) => {
-      console.log(e);
-    });
-
-  }, [props.fileHash, props.orientation, isAutomaticRotated]);
+    })();
+  }, [props.fileHash, props.orientation]);
 
   return <><img alt={props.tags}
     className={"image--default " + translateRotation}
