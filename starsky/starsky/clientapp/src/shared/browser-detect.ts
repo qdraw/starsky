@@ -7,6 +7,7 @@ export class BrowserDetect {
     return isWebKit && (isIOS || isIPadOS);
   }
   public IsLegacy = () => {
+    if (!('fetch' in window)) return true;
     return '-ms-scroll-limit' in document.documentElement.style
       && '-ms-ime-align' in document.documentElement.style
       && navigator.userAgent.indexOf("Trident") > -1;
