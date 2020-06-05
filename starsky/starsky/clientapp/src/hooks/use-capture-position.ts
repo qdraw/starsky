@@ -6,18 +6,16 @@ export interface ICaptionPosition {
 }
 
 const capturePosition = () => {
-  let cachedPosition = window.pageYOffset;
+  let topCachedPosition = window.pageYOffset;
   return {
     freeze: () => {
       (document.body as any).style.position = "fixed";
-      (document.body as any).style.top = `${cachedPosition * -1}px`;
+      (document.body as any).style.top = `${topCachedPosition * -1}px`;
       (document.body as any).style.width = "100%";
     },
     unfreeze: () => {
       document.body.removeAttribute("style");
-      window.scrollTo({
-        top: cachedPosition
-      });
+      window.scrollTo(0, topCachedPosition);
     }
   } as ICaptionPosition;
 };
