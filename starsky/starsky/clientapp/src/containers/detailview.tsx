@@ -166,7 +166,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
       <div className={isError ? "main main--error main--" + state.fileIndexItem.imageFormat : "main main--" + state.fileIndexItem.imageFormat}>
 
-        {!isError ? <FileHashImage
+        {!isError && state.fileIndexItem.fileHash ? <FileHashImage
           setError={setError}
           isError={isError}
           setIsLoading={setIsLoading}
