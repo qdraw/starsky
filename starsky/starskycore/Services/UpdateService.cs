@@ -10,6 +10,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starskycore.Services
@@ -74,7 +75,7 @@ namespace starskycore.Services
 		/// Run Update
 		/// </summary>
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
-		/// <param name="fileIndexResultsList"></param>
+		/// <param name="fileIndexResultsList">items stored in the database</param>
 		/// <param name="inputModel">This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
@@ -139,7 +140,7 @@ namespace starskycore.Services
 			}
 			else
 			{
-				Console.WriteLine();
+				new FileIndexItemJsonWriter(_iStorage).Write(detailView.FileIndexItem);
 			}
                         
 			// change thumbnail names after the original is changed

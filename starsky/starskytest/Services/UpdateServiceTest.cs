@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,6 +15,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -287,7 +289,7 @@ namespace starskytest.Services
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
 			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
-				.Update(changedFileIndexItemName, fileIndexResultsList,updateItem,false,false,0);
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
 			Assert.AreEqual("only used when Caching is disabled",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
@@ -296,10 +298,29 @@ namespace starskytest.Services
 
 			// need to reload again due tracking changes
 			_queryWithoutCache.RemoveItem(_queryWithoutCache.SingleItem("/test.jpg").FileIndexItem);
-			
-
-
 		}
-		
+
+		[TestMethod]
+		public void Update_Write_GPX()
+		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>();
+
+			_iStorageFake.WriteStream(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
+			var updateItem = new FileIndexItem("/test.gpx")
+			{
+				Tags = "test",
+				Status = FileIndexItem.ExifStatus.Ok
+			};
+
+			_query.AddItem(updateItem);
+			
+			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
+
+			
+			new UpdateService(_queryWithoutCache,_exifTool, _readMeta, _iStorageFake, _iStorageFake)
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
+
+			Assert.IsTrue(_iStorageFake.ExistFile("._test.gpx.json"));
+		}
 	}
 }
