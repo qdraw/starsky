@@ -30,7 +30,7 @@ namespace starsky.foundation.writemeta.Helpers
         }
 
 	    /// <summary>
-	    /// To update Exiftool (both Thumbnail as Storage item)
+	    /// To update ExifTool (both Thumbnail as Storage item)
 	    /// </summary>
 	    /// <param name="updateModel">update model</param>
 	    /// <param name="comparedNames">list,string e.g. Tags</param>
