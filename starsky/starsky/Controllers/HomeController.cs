@@ -183,7 +183,7 @@ namespace starsky.Controllers
 
 		private string AppendPathBasePrefix(string requestPathBase, string url)
 		{
-			return $"{requestPathBase}{url}";
+			return requestPathBase.ToLowerInvariant() == "/starsky" ? $"/starsky{url}" : url;
 		}
 
 		internal bool IsCaseSensitiveRedirect(string expectedRequestPath, string requestPathValue)
