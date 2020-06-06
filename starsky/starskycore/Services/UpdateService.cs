@@ -4,6 +4,7 @@ using System.Linq;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -104,7 +105,6 @@ namespace starskycore.Services
 				
 				// used for tracking differences, in the database/ExifTool compare
 				var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
-	
 				
 				// Then update it on exifTool,database and rotation
 				UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
@@ -130,10 +130,17 @@ namespace starskycore.Services
 			// do rotation on thumbs
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
-			// Do an Exif Sync for all files, including thumbnails
-			var exifResult = exifTool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-			
-			Console.WriteLine($"exifResult: {exifResult}");
+							
+			if ( ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
+			{
+				// Do an Exif Sync for all files, including thumbnails
+				var exifResult = exifTool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
+				Console.WriteLine($"exifResult: {exifResult}");
+			}
+			else
+			{
+				Console.WriteLine();
+			}
                         
 			// change thumbnail names after the original is changed
 			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;

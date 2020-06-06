@@ -98,14 +98,14 @@ namespace starsky.Controllers
 				{
 					var collectionsDetailView = _query.SingleItem(collectionSubPath, null, collections, false);
 					
-					// Check if extension is supported for ExtensionExifToolSupportedList
-					// Not all files are able to write with exifTool
-					if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
-					{
-						collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
-						fileIndexResultsList.Add(detailView.FileIndexItem);
-						continue;
-					}
+					// // Check if extension is supported for ExtensionExifToolSupportedList
+					// // Not all files are able to write with exifTool
+					// if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
+					// {
+					// 	collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
+					// 	fileIndexResultsList.Add(detailView.FileIndexItem);
+					// 	continue;
+					// }
 
 					// Compare Rotation and All other tags
 					new UpdateService(_query, _exifTool, _readMeta,_iStorage, _thumbnailStorage)
