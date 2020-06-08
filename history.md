@@ -59,6 +59,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Chrome 81+ Exif rotation on non-thumbnail images #48
 - [x]   (Fixed) _Back-end_  Redirect with Prefix issu #49
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.4 (using SDK 3.1.300)
+- [x]   (Fixed)  _App_  add playback for video Issue #61 
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
