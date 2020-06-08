@@ -52,7 +52,7 @@ exports.createMainWindow = () => {
     var csp = "default-src 'none'; img-src file://* https://*.tile.openstreetmap.org " + whitelistDomain + "; " +
       "style-src file://* unsafe-inline " + whitelistDomain + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
       "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
-      "font-src " + whitelistDomain + ";";
+      "font-src " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 
     if (!res.url.startsWith('devtools://')) {
       res.responseHeaders["Content-Security-Policy"] = csp;
