@@ -17,7 +17,7 @@
  * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## Build instructions for docker
-See the [Docker instructions](docker-instructions.md) for more details about how to install
+See the [Docker instructions](readme-docker-instructions.md) for more details about how to install
 
 ## Build instructions (without docker)
 
@@ -27,7 +27,7 @@ See the [Docker instructions](docker-instructions.md) for more details about how
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 3.1.201 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.1.300 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3. Make a build of all the projects and run the tests
 from the root folder of the repository

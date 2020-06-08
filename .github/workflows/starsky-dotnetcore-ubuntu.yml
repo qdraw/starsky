@@ -23,7 +23,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.201
+        dotnet-version: 3.1.300
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
@@ -35,7 +35,6 @@ jobs:
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}  
-        timeout-minutes: 10 
         file: ./starsky/starskytest/netcore-coverage.opencover.xml
         flags: netcore # flags must match pattern ^[\w\,]+$
         name: codecov # optional
