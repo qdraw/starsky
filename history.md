@@ -61,6 +61,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.4 (using SDK 3.1.300)
 - [x]   (Fixed)  _App_ Add playback for video in App Issue #53 
 - [x]   (Fixed)  _App_ StarskyApp should see map Issue #52
+- [x]   (Fixed)  _Front-end_  Download folders with + (plus) not found Issue #54 
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
