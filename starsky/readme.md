@@ -17,7 +17,7 @@
  * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## Build instructions for docker
-See the [Docker instructions](docker-instructions.md) for more details about how to install
+See the [Docker instructions](readme-docker-instructions.md) for more details about how to install
 
 ## Build instructions (without docker)
 
