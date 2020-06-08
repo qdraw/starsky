@@ -43,11 +43,11 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk 3.1.201'
+      displayName: 'Use .NET Core sdk 3.1.300'
       enabled: true
       inputs:
         packageType: sdk
-        version: 3.1.201
+        version: 3.1.300
         installationPath: $(Agent.ToolsDirectory)/dotnet
 
     - task: DotNetCoreCLI@2
@@ -69,13 +69,13 @@ stages:
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
         ArtifactName: 'win7-x86'
-        
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: win7-x64'
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip'
         ArtifactName: 'win7-x64'
-        
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: osx.10.12-x64'
       inputs:
