@@ -77,6 +77,7 @@ function AppMenu() {
         {
           label: "Dev Tools",
           click: () => {
+            // only works on mac os
             BrowserWindow.getAllWindows().forEach(window => {
               window.webContents.openDevTools()
             });
