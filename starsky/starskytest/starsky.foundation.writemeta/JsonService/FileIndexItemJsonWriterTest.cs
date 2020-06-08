@@ -10,11 +10,11 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 	public class FileIndexItemJsonWriterTest
 	{
 		[TestMethod]
-		public async Task Write()
+		public async Task Json_Write()
 		{
 			var fakeStorage = new FakeIStorage();
 			await new FileIndexItemJsonWriter(fakeStorage).Write(new FileIndexItem("/test.jpg"));
-			Assert.IsTrue(fakeStorage.ExistFile("/._test.json"));
+			Assert.IsTrue(fakeStorage.ExistFile("/._test.jpg.json"));
 		}
 	}
 }
