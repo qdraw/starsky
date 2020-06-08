@@ -81,6 +81,6 @@
   },
   "devDependencies": {
     "@storybook/preset-create-react-app": "^2.1.1",
-    "@storybook/react": "^5.3.18"
+    "@storybook/react": "^5.3.19"
   }
 }
