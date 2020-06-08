@@ -33,8 +33,13 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
+# Folder and file movable, Epic (Work In Progress)
+- [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 
 # Unreleased - 2020-06-XX
+- nothing yet
+
+# version 0.2.6 - 2020-06-08
 - [x]   (Added)  _Back-end_ Option for shared `AppSettings`
 - [x]   (Added)  _Back-end_ API to update some `appSettings` from the UI
 - [x]   (Fixed)  _Tools_ Ignore non-jpeg files for thumbnail tool
@@ -48,12 +53,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Add first version of preferences-app-settings
 - [x]   (Added) _Front-end_ Add first version of preferences-password
 - [x]   (Fixed) _Back-end_ AppSettings Update API Values that are true are overwritten when summing new value #45
-- [x]   (Fixed) _Back-end_  Importer disposed object #46 
+- [x]   (Fixed) _Back-end_  Importer disposed object #46
 - [x]   (Fixed) _Back-end_ In /api/update allow null `\\0` to support emthy overwrites
 - [x]   (Fixed) _Front-end_ Send null `\\0` value when a user the content in detailView a tags/description field removes
 - [x]   (Fixed) _Front-end_ Chrome 81+ Exif rotation on non-thumbnail images #48
 - [x]   (Fixed) _Back-end_  Redirect with Prefix issu #49
-- [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.4 (using SDK 3.1.300)
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
