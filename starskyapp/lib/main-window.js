@@ -49,8 +49,8 @@ exports.createMainWindow = () => {
     }
 
     // When change also check if CSPMiddleware needs to be updated
-    var csp = "default-src 'none'; img-src file://* https://*.tile.openstreetmap.org " + whitelistDomain + "; " +
-      "style-src file://* unsafe-inline " + whitelistDomain + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
+    var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org " + whitelistDomain + "; " +
+      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
       "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
       "font-src " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 

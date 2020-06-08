@@ -1,4 +1,4 @@
-const {app, Menu, shell ,remote } = require('electron')
+const {app, Menu, shell , BrowserWindow } = require('electron')
 const createMainWindow = require('./main-window').createMainWindow
 const createSettingsWindow = require('./settings-window').createSettingsWindow
 
@@ -77,14 +77,17 @@ function AppMenu() {
         {
           label: "Dev Tools",
           click: () => {
-            mainWindows.forEach(window => {
-              window.webContents.openDevTools()
-            });
-            settingsWindows.forEach(window => {
+            BrowserWindow.getAllWindows().forEach(window => {
               window.webContents.openDevTools()
             });
           },
           accelerator: 'CmdOrCtrl+Alt+I'
+        },
+        {
+          label: "Open in browser",
+          click: async () => {
+            await shell.openExternal(BrowserWindow.getFocusedWindow().webContents.getURL())
+          }
         },
       ]
     },
