@@ -37,7 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 
 # Unreleased - 2020-06-XX
-- nothing yet
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
 
 # version 0.2.6 - 2020-06-08
 - [x]   (Added)  _Back-end_ Option for shared `AppSettings`
