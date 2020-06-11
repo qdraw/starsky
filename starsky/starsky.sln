@@ -51,6 +51,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.http", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.import", "starsky.feature.import\starsky.feature.import.csproj", "{81C4FBDB-B778-4A98-AEE4-FC7B6E341589}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readme", "Readme", "{C757587F-8490-4815-97CE-9BE39A6C82C6}"
+ProjectSection(SolutionItems) = preProject
+	..\history.md = ..\history.md
+	..\index.md = ..\index.md
+	..\readme.md = ..\readme.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"
+ProjectSection(SolutionItems) = preProject
+	readme.md = readme.md
+	readme-docker-instructions.md = readme-docker-instructions.md
+	readme-upgrade-net-core.md = readme-upgrade-net-core.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,5 +182,6 @@ Global
 		{DE3680F5-9529-4974-990A-21A0A97202E3} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{A9F75593-3660-47AA-8EA7-D967AD447C0F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{81C4FBDB-B778-4A98-AEE4-FC7B6E341589} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{0F47FD1D-CE79-4069-AFD4-252ED9D9445E} = {C757587F-8490-4815-97CE-9BE39A6C82C6}
 	EndGlobalSection
 EndGlobal
