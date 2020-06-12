@@ -91,16 +91,16 @@ namespace starskycore.Helpers
         {
             switch (statusResults)
             {
-                case FileIndexItem.ExifStatus.NotFoundIsDir:
-                    statusModel.IsDirectory = true;
-                    statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
-                case FileIndexItem.ExifStatus.DirReadOnly:
-                    statusModel.IsDirectory = true;
-                    statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
-                    fileIndexResultsList.Add(statusModel);
-                    return true;
+                // case FileIndexItem.ExifStatus.NotFoundIsDir:
+                //     statusModel.IsDirectory = true;
+                //     statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
+                //     fileIndexResultsList.Add(statusModel);
+                //     return true;
+                // case FileIndexItem.ExifStatus.DirReadOnly:
+                //     statusModel.IsDirectory = true;
+                //     statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
+                //     fileIndexResultsList.Add(statusModel);
+                //     return true;
                 case FileIndexItem.ExifStatus.NotFoundNotInIndex:
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
                     fileIndexResultsList.Add(statusModel);

@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
+    <ProjectReference Include="..\starsky.feature.update\starsky.feature.update.csproj" />
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
     <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />

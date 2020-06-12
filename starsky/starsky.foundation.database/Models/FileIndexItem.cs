@@ -232,6 +232,9 @@ namespace starsky.foundation.database.Models
             NotFoundSourceMissing,
             NotFoundIsDir,
 	        OperationNotSupported,
+	        /// <summary>
+	        /// Directory is read only
+	        /// </summary>
             DirReadOnly,
             ReadOnly,
             Unauthorized,
