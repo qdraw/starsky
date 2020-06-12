@@ -35,6 +35,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
+- [ ]   (x) Move multiple files __not implemented__
 
 # Unreleased - 2020-06-XX
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
