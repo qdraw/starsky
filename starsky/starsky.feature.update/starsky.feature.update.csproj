@@ -9,4 +9,8 @@
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Helpers" />
+    </ItemGroup>
+
 </Project>

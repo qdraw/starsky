@@ -57,8 +57,10 @@ namespace starskycore.Services
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
+				
+				// todo: add check filesystem check
 				var statusResults =
-					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
+					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 
 				// To Inject if detailView is false
 				var statusModel = new FileIndexItem();

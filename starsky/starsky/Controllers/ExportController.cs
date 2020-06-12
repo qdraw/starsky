@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -68,8 +69,9 @@ namespace starsky.Controllers
 				
 				// all filetypes that are exist > should be added 
 				
+				// todo: add filesystem check
 				var statusResults =
-					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
+					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 				
 				// ignore readonly status
 				if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )

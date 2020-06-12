@@ -1,14 +1,17 @@
 using System.Collections.Generic;
-using System.IO;
+using starsky.feature.update.Interfaces;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.update.Services
 {
-	public class PreflightUpdate
+	[Service(typeof(IPreflightUpdate), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class PreflightUpdate : IPreflightUpdate
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
@@ -21,7 +24,7 @@ namespace starsky.feature.update.Services
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 		
-		public void Preflight(FileIndexItem inputModel, string[] inputFilePaths, bool collections)
+		public List<FileIndexItem> Preflight(FileIndexItem inputModel, string[] inputFilePaths, bool collections)
 		{
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
@@ -30,8 +33,8 @@ namespace starsky.feature.update.Services
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
 				
+				var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 				
-				// var statusResults = new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
 				//
 				// var statusModel = inputModel.Clone();
 				// statusModel.IsDirectory = false;
@@ -73,6 +76,8 @@ namespace starsky.feature.update.Services
 				// 	fileIndexResultsList.Add(collectionsDetailView.FileIndexItem);
 				// }
             }
+
+			return fileIndexResultsList;
 		}
 	}
 }

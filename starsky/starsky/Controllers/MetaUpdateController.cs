@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.update.Interfaces;
 using starsky.feature.update.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -9,11 +11,11 @@ namespace starsky.Controllers
 {
 	public class MetaUpdateController : Controller
 	{
-		private PreflightUpdate _preflightUpdate;
+		private readonly IPreflightUpdate _preflightUpdate;
 
-		public MetaUpdateController()
+		public MetaUpdateController(IPreflightUpdate preflightUpdate)
 		{
-			_preflightUpdate = new PreflightUpdate()
+			_preflightUpdate = preflightUpdate;
 		}
 	    
 	    /// <summary>
@@ -43,8 +45,8 @@ namespace starsky.Controllers
 			
 			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			
-			var fileIndexResultsList = .Preflight()
+
+			var fileIndexResultsList =  _preflightUpdate.Preflight(inputModel, inputFilePaths, collections);
 			
 			
 			// // Update >
