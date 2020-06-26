@@ -33,7 +33,24 @@ namespace starsky.feature.update.Services
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
 				
-				var statusResults = new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				// Dir is readonly / don't edit
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				     == FileIndexItem.ExifStatus.ReadOnly)
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+					continue; 
+				}
+				
+				// Deleted is allowed but the status need be updated
+				if ( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
+				     == FileIndexItem.ExifStatus.Deleted)
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+				}
 				
 				//
 				// var statusModel = inputModel.Clone();

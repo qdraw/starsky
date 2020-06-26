@@ -19,11 +19,31 @@ namespace starsky.foundation.database.Helpers
 	    {
 	    }
 
+	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
+	    {
+		    if (detailView.IsDirectory && _appSettings.IsReadOnly(detailView.SubPath))
+		    {
+			    return FileIndexItem.ExifStatus.DirReadOnly;
+		    }
+		    return FileIndexItem.ExifStatus.Default;
+	    }
+
+	    public FileIndexItem.ExifStatus IsDeletedStatus(DetailView detailView)
+	    {
+		    if (detailView.FileIndexItem.Tags.Contains("!delete!"))
+		    {
+			    return FileIndexItem.ExifStatus.Deleted;
+		    }
+
+		    return FileIndexItem.ExifStatus.Default;
+	    }
+
 	    /// <summary>
         /// Check the status of a file based on DetailView object
         /// </summary>
         /// <param name="detailView">The element used on the web</param>
         /// <returns>ExifStatus enum</returns>
+        [Obsolete("replace by other functions IsReadOnlyStatus IsDeletedStatus")]
         public FileIndexItem.ExifStatus FileCollectionsCheck(DetailView detailView)
         {
             if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");

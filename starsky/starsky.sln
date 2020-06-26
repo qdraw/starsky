@@ -65,7 +65,7 @@ ProjectSection(SolutionItems) = preProject
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
 EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.update", "starsky.feature.update\starsky.feature.update.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
