@@ -35,7 +35,8 @@ namespace starsky.foundation.database.Models
 	    public bool Collections { get; set; }
 
 	    /// <summary>
-	    /// If collections is enabled return list of subpaths
+	    /// If collections is enabled return list of subPaths
+	    /// Does NOT Fill the collection list
 	    /// </summary>
 	    /// <param name="detailView">the base fileIndexItem</param>
 	    /// <param name="collections">bool, to enable</param>

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.update.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -41,7 +42,7 @@ namespace starskytest.Services
 			_memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(UpdateService));
+			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
@@ -63,7 +64,7 @@ namespace starskytest.Services
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			new UpdateService(null, null, null, null, null).
+			new MetaUpdateService(null, null, null, null, null).
 				CompareAllLabelsAndRotation(null, null,
 				null, false, 0);
 			// ==>> MissingFieldException
@@ -95,7 +96,7 @@ namespace starskytest.Services
 			};
 			
 			// Check for compare values
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
 			
 			// Check how that changedFileIndexItemName works
@@ -125,7 +126,7 @@ namespace starskytest.Services
 			};
 			
 			// Rotate right; check if values are the same
-			new UpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
 			
 			// Check for value
@@ -176,7 +177,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -223,7 +224,7 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new UpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 
@@ -288,7 +289,7 @@ namespace starskytest.Services
 			
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
-			new UpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
+			new MetaUpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
@@ -317,7 +318,7 @@ namespace starskytest.Services
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
 			
-			new UpdateService(_queryWithoutCache,_exifTool, _readMeta, _iStorageFake, _iStorageFake)
+			new MetaUpdateService(_queryWithoutCache,_exifTool, _readMeta, _iStorageFake, _iStorageFake)
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("._test.gpx.json"));

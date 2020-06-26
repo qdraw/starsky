@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using starsky.foundation.database.Helpers;
+using starsky.feature.update.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
@@ -13,68 +14,39 @@ using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
-namespace starskycore.Services
+namespace starsky.feature.update.Services
 {
-	public class UpdateService
+	[Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class MetaUpdateService : IMetaUpdateService
 	{ 
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;
 		private readonly IReadMeta _readMeta;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
+		private readonly IMetaPreflight _metaPreflight;
 
-		public UpdateService(
+		public MetaUpdateService(
 			IQuery query,
 			IExifTool exifTool, 
 			IReadMeta readMeta,
 			IStorage iStorage,
-			IStorage thumbnailStorage)
+			IStorage thumbnailStorage,
+			IMetaPreflight metaPreflight)
 		{
 			_query = query;
 			_exifTool = exifTool;
 			_readMeta = readMeta;
 			_iStorage = iStorage;
 			_thumbnailStorage = thumbnailStorage;
-		}
-
-		/// <summary>
-		/// Compare Rotation and All other tags
-		/// </summary>
-		/// <param name="changedFileIndexItemName">Per file stored  string{FilePath}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
-		/// <param name="collectionsDetailView">DetailView input, only to display changes</param>
-		/// <param name="statusModel">object that include the changes</param>
-		/// <param name="append">true= for tags to add</param>
-		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
-			DetailView collectionsDetailView, FileIndexItem statusModel, bool append, int rotateClock)
-		{
-			if ( changedFileIndexItemName == null )
-				throw new MissingFieldException(nameof(changedFileIndexItemName));
-			
-			// compare and add changes to collectionsDetailView
-			var comparedNamesList = FileIndexCompareHelper
-				.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
-					
-			// if requested, add changes to rotation
-			collectionsDetailView.FileIndexItem = 
-				RotationCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
-
-			if ( ! changedFileIndexItemName.ContainsKey(collectionsDetailView.FileIndexItem.FilePath) )
-			{
-				// add to list
-				changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
-				return;
-			}
-			
-			// overwrite list if already exist
-			changedFileIndexItemName[collectionsDetailView.FileIndexItem.FilePath] = comparedNamesList;
-			
+			_metaPreflight = metaPreflight;
 		}
 
 		/// <summary>
 		/// Run Update
 		/// </summary>
-		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash}, List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
+		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
+		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="fileIndexResultsList">items stored in the database</param>
 		/// <param name="inputModel">This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
@@ -101,7 +73,8 @@ namespace starskycore.Services
 					
 					// when you disable cache the field is not filled with the data
 					// Compare Rotation and All other tags
-					CompareAllLabelsAndRotation(changedFileIndexItemName, detailView, inputModel, append, rotateClock);
+					_metaPreflight.CompareAllLabelsAndRotation(changedFileIndexItemName, detailView, 
+						inputModel, append, rotateClock);
 				}
 				
 				// used for tracking differences, in the database/ExifTool compare
@@ -160,32 +133,10 @@ namespace starskycore.Services
 		}
 		
 		/// <summary>
-		/// Add to comparedNames list and add to detail view
-		/// </summary>
-		/// <param name="rotateClock">-1 or 1</param>
-		/// <param name="fileIndexItem">main db object</param>
-		/// <param name="comparedNamesList">list of types that are changes</param>
-		/// <returns>updated image</returns>
-		public FileIndexItem RotationCompare(int rotateClock, FileIndexItem fileIndexItem, ICollection<string> comparedNamesList)
-		{
-			// Do orientation / Rotate if needed (after compare)
-			if (!FileIndexItem.IsRelativeOrientation(rotateClock)) return fileIndexItem;
-			// run this on detail view => statusModel is always default
-			fileIndexItem.SetRelativeOrientation(rotateClock);
-			
-			// list of exifTool to update this field
-			if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation)) )
-			{
-				comparedNamesList.Add(nameof(fileIndexItem.Orientation));
-			}
-			return fileIndexItem;
-		}
-		
-		/// <summary>
 		/// Run the Orientation changes on the thumbnail (only relative)
 		/// </summary>
 		/// <param name="rotateClock">-1 or 1</param>
-		/// <param name="fileIndexItem">object contains filehash</param>
+		/// <param name="fileIndexItem">object contains fileHash</param>
 		/// <returns>updated image</returns>
 		private void RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{

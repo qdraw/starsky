@@ -153,68 +153,7 @@ namespace starsky.Controllers
   //       }
 
 	    
-	    /// <summary>
-	    /// Search and Replace text in meta information 
-	    /// </summary>
-	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
-	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
-	    /// <param name="search">text to search for</param>
-	    /// <param name="replace">replace [search] with this text</param>
-	    /// <param name="collections">enable collections</param>
-	    /// <returns>list of changed files</returns>
-	    /// <response code="200">Initialized replace job</response>
-	    /// <response code="404">item(s) not found</response>
-	    /// <response code="401">User unauthorized</response>
-	    [HttpPost("/api/replace")]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-	    [Produces("application/json")]
-	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
-	    {
-		    var fileIndexResultsList = new ReplaceService(_query, _appSettings, _iStorage)
-			    .Replace(f, fieldName, search, replace, collections);
-		    
-			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-			{
-				var resultsOkList =
-					fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
-				
-				foreach ( var inputModel in resultsOkList )
-				{
-					// The differences are specified before update
-					var changedFileIndexItemName = new Dictionary<string, List<string>>
-					{
-						{ 
-							inputModel.FilePath, new List<string>
-							{
-								fieldName
-							} 
-						}
-					};
-					
-					new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
-						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, collections, false, 0);
-					
-				}
-			});
-					
-			// When all items are not found
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
-			{
-				return NotFound(fileIndexResultsList);
-			}
-
-			// Clone an new item in the list to display
-			var returnNewResultList = new List<FileIndexItem>();
-			foreach ( var clonedItem in fileIndexResultsList.Select(item => item.Clone()) )
-			{
-				clonedItem.FileHash = null;
-				returnNewResultList.Add(clonedItem);
-			}
-			
-			return Json(returnNewResultList);
-		}
+	    
 
 	   
 

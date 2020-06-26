@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.update.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
@@ -25,7 +26,7 @@ namespace starskytest.Services
 			_memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(UpdateService));
+			builder.UseInMemoryDatabase(nameof(MetaUpdateService));
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 		}

@@ -17,7 +17,7 @@ namespace starskytest.Services
 	public class ReplaceServiceTest
 	{
 		
-		private ReplaceService _replace;
+		private MetaReplaceService _metaReplace;
 		private readonly Query _query;
 		private readonly IMemoryCache _memoryCache;
 		private FakeIStorage _iStorage;
@@ -30,13 +30,13 @@ namespace starskytest.Services
 			_memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase(nameof(ReplaceService));
+			builder.UseInMemoryDatabase(nameof(MetaReplaceService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg","/test2.jpg"});
-			_replace = new ReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},_iStorage);
+			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},_iStorage);
 
 		}
 		
@@ -53,7 +53,7 @@ namespace starskytest.Services
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -76,7 +76,7 @@ namespace starskytest.Services
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
-			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 
@@ -96,7 +96,7 @@ namespace starskytest.Services
 				Tags = "!delete!"
 			});
 			
-			var output = _replace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			_query.RemoveItem(item0);
 
@@ -106,7 +106,7 @@ namespace starskytest.Services
 		public void ReplaceServiceTest_replaceSearchNull()
 		{
 			// When you search for nothing, there is nothing to replace 
-			var output = _replace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
+			var output = _metaReplace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
 		}
 
@@ -121,7 +121,7 @@ namespace starskytest.Services
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _replace.Replace("/test2.jpg",nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg",nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -139,7 +139,7 @@ namespace starskytest.Services
 				Tags = "!delete!"
 			});
 			
-			var output = _replace.Replace("/readonly/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+			var output = _metaReplace.Replace("/readonly/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault().Status);
 			
@@ -150,7 +150,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_Default()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
-			var result =  _replace.SearchAndReplace(items, "Tags", "!keyword!", "");
+			var result =  _metaReplace.SearchAndReplace(items, "Tags", "!keyword!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 		
@@ -158,7 +158,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_LowerCase()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !keyword!", Status = FileIndexItem.ExifStatus.Ok}};
-			var result =  _replace.SearchAndReplace(items, "tags", "!keyword!", "");
+			var result =  _metaReplace.SearchAndReplace(items, "tags", "!keyword!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 		
@@ -166,7 +166,7 @@ namespace starskytest.Services
 		public void SearchAndReplace_ReplaceDeletedTag_StatusDeleted()
 		{
 			var items = new List<FileIndexItem>{new FileIndexItem{Tags = "test, !delete!", Status = FileIndexItem.ExifStatus.Deleted}};
-			var result =  _replace.SearchAndReplace(items, "tags", "!delete!", "");
+			var result =  _metaReplace.SearchAndReplace(items, "tags", "!delete!", "");
 			Assert.AreEqual("test",result.FirstOrDefault().Tags);
 		}
 	}

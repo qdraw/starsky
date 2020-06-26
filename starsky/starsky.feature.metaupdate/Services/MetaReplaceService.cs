@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using starsky.feature.update.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -14,7 +16,8 @@ using starskycore.Helpers;
 
 namespace starskycore.Services
 {
-	public class ReplaceService
+	[Service(typeof(IMetaReplaceService), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class MetaReplaceService : IMetaReplaceService
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
@@ -24,7 +27,7 @@ namespace starskycore.Services
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
 		/// <param name="iStorage">storage abstraction</param>
-		public ReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
+		public MetaReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;

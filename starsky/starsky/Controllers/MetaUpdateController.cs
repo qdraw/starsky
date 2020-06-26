@@ -6,16 +6,24 @@ using starsky.feature.update.Interfaces;
 using starsky.feature.update.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starskycore.Services;
 
 namespace starsky.Controllers
 {
 	public class MetaUpdateController : Controller
 	{
-		private readonly IPreflightUpdate _preflightUpdate;
+		private readonly IMetaPreflight _metaPreflight;
+		private readonly IMetaUpdateService _metaUpdateService;
+		private readonly IMetaReplaceService _metaReplaceService;
+		private readonly IBackgroundTaskQueue _bgTaskQueue;
 
-		public MetaUpdateController(IPreflightUpdate preflightUpdate)
+		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
+			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue)
 		{
-			_preflightUpdate = preflightUpdate;
+			_metaPreflight = metaPreflight;
+			_metaUpdateService = metaUpdateService;
+			_metaReplaceService = metaReplaceService;
+			_bgTaskQueue = queue;
 		}
 	    
 	    /// <summary>
@@ -38,24 +46,23 @@ namespace starsky.Controllers
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 	    [HttpPost("/api/update")]
 	    [Produces("application/json")]
-	    public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, bool collections = true)
+	    public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
+		    bool collections = true, int rotateClock = 0)
 	    {
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
-			
-			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
-			var changedFileIndexItemName = new Dictionary<string, List<string>>();
+			var preflightResult =  _metaPreflight.Preflight(inputModel, inputFilePaths,
+				append, collections, rotateClock);
+			var fileIndexResultsList = preflightResult.fileIndexResultsList;
 
-			var fileIndexResultsList =  _preflightUpdate.Preflight(inputModel, inputFilePaths, collections);
+			// Update >
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				_metaUpdateService
+					.Update(preflightResult.changedFileIndexItemName, 
+						fileIndexResultsList, inputModel,collections, append, rotateClock);
+			});
 			
-			
-			// // Update >
-			// _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-			// {
-			// 	new UpdateService(_query,_exifTool, _readMeta,_iStorage,_thumbnailStorage)
-			// 		.Update(changedFileIndexItemName,fileIndexResultsList,inputModel,collections, append);
-			// });
-            
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
                 return NotFound(fileIndexResultsList);
@@ -70,5 +77,69 @@ namespace starsky.Controllers
                         
             return Json(returnNewResultList);
 	    }
+	    
+	    /// <summary>
+	    /// Search and Replace text in meta information 
+	    /// </summary>
+	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
+	    /// <param name="search">text to search for</param>
+	    /// <param name="replace">replace [search] with this text</param>
+	    /// <param name="collections">enable collections</param>
+	    /// <returns>list of changed files</returns>
+	    /// <response code="200">Initialized replace job</response>
+	    /// <response code="404">item(s) not found</response>
+	    /// <response code="401">User unauthorized</response>
+	    [HttpPost("/api/replace")]
+	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
+	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
+	    [Produces("application/json")]
+	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
+	    {
+		    var fileIndexResultsList = _metaReplaceService
+			    .Replace(f, fieldName, search, replace, collections);
+		    
+			// Update >
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				var resultsOkList =
+					fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+				
+				foreach ( var inputModel in resultsOkList )
+				{
+					// The differences are specified before update
+					var changedFileIndexItemName = new Dictionary<string, List<string>>
+					{
+						{ 
+							inputModel.FilePath, new List<string>
+							{
+								fieldName
+							} 
+						}
+					};
+					
+					_metaUpdateService
+						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
+							collections, false, 0);
+					
+				}
+			});
+					
+			// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			{
+				return NotFound(fileIndexResultsList);
+			}
+
+			// Clone an new item in the list to display
+			var returnNewResultList = new List<FileIndexItem>();
+			foreach ( var clonedItem in fileIndexResultsList.Select(item => item.Clone()) )
+			{
+				clonedItem.FileHash = null;
+				returnNewResultList.Add(clonedItem);
+			}
+			
+			return Json(returnNewResultList);
+		}
 	}
 }
