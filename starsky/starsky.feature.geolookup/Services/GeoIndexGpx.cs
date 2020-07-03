@@ -60,17 +60,19 @@ namespace starsky.feature.geolookup.Services
         /// <summary>
         /// Convert to the appSettings timezone setting
         /// </summary>
-        /// <param name="valueDateTime"></param>
+        /// <param name="valueDateTime">current DateTime</param>
+        /// <param name="subPath">optional only to display errors</param>
         /// <returns>The time in the specified timezone</returns>
         /// <exception cref="ArgumentException">DateTime Kind should not be Local</exception>
-        internal DateTime ConvertTimeZone(DateTime valueDateTime)
+        internal DateTime ConvertTimeZone(DateTime valueDateTime, string subPath = "")
         {
 	        if ( valueDateTime.Kind == DateTimeKind.Utc ) return valueDateTime;
 
 	        // Not supported by TimeZoneInfo convert
 	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
 	        {
-		        throw new ArgumentException("valueDateTime DateTime-Kind should be Unspecified", nameof(DateTime));
+		        throw new ArgumentException($"valueDateTime DateTime-Kind '{valueDateTime.Kind}' " +
+		                                    $"'{subPath}' should be Unspecified", nameof(DateTime));
 	        }
 	        
 	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
@@ -91,7 +93,7 @@ namespace starsky.feature.geolookup.Services
             
             foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
             {
-	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime);
+	            var dateTimeCameraUtc = ConvertTimeZone(metaFileItem.value.DateTime, metaFileItem.value.FilePath);
                 
                 var fileGeoData = gpxList.OrderBy(p => Math.Abs((p.DateTime - dateTimeCameraUtc).Ticks)).FirstOrDefault();
                 if(fileGeoData == null) continue;

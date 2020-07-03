@@ -10,7 +10,7 @@ Build pipelines need to be updated
  - [x] `azure-pipelines-starsky.yml`
  - [x] `azure-pipelines-starsky.starskyapp.yml`
 
-Docs
+Docs in `starsky (sln)`
  - [x] `starsky/starsky/readme.md`
 
 Docker only needs to be updated when a major version is upgraded

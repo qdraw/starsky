@@ -35,13 +35,19 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
+- [ ]   (x) Move multiple files __not implemented__
 
+<<<<<<< HEAD
 # version 0.3.0 _(Unreleased)_  2020-07-XX
 - [ ]   (NOT Ready) Update meta information for folders
 
 # version 0.2.7 _(Unreleased)_ - 2020-07-XX
 - [x]   (Fixed) _Back-end_ Fix GPS Tracking issue with 'Local' time.
 - [x]   (Deprecated) Starsky Net Framework will be removed in 0.3
+=======
+# Unreleased - 2020-06-XX
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
+>>>>>>> master
 
 # version 0.2.6 - 2020-06-08
 - [x]   (Added)  _Back-end_ Option for shared `AppSettings`
