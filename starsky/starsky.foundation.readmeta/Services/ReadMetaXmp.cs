@@ -253,8 +253,8 @@ namespace starsky.foundation.readmeta.Services
 				            DateTimeStyles.None,
 				            out dateTime);
 		            }
-		            // write it back
-		            item.DateTime = dateTime;
+		            // and use this value
+		            item.DateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
 	            }
                 
                 //   Path=photomechanic:ColorClass Namespace=http://ns.camerabits.com/photomechanic/1.0/ Value=1
