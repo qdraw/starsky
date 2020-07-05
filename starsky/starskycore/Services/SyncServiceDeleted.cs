@@ -29,7 +29,7 @@ namespace starskycore.Services
                     _query.RemoveItem(dbItem);
                     Console.WriteLine($"File {subPath} not found and removed");
 
-                    if (!dbItem.IsDirectory) return true;
+                    if (dbItem.IsDirectory  == false) return true;
                     // Remove subItems in directory
                     var toBeDeleted = _query.GetAllFiles(dbItem.FilePath);
 

@@ -173,7 +173,7 @@ namespace starsky.foundation.database.Models
 		///   <c>true</c> if this instance is directory; otherwise (then is a file), <c>false</c>.
 		/// </value>
 		/// <example>true</example>
-		public bool IsDirectory { get; set; }
+		public bool? IsDirectory { get; set; }
 
 		/// <summary>
 		/// Get/Set a HashList with Tags (stores as string under Tags)

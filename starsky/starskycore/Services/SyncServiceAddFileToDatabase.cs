@@ -23,7 +23,7 @@ namespace starskycore.Services
                 // Check if file is in database
                 var dbFolderMatchFirst = databaseFileList.FirstOrDefault(
                     p =>
-                        !p.IsDirectory &&
+                        p.IsDirectory == false &&
                         p.FilePath == singleFolderDbStyle
                 );
 

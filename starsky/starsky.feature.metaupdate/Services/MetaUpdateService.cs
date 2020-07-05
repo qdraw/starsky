@@ -9,6 +9,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
@@ -30,15 +31,14 @@ namespace starsky.feature.update.Services
 			IQuery query,
 			IExifTool exifTool, 
 			IReadMeta readMeta,
-			IStorage iStorage,
-			IStorage thumbnailStorage,
+			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight)
 		{
 			_query = query;
 			_exifTool = exifTool;
 			_readMeta = readMeta;
-			_iStorage = iStorage;
-			_thumbnailStorage = thumbnailStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
 		}
 
@@ -61,7 +61,7 @@ namespace starsky.feature.update.Services
 			foreach ( var item in collectionsDetailViewList )
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
-				var detailView = _query.SingleItem(item.FilePath,null,collections,false);
+				var detailView = _query.SingleItem(item.FilePath,null, collections,false);
 
 				// to get a value when null	
 				if ( changedFileIndexItemName == null ) changedFileIndexItemName = new Dictionary<string, List<string>>();
@@ -79,8 +79,7 @@ namespace starsky.feature.update.Services
 				
 				// used for tracking differences, in the database/ExifTool compare
 				var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
-				
-				// Then update it on exifTool,database and rotation
+
 				UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
 			}
 		}
@@ -104,8 +103,8 @@ namespace starsky.feature.update.Services
 			// do rotation on thumbs
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
-							
-			if ( ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
+			if ( detailView.FileIndexItem.IsDirectory == false 
+			     && ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
 			{
 				// Do an Exif Sync for all files, including thumbnails
 				var exifResult = exifTool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
@@ -114,14 +113,18 @@ namespace starsky.feature.update.Services
 			else
 			{
 				new FileIndexItemJsonWriter(_iStorage).Write(detailView.FileIndexItem);
+				Console.WriteLine(">> json written");
 			}
-                        
-			// change thumbnail names after the original is changed
-			var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
-			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
-					
-			// Update the hash in the database
-			detailView.FileIndexItem.FileHash = newFileHash;
+
+			if ( detailView.FileIndexItem.IsDirectory == false )
+			{
+				// change thumbnail names after the original is changed
+				var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
+				_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
+				
+				// Update the hash in the database
+				detailView.FileIndexItem.FileHash = newFileHash;
+			}
 			
 			// Do a database sync + cache sync
 			_query.UpdateItem(detailView.FileIndexItem);
@@ -131,7 +134,7 @@ namespace starsky.feature.update.Services
 			// only the full path url of the source image
 			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
 		}
-		
+
 		/// <summary>
 		/// Run the Orientation changes on the thumbnail (only relative)
 		/// </summary>

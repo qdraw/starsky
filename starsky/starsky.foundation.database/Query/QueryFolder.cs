@@ -18,12 +18,12 @@ namespace starsky.foundation.database.Query
         {
 	        try
 	        {
-		        return _context.FileIndex.Where(p => p.IsDirectory).ToList();
+		        return _context.FileIndex.Where(p => p.IsDirectory == true).ToList();
 	        }
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope( _scopeFactory).Context();
-		        return context.FileIndex.Where(p => p.IsDirectory).ToList();
+		        return context.FileIndex.Where(p => p.IsDirectory == true).ToList();
 	        }
         }
 

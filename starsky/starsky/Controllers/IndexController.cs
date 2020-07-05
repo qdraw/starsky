@@ -71,7 +71,7 @@ namespace starsky.Controllers
                 SearchQuery = subpath.Split("/").LastOrDefault(),
                 SubPath = subpath,
                 CollectionsCount = _query.DisplayFileFolders(
-	                subpath,null,false,hidedelete).Count(p => !p.IsDirectory),
+	                subpath,null,false,hidedelete).Count(p => p.IsDirectory == false),
                 ColorClassUsage = _query.DisplayFileFolders(
 	                subpath,null,false,hidedelete)
 	                .Select( p => p.ColorClass).Distinct()

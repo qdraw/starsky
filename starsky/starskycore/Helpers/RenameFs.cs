@@ -66,7 +66,7 @@ namespace starskycore.Helpers
 				// skip for files
 				if ( detailView == null) continue;
 				// dirs are mergable (isdir=false)
-				if (!detailView.FileIndexItem.IsDirectory) toFileSubPaths[i] = null;
+				if (detailView.FileIndexItem.IsDirectory == false) toFileSubPaths[i] = null;
 			}
 			
 			// Remove null from list

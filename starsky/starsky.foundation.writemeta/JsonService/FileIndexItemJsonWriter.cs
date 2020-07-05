@@ -23,7 +23,7 @@ namespace starsky.foundation.writemeta.JsonService
 				WriteIndented = true, 
 			});
 
-			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + "._" +
+			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + "." +
 			              fileIndexItem.FileName + ".json";
 			
 			await _iStorage.WriteStreamAsync(

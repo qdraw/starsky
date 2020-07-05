@@ -21,7 +21,7 @@ namespace starskycore.Services
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = databaseSubFolderList.FirstOrDefault(p =>
-                    p.IsDirectory &&
+                    p.IsDirectory == true &&
                     p.FilePath == singleFolderDbStyle
                 );
 

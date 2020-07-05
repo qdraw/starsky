@@ -89,7 +89,7 @@ namespace starsky.foundation.database.Query
 	            currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
             }
             
-            if(currentFileIndexItem.IsDirectory) {
+            if(currentFileIndexItem.IsDirectory == true) {
 	            currentFileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
 	            return new DetailView
 	            {

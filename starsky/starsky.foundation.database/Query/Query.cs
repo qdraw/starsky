@@ -48,14 +48,14 @@ namespace starsky.foundation.database.Query
             try
             {
 	            return _context.FileIndex.Where
-			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
             }
             catch ( ObjectDisposedException )
             {
 	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            return context.FileIndex.Where
-			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
             }
         }
@@ -142,7 +142,7 @@ namespace starsky.foundation.database.Query
 	        {
 		       return _context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && !p.IsDirectory
+			             && p.IsDirectory == false
 		        )?.FilePath;
 	        }
 	        catch ( ObjectDisposedException )
@@ -150,7 +150,7 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && !p.IsDirectory
+			             && p.IsDirectory == false
 		        )?.FilePath;
 	        }
         }
@@ -339,7 +339,7 @@ namespace starsky.foundation.database.Query
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
 	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
-	            && !updateStatusContent.IsDirectory) 
+	            && updateStatusContent.IsDirectory == false) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
 
 	        try
