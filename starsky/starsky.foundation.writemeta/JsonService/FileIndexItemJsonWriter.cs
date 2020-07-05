@@ -9,7 +9,7 @@ namespace starsky.foundation.writemeta.JsonService
 {
 	public class FileIndexItemJsonWriter
 	{
-		private IStorage _iStorage;
+		private readonly IStorage _iStorage;
 
 		public FileIndexItemJsonWriter(IStorage storage)
 		{
@@ -23,7 +23,7 @@ namespace starsky.foundation.writemeta.JsonService
 				WriteIndented = true, 
 			});
 
-			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + "." +
+			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + ".starsky." +
 			              fileIndexItem.FileName + ".json";
 			
 			await _iStorage.WriteStreamAsync(
