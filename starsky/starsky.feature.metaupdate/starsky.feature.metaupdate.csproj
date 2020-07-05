@@ -13,8 +13,4 @@
       <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Helpers" />
-    </ItemGroup>
-
 </Project>
