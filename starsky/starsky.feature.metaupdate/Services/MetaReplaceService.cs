@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using starsky.feature.update.Interfaces;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -12,9 +12,8 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
 
-namespace starskycore.Services
+namespace starsky.feature.metaupdate.Services
 {
 	[Service(typeof(IMetaReplaceService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class MetaReplaceService : IMetaReplaceService
@@ -61,18 +60,24 @@ namespace starskycore.Services
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				
-				// todo: add check filesystem check
-				var statusResults =
-					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
-
-				// To Inject if detailView is false
-				var statusModel = new FileIndexItem();
-				statusModel.SetFilePath(subPath);
-				statusModel.IsDirectory = false;
-
-				// if one item fails, the status will added
-				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList) || 
-				     new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList) ) continue;
+				// Dir is readonly / don't edit
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				     == FileIndexItem.ExifStatus.ReadOnly)
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+					continue; 
+				}
+				
+				// Deleted is allowed but the status need be updated
+				if ( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
+				     == FileIndexItem.ExifStatus.Deleted)
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+				}
 
 				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				

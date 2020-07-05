@@ -37,7 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.0 _(Unreleased)_  2020-07-XX
+# version 0.3.0-beta.0 _(Unreleased)_  2020-07-XX
 - [ ]   (NOT Ready) Update meta information for folders
 
 # version 0.2.7 _(Unreleased)_ - 2020-07-XX

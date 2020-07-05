@@ -70,19 +70,25 @@ namespace starsky.Controllers
 				// all filetypes that are exist > should be added 
 				
 				// todo: add filesystem check
-				var statusResults =
-					new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
 				
-				// ignore readonly status
-				if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
-					statusResults = FileIndexItem.ExifStatus.Ok;
-
 				
-				var statusModel = new FileIndexItem();
-				statusModel.SetFilePath(subPath);
-				statusModel.IsDirectory = false;
 				
-				if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				// var statusResults =
+				// 	new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
+				//
+				// // ignore readonly status
+				// if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
+				// 	statusResults = FileIndexItem.ExifStatus.Ok;
+				//
+				//
+				// var statusModel = new FileIndexItem();
+				// statusModel.SetFilePath(subPath);
+				// statusModel.IsDirectory = false;
+				//
+				// if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
+				//
+				//
+				
 
 				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
 

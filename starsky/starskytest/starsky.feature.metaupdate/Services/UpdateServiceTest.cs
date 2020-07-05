@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.update.Services;
+using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -57,82 +57,8 @@ namespace starskytest.Services
 
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
-			
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(MissingFieldException))]
-		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
-		{
-			new MetaUpdateService(null, null, null, null, null).
-				CompareAllLabelsAndRotation(null, null,
-				null, false, 0);
-			// ==>> MissingFieldException
-		}
-
-		[TestMethod]
-		public void UpdateServiceTest_CompareAllLabelsAndRotation_AppendIsFalse()
-		{
-			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			
-			var collectionsDetailView = new DetailView
-			{
-				FileIndexItem = new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "initial Value",
-					FileName = "test.jpg",
-					ParentDirectory = "/",
-					Orientation = FileIndexItem.Rotation.Horizontal
-				}
-			};
-
-			var statusModel = new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "updated Value",
-				FileName = "test.jpg",
-				ParentDirectory = "/"
-			};
-			
-			// Check for compare values
-			new MetaUpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
-				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
-			
-			// Check how that changedFileIndexItemName works
-			Assert.AreEqual(1,changedFileIndexItemName["/test.jpg"].Count);
-			Assert.AreEqual("tags",changedFileIndexItemName["/test.jpg"].FirstOrDefault());
-			
-			// Check for value
-			Assert.AreEqual("updated Value", collectionsDetailView.FileIndexItem.Tags);
-			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, collectionsDetailView.FileIndexItem.Orientation);
-
-		}
-		
-		[TestMethod]
-		public void UpdateServiceTest_CompareAllLabelsAndRotation_Rotate270Cw()
-		{
-			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			
-			var collectionsDetailView = new DetailView
-			{
-				FileIndexItem = new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "initial Value",
-					FileName = "test.jpg",
-					ParentDirectory = "/"
-				}
-			};
-			
-			// Rotate right; check if values are the same
-			new MetaUpdateService(_query, _exifTool, _readMeta,_iStorageFake,_iStorageFake)
-				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
-			
-			// Check for value
-			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, collectionsDetailView.FileIndexItem.Orientation);
-		}
-		
 		
 		[TestMethod]
 		public void UpdateService_Update_defaultTest()
@@ -177,7 +103,8 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+				new FakeConsoleWrapper(new List<string>()))
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -224,7 +151,8 @@ namespace starskytest.Services
 				ParentDirectory = "/"
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta,_iStorageFake,_iStorageFake)
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+				new FakeConsoleWrapper(new List<string>()))
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 
@@ -289,7 +217,9 @@ namespace starskytest.Services
 			
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
-			new MetaUpdateService(_queryWithoutCache,_exifTool, readMetaWithNoCache, _iStorageFake, _iStorageFake)
+			
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+				new FakeConsoleWrapper(new List<string>()))
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
@@ -317,8 +247,8 @@ namespace starskytest.Services
 			
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
-			
-			new MetaUpdateService(_queryWithoutCache,_exifTool, _readMeta, _iStorageFake, _iStorageFake)
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+				new FakeConsoleWrapper(new List<string>()))
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("._test.gpx.json"));

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using starsky.feature.update.Interfaces;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -15,7 +16,7 @@ using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
-namespace starsky.feature.update.Services
+namespace starsky.feature.metaupdate.Services
 {
 	[Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class MetaUpdateService : IMetaUpdateService
@@ -26,13 +27,15 @@ namespace starsky.feature.update.Services
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
+		private readonly IConsole _console;
 
 		public MetaUpdateService(
 			IQuery query,
 			IExifTool exifTool, 
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
-			IMetaPreflight metaPreflight)
+			IMetaPreflight metaPreflight,
+			IConsole console)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -40,6 +43,7 @@ namespace starsky.feature.update.Services
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
+			_console = console;
 		}
 
 		/// <summary>
@@ -108,12 +112,11 @@ namespace starsky.feature.update.Services
 			{
 				// Do an Exif Sync for all files, including thumbnails
 				var exifResult = exifTool.Update(detailView.FileIndexItem, exifUpdateFilePaths, comparedNamesList);
-				Console.WriteLine($"exifResult: {exifResult}");
+				_console.WriteLine($"exifResult: {exifResult}");
 			}
 			else
 			{
 				new FileIndexItemJsonWriter(_iStorage).Write(detailView.FileIndexItem);
-				Console.WriteLine(">> json written");
 			}
 
 			if ( detailView.FileIndexItem.IsDirectory == false )

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using starsky.feature.update.Interfaces;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,7 +9,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.update.Services
+namespace starsky.feature.metaupdate.Services
 {
 	[Service(typeof(IMetaPreflight), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class MetaPreflight : IMetaPreflight
@@ -39,6 +39,8 @@ namespace starsky.feature.update.Services
 			foreach (var subPath in inputFilePaths)
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
+				
+				// todo : check if file/directory exist 
 				
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
