@@ -37,7 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.0 _(Unreleased)_  2020-07-XX
+# version 0.3.0-beta.0 _(Unreleased)_  2020-07-XX
 - [ ]   (NOT Ready) Update meta information for folders
 
 # version 0.2.7 _(Unreleased)_ - 2020-07-XX
@@ -65,9 +65,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Chrome 81+ Exif rotation on non-thumbnail images #48
 - [x]   (Fixed) _Back-end_  Redirect with Prefix issu #49
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.4 (using SDK 3.1.300)
-- [x]   (Fixed)  _App_ Add playback for video in App Issue #53 
+- [x]   (Fixed)  _App_ Add playback for video in App Issue #53
 - [x]   (Fixed)  _App_ StarskyApp should see map Issue #52
-- [x]   (Fixed)  _Front-end_  Download folders with + (plus) not found Issue #54 
+- [x]   (Fixed)  _Front-end_  Download folders with + (plus) not found Issue #54
 
 # version 0.2.5 - 2020-05-22
 - [x]   (Added)  _Tools_ Azure pipeline for starskyApp
