@@ -15,7 +15,7 @@ namespace starskytest.FakeMocks
 		public void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, DetailView detailView,
 			FileIndexItem inputModel, bool append, int rotateClock)
 		{
-			throw new System.NotImplementedException();
+			changedFileIndexItemName.Add(detailView.FileIndexItem.FilePath, new List<string>{"Tags"});
 		}
 	}
 }
