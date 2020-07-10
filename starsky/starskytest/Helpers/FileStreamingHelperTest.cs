@@ -12,6 +12,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+#pragma warning disable 1998
 
 namespace starskytest.Helpers
 {

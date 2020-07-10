@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+#pragma warning disable 1998
 
 namespace starskytest.FakeMocks
 {

@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
-using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starskycore.Services;
 
 namespace starsky.Controllers
 {
+	[Authorize]
 	public class MetaUpdateController : Controller
 	{
 		private readonly IMetaPreflight _metaPreflight;

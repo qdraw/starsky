@@ -12,6 +12,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.metaupdate.Services
 {
@@ -25,12 +26,12 @@ namespace starsky.feature.metaupdate.Services
 		/// <summary>Do a sync of files uning a subpath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
-		/// <param name="iStorage">storage abstraction</param>
-		public MetaReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
+		/// <param name="selectorStorage">storage abstraction</param>
+		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 
 		/// <summary>
