@@ -110,6 +110,7 @@ namespace starskytest.Services
                     FileHash = "stationdeletedfile",
                     Tags = "!delete!",
 	                DateTime = new DateTime(2013,1,1,1,1,1),
+	                IsDirectory = false
                 });
             }
             
@@ -385,6 +386,8 @@ namespace starskytest.Services
 	    public void SearchService_SearchForDirectories()
 	    {
 		    InsertSearchData();
+		    var t = _query.GetObjectByFilePath("/stations");
+		    
 		    Assert.AreEqual(1, _search.Search("-isDirectory:true -inurl:stations").SearchCount);
 	    }
         

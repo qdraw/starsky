@@ -17,7 +17,7 @@ using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
-namespace starskytest.Services
+namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
 	public class MetaPreflightTest

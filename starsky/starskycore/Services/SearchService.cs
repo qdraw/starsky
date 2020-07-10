@@ -76,7 +76,6 @@ namespace starskycore.Services
 		    return true;
 	    }
 	    
-	    
 	    /// <summary>
         /// Skip un-needed items
         /// </summary>
@@ -105,7 +104,6 @@ namespace starskycore.Services
 
 	        return searchModel;
         }
-	    
 
         /// <summary>
         /// Return all results
@@ -114,7 +112,6 @@ namespace starskycore.Services
         /// <returns></returns>
         private SearchViewModel SearchDirect(string query = "")
         {
-
             var stopWatch = Stopwatch.StartNew();
 
             // Create an view model
@@ -274,8 +271,6 @@ namespace starskycore.Services
 		    return model;
 	    }
 
-
-
 	    /// <summary>
 		/// Store the query during search
 		/// </summary>
@@ -309,8 +304,6 @@ namespace starskycore.Services
             model.SearchQuery = _orginalSearchQuery;
             return model;
         }
-
-
 
 	    /// <summary>
 	    /// Search for e.g. -Tags:"test"
@@ -376,7 +369,6 @@ namespace starskycore.Services
                 model.SetAddSearchInStringType(itemName);
            
             }
-                
         }
 
 	    /// <summary>
@@ -445,6 +437,5 @@ namespace starskycore.Services
         {
             return toRound - toRound % 10;
         }
-
     }
 }

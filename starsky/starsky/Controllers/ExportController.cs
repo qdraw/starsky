@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -90,7 +89,7 @@ namespace starsky.Controllers
 				//
 				
 
-				if ( detailView == null ) throw new InvalidDataException("Detailview is null " + nameof(detailView));
+				if ( detailView == null ) throw new InvalidDataException("DetailView is null ~ " + nameof(detailView));
 
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);

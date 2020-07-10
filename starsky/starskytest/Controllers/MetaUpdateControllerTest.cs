@@ -126,7 +126,7 @@ namespace starskytest.Controllers
         }
 
         [TestMethod]
-        public async Task ApiController_Update_AllDataIncluded_WithFakeExiftool()
+        public async Task ApiController_Update_AllDataIncluded_WithFakeExifTool()
         {
 	        var createAnImage = new CreateAnImage();
 	        InsertSearchData();
@@ -149,7 +149,7 @@ namespace starskytest.Controllers
         }
         
         [TestMethod]
-        public async Task ApiController_Update_SourceImageMissingOnDisk_WithFakeExiftool()
+        public async Task ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool()
         {
 	        _query.AddItem(new FileIndexItem
 	        {
