@@ -142,7 +142,7 @@ namespace starsky.foundation.database.Query
 	        {
 		       return _context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && p.IsDirectory == false
+			             && p.IsDirectory != true
 		        )?.FilePath;
 	        }
 	        catch ( ObjectDisposedException )
@@ -150,7 +150,7 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && p.IsDirectory == false
+			             && p.IsDirectory != true
 		        )?.FilePath;
 	        }
         }

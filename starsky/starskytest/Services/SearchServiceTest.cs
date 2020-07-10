@@ -57,7 +57,8 @@ namespace starskytest.Services
                     Title = "Schiphol",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 	                DateTime = new DateTime(2014,1,1,1,1,1),
-	                MakeModel = "Apple|iPhone SE|"
+	                MakeModel = "Apple|iPhone SE|",
+	                IsDirectory = false
                 });
             }
 
@@ -69,7 +70,8 @@ namespace starskytest.Services
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
                     Tags = "station, train, lelystad, de trein, delete",
-	                DateTime = DateTime.Now
+	                DateTime = DateTime.Now,
+	                IsDirectory = false
                 });
             }
             
@@ -84,7 +86,8 @@ namespace starskytest.Services
                     Description = "lelystadcentrum2",
                     ImageFormat = ExtensionRolesHelper.ImageFormat.tiff,
                     DateTime = new DateTime(2016,1,1,1,1,1),
-                    AddToDatabase = new DateTime(2016,1,1,1,1,1)
+                    AddToDatabase = new DateTime(2016,1,1,1,1,1),
+                    IsDirectory = false
                 });
             }
             

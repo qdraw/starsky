@@ -29,7 +29,7 @@ namespace starskytest.Services
 			_memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("searchService");
+			builder.UseInMemoryDatabase("searchSuggestionService");
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new AppSettings());
