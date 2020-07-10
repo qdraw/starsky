@@ -445,6 +445,7 @@ namespace starsky.foundation.database.Models
             {
                 if ((
 						propertyInfo.PropertyType == typeof(bool) || 
+						propertyInfo.PropertyType == typeof(bool?) || 
 						propertyInfo.PropertyType == typeof(string) || 
 						propertyInfo.PropertyType == typeof(DateTime) ||
 						propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat)

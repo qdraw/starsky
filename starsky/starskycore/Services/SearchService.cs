@@ -293,6 +293,8 @@ namespace starskycore.Services
 
 	        _defaultQuery = model.SearchQuery;
 
+	        // Need to have the type registered in FileIndexPropList
+	        
             foreach (var itemName in new FileIndexItem().FileIndexPropList())
             {
                 SearchItemName(model, itemName);
