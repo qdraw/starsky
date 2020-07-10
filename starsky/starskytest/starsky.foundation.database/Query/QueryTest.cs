@@ -57,35 +57,40 @@ namespace starskytest.starsky.foundation.database.Query
                     FileHash = "09876543456789",
                     ColorClass = ColorClassParser.Color.Winner, // 1
                     Tags = "",
-                    Title = ""
+                    Title = "",
+                    IsDirectory = false
                 });
                 
                 _insertSearchDatahi2JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
                     Tags = "!delete!",
-                    ParentDirectory = "/basic"
+                    ParentDirectory = "/basic",
+                    IsDirectory = false
                 });
             
                 _insertSearchDatahi3JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi3.jpg",
                     ParentDirectory = "/basic",
-                    ColorClass = ColorClassParser.Color.Trash // 9
+                    ColorClass = ColorClassParser.Color.Trash, // 9
+                    IsDirectory = false
                 });
             
                 _insertSearchDatahi4JpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi4.jpg",
                     ParentDirectory = "/basic",
-                    ColorClass = ColorClassParser.Color.Winner // 1
+                    ColorClass = ColorClassParser.Color.Winner, // 1
+                    IsDirectory = false
                 });
             
                 _insertSearchDatahi2SubfolderJpgInput =  _query.AddItem(new FileIndexItem
                 {
                     FileName = "hi2.jpg",
                     ParentDirectory = "/basic/subfolder",
-                    FileHash = "234567876543"
+                    FileHash = "234567876543",
+                    IsDirectory = false
                 });
             }
         }
