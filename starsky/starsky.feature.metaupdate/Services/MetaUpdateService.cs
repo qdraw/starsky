@@ -107,7 +107,7 @@ namespace starsky.feature.metaupdate.Services
 			// do rotation on thumbs
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
-			if ( detailView.FileIndexItem.IsDirectory == false 
+			if ( detailView.FileIndexItem.IsDirectory != true 
 			     && ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
 			{
 				// Do an Exif Sync for all files, including thumbnails
@@ -119,7 +119,7 @@ namespace starsky.feature.metaupdate.Services
 				new FileIndexItemJsonWriter(_iStorage).Write(detailView.FileIndexItem);
 			}
 
-			if ( detailView.FileIndexItem.IsDirectory == false )
+			if ( detailView.FileIndexItem.IsDirectory != true )
 			{
 				// change thumbnail names after the original is changed
 				var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;

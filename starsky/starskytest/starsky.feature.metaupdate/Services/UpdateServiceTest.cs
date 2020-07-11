@@ -124,7 +124,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				Tags = "thisKeywordHasChanged",
 				FileName = "test.jpg",
 				Description = "noChanges",
-				ParentDirectory = "/"
+				ParentDirectory = "/",
+				IsDirectory = false
 			});
 
 			var fileIndexResultsList = new List<FileIndexItem>
@@ -136,6 +137,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					FileName = "test.jpg",
 					ParentDirectory = "/",
 					Description = "keep",
+					IsDirectory = false
 				}
 			};
 
@@ -145,11 +147,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				Tags = "only used when NoChangedFileIndexItemName",
 				FileName = "test.jpg",
 				Description = "noChanges",
-				ParentDirectory = "/"
+				ParentDirectory = "/",
+				IsDirectory = false
 			};
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				new FakeConsoleWrapper(new List<string>()))
+				new FakeConsoleWrapper())
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 
@@ -212,8 +215,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
 			
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				new FakeConsoleWrapper(new List<string>()))
+			new MetaUpdateService(_query,_exifTool, readMetaWithNoCache, new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),  
+					new FakeConsoleWrapper())
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
