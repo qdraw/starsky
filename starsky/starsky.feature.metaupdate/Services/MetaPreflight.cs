@@ -22,7 +22,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 
 		public (List<FileIndexItem> fileIndexResultsList, 

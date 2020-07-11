@@ -151,8 +151,10 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				IsDirectory = false
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				new FakeConsoleWrapper())
+			new MetaUpdateService(_query,_exifTool, _readMeta, 
+					new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(), 
+					new FakeConsoleWrapper())
 				.Update(null,fileIndexResultsList, updateItem, false,false,0);
 			// Second one is null
 

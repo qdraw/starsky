@@ -25,6 +25,12 @@ namespace starsky.foundation.database.Helpers
 		    {
 			    return FileIndexItem.ExifStatus.DirReadOnly;
 		    }
+
+		    if ( _appSettings.IsReadOnly(detailView.FileIndexItem.ParentDirectory) )
+		    {
+			    return  FileIndexItem.ExifStatus.ReadOnly;
+		    }
+
 		    return FileIndexItem.ExifStatus.Default;
 	    }
 
@@ -112,11 +118,11 @@ namespace starsky.foundation.database.Helpers
                 //     statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
                 //     fileIndexResultsList.Add(statusModel);
                 //     return true;
-                // case FileIndexItem.ExifStatus.DirReadOnly:
-                //     statusModel.IsDirectory = true;
-                //     statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
-                //     fileIndexResultsList.Add(statusModel);
-                //     return true;
+                case FileIndexItem.ExifStatus.DirReadOnly:
+                    statusModel.IsDirectory = true;
+                    statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;
+                    fileIndexResultsList.Add(statusModel);
+                    return true;
                 case FileIndexItem.ExifStatus.NotFoundNotInIndex:
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
                     fileIndexResultsList.Add(statusModel);
@@ -125,6 +131,10 @@ namespace starsky.foundation.database.Helpers
                     statusModel.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
                     fileIndexResultsList.Add(statusModel);
                     return true;
+                case FileIndexItem.ExifStatus.ReadOnly:
+	                statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
+	                fileIndexResultsList.Add(statusModel);
+	                return true;
             }
             return false;
         }

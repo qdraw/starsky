@@ -124,7 +124,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			// Rotate right; check if values are the same
 			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
-				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, false, -1);
+				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, 
+					false, -1);
 			
 			// Check for value
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, collectionsDetailView.FileIndexItem.Orientation);

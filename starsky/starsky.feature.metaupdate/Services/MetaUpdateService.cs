@@ -70,7 +70,8 @@ namespace starsky.feature.metaupdate.Services
 				// to get a value when null	
 				if ( changedFileIndexItemName == null ) changedFileIndexItemName = new Dictionary<string, List<string>>();
 				
-				if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) || !_query.IsCacheEnabled() )
+				// 202007. used to have: || !_query.IsCacheEnabled()
+				if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
 				{
 					// the inputModel is always DoNotChange, so checking from the field is useless
 					inputModel.Orientation = detailView.FileIndexItem.Orientation;
@@ -123,7 +124,11 @@ namespace starsky.feature.metaupdate.Services
 			{
 				// change thumbnail names after the original is changed
 				var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
-				_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
+
+				if ( _thumbnailStorage.ExistFile(detailView.FileIndexItem.FileHash) )
+				{
+					_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
+				}
 				
 				// Update the hash in the database
 				detailView.FileIndexItem.FileHash = newFileHash;
