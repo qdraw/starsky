@@ -162,9 +162,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			_query.RemoveItem(item0);
 		}
-
-		
-		
 		
 		[TestMethod]
 		public void UpdateService_Update_DisabledCache()
@@ -248,7 +245,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FakeConsoleWrapper(new List<string>()))
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
-			Assert.IsTrue(_iStorageFake.ExistFile("._test.gpx.json"));
+			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
 		}
 	}
 }
