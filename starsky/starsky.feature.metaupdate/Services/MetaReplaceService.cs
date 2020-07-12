@@ -61,6 +61,15 @@ namespace starsky.feature.metaupdate.Services
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				
+				// todo: not found??
+				
+				if ( detailView?.FileIndexItem == null )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+				}
+				
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
@@ -79,8 +88,6 @@ namespace starsky.feature.metaupdate.Services
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexResultsList);
 				}
-
-				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				
 				// current item is also ok
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
