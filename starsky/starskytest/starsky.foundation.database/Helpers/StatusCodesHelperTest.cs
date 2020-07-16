@@ -44,23 +44,23 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly,status);
 		}
 		
-		[TestMethod]
-		public void StatusCodesHelperTest_InjectFakeIStorage_GoodSituation()
-		{
-			var appSettings = new AppSettings();
-			var detailView = new DetailView
-			{
-				IsDirectory = false,
-				SubPath = "/test.jpg",
-				FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
-			};
-			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
-			
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status);
-			
-			var status1 = new StatusCodesHelper(appSettings).IsDeletedStatus(detailView);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status1);
-		}
+		// [TestMethod]
+		// public void StatusCodesHelperTest_InjectFakeIStorage_GoodSituation()
+		// {
+		// 	var appSettings = new AppSettings();
+		// 	var detailView = new DetailView
+		// 	{
+		// 		IsDirectory = false,
+		// 		SubPath = "/test.jpg",
+		// 		FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+		// 	};
+		// 	var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
+		// 	
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status);
+		// 	
+		// 	var status1 = new StatusCodesHelper(appSettings).IsDeletedStatus(detailView);
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status1);
+		// }
 		
 		
 		[TestMethod]
@@ -156,17 +156,17 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,statusBool);
 		}
 	
-		[TestMethod]
-		public void StatusCodesHelperTest_ReturnExifStatusError_ReadOnly()
-		{
-			var appSettings = new AppSettings();
-			var statusModel = new FileIndexItem();
-			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
-			var fileIndexResultsList = new List<FileIndexItem>();
-			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
-				fileIndexResultsList);
-			Assert.AreEqual(false,statusBool);
-		}
+		// [TestMethod]
+		// public void StatusCodesHelperTest_ReturnExifStatusError_ReadOnly()
+		// {
+		// 	var appSettings = new AppSettings();
+		// 	var statusModel = new FileIndexItem();
+		// 	var statusResults = FileIndexItem.ExifStatus.ReadOnly;
+		// 	var fileIndexResultsList = new List<FileIndexItem>();
+		// 	var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+		// 		fileIndexResultsList);
+		// 	Assert.AreEqual(false,statusBool);
+		// }
 
 		[TestMethod]
 		public void StatusCodesHelperTest_ReadonlyDenied_true()

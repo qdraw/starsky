@@ -68,6 +68,7 @@ namespace starsky.feature.metaupdate.Services
 					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
+					continue;
 				}
 				
 				// Dir is readonly / don't edit

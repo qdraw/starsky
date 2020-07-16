@@ -21,6 +21,11 @@ namespace starsky.foundation.database.Helpers
 
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
 	    {
+		    if ( detailView == null )
+		    {
+			    return FileIndexItem.ExifStatus.Default;
+		    }
+		    
 		    if (detailView.IsDirectory && _appSettings.IsReadOnly(detailView.SubPath))
 		    {
 			    return FileIndexItem.ExifStatus.DirReadOnly;

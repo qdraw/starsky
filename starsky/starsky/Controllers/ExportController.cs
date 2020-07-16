@@ -15,6 +15,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
@@ -72,6 +73,15 @@ namespace starsky.Controllers
 					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
+					continue;
+				}
+				
+				if ( !_iStorage.ExistFile(detailView.SubPath) )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.Deleted,
+						fileIndexResultsList);
+					continue; 
 				}
 				
 				// all filetypes that are exist > should be added 

@@ -7,6 +7,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.metaupdate.Services
@@ -40,7 +41,21 @@ namespace starsky.feature.metaupdate.Services
 			{
 				var detailView = _query.SingleItem(subPath,null,collections,false);
 				
-				// todo : check if file/directory exist 
+				if ( detailView?.FileIndexItem == null )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+					continue;
+				}
+				
+				if ( _iStorage.IsFolderOrFile(detailView.SubPath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.Deleted,
+						fileIndexResultsList);
+					continue; 
+				}
 				
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
