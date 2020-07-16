@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>starsky.feature.metaupdate</RootNamespace>
+        <ProjectGuid>{9567d576-4dee-481b-b316-c55d493416f4}</ProjectGuid>
     </PropertyGroup>
 
     <ItemGroup>
