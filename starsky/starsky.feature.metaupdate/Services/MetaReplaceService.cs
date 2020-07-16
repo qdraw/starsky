@@ -79,18 +79,12 @@ namespace starsky.feature.metaupdate.Services
 						fileIndexResultsList);
 					continue; 
 				}
-				
-				// Deleted is allowed but the status need be updated
-				if ( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
-				     == FileIndexItem.ExifStatus.Deleted)
-				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
-						FileIndexItem.ExifStatus.ReadOnly,
-						fileIndexResultsList);
-				}
-				
+
 				// current item is also ok
-				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				if ( detailView.FileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				{
+					detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				}
 				
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);

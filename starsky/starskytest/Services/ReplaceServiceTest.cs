@@ -36,8 +36,10 @@ namespace starskytest.Services
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
 
-			_iStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg","/test2.jpg"});
-			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},new FakeSelectorStorage(_iStorage));
+			_iStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg","/test2.jpg"});
+			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
+				new FakeSelectorStorage(_iStorage));
 
 		}
 		
@@ -54,7 +56,8 @@ namespace starskytest.Services
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _metaReplace.Replace("/test2.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -77,7 +80,8 @@ namespace starskytest.Services
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
-			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 
@@ -97,7 +101,8 @@ namespace starskytest.Services
 				Tags = "!delete!"
 			});
 			
-			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			_query.RemoveItem(item0);
 
@@ -107,7 +112,8 @@ namespace starskytest.Services
 		public void ReplaceServiceTest_replaceSearchNull()
 		{
 			// When you search for nothing, there is nothing to replace 
-			var output = _metaReplace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), null, "test", false);
+			var output = _metaReplace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), 
+				null, "test", false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
 		}
 
@@ -122,7 +128,8 @@ namespace starskytest.Services
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _metaReplace.Replace("/test2.jpg",nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
+			var output = _metaReplace.Replace("/test2.jpg",
+				nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
@@ -140,7 +147,8 @@ namespace starskytest.Services
 				Tags = "!delete!"
 			});
 			
-			var output = _metaReplace.Replace("/readonly/test.jpg",nameof(FileIndexItem.Tags),"!delete!",null,false);
+			var output = _metaReplace.Replace("/readonly/test.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault().Status);
 			

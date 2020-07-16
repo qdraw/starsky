@@ -14,21 +14,21 @@ namespace starskytest.Helpers
 	[TestClass]
 	public class StatusCodesHelperTest
 	{
-		[TestMethod]
-		public void StatusCodesHelperTest_IsDeletedStatus_NotFoundNotInIndex()
-		{
-			var appSettings = new AppSettings();
-			var status = new StatusCodesHelper(appSettings).IsDeletedStatus(null);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
-		}
-		
-		[TestMethod]
-		public void StatusCodesHelperTest_IsReadOnlyStatus_NotFoundNotInIndex()
-		{
-			var appSettings = new AppSettings();
-			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(null);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
-		}
+		// [TestMethod]
+		// public void StatusCodesHelperTest_IsDeletedStatus_NotFoundNotInIndex()
+		// {
+		// 	var appSettings = new AppSettings();
+		// 	var status = new StatusCodesHelper(appSettings).IsDeletedStatus(null);
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
+		// }
+		//
+		// [TestMethod]
+		// public void StatusCodesHelperTest_IsReadOnlyStatus_NotFoundNotInIndex()
+		// {
+		// 	var appSettings = new AppSettings();
+		// 	var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(null);
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
+		// }
 		
 		[TestMethod]
 		public void StatusCodesHelperTest_IsReadOnlyStatus_DirReadOnly()
