@@ -21,7 +21,9 @@ namespace starsky.foundation.database.Helpers
 
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
 	    {
-		    if ( detailView == null || _appSettings == null )
+		    if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");
+
+		    if ( detailView == null )
 		    {
 			    return FileIndexItem.ExifStatus.Default;
 		    }

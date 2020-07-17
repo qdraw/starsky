@@ -19,6 +19,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly AppSettings _appSettings;
 		private readonly ReadMeta _readMeta;
 		private readonly IStorage _iStorage;
+		private readonly StatusCodesHelper _statusCodeHelper;
 
 		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
@@ -26,6 +27,7 @@ namespace starsky.feature.metaupdate.Services
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_readMeta = new ReadMeta(_iStorage);
+			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 		}
 		
 		public List<FileIndexItem> GetInfo(List<string> inputFilePaths, bool collections)
@@ -39,7 +41,7 @@ namespace starsky.feature.metaupdate.Services
 				
 				if ( detailView?.FileIndexItem == null )
 				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 					continue;
@@ -47,7 +49,7 @@ namespace starsky.feature.metaupdate.Services
 				
 				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath) )
 				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
@@ -57,7 +59,7 @@ namespace starsky.feature.metaupdate.Services
 				// Not all files are able to write with exifTool
 				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.OperationNotSupported,
 						fileIndexResultsList);
 					continue;
@@ -65,7 +67,7 @@ namespace starsky.feature.metaupdate.Services
         
 				var statusResults = new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView);
 				// only when default status to avoid unneeded checks
-				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = new StatusCodesHelper().IsReadOnlyStatus(detailView);
+				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = _statusCodeHelper.IsReadOnlyStatus(detailView);
 				// when everything is checked, it should be good
 				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = FileIndexItem.ExifStatus.Ok;
 

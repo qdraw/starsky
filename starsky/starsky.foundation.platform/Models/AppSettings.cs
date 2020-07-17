@@ -311,7 +311,7 @@ namespace starsky.foundation.platform.Models
         public List<string> ReadOnlyFolders { get; set; }
 
         /// <summary>
-        /// Is the file read only
+        /// Is the file read only (only by folder name)
         /// </summary>
         /// <param name="f">filepath</param>
         /// <returns>true = don't edit</returns>
