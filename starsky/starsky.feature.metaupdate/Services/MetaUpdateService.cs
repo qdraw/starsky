@@ -52,7 +52,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
 		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="fileIndexResultsList">items stored in the database</param>
-		/// <param name="inputModel">This model is overwritten in the database and ExifTool</param>
+		/// <param name="inputModel">(only used when cache is disabled) This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
@@ -61,27 +61,19 @@ namespace starsky.feature.metaupdate.Services
 			FileIndexItem inputModel, 
 			bool collections, bool append, int rotateClock)
 		{
+			if ( changedFileIndexItemName == null )
+			{
+				changedFileIndexItemName = _metaPreflight.Preflight(inputModel,
+					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
+					rotateClock).changedFileIndexItemName;
+			}
+			
 			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 			foreach ( var item in collectionsDetailViewList )
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
 				var detailView = _query.SingleItem(item.FilePath,null, collections,false);
 
-				// to get a value when null	
-				if ( changedFileIndexItemName == null ) changedFileIndexItemName = new Dictionary<string, List<string>>();
-				
-				// 202007. used to have: || !_query.IsCacheEnabled()
-				if ( !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
-				{
-					// the inputModel is always DoNotChange, so checking from the field is useless
-					inputModel.Orientation = detailView.FileIndexItem.Orientation;
-					
-					// when you disable cache the field is not filled with the data
-					// Compare Rotation and All other tags
-					_metaPreflight.CompareAllLabelsAndRotation(changedFileIndexItemName, detailView, 
-						inputModel, append, rotateClock);
-				}
-				
 				// used for tracking differences, in the database/ExifTool compare
 				var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
 
@@ -95,7 +87,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="detailView">output database object</param>
 		/// <param name="comparedNamesList">name of fields updated by exifTool</param>
 		/// <param name="rotateClock">rotation value (if needed)</param>
-		public void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
+		private void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
 			var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
 					

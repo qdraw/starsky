@@ -41,7 +41,6 @@ namespace starskytest.Controllers
 			var listResult = jsonResult.Value as List<FileIndexItem>;
 			Assert.AreEqual("test, sion", listResult.FirstOrDefault().Tags);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, listResult.FirstOrDefault().Status);
-
 		}
 
 		[TestMethod]

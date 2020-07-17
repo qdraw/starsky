@@ -20,7 +20,7 @@ using starskytest.Models;
 namespace starskytest.starsky.feature.metaupdate.Services
 {
 	[TestClass]
-	public class UpdateServiceTest
+	public class MetaUpdateServiceTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IQuery _query;
@@ -31,7 +31,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		private readonly Query _queryWithoutCache;
 		private string _exampleHash;
 
-		public UpdateServiceTest()
+		public MetaUpdateServiceTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -43,11 +43,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
 			_query = new Query(dbContext,_memoryCache);
-			_queryWithoutCache = new Query(dbContext,null);
+			_queryWithoutCache = new Query(dbContext,null, new AppSettings{ AddMemoryCache = false});
 
 			_appSettings = new AppSettings();
 
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash},
+			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash,
+					"/test_default.jpg"},
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
@@ -64,7 +65,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "thisKeywordHasChanged",
-				FileName = "test.jpg",
+				FileName = "test_default.jpg",
 				Description = "noChanges",
 				ParentDirectory = "/"
 			});
@@ -72,7 +73,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var changedFileIndexItemName = new Dictionary<string, List<string>>
 			{
 				{ 
-					"/test.jpg", new List<string>
+					"/test_default.jpg", new List<string>
 					{
 						nameof(FileIndexItem.Tags)
 					} 
@@ -85,7 +86,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				{
 					Status = FileIndexItem.ExifStatus.Ok,
 					Tags = "initial tags (from database)",
-					FileName = "test.jpg",
+					FileName = "test_default.jpg",
 					ParentDirectory = "/",
 					Description = "keep",
 				}
@@ -95,7 +96,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "only used when Caching is disabled",
-				FileName = "test.jpg",
+				FileName = "test_default.jpg",
 				Description = "noChanges",
 				ParentDirectory = "/"
 			};
@@ -107,23 +108,22 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
 			// db
-			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test_default.jpg").FileIndexItem.Tags);
 			
-			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
+			Assert.AreEqual("noChanges",_query.SingleItem("/test_default.jpg").FileIndexItem.Description);
 
 			_query.RemoveItem(item0);
 		}
 
 		
-		// [TestMethod]
-		public void UpdateService_Update_NoChangedFileIndexItemName()
+		[TestMethod]
+		public void UpdateService_Update_NoChangedFileIndexItemName_AndHasChanged()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var databaseItem = _query.AddItem(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "thisKeywordHasChanged",
+				Tags = "databaseItem",
 				FileName = "test.jpg",
-				Description = "noChanges",
 				ParentDirectory = "/",
 				IsDirectory = false
 			});
@@ -141,12 +141,11 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				}
 			};
 
-			var updateItem = new FileIndexItem
+			var toUpdateItem = new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "only used when NoChangedFileIndexItemName",
+				Tags = "databaseItem",
 				FileName = "test.jpg",
-				Description = "noChanges",
 				ParentDirectory = "/",
 				IsDirectory = false
 			};
@@ -155,20 +154,18 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(), 
 					new FakeConsoleWrapper())
-				.Update(null,fileIndexResultsList, updateItem, false,false,0);
+				.Update(null,fileIndexResultsList, toUpdateItem, false,false,0);
 			// Second one is null
 
 			// check for item (Referenced)
-			Assert.AreEqual("only used when NoChangedFileIndexItemName",item0.Tags);
+			Assert.AreEqual("databaseItem",toUpdateItem.Tags);
 			// db
-			Assert.AreEqual("only used when NoChangedFileIndexItemName",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
-			
-			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
+			Assert.AreEqual("databaseItem",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
 
-			_query.RemoveItem(item0);
+			_query.RemoveItem(databaseItem);
 		}
 		
-		// [TestMethod]
+		[TestMethod]
 		public void UpdateService_Update_DisabledCache()
 		{
 			_query.AddItem(new FileIndexItem
@@ -207,7 +204,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var updateItem = new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "only used when Caching is disabled",
+				Tags = "?? only used when Caching is disabled",
 				FileName = "test.jpg",
 				FileHash = "test.jpg",
 				Description = "noChanges",
@@ -217,13 +214,13 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var appSettings = new AppSettings{AddMemoryCache = false};
 			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
 			
-			new MetaUpdateService(_query,_exifTool, readMetaWithNoCache, new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(),  
+			new MetaUpdateService(_queryWithoutCache, _exifTool, readMetaWithNoCache, new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),   
 					new FakeConsoleWrapper())
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
-			Assert.AreEqual("only used when Caching is disabled",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
+			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
 			
 			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
 
