@@ -30,12 +30,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		public void ExtensionNotSupported_OperationNotSupported()
+		public void ExtensionNotSupported_ExifWriteNotSupported()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), new List<string> {"/test"})));
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
-			Assert.AreEqual(test.FirstOrDefault().Status, FileIndexItem.ExifStatus.OperationNotSupported);
+			Assert.AreEqual(test.FirstOrDefault().Status, FileIndexItem.ExifStatus.ExifWriteNotSupported);
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 		public async Task Json_Write()
 		{
 			var fakeStorage = new FakeIStorage();
-			await new FileIndexItemJsonWriter(fakeStorage).Write(new FileIndexItem("/test.jpg"));
+			await new FileIndexItemJsonParser(fakeStorage).Write(new FileIndexItem("/test.jpg"));
 			Assert.IsTrue(fakeStorage.ExistFile("/.starsky.test.jpg.json"));
 		}
 	}

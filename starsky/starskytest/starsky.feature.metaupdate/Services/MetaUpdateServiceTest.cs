@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -231,7 +232,10 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		[TestMethod]
 		public void Update_Write_GPX()
 		{
-			var changedFileIndexItemName = new Dictionary<string, List<string>>();
+			var changedFileIndexItemName = new Dictionary<string, List<string>>{
+			{
+				"/test.gpx", new List<string>{"Tags"}
+			}};
 
 			_iStorageFake.WriteStream(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
 			var updateItem = new FileIndexItem("/test.gpx")
@@ -249,6 +253,24 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void Update_Exception_MissingInList()
+		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>();
+
+			var fileIndexResultList = new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
+			};
+			
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+					new FakeConsoleWrapper(new List<string>()))
+				.Update(changedFileIndexItemName, fileIndexResultList , 
+					null,false,false,0);
+			// expect exception
 		}
 	}
 }

@@ -18,7 +18,11 @@ namespace starsky.foundation.readmeta.Services
 	    
         public FileIndexItem ReadGpxFromFileReturnAfterFirstField(Stream stream, string subPath)
         {
-            if (stream == null) return new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.OperationNotSupported};
+	        if ( stream == null )
+	        {
+		        var returnItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.OperationNotSupported};
+		        return returnItem;
+	        }
 
 	        var readGpxFile = ReadGpxFile(stream, null, 1);
 	        

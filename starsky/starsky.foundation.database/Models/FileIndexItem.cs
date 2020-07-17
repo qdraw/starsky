@@ -228,6 +228,7 @@ namespace starsky.foundation.database.Models
 		public enum ExifStatus
         {
             Default,
+            ExifWriteNotSupported,
             NotFoundNotInIndex,
             NotFoundSourceMissing,
             NotFoundIsDir,
@@ -239,7 +240,7 @@ namespace starsky.foundation.database.Models
             ReadOnly,
             Unauthorized,
             Ok,
-            Deleted
+            Deleted,
         }
 
 		/// <summary>

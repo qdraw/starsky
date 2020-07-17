@@ -146,6 +146,10 @@ namespace starsky.foundation.database.Helpers
 	                statusModel.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 	                fileIndexResultsList.Add(statusModel);
 	                return true;
+                case FileIndexItem.ExifStatus.ExifWriteNotSupported:
+	                statusModel.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
+	                fileIndexResultsList.Add(statusModel);
+	                return true;
             }
             return false;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
@@ -7,6 +8,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -28,6 +30,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IConsole _console;
+		private readonly ITelemetryService _telemetryService;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -35,7 +38,7 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IConsole console)
+			IConsole console, ITelemetryService telemetryService = null)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -44,6 +47,7 @@ namespace starsky.feature.metaupdate.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
 			_console = console;
+			_telemetryService = telemetryService;
 		}
 
 		/// <summary>
@@ -73,11 +77,21 @@ namespace starsky.feature.metaupdate.Services
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
 				var detailView = _query.SingleItem(item.FilePath,null, collections,false);
+			
+				if (detailView != null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				{
+					// used for tracking differences, in the database/ExifTool compare
+					var comparedNamesList = changedFileIndexItemName[item.FilePath];
 
-				// used for tracking differences, in the database/ExifTool compare
-				var comparedNamesList = changedFileIndexItemName[detailView.FileIndexItem.FilePath];
+					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
+					continue;
+				}
 
-				UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
+				if ( detailView == null  ) _telemetryService?.TrackException(
+					new InvalidDataException("detailView is missing for and NOT Saved: " + item.FilePath));
+				
+				throw new ArgumentException($"Missing in key: {item.FilePath}",
+					nameof(changedFileIndexItemName));
 			}
 		}
 		
@@ -109,7 +123,7 @@ namespace starsky.feature.metaupdate.Services
 			}
 			else
 			{
-				new FileIndexItemJsonWriter(_iStorage).Write(detailView.FileIndexItem);
+				new FileIndexItemJsonParser(_iStorage).Write(detailView.FileIndexItem);
 			}
 
 			if ( detailView.FileIndexItem.IsDirectory != true )

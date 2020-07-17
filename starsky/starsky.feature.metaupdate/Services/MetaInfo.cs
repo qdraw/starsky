@@ -9,6 +9,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.JsonService;
 
 namespace starsky.feature.metaupdate.Services
 {
@@ -57,10 +58,11 @@ namespace starsky.feature.metaupdate.Services
 				
 				// Check if extension is supported for ExtensionExifToolSupportedList
 				// Not all files are able to write with exifTool
+				// 
 				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
-						FileIndexItem.ExifStatus.OperationNotSupported,
+					_statusCodeHelper.ReturnExifStatusError(new FileIndexItemJsonParser(_iStorage).Read(detailView.FileIndexItem), 
+						FileIndexItem.ExifStatus.ExifWriteNotSupported,
 						fileIndexResultsList);
 					continue;
 				}
