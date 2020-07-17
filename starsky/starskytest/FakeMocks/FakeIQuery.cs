@@ -142,7 +142,7 @@ namespace starskytest.FakeMocks
 
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 		{
-			throw new System.NotImplementedException();
+			Console.WriteLine("CacheUpdateItem is called");
 		}
 
 		public bool IsCacheEnabled()

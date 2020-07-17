@@ -169,6 +169,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 	        if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )
 	        {
+		        Console.Write("thumbnail: -> ");
 		        await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 	        }
 

@@ -99,7 +99,7 @@ namespace starsky.foundation.writemeta.Services
 					//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await
 					// cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
 					
-					if ( _appSettings.Verbose ) Console.WriteLine($"exifTool {optionsArgs} run with result: {result.Success}");
+					if ( _appSettings.Verbose ) Console.WriteLine($"~ exifTool {optionsArgs} run with result: {result.Success} ~ ");
 	
 					ms.Seek(0, SeekOrigin.Begin);
 

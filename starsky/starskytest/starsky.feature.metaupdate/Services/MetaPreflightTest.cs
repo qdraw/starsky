@@ -14,6 +14,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -130,6 +131,31 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			// Check for value
 			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, collectionsDetailView.FileIndexItem.Orientation);
 		}
+
+		[TestMethod]
+		public void NotFoundNotInIndex()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage());
+			var result = metaPreflight.Preflight(new FileIndexItem("test"), 
+				new[] {"test"}, true, true, 0);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result.fileIndexResultsList.FirstOrDefault().Status);
+		}
 		
+		[TestMethod]
+		public void ReadOnly()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>{ new FileIndexItem("/readonly/test.jpg")}), 
+				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, new FakeSelectorStorage(
+				new FakeIStorage(new List<string>(), 
+				new List<string>{"/readonly/test.jpg"}, new []{CreateAnImage.Bytes, })));
+			
+			var result = metaPreflight.Preflight(new FileIndexItem("/readonly/test.jpg"), 
+				new[] {"/readonly/test.jpg"}, true, true, 0);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, result.fileIndexResultsList.FirstOrDefault().Status);
+			Assert.AreEqual("", result.fileIndexResultsList.FirstOrDefault().Tags);
+
+		}
 	}
 }
