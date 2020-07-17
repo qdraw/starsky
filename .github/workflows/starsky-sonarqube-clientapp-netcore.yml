@@ -45,7 +45,7 @@ jobs:
       - name: Setup side by side .NET SDKs on *nix
         if: matrix.os != 'windows-latest'
         run: |
-          rsync -a ${DOTNET_ROOT/3.1.300/2.1.202}/* $DOTNET_ROOT/
+          rsync -a ${DOTNET_ROOT/3.1.301/2.1.202}/* $DOTNET_ROOT/
         
       - name: Build
         shell: bash
