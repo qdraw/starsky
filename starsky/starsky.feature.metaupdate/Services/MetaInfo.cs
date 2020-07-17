@@ -64,8 +64,11 @@ namespace starsky.feature.metaupdate.Services
 				}
         
 				var statusResults = new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView);
+				// only when default status to avoid unneeded checks
 				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = new StatusCodesHelper().IsReadOnlyStatus(detailView);
-        
+				// when everything is checked, it should be good
+				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = FileIndexItem.ExifStatus.Ok;
+
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
         
 				foreach ( var collectionSubPath in collectionSubPathList )

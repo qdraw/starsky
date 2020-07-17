@@ -21,7 +21,7 @@ namespace starsky.foundation.database.Helpers
 
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
 	    {
-		    if ( detailView == null )
+		    if ( detailView == null || _appSettings == null )
 		    {
 			    return FileIndexItem.ExifStatus.Default;
 		    }
