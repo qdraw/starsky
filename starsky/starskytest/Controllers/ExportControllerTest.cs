@@ -172,6 +172,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.CreateZip(_createAnImage.DbPath,true,false) as JsonResult;
+			
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 
