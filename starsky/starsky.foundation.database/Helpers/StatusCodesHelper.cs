@@ -140,6 +140,10 @@ namespace starsky.foundation.database.Helpers
 	                statusModel.Status = FileIndexItem.ExifStatus.ReadOnly;
 	                fileIndexResultsList.Add(statusModel);
 	                return true;
+                case FileIndexItem.ExifStatus.OperationNotSupported:
+	                statusModel.Status = FileIndexItem.ExifStatus.OperationNotSupported;
+	                fileIndexResultsList.Add(statusModel);
+	                return true;
             }
             return false;
         }

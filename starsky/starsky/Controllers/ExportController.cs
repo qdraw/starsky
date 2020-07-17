@@ -79,7 +79,7 @@ namespace starsky.Controllers
 				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath) )
 				{
 					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
-						FileIndexItem.ExifStatus.Deleted,
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
 				}
