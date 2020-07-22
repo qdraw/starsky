@@ -282,13 +282,22 @@ namespace starsky.foundation.writemeta.Helpers
             return command;
         }
 	    
-	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames)
+	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {
-		    if (comparedNames.Contains( nameof(FileIndexItem.Software).ToLowerInvariant() ))
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
+			    return command;
+		    
+		    if ( updateModel.SoftwareMetaExport )
 		    {
-				// add space before
+			    // add space before
 			    command +=
-				    " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" " +
+				    $" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" -HistorySoftwareAgent=\"{updateModel.Software}\" " +
+				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
+		    }
+		    else
+		    {
+			    command +=
+				    " -Software=\"Starsky\" -CreatorTool=\"Starsky\" -HistorySoftwareAgent=\"Starsky\" " +
 				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
 		    }
 		    return command;
