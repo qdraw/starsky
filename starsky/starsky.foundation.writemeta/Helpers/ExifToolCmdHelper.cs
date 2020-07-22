@@ -282,7 +282,7 @@ namespace starsky.foundation.writemeta.Helpers
             return command;
         }
 	    
-	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames)
 	    {
 		    if (comparedNames.Contains( nameof(FileIndexItem.Software).ToLowerInvariant() ))
 		    {

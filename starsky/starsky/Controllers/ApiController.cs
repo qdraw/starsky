@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Services;
 
@@ -16,12 +13,7 @@ namespace starsky.Controllers
     public class ApiController : Controller
     {
         private readonly IQuery _query;
-        private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
-        private readonly IBackgroundTaskQueue _bgTaskQueue;
-        private readonly IReadMeta _readMeta;
-	    private readonly IStorage _iStorage;
-	    private readonly IStorage _thumbnailStorage;
 
 	    public ApiController(
             IQuery query, IExifTool exifTool, 
@@ -30,11 +22,6 @@ namespace starsky.Controllers
         {
             _appSettings = appSettings;
             _query = query;
-            _exifTool = exifTool;
-            _bgTaskQueue = queue;
-            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-            _readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
         }
 
 	    /// <summary>
