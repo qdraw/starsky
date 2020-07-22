@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -12,6 +11,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.metaupdate.Services
@@ -22,6 +22,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
+		private readonly StatusCodesHelper _statusCodeHelper;
 
 		/// <summary>Do a sync of files uning a subpath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
@@ -32,6 +33,7 @@ namespace starsky.feature.metaupdate.Services
 			_query = query;
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 		}
 
 		/// <summary>
@@ -61,21 +63,27 @@ namespace starsky.feature.metaupdate.Services
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
 				
-				// todo: not found??
-				
 				if ( detailView?.FileIndexItem == null )
 				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
 					continue;
+				}
+				
+				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) != FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
+						fileIndexResultsList);
+					continue; 
 				}
 				
 				// Dir is readonly / don't edit
 				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
 				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexResultsList);
 					continue; 
