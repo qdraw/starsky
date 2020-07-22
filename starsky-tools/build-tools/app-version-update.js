@@ -6,7 +6,7 @@
 const { resolve, join } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
 
-var newVersion = "0.2.7";
+var newVersion = "0.3.0-beta.0";
 
 function checkNewVersion() {
   var versionRegexChecker = new RegExp("^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$", "g")
