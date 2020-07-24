@@ -37,7 +37,7 @@ namespace starskytest.Services
 			_query = new Query(dbContext,_memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg","/test2.jpg"});
+				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg"});
 			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
 				new FakeSelectorStorage(_iStorage));
 

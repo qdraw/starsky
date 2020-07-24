@@ -71,7 +71,7 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 				
-				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) != FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
