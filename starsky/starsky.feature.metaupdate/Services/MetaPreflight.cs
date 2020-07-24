@@ -52,7 +52,7 @@ namespace starsky.feature.metaupdate.Services
 				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
-						FileIndexItem.ExifStatus.Deleted,
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
 				}

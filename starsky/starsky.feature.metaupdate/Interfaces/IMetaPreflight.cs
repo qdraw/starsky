@@ -8,7 +8,9 @@ namespace starsky.feature.metaupdate.Interfaces
 		(List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>> changedFileIndexItemName)
 			Preflight(FileIndexItem inputModel, string[] inputFilePaths, bool append,
 				bool collections, int rotateClock);
-		void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName, 
-			DetailView detailView, FileIndexItem inputModel, bool append, int rotateClock);
+
+		void CompareAllLabelsAndRotation(Dictionary<string, List<string>> changedFileIndexItemName,
+			DetailView collectionsDetailView, FileIndexItem statusModel, bool append,
+			int rotateClock);
 	}
 }

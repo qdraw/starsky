@@ -212,5 +212,22 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(compareList.FirstOrDefault(),
 				nameof(FileIndexItem.Orientation).ToLowerInvariant());
 		}
+		
+		
+		
+		[TestMethod]
+		public void Preflight_NotFoundSourceMissing()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(
+					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(), 
+				new FakeSelectorStorage());
+			
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("/test.jpg"), 
+				new[] {"/test.jpg"}, true, true, 0);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
+				result.fileIndexResultsList.FirstOrDefault().Status);
+		}
 	}
 }
