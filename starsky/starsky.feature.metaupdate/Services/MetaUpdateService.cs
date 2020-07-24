@@ -8,7 +8,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -76,9 +75,9 @@ namespace starsky.feature.metaupdate.Services
 			foreach ( var item in collectionsDetailViewList )
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
-				var detailView = _query.SingleItem(item.FilePath,null, collections,false);
-			
-				if (detailView != null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				var detailView = _query.SingleItem(item.FilePath, null, collections, false);
+
+				if ( detailView != null && changedFileIndexItemName.ContainsKey(item.FilePath) )
 				{
 					// used for tracking differences, in the database/ExifTool compare
 					var comparedNamesList = changedFileIndexItemName[item.FilePath];
@@ -87,9 +86,14 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 
-				if ( detailView == null  ) _telemetryService?.TrackException(
-					new InvalidDataException("detailView is missing for and NOT Saved: " + item.FilePath));
-				
+				if ( detailView == null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				{
+					_telemetryService?.TrackException(
+						new InvalidDataException("detailView is missing for and NOT Saved: " +
+						                         item.FilePath));
+					continue;
+				}
+
 				throw new ArgumentException($"Missing in key: {item.FilePath}",
 					nameof(changedFileIndexItemName));
 			}

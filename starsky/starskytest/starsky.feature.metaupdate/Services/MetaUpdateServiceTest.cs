@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -272,5 +273,64 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					null,false,false,0);
 			// expect exception
 		}
-	}
+
+		[TestMethod]
+		public void Update_Missing_DataInDbAndTrackException()
+		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>
+			{
+				{ 
+					"/test.jpg", new List<string>
+					{
+						nameof(FileIndexItem.Tags).ToLowerInvariant()
+					} 
+				},
+			};
+			var fileIndexResultList = new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
+			};
+			
+			var telemetry = new FakeTelemetryService();
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+					new FakeConsoleWrapper(new List<string>()), telemetry)
+				.Update(changedFileIndexItemName, fileIndexResultList , 
+					null,false,false,0);
+			
+			Assert.AreEqual("detailView is missing for and NOT Saved: /test.jpg", 
+				telemetry.TrackedExceptions.LastOrDefault().Message);
+		}
+		
+		[TestMethod]
+		public void UpdateRotate()
+		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>{
+			{
+				"/test.jpg", new List<string>{"orientation"}
+			}};
+
+			_iStorageFake.WriteStream(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
+			var updateItem = new FileIndexItem("/test.jpg")
+			{
+				Orientation = FileIndexItem.Rotation.Horizontal,
+				Status = FileIndexItem.ExifStatus.Ok,
+				FileHash = "test"
+			};
+
+			_query.AddItem(updateItem);
+			
+			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
+
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),  
+					new FakeConsoleWrapper(new List<string>()))
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
+					false,1);
+
+			// so there is something changed
+			Assert.AreNotEqual("test", updateItem.FileHash);
+
+			_query.RemoveItem(updateItem);
+		}
+ 	}
 }
