@@ -20,7 +20,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -41,9 +40,7 @@ namespace starskytest.Controllers
         private readonly CreateAnImage _createAnImage;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
         private readonly ApplicationDbContext _context;
-        private readonly IReadMeta _readmeta;
-        private readonly IServiceScopeFactory _scopeFactory;
-	    private readonly IStorage _iStorage;
+        private readonly IStorage _iStorage;
 
 	    public MetaUpdateControllerTest()
         {
@@ -92,12 +89,8 @@ namespace starskytest.Controllers
             // get the service
             _appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
-            // inject fake exiftool
+            // inject fake exifTool
             _exifTool = new FakeExifTool(_iStorage,_appSettings);
-            
-            _readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-            _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-
             
             // get the background helper
             _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
@@ -135,7 +128,8 @@ namespace starskytest.Controllers
 	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 	        
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
-	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, metaPreflight, new FakeConsoleWrapper());
+	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
+		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue);
 
@@ -143,7 +137,8 @@ namespace starskytest.Controllers
 	        {
 		        Tags = "test"
 	        };
-	        var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath,false,false) as JsonResult;
+	        var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath,false,
+		        false) as JsonResult;
 	        var fileModel = jsonResult.Value as List<FileIndexItem>;
 	        //you could not test because exiftool is an external dependency
 	        Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
@@ -161,7 +156,8 @@ namespace starskytest.Controllers
 	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
-	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, metaPreflight, new FakeConsoleWrapper());
+	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
+		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue)
@@ -170,7 +166,8 @@ namespace starskytest.Controllers
 		        };
 
 	        var testElement = new FileIndexItem();
-	        var notFoundResult = await controller.UpdateAsync(testElement, "/345678765434567.jpg",false,false) as NotFoundObjectResult;
+	        var notFoundResult = await controller.UpdateAsync(testElement, "/345678765434567.jpg",
+		        false,false) as NotFoundObjectResult;
 	        Assert.AreEqual(404,notFoundResult.StatusCode);
 
 	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
@@ -218,7 +215,8 @@ namespace starskytest.Controllers
 		        new List<string>{"/test09.jpg"}));
 	        
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
-	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, metaPreflight, new FakeConsoleWrapper());
+	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
+		        metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue);
 
