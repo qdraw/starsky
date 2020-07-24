@@ -16,14 +16,14 @@ Windows 32 bits: 'win7-x86'
 */
 
 // For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.5.1"
+#tool "nuget:?package=ReportGenerator&version=4.6.1"
 
 // SonarQube
 #tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
 #addin nuget:?package=Cake.Sonar&version=1.1.25
 
 // Get Git info
-#addin nuget:?package=Cake.Git&version=0.21.0
+#addin nuget:?package=Cake.Git&version=0.22.0
 
 // For NPM
 #addin "Cake.Npm&version=0.17.0"
