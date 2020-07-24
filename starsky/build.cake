@@ -378,10 +378,41 @@ Task("MergeOnlyNetCoreCoverageFiles")
        DeleteFile($"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all coverage files
-    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
-        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
-    });
+    IEnumerable<string> redirectedStandardOutput;
+    IEnumerable<string> redirectedErrorOutput;
+    var exitCodeWithArgument =
+        StartProcess(
+            "dotnet",
+            new ProcessSettings {
+              Arguments = new ProcessArgumentBuilder()
+                  .Append($"reportgenerator")
+                  .Append($"-reports:./starskytest/*coverage.*.xml")
+                  .Append($"-targetdir:./starskytest/")
+                  .Append($"-reporttypes:Cobertura"),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            },
+            out redirectedStandardOutput,
+            out redirectedErrorOutput
+        );
+
+    // Output process output.
+    foreach(var stdOutput in redirectedStandardOutput)
+    {
+        Information("reportgenerator: {0}", stdOutput);
+    }
+
+    // Throw exception if anything was written to the standard error.
+    if (redirectedErrorOutput.Any())
+    {
+        throw new Exception(
+            string.Format(
+                "Errors occurred: {0}",
+                string.Join(", ", redirectedErrorOutput)));
+    }
+
+    // This should output 0 as valid arguments supplied
+    Information("Exit code: {0}", exitCodeWithArgument);
 
     // And rename it
     MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
@@ -398,9 +429,44 @@ Task("CoverageReport")
             Information("CoverageReport project " + project);
             // Generate html files for reports
             var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
-            ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
-                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline, ReportGeneratorReportType.Badges, ReportGeneratorReportType.PngChart }
-            });
+
+            IEnumerable<string> redirectedStandardOutput;
+            IEnumerable<string> redirectedErrorOutput;
+            var exitCodeWithArgument =
+                StartProcess(
+                    "dotnet",
+                    new ProcessSettings {
+                      Arguments = new ProcessArgumentBuilder()
+                          .Append($"reportgenerator")
+                          .Append($"-reports:{project}")
+                          .Append($"-targetdir:{reportFolder}")
+                          .Append($"-reporttypes:HtmlInline"),
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    },
+                    out redirectedStandardOutput,
+                    out redirectedErrorOutput
+                );
+
+            // Output process output.
+            foreach(var stdOutput in redirectedStandardOutput)
+            {
+                Information("reportgenerator: {0}", stdOutput);
+            }
+
+            // Throw exception if anything was written to the standard error.
+            if (redirectedErrorOutput.Any())
+            {
+                throw new Exception(
+                    string.Format(
+                        "Errors occurred: {0}",
+                        string.Join(", ", redirectedErrorOutput)));
+            }
+
+            // This should output 0 as valid arguments supplied
+            Information("Exit code: {0}", exitCodeWithArgument);
+
+
             // Zip entire folder
             Zip(reportFolder, $"{reportFolder}.zip");
         }
@@ -555,10 +621,40 @@ Task("SonarEnd")
       return;
     }
 
-    /* SonarEnd(new SonarEndSettings {
-        Login = login,
-        Silent = true,
-    }); */
+    IEnumerable<string> redirectedStandardOutput;
+    IEnumerable<string> redirectedErrorOutput;
+    var exitCodeWithArgument =
+        StartProcess(
+            "dotnet",
+            new ProcessSettings {
+              Arguments = new ProcessArgumentBuilder()
+                  .Append($"sonarscanner")
+                  .Append($"end")
+                  .Append($"/d:sonar.login=\"{login}\""),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            },
+            out redirectedStandardOutput,
+            out redirectedErrorOutput
+        );
+
+    // Output process output.
+    foreach(var stdOutput in redirectedStandardOutput)
+    {
+        Information("sonarscanner: {0}", stdOutput);
+    }
+
+    // Throw exception if anything was written to the standard error.
+    if (redirectedErrorOutput.Any())
+    {
+        throw new Exception(
+            string.Format(
+                "Errors occurred: {0}",
+                string.Join(", ", redirectedErrorOutput)));
+    }
+
+    // This should output 0 as valid arguments supplied
+    Information("Exit code: {0}", exitCodeWithArgument);
   });
 
 Task("DocsGenerate")
