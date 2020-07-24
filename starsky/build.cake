@@ -15,9 +15,6 @@ Raspberry Pi: 'linux-arm'
 Windows 32 bits: 'win7-x86'
 */
 
-// For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.6.1"
-
 // SonarQube
 #tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
 #addin nuget:?package=Cake.Sonar&version=1.1.25
@@ -326,13 +323,44 @@ Task("MergeCoverageFiles")
         CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all coverage files
-    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
-        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
-    });
+      IEnumerable<string> redirectedStandardOutput;
+      IEnumerable<string> redirectedErrorOutput;
+      var exitCodeWithArgument =
+          StartProcess(
+              "dotnet",
+              new ProcessSettings {
+                Arguments = new ProcessArgumentBuilder()
+                    .Append($"reportgenerator")
+                    .Append($"-reports:./starskytest/*coverage.*.xml")
+                    .Append($"-targetdir:./starskytest/")
+                    .Append($"-reporttypes:Cobertura"),
+                  RedirectStandardOutput = true,
+                  RedirectStandardError = true
+              },
+              out redirectedStandardOutput,
+              out redirectedErrorOutput
+          );
 
-    // And rename it
-    MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+      // Output process output.
+      foreach(var stdOutput in redirectedStandardOutput)
+      {
+          Information("reportgenerator: {0}", stdOutput);
+      }
+
+      // Throw exception if anything was written to the standard error.
+      if (redirectedErrorOutput.Any())
+      {
+          throw new Exception(
+              string.Format(
+                  "Errors occurred: {0}",
+                  string.Join(", ", redirectedErrorOutput)));
+      }
+
+      // This should output 0 as valid arguments supplied
+      Information("Exit code: {0}", exitCodeWithArgument);
+
+      // And rename it
+      MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
   });
 
 Task("MergeOnlyNetCoreCoverageFiles")
