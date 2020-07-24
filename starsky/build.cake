@@ -92,6 +92,12 @@ Task("TestEnv")
 
             Information($"{systemTempPath} exist");
         }
+
+        // DotNet localTools need to be part of the Env Path
+        var pathEnv = Environment.GetEnvironmentVariable("PATH").Contains($".dotnet{System.IO.Path.DirectorySeparatorChar}tools");
+        if(!pathEnv) {
+          throw new Exception($".dotnet{System.IO.Path.DirectorySeparatorChar}tools is not part of the path");
+        }
     });
 
 // Deletes the contents of the Artifacts folder if it contains anything from a previous build.
