@@ -496,10 +496,6 @@ Task("SonarBegin")
         }
         Information($">> Selecting Branch: {branchName}");
 
-
- // begin /d:sonar.host.url="https://sonarcloud.io" /k:"starsky" /n:"Starsky" /d:sonar.branch.name="master" /d:sonar.cs.opencover.reportsPaths="/data/git/starsky/starsky/starskytest/netcore-coverage.opencover.xml" /d:sonar.typescript.lcov.reportPaths="/data/git/starsky/starsky/starsky/clientapp/coverage/lcov.info" /d:sonar.login="[REDACTED]" /o:qdraw /d:sonar.coverage.exclusions="**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx" /d:sonar.exclusions="**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*"
-
-
         IEnumerable<string> redirectedStandardOutput;
         IEnumerable<string> redirectedErrorOutput;
         var exitCodeWithArgument =
