@@ -83,7 +83,7 @@ namespace starsky.feature.metaupdate.Services
 						null, collections, false);
 					
 					CompareAllLabelsAndRotation(changedFileIndexItemName,
-								collectionsDetailView, inputModel, append, 0); // todo fix rotate
+								collectionsDetailView, inputModel, append, rotateClock);
 					
 					// this one is good :)
 					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -130,7 +130,6 @@ namespace starsky.feature.metaupdate.Services
 			
 			// overwrite list if already exist
 			changedFileIndexItemName[collectionsDetailView.FileIndexItem.FilePath] = comparedNamesList;
-			
 		}
 		
 		/// <summary>
@@ -149,9 +148,9 @@ namespace starsky.feature.metaupdate.Services
 			fileIndexItem.SetRelativeOrientation(rotateClock);
 			
 			// list of exifTool to update this field
-			if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation)) )
+			if ( !comparedNamesList.Contains(nameof(fileIndexItem.Orientation).ToLowerInvariant()) )
 			{
-				comparedNamesList.Add(nameof(fileIndexItem.Orientation));
+				comparedNamesList.Add(nameof(fileIndexItem.Orientation).ToLowerInvariant());
 			}
 			return fileIndexItem;
 		}
