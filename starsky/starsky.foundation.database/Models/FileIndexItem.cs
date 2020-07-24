@@ -759,9 +759,6 @@ namespace starsky.foundation.database.Models
 		[MaxLength(40)]
 		public string Software { get; set; }
 
-		[NotMapped] 
-		public bool SoftwareMetaExport { get; set; } = true;
-
 		/// <summary>
 		/// Private field to store MakeModel Data
 		/// </summary>
