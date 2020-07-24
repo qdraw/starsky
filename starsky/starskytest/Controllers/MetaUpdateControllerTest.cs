@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -151,7 +152,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public async Task ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool()
         {
-	        _query.AddItem(new FileIndexItem
+	        await _query.AddItemAsync(new FileIndexItem
 	        {
 		        FileName = "345678765434567.jpg",
 		        ParentDirectory = "/",
@@ -173,6 +174,62 @@ namespace starskytest.Controllers
 	        Assert.AreEqual(404,notFoundResult.StatusCode);
 
 	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
+
+        [TestMethod]
+        public void Replace_SourceImageMissingOnDisk_WithFakeExifTool()
+        {
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "345678765434567.jpg",
+		        ParentDirectory = "/",
+		        FileHash = "345678765434567"
+	        });
+	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
+	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
+		        metaPreflight, new FakeConsoleWrapper());
+	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
+	        
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext()}
+	        };
+
+	        var notFoundResult = controller.Replace( "/345678765434567.jpg", "test", "search", 
+		        String.Empty, true) as NotFoundObjectResult;
+	        Assert.AreEqual(404,notFoundResult.StatusCode);
+
+	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+        }
+        
+        [TestMethod]
+        public void Replace_AllDataIncluded_WithFakeExifTool()
+        {
+	        var item = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test09.jpg",
+		        ParentDirectory = "/",
+		        Tags = "7test"
+	        });
+	        
+	        var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
+		        new List<string>{"/test09.jpg"}));
+	        
+	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, metaPreflight, new FakeConsoleWrapper());
+	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue);
+
+	        var jsonResult =  controller.Replace("/test09.jpg","Tags", "test", 
+		        string.Empty) as JsonResult;
+	        var fileModel = jsonResult.Value as List<FileIndexItem>;
+
+	        Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
+	        Assert.AreEqual("7", fileModel.FirstOrDefault().Tags);
+
+	        _query.RemoveItem(item);
         }
 	}
 }
