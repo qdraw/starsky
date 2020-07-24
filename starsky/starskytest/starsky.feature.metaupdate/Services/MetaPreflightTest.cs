@@ -48,7 +48,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			_appSettings = new AppSettings();
 
-			_iStorageFake = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg", _exampleHash},
+			_iStorageFake = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg", _exampleHash},
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
 			
 			_exifTool = new FakeExifTool(_iStorageFake,_appSettings);
@@ -95,7 +96,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			// Check for compare values
 			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
-				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, statusModel, false, 0);
+				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView,
+					statusModel, false, 0);
 			
 			// Check how that changedFileIndexItemName works
 			Assert.AreEqual(1,changedFileIndexItemName["/test.jpg"].Count);
@@ -103,7 +105,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			// Check for value
 			Assert.AreEqual("updated Value", collectionsDetailView.FileIndexItem.Tags);
-			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, collectionsDetailView.FileIndexItem.Orientation);
+			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, 
+				collectionsDetailView.FileIndexItem.Orientation);
 		}
 		
 				
@@ -125,37 +128,89 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			// Rotate right; check if values are the same
 			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
-				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, collectionsDetailView.FileIndexItem, 
+				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView, 
+					collectionsDetailView.FileIndexItem, 
 					false, -1);
 			
 			// Check for value
-			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, collectionsDetailView.FileIndexItem.Orientation);
+			Assert.AreEqual(FileIndexItem.Rotation.Rotate270Cw, 
+				collectionsDetailView.FileIndexItem.Orientation);
 		}
 
 		[TestMethod]
 		public void NotFoundNotInIndex()
 		{
-			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), new FakeSelectorStorage());
-			var result = metaPreflight.Preflight(new FileIndexItem("test"), 
+			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), 
+				new FakeSelectorStorage());
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("test"), 
 				new[] {"test"}, true, true, 0);
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result.fileIndexResultsList.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, 
+				result.fileIndexResultsList.FirstOrDefault().Status);
 		}
 		
 		[TestMethod]
 		public void ReadOnly()
 		{
-			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>{ new FileIndexItem("/readonly/test.jpg")}), 
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/readonly/test.jpg")
+				}), 
 				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, new FakeSelectorStorage(
 				new FakeIStorage(new List<string>(), 
-				new List<string>{"/readonly/test.jpg"}, new []{CreateAnImage.Bytes, })));
+				new List<string>{"/readonly/test.jpg"}, 
+				new []{CreateAnImage.Bytes, })));
 			
-			var result = metaPreflight.Preflight(new FileIndexItem("/readonly/test.jpg"), 
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("/readonly/test.jpg"), 
 				new[] {"/readonly/test.jpg"}, true, true, 0);
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, result.fileIndexResultsList.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, 
+				result.fileIndexResultsList.FirstOrDefault().Status);
 			Assert.AreEqual("", result.fileIndexResultsList.FirstOrDefault().Tags);
+		}
 
+		[TestMethod]
+		public void RotationCompare_DoNotRotate()
+		{
+			var metaPreflight = new MetaPreflight(_query, _appSettings,
+				new FakeSelectorStorage(_iStorageFake));
+			var compareList = new List<string>();
+
+			var rotationCompare = metaPreflight.RotationCompare(0, 
+				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
+				compareList);
+			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Horizontal);
+			Assert.IsTrue(!compareList.Any());
+		}
+		
+		[TestMethod]
+		public void RotationCompare_Plus1()
+		{
+			var metaPreflight = new MetaPreflight(_query, _appSettings,
+				new FakeSelectorStorage(_iStorageFake));
+			var compareList = new List<string>();
+			var rotationCompare = metaPreflight.RotationCompare(1, 
+				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
+				compareList);
+			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate90Cw);
+			Assert.AreEqual(compareList.FirstOrDefault(),
+				nameof(FileIndexItem.Orientation).ToLowerInvariant());
+		}
+		
+		[TestMethod]
+		public void RotationCompare_Minus1()
+		{
+			var metaPreflight = new MetaPreflight(_query, _appSettings,
+				new FakeSelectorStorage(_iStorageFake));
+			var compareList = new List<string>();
+			var rotationCompare = metaPreflight.RotationCompare(-1, 
+				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
+				compareList);
+			Assert.AreEqual(rotationCompare.Orientation, FileIndexItem.Rotation.Rotate270Cw);
+			Assert.AreEqual(compareList.FirstOrDefault(),
+				nameof(FileIndexItem.Orientation).ToLowerInvariant());
 		}
 	}
 }
