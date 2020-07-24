@@ -19,7 +19,6 @@ export interface IFileIndexItem {
     fileName: string;
     fileHash: string;
     parentDirectory: string;
-    keywords?: [];
     status: IExifStatus;
     description?: string;
     isDirectory?: boolean;

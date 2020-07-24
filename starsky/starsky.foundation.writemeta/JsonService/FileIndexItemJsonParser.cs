@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -23,26 +24,33 @@ namespace starsky.foundation.writemeta.JsonService
 				WriteIndented = true, 
 			});
 
-			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + ".starsky." +
+			var jsonSubPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + ".starsky." +
 			              fileIndexItem.FileName + ".json";
 			
 			await _iStorage.WriteStreamAsync(
-				new PlainTextFileHelper().StringToStream(jsonOutput), subPath);
+				new PlainTextFileHelper().StringToStream(jsonOutput), jsonSubPath);
 		}
-		
+
 		public FileIndexItem Read(FileIndexItem fileIndexItem)
 		{
-			var subPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + ".starsky." +
-			              fileIndexItem.FileName + ".json";
-
+			var jsonSubPath = PathHelper.AddSlash(fileIndexItem.ParentDirectory) + ".starsky." +
+			                  fileIndexItem.FileName + ".json";
 			// when sidecar file does not exist
-			if ( !_iStorage.ExistFile(subPath) ) return fileIndexItem;
+			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			
-			var stream = _iStorage.ReadStream( subPath);
-			var jsonAsString = new PlainTextFileHelper().StreamToString(stream);
-			var returnFileIndexItem = JsonSerializer.Deserialize<FileIndexItem>(jsonAsString);
+			var returnFileIndexItem = Read<FileIndexItem>(jsonSubPath);
 			returnFileIndexItem.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
 			return returnFileIndexItem;
 		}
+		
+		public T Read<T>(string jsonSubPath)
+		{
+			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
+			var stream = _iStorage.ReadStream(jsonSubPath);
+			var jsonAsString = new PlainTextFileHelper().StreamToString(stream);
+			var returnFileIndexItem = JsonSerializer.Deserialize<T>(jsonAsString);
+			return returnFileIndexItem;
+		}
 	}
+
 }

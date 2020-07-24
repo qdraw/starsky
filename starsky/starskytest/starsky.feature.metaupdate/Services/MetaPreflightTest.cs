@@ -213,8 +213,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				nameof(FileIndexItem.Orientation).ToLowerInvariant());
 		}
 		
-		
-		
 		[TestMethod]
 		public void Preflight_NotFoundSourceMissing()
 		{

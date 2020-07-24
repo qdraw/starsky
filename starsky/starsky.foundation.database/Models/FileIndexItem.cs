@@ -182,7 +182,8 @@ namespace starsky.foundation.database.Models
 		/// The keywords as List/HashList
 		/// </value>
 		[NotMapped]
-        public HashSet<string> Keywords {
+		[JsonIgnore] // <== gives conversion errors with jsonParser
+        internal HashSet<string> Keywords {
 			get => HashSetHelper.StringToHashSet(Tags.Trim());
 			set
 			{
@@ -193,7 +194,7 @@ namespace starsky.foundation.database.Models
 
         
 	    /// <summary>
-	    /// Internal API: Do not save null in database for tags
+	    /// Private API: Do not save null in database for tags
 	    /// </summary>
         private string _tags;
 
@@ -284,7 +285,7 @@ namespace starsky.foundation.database.Models
         }
         
 	    /// <summary>
-	    /// Internal API: to store Title
+	    /// Private API: to store Title
 	    /// </summary>
         private string _title;
 
@@ -641,16 +642,7 @@ namespace starsky.foundation.database.Models
             if(imageHeight >= 1 && imageHeight <= ushort.MaxValue ) 
                 ImageHeight = (ushort) imageHeight;
         }
-
-
-		/// <summary>
-		/// Gets all items of the enum color, eg Winner, WinnerAlt.
-		/// </summary>
-		/// <returns>List with enum-item</returns>
-		public static IEnumerable<ColorClassParser.Color> GetAllColor()
-        {
-            return Enum.GetValues(typeof(ColorClassParser.Color)).Cast<ColorClassParser.Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
-        }
+		
 
 		/// <summary>
 		/// Gets or sets the image format. (eg: jpg, tiff)
