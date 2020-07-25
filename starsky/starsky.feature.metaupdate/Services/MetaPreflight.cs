@@ -66,16 +66,7 @@ namespace starsky.feature.metaupdate.Services
 						fileIndexResultsList);
 					continue; 
 				}
-				
-				// Deleted is allowed but the status need be updated
-				if ( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
-				     == FileIndexItem.ExifStatus.Deleted)
-				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
-						FileIndexItem.ExifStatus.ReadOnly,
-						fileIndexResultsList);
-				}
-				
+
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
@@ -87,6 +78,14 @@ namespace starsky.feature.metaupdate.Services
 					
 					// this one is good :)
 					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+
+					// Deleted is allowed but the status need be updated
+					if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
+					      == FileIndexItem.ExifStatus.Deleted) )
+					{
+						collectionsDetailView.FileIndexItem.Status =
+							FileIndexItem.ExifStatus.Deleted;
+					}
 					
 					// update database cache
 					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});

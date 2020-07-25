@@ -170,6 +170,27 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				result.fileIndexResultsList.FirstOrDefault().Status);
 			Assert.AreEqual("", result.fileIndexResultsList.FirstOrDefault().Tags);
 		}
+		
+		[TestMethod]
+		public void Deleted()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/deleted.jpg") {Tags = "!delete!"}
+				}), 
+				new AppSettings(), new FakeSelectorStorage(
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/deleted.jpg"}, 
+						new []{CreateAnImage.Bytes, })));
+			
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("/deleted.jpg"), 
+				new[] {"/deleted.jpg"}, true, true, 0);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, 
+				result.fileIndexResultsList.FirstOrDefault().Status);
+			Assert.AreEqual("!delete!", result.fileIndexResultsList.FirstOrDefault().Tags);
+		}
 
 		[TestMethod]
 		public void RotationCompare_DoNotRotate()
