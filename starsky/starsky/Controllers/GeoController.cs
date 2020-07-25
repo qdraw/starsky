@@ -94,6 +94,7 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
+				if ( !_iStorage.ExistFolder(f) ) return;
 				// use relative to StorageFolder
 				var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
