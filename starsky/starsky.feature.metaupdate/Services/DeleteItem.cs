@@ -15,7 +15,6 @@ namespace starsky.feature.metaupdate.Services
 	public class DeleteItem : IDeleteItem
 	{
 		private readonly IQuery _query;
-		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
@@ -23,10 +22,9 @@ namespace starsky.feature.metaupdate.Services
 		public DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_query = query;
-			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_statusCodeHelper = new StatusCodesHelper(_appSettings);
+			_statusCodeHelper = new StatusCodesHelper(appSettings);
 		}
 		
 		public List<FileIndexItem> Delete(string f, bool collections)
