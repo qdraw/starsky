@@ -84,14 +84,7 @@ namespace starsky.feature.metaupdate.Services
                     var collectionSubPath = collectionSubPathList[i];
                     var detailViewItem = _query.SingleItem(collectionSubPath, 
 	                    null, collections, false);
-     
-                    // Allow only files that contains the delete tag
-                    if (!detailViewItem.FileIndexItem.Tags.Contains("!delete!"))
-                    {
-                        detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Unauthorized;
-                        fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
-                        continue;
-                    }
+                    
 	                // return a Ok, which means the file is deleted
 	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
      
@@ -117,6 +110,12 @@ namespace starsky.feature.metaupdate.Services
 		                .FileIndexItem.ParentDirectory, detailViewItem
 		                .FileIndexItem.FileName);
 	                _iStorage.FileDelete(jsonSubPath);
+
+	                if ( detailViewItem.FileIndexItem.IsDirectory == true )
+	                {
+		                _iStorage.FolderDelete(detailViewItem.FileIndexItem.FilePath);
+		                continue;
+	                }
 	                
 	                // and remove the actual file
 	                _iStorage.FileDelete(detailViewItem.FileIndexItem.FilePath);

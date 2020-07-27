@@ -129,7 +129,11 @@ namespace starskytest.FakeMocks
 
 		public bool FolderDelete(string path)
 		{
-			throw new NotImplementedException();
+			path = PathHelper.PrefixDbSlash(path);
+			if ( !ExistFolder(path) ) return false;
+			var index = _outputSubPathFolders.IndexOf(path);
+			_outputSubPathFolders[index] = null;
+			return true;
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
