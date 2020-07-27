@@ -93,34 +93,47 @@ namespace starsky.feature.metaupdate.Services
 	                
                     // remove item from db
                     _query.RemoveItem(detailViewItem.FileIndexItem);
-     
-	                // remove the sidecar file (if exist)
-	                if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem
-		                .FileName) )
-	                {
-		                _iStorage.FileDelete(
-			                ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
-				                .FileIndexItem.FilePath));
-	                }
 
-	                // remove the json sidecar file (if exist)
-	                var jsonSubPath = new FileIndexItemJsonParser(_iStorage).JsonLocation(detailViewItem
-		                .FileIndexItem.ParentDirectory, detailViewItem
-		                .FileIndexItem.FileName);
-	                _iStorage.FileDelete(jsonSubPath);
-
-	                if ( detailViewItem.FileIndexItem.IsDirectory == true )
-	                {
-		                _iStorage.FolderDelete(detailViewItem.FileIndexItem.FilePath);
-		                continue;
-	                }
-	                
-	                // and remove the actual file
-	                _iStorage.FileDelete(detailViewItem.FileIndexItem.FilePath);
+                    RemoveXmpSideCarFile(detailViewItem);
+	                RemoveJsonSideCarFile(detailViewItem);
+	                RemoveFileOrFolderFromDisk(detailViewItem);
                 }
             }
 
             return fileIndexResultsList;
+		}
+
+		private void RemoveXmpSideCarFile(DetailView detailViewItem)
+		{
+			// remove the sidecar file (if exist)
+			if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem
+				.FileName) )
+			{
+				_iStorage.FileDelete(
+					ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem
+						.FileIndexItem.FilePath));
+			}
+		}
+
+		private void RemoveJsonSideCarFile(DetailView detailViewItem)
+		{
+			// remove the json sidecar file (if exist)
+			var jsonSubPath = new FileIndexItemJsonParser(_iStorage).JsonLocation(detailViewItem
+				.FileIndexItem.ParentDirectory, detailViewItem
+				.FileIndexItem.FileName);
+			_iStorage.FileDelete(jsonSubPath);
+		}
+
+		private void RemoveFileOrFolderFromDisk(DetailView detailViewItem)
+		{
+			if ( detailViewItem.FileIndexItem.IsDirectory == true )
+			{
+				_iStorage.FolderDelete(detailViewItem.FileIndexItem.FilePath);
+				return;
+			}
+	                
+			// and remove the actual file
+			_iStorage.FileDelete(detailViewItem.FileIndexItem.FilePath);
 		}
 	}
 }

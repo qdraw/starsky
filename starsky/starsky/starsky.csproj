@@ -49,6 +49,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
     <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
     <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
