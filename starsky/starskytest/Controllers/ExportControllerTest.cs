@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -121,7 +122,8 @@ namespace starskytest.Controllers
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings);
 			var storageSelector = new FakeSelectorStorage(iStorage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, storageSelector);
+			var export = new ExportService(_query,_appSettings,storageSelector);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, storageSelector, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.CreateZip("/fail", true, false) as NotFoundObjectResult;
@@ -167,8 +169,10 @@ namespace starskytest.Controllers
 				FileHash = "t",
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
-				
-			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector);
+			
+			var export = new ExportService(_query,_appSettings,storageSelector);
+			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector, export);
+			
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = controller.CreateZip(_createAnImage.DbPath,true,false) as JsonResult;
@@ -204,7 +208,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
+			
+			var export = new ExportService(_query,_appSettings,selectorStorage);
 
 			var item = new FileIndexItem
 			{
@@ -218,7 +223,7 @@ namespace starskytest.Controllers
 
 			var fileIndexResultsList = new List<FileIndexItem> { item };
 
-			var filePaths = controller.CreateListToExport(fileIndexResultsList, true);
+			var filePaths = export.CreateListToExport(fileIndexResultsList, true);
 
 			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
 		}
@@ -230,7 +235,9 @@ namespace starskytest.Controllers
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
+
+			var export = new ExportService(_query,_appSettings,selectorStorage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage,export);
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -245,8 +252,8 @@ namespace starskytest.Controllers
 			_query.AddItem(item);
 
 			var fileIndexResultsList = new List<FileIndexItem> { item };
-
-			var filePaths = controller.CreateListToExport(fileIndexResultsList,false);
+			
+			var filePaths = export.CreateListToExport(fileIndexResultsList,false);
 
 			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
 
@@ -261,12 +268,13 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
+			var export = new ExportService(_query,_appSettings,selectorStorage);
+
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","file.jpg")
 			};
-			var fileNames = controller.FilePathToFileName(filePaths, false);
+			var fileNames = export.FilePathToFileName(filePaths, false);
 			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
 		}
 
@@ -275,7 +283,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
+			var export = new ExportService(_query,_appSettings,selectorStorage);
 			var filePaths = new List<string>
 			{
 				Path.Combine("test","thumb.jpg")
@@ -288,7 +296,7 @@ namespace starskytest.Controllers
 				FileHash = "thumb"
 			});
 			
-			var fileNames = controller.FilePathToFileName(filePaths, true);
+			var fileNames = export.FilePathToFileName(filePaths, true);
 			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
 			
 			// This is a strange one: 
@@ -301,7 +309,8 @@ namespace starskytest.Controllers
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage);
+			var export = new ExportService(_query,_appSettings,selectorStorage);
+			var controller = new ExportController(_query, _appSettings, _bgTaskQueue, selectorStorage, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			var actionResult = await controller.Zip("____fail", true) as NotFoundObjectResult;
