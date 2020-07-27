@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -130,7 +131,9 @@ namespace starskytest.Controllers
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-			var controller = new DeleteController(_query,_appSettings,selectorStorage);
+			
+			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
+			var controller = new DeleteController(deleteItem);
 
 			Console.WriteLine("createAnImage.FilePath");
 			Console.WriteLine(createAnImage.FilePath);
@@ -158,13 +161,16 @@ namespace starskytest.Controllers
 	        
 			var selectorStorage =
 				new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-			var controller = new DeleteController(_query,_appSettings,selectorStorage);
+			
+			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
+			var controller = new DeleteController(deleteItem);
 			
 			var notFoundResult = controller.Delete(createAnImage.FilePath) as NotFoundObjectResult;
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 			var jsonCollection = notFoundResult.Value as List<FileIndexItem>;
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Unauthorized,jsonCollection.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
+				jsonCollection.FirstOrDefault().Status);
 
 			_query.RemoveItem(_query.SingleItem(createAnImage.FilePath).FileIndexItem);
 		}
@@ -181,7 +187,8 @@ namespace starskytest.Controllers
 			});
             
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
-			var controller = new DeleteController(_query,_appSettings,selectorStorage);
+			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
+			var controller = new DeleteController(deleteItem);
 			var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
