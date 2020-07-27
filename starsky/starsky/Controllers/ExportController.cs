@@ -15,7 +15,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
@@ -48,7 +47,7 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Export source files to an zip archive
 		/// </summary>
-		/// <param name="f">subpath to files</param>
+		/// <param name="f">subPath to files</param>
 		/// <param name="collections">enable files with the same name (before the extension)</param>
 		/// <param name="thumbnail">export thumbnails</param>
 		/// <returns>name of a to generate zip file</returns>
