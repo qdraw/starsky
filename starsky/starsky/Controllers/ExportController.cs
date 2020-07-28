@@ -1,23 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.export.Interfaces;
-using starsky.foundation.database.Helpers;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.ArchiveFormats;
-using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Services;
 
@@ -26,17 +18,13 @@ namespace starsky.Controllers
 	[Authorize]
 	public class ExportController : Controller
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IExport _export;
 
-		public ExportController(
-			IQuery query, AppSettings appSettings, IBackgroundTaskQueue queue,
+		public ExportController( IBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, IExport export)
 		{
-			_appSettings = appSettings;
 			_bgTaskQueue = queue;
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_export = export;
@@ -58,9 +46,7 @@ namespace starsky.Controllers
 		public IActionResult CreateZip(string f, bool collections = true, bool thumbnail = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-
-			var createZip = _export.CreateZip(inputFilePaths, collections, thumbnail);
-			var fileIndexResultsList = createZip.Item2;
+			var (zipOutputName, fileIndexResultsList) = _export.Preflight(inputFilePaths, collections, thumbnail);
 			
 			// When all items are not found
 			// allow read only
@@ -72,24 +58,12 @@ namespace starsky.Controllers
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-
-				var filePaths = _export.CreateListToExport(fileIndexResultsList, thumbnail);
-				var fileNames = _export.FilePathToFileName(filePaths, thumbnail);
-
-				// todo: move to feature.export
-				new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,createZip.Item1);
-				
-				// Write a single file to be sure that writing is ready
-				var doneFileFullPath = Path.Join(_appSettings.TempFolder,createZip.Item1) + ".done";
-				await _hostFileSystemStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
-				if(_appSettings.Verbose) Console.WriteLine("Zip done: " + doneFileFullPath);
-				
+				_export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
 			});
 			
 			// for the rest api
-			return Json(createZip.Item1);
+			return Json(zipOutputName);
 		}
-
 
 		/// <summary>
 		/// Get the exported zip, but first call 'createZip'
@@ -104,21 +78,20 @@ namespace starsky.Controllers
 		[HttpGet("/export/zip/{f}.zip")]
 		[ProducesResponseType(200)] // "zip file"
 		[ProducesResponseType(206)] // "Not Ready"
-		public async Task<IActionResult> Zip(string f, bool json = false)
+		public async Task<IActionResult> Status(string f, bool json = false)
 		{
-			var sourceFullPath = Path.Join(_appSettings.TempFolder,f) + ".zip";
-			var doneFileFullPath = Path.Join(_appSettings.TempFolder,f) + ".done";
-
-			if ( !_hostFileSystemStorage.ExistFile(sourceFullPath)  ) return NotFound("Path is not found");
-
-			// Read a single file to be sure that writing is ready
-			if ( !_hostFileSystemStorage.ExistFile(doneFileFullPath)  )
+			var (status, sourceFullPath) = _export.StatusIsReady(f);
+			switch ( status )
 			{
-				Response.StatusCode = 206;
-				return Json("Not Ready");
+				case null:
+					return NotFound("Path is not found");
+				case false:
+					Response.StatusCode = 206;
+					return Json("Not Ready");
 			}
-			
+
 			if ( json ) return Json("OK");
+			
 			var fs = _hostFileSystemStorage.ReadStream(sourceFullPath);
 			// Return the right mime type
 			return File(fs, MimeHelper.GetMimeTypeByFileName(sourceFullPath));

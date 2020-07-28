@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using starsky.feature.export.Interfaces;
@@ -10,25 +11,29 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.export.Services
 {
 	public class ExportService: IExport
 	{
-		
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
+		private readonly IConsole _console;
 
-		public ExportService(	IQuery query, AppSettings appSettings, 
-			ISelectorStorage selectorStorage)
+		public ExportService(IQuery query, AppSettings appSettings, 
+			ISelectorStorage selectorStorage, IConsole console)
 		{
 			_appSettings = appSettings;
 			_query = query;
@@ -36,10 +41,10 @@ namespace starsky.feature.export.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_statusCodeHelper = new StatusCodesHelper();
+			_console = console;
 		}
 
-		// todo: !!!!!! RENAME!!!!
-		public Tuple<string, List<FileIndexItem>> CreateZip(string[] inputFilePaths, 
+		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
 			bool collections = true, 
 			bool thumbnail = false )
 		{
@@ -107,6 +112,28 @@ namespace starsky.feature.export.Services
 			
 			return new Tuple<string, List<FileIndexItem>>(zipHash, fileIndexResultsList);
 		}
+
+		/// <summary>
+		/// Based on the preflight create a Zip Export
+		/// </summary>
+		/// <param name="fileIndexResultsList">Result of Preflight</param>
+		/// <param name="thumbnail">isThumbnail?</param>
+		/// <param name="zipOutputFileName">filename of zip file (no extension)</param>
+		/// <returns>nothing</returns>
+		public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail, 
+			string zipOutputFileName)
+		{
+			var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
+			var fileNames = FilePathToFileName(filePaths, thumbnail);
+
+			new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipOutputFileName);
+				
+			// Write a single file to be sure that writing is ready
+			var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".done";
+			await _hostFileSystemStorage.
+				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
+			if(_appSettings.Verbose) _console.WriteLine("Zip done: " + doneFileFullPath);
+		}
 		
 		/// <summary>
 		/// This list will be included in the zip
@@ -118,7 +145,8 @@ namespace starsky.feature.export.Services
 		{
 			var filePaths = new List<string>();
 
-			foreach ( var item in fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
+			foreach ( var item in fileIndexResultsList.Where(p => 
+				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
 			{
 				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
 				var sourceThumb = Path.Join(_appSettings.ThumbnailTempFolder,
@@ -132,15 +160,15 @@ namespace starsky.feature.export.Services
 				
 				// when there is .xmp sidecar file
 				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) 
-				                && _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
+				                && _iStorage.ExistFile(
+					                ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
 				{
 					filePaths.Add(
-						_appSettings.DatabasePathToFilePath(ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
+						_appSettings.DatabasePathToFilePath(
+							ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
 					);
 				}
-				
 			}
-
 			return filePaths;
 		}
 		
@@ -150,7 +178,7 @@ namespace starsky.feature.export.Services
 		/// <param name="filePaths">the full file paths </param>
 		/// <param name="thumbnail">copy the thumbnail (true) or the source image (false)</param>
 		/// <returns></returns>
-		public List<string> FilePathToFileName(List<string> filePaths, bool thumbnail)
+		internal List<string> FilePathToFileName(IEnumerable<string> filePaths, bool thumbnail)
 		{
 			var fileNames = new List<string>();
 			foreach ( var filePath in filePaths )
@@ -171,14 +199,12 @@ namespace starsky.feature.export.Services
 			return fileNames;
 		}
 
-
-
 		/// <summary>
 		/// to create a unique name of the zip using c# get hashcode
 		/// </summary>
-		/// <param name="fileIndexResultsList">list of objects with filehashes</param>
+		/// <param name="fileIndexResultsList">list of objects with fileHashes</param>
 		/// <returns>unique 'get hashcode' string</returns>
-		public string GetName(List<FileIndexItem> fileIndexResultsList)
+		private string GetName(List<FileIndexItem> fileIndexResultsList)
 		{
 			var tempFileNameStringBuilder = new StringBuilder();
 			foreach ( var item in fileIndexResultsList )
@@ -190,6 +216,22 @@ namespace starsky.feature.export.Services
 				.ToString(CultureInfo.InvariantCulture).ToLower().Replace("-","A");
 			
 			return shortName;
+		}
+
+		/// <summary>
+		/// Is Zip Ready?
+		/// </summary>
+		/// <param name="zipOutputFileName">fileName without extension</param>
+		/// <returns>null if status file is not found, true if done file exist</returns>
+		public Tuple<bool?,string> StatusIsReady(string zipOutputFileName)
+		{
+			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".zip";
+			var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".done";
+
+			if ( !_hostFileSystemStorage.ExistFile(sourceFullPath)  ) return new Tuple<bool?, string>(null,null);
+
+			// Read a single file to be sure that writing is ready
+			return new Tuple<bool?, string>(_hostFileSystemStorage.ExistFile(doneFileFullPath), sourceFullPath);
 		}
 	}
 }
