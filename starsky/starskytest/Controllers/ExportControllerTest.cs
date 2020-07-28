@@ -170,12 +170,14 @@ namespace starskytest.Controllers
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
 			
-			var export = new ExportService(_query,_appSettings,storageSelector);
-			var controller = new ExportController(fakeQuery, _appSettings, backgroundQueue, storageSelector, export);
+			var export = new ExportService(fakeQuery,_appSettings,storageSelector);
+			var controller = new ExportController(fakeQuery, _appSettings,
+				backgroundQueue, storageSelector, export);
 			
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = controller.CreateZip(_createAnImage.DbPath,true,false) as JsonResult;
+			var actionResult = controller.CreateZip(_createAnImage.DbPath,
+				true,false) as JsonResult;
 			
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
