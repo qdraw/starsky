@@ -6,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
+using starsky.foundation.writemeta.JsonService;
 
 namespace starsky.feature.rename.Services
 {
@@ -182,7 +183,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
 				{
-					// toFileSubPath should contain the full subpath
+					// toFileSubPath should contain the full subPath
 					
 					// when trying to rename something wrongs
 					var fileName = FilenamesHelper.GetFileName(toFileSubPath);
@@ -213,37 +214,16 @@ namespace starsky.feature.rename.Services
 					_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
 					
 					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
+					
+					// move sidecar file
+					_iStorage.FileMove(new FileIndexItemJsonParser(_iStorage).JsonLocation(),toFileSubPath);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
 				{
 					// toFileSubPath must be the to copy directory, the filename is kept the same
-
-					// update to support UpdateItem
-					toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
-					
-					// you can't move the file to the same location
-					if ( inputFileSubPath == toFileSubPath )
-					{
-						fileIndexResultsList.Add(new FileIndexItem
-						{
-							Status = FileIndexItem.ExifStatus.OperationNotSupported
-						});
-						continue; //next
-					}
-					
-					// from/input cache should be cleared
-					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
-					_query.RemoveCacheParentItem(inputParentSubFolder);
-					
-					// clear cache // parentSubFolder (to FileSubPath parents)
-					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-					_query.RemoveCacheParentItem(toParentSubFolder); 
-					
-					// Check if the parent folder exist in the database // parentSubFolder
-					_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
-					
-					_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+					fileIndexResultsList = FromFileToFolder(inputFileSubPath, toFileSubPath,
+						fileIndexResultsList);
 				} 
 				
 				// Rename parent item >eg the folder or file
@@ -259,6 +239,37 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+
+		private List<FileIndexItem> FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		{
+			// update to support UpdateItem
+			toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
+					
+			// you can't move the file to the same location
+			if ( inputFileSubPath == toFileSubPath )
+			{
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				});
+				return fileIndexResultsList; //next
+			}
+					
+			// from/input cache should be cleared
+			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+			_query.RemoveCacheParentItem(inputParentSubFolder);
+					
+			// clear cache // parentSubFolder (to FileSubPath parents)
+			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+			_query.RemoveCacheParentItem(toParentSubFolder); 
+					
+			// Check if the parent folder exist in the database // parentSubFolder
+			_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
+					
+			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
+			
+			return fileIndexResultsList;
+		}
 
     }
 }
