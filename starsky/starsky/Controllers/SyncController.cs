@@ -173,7 +173,7 @@ namespace starsky.Controllers
 	    [Produces("application/json")]	    
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
-		    var rename = new RenameFs(_query, _iStorage).Rename(f, to, collections);
+		    var rename = new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
 		    // When all items are not found
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

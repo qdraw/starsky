@@ -6,16 +6,15 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starsky.foundation.writemeta.JsonService;
 
 namespace starsky.feature.rename.Services
 {
-    public class RenameFs
+    public class RenameService
     {
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;
 
-		public RenameFs(IQuery query,  IStorage iStorage)
+		public RenameService(IQuery query,  IStorage iStorage)
 		{
 			_query = query;
 			_iStorage = iStorage;
@@ -214,9 +213,7 @@ namespace starsky.feature.rename.Services
 					_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
 					
 					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
-					
-					// move sidecar file
-					_iStorage.FileMove(new FileIndexItemJsonParser(_iStorage).JsonLocation(),toFileSubPath);
+					MoveSidecarFile(inputFileSubPath, toFileSubPath);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
@@ -239,6 +236,16 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+
+		private void MoveSidecarFile(string inputFileSubPath, string toFileSubPath)
+		{
+			var inputFileSubPathJsonSidecarFile =
+				JsonSidecarLocation.JsonLocation(inputFileSubPath);
+			if ( _iStorage.ExistFile(inputFileSubPathJsonSidecarFile) )
+			{
+				_iStorage.FileMove(inputFileSubPathJsonSidecarFile,JsonSidecarLocation.JsonLocation(toFileSubPath));
+			}
+		}
 
 		private List<FileIndexItem> FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
 		{
@@ -267,7 +274,8 @@ namespace starsky.feature.rename.Services
 			_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
 					
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
-			
+			MoveSidecarFile(inputFileSubPath, toFileSubPath);
+
 			return fileIndexResultsList;
 		}
 

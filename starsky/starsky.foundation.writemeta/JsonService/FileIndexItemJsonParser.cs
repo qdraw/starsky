@@ -16,18 +16,6 @@ namespace starsky.foundation.writemeta.JsonService
 		{
 			_iStorage = storage;
 		}
-
-		/// <summary>
-		/// Get the jsonSubPath `parentDir/.starsky.filename.ext.json`
-		/// </summary>
-		/// <param name="parentDirectory">parent Directory</param>
-		/// <param name="fileName">and filename</param>
-		/// <returns>parentDir/.starsky.filename.`ext.json</returns>
-		public string JsonLocation(string parentDirectory, string fileName)
-		{
-			return PathHelper.AddSlash(parentDirectory) + ".starsky." + fileName
-			        + ".json";
-		}
 		
 		public async Task Write(FileIndexItem fileIndexItem)
 		{
@@ -35,14 +23,14 @@ namespace starsky.foundation.writemeta.JsonService
 			{
 				WriteIndented = true, 
 			});
-			var jsonSubPath = JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
+			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
 			await _iStorage.WriteStreamAsync(
 				new PlainTextFileHelper().StringToStream(jsonOutput), jsonSubPath);
 		}
 
 		public FileIndexItem Read(FileIndexItem fileIndexItem)
 		{
-			var jsonSubPath = JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
+			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
 			// when sidecar file does not exist
 			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			

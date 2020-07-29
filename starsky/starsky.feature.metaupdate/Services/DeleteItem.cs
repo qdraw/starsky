@@ -8,7 +8,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.JsonService;
 
 namespace starsky.feature.metaupdate.Services
 {
@@ -118,7 +117,7 @@ namespace starsky.feature.metaupdate.Services
 		private void RemoveJsonSideCarFile(DetailView detailViewItem)
 		{
 			// remove the json sidecar file (if exist)
-			var jsonSubPath = new FileIndexItemJsonParser(_iStorage).JsonLocation(detailViewItem
+			var jsonSubPath = JsonSidecarLocation.JsonLocation(detailViewItem
 				.FileIndexItem.ParentDirectory, detailViewItem
 				.FileIndexItem.FileName);
 			_iStorage.FileDelete(jsonSubPath);
