@@ -38,7 +38,7 @@ namespace starskytest.starsky.feature.rename.Services
 			var memoryCache = provider.GetService<IMemoryCache>();
 			
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			builder.UseInMemoryDatabase("test");
+			builder.UseInMemoryDatabase(nameof(RenameServiceTest));
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
 			
@@ -99,6 +99,8 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public void RenameFsTest_MoveFileToExistFolder_Items()
 		{
+			CreateFoldersAndFilesInDatabase();
+
 			// remove file if already exist; we are not testing duplicate support here
 			var existFullPath = Path.Combine(_newImage.BasePath, "exist");
 			if ( File.Exists(Path.Combine(existFullPath, "test2.jpg")) )
@@ -107,9 +109,9 @@ namespace starskytest.starsky.feature.rename.Services
 			}
 			
 			// check if dir exist
-			if (!System.IO.Directory.Exists(existFullPath) )
+			if (!Directory.Exists(existFullPath) )
 			{
-				System.IO.Directory.CreateDirectory(existFullPath);
+				Directory.CreateDirectory(existFullPath);
 			}
 			
 			
@@ -128,6 +130,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
 			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(_newImage.BasePath, "exist"));
+
+			RemoveFoldersAndFilesInDatabase();
 		}
 
 	
@@ -135,7 +139,7 @@ namespace starskytest.starsky.feature.rename.Services
 		public void RenameFsTest_MoveDirWithItemsTest()
 		{
 			var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
-			System.IO.Directory.CreateDirectory(existFullDirPath);
+			Directory.CreateDirectory(existFullDirPath);
 			// move an item to this directory	
 			
 			if (! File.Exists(_appSettings.DatabasePathToFilePath("/dir1/test3.jpg")) )
@@ -323,19 +327,19 @@ namespace starskytest.starsky.feature.rename.Services
 
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
-			var istorage = new FakeIStorage(initFolderList,initFileList);
-			var renameFs = new RenameService(_query, istorage).Rename(initFileList.FirstOrDefault(), "/test/", true);
+			var fakeIStorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFsResult = new RenameService(_query, fakeIStorage).Rename(initFileList.FirstOrDefault(), "/test/", true);
 			
 			// to file: (in database)
-			var all2 = _query.GetAllRecursive();
-			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "file.jpg");
+			var all2 = _query.GetAllRecursive("/test");
+			var selectFile3 = all2.FirstOrDefault(p => p.FilePath == "/test/file.jpg");
 			Assert.AreEqual("file.jpg",selectFile3.FileName);
 			Assert.AreEqual("/test",selectFile3.ParentDirectory);
 
 			// check if files are moved (on fake Filesystem)
-			var values = istorage.GetAllFilesInDirectory("/test").ToList();
+			var values = fakeIStorage.GetAllFilesInDirectory("/test").ToList();
 			Assert.AreEqual("/test/file.jpg", values.FirstOrDefault(p => p == "/test/file.jpg"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFsResult.FirstOrDefault().Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
