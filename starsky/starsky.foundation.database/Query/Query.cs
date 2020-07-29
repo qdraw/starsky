@@ -59,10 +59,14 @@ namespace starsky.foundation.database.Query
 		            .OrderBy(r => r.FileName).ToList();
             }
         }
-        
-        // Includes sub items in file
-        // Used for Orphan Check
-        // All files in
+	    
+	    /// <summary>
+	    /// Includes sub items in file
+	    /// Used for Orphan Check
+	    /// All files in
+	    /// </summary>
+	    /// <param name="subPath"></param>
+	    /// <returns></returns>
         public List<FileIndexItem> GetAllRecursive(
             string subPath = "/")
         {
@@ -99,7 +103,7 @@ namespace starsky.foundation.database.Query
 		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
-		/// <returns>subpath (relative to database)</returns>
+		/// <returns>subPath (relative to database)</returns>
 	    public string GetSubPathByHash(string fileHash)
 	    {
 		    // The CLI programs uses no cache
@@ -241,7 +245,7 @@ namespace starsky.foundation.database.Query
 	    // Private api within Query to add cached items
         public void AddCacheItem(FileIndexItem updateStatusContent)
         {
-            // Add protection for disabeling caching
+            // If cache is turned of
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
@@ -291,7 +295,6 @@ namespace starsky.foundation.database.Query
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
-            
         }
         
         // Private api within Query to remove cached items

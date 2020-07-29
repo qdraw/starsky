@@ -10,18 +10,21 @@ using starsky.feature.export.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.export.Services
 {
+	[Service(typeof(IExport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ExportService: IExport
 	{
 		private readonly IQuery _query;
@@ -48,14 +51,12 @@ namespace starsky.feature.export.Services
 			bool collections = true, 
 			bool thumbnail = false )
 		{
-			
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
-
 				if ( detailView?.FileIndexItem == null )
 				{
 					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
@@ -64,7 +65,8 @@ namespace starsky.feature.export.Services
 					continue;
 				}
 				
-				if ( !_iStorage.ExistFile(detailView.FileIndexItem.FilePath) )
+				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == 
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -72,36 +74,25 @@ namespace starsky.feature.export.Services
 					continue; 
 				}
 				
-				// all filetypes that are exist > should be added 
+				if ( detailView.FileIndexItem.IsDirectory == true )
+				{
+					// Collection is only relevant for when selecting one file
+					foreach ( var item in 
+						_query.GetAllRecursive(detailView.FileIndexItem.FilePath).
+							Where(item => _iStorage.ExistFile(item.FilePath)) )
+					{
+						item.Status = FileIndexItem.ExifStatus.Ok;
+						fileIndexResultsList.Add(item);
+					}
+					continue;
+				}
 				
-				// todo: add filesystem check
-				
-				
-				
-				// var statusResults =
-				// 	new StatusCodesHelper(_appSettings).FileCollectionsCheck(detailView);
-				//
-				// // ignore readonly status
-				// if ( statusResults == FileIndexItem.ExifStatus.ReadOnly )
-				// 	statusResults = FileIndexItem.ExifStatus.Ok;
-				//
-				//
-				// var statusModel = new FileIndexItem();
-				// statusModel.SetFilePath(subPath);
-				// statusModel.IsDirectory = false;
-				//
-				// if(new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList)) continue;
-				//
-				//
-				
-
-				// if ( detailView == null ) throw new InvalidDataException("DetailView is null ~ " + nameof(detailView));
-
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
-					var itemDetailView = _query.SingleItem(item, null, false, false).FileIndexItem;
+					var itemDetailView = _query.SingleItem(item, null, 
+						false, false).FileIndexItem;
 					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
 					fileIndexResultsList.Add(itemDetailView);
 				}
