@@ -67,6 +67,11 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
+		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		{
+			throw new NotImplementedException();
+		}
+
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
 			_fakeContext.Remove(updateStatusContent);

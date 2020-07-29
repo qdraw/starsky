@@ -99,6 +99,27 @@ namespace starsky.foundation.database.Query
             }
             return query;
         }
+		
+		/// <summary>
+		/// Returns a database object file or folder
+		/// </summary>
+		/// <param name="filePath">relative database path</param>
+		/// <returns>FileIndex-objects with database data</returns>
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		{
+			filePath = PathHelper.RemoveLatestSlash(filePath);
+			FileIndexItem query;
+			try
+			{
+				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
+			catch (ObjectDisposedException)
+			{
+				_context = new InjectServiceScope(_scopeFactory).Context();
+				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
+			return query;
+		}
 	    
 		/// <summary>
 		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)

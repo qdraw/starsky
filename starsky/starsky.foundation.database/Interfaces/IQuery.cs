@@ -43,7 +43,8 @@ namespace starsky.foundation.database.Interfaces
             bool hideDeleted = true);
         
         FileIndexItem GetObjectByFilePath(string filePath);
-
+        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
+        
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         
         /// <summary>

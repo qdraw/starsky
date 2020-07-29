@@ -813,6 +813,11 @@ namespace starsky.foundation.database.Models
 	    /// </summary>
 	    public double FocalLength { get; set; }
 
+	    /// <summary>
+	    /// Size of the file in bytes
+	    /// </summary>
+	    public int Size { get; set; }
+
 	    
 	    /// <summary>
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
