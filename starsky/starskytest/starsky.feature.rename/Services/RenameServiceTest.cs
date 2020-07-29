@@ -328,10 +328,16 @@ namespace starskytest.starsky.feature.rename.Services
 			var initFolderList =  new List<string> { "/", "/test" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
 			var fakeIStorage = new FakeIStorage(initFolderList,initFileList);
-			var renameFsResult = new RenameService(_query, fakeIStorage).Rename(initFileList.FirstOrDefault(), "/test/", true);
+			
+			
+			var renameFsResult = new RenameService(_query, fakeIStorage).
+				Rename(initFileList.FirstOrDefault(), "/test/", true);
+
+			var oldItem = _query.GetObjectByFilePath("/exist/file.jpg");
+			Assert.IsNull(oldItem);
 			
 			// to file: (in database)
-			var all2 = _query.GetAllRecursive("/test");
+			var all2 = _query.GetAllRecursive().Where(p => p.ParentDirectory.Contains("/test"));
 			var selectFile3 = all2.FirstOrDefault(p => p.FilePath == "/test/file.jpg");
 			Assert.AreEqual("file.jpg",selectFile3.FileName);
 			Assert.AreEqual("/test",selectFile3.ParentDirectory);
