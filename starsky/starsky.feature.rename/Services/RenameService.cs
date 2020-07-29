@@ -123,52 +123,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					// 1. Get Direct child files
-					// 2. Get Direct folder and child folders
-					// 3. move child files
-					// 4. remove old folder
-					
-					// Store Child folders
-					var directChildFolders = new List<string>();
-					directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath));
-
-					// Store direct files
-					var directChildItems = new List<string>();
-					directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
-					
-					// rename child folders
-					foreach ( var inputChildFolder in directChildFolders )
-					{
-						// First FileSys (with folders)
-						var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
-						_iStorage.FolderMove(inputChildFolder,outputChildItem);
-					}
-
-					// rename child files
-					foreach ( var inputChildItem in directChildItems )
-					{
-						// First FileSys
-						var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
-						_iStorage.FileMove(inputChildItem,outputChildItem);
-					}
-					
-					// Replace all Recursive items in Query
-					// Does only replace in existing database items
-					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-					
-					// Rename child items
-					fileIndexItems.ForEach(p =>
-						{
-							p.ParentDirectory =
-								p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
-							p.Status = FileIndexItem.ExifStatus.Ok;
-						}
-					);
-					
-					// todo: remove folder from disk + remove duplicate database item 
-					// remove duplicate item from list
-					_query.GetObjectByFilePath(inputFileSubPath);
-
+					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -183,37 +138,8 @@ namespace starsky.feature.rename.Services
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
 				{
 					// toFileSubPath should contain the full subPath
-					
-					// when trying to rename something wrongs
-					var fileName = FilenamesHelper.GetFileName(toFileSubPath);
-					if ( !FilenamesHelper.IsValidFileName(fileName) )
-					{
-						fileIndexResultsList.Add(new FileIndexItem
-						{
-							Status = FileIndexItem.ExifStatus.OperationNotSupported
-						});
-						continue; //next
-					}
-					
-					// from/input cache should be cleared
-					var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
-					_query.RemoveCacheParentItem(inputParentSubFolder);
-
-					var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
-					// clear cache (to FileSubPath parents)
-					_query.RemoveCacheParentItem(toParentSubFolder);
-
-					// add folder to file system
-					if ( !_iStorage.ExistFolder(toParentSubFolder) )
-					{
-						_iStorage.CreateDirectory(toParentSubFolder);
-					}
-					
-					// Check if the parent folder exist in the database
-					_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
-					
-					_iStorage.FileMove(inputFileSubPath,toFileSubPath);
-					MoveSidecarFile(inputFileSubPath, toFileSubPath);
+					fileIndexResultsList = FromFileToDeleted(inputFileSubPath, toFileSubPath, 
+						fileIndexResultsList);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
@@ -245,6 +171,95 @@ namespace starsky.feature.rename.Services
 			{
 				_iStorage.FileMove(inputFileSubPathJsonSidecarFile,JsonSidecarLocation.JsonLocation(toFileSubPath));
 			}
+		}
+
+
+		private void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
+			List<FileIndexItem> fileIndexItems)
+		{
+			// 1. Get Direct child files
+			// 2. Get Direct folder and child folders
+			// 3. move child files
+			// 4. remove old folder
+					
+			// Store Child folders
+			var directChildFolders = new List<string>();
+			directChildFolders.AddRange(_iStorage.GetDirectoryRecursive(inputFileSubPath));
+
+			// Store direct files
+			var directChildItems = new List<string>();
+			directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+					
+			// rename child folders
+			foreach ( var inputChildFolder in directChildFolders )
+			{
+				// First FileSys (with folders)
+				var outputChildItem = inputChildFolder.Replace(inputFileSubPath, toFileSubPath);
+				_iStorage.FolderMove(inputChildFolder,outputChildItem);
+			}
+
+			// rename child files
+			foreach ( var inputChildItem in directChildItems )
+			{
+				// First FileSys
+				var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
+				_iStorage.FileMove(inputChildItem,outputChildItem);
+			}
+					
+			// Replace all Recursive items in Query
+			// Does only replace in existing database items
+			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+					
+			// Rename child items
+			fileIndexItems.ForEach(p =>
+				{
+					p.ParentDirectory =
+						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+					p.Status = FileIndexItem.ExifStatus.Ok;
+				}
+			);
+					
+			// todo: remove folder from disk + remove duplicate database item 
+			// remove duplicate item from list
+			_query.GetObjectByFilePath(inputFileSubPath);
+		}
+
+		private List<FileIndexItem> FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
+			List<FileIndexItem> fileIndexResultsList)
+		{
+			
+			// when trying to rename something wrongs
+			var fileName = FilenamesHelper.GetFileName(toFileSubPath);
+			if ( !FilenamesHelper.IsValidFileName(fileName) )
+			{
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				});
+				return fileIndexResultsList; //next
+			}
+					
+			// from/input cache should be cleared
+			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+			_query.RemoveCacheParentItem(inputParentSubFolder);
+
+			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+			// clear cache (to FileSubPath parents)
+			_query.RemoveCacheParentItem(toParentSubFolder);
+
+			// add folder to file system
+			if ( !_iStorage.ExistFolder(toParentSubFolder) )
+			{
+				_iStorage.CreateDirectory(toParentSubFolder);
+			}
+					
+			// Check if the parent folder exist in the database
+			_query.AddParentItemsAsync(toParentSubFolder).ConfigureAwait(false);
+					
+			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
+			MoveSidecarFile(inputFileSubPath, toFileSubPath);
+			
+			return fileIndexResultsList;
 		}
 
 		private List<FileIndexItem> FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
