@@ -138,15 +138,16 @@ namespace starsky.feature.rename.Services
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
 				{
 					// toFileSubPath should contain the full subPath
-					fileIndexResultsList = FromFileToDeleted(inputFileSubPath, toFileSubPath, 
+					FromFileToDeleted(inputFileSubPath, toFileSubPath, 
 						fileIndexResultsList);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
 				{
+					// Needed to create SetFilePath() for item that is copied, not the folder
+					toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
 					// toFileSubPath must be the to copy directory, the filename is kept the same
-					fileIndexResultsList = FromFileToFolder(inputFileSubPath, toFileSubPath,
-						fileIndexResultsList);
+					FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
 				
 				// Rename parent item >eg the folder or file
@@ -167,9 +168,10 @@ namespace starsky.feature.rename.Services
 		{
 			var inputFileSubPathJsonSidecarFile =
 				JsonSidecarLocation.JsonLocation(inputFileSubPath);
+			var toSidecarFile = JsonSidecarLocation.JsonLocation(toFileSubPath);
 			if ( _iStorage.ExistFile(inputFileSubPathJsonSidecarFile) )
 			{
-				_iStorage.FileMove(inputFileSubPathJsonSidecarFile,JsonSidecarLocation.JsonLocation(toFileSubPath));
+				_iStorage.FileMove(inputFileSubPathJsonSidecarFile,toSidecarFile);
 			}
 		}
 
@@ -224,7 +226,7 @@ namespace starsky.feature.rename.Services
 			_query.GetObjectByFilePath(inputFileSubPath);
 		}
 
-		private List<FileIndexItem> FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
+		private void FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexResultsList)
 		{
 			
@@ -236,7 +238,7 @@ namespace starsky.feature.rename.Services
 				{
 					Status = FileIndexItem.ExifStatus.OperationNotSupported
 				});
-				return fileIndexResultsList; //next
+				return; //next
 			}
 					
 			// from/input cache should be cleared
@@ -258,15 +260,11 @@ namespace starsky.feature.rename.Services
 					
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
-			
-			return fileIndexResultsList;
 		}
 
-		private List<FileIndexItem> FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		private void FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
 		{
-			// update to support UpdateItem
-			toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
-					
+				
 			// you can't move the file to the same location
 			if ( inputFileSubPath == toFileSubPath )
 			{
@@ -274,7 +272,7 @@ namespace starsky.feature.rename.Services
 				{
 					Status = FileIndexItem.ExifStatus.OperationNotSupported
 				});
-				return fileIndexResultsList; //next
+				return; //next
 			}
 					
 			// from/input cache should be cleared
@@ -290,8 +288,6 @@ namespace starsky.feature.rename.Services
 					
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
-
-			return fileIndexResultsList;
 		}
 
     }

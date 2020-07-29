@@ -96,7 +96,7 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 
-		// [TestMethod]
+		[TestMethod]
 		public void RenameFsTest_MoveFileToExistFolder_Items()
 		{
 			CreateFoldersAndFilesInDatabase();
@@ -319,9 +319,7 @@ namespace starskytest.starsky.feature.rename.Services
 			RemoveFoldersAndFilesInDatabase();
 		}
 		
-		
-		// todo: ENABLE
-		/// [TestMethod]
+		[TestMethod]
 		public void RenameFsTest_FakeIStorage_File_To_ExistFolder() // there is a separate sidecar json test
 		{
 			CreateFoldersAndFilesInDatabase();
@@ -351,8 +349,7 @@ namespace starskytest.starsky.feature.rename.Services
 			RemoveFoldersAndFilesInDatabase();
 		}
 		
-		// [TestMethod]
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! TODO: FIX!!!!!!!
+		[TestMethod]
 		public void RenameFsTest_FakeIStorage_File_To_ExistFolder_Json_SidecarFile()
 		{
 			CreateFoldersAndFilesInDatabase();
@@ -372,8 +369,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/test",selectFile3.ParentDirectory);
 
 			// check if sidecar json are moved (on fake Filesystem)
-			var values = iStorage.GetAllFilesInDirectory("/test").ToList();
-			Assert.AreEqual("/exist/.starsky.file.jpg.json", values.FirstOrDefault(p => p == "/exist/.starsky.file.jpg.json"));
+			var values = iStorage.GetAllFilesInDirectoryRecursive("/test").ToList();
+			Assert.AreEqual("/test/.starsky.file.jpg.json", values.FirstOrDefault(p => p == "/test/.starsky.file.jpg.json"));
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
 
 			RemoveFoldersAndFilesInDatabase();
