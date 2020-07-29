@@ -23,7 +23,7 @@ using SyncService = starskycore.Services.SyncService;
 namespace starskytest.Helpers
 {
 	[TestClass]
-	public class RenameFsTest
+	public class RenameServiceTest
 	{
 		private readonly Query _query;
 		private readonly AppSettings _appSettings;
@@ -31,7 +31,7 @@ namespace starskytest.Helpers
 		private readonly SyncService _sync;
 		private readonly StorageSubPathFilesystem _iStorageSubPath;
 
-		public RenameFsTest()
+		public RenameServiceTest()
 		{
 			var provider = new ServiceCollection()
 			.AddMemoryCache()
