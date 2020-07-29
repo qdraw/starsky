@@ -47,7 +47,7 @@ namespace starskycore.Services
 	    /// Add the roles 'User' and 'Administrator' to an empty database (and checks this list)
 	    /// </summary>
 	    /// <returns>List of roles in existingRoleNames</returns>
-		public List<Role> AddDefaultRoles()
+		private List<Role> AddDefaultRoles()
 		{
 			// User.HasClaim(ClaimTypes.Role, "Administrator") -- > p.Code
 
@@ -87,7 +87,7 @@ namespace starskycore.Services
 	    /// </summary>
 	    /// <param name="credentialTypeCode">the type, for example email</param>
 	    /// <returns></returns>
-	    public CredentialType AddDefaultCredentialType(string credentialTypeCode)
+	    private CredentialType AddDefaultCredentialType(string credentialTypeCode)
 	    {
 		     CredentialType credentialType = _dbContext
 			     .CredentialTypes.FirstOrDefault(p => p.Code.ToLower()
@@ -146,7 +146,7 @@ namespace starskycore.Services
 	    /// <summary>
 	    /// Remove one user from cache
 	    /// </summary>
-	    internal void RemoveUserFromCache(User user)
+	    private void RemoveUserFromCache(User user)
 	    {
 		    if ( !IsCacheEnabled() ) return;
 		    var allUsers = AllUsers();
@@ -206,6 +206,8 @@ namespace starskycore.Services
 
 		        // to get the Id
 		        user = _dbContext.Users.FirstOrDefault(p => p.Created == createdDate);
+		        
+		        if ( user == null ) throw new AggregateException("user should not be null");
 	        }
 
 			// Add a user role based on a user id
@@ -218,7 +220,7 @@ namespace starskycore.Services
 
             var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
             if ( credential != null ) return new SignUpResult(user: user, success: true);
-            
+
             // Check if credential not already exist
             credential = new Credential
             {

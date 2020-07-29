@@ -58,7 +58,6 @@ namespace starsky.feature.metaupdate.Services
 				
 				// Check if extension is supported for ExtensionExifToolSupportedList
 				// Not all files are able to write with exifTool
-				// 
 				if(!ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName))
 				{
 					_statusCodeHelper.ReturnExifStatusError(new FileIndexItemJsonParser(_iStorage).Read(detailView.FileIndexItem), 

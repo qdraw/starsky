@@ -12,7 +12,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 
-namespace starskytest.starsky.foundation.database.Query
+namespace starskytest.starsky.foundation.database.QueryTest
 {
     [TestClass]
     public class QueryTest

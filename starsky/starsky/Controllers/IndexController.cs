@@ -31,7 +31,7 @@ namespace starsky.Controllers
 	    /// <param name="hidedelete">ignore deleted files</param>
 	    /// <returns></returns>
 	    /// <response code="200">returns a list of items from the database</response>
-	    /// <response code="404">subpath not found in the database</response>
+	    /// <response code="404">subPath not found in the database</response>
 	    /// <response code="401">User unauthorized</response>
 	    [HttpGet("/api/index")]
 		[Produces("application/json")]
@@ -49,10 +49,10 @@ namespace starsky.Controllers
             
             // Used in Detail and Index View => does not hide this single item
             var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
-            var subpath = _query.SubPathSlashRemove(f);
+            var subPath = _query.SubPathSlashRemove(f);
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subpath, colorClassActiveList,collections);
+            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections);
             // returns no object when it a directory
             
             if (singleItem?.IsDirectory == false)
@@ -64,26 +64,26 @@ namespace starsky.Controllers
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subpath,colorClassActiveList,collections,hidedelete),
+                FileIndexItems = _query.DisplayFileFolders(subPath,colorClassActiveList,collections,hidedelete),
                 ColorClassActiveList = 	colorClassActiveList,
-                RelativeObjects = _query.GetNextPrevInFolder(subpath), // Args are not shown in this view
-                Breadcrumb = Breadcrumbs.BreadcrumbHelper(subpath),
-                SearchQuery = subpath.Split("/").LastOrDefault(),
-                SubPath = subpath,
+                RelativeObjects = _query.GetNextPrevInFolder(subPath), // Args are not shown in this view
+                Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),
+                SearchQuery = subPath.Split("/").LastOrDefault(),
+                SubPath = subPath,
                 CollectionsCount = _query.DisplayFileFolders(
-	                subpath,null,false,hidedelete).
+	                subPath,null,false,hidedelete).
 	                Count(p => p.IsDirectory == false),
                 ColorClassUsage = _query.DisplayFileFolders(
-	                subpath,null,false,hidedelete)
+	                subPath,null,false,hidedelete)
 	                .Select( p => p.ColorClass).Distinct()
 	                .OrderBy(p => (int) (p)).ToList(),
-                IsReadOnly =  _appSettings.IsReadOnly(subpath)
+                IsReadOnly =  _appSettings.IsReadOnly(subPath)
             };
 
             if (singleItem == null)
             {
                 // For showing a new database
-                var queryIfFolder = _query.GetObjectByFilePath(subpath);
+                var queryIfFolder = _query.GetObjectByFilePath(subPath);
 
                 // For showing a new database
                 if ( f == "/" && queryIfFolder == null ) return Json(directoryModel);

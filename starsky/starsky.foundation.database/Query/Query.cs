@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -160,6 +161,7 @@ namespace starsky.foundation.database.Query
         }
 
 	    // Remove the '/' from the end of the url
+	    [Obsolete("use PathHelper.RemoveLatestSlash()")]
         public string SubPathSlashRemove(string subPath = "/")
         {
             if (string.IsNullOrEmpty(subPath)) return subPath;
@@ -236,14 +238,14 @@ namespace starsky.foundation.database.Query
             return updateStatusContent;
         }
 
-	    public bool IsCacheEnabled()
+	    internal bool IsCacheEnabled()
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
 		    return true;
 	    }
 
 	    // Private api within Query to add cached items
-        public void AddCacheItem(FileIndexItem updateStatusContent)
+        internal void AddCacheItem(FileIndexItem updateStatusContent)
         {
             // If cache is turned of
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
@@ -299,9 +301,9 @@ namespace starsky.foundation.database.Query
         
         // Private api within Query to remove cached items
         // This Does remove a SINGLE item from the cache NOT from the database
-        public void RemoveCacheItem(FileIndexItem updateStatusContent)
+        private void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
-            // Add protection for disabeling caching
+            // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
@@ -389,7 +391,43 @@ namespace starsky.foundation.database.Query
 
 		    return fileIndexItem;
 	    }
-        
+	    
+	    /// <summary>
+	    /// Add Sub Path Folder - Parent Folders
+	    ///  root(/)
+	    ///      /2017  <= index only this folder
+	    ///      /2018
+	    /// If you use the cmd: $ starskycli -s "/2017"
+	    /// the folder '2017' it self is not added 
+	    /// and all parent paths are not included
+	    /// this class does add those parent folders
+	    /// </summary>
+	    /// <param name="subPath"></param>
+	    /// <returns></returns>
+	    public async Task AddParentItemsAsync(string subPath)
+	    {
+		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
+		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
+
+		    var toAddList = new List<FileIndexItem>();
+		    var indexItems = await _context.FileIndex.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+
+		    foreach ( var pathShouldExist in pathListShouldExist )
+		    {
+			    if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
+			    {
+				    toAddList.Add(new FileIndexItem(pathShouldExist)
+				    {
+					    IsDirectory = true,
+					    AddToDatabase = DateTime.UtcNow,
+					    ColorClass = ColorClassParser.Color.None
+				    });
+			    }
+		    }
+
+		    await AddRangeAsync(toAddList);
+	    }
+
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)
 	    /// </summary>

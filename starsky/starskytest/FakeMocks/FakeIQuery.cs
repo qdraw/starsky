@@ -146,6 +146,10 @@ namespace starskytest.FakeMocks
 			Console.WriteLine("CacheUpdateItem is called");
 		}
 
+		public async Task AddParentItemsAsync(string subPath)
+		{
+		}
+
 		public bool IsCacheEnabled()
 		{
 			throw new System.NotImplementedException();
