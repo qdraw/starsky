@@ -626,7 +626,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		        ParentDirectory = "/8118",
 		        FileHash = "3456784567890987654"
 	        }};
-	        _query.AddItem(toupdate.FirstOrDefault());
+	        await _query.AddItemAsync(toupdate.FirstOrDefault());
 
 	        foreach (var item in toupdate)
 	        {
