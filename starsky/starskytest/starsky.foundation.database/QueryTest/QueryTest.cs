@@ -614,6 +614,30 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var fileObjectByFilePath = _query.GetObjectByFilePath("/3456784567890987654/3456784567890987654.jpg");
             Assert.AreEqual("updated",fileObjectByFilePath.Tags);
         }
+        
+        [TestMethod]
+        public async Task Query_updateStatusContentList_Async()
+        {
+	        // for updateing multiple items
+	        var toupdate = new List<FileIndexItem>{new FileIndexItem
+	        {
+		        Tags = "test",
+		        FileName = "9278521.jpg",
+		        ParentDirectory = "/8118",
+		        FileHash = "3456784567890987654"
+	        }};
+	        _query.AddItem(toupdate.FirstOrDefault());
+
+	        foreach (var item in toupdate)
+	        {
+		        item.Tags = "updated";
+	        }
+	        _query.UpdateItem(toupdate);
+
+	        var fileObjectByFilePath = await _query.GetObjectByFilePathAsync("/8118/9278521.jpg");
+	        Assert.AreEqual("updated",fileObjectByFilePath.Tags);
+        }
+
 
 	    [TestMethod]
 	    public void Query_IsCacheEnabled_True()
