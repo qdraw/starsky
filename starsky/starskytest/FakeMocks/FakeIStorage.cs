@@ -271,5 +271,9 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(WriteStream(stream, path));
 		}
 
+		public StorageInfo Info(string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
