@@ -816,7 +816,7 @@ namespace starsky.foundation.database.Models
 	    /// <summary>
 	    /// Size of the file in bytes
 	    /// </summary>
-	    public int Size { get; set; }
+	    public long Size { get; set; }
 
 	    
 	    /// <summary>

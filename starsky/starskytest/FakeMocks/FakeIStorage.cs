@@ -59,7 +59,6 @@ namespace starskytest.FakeMocks
 		{
 			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(path));
 		}
-
 		public bool ExistFolder(string path)
 		{
 			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));

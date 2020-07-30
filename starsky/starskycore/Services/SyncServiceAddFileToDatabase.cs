@@ -45,6 +45,7 @@ namespace starskycore.Services
                     databaseItem.FileHash = new FileHash(_subPathStorage).GetHashCode(singleFolderDbStyle).Key;
                     databaseItem.FileName = PathHelper.GetFileName(singleFolderDbStyle);
                     databaseItem.IsDirectory = false;
+                    databaseItem.Size = _subPathStorage.Info(singleFolderDbStyle).Size;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
                         
                     _query.AddItem(databaseItem);

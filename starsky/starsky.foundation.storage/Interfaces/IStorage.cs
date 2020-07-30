@@ -50,5 +50,6 @@ namespace starsky.foundation.storage.Interfaces
 		bool WriteStreamOpenOrCreate(Stream stream, string path);
 
 		Task<bool> WriteStreamAsync(Stream stream, string path);
+		StorageInfo Info(string path);
 	}
 }

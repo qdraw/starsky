@@ -24,13 +24,14 @@ namespace starsky.foundation.storage.Storage
 				return new StorageInfo
 				{
 					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
+					Size = -1
 				};
 			}
 			
 			return new StorageInfo
 			{
 				IsFolderOrFile = IsFolderOrFile(path),
-				Length = new FileInfo(path).Length,
+				Size = new FileInfo(path).Length,
 			};
 		}
 		

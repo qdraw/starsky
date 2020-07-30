@@ -138,6 +138,10 @@ namespace starsky.foundation.storage.Storage
 			var fullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
 			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
 		}
-		
+
+		public StorageInfo Info(string path)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }
