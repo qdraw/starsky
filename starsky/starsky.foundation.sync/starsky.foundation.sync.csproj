@@ -10,6 +10,7 @@
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
     </ItemGroup>
 
