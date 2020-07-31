@@ -38,7 +38,14 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.3.0-beta.0 _(Unreleased)_  2020-07-XX
-- [ ]   (NOT Ready) Update meta information for folders
+- [ ]   (Added) Update meta information for folders
+- [ ]   (Added) Write component
+- [ ]   Add read component (sync) [not implemented]
+- [ ]   Move json sidecar file
+- [ ]   Directory sidecar write file
+- [ ]   Unknown/GPX files sidecar files
+- [ ]   FileSize update for add item
+- [ ]   FileSize on add item
 
 # version 0.2.7 _(Unreleased)_ - 2020-07-XX
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
