@@ -129,7 +129,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
 
       {isModalRenameFolder && !isReadOnly
-        && state.subPath != "/" ? <ModalArchiveRename handleExit={() => setModalRenameFolder(!isModalRenameFolder)} isOpen={isModalRenameFolder} /> : null}
+        && state.subPath != "/" ? <ModalArchiveRename subPath={state.subPath}
+          handleExit={() => setModalRenameFolder(!isModalRenameFolder)} isOpen={isModalRenameFolder} /> : null}
 
       {/* Upload drop Area */}
       {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded

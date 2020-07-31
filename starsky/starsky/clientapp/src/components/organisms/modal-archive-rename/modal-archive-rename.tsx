@@ -7,6 +7,7 @@ import Modal from '../../atoms/modal/modal';
 interface IModalRenameFolderProps {
   isOpen: boolean;
   handleExit: Function;
+  subPath: string;
 }
 
 const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (props) => {
@@ -24,7 +25,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
   const [loading, setIsLoading] = React.useState(false);
 
   // The Updated that is send to the api
-  const [fileName, setFileName] = React.useState("state.fileIndexItem.fileName");
+  const [folderName, setFolderName] = React.useState(props.subPath);
 
   // allow summit
   const [buttonState, setButtonState] = React.useState(false);
@@ -38,7 +39,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     if (!event.currentTarget.textContent) return null;
     let fieldValue = event.currentTarget.textContent.trim();
 
-    setFileName(fieldValue);
+    setFolderName(fieldValue);
     setButtonState(true)
 
     // var extensionsState = new FileExtensions().MatchExtension(state.fileIndexItem.fileName, fieldValue);
@@ -71,12 +72,12 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
       <div className="modal content--text">
 
         <FormControl onInput={handleUpdateChange} name="filename" contentEditable={isFormEnabled}>
-          {"state.fileIndexItem.fileName"}
+          {props.subPath}
         </FormControl>
 
         {error && <div className="warning-box--under-form warning-box">{error}</div>}
 
-        <button disabled={"state.fileIndexItem.fileName" === fileName || !isFormEnabled ||
+        <button disabled={props.subPath === folderName || !isFormEnabled ||
           loading || !buttonState}
           className="btn btn--default" onClick={pushRenameChange}>
           {loading ? 'Loading...' : MessageRenameFolder}
