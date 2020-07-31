@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
     public class OverlayImage
     {
@@ -32,7 +32,6 @@ namespace starskywebhtmlcli.Services
 	        
             return outputFilePath;
         }
-
         
         public void ResizeOverlayImageThumbnails(string fileHash, string outputSubPath, AppSettingsPublishProfiles profile)
         {
@@ -40,7 +39,6 @@ namespace starskywebhtmlcli.Services
 
 	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
 	        
-
 	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
 	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
@@ -50,7 +48,6 @@ namespace starskywebhtmlcli.Services
 		        ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
 			        outputSubPath);
 	        }
-
         }
 	    
 	    public void ResizeOverlayImageLarge(string subPath, string outputSubPath, AppSettingsPublishProfiles profile)
@@ -71,7 +68,6 @@ namespace starskywebhtmlcli.Services
 			    ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
 				    outputSubPath);
 		    }
-
 	    }
 
 	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
@@ -98,6 +94,5 @@ namespace starskywebhtmlcli.Services
 
 		    _iStorage.WriteStream(outputStream, outputSubPath);
 	    }
-    
     }
 }
