@@ -34,17 +34,6 @@ namespace starskycore.Services
                     Console.Write("+");
                     if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
-                    // When reading a sidecar file
-                    if ( _subPathStorage.ExistFile(
-	                    JsonSidecarLocation.JsonLocation(singleFolderDbStyle)))
-                    {
-	                    var dbItem = new FileIndexItemJsonParser(_subPathStorage).Read<FileIndexItem>(
-		                    singleFolderDbStyle);
-	                    _query.AddItem(dbItem);
-	                    databaseFileList.Add(dbItem);
-	                    return;
-                    } 
-
                     // Check the headers of a file to match a type
                     var imageFormat = ExtensionRolesHelper.GetImageFormat(
 	                    _subPathStorage.ReadStream(singleFolderDbStyle,50));

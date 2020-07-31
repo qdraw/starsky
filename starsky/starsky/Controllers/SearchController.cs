@@ -30,7 +30,6 @@ namespace starsky.Controllers
 	    [Produces("application/json")]
         public IActionResult Index(string t, int p = 0)
         {
-            // Json api && View()            
             var model = _search.Search(t, p);
             return Json(model);
         }

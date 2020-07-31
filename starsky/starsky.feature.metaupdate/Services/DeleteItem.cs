@@ -3,6 +3,7 @@ using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -11,6 +12,7 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.metaupdate.Services
 {
+	[Service(typeof(IDeleteItem), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class DeleteItem : IDeleteItem
 	{
 		private readonly IQuery _query;

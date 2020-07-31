@@ -29,16 +29,6 @@ namespace starskycore.Services
                 // Folders!!!!
                 if (dbFolderMatchFirst == null)
                 {
-	                // When reading a sidecar file
-	                if ( _subPathStorage.ExistFile(
-		                JsonSidecarLocation.JsonLocation(singleFolderDbStyle)))
-	                {
-		                var dbItem = new FileIndexItemJsonParser(_subPathStorage).Read<FileIndexItem>(
-			                singleFolderDbStyle);
-		                _query.AddItem(dbItem);
-		                return;
-	                } 
-	                
                     var folderItem = new FileIndexItem
                     {
                         IsDirectory = true,

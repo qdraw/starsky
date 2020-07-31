@@ -71,7 +71,8 @@ namespace starsky.feature.metaupdate.Services
 					rotateClock).changedFileIndexItemName;
 			}
 			
-			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
+			                                                                || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
 			foreach ( var item in collectionsDetailViewList )
 			{
 				// need to recheck because this process is async, so in the meanwhile there are changes possible
