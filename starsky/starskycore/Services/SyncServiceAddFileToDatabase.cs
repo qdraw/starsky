@@ -5,6 +5,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Services;
+using starsky.foundation.writemeta.JsonService;
 
 namespace starskycore.Services
 {
@@ -33,9 +34,20 @@ namespace starskycore.Services
                     Console.Write("+");
                     if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
+                    // When reading a sidecar file
+                    if ( _subPathStorage.ExistFile(
+	                    JsonSidecarLocation.JsonLocation(singleFolderDbStyle)))
+                    {
+	                    var dbItem = new FileIndexItemJsonParser(_subPathStorage).Read<FileIndexItem>(
+		                    singleFolderDbStyle);
+	                    _query.AddItem(dbItem);
+	                    databaseFileList.Add(dbItem);
+	                    return;
+                    } 
 
                     // Check the headers of a file to match a type
-                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(singleFolderDbStyle,50));
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(
+	                    _subPathStorage.ReadStream(singleFolderDbStyle,50));
                     
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);

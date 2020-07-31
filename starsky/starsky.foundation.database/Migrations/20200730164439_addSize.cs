@@ -6,13 +6,6 @@ namespace starsky.foundation.database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<bool>(
-                name: "IsDirectory",
-                table: "FileIndex",
-                nullable: true,
-                oldClrType: typeof(bool),
-                oldType: "INTEGER");
-
             migrationBuilder.AddColumn<long>(
                 name: "Size",
                 table: "FileIndex",
@@ -25,14 +18,6 @@ namespace starsky.foundation.database.Migrations
             migrationBuilder.DropColumn(
                 name: "Size",
                 table: "FileIndex");
-
-            migrationBuilder.AlterColumn<bool>(
-                name: "IsDirectory",
-                table: "FileIndex",
-                type: "INTEGER",
-                nullable: false,
-                oldClrType: typeof(bool),
-                oldNullable: true);
         }
     }
 }
