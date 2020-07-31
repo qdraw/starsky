@@ -4,6 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import * as FetchPost from '../../../shared/fetch-post';
 import { UrlQuery } from '../../../shared/url-query';
+import * as Modal from '../../atoms/modal/modal';
 import ModalArchiveRename from './modal-archive-rename';
 
 describe("ModalArchiveRename", () => {
@@ -76,7 +77,7 @@ describe("ModalArchiveRename", () => {
 
     it("change directory name and FAIL", async () => {
       // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
+      // use this import => import * as FetchPost from '../../../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 500 } as IConnectionDefault);
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
@@ -109,6 +110,24 @@ describe("ModalArchiveRename", () => {
       // Cleanup
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
       modal.unmount();
+    });
+
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from '../../atoms/modal/modal';
+      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>
+      });
+
+      var handleExitSpy = jest.fn();
+
+      var component = mount(<ModalArchiveRename subPath="/" isOpen={true} handleExit={handleExitSpy} />);
+
+      expect(handleExitSpy).toBeCalled();
+
+      // and clean afterwards
+      component.unmount();
     });
 
   });
