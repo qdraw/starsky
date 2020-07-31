@@ -136,12 +136,12 @@ describe("MenuArchive", () => {
 
     });
 
-    it("menu click rename(dir)", () => {
+    it("menu click rename (dir)", () => {
 
-      globalHistory.navigate("/");
+      globalHistory.navigate("/?f=/test");
 
       var state = {
-        subPath: "/",
+        subPath: "/test",
         fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
       } as IArchive;
       var contextValues = { state, dispatch: jest.fn() }
@@ -155,9 +155,9 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => { return contextValues })
 
       var component = mount(<MenuArchive />);
+      console.log(component.html());
 
       var item = component.find('[data-test="rename"]');
-      console.log(item.html());
 
 
       act(() => {
@@ -167,6 +167,8 @@ describe("MenuArchive", () => {
       expect(renameModalSpy).toBeCalled();
 
       component.unmount();
+
+      globalHistory.navigate("/");
 
     });
 
