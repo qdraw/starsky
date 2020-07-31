@@ -25,7 +25,8 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   const MessageNonValidExtension: string = language.text("Dit bestand kan zo niet worden weggeschreven", "This file cannot be saved");
   const MessageChangeToDifferentExtension = language.text("Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden",
     "Pay attention! You change the file extension, which can make it unreadable");
-  const MessageGeneralError: string = language.text("Er is iets misgegaan met de aanvraag, probeer het later opnieuw", "Something went wrong with the request, please try again later");
+  const MessageGeneralError: string = language.text("Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
+    "Something went wrong with the request, please try again later");
   const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
 
   let { state, } = React.useContext(DetailViewContext);
