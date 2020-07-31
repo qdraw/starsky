@@ -13,7 +13,8 @@ import { UrlQuery } from '../../../shared/url-query';
 import DropArea from '../../atoms/drop-area/drop-area';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
-import ModalArchiveMkdir from '../modal-archive/modal-archive-mkdir';
+import ModalArchiveMkdir from '../modal-archive-mkdir/modal-archive-mkdir';
+import ModalArchiveRename from '../modal-archive-rename/modal-archive-rename';
 import ModalDisplayOptions from '../modal-display-options/modal-display-options';
 import ModalDownload from '../modal-download/modal-download';
 import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
@@ -31,6 +32,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageSelectPresentPerfect = language.text("geselecteerd", "selected");
   const MessageNoneSelected = language.text("Niets geselecteerd", "Nothing selected");
   const MessageMkdir = language.text("Map maken", "Create folder");
+  const MessageRenameDir = language.text("Naam wijzigen", "Rename");
   const MessageDisplayOptions = language.text("Weergave opties", "Display options");
   const MessageSelectFurther = language.text("Verder selecteren", "Select further");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
@@ -95,6 +97,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
+  const [isModalRenameFolder, setModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
 
   const UploadMenuItem = () => {
@@ -124,6 +127,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
       {/* Modal new directory */}
       {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
+
+      {isModalRenameFolder && !isReadOnly
+        && state.subPath != "/" ? <ModalArchiveRename handleExit={() => setModalRenameFolder(!isModalRenameFolder)} isOpen={isModalRenameFolder} /> : null}
 
       {/* Upload drop Area */}
       {dropAreaUploadFilesList.length !== 0 ? <ModalDropAreaFilesAdded
@@ -159,6 +165,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
             <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             {state ? <UploadMenuItem /> : null}
+            <li className={!isReadOnly && state.subPath !== "/" ? "menu-option" : "menu-option disabled"} data-test="rename" onClick={() =>
+              setModalRenameFolder(!isModalRenameFolder)}>{MessageRenameDir}</li>
           </MoreMenu> : null}
 
           {/* In the select context there are more options */}
