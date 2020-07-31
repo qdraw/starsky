@@ -104,7 +104,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
       <div className="modal content--subheader">{MessageRenameFolder}</div>
       <div className="modal content--text">
 
-        <FormControl onInput={handleUpdateChange} name="filename" contentEditable={isFormEnabled}>
+        <FormControl onInput={handleUpdateChange} name="foldername" contentEditable={isFormEnabled}>
           {new FileExtensions().GetFileName(props.subPath)}
         </FormControl>
 
