@@ -17,6 +17,11 @@ namespace starsky.foundation.writemeta.JsonService
 			_iStorage = storage;
 		}
 		
+		/// <summary>
+		/// Write FileIndexItem to IStorage
+		/// </summary>
+		/// <param name="fileIndexItem">data object</param>
+		/// <returns>void</returns>
 		public async Task Write(FileIndexItem fileIndexItem)
 		{
 			var jsonOutput = JsonSerializer.Serialize(fileIndexItem, new JsonSerializerOptions
@@ -28,6 +33,11 @@ namespace starsky.foundation.writemeta.JsonService
 				new PlainTextFileHelper().StringToStream(jsonOutput), jsonSubPath);
 		}
 
+		/// <summary>
+		/// Read sidecar item
+		/// </summary>
+		/// <param name="fileIndexItem">data object</param>
+		/// <returns>data</returns>
 		public FileIndexItem Read(FileIndexItem fileIndexItem)
 		{
 			var jsonSubPath = JsonSidecarLocation.JsonLocation(fileIndexItem.ParentDirectory, fileIndexItem.FileName);
@@ -39,6 +49,13 @@ namespace starsky.foundation.writemeta.JsonService
 			return returnFileIndexItem;
 		}
 		
+		/// <summary>
+		/// Read Json
+		/// </summary>
+		/// <param name="jsonSubPath">location on disk</param>
+		/// <typeparam name="T">Typed</typeparam>
+		/// <returns>Data</returns>
+		/// <exception cref="FileNotFoundException">when file is not found</exception>
 		public T Read<T>(string jsonSubPath)
 		{
 			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);

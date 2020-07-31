@@ -93,6 +93,13 @@ namespace starsky.foundation.writemeta.Helpers
 		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
 	    
+        /// <summary>
+        /// Get command line args for exifTool by updateModel as data, comparedNames
+        /// </summary>
+        /// <param name="updateModel">data</param>
+        /// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
+        /// <param name="includeSoftware">to include software name</param>
+        /// <returns>command line args</returns>
 	    private string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 	    {
 		    var command = "-json -overwrite_original";
@@ -132,6 +139,12 @@ namespace starsky.foundation.writemeta.Helpers
 		    return command;
 	    }
 
+        /// <summary>
+        /// Create a XMP file when it not exist
+        /// </summary>
+        /// <param name="updateModel">model</param>
+        /// <param name="inputSubPaths">list of paths</param>
+        /// <returns>void</returns>
 	    private async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
 	    {
 		    foreach ( var subPath in inputSubPaths )
