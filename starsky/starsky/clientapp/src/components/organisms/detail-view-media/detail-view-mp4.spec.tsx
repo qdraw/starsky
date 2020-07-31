@@ -42,7 +42,7 @@ describe("DetailViewMp4", () => {
       component.unmount();
     });
 
-    xit("progress DOM", () => {
+    it("progress DOM", () => {
 
       const component = document.createElement('div');
       ReactDOM.render(<DetailViewMp4 />, component);

@@ -10,7 +10,8 @@ import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import * as FetchPost from '../../../shared/fetch-post';
 import { UrlQuery } from '../../../shared/url-query';
 import * as DropArea from '../../atoms/drop-area/drop-area';
-import * as ModalArchiveMkdir from '../modal-archive/modal-archive-mkdir';
+import * as ModalArchiveMkdir from '../modal-archive-mkdir/modal-archive-mkdir';
+import * as ModalArchiveRename from '../modal-archive-rename/modal-archive-rename';
 import * as ModalDownload from '../modal-download/modal-download';
 import MenuArchive from './menu-archive';
 
@@ -132,6 +133,42 @@ describe("MenuArchive", () => {
       expect(mkdirModalSpy).toBeCalled();
 
       component.unmount();
+
+    });
+
+    it("menu click rename (dir)", () => {
+
+      globalHistory.navigate("/?f=/test");
+
+      var state = {
+        subPath: "/test",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      var renameModalSpy = jest.spyOn(ModalArchiveRename, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var component = mount(<MenuArchive />);
+      console.log(component.html());
+
+      var item = component.find('[data-test="rename"]');
+
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(renameModalSpy).toBeCalled();
+
+      component.unmount();
+
+      globalHistory.navigate("/");
 
     });
 
