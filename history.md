@@ -47,7 +47,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   FileSize update for add item
 - [ ]   FileSize on add item
 
-# version 0.2.7 _(Unreleased)_ - 2020-07-XX
+# version 0.2.7 - 2020-07-31
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
 - [x]   (Fixed) _Back-end_ Fix GPS Tracking issue with 'Local' time.
 - [x]   (Deprecated) Starsky Net Framework will be removed in 0.3
