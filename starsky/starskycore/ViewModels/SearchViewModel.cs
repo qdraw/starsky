@@ -400,7 +400,9 @@ namespace starskycore.ViewModels
 				    SetAddSearchInStringType("tags");
 				    continue;
 			    }
-			    
+
+			    // Need to have the type registered in FileIndexPropList
+
 			    var startIndexer = regexInUrl.Index;
 			    var startLength = regexInUrl.Length;
 			    var lastChar = defaultQuery[startIndexer + regexInUrl.Length -1 ];

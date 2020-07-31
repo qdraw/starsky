@@ -4,6 +4,7 @@ using System.Linq;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.writemeta.JsonService;
 
 namespace starskycore.Services
 {
@@ -21,7 +22,7 @@ namespace starskycore.Services
 
                 // Check if Directory is in database
                 var dbFolderMatchFirst = databaseSubFolderList.FirstOrDefault(p =>
-                    p.IsDirectory &&
+                    p.IsDirectory == true &&
                     p.FilePath == singleFolderDbStyle
                 );
 

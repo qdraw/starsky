@@ -57,7 +57,8 @@ namespace starskytest.Services
                     Title = "Schiphol",
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 	                DateTime = new DateTime(2014,1,1,1,1,1),
-	                MakeModel = "Apple|iPhone SE|"
+	                MakeModel = "Apple|iPhone SE|",
+	                IsDirectory = false
                 });
             }
 
@@ -69,7 +70,8 @@ namespace starskytest.Services
                     ParentDirectory = "/stations",
                     FileHash = "lelystadcentrum",
                     Tags = "station, train, lelystad, de trein, delete",
-	                DateTime = DateTime.Now
+	                DateTime = DateTime.Now,
+	                IsDirectory = false
                 });
             }
             
@@ -84,7 +86,8 @@ namespace starskytest.Services
                     Description = "lelystadcentrum2",
                     ImageFormat = ExtensionRolesHelper.ImageFormat.tiff,
                     DateTime = new DateTime(2016,1,1,1,1,1),
-                    AddToDatabase = new DateTime(2016,1,1,1,1,1)
+                    AddToDatabase = new DateTime(2016,1,1,1,1,1),
+                    IsDirectory = false
                 });
             }
             
@@ -107,6 +110,7 @@ namespace starskytest.Services
                     FileHash = "stationdeletedfile",
                     Tags = "!delete!",
 	                DateTime = new DateTime(2013,1,1,1,1,1),
+	                IsDirectory = false
                 });
             }
             
@@ -382,6 +386,8 @@ namespace starskytest.Services
 	    public void SearchService_SearchForDirectories()
 	    {
 		    InsertSearchData();
+		    var t = _query.GetObjectByFilePath("/stations");
+		    
 		    Assert.AreEqual(1, _search.Search("-isDirectory:true -inurl:stations").SearchCount);
 	    }
         

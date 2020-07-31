@@ -173,7 +173,7 @@ namespace starsky.foundation.database.Models
 		///   <c>true</c> if this instance is directory; otherwise (then is a file), <c>false</c>.
 		/// </value>
 		/// <example>true</example>
-		public bool IsDirectory { get; set; }
+		public bool? IsDirectory { get; set; }
 
 		/// <summary>
 		/// Get/Set a HashList with Tags (stores as string under Tags)
@@ -182,7 +182,8 @@ namespace starsky.foundation.database.Models
 		/// The keywords as List/HashList
 		/// </value>
 		[NotMapped]
-        public HashSet<string> Keywords {
+		[JsonIgnore] // <== gives conversion errors with jsonParser
+        internal HashSet<string> Keywords {
 			get => HashSetHelper.StringToHashSet(Tags.Trim());
 			set
 			{
@@ -193,7 +194,7 @@ namespace starsky.foundation.database.Models
 
         
 	    /// <summary>
-	    /// Internal API: Do not save null in database for tags
+	    /// Private API: Do not save null in database for tags
 	    /// </summary>
         private string _tags;
 
@@ -228,15 +229,19 @@ namespace starsky.foundation.database.Models
 		public enum ExifStatus
         {
             Default,
+            ExifWriteNotSupported,
             NotFoundNotInIndex,
             NotFoundSourceMissing,
             NotFoundIsDir,
 	        OperationNotSupported,
+	        /// <summary>
+	        /// Directory is read only
+	        /// </summary>
             DirReadOnly,
             ReadOnly,
             Unauthorized,
             Ok,
-            Deleted
+            Deleted,
         }
 
 		/// <summary>
@@ -280,7 +285,7 @@ namespace starsky.foundation.database.Models
         }
         
 	    /// <summary>
-	    /// Internal API: to store Title
+	    /// Private API: to store Title
 	    /// </summary>
         private string _title;
 
@@ -442,6 +447,7 @@ namespace starsky.foundation.database.Models
             {
                 if ((
 						propertyInfo.PropertyType == typeof(bool) || 
+						propertyInfo.PropertyType == typeof(bool?) || 
 						propertyInfo.PropertyType == typeof(string) || 
 						propertyInfo.PropertyType == typeof(DateTime) ||
 						propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat)
@@ -636,16 +642,7 @@ namespace starsky.foundation.database.Models
             if(imageHeight >= 1 && imageHeight <= ushort.MaxValue ) 
                 ImageHeight = (ushort) imageHeight;
         }
-
-
-		/// <summary>
-		/// Gets all items of the enum color, eg Winner, WinnerAlt.
-		/// </summary>
-		/// <returns>List with enum-item</returns>
-		public static IEnumerable<ColorClassParser.Color> GetAllColor()
-        {
-            return Enum.GetValues(typeof(ColorClassParser.Color)).Cast<ColorClassParser.Color>().Where(p => (int)p >= 0).OrderBy(p => (int)p );
-        }
+		
 
 		/// <summary>
 		/// Gets or sets the image format. (eg: jpg, tiff)
@@ -753,8 +750,7 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		[MaxLength(40)]
 		public string Software { get; set; }
-	    
-	    
+
 		/// <summary>
 		/// Private field to store MakeModel Data
 		/// </summary>
@@ -816,6 +812,11 @@ namespace starsky.foundation.database.Models
 	    /// The Zoom of the camera
 	    /// </summary>
 	    public double FocalLength { get; set; }
+
+	    /// <summary>
+	    /// Size of the file in bytes
+	    /// </summary>
+	    public long Size { get; set; }
 
 	    
 	    /// <summary>

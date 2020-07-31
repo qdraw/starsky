@@ -15,15 +15,8 @@ Raspberry Pi: 'linux-arm'
 Windows 32 bits: 'win7-x86'
 */
 
-// For the step CoverageReport
-#tool "nuget:?package=ReportGenerator&version=4.5.1"
-
-// SonarQube
-#tool nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.8.0
-#addin nuget:?package=Cake.Sonar&version=1.1.25
-
 // Get Git info
-#addin nuget:?package=Cake.Git&version=0.21.0
+#addin nuget:?package=Cake.Git&version=0.22.0
 
 // For NPM
 #addin "Cake.Npm&version=0.17.0"
@@ -94,6 +87,12 @@ Task("TestEnv")
             // if not it will fail
 
             Information($"{systemTempPath} exist");
+        }
+
+        // DotNet localTools need to be part of the Env Path
+        var pathEnv = Environment.GetEnvironmentVariable("PATH").Contains($".dotnet{System.IO.Path.DirectorySeparatorChar}tools");
+        if(!pathEnv) {
+          throw new Exception($".dotnet{System.IO.Path.DirectorySeparatorChar}tools is not part of the path");
         }
     });
 
@@ -326,13 +325,44 @@ Task("MergeCoverageFiles")
         CopyFile($"./starsky/clientapp/coverage/cobertura-coverage.xml", $"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all coverage files
-    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
-        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
-    });
+      IEnumerable<string> redirectedStandardOutput;
+      IEnumerable<string> redirectedErrorOutput;
+      var exitCodeWithArgument =
+          StartProcess(
+              "dotnet",
+              new ProcessSettings {
+                Arguments = new ProcessArgumentBuilder()
+                    .Append($"reportgenerator")
+                    .Append($"-reports:./starskytest/*coverage.*.xml")
+                    .Append($"-targetdir:./starskytest/")
+                    .Append($"-reporttypes:Cobertura"),
+                  RedirectStandardOutput = true,
+                  RedirectStandardError = true
+              },
+              out redirectedStandardOutput,
+              out redirectedErrorOutput
+          );
 
-    // And rename it
-    MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+      // Output process output.
+      foreach(var stdOutput in redirectedStandardOutput)
+      {
+          Information("reportgenerator: {0}", stdOutput);
+      }
+
+      // Throw exception if anything was written to the standard error.
+      if (redirectedErrorOutput.Any())
+      {
+          throw new Exception(
+              string.Format(
+                  "Errors occurred: {0}",
+                  string.Join(", ", redirectedErrorOutput)));
+      }
+
+      // This should output 0 as valid arguments supplied
+      Information("Exit code: {0}", exitCodeWithArgument);
+
+      // And rename it
+      MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
   });
 
 Task("MergeOnlyNetCoreCoverageFiles")
@@ -348,10 +378,41 @@ Task("MergeOnlyNetCoreCoverageFiles")
        DeleteFile($"./starskytest/jest-coverage.cobertura.xml");
     }
 
-    // Merge all coverage files
-    ReportGenerator($"./starskytest/*coverage.*.xml", $"./starskytest/", new ReportGeneratorSettings{
-        ReportTypes = new[] { ReportGeneratorReportType.Cobertura }
-    });
+    IEnumerable<string> redirectedStandardOutput;
+    IEnumerable<string> redirectedErrorOutput;
+    var exitCodeWithArgument =
+        StartProcess(
+            "dotnet",
+            new ProcessSettings {
+              Arguments = new ProcessArgumentBuilder()
+                  .Append($"reportgenerator")
+                  .Append($"-reports:./starskytest/*coverage.*.xml")
+                  .Append($"-targetdir:./starskytest/")
+                  .Append($"-reporttypes:Cobertura"),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            },
+            out redirectedStandardOutput,
+            out redirectedErrorOutput
+        );
+
+    // Output process output.
+    foreach(var stdOutput in redirectedStandardOutput)
+    {
+        Information("reportgenerator: {0}", stdOutput);
+    }
+
+    // Throw exception if anything was written to the standard error.
+    if (redirectedErrorOutput.Any())
+    {
+        throw new Exception(
+            string.Format(
+                "Errors occurred: {0}",
+                string.Join(", ", redirectedErrorOutput)));
+    }
+
+    // This should output 0 as valid arguments supplied
+    Information("Exit code: {0}", exitCodeWithArgument);
 
     // And rename it
     MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
@@ -368,9 +429,44 @@ Task("CoverageReport")
             Information("CoverageReport project " + project);
             // Generate html files for reports
             var reportFolder = project.ToString().Replace("merge-cobertura.xml","report");
-            ReportGenerator(project, reportFolder, new ReportGeneratorSettings{
-                ReportTypes = new[] { ReportGeneratorReportType.HtmlInline, ReportGeneratorReportType.Badges, ReportGeneratorReportType.PngChart }
-            });
+
+            IEnumerable<string> redirectedStandardOutput;
+            IEnumerable<string> redirectedErrorOutput;
+            var exitCodeWithArgument =
+                StartProcess(
+                    "dotnet",
+                    new ProcessSettings {
+                      Arguments = new ProcessArgumentBuilder()
+                          .Append($"reportgenerator")
+                          .Append($"-reports:{project}")
+                          .Append($"-targetdir:{reportFolder}")
+                          .Append($"-reporttypes:HtmlInline"),
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    },
+                    out redirectedStandardOutput,
+                    out redirectedErrorOutput
+                );
+
+            // Output process output.
+            foreach(var stdOutput in redirectedStandardOutput)
+            {
+                Information("reportgenerator: {0}", stdOutput);
+            }
+
+            // Throw exception if anything was written to the standard error.
+            if (redirectedErrorOutput.Any())
+            {
+                throw new Exception(
+                    string.Format(
+                        "Errors occurred: {0}",
+                        string.Join(", ", redirectedErrorOutput)));
+            }
+
+            // This should output 0 as valid arguments supplied
+            Information("Exit code: {0}", exitCodeWithArgument);
+
+
             // Zip entire folder
             Zip(reportFolder, $"{reportFolder}.zip");
         }
@@ -466,21 +562,49 @@ Task("SonarBegin")
         }
         Information($">> Selecting Branch: {branchName}");
 
-        SonarBegin(new SonarBeginSettings{
-            Name = "Starsky",
-            Key = key,
-            Login = login,
-            Verbose = false,
-            Url = url,
-            Branch = branchName,
-            UseCoreClr = true,
-            TypescriptCoverageReportsPath = jestCoverageFile,
-            OpenCoverReportsPath = netCoreCoverageFile,
-            ArgumentCustomization = args => args
-                .Append($"/o:" + organisation)
-                .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx\"")
-                .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
-        });
+        IEnumerable<string> redirectedStandardOutput;
+        IEnumerable<string> redirectedErrorOutput;
+        var exitCodeWithArgument =
+            StartProcess(
+                "dotnet",
+                new ProcessSettings {
+                  Arguments = new ProcessArgumentBuilder()
+                      .Append($"sonarscanner")
+                      .Append($"begin")
+                      .Append($"/d:sonar.host.url=\"{url}\"")
+                      .Append($"/k:\"{key}\"")
+                      .Append($"/n:\"Starsky\"")
+                      .Append($"/d:sonar.login=\"{login}\"")
+                      .Append($"/d:sonar.branch.name=\"{branchName}\"")
+                      .Append($"/o:" + organisation)
+                      .Append($"/d:sonar.cs.opencover.reportsPaths=\"{netCoreCoverageFile}\"")
+                      .Append($"/d:sonar.typescript.lcov.reportPaths=\"{jestCoverageFile}\"")
+                      .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
+                      .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx\""),
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                },
+                out redirectedStandardOutput,
+                out redirectedErrorOutput
+            );
+
+        // Output process output.
+        foreach(var stdOutput in redirectedStandardOutput)
+        {
+            Information("sonarscanner: {0}", stdOutput);
+        }
+
+        // Throw exception if anything was written to the standard error.
+        if (redirectedErrorOutput.Any())
+        {
+            throw new Exception(
+                string.Format(
+                    "Errors occurred: {0}",
+                    string.Join(", ", redirectedErrorOutput)));
+        }
+
+        // This should output 0 as valid arguments supplied
+        Information("Exit code: {0}", exitCodeWithArgument);
   });
 
 // End the task and send it SonarCloud
@@ -497,10 +621,40 @@ Task("SonarEnd")
       return;
     }
 
-    SonarEnd(new SonarEndSettings {
-        Login = login,
-        Silent = true,
-    });
+    IEnumerable<string> redirectedStandardOutput;
+    IEnumerable<string> redirectedErrorOutput;
+    var exitCodeWithArgument =
+        StartProcess(
+            "dotnet",
+            new ProcessSettings {
+              Arguments = new ProcessArgumentBuilder()
+                  .Append($"sonarscanner")
+                  .Append($"end")
+                  .Append($"/d:sonar.login=\"{login}\""),
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            },
+            out redirectedStandardOutput,
+            out redirectedErrorOutput
+        );
+
+    // Output process output.
+    foreach(var stdOutput in redirectedStandardOutput)
+    {
+        Information("sonarscanner: {0}", stdOutput);
+    }
+
+    // Throw exception if anything was written to the standard error.
+    if (redirectedErrorOutput.Any())
+    {
+        throw new Exception(
+            string.Format(
+                "Errors occurred: {0}",
+                string.Join(", ", redirectedErrorOutput)));
+    }
+
+    // This should output 0 as valid arguments supplied
+    Information("Exit code: {0}", exitCodeWithArgument);
   });
 
 Task("DocsGenerate")

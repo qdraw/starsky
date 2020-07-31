@@ -10,7 +10,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.database.Query
+namespace starskytest.starsky.foundation.database.QueryTest
 {
 	
 	[TestClass]

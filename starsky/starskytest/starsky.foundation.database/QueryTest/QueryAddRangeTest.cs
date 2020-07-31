@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +9,8 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
-namespace starskytest.starsky.foundation.database.Query
+
+namespace starskytest.starsky.foundation.database.QueryTest
 {
 	
 	[TestClass]

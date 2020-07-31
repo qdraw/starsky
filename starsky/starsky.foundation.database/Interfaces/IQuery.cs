@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -42,7 +43,8 @@ namespace starsky.foundation.database.Interfaces
             bool hideDeleted = true);
         
         FileIndexItem GetObjectByFilePath(string filePath);
-
+        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
+        
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         
         /// <summary>
@@ -64,6 +66,7 @@ namespace starsky.foundation.database.Interfaces
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
+        [Obsolete("use PathHelper.RemoveLatestSlash()")]
         string SubPathSlashRemove(string subPath = "/");
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
@@ -71,6 +74,6 @@ namespace starsky.foundation.database.Interfaces
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
-	    bool IsCacheEnabled();
+        Task AddParentItemsAsync(string subPath);
     }
 }

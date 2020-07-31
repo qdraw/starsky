@@ -30,18 +30,19 @@ namespace starsky.foundation.writemeta.Helpers
         }
 
 	    /// <summary>
-	    /// To update Exiftool (both Thumbnail as Storage item)
+	    /// To update ExifTool (both Thumbnail as Storage item)
 	    /// </summary>
 	    /// <param name="updateModel">update model</param>
 	    /// <param name="comparedNames">list,string e.g. Tags</param>
+	    /// <param name="includeSoftware">include software export</param>
 	    /// <returns></returns>
-        public string Update(FileIndexItem updateModel, List<string> comparedNames)
+	    public string Update(FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware = true)
         {
             var exifUpdateFilePaths = new List<string>
             {
                 updateModel.FilePath           
             };
-	        return UpdateAsyncWrapperBoth(updateModel, exifUpdateFilePaths, comparedNames).Result;
+	        return UpdateAsyncWrapperBoth(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware).Result;
         }
 
 	    /// <summary>
@@ -78,20 +79,28 @@ namespace starsky.foundation.writemeta.Helpers
             return pathsList;
         }
 
-	    /// <summary>
-	    /// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-	    /// </summary>
-	    /// <param name="updateModel"></param>
-	    /// <param name="inputSubPaths"></param>
-	    /// <param name="comparedNames"></param>
-	    /// <returns></returns>
-	    private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames)
+        /// <summary>
+        /// Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
+        /// </summary>
+        /// <param name="updateModel"></param>
+        /// <param name="inputSubPaths"></param>
+        /// <param name="comparedNames"></param>
+        /// <param name="includeSoftware"></param>
+        /// <returns></returns>
+        private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware = true)
 	    {
-		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames));
+		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames,includeSoftware));
 		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
 	    
-	    public string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames )
+        /// <summary>
+        /// Get command line args for exifTool by updateModel as data, comparedNames
+        /// </summary>
+        /// <param name="updateModel">data</param>
+        /// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
+        /// <param name="includeSoftware">to include software name</param>
+        /// <returns>command line args</returns>
+	    private string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 	    {
 		    var command = "-json -overwrite_original";
             var initCommand = command; // to check if nothing
@@ -110,7 +119,7 @@ namespace starsky.foundation.writemeta.Helpers
             command = UpdateLocationStateCommand(command, comparedNames, updateModel);
             command = UpdateLocationCityCommand(command, comparedNames, updateModel);
 		    
-	        command = UpdateSoftwareCommand(command, comparedNames, updateModel);
+	        command = UpdateSoftwareCommand(command, comparedNames, updateModel, includeSoftware);
 
 			command = UpdateTitleCommand(command, comparedNames, updateModel);
 		    command = UpdateColorClassCommand(command, comparedNames, updateModel);
@@ -130,6 +139,12 @@ namespace starsky.foundation.writemeta.Helpers
 		    return command;
 	    }
 
+        /// <summary>
+        /// Create a XMP file when it not exist
+        /// </summary>
+        /// <param name="updateModel">model</param>
+        /// <param name="inputSubPaths">list of paths</param>
+        /// <returns>void</returns>
 	    private async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
 	    {
 		    foreach ( var subPath in inputSubPaths )
@@ -145,13 +160,13 @@ namespace starsky.foundation.writemeta.Helpers
 			    new ExifCopy(_iStorage,_thumbnailStorage, _exifTool,_readMeta).XmpCreate(withXmp);
 				    
 			    var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
-			    var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+			    var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
 				    
 			    await _exifTool.WriteTagsAsync(withXmp, command);
 		    }
 	    }
 
-        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames )
+        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware )
         {
 	        // Creation and update .xmp file with all available content
 	        await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
@@ -159,7 +174,7 @@ namespace starsky.foundation.writemeta.Helpers
 	        // Rename .dng files .xmp to update in exifTool
 	        var subPathsList = PathsListTagsFromFile(inputSubPaths);
 
-	        var command = ExifToolCommandLineArgs(updateModel, comparedNames);
+	        var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
         
 	        foreach (var path in subPathsList)
 	        {
@@ -169,13 +184,12 @@ namespace starsky.foundation.writemeta.Helpers
 
 	        if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )
 	        {
+		        Console.Write("thumbnail: -> ");
 		        await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 	        }
 
 	        return command;
         }
-
-
 
 	    private string UpdateLocationAltitudeCommand(
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
@@ -281,15 +295,25 @@ namespace starsky.foundation.writemeta.Helpers
             return command;
         }
 	    
-	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
 	    {
-		    if (comparedNames.Contains( nameof(FileIndexItem.Software).ToLowerInvariant() ))
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
+			    return command;
+
+		    if ( includeSoftware )
 		    {
-				// add space before
+			    // add space before
 			    command +=
-				    " -Software=\"Qdraw 1.0\" -CreatorTool=\"Qdraw 1.0\" -HistorySoftwareAgent=\"Qdraw 1.0\" " +
+				    $" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" -HistorySoftwareAgent=\"{updateModel.Software}\" " +
 				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
 		    }
+		    else
+		    {
+			    command +=
+				    " -Software=\"Starsky\" -CreatorTool=\"Starsky\" -HistorySoftwareAgent=\"Starsky\" " +
+				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
+		    }
+		    
 		    return command;
 	    }
 	    
@@ -317,7 +341,6 @@ namespace starsky.foundation.writemeta.Helpers
 						   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass + " Rating:0 FrameNum:0\" ";
 			}
 		    return command;
-
 	    }
 
 	    private static string UpdateOrientationCommand(string command, List<string> comparedNames,
@@ -332,7 +355,6 @@ namespace starsky.foundation.writemeta.Helpers
 		    }
 		    return command;
 	    }
-
 
 	    private static string UpdateDateTimeCommand(string command, List<string> comparedNames,
 		    FileIndexItem updateModel)
@@ -372,7 +394,6 @@ namespace starsky.foundation.writemeta.Helpers
 		    command += $" -FNumber=\"{aperture}\" \"-xmp:FNumber={aperture}\" ";
 		    return command;
 	    }
-
 	    
 	    private static string UpdateShutterSpeedCommand(string command, List<string> comparedNames,
 		    FileIndexItem updateModel)
@@ -386,7 +407,6 @@ namespace starsky.foundation.writemeta.Helpers
 		    return command;
 	    }
 
-
 	    private static string UpdateMakeModelCommand(string command, List<string> comparedNames,
 		    FileIndexItem updateModel)
 	    {
@@ -399,7 +419,6 @@ namespace starsky.foundation.writemeta.Helpers
 
 		    return command;
 	    }
-
 
 	    private string UpdateFocalLengthCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
 	    {

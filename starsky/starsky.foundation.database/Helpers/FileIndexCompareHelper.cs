@@ -42,6 +42,13 @@ namespace starsky.foundation.database.Helpers
                     var newBoolValue = (bool)propertiesB [i].GetValue(updateObject, null);
                     CompareBool(propertiesB[i].Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
                 }
+                
+                if (propertiesA [i].PropertyType == typeof(bool?))
+                {
+	                var oldBoolValue = (bool?)propertiesA [i].GetValue(sourceIndexItem, null);
+	                var newBoolValue = (bool?)propertiesB [i].GetValue(updateObject, null);
+	                CompareNullableBool(propertiesB[i].Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
+                }
                     
                 if (propertiesA [i].PropertyType == typeof(ColorClassParser.Color))
                 {
@@ -315,6 +322,21 @@ namespace starsky.foundation.database.Helpers
             sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newBoolValue, null);
             differenceList.Add(propertyName.ToLowerInvariant());
         }
+	    
+	    /// <summary>
+	    /// Compare Nullable bool type 
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. IsDirectory</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
+	    /// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
+	    /// <param name="differenceList">list of different values</param>
+	    private static void CompareNullableBool(string propertyName, FileIndexItem sourceIndexItem, bool? oldBoolValue, bool? newBoolValue, List<string> differenceList)
+	    {
+		    if ( newBoolValue == null || oldBoolValue == newBoolValue) return;
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newBoolValue, null);
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
 
 	    /// <summary>
 	    /// Compare string type 

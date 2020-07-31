@@ -5,6 +5,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Services;
+using starsky.foundation.writemeta.JsonService;
 
 namespace starskycore.Services
 {
@@ -23,7 +24,7 @@ namespace starskycore.Services
                 // Check if file is in database
                 var dbFolderMatchFirst = databaseFileList.FirstOrDefault(
                     p =>
-                        !p.IsDirectory &&
+                        p.IsDirectory == false &&
                         p.FilePath == singleFolderDbStyle
                 );
 
@@ -33,9 +34,9 @@ namespace starskycore.Services
                     Console.Write("+");
                     if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
-
                     // Check the headers of a file to match a type
-                    var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(singleFolderDbStyle,50));
+                    var imageFormat = ExtensionRolesHelper.GetImageFormat(
+	                    _subPathStorage.ReadStream(singleFolderDbStyle,50));
                     
                     // Read data from file
 	                var databaseItem = _readMeta.ReadExifAndXmpFromFile(singleFolderDbStyle);
@@ -45,6 +46,7 @@ namespace starskycore.Services
                     databaseItem.FileHash = new FileHash(_subPathStorage).GetHashCode(singleFolderDbStyle).Key;
                     databaseItem.FileName = PathHelper.GetFileName(singleFolderDbStyle);
                     databaseItem.IsDirectory = false;
+                    databaseItem.Size = _subPathStorage.Info(singleFolderDbStyle).Size;
                     databaseItem.ParentDirectory = Breadcrumbs.BreadcrumbHelper(singleFolderDbStyle).LastOrDefault();
                         
                     _query.AddItem(databaseItem);

@@ -89,13 +89,16 @@ namespace starsky.foundation.database.Query
 	            currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
             }
             
-            if(currentFileIndexItem.IsDirectory) return new DetailView
-            {
-                IsDirectory = true,
-                SubPath = singleItemDbPath,
-	            FileIndexItem = currentFileIndexItem, // added
-	            Collections = enableCollections
-            };
+            if(currentFileIndexItem.IsDirectory == true) {
+	            currentFileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
+	            return new DetailView
+	            {
+	                IsDirectory = true,
+	                SubPath = singleItemDbPath,
+		            FileIndexItem = currentFileIndexItem,
+		            Collections = enableCollections,
+	            };
+            }
 
             if (currentFileIndexItem.Tags.Contains("!delete!")) hideDeleted = false;
             

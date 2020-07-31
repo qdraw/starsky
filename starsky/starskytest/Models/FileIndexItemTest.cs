@@ -153,12 +153,6 @@ namespace starskytest.Models
 	    }
 
 	    [TestMethod]
-        public void FileIndexItemTest_GetAllColorTest()
-        {
-            Assert.IsTrue(FileIndexItem.GetAllColor().Any());
-        }
-        
-        [TestMethod]
         public void FileIndexItemTest_FileIndexItemTitleTest()
         {
             var fileIndexItem = new FileIndexItem {Title = null};

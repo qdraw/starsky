@@ -42,6 +42,7 @@ namespace starskycore.Services
                         updatedDatabaseItem.SetAddToDatabase();
 	                    updatedDatabaseItem.SetLastEdited();
                         updatedDatabaseItem.IsDirectory = false;
+                        updatedDatabaseItem.Size = _subPathStorage.Info(itemLocal).Size;
                         updatedDatabaseItem.ParentDirectory = dbItem.ParentDirectory;
                         _query.AddItem(updatedDatabaseItem);
                     }

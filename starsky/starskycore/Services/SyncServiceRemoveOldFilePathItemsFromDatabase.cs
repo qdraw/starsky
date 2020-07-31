@@ -63,7 +63,7 @@ namespace starskycore.Services
                 
                 // todo: not sure if this function is any good
                 
-                if (!ditem.IsDirectory) continue;
+                if (ditem.IsDirectory == false) continue;
 
 	            var orphanPictures = _query.GetAllFiles(ditem.FilePath);
                 foreach (var orphanItem in orphanPictures)

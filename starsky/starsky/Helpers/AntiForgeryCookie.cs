@@ -26,7 +26,7 @@ namespace starsky.Helpers
 				new CookieOptions()
 				{
 					HttpOnly = false, // need to be false, is needed by the javascript front-end
-					SameSite = SameSiteMode.Strict,
+					SameSite = SameSiteMode.Lax,
 					Secure = httpContext.Request.IsHttps
 				});
 		}

@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{e9c60bf0-09b6-40c9-95b5-25c7a185365e}</ProjectGuid>
-        <Version>0.2.7</Version>
+        <Version>0.3.0-beta.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

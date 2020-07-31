@@ -67,9 +67,15 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
+		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		{
+			throw new NotImplementedException();
+		}
+
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
-			throw new System.NotImplementedException();
+			_fakeContext.Remove(updateStatusContent);
+			return updateStatusContent;
 		}
 
 		public void RemoveCacheParentItem(string directoryName)
@@ -142,7 +148,11 @@ namespace starskytest.FakeMocks
 
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 		{
-			throw new System.NotImplementedException();
+			Console.WriteLine("CacheUpdateItem is called");
+		}
+
+		public async Task AddParentItemsAsync(string subPath)
+		{
 		}
 
 		public bool IsCacheEnabled()

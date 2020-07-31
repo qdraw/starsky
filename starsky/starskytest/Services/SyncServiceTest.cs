@@ -199,7 +199,7 @@ namespace starskytest.Services
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,updatedItem.ImageFormat);
 		    Assert.AreEqual(false,updatedItem.IsDirectory);
 		    Assert.AreEqual(updatedItem.FileHash.Length >= 5,true);
-
+		    Assert.IsTrue(updatedItem.Size > 200);
 	    }
 
 	    [TestMethod]

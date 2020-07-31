@@ -30,6 +30,7 @@ namespace starskycore.Services
 	    /// this class does add those parent folders
 	    /// </summary>
 	    /// <param name="subPath">the relative urls</param>
+	    [Obsolete("Will be replaced by _query.AddParentItemsAsync", false)]
         public void AddSubPathFolder(string subPath)
         {
             foreach (var itemSubpath in GetListOfSubpaths(subPath))
@@ -50,7 +51,6 @@ namespace starskycore.Services
                 }
                 newItem.FileName = itemSubpath.Split("/".ToCharArray()).LastOrDefault();
                 _query.AddItem(newItem);
-
             }
         }
     }

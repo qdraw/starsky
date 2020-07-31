@@ -4,7 +4,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
-namespace starskytest.starsky.foundation.database.Query
+namespace starskytest.starsky.foundation.database.QueryTest
 {
     [TestClass]
     public class QueryTestNoCacheTest

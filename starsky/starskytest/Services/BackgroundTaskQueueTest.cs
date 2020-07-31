@@ -13,6 +13,7 @@ using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starskycore.Services;
 using starskytest.FakeMocks;
+#pragma warning disable 1998
 
 namespace starskytest.Services
 {

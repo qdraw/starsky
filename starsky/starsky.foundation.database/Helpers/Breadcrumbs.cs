@@ -10,7 +10,7 @@ namespace starsky.foundation.database.Helpers
         /// Breadcrumb returns a list of parent folders
         /// it does not contain the current folder
         /// </summary>
-        /// <param name="filePath">subpath (unix style)</param>
+        /// <param name="filePath">subPath (unix style)</param>
         /// <returns>list of parent folders</returns>
         public static List<string> BreadcrumbHelper(string filePath)
         {

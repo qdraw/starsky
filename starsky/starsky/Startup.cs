@@ -136,7 +136,7 @@ namespace starsky
                 {
                     options.Cookie.Name = "_af";
                     options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
-                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                     options.Cookie.Path = "/";
                     options.Cookie.IsEssential = true;

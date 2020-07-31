@@ -1,34 +1,39 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Helpers;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 
-namespace starskycore.Services
+namespace starsky.feature.metaupdate.Services
 {
-	public class ReplaceService
+	[Service(typeof(IMetaReplaceService), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class MetaReplaceService : IMetaReplaceService
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
+		private readonly StatusCodesHelper _statusCodeHelper;
 
 		/// <summary>Do a sync of files uning a subpath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
-		/// <param name="iStorage">storage abstraction</param>
-		public ReplaceService(IQuery query, AppSettings appSettings, IStorage iStorage)
+		/// <param name="selectorStorage">storage abstraction</param>
+		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_iStorage = iStorage;
+			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 		}
 
 		/// <summary>
@@ -57,22 +62,38 @@ namespace starskycore.Services
 			foreach ( var subPath in inputFilePaths )
 			{
 				var detailView = _query.SingleItem(subPath, null, collections, false);
-				var statusResults =
-					new StatusCodesHelper(_appSettings,_iStorage).FileCollectionsCheck(detailView);
-
-				// To Inject if detailView is false
-				var statusModel = new FileIndexItem();
-				statusModel.SetFilePath(subPath);
-				statusModel.IsDirectory = false;
-
-				// if one item fails, the status will added
-				if ( new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults, fileIndexResultsList) || 
-				     new StatusCodesHelper().ReadonlyDenied(statusModel, statusResults, fileIndexResultsList) ) continue;
-
-				if ( detailView == null ) throw new InvalidDataException("DetailView is null " + nameof(detailView));
 				
+				if ( detailView?.FileIndexItem == null )
+				{
+					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+					continue;
+				}
+				
+				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
+						fileIndexResultsList);
+					continue; 
+				}
+				
+				// Dir is readonly / don't edit
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				     == FileIndexItem.ExifStatus.ReadOnly)
+				{
+					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+					continue; 
+				}
+
 				// current item is also ok
-				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				if ( detailView.FileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				{
+					detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				}
 				
 				// Now Add Collection based images
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);

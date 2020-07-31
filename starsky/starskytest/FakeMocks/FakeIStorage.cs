@@ -59,7 +59,6 @@ namespace starskytest.FakeMocks
 		{
 			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(path));
 		}
-
 		public bool ExistFolder(string path)
 		{
 			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));
@@ -129,7 +128,11 @@ namespace starskytest.FakeMocks
 
 		public bool FolderDelete(string path)
 		{
-			throw new NotImplementedException();
+			path = PathHelper.PrefixDbSlash(path);
+			if ( !ExistFolder(path) ) return false;
+			var index = _outputSubPathFolders.IndexOf(path);
+			_outputSubPathFolders[index] = null;
+			return true;
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
@@ -268,5 +271,32 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(WriteStream(stream, path));
 		}
 
+		public StorageInfo Info(string path)
+		{
+			path = PathHelper.PrefixDbSlash(path);
+			if ( ExistFolder(path) )
+			{
+				return new StorageInfo
+                {
+                	IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Folder
+                };
+			}
+
+			if ( !ExistFile(path) )
+			{
+				return new StorageInfo
+				{
+					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted
+				};
+			}
+			
+			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
+			return new StorageInfo
+			{
+				IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.File,
+				Size = result.Length
+			};
+
+		}
 	}
 }

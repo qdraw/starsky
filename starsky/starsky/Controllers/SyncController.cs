@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -159,8 +160,8 @@ namespace starsky.Controllers
 	    /// <summary>
 	    /// Rename file/folder and update it in the database
 	    /// </summary>
-	    /// <param name="f">from subpath</param>
-	    /// <param name="to">to subpath</param>
+	    /// <param name="f">from subPath</param>
+	    /// <param name="to">to subPath</param>
 	    /// <param name="collections">is collections bool</param>
 	    /// <returns>list of details form changed files</returns>
 	    /// <response code="200">the item including the updated content</response>
@@ -172,7 +173,7 @@ namespace starsky.Controllers
 	    [Produces("application/json")]	    
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {
-		    var rename = new RenameFs(_query, _sync, _iStorage).Rename(f, to, collections);
+		    var rename = new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
 		    // When all items are not found
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

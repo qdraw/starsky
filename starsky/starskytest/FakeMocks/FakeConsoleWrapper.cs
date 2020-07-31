@@ -11,8 +11,17 @@ namespace starskytest.FakeMocks
 	{
 		public List<string> LinesToRead;
 
+		public FakeConsoleWrapper()
+		{
+			LinesToRead = new List<string>();
+		}
+
 		public FakeConsoleWrapper(List<string> linesToRead)
 		{
+			if ( linesToRead == null )
+			{
+				linesToRead = new List<string>();
+			}
 			LinesToRead = linesToRead;
 		}
 		

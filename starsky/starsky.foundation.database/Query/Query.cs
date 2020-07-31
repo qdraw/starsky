@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -48,21 +49,25 @@ namespace starsky.foundation.database.Query
             try
             {
 	            return _context.FileIndex.Where
-			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
             }
             catch ( ObjectDisposedException )
             {
 	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            return context.FileIndex.Where
-			            (p => !p.IsDirectory && p.ParentDirectory == subPath)
+			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
             }
         }
-        
-        // Includes sub items in file
-        // Used for Orphan Check
-        // All files in
+	    
+	    /// <summary>
+	    /// Includes sub items in file
+	    /// Used for Orphan Check
+	    /// All files in
+	    /// </summary>
+	    /// <param name="subPath"></param>
+	    /// <returns></returns>
         public List<FileIndexItem> GetAllRecursive(
             string subPath = "/")
         {
@@ -94,12 +99,33 @@ namespace starsky.foundation.database.Query
             }
             return query;
         }
+		
+		/// <summary>
+		/// Returns a database object file or folder
+		/// </summary>
+		/// <param name="filePath">relative database path</param>
+		/// <returns>FileIndex-objects with database data</returns>
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		{
+			filePath = PathHelper.RemoveLatestSlash(filePath);
+			FileIndexItem query;
+			try
+			{
+				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
+			catch (ObjectDisposedException)
+			{
+				_context = new InjectServiceScope(_scopeFactory).Context();
+				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
+			return query;
+		}
 	    
 		/// <summary>
 		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
-		/// <returns>subpath (relative to database)</returns>
+		/// <returns>subPath (relative to database)</returns>
 	    public string GetSubPathByHash(string fileHash)
 	    {
 		    // The CLI programs uses no cache
@@ -142,7 +168,7 @@ namespace starsky.foundation.database.Query
 	        {
 		       return _context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && !p.IsDirectory
+			             && p.IsDirectory != true
 		        )?.FilePath;
 	        }
 	        catch ( ObjectDisposedException )
@@ -150,12 +176,13 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return context.FileIndex.FirstOrDefault(
 			        p => p.FileHash == fileHash 
-			             && !p.IsDirectory
+			             && p.IsDirectory != true
 		        )?.FilePath;
 	        }
         }
 
 	    // Remove the '/' from the end of the url
+	    [Obsolete("use PathHelper.RemoveLatestSlash()")]
         public string SubPathSlashRemove(string subPath = "/")
         {
             if (string.IsNullOrEmpty(subPath)) return subPath;
@@ -232,16 +259,16 @@ namespace starsky.foundation.database.Query
             return updateStatusContent;
         }
 
-	    public bool IsCacheEnabled()
+	    internal bool IsCacheEnabled()
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
 		    return true;
 	    }
 
 	    // Private api within Query to add cached items
-        public void AddCacheItem(FileIndexItem updateStatusContent)
+        internal void AddCacheItem(FileIndexItem updateStatusContent)
         {
-            // Add protection for disabeling caching
+            // If cache is turned of
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
@@ -291,14 +318,13 @@ namespace starsky.foundation.database.Query
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
-            
         }
         
         // Private api within Query to remove cached items
         // This Does remove a SINGLE item from the cache NOT from the database
-        public void RemoveCacheItem(FileIndexItem updateStatusContent)
+        private void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
-            // Add protection for disabeling caching
+            // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
@@ -339,7 +365,7 @@ namespace starsky.foundation.database.Query
         public FileIndexItem AddItem(FileIndexItem updateStatusContent)
         {        
 	        if( string.IsNullOrWhiteSpace(updateStatusContent.FileName) 
-	            && !updateStatusContent.IsDirectory) 
+	            && updateStatusContent.IsDirectory == false) 
 		        throw new MissingFieldException("use filename (exception: the root folder can have no name)");
 
 	        try
@@ -386,7 +412,43 @@ namespace starsky.foundation.database.Query
 
 		    return fileIndexItem;
 	    }
-        
+	    
+	    /// <summary>
+	    /// Add Sub Path Folder - Parent Folders
+	    ///  root(/)
+	    ///      /2017  <= index only this folder
+	    ///      /2018
+	    /// If you use the cmd: $ starskycli -s "/2017"
+	    /// the folder '2017' it self is not added 
+	    /// and all parent paths are not included
+	    /// this class does add those parent folders
+	    /// </summary>
+	    /// <param name="subPath"></param>
+	    /// <returns></returns>
+	    public async Task AddParentItemsAsync(string subPath)
+	    {
+		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
+		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
+
+		    var toAddList = new List<FileIndexItem>();
+		    var indexItems = await _context.FileIndex.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+
+		    foreach ( var pathShouldExist in pathListShouldExist )
+		    {
+			    if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
+			    {
+				    toAddList.Add(new FileIndexItem(pathShouldExist)
+				    {
+					    IsDirectory = true,
+					    AddToDatabase = DateTime.UtcNow,
+					    ColorClass = ColorClassParser.Color.None
+				    });
+			    }
+		    }
+
+		    await AddRangeAsync(toAddList);
+	    }
+
 	    /// <summary>
 	    /// Remove a new item from the database (NOT from the file system)
 	    /// </summary>

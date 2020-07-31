@@ -45,12 +45,12 @@ namespace starskycore.Services
             {
                 Console.WriteLine(dbItem.FilePath);
 
-                if (!dbItem.IsDirectory)
+                if (dbItem.IsDirectory == false)
                 {
                     // For Checking if File has no parent items
                     var res = allItemsInDb.Where(
                         p =>
-                            p.IsDirectory &&
+                            p.IsDirectory == true &&
                             p.FilePath == dbItem.ParentDirectory
                     );
 
