@@ -20,7 +20,6 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # Features todo (in random order)
-- [ ]   (Added) _Back-end_ Docker support,
 - [ ]   (Added) _Frond-end_  Search details show exact query behind modal
 - [ ]   (Added) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
 - [ ]   (Added) _Front-end_ Zoom in picture
@@ -28,29 +27,29 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
 - [ ]   (Added) _Back-end_ Realtime Files API  __not implemented__
 
-
 # Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
 - [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
 
 # Folder and file movable, Epic (Work In Progress)
-- [ ]   (NOT_Fixed) GPX rename file does not work __not implemented__
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.0-beta.0 _(Unreleased)_  2020-07-XX
+# version 0.3.0-beta.0 _(Unreleased)_  2020-08-XX
 - [ ]   (Added) Update meta information for folders
 - [ ]   (Added) Write component
-- [ ]   Add read component (sync) [not implemented]
-- [ ]   Move json sidecar file
-- [ ]   Directory sidecar write file
-- [ ]   Unknown/GPX files sidecar files
-- [ ]   FileSize update for add item
-- [ ]   FileSize on add item
+- [ ]   (Added) Add read component (sync) [not implemented]
+- [ ]   (Added) Move json sidecar file
+- [ ]   (Added) Directory sidecar write file
+- [ ]   (Fixed) Unknown/GPX files sidecar files
+- [ ]   (Fixed) GPX rename file does not work
+- [ ]   (Added) FileSize update for add item
+- [ ]   (Added) FileSize on add item
 
 # version 0.2.7 - 2020-07-31
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
 - [x]   (Fixed) _Back-end_ Fix GPS Tracking issue with 'Local' time.
 - [x]   (Deprecated) Starsky Net Framework will be removed in 0.3
+- [x]   (Added) _Back-end_ Docker support,
 
 # version 0.2.6 - 2020-06-08
 - [x]   (Added)  _Back-end_ Option for shared `AppSettings`
