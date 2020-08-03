@@ -13,6 +13,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 [assembly: InternalsVisibleTo("starskytest")]
+
 namespace starskytest.Controllers
 {
 	[TestClass]
@@ -25,7 +26,7 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-			
+
 			var serviceProvider = services.BuildServiceProvider();
 			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
 
@@ -35,10 +36,10 @@ namespace starskytest.Controllers
 		public async Task ThumbnailGenerationTest_CheckIfGenerated()
 		{
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
-				new List<byte[]>{CreateAnImage.Bytes});
+				new List<byte[]> {CreateAnImage.Bytes});
 
 			var thumbStorage = new FakeIStorage();
-			
+
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
 				new FakeTelemetryService());
@@ -46,10 +47,25 @@ namespace starskytest.Controllers
 			var json = controller.ThumbnailGeneration("/") as JsonResult;
 			var result = json.Value as string;
 			Assert.IsNotNull(result);
-				
+
 			await controller.WorkItem("/", storage, thumbStorage);
 
 			Assert.AreEqual(1, thumbStorage.GetAllFilesInDirectoryRecursive("/").Count());
+		}
+
+		[TestMethod]
+		public async Task TestFailing()
+		{
+			var message = "reading not allowed";
+			var storage = new FakeIStorage(new UnauthorizedAccessException(message));
+			var selectorStorage = new FakeSelectorStorage(storage);
+
+			var telemetry = new FakeTelemetryService();
+			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
+				telemetry);
+			await controller.WorkItem("/", storage, storage);
+
+			Assert.AreEqual(message,telemetry.TrackedExceptions.FirstOrDefault().Message);
 		}
 	}
 }
