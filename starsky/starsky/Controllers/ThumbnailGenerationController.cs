@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +34,7 @@ namespace starsky.Controllers
 		/// <returns>the ImportIndexItem of the imported files</returns>
 		[HttpPost("/api/thumbnail-generation")]
 		[Produces("application/json")]
-		public async Task<IActionResult> ThumbnailGeneration(string f)
+		public IActionResult ThumbnailGeneration(string f)
 		{
 			var subPath = PathHelper.RemoveLatestSlash(f);
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -48,7 +47,7 @@ namespace starsky.Controllers
 
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				WorkItem(subPath, subPathStorage, thumbnailStorage);
+				await WorkItem(subPath, subPathStorage, thumbnailStorage);
 			});	
 			
 			return Json("started");
@@ -57,7 +56,6 @@ namespace starsky.Controllers
 		internal async Task WorkItem(string subPath, IStorage subPathStorage, 
 			IStorage thumbnailStorage)
 		{
-			Console.WriteLine(">>>>");
 			try
 			{
 				new Thumbnail(subPathStorage, thumbnailStorage).CreateThumb(subPath);

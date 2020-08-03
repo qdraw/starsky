@@ -43,7 +43,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
 				new FakeTelemetryService());
 
-			var json = await controller.ThumbnailGeneration("/") as JsonResult;
+			var json = controller.ThumbnailGeneration("/") as JsonResult;
 			var result = json.Value as string;
 			Assert.IsNotNull(result);
 				
