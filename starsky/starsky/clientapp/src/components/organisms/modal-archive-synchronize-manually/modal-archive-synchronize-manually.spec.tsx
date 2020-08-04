@@ -3,7 +3,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import * as FetchGet from '../../../shared/fetch-get';
+import * as FetchPost from '../../../shared/fetch-post';
 import { UrlQuery } from '../../../shared/url-query';
+import * as Modal from '../../atoms/modal/modal';
 import ModalArchiveSynchronizeManually from './modal-archive-synchronize-manually';
 
 describe("ModalArchiveSynchronizeManually", () => {
@@ -107,9 +109,45 @@ describe("ModalArchiveSynchronizeManually", () => {
 
         modal.find('[data-test="geo-sync"]').simulate('click');
         expect(urlGeoSyncUrlQuerySpy).toBeCalled();
+      });
 
+      it("remove-cache (only first POST)", () => {
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+          statusCode: 200, data: null
+        } as IConnectionDefault);
+
+        var fetchGetSpy = jest.spyOn(FetchPost, 'default')
+          .mockImplementationOnce(() => mockGetIConnectionDefault)
+
+        act(() => {
+          modal.find('[data-test="thumbnail-generation"]').simulate('click');
+        });
+
+        expect(fetchGetSpy).toBeCalled();
+        expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlThumbnailGeneration(), "f=%2F");
+
+        fetchGetSpy.mockReset();
       });
     });
+
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>
+      });
+
+      var handleExitSpy = jest.fn();
+
+      var component = mount(<ModalArchiveSynchronizeManually parentFolder="/" isOpen={true} handleExit={handleExitSpy} />);
+
+      expect(handleExitSpy).toBeCalled();
+
+      // and clean afterwards
+      component.unmount();
+    });
+
   });
 
 });
