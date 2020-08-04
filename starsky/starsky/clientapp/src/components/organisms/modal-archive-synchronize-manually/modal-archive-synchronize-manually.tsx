@@ -49,7 +49,9 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
   }, [collections, history.location.search])
 
-
+  /**
+   * Remove Folder cache
+   */
   function removeCache() {
     setIsLoading(true);
 
@@ -139,11 +141,11 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
     <div className="modal content--subheader">{MessageSynchronizeManually}</div>
     <div className="modal content--text">
-      <button className="btn btn--default" onClick={() => forceSync()}>{MessageForceSync}</button>
-      <button className="btn btn--default" onClick={() => removeCache()}>{MessageRemoveCache}</button>
-      <button className="btn btn--info btn--percentage" onClick={() => geoSync()}>{MessageGeoSync} {geoSyncPercentage}%</button>
+      <button className="btn btn--default" data-test="force-sync" onClick={() => forceSync()}>{MessageForceSync}</button>
+      <button className="btn btn--default" data-test="remove-cache" onClick={() => removeCache()}>{MessageRemoveCache}</button>
+      <button className="btn btn--info btn--percentage" data-test="geo-sync" onClick={() => geoSync()}>{MessageGeoSync} {geoSyncPercentage}%</button>
       <p>{MessageGeoSyncExplainer}</p>
-      <button className="btn btn--info" onClick={() => manualThumbnailSync()}>{MessageManualThumbnailSync}</button>
+      <button className="btn btn--info" data-test="thumbnail" onClick={() => manualThumbnailSync()}>{MessageManualThumbnailSync}</button>
       <p>
         {MessageManualThumbnailSyncExplainer}
       </p>
