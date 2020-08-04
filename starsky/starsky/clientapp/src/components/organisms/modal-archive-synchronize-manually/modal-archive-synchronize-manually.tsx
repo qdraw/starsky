@@ -73,6 +73,8 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   const [geoSyncPercentage, setGeoSyncPercentage] = useState(0);
 
   function geoSync() {
+    console.log('--geo');
+
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
