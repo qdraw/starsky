@@ -272,4 +272,8 @@ export class UrlQuery {
     return this.prefix + "/api/geo/status/?f=" + arg0;
   }
 
+  public UrlThumbnailGeneration(): string {
+    return this.prefix + "/api/thumbnail-generation";
+  }
+
 }
