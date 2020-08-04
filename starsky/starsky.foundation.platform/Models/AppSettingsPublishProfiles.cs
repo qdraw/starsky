@@ -54,7 +54,7 @@ namespace starsky.foundation.platform.Models
 	    /// <summary>
 	    /// private: used for template url or overlay image
 	    /// </summary>
-	    private string _path { get; set; } = string.Empty;
+	    private string pathPrivate { get; set; } = string.Empty;
 
 	    /// <summary>
 	    /// used for template url or overlay image
@@ -64,7 +64,7 @@ namespace starsky.foundation.platform.Models
 		    get
 		    {
 			    // return: if null > string.Empty
-			    return string.IsNullOrEmpty(_path) ? string.Empty : _path;
+			    return string.IsNullOrEmpty(pathPrivate) ? string.Empty : pathPrivate;
 		    }
 		    set
 		    {
@@ -72,7 +72,7 @@ namespace starsky.foundation.platform.Models
 
 			    if ( !value.Contains("{AssemblyDirectory}") )
 			    {
-				    _path = value;
+				    pathPrivate = value;
 				    return;
 			    }
 				// get current dir
@@ -81,7 +81,7 @@ namespace starsky.foundation.platform.Models
 			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", string.Empty, RegexOptions.IgnoreCase);
 			    
 			    // append and replace
-			    _path = assemblyDirectory + subPath
+			    pathPrivate = assemblyDirectory + subPath
 				    .Replace("starskywebftpcli", "starskywebhtmlcli");
 		    }
 	    }
@@ -99,7 +99,6 @@ namespace starsky.foundation.platform.Models
 					return;
 				}
 	            _folder = PathHelper.AddSlash(value);
-
 			}
 		}
 

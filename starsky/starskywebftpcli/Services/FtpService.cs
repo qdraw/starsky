@@ -64,7 +64,12 @@ namespace starskywebftpcli.Services
 			};
 			
 			// make the 1000 and 500 dirs on ftp
-			foreach ( var publishProfile in _appSettings.PublishProfiles )
+			
+			
+			// todo: CHANGE TEST!!
+			
+			
+			foreach ( var publishProfile in _appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value )
 			{
 				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
 				{
@@ -81,9 +86,13 @@ namespace starskywebftpcli.Services
 		/// <returns></returns>
 		internal HashSet<string> CreateListOfRemoteFiles()
 		{
+			
+			// TODO: CHANGE TEST
+			
+			
 			// copy content of dir
 			var copyThisFiles = new List<string>();
-			foreach ( var publishProfile in _appSettings.PublishProfiles )
+			foreach ( var publishProfile in _appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value )
 			{
 				switch ( publishProfile.ContentType )
 				{

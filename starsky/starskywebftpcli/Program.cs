@@ -78,9 +78,11 @@ namespace starskywebftpcli
 			var ftpService = new FtpService(appSettings,storage).Run();
 			if ( !ftpService ) return;
 			
+			// TODO: Replace TEst with actual name
+			
 			// get prepend path to show
 			var prepend = appSettings.GetWebSafeReplacedName(
-				appSettings.PublishProfiles
+				appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value
 					.FirstOrDefault(p => !string.IsNullOrEmpty(p.Prepend))
 					?.Prepend
 			);

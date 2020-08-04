@@ -5,6 +5,7 @@ using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -80,8 +81,8 @@ namespace starskywebhtmlcli
 	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
 
 			new LoopPublications(startupHelper.SelectorStorage(), appSettings, 
-					startupHelper.ExifTool(), startupHelper.ReadMeta())
-				.Render(fileIndexList, base64DataUri);
+					startupHelper.ExifTool(), startupHelper.ReadMeta(), new ConsoleWrapper())
+				.Render(fileIndexList, base64DataUri,"test");
 
 			// Copy all items in the subFolder content for example javascripts
 			new Content(iStorage).CopyContent();

@@ -51,9 +51,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 
 			if ( !_storage.ExistFile(fullSettingsPath) ) return false;
 			
-			// todo fix abstraction
-			var input = _plainTextFileHelper.ReadFile(fullSettingsPath);
-
+			var input = _plainTextFileHelper.StreamToString(_storage.ReadStream(fullSettingsPath));
 			var manifestModel = JsonConvert.DeserializeObject<ManifestModel>(input);
 			_appSettings.Name = manifestModel.Name;
 			
