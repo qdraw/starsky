@@ -303,21 +303,28 @@ namespace starsky.foundation.platform.Helpers
 			
 			switch ( _appSettings.ApplicationType )
 			{
-				case AppSettings.StarskyAppType.WebHtml:
+				case AppSettings.StarskyAppType.Geo: // WebHtml
+					
+					// TODO: CHANGE BACK!!
+					
 					_console.WriteLine($"Config for {_appSettings.ApplicationType}");
 					foreach ( var publishProfiles in _appSettings.PublishProfiles )
 					{
-						_console.WriteLine("--- " +
-						                   $"Path: {publishProfiles.Path} " +
-						                   $"Append: {publishProfiles.Append} " +
-						                   $"Copy: {publishProfiles.Copy} " +
-						                   $"Folder: {publishProfiles.Folder} " +
-						                   $"Prepend: {publishProfiles.Prepend} " +
-						                   $"Template: {publishProfiles.Template} " +
-						                   $"ContentType: {publishProfiles.ContentType} " +
-						                   $"MetaData: {publishProfiles.MetaData} " +
-						                   $"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
-						                   $"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
+						Console.WriteLine($"ID: {publishProfiles.Key}" );
+						foreach ( var publishProfile in publishProfiles.Value )
+						{
+							_console.WriteLine("--- " +
+							                   $"Path: {publishProfile.Path} " +
+							                   $"Append: {publishProfile.Append} " +
+							                   $"Copy: {publishProfile.Copy} " +
+							                   $"Folder: {publishProfile.Folder} " +
+							                   $"Prepend: {publishProfile.Prepend} " +
+							                   $"Template: {publishProfile.Template} " +
+							                   $"ContentType: {publishProfile.ContentType} " +
+							                   $"MetaData: {publishProfile.MetaData} " +
+							                   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
+							                   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
+						}
 					}
 					break;
 			}
