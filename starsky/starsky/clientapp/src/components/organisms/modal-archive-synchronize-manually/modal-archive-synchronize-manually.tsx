@@ -104,7 +104,9 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
     FetchGet(new UrlQuery().UrlSync(new URLPath().encodeURI(parentFolder))).then((_) => {
+      console.log('--->');
       setTimeout(() => {
+        console.log('====>');
         FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
           var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
