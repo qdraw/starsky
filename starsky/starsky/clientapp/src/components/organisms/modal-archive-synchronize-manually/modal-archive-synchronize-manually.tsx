@@ -76,10 +76,14 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     console.log('--geo');
 
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
+
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
+    console.log(bodyParams.toString());
+    console.log(new UrlQuery().UrlGeoSync());
 
     FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((anyData) => {
+      console.log(anyData);
     });
   }
 
