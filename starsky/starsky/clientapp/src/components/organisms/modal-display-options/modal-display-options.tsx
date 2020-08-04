@@ -58,13 +58,13 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     }}>
     <div className="modal content--subheader">{MessageDisplayOptions}</div>
     <div className="content--text">
-      <SwitchButton isOn={!collections} isEnabled={true}
+      <SwitchButton isOn={!collections} data-test="toggle-collections" isEnabled={true}
         leftLabel={MessageSwitchButtonCollectionsOn}
         onToggle={() => toggleCollections()}
         rightLabel={MessageSwitchButtonCollectionsOff} />
     </div>
     <div className="modal content--subheader">
-      <SwitchButton isOn={isSingleItem} isEnabled={true}
+      <SwitchButton data-test="toggle-slow-files" isOn={isSingleItem} isEnabled={true}
         leftLabel={MessageSwitchButtonIsSingleItemOn}
         rightLabel={MessageSwitchButtonIsSingleItemOff}
         onToggle={() => toggleSlowFiles()} />
