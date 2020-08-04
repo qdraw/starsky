@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
@@ -13,7 +13,6 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.Services;
-using starskywebhtmlcli.Services;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
@@ -27,8 +26,10 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
+	    private readonly IConsole _console;
 
-	    public LoopPublications(ISelectorStorage selectorStorage, AppSettings appSettings, IExifTool exifTool, IReadMeta readMeta)
+	    public LoopPublications(ISelectorStorage selectorStorage, AppSettings appSettings, 
+		    IExifTool exifTool, IReadMeta readMeta, IConsole console)
 	    {
 		    _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -37,40 +38,56 @@ namespace starsky.feature.webhtmlpublish.Services
             _appSettings = appSettings;
             _exifTool = exifTool;
 		    _readMeta = readMeta;
+		    _console = console;
 	    }
 
-        public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray)
+        public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray, string publishProfileName)
         {
-            if(!_appSettings.PublishProfiles.Any()) Console.WriteLine("There are no config items");
+	        if ( !_appSettings.PublishProfiles.Any() )
+	        {
+		        _console.WriteLine("There are no config items");
+		        return;
+	        }
+	        
+            if ( !_appSettings.PublishProfiles.ContainsKey(publishProfileName) )
+            {
+	            _console.WriteLine("Key not found");
+	            return;
+            }
+            
             if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
             
             // Order alphabetically
             fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
-            
-            foreach (var profile in _appSettings.PublishProfiles)
+
+            var profiles = _appSettings.PublishProfiles
+	            .FirstOrDefault(p => p.Key == publishProfileName).Value;
+            foreach (var currentProfile in profiles)
             {
-                switch (profile.ContentType)
+                switch (currentProfile.ContentType)
                 {
                     case TemplateContentType.Html:
-                        GenerateWebHtml(profile,base64ImageArray,fileIndexItemsList);
+                        GenerateWebHtml(profiles, currentProfile,base64ImageArray,fileIndexItemsList);
                         break;
                     case TemplateContentType.Jpeg:
-                        GenerateJpeg(profile,fileIndexItemsList);
+                        GenerateJpeg(currentProfile,fileIndexItemsList);
                         break;
                     case TemplateContentType.MoveSourceFiles:
-                        GenerateMoveSourceFiles(profile,fileIndexItemsList);
+                        GenerateMoveSourceFiles(currentProfile,fileIndexItemsList);
                         break;
                 }
             }
         }
 
-        private void GenerateWebHtml(AppSettingsPublishProfiles profile,string[] base64ImageArray, List<FileIndexItem> fileIndexItemsList)
+        private void GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, AppSettingsPublishProfiles currentProfile, string[] base64ImageArray, 
+	        IEnumerable<FileIndexItem> fileIndexItemsList)
         {
             // Generates html by razorLight
             var viewModel = new WebHtmlViewModel
             {
+	            Profiles = profiles,
                 AppSettings = _appSettings,
-                Profile = profile,
+                CurrentProfile = currentProfile,
                 Base64ImageArray = base64ImageArray,
                 // apply slug to items, but use it only in the copy
                 FileIndexItems = fileIndexItemsList.Select(c => c.Clone()).ToList(),
@@ -79,18 +96,21 @@ namespace starsky.feature.webhtmlpublish.Services
             // add to IClonable
             foreach (var item in viewModel.FileIndexItems)
             {
-                item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + Path.GetExtension(item.FileName);
+                item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + 
+                                Path.GetExtension(item.FileName);
             }
                   
-            var embeddedResult = new ParseRazor(_hostFileSystemStorage).EmbeddedViews(profile.Template, viewModel).Result;
+            var embeddedResult = new ParseRazor(_hostFileSystemStorage)
+	            .EmbeddedViews(currentProfile.Template, viewModel).Result;
 
 	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
-	        _iStorage.WriteStream(stream, profile.Path);
+	        _iStorage.WriteStream(stream, currentProfile.Path);
 
-            Console.WriteLine(embeddedResult);
+	        if ( _appSettings.Verbose ) _console.WriteLine(embeddedResult);
         }
 
-        private void GenerateJpeg(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
+        private void GenerateJpeg(AppSettingsPublishProfiles profile, 
+	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
             var overlayImage = new OverlayImage(_selectorStorage,_appSettings);
@@ -113,14 +133,14 @@ namespace starsky.feature.webhtmlpublish.Services
                             
 	            if ( profile.MetaData )
 	            {
-		            new ExifCopy(_iStorage, _thumbnailStorage, _exifTool, _readMeta).CopyExifPublish(item.FilePath,
-			            outputPath);
+		            new ExifCopy(_iStorage, _thumbnailStorage, _exifTool, _readMeta)
+			            .CopyExifPublish(item.FilePath, outputPath);
 	            }
-
             }
         }
 
-        private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, List<FileIndexItem> fileIndexItemsList)
+        private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, 
+	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
             var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
@@ -146,13 +166,11 @@ namespace starsky.feature.webhtmlpublish.Services
 	        
             profileFolderStringBuilder.Append(profile.Folder);
 
-	        if ( _iStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+	        if ( _iStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
+	             == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	        {
 		        _iStorage.CreateDirectory(profileFolderStringBuilder.ToString());
 	        }
-	        
         }
-
-        
     }
 }

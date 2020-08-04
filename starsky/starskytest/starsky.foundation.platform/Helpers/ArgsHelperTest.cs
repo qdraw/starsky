@@ -352,12 +352,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
                 // Just simple show a console dialog
             new ArgsHelper(new AppSettings {
 		            ApplicationType = AppSettings.StarskyAppType.WebHtml, 
-		            Verbose = true,
-		            PublishProfiles = new List<AppSettingsPublishProfiles>{new AppSettingsPublishProfiles
-		            {
-			            Append = "t",
-		            }}
-		            
+		            Verbose = true
 	            })
                 .NeedHelpShowDialog();
             new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})

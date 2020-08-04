@@ -79,7 +79,8 @@ namespace starskywebhtmlcli
 	        
 	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
 
-			new LoopPublications(startupHelper.SelectorStorage(), appSettings, startupHelper.ExifTool(), startupHelper.ReadMeta())
+			new LoopPublications(startupHelper.SelectorStorage(), appSettings, 
+					startupHelper.ExifTool(), startupHelper.ReadMeta())
 				.Render(fileIndexList, base64DataUri);
 
 			// Copy all items in the subFolder content for example javascripts

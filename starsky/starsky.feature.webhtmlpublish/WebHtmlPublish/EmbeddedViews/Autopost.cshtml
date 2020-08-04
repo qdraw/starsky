@@ -3,35 +3,34 @@
 @model starsky.feature.webhtmlpublish.ViewModels.WebHtmlViewModel
 
 @{
-    var profile500 = Model.AppSettings.PublishProfiles.FirstOrDefault(p => p.SourceMaxWidth == 500);
+	var profile500 = Model.Profiles.FirstOrDefault(p => p.SourceMaxWidth == 500);
     var fileFolder500 = profile500?.Folder ?? "500/";
     var append500 = profile500?.Append ?? string.Empty;
-    var profile1000 = Model.AppSettings.PublishProfiles.FirstOrDefault(p => p.SourceMaxWidth == 1000);
+    var profile1000 = Model.Profiles.FirstOrDefault(p => p.SourceMaxWidth == 1000);
     var fileFolder1000 = profile1000?.Folder ?? "1000/";
     var append1000 = profile1000?.Append ?? string.Empty;
-
-
 }
-
 
 @for (int i = 0; i < @Model.FileIndexItems.Count(); i++)
 {
     var item = @Model.FileIndexItems[i];
     var count = i + 1;
-    var heightratio = Math.Round((double)@item.ImageHeight / @item.ImageWidth, 3).ToString(CultureInfo.InvariantCulture); ;
+    var heightRatio = Math.Round((double)@item.ImageHeight / @item.ImageWidth, 3).ToString(CultureInfo.InvariantCulture); ;
     var latitude = Math.Round(@item.Latitude, 6).ToString(CultureInfo.InvariantCulture);
     var longitude = Math.Round(@item.Longitude, 6).ToString(CultureInfo.InvariantCulture);
 
     //    // Logic to setup filename
-    var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder500 + @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
-    var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(@Model.Profile.Prepend) + @fileFolder1000 + @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
+    var filePath500 = @Model.AppSettings.GetWebSafeReplacedName(@Model.CurrentProfile.Prepend) + @fileFolder500 + 
+                      @item.FileCollectionName + @append500 + @System.IO.Path.GetExtension(item.FileName);
+    var filePath1000 = @Model.AppSettings.GetWebSafeReplacedName(@Model.CurrentProfile.Prepend) + @fileFolder1000 + 
+                       @item.FileCollectionName + @append1000 + @System.IO.Path.GetExtension(item.FileName);
 
     var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.AppSettings.Name;
 
     <a href="@filePath1000" class="lightbox[blog]"
        title="@Model.AppSettings.Name - @item.Title | foto @count"
-       data-gps="@latitude,@longitude" data-heightratio="@heightratio">
-        <noscript><img src="@filePath500" alt="@Model.AppSettings.Name @item.Title" /></noscript>
+       data-gps="@latitude,@longitude" data-heightratio="@heightRatio">
+        <noscript><img src="@filePath500" alt=" @item.Title" /></noscript>
         <img src="@Model.Base64ImageArray[i]" title="@displayTitleName | foto @count" alt="@Model.AppSettings.Name ; @item.Title ; @item.Tags" />
     </a>
 }

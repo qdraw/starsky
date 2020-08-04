@@ -20,7 +20,7 @@ namespace starskywebftpcli
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
 			
-			// inject services + appsettings
+			// inject services + appSettings
 			var startupHelper = new ConfigCliAppsStartupHelper();
 			var appSettings = startupHelper.AppSettings();
             
