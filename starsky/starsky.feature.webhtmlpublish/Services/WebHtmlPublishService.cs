@@ -19,7 +19,7 @@ using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
-    public class LoopPublications : ILoopPublications
+    public class WebHtmlPublishService : IWebHtmlPublishService
     {
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
@@ -30,7 +30,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IConsole _console;
 
-	    public LoopPublications(ISelectorStorage selectorStorage, AppSettings appSettings, 
+	    public WebHtmlPublishService(ISelectorStorage selectorStorage, AppSettings appSettings, 
 		    IExifTool exifTool, IReadMeta readMeta, IConsole console)
 	    {
 		    _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -90,6 +90,7 @@ namespace starsky.feature.webhtmlpublish.Services
             // Generates html by razorLight
             var viewModel = new WebHtmlViewModel
             {
+	            ItemName = "test",
 	            Profiles = profiles,
                 AppSettings = _appSettings,
                 CurrentProfile = currentProfile,

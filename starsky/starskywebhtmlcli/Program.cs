@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Helpers;
@@ -18,10 +19,8 @@ namespace starskywebhtmlcli
 {
     public static class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            
-            // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
             var startupHelper = new ConfigCliAppsStartupHelper();
 	        
@@ -48,20 +47,20 @@ namespace starskywebhtmlcli
             if(startupHelper.HostFileSystemStorage().IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
                 Console.WriteLine("Please add a valid folder: " + inputPath);
 
-            if (appSettings.Name == new AppSettings().Name)
+            var name = new ArgsHelper().GetName(args);
+            if ( string.IsNullOrWhiteSpace(name))
             {
-                var suggestedInput = Path.GetFileName(inputPath);
+	            var suggestedInput = Path.GetFileName(inputPath);
                 
-                Console.WriteLine("\nWhat is the name of the item? (for: "+ suggestedInput +" press Enter)\n ");
-                var name = Console.ReadLine();
-                appSettings.Name = name;
-                if (string.IsNullOrEmpty(name))
-                {
-                    appSettings.Name = suggestedInput;
-                }
+	            Console.WriteLine("\nWhat is the name of the item? (for: "+ suggestedInput +" press Enter)\n ");
+	            name = Console.ReadLine();
+	            if (string.IsNullOrEmpty(name))
+	            {
+		            name = suggestedInput;
+	            }
             }
 
-            if(appSettings.Verbose) Console.WriteLine("Name: " + appSettings.Name);
+            if(appSettings.Verbose) Console.WriteLine("Name: " + name);
             if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
 
             // used in this session to find the files back
@@ -79,11 +78,12 @@ namespace starskywebhtmlcli
 	        
 	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
 
-			new LoopPublications(startupHelper.SelectorStorage(), appSettings, 
+	        var profileName = new PublishPreflight(appSettings).GetPublishProfileNameByIndex(0);
+			await new WebHtmlPublishService(startupHelper.SelectorStorage(), appSettings, 
 					startupHelper.ExifTool(), startupHelper.ReadMeta(), new ConsoleWrapper())
-				.Render(fileIndexList, base64DataUri,"test");
+				.Render(fileIndexList, base64DataUri, profileName);
 
-			// Copy all items in the subFolder content for example javascripts
+			// Copy all items in the subFolder content for example JavaScripts
 			new Content(iStorage).CopyContent();
 
 			// Export all

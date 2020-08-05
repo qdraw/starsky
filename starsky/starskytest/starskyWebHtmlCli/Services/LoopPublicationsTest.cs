@@ -70,7 +70,7 @@ namespace starskytest.starskyWebHtmlCli.Services
 	        fakeStorage.WriteStream(new PlainTextFileHelper().StringToStream(template),
 		        new EmbeddedViewsPath().GetViewFullPath("Index.cshtml"));
 	        
-            new LoopPublications(selectorStorage, appSettings,
+            new WebHtmlPublishService(selectorStorage, appSettings,
 	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage), 
 	            new FakeConsoleWrapper()).Render(list,null,"default");
 

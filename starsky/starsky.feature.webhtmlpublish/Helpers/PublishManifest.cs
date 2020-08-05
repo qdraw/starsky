@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using starsky.feature.webhtmlpublish.Models;
@@ -28,7 +29,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		public void ExportManifest()
 		{
 			// Export settings as manifest.json to the StorageFolder
-		
+
+			throw new Exception("_appSettings.Name is obsolete ");
 			var manifest = new ManifestModel
 			{
 				Name = _appSettings.Name,
@@ -53,6 +55,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			
 			var input = _plainTextFileHelper.StreamToString(_storage.ReadStream(fullSettingsPath));
 			var manifestModel = JsonConvert.DeserializeObject<ManifestModel>(input);
+			
+			throw new Exception("_appSettings.Name is obsolete ");
 			_appSettings.Name = manifestModel.Name;
 			
 			return true;

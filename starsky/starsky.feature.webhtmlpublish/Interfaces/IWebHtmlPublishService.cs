@@ -4,7 +4,7 @@ using starsky.foundation.database.Models;
 
 namespace starsky.feature.webhtmlpublish.Interfaces
 {
-	public interface ILoopPublications
+	public interface IWebHtmlPublishService
 	{
 		Task<bool> Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray,
 			string publishProfileName);

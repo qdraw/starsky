@@ -6,6 +6,8 @@ namespace starsky.feature.webhtmlpublish.ViewModels
 {
     public class WebHtmlViewModel
     {
+	    public string ItemName { get; set; }
+
 	    /// <summary>
 	    /// Used with helpers
 	    /// </summary>
