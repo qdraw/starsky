@@ -43,7 +43,8 @@ namespace starskytest.starskyWebFtpCli
 
 			var exampleConfig = "{\"Name\":\"0001-readonly\",\"Slug\":\"0001-readonly\",\"Export\":\"20190908145825\",\"Version\":\"0.1.5.9\"}";
 			var exampleConfigBytes = Encoding.ASCII.GetBytes(exampleConfig);
-			_storage = new FakeIStorage(new List<string>{"/","/large"},new List<string>{"/test.jpg","/_settings.json"},new List<byte[]>{newImage,exampleConfigBytes});
+			_storage = new FakeIStorage(new List<string>{"/","/large"},
+				new List<string>{"/test.jpg","/_settings.json"},new List<byte[]>{newImage,exampleConfigBytes});
 			var t = _storage.GetAllFilesInDirectory("/").ToList();
 			
 		}
@@ -51,7 +52,8 @@ namespace starskytest.starskyWebFtpCli
 		[TestMethod]
 		public void StarskyWebHtmlCli_CreateListOfRemoteDirectoriesTest()
 		{
-			var item  = new FtpService(_appSettings, _storage).CreateListOfRemoteDirectories().ToList();
+			var item  = new FtpService(_appSettings, _storage)
+				.CreateListOfRemoteDirectories().ToList();
 			Assert.AreEqual("ftp://testmedia.be//test",item[1]);
 			Assert.AreEqual("ftp://testmedia.be//test/large/",item[2]);
 		}
