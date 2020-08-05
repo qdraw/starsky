@@ -25,15 +25,18 @@ namespace starskytest.starskyWebFtpCli
 			{
 				WebFtp = "ftp://test:test@testmedia.be",
 				Name = "test",
-				PublishProfiles = new List<AppSettingsPublishProfiles>
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					new AppSettingsPublishProfiles
-					{
-						Folder = "large",
-						SourceMaxWidth = 1,
-						ContentType = TemplateContentType.Jpeg,
-						Copy = true
-					}
+					{"default", new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								Folder = "large",
+								SourceMaxWidth = 1,
+								ContentType = TemplateContentType.Jpeg,
+								Copy = true
+							}
+						}}
 				}
 			};
 			var newImage = CreateAnImage.Bytes;

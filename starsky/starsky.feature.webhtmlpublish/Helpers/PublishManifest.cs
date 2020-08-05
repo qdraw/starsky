@@ -23,7 +23,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		}
 
 		/// <summary>
-		/// Export settings as manifest.json to the StorageFolder within appsettings
+		/// Export settings as manifest.json to the StorageFolder within appSettings
 		/// </summary>
 		public void ExportManifest()
 		{

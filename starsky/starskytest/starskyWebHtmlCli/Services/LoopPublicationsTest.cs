@@ -6,9 +6,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
-using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -24,18 +21,21 @@ namespace starskytest.starskyWebHtmlCli.Services
         {
             var appSettings = new AppSettings
             {
-                PublishProfiles = new List<AppSettingsPublishProfiles>
-                {
-                    new AppSettingsPublishProfiles
-                    {
-                        ContentType = TemplateContentType.Html,
-                        Path = "index.html",
-                        Template = "Index.cshtml"
-                    }
-                }
+	            PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+	            {
+		            {"default", new List<AppSettingsPublishProfiles>
+		            {
+			            new AppSettingsPublishProfiles
+			            {
+				            ContentType = TemplateContentType.Html,
+				            Path = "index.html",
+				            Template = "Index.cshtml"
+			            }
+		            }}
+	            }
             };
             
-            appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
+            appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "default").Value.Add(new AppSettingsPublishProfiles
             {
                 ContentType = TemplateContentType.Jpeg,
                 Path = new CreateAnImage().FullFilePath,  // <== overlay image; depends on fs
@@ -43,7 +43,7 @@ namespace starskytest.starskyWebHtmlCli.Services
             });
 
             // Add large image
-            appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
+            appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "default").Value.Add(new AppSettingsPublishProfiles
             {
                 ContentType = TemplateContentType.Jpeg,
                 Path = new CreateAnImage().FullFilePath, // <== overlay image; depends on fs
@@ -51,11 +51,10 @@ namespace starskytest.starskyWebHtmlCli.Services
             });
 
             // Move to the same folder
-            appSettings.PublishProfiles.Add(new AppSettingsPublishProfiles
+            appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "default").Value.Add(new AppSettingsPublishProfiles
             {
                 ContentType = TemplateContentType.MoveSourceFiles,
             });
-
 	        
             var list = new List<FileIndexItem> {new FileIndexItem
             {
@@ -72,7 +71,8 @@ namespace starskytest.starskyWebHtmlCli.Services
 		        new EmbeddedViewsPath().GetViewFullPath("Index.cshtml"));
 	        
             new LoopPublications(selectorStorage, appSettings,
-	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage)).Render(list,null);
+	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage), 
+	            new FakeConsoleWrapper()).Render(list,null,"default");
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 
