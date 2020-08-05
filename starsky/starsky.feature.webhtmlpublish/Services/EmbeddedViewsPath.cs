@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
 	public class EmbeddedViewsPath
 	{

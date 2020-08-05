@@ -5,7 +5,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
 	public class ToBase64DataUriList
 	{

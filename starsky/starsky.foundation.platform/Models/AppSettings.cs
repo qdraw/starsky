@@ -365,34 +365,35 @@ namespace starsky.foundation.platform.Models
 	    /// <summary>
 	    /// Publishing profiles used within the publishing module
 	    /// </summary>
-	    public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles { get; set; } = 
-			    new Dictionary<string, List<AppSettingsPublishProfiles>>
-				    {
-					    {"zz__example", new List<AppSettingsPublishProfiles>
-						    {
-							    new AppSettingsPublishProfiles
-							    {
-								    ContentType = TemplateContentType.Jpeg,
-								    SourceMaxWidth = 1000,
-								    OverlayMaxWidth = 380,
-								    Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-								    Folder =  "1000",
-								    Append = "_kl1k"
-							    }
-						    }},
-					    {"zz__example2", new List<AppSettingsPublishProfiles>
-					    {
-						    new AppSettingsPublishProfiles
-						    {
-							    ContentType = TemplateContentType.Jpeg,
-							    SourceMaxWidth = 1000,
-							    OverlayMaxWidth = 380,
-							    Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-							    Folder =  "1000",
-							    Append = "_kl1k"
-						    }
-					    }},
-					};
+	    public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles { get; set; } =
+		    new Dictionary<string, List<AppSettingsPublishProfiles>>();
+	    //{
+	    // {"zz__example", new List<AppSettingsPublishProfiles>
+	    //  {
+	    //   new AppSettingsPublishProfiles
+	    //   {
+	    //    ContentType = TemplateContentType.Jpeg,
+	    //    SourceMaxWidth = 1000,
+	    //    OverlayMaxWidth = 380,
+	    //    Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+	    //    Folder =  "1000",
+	    //    Append = "_kl1k"
+	    //   }
+	    //  }},
+	    // {"zz__example2", new List<AppSettingsPublishProfiles>
+	    // {
+	    //  new AppSettingsPublishProfiles
+	    //  {
+	    //   ContentType = TemplateContentType.Jpeg,
+	    //   SourceMaxWidth = 1000,
+	    //   OverlayMaxWidth = 380,
+	    //   Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+	    //   Folder =  "1000",
+	    //   Append = "_kl1k"
+	    //  }
+	    // }
+	    //}
+    // };
 	    
 	    /// <summary>
 	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)

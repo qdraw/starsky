@@ -3,7 +3,7 @@ using System.IO;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starskywebhtmlcli.Services
+namespace starsky.feature.webhtmlpublish.Services
 {
 	public class Content
 	{

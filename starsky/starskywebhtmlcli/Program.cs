@@ -13,7 +13,6 @@ using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 using starskycore.Models;
 using starskycore.Services;
-using starskywebhtmlcli.Services;
 
 namespace starskywebhtmlcli
 {
