@@ -7,7 +7,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.webhtmlpublish.Services
+namespace starsky.feature.webhtmlpublish.Helpers
 {
     public class OverlayImage
     {

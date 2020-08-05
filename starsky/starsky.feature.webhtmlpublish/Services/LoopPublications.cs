@@ -2,6 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using starsky.feature.webhtmlpublish.Helpers;
+using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
@@ -16,9 +19,8 @@ using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
-    public class LoopPublications
+    public class LoopPublications : ILoopPublications
     {
-
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _iStorage;
@@ -41,18 +43,19 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _console = console;
 	    }
 
-        public void Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray, string publishProfileName)
+        public async Task<bool> Render(List<FileIndexItem> fileIndexItemsList,
+	        string[] base64ImageArray, string publishProfileName)
         {
 	        if ( !_appSettings.PublishProfiles.Any() )
 	        {
 		        _console.WriteLine("There are no config items");
-		        return;
+		        return false;
 	        }
 	        
             if ( !_appSettings.PublishProfiles.ContainsKey(publishProfileName) )
             {
 	            _console.WriteLine("Key not found");
-	            return;
+	            return false;
             }
             
             if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
@@ -67,7 +70,7 @@ namespace starsky.feature.webhtmlpublish.Services
                 switch (currentProfile.ContentType)
                 {
                     case TemplateContentType.Html:
-                        GenerateWebHtml(profiles, currentProfile,base64ImageArray,fileIndexItemsList);
+                        await GenerateWebHtml(profiles, currentProfile,base64ImageArray,fileIndexItemsList);
                         break;
                     case TemplateContentType.Jpeg:
                         GenerateJpeg(currentProfile,fileIndexItemsList);
@@ -77,9 +80,11 @@ namespace starsky.feature.webhtmlpublish.Services
                         break;
                 }
             }
+            return true;
         }
 
-        private void GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, AppSettingsPublishProfiles currentProfile, string[] base64ImageArray, 
+        private async Task GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
+	        AppSettingsPublishProfiles currentProfile, string[] base64ImageArray, 
 	        IEnumerable<FileIndexItem> fileIndexItemsList)
         {
             // Generates html by razorLight
@@ -100,11 +105,11 @@ namespace starsky.feature.webhtmlpublish.Services
                                 Path.GetExtension(item.FileName);
             }
                   
-            var embeddedResult = new ParseRazor(_hostFileSystemStorage)
-	            .EmbeddedViews(currentProfile.Template, viewModel).Result;
+            var embeddedResult = await new ParseRazor(_hostFileSystemStorage)
+	            .EmbeddedViews(currentProfile.Template, viewModel);
 
 	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
-	        _iStorage.WriteStream(stream, currentProfile.Path);
+	        await _iStorage.WriteStreamAsync(stream, currentProfile.Path);
 
 	        if ( _appSettings.Verbose ) _console.WriteLine(embeddedResult);
         }

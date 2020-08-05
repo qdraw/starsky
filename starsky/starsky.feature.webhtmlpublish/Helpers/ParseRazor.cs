@@ -6,7 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.feature.webhtmlpublish.Services
+namespace starsky.feature.webhtmlpublish.Helpers
 {
     public class ParseRazor
     {
