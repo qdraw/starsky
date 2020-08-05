@@ -29,8 +29,8 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
 {
     "app" :{
         "WebFtp": "ftp://username%40qdraw.nl:secret@ftp.qdraw.nl",
-        "publishProfiles":
-            [
+        "publishProfiles": {
+            "default": [
                 {
                     "ContentType":  "html",
                     "SourceMaxWidth":  0,
@@ -84,7 +84,18 @@ Use the `publishProfiles` by the `starskyWebHtmlCli` and add the `WebFtp` field.
                     "Folder": "orgineel",
                     "Copy": "false"
                 }
+            ],
+            "2000px": [
+                {
+                    "ContentType":  "jpeg",
+                    "SourceMaxWidth":  2000,
+                    "OverlayMaxWidth":  0,
+                    "Folder": "2000",
+                    "Append": "_kl2k",
+                    "Copy": "true"
+                }
             ]
+        }
     }
 }
 ```

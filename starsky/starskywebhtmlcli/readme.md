@@ -99,8 +99,8 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
 ```json
 {
     "app" :{
-        "publishProfiles":
-            [
+        "publishProfiles": {
+            "default": [
                 {
                     "ContentType":  "html",
                     "SourceMaxWidth":  0,
@@ -154,7 +154,18 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "Folder": "orgineel",
                     "Copy": "false"
                 }
+            ],
+            "2000px": [
+                {
+                    "ContentType":  "jpeg",
+                    "SourceMaxWidth":  2000,
+                    "OverlayMaxWidth":  0,
+                    "Folder": "2000",
+                    "Append": "_kl2k",
+                    "Copy": "true"
+                }
             ]
+        }
     }
 }
 ```
