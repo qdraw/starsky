@@ -253,7 +253,12 @@ export class URLPath {
     if (select === undefined || parent === undefined) return subPaths;
 
     select.forEach(item => {
-      subPaths.push(parent + "/" + item)
+      if (parent === "/") {
+        subPaths.push("/" + item);
+      }
+      else {
+        subPaths.push(parent + "/" + item);
+      }
     });
     return subPaths;
   }

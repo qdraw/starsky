@@ -148,6 +148,11 @@ describe("url-path", () => {
       var test = urlPath.MergeSelectParent(["test.jpg"], "/test");
       expect(test[0]).toStrictEqual("/test/test.jpg")
     });
+
+    it("merge home item", () => {
+      var test = urlPath.MergeSelectParent(["test.jpg"], "/");
+      expect(test[0]).toStrictEqual("/test.jpg")
+    });
   });
   describe("MergeSelectFileIndexItem", () => {
     it("default", () => {

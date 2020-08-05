@@ -15,6 +15,7 @@ import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import ModalArchiveMkdir from '../modal-archive-mkdir/modal-archive-mkdir';
 import ModalArchiveRename from '../modal-archive-rename/modal-archive-rename';
+import ModalArchiveSynchronizeManually from '../modal-archive-synchronize-manually/modal-archive-synchronize-manually';
 import ModalDisplayOptions from '../modal-display-options/modal-display-options';
 import ModalDownload from '../modal-download/modal-download';
 import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
@@ -34,6 +35,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageMkdir = language.text("Map maken", "Create folder");
   const MessageRenameDir = language.text("Naam wijzigen", "Rename");
   const MessageDisplayOptions = language.text("Weergave opties", "Display options");
+  const MessageSynchronizeManually = language.text("Handmatig synchroniseren", "Synchronize manually");
   const MessageSelectFurther = language.text("Verder selecteren", "Select further");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
@@ -96,6 +98,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
+  const [isSynchronizeManuallyOpen, setSynchronizeManuallyOpen] = React.useState(false);
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
   const [isModalRenameFolder, setModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(newIFileIndexItemArray());
@@ -124,6 +127,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {/* Modal Display options */}
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
         setDisplayOptionsOpen(!isDisplayOptionsOpen)} isOpen={isDisplayOptionsOpen} /> : null}
+
+      {/*  Synchronize Manually */}
+      {isSynchronizeManuallyOpen ? <ModalArchiveSynchronizeManually parentFolder={new URLPath().StringToIUrl(history.location.search).f}
+        handleExit={() => setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)} isOpen={isSynchronizeManuallyOpen} /> : null}
 
       {/* Modal new directory */}
       {isModalMkdirOpen && !isReadOnly ? <ModalArchiveMkdir handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)} isOpen={isModalMkdirOpen} /> : null}
@@ -164,7 +171,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? <MoreMenu>
             <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="mkdir" onClick={() =>
               setModalMkdirOpen(!isModalMkdirOpen)}>{MessageMkdir}</li>
-            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
+            <li className="menu-option" data-test="display-options"
+              onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
+            <li className="menu-option" data-test="synchronize-manually"
+              onClick={() => setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)}>{MessageSynchronizeManually}</li>
             {state ? <UploadMenuItem /> : null}
             <li className={!isReadOnly && state.subPath !== "/" ? "menu-option" : "menu-option disabled"} data-test="rename" onClick={() =>
               setModalRenameFolder(!isModalRenameFolder)}>{MessageRenameDir}</li>
@@ -177,7 +187,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length >= 1 ? <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
             {select.length >= 1 ? <li data-test="trash" className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
-            <li className="menu-option" onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
+            <li className="menu-option" data-test="display-options"
+              onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
+            <li className="menu-option" data-test="synchronize-manually"
+              onClick={() => setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)}>{MessageSynchronizeManually}</li>
             {state ? <UploadMenuItem /> : null}
 
           </MoreMenu> : null}

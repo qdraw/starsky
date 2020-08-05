@@ -54,6 +54,13 @@ namespace starskytest.FakeMocks
 			}
 
 		}
+
+		private readonly Exception _exception;
+		
+		public FakeIStorage(Exception exception)
+		{
+			_exception = exception;
+		}
 		
 		public bool ExistFile(string path)
 		{
@@ -61,6 +68,7 @@ namespace starskytest.FakeMocks
 		}
 		public bool ExistFolder(string path)
 		{
+			if ( _exception != null ) throw _exception;
 			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));
 		}
 

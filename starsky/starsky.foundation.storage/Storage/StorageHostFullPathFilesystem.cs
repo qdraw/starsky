@@ -129,7 +129,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					Console.WriteLine(e);
+					Console.WriteLine("UnauthorizedAccessException => " + e);
 				}
 			}
 			return folderList;
@@ -200,13 +200,22 @@ namespace starsky.foundation.storage.Storage
 		{
 			Directory.Move(fromPath,toPath);
 		}
-
 	
-		public void FileMove(string inputFileFullPath, string toFileFullPath)
+		/// <summary>
+		/// Move file on real filesystem
+		/// </summary>
+		/// <param name="fromPath">inputFileFullPath</param>
+		/// <param name="toPath">toFileFullPath</param>
+		public void FileMove(string fromPath, string toPath)
 		{
-			File.Move(inputFileFullPath,toFileFullPath);
+			File.Move(fromPath,toPath);
 		}
 		
+		/// <summary>
+		/// Copy file on real filesystem
+		/// </summary>
+		/// <param name="fromPath">inputFileFullPath</param>
+		/// <param name="toPath">toFileFullPath</param>
 		public void FileCopy(string fromPath, string toPath)
 		{
 			File.Copy(fromPath,toPath);
