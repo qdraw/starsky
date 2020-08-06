@@ -361,12 +361,27 @@ namespace starsky.foundation.platform.Models
 
 		    }
 	    }
+	    
+	    /// <summary>
+	    /// Private field: Publishing profiles
+	    /// </summary>
+	    private Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfilesPrivate { get; set; } =
+		    new Dictionary<string, List<AppSettingsPublishProfiles>>();
 
 	    /// <summary>
-	    /// Publishing profiles used within the publishing module
+	    /// Publishing profiles used within the publishing module (Order by Key)
 	    /// </summary>
-	    public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles { get; set; } =
-		    new Dictionary<string, List<AppSettingsPublishProfiles>>();
+	    public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles {
+		    get => PublishProfilesPrivate;
+		    set
+		    {
+			    if ( value == null ) return;
+			    PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
+				    .ToDictionary(obj => obj.Key, 
+					    obj => obj.Value);
+		    } 
+	    } 
+	    
 	    //{
 	    // {"zz__example", new List<AppSettingsPublishProfiles>
 	    //  {

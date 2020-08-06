@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using starsky.foundation.platform.Models;
@@ -13,9 +14,9 @@ namespace starsky.feature.webhtmlpublish.Models
 		public string Name { get; set; }
 		
 		/// <summary>
-		/// To Identify the settings
+		/// Which files or folders need to be copied
 		/// </summary>
-		public string Key { get; set; }
+		public List<string> Copy { get; set; } = new List<string>();
 
 		/// <summary>
 		/// Slug, Name without spaces, but underscores are allowed

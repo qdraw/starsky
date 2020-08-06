@@ -17,7 +17,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
         {
 	        _hostFileSystemStorage = fileSystemStorage;
             _engine = new RazorLightEngineBuilder()
-                .UseEmbeddedResourcesProject(typeof(Helpers.PublishManifest))
+                .UseEmbeddedResourcesProject(typeof(PublishManifest))
 				.UseEmbeddedResourcesProject(typeof(WebHtmlViewModel))
 				.UseEmbeddedResourcesProject(typeof(AppSettings))
 				.UseEmbeddedResourcesProject(typeof(FileIndexItem))

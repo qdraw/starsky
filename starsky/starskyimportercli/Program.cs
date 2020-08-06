@@ -39,6 +39,7 @@ namespace starskyimportercli
             var import = serviceProvider.GetService<IImport>();
             var console = serviceProvider.GetRequiredService<IConsole>();
 
+            // Help and other Command Line Tools args are included in the ImporterCli 
             await new ImportCli().Importer(args, import, appSettings, console);
         }
     }

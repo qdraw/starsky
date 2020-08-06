@@ -33,28 +33,36 @@ namespace starsky.feature.webhtmlpublish.Helpers
             return outputFilePath;
         }
         
-        public void ResizeOverlayImageThumbnails(string fileHash, string outputSubPath, AppSettingsPublishProfiles profile)
+        public void ResizeOverlayImageThumbnails(string fileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
         {
 	        if ( !_thumbnailStorage.ExistFile(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
 
-	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
+	        if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
 	        
 	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
-	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
+	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path)) // for example a logo
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
 	        using ( var outputStream  = new MemoryStream() )
 	        {
-		        ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
-			        outputSubPath);
+		        var result = ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+			        outputFullFilePath);
+		        _hostFileSystem.WriteStream(result, outputFullFilePath);
 	        }
         }
 	    
-	    public void ResizeOverlayImageLarge(string subPath, string outputSubPath, AppSettingsPublishProfiles profile)
+        /// <summary>
+        /// Read from _iStorage to _hostFileSystem
+        /// </summary>
+        /// <param name="subPath">input Image</param>
+        /// <param name="outputFullFilePath">location where to store</param>
+        /// <param name="profile">image profile that contains sizes</param>
+        /// <exception cref="FileNotFoundException">source image not found</exception>
+	    public void ResizeOverlayImageLarge(string subPath, string outputFullFilePath, AppSettingsPublishProfiles profile)
 	    {
 		    if ( !_iStorage.ExistFile(subPath) ) throw new FileNotFoundException("subPath " + subPath);
 
-		    if ( _iStorage.ExistFile(outputSubPath)  ) return;
+		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
 	        
 		    // only for overlay image
 		    var hostFileSystem = new StorageHostFullPathFilesystem();
@@ -65,12 +73,13 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		    using ( var overlayImage = Image.Load(overlayImageStream) )
 		    using ( var outputStream  = new MemoryStream() )
 		    {
-			    ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
-				    outputSubPath);
+			    var result = ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+				    outputFullFilePath);
+			    _hostFileSystem.WriteStream(result, outputFullFilePath);
 		    }
 	    }
 
-	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
+	    private Stream ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
 		    Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 	    {
 		    sourceImage.Mutate(x => x
@@ -88,11 +97,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		    // sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
 		    
 		    // For ImageSharp-0005
-		    sourceImage.Mutate(x => x.DrawImage(overlayImage, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, 
+			    PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
 		    sourceImage.SaveAsJpeg(outputStream);
-
-		    _iStorage.WriteStream(outputStream, outputSubPath);
+		    return outputStream;
 	    }
     }
 }

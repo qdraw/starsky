@@ -7,6 +7,7 @@ using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
@@ -19,11 +20,12 @@ using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
+	[Service(typeof(IWebHtmlPublishService), InjectionLifetime = InjectionLifetime.Scoped)]
     public class WebHtmlPublishService : IWebHtmlPublishService
     {
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
-	    private readonly IStorage _iStorage;
+	    private readonly IStorage _subPathStorage;
 	    private readonly IReadMeta _readMeta;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly ISelectorStorage _selectorStorage;
@@ -33,7 +35,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    public WebHtmlPublishService(ISelectorStorage selectorStorage, AppSettings appSettings, 
 		    IExifTool exifTool, IReadMeta readMeta, IConsole console)
 	    {
-		    _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		    _selectorStorage = selectorStorage;
@@ -42,9 +44,21 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _readMeta = readMeta;
 		    _console = console;
 	    }
+	    
+	    
+	    public async Task<bool> RenderCopy(List<FileIndexItem> fileIndexItemsList, 
+		    string[] base64ImageArray, string publishProfileName, string outputFullFilePath, bool moveSourceFiles = false)
+	    {
+		    var render = await Render(fileIndexItemsList, base64ImageArray, publishProfileName, outputFullFilePath);
+		    // Copy all items in the subFolder content for example JavaScripts
+		    new Content(_subPathStorage).CopyPublishedContent();
+		    return render;
+	    }
+	    
 
         public async Task<bool> Render(List<FileIndexItem> fileIndexItemsList,
-	        string[] base64ImageArray, string publishProfileName)
+	        string[] base64ImageArray, string publishProfileName, 
+	        string outputParentFullFilePathFolder, bool moveSourceFiles = false)
         {
 	        if ( !_appSettings.PublishProfiles.Any() )
 	        {
@@ -70,14 +84,14 @@ namespace starsky.feature.webhtmlpublish.Services
                 switch (currentProfile.ContentType)
                 {
                     case TemplateContentType.Html:
-                        await GenerateWebHtml(profiles, currentProfile,base64ImageArray,fileIndexItemsList);
+                        await GenerateWebHtml(profiles, currentProfile, base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder);
                         break;
                     case TemplateContentType.Jpeg:
-                        GenerateJpeg(currentProfile,fileIndexItemsList);
+                        GenerateJpeg(currentProfile,fileIndexItemsList, outputParentFullFilePathFolder);
                         break;
-                    case TemplateContentType.MoveSourceFiles:
-                        GenerateMoveSourceFiles(currentProfile,fileIndexItemsList);
-                        break;
+                    // case TemplateContentType.MoveSourceFiles:
+                    //     GenerateMoveSourceFiles(currentProfile,fileIndexItemsList);
+                    //     break;
                 }
             }
             return true;
@@ -85,7 +99,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
         private async Task GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
 	        AppSettingsPublishProfiles currentProfile, string[] base64ImageArray, 
-	        IEnumerable<FileIndexItem> fileIndexItemsList)
+	        IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
             // Generates html by razorLight
             var viewModel = new WebHtmlViewModel
@@ -105,18 +119,19 @@ namespace starsky.feature.webhtmlpublish.Services
                 item.FileName = _appSettings.GenerateSlug(item.FileCollectionName, true) + 
                                 Path.GetExtension(item.FileName);
             }
-                  
+            
+            // has a direct dependency on the filesystem
             var embeddedResult = await new ParseRazor(_hostFileSystemStorage)
 	            .EmbeddedViews(currentProfile.Template, viewModel);
 
 	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
-	        await _iStorage.WriteStreamAsync(stream, currentProfile.Path);
+	        await _hostFileSystemStorage.WriteStreamAsync(stream, Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
 	        if ( _appSettings.Verbose ) _console.WriteLine(embeddedResult);
         }
 
         private void GenerateJpeg(AppSettingsPublishProfiles profile, 
-	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList)
+	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
             ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
             var overlayImage = new OverlayImage(_selectorStorage,_appSettings);
@@ -139,7 +154,7 @@ namespace starsky.feature.webhtmlpublish.Services
                             
 	            if ( profile.MetaData )
 	            {
-		            new ExifCopy(_iStorage, _thumbnailStorage, _exifTool, _readMeta)
+		            new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, _readMeta)
 			            .CopyExifPublish(item.FilePath, outputPath);
 	            }
             }
@@ -155,7 +170,7 @@ namespace starsky.feature.webhtmlpublish.Services
             {
 	            // input: item.FilePath
                 var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
-	            _iStorage.FileMove(item.FilePath,outputPath);
+	            _subPathStorage.FileMove(item.FilePath,outputPath);
             }
         }
 
@@ -172,10 +187,10 @@ namespace starsky.feature.webhtmlpublish.Services
 	        
             profileFolderStringBuilder.Append(profile.Folder);
 
-	        if ( _iStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
+	        if ( _subPathStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
 	             == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	        {
-		        _iStorage.CreateDirectory(profileFolderStringBuilder.ToString());
+		        _subPathStorage.CreateDirectory(profileFolderStringBuilder.ToString());
 	        }
         }
     }

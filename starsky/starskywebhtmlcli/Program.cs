@@ -1,19 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.webhtmlpublish.Helpers;
-using starsky.feature.webhtmlpublish.Services;
+using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
-using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Services;
-using starskycore.Helpers;
-using starskycore.Models;
-using starskycore.Services;
+using starsky.foundation.storage.Interfaces;
 
 namespace starskywebhtmlcli
 {
@@ -21,75 +16,33 @@ namespace starskywebhtmlcli
     {
         public static async Task Main(string[] args)
         {
-            new ArgsHelper().SetEnvironmentByArgs(args);
-            var startupHelper = new ConfigCliAppsStartupHelper();
-	        
-	        // Run feature:
-            var appSettings = startupHelper.AppSettings();
+	        // Use args in application
+	        new ArgsHelper().SetEnvironmentByArgs(args);
+	        var services = new ServiceCollection();
+
+	        // Setup AppSettings
+	        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+	        var configurationRoot = SetupAppSettings.AppSettingsToBuilder();
+	        services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
+
+	        // Inject services
+	        new RegisterDependencies().Configure(services);
+	        var serviceProvider = services.BuildServiceProvider();
+	        var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-            appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-            
-            if (new ArgsHelper().NeedHelp(args))
-            {
-                appSettings.ApplicationType = AppSettings.StarskyAppType.WebHtml;
-                new ArgsHelper(appSettings).NeedHelpShowDialog();
-                return;
-            }
-            
-            var inputPath = new ArgsHelper(appSettings).GetPathFormArgs(args,false);
+	        appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
-            if (string.IsNullOrWhiteSpace(inputPath))
-            {
-                Console.WriteLine("Please use the -p to add a path first");
-                return;
-            }
-            
-            if(startupHelper.HostFileSystemStorage().IsFolderOrFile(inputPath) != FolderOrFileModel.FolderOrFileTypeList.Folder)
-                Console.WriteLine("Please add a valid folder: " + inputPath);
+	        // dont need database services?: new SetupDatabaseTypes(appSettings,services).BuilderDb();
+	        serviceProvider = services.BuildServiceProvider();
 
-            var name = new ArgsHelper().GetName(args);
-            if ( string.IsNullOrWhiteSpace(name))
-            {
-	            var suggestedInput = Path.GetFileName(inputPath);
-                
-	            Console.WriteLine("\nWhat is the name of the item? (for: "+ suggestedInput +" press Enter)\n ");
-	            name = Console.ReadLine();
-	            if (string.IsNullOrEmpty(name))
-	            {
-		            name = suggestedInput;
-	            }
-            }
+	        var publishPreflight = serviceProvider.GetService<IPublishPreflight>();
+	        var publishService = serviceProvider.GetService<IWebHtmlPublishService>();
+	        var storageSelector = serviceProvider.GetService<ISelectorStorage>();
 
-            if(appSettings.Verbose) Console.WriteLine("Name: " + name);
-            if(appSettings.Verbose) Console.WriteLine("inputPath " + inputPath);
+	        var console = serviceProvider.GetRequiredService<IConsole>();
 
-            // used in this session to find the files back
-            appSettings.StorageFolder = inputPath;
-
-	        var iStorage = startupHelper.SubPathStorage();
-			// use relative to StorageFolder
-	        var listOfFiles = iStorage.GetAllFilesInDirectory("/")
-		        .Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-	        
-            var fileIndexList = startupHelper.ReadMeta().ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
-            
-            // Create thumbnails from the source images 
-			new Thumbnail(iStorage, startupHelper.ThumbnailStorage()).CreateThumb("/"); // <= subPath style
-	        
-	        var base64DataUri = new ToBase64DataUriList(iStorage, startupHelper.ThumbnailStorage()).Create(fileIndexList);
-
-	        var profileName = new PublishPreflight(appSettings).GetPublishProfileNameByIndex(0);
-			await new WebHtmlPublishService(startupHelper.SelectorStorage(), appSettings, 
-					startupHelper.ExifTool(), startupHelper.ReadMeta(), new ConsoleWrapper())
-				.Render(fileIndexList, base64DataUri, profileName);
-
-			// Copy all items in the subFolder content for example JavaScripts
-			new Content(iStorage).CopyContent();
-
-			// Export all
-			new PublishManifest( startupHelper.SelectorStorage().Get(SelectorStorage.StorageServices.HostFilesystem),appSettings,
-				new PlainTextFileHelper()).ExportManifest();
-
+	        // Help and args selectors are defined in the PublishCli
+	        await new PublishCli(storageSelector, publishPreflight, publishService, appSettings, console).Publisher(args);
 		}
         
     }

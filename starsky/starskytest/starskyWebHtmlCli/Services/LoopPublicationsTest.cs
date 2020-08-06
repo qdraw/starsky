@@ -72,7 +72,7 @@ namespace starskytest.starskyWebHtmlCli.Services
 	        
             new WebHtmlPublishService(selectorStorage, appSettings,
 	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage), 
-	            new FakeConsoleWrapper()).Render(list,null,"default");
+	            new FakeConsoleWrapper()).Render(list,null,"default","FAIL");
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 

@@ -23,7 +23,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				   "PublishedContent";
 		}
 
-		public void CopyContent()
+		public void CopyPublishedContent()
 		{
 			var files = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(GetContentFolder());
 			foreach ( var file in files)

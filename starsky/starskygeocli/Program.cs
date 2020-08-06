@@ -18,6 +18,7 @@ namespace starskyGeoCli
 		{
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
+			// todo: remove reference to starskyCore
 			var startupHelper = new ConfigCliAppsStartupHelper();
 			var appSettings = startupHelper.AppSettings();
 

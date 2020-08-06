@@ -6,7 +6,8 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 {
 	public interface IWebHtmlPublishService
 	{
-		Task<bool> Render(List<FileIndexItem> fileIndexItemsList, string[] base64ImageArray,
-			string publishProfileName);
+		Task<bool> RenderCopy(List<FileIndexItem> fileIndexItemsList, 
+			string[] base64ImageArray, string publishProfileName, 
+			string outputFullFilePath, bool moveSourceFiles = false);
 	}
 }

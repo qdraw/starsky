@@ -4,7 +4,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starskyAdminCli.Services;
 using starskycore.Helpers;
-using starskycore.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starskyAdminCli
@@ -13,8 +12,12 @@ namespace starskyAdminCli
 	{
 		internal static void Main(string[] args)
 		{
+			
+			// todo fix NAME
+			
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
+			// todo :  remove reference to starskyCore
 			var startupHelper = new ConfigCliAppsStartupHelper();
 			var appSettings = startupHelper.AppSettings();
 			
