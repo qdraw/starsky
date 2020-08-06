@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -13,11 +16,13 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly PlainTextFileHelper _plainTextFileHelper;
 		private readonly IStorage _storage;
+		private readonly IPublishPreflight _publishPreflight;
 
 		private const string ManifestName = "_settings.json";
 
-		public PublishManifest(IStorage storage,  AppSettings appSettings, PlainTextFileHelper plainTextFileHelper)
+		public PublishManifest(IPublishPreflight publishPreflight, IStorage storage,  AppSettings appSettings, PlainTextFileHelper plainTextFileHelper)
 		{
+			_publishPreflight = publishPreflight;
 			_storage = storage;
 			_appSettings = appSettings;
 			_plainTextFileHelper = plainTextFileHelper;
@@ -26,17 +31,34 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <summary>
 		/// Export settings as manifest.json to the StorageFolder within appSettings
 		/// </summary>
-		public void ExportManifest()
+		/// <param name="fullFilePath"></param>
+		/// <param name="itemName"></param>
+		/// <param name="publishProfileName"></param>
+		public void ExportManifest( string fullFilePath, string itemName, string publishProfileName)
 		{
-			// Export settings as manifest.json to the StorageFolder
-
-			throw new Exception("_appSettings.Name is obsolete ");
+			
+			//t o todo!!
+			// missing appended items
+			// _bigimages-helper.js
+			
+			var copy = _publishPreflight.GetPublishProfileName(publishProfileName).Select(p
+				=> new Dictionary<string, bool>
+				{
+					{
+						!string.IsNullOrEmpty(p.Folder)
+							? p.Folder
+							: p.Path.Replace(fullFilePath, string.Empty),
+						p.Copy
+					}
+				});
+			
 			var manifest = new ManifestModel
 			{
-				Name = _appSettings.Name,
+				Name = itemName,
+				Copy = copy
 			};
-			var output = JsonConvert.SerializeObject(manifest);
-			var outputLocation = Path.Combine(_appSettings.StorageFolder, ManifestName);
+			var output = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+			var outputLocation = Path.Combine(fullFilePath, ManifestName);
 			_storage.FileDelete(outputLocation);
 
 			_storage.WriteStream(_plainTextFileHelper.StringToStream(output), outputLocation);

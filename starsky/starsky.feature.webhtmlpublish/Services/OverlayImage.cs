@@ -3,13 +3,17 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.webhtmlpublish.Helpers
+namespace starsky.feature.webhtmlpublish.Services
 {
-    public class OverlayImage
+	[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
+    public class OverlayImage : IOverlayImage
     {
         private readonly AppSettings _appSettings;
         private readonly IStorage _thumbnailStorage;
@@ -24,11 +28,12 @@ namespace starsky.feature.webhtmlpublish.Helpers
             _appSettings = appSettings;
         }
 
-        public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+        public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
         {
-            var outputFilePath = 
-	            profile.Folder + _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true )
-	                           + profile.Append + Path.GetExtension(sourceFilePath);
+            var outputFilePath = PathHelper.AddBackslash(outputParentFullFilePathFolder)  +
+                                 profile.Folder + _appSettings.GenerateSlug( 
+	                                 Path.GetFileNameWithoutExtension(sourceFilePath),true )
+                                 + profile.Append + Path.GetExtension(sourceFilePath);
 	        
             return outputFilePath;
         }

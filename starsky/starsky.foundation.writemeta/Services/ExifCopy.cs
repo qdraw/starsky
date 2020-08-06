@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -31,7 +30,10 @@ namespace starsky.foundation.writemeta.Services
 			"\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n" +
 			"</rdf:RDF>\n</x:xmpmeta>";
 
-		
+		/// <summary>
+		/// Create a simple xmp starter file
+		/// </summary>
+		/// <param name="xmpPath">location</param>
 		public void XmpCreate(string xmpPath)
 		{
 			if ( _iStorage.ExistFile(xmpPath) ) return;
@@ -39,7 +41,6 @@ namespace starsky.foundation.writemeta.Services
 			var plainTextStream = new PlainTextFileHelper().StringToStream(XmpStartContent);
 			_iStorage.WriteStream(plainTextStream, xmpPath);
 		}
-
 		
 		/// <summary>
 		/// Add a .xmp sidecar file
@@ -62,23 +63,24 @@ namespace starsky.foundation.writemeta.Services
 			// Now copy content using exifTool
 			CopyExifPublish(subPath, withXmp);
 
-
 			return withXmp;
 		}
 	    
-		public string CopyExifPublish(string fromSubPath, string toSubPath)
+		/// <summary>
+		/// Keep within the same storage provider
+		/// </summary>
+		/// <param name="fromSubPath"></param>
+		/// <param name="toSubPath"></param>
+		/// <returns></returns>
+		private string CopyExifPublish(string fromSubPath, string toSubPath)
 		{
 			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
-			var comparedNames = CompareAll(updateModel);
+			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);
-			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames);
+			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames, false);
 		}
 
-		public List<string> CompareAll(FileIndexItem fileIndexItem)
-		{
-			return FileIndexCompareHelper.Compare(new FileIndexItem(), fileIndexItem);
-		}
 
 	}
 }

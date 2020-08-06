@@ -62,9 +62,9 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				return;
 			}
 
-			var name = _publishPreflight.GetNameConsole(inputFullPath,args);
+			var itemName = _publishPreflight.GetNameConsole(inputFullPath,args);
 
-			if(_appSettings.Verbose) _console.WriteLine("Name: " + name);
+			if(_appSettings.Verbose) _console.WriteLine("Name: " + itemName);
 			if(_appSettings.Verbose) _console.WriteLine("inputPath " + inputFullPath);
 
 			// used in this session to find the photos back
@@ -86,7 +86,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			// todo introduce selector
 			var profileName = new PublishPreflight(_appSettings,_console).GetPublishProfileNameByIndex(0);
 			
-			await _publishService.RenderCopy(fileIndexList, base64DataUri, profileName, inputFullPath, true);
+			await _publishService.RenderCopy(fileIndexList, base64DataUri, profileName, 
+				itemName, inputFullPath, true);
 			
 
 			

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,17 @@ using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.ViewModels;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
-using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
@@ -26,38 +27,45 @@ namespace starsky.feature.webhtmlpublish.Services
         private readonly AppSettings _appSettings;
         private readonly IExifTool _exifTool;
 	    private readonly IStorage _subPathStorage;
-	    private readonly IReadMeta _readMeta;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IConsole _console;
+	    private readonly IOverlayImage _overlayImage;
+	    private readonly PublishManifest _publishManifest;
+	    private readonly IPublishPreflight _publishPreflight;
 
-	    public WebHtmlPublishService(ISelectorStorage selectorStorage, AppSettings appSettings, 
-		    IExifTool exifTool, IReadMeta readMeta, IConsole console)
+	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage selectorStorage, AppSettings appSettings, 
+		    IExifTool exifTool, IOverlayImage overlayImage, IConsole console)
 	    {
+		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		    _selectorStorage = selectorStorage;
             _appSettings = appSettings;
             _exifTool = exifTool;
-		    _readMeta = readMeta;
 		    _console = console;
+		    _overlayImage = overlayImage;
+		    _publishManifest = new PublishManifest(_publishPreflight, _hostFileSystemStorage, _appSettings,
+			    new PlainTextFileHelper());
 	    }
 	    
-	    
 	    public async Task<bool> RenderCopy(List<FileIndexItem> fileIndexItemsList, 
-		    string[] base64ImageArray, string publishProfileName, string outputFullFilePath, bool moveSourceFiles = false)
+		    string[] base64ImageArray, string publishProfileName, string itemName, string outputFullFilePath,
+		    bool moveSourceFiles = false)
 	    {
-		    var render = await Render(fileIndexItemsList, base64ImageArray, publishProfileName, outputFullFilePath);
+		    var render = await Render(fileIndexItemsList, base64ImageArray, publishProfileName, itemName, outputFullFilePath, moveSourceFiles);
+
+		    _publishManifest.ExportManifest(outputFullFilePath, itemName, publishProfileName);
+		    
 		    // Copy all items in the subFolder content for example JavaScripts
 		    new Content(_subPathStorage).CopyPublishedContent();
 		    return render;
 	    }
 	    
-
         public async Task<bool> Render(List<FileIndexItem> fileIndexItemsList,
-	        string[] base64ImageArray, string publishProfileName, 
+	        string[] base64ImageArray, string publishProfileName, string itemName, 
 	        string outputParentFullFilePathFolder, bool moveSourceFiles = false)
         {
 	        if ( !_appSettings.PublishProfiles.Any() )
@@ -77,34 +85,33 @@ namespace starsky.feature.webhtmlpublish.Services
             // Order alphabetically
             fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
 
-            var profiles = _appSettings.PublishProfiles
-	            .FirstOrDefault(p => p.Key == publishProfileName).Value;
+			var profiles = _publishPreflight.GetPublishProfileName(publishProfileName);
             foreach (var currentProfile in profiles)
             {
                 switch (currentProfile.ContentType)
                 {
                     case TemplateContentType.Html:
-                        await GenerateWebHtml(profiles, currentProfile, base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder);
+                        await GenerateWebHtml(profiles, currentProfile, itemName, base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder);
                         break;
                     case TemplateContentType.Jpeg:
-                        GenerateJpeg(currentProfile,fileIndexItemsList, outputParentFullFilePathFolder);
+                        GenerateJpeg(currentProfile, fileIndexItemsList, outputParentFullFilePathFolder);
                         break;
-                    // case TemplateContentType.MoveSourceFiles:
-                    //     GenerateMoveSourceFiles(currentProfile,fileIndexItemsList);
-                    //     break;
+                    case TemplateContentType.MoveSourceFiles:
+                        await GenerateMoveSourceFiles(currentProfile,fileIndexItemsList, outputParentFullFilePathFolder, moveSourceFiles);
+                        break;
                 }
             }
             return true;
         }
 
         private async Task GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
-	        AppSettingsPublishProfiles currentProfile, string[] base64ImageArray, 
+	        AppSettingsPublishProfiles currentProfile, string itemName, string[] base64ImageArray, 
 	        IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
             // Generates html by razorLight
             var viewModel = new WebHtmlViewModel
             {
-	            ItemName = "test",
+	            ItemName = itemName,
 	            Profiles = profiles,
                 AppSettings = _appSettings,
                 CurrentProfile = currentProfile,
@@ -127,53 +134,68 @@ namespace starsky.feature.webhtmlpublish.Services
 	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
 	        await _hostFileSystemStorage.WriteStreamAsync(stream, Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
-	        if ( _appSettings.Verbose ) _console.WriteLine(embeddedResult);
+	        _console.Write(_appSettings.Verbose ? embeddedResult +"\n" : "•");
         }
 
         private void GenerateJpeg(AppSettingsPublishProfiles profile, 
 	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
-            ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
-            var overlayImage = new OverlayImage(_selectorStorage,_appSettings);
+	        ToCreateSubfolder(profile,outputParentFullFilePathFolder);
 
             foreach (var item in fileIndexItemsList)
             {
-
-                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
+                var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, item.FilePath, profile);
                         
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
                 {
-	                overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+	                _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
                 }
                 else
                 {
 	                // Thumbs are 1000 px (and larger)
-	                overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
+	                _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
                 }
                             
 	            if ( profile.MetaData )
 	            {
-		            new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, _readMeta)
-			            .CopyExifPublish(item.FilePath, outputPath);
+		            // Write the metadata to the new created file
+		            var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), item);
+		            comparedNames.Add(nameof(FileIndexItem.Software));
+		            new ExifToolCmdHelper(_exifTool,_hostFileSystemStorage, _thumbnailStorage, null)
+			            .Update(item, comparedNames, false);
 	            }
             }
         }
 
-        private void GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, 
-	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList)
+        private async Task GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, 
+	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder, bool moveSourceFiles)
         {
-            ToCreateSubfolder(profile,fileIndexItemsList.FirstOrDefault()?.ParentDirectory);
+            ToCreateSubfolder(profile,outputParentFullFilePathFolder);
+            
             var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 
             foreach (var item in fileIndexItemsList)
             {
 	            // input: item.FilePath
-                var outputPath = overlayImage.FilePathOverlayImage(item.FilePath, profile);
-	            _subPathStorage.FileMove(item.FilePath,outputPath);
+                var outputPath = overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, item.FilePath, profile);
+
+                await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(item.FilePath),
+	                outputPath);
+                
+                // only delete when using in cli mode
+                if ( moveSourceFiles )
+                {
+	                _subPathStorage.FileDelete(item.FilePath);
+                }
             }
         }
 
+        /// <summary>
+        /// Create SubFolders by the profile.Folder setting
+        /// </summary>
+        /// <param name="profile">config</param>
+        /// <param name="parentFolder">root folder</param>
         private void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
         {
             // check if subfolder '1000' exist on disk
@@ -187,10 +209,10 @@ namespace starsky.feature.webhtmlpublish.Services
 	        
             profileFolderStringBuilder.Append(profile.Folder);
 
-	        if ( _subPathStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
+	        if ( _hostFileSystemStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
 	             == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 	        {
-		        _subPathStorage.CreateDirectory(profileFolderStringBuilder.ToString());
+		        _hostFileSystemStorage.CreateDirectory(profileFolderStringBuilder.ToString());
 	        }
         }
     }

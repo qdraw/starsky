@@ -7,11 +7,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 {
 	public class Content
 	{
-		private readonly IStorage _istorage;
+		private readonly IStorage _iStorage;
 
 		public Content(IStorage storage)
 		{
-			_istorage = storage;
+			_iStorage = storage;
 		}
 
 		private string GetContentFolder()
@@ -25,11 +25,14 @@ namespace starsky.feature.webhtmlpublish.Helpers
 
 		public void CopyPublishedContent()
 		{
+			
+			// todo REFACTOR!!
+			
 			var files = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(GetContentFolder());
 			foreach ( var file in files)
 			{
 				var input = new StorageHostFullPathFilesystem().ReadStream(file);
-				_istorage.WriteStream(input, Path.GetFileName(file));
+				_iStorage.WriteStream(input, Path.GetFileName(file));
 			}
 		}
 
