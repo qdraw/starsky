@@ -52,8 +52,7 @@ namespace starsky.feature.webhtmlpublish.Services
             _exifTool = exifTool;
 		    _console = console;
 		    _overlayImage = overlayImage;
-		    _publishManifest = new PublishManifest(_hostFileSystemStorage, _appSettings,
-			    new PlainTextFileHelper());
+		    _publishManifest = new PublishManifest(_hostFileSystemStorage, new PlainTextFileHelper());
 		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);

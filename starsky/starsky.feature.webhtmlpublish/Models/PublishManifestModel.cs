@@ -6,7 +6,7 @@ using starsky.foundation.platform.Models;
 
 namespace starsky.feature.webhtmlpublish.Models
 {
-	public class ManifestModel
+	public class PublishManifestModel
 	{
 		/// <summary>
 		/// Display name

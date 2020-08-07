@@ -74,10 +74,12 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			var listOfFiles = _subPathStorage.GetAllFilesInDirectory("/")
 				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
 			      
-			var fileIndexList = new ReadMeta(_subPathStorage).ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			var fileIndexList = new ReadMeta(_subPathStorage)
+				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 			         
 			// todo introduce selector
-			var profileName = new PublishPreflight(_appSettings,_console).GetPublishProfileNameByIndex(0);
+			var profileName = new PublishPreflight(_appSettings,_console)
+				.GetPublishProfileNameByIndex(0);
 			
 			await _publishService.RenderCopy(fileIndexList,  profileName, 
 				itemName, inputFullPath, true);

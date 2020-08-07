@@ -120,7 +120,7 @@ namespace starsky.feature.export.Services
 			new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipOutputFileName);
 				
 			// Write a single file to be sure that writing is ready
-			var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".done";
+			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 			await _hostFileSystemStorage.
 				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
 			if(_appSettings.Verbose) _console.WriteLine("Zip done: " + doneFileFullPath);
@@ -140,7 +140,7 @@ namespace starsky.feature.export.Services
 				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
 			{
 				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
-				var sourceThumb = Path.Join(_appSettings.ThumbnailTempFolder,
+				var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder,
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
@@ -181,7 +181,7 @@ namespace starsky.feature.export.Services
 					
 					var thumbFilename = Path.GetFileNameWithoutExtension(filePath);
 					var subPath = _query.GetSubPathByHash(thumbFilename);
-					var filename = subPath.Split("/").LastOrDefault();
+					var filename = subPath.Split('/').LastOrDefault(); // first a string
 					fileNames.Add(filename);
 					continue;
 				}
@@ -216,8 +216,8 @@ namespace starsky.feature.export.Services
 		/// <returns>null if status file is not found, true if done file exist</returns>
 		public Tuple<bool?,string> StatusIsReady(string zipOutputFileName)
 		{
-			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".zip";
-			var doneFileFullPath = Path.Join(_appSettings.TempFolder,zipOutputFileName) + ".done";
+			var sourceFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".zip";
+			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 
 			if ( !_hostFileSystemStorage.ExistFile(sourceFullPath)  ) return new Tuple<bool?, string>(null,null);
 

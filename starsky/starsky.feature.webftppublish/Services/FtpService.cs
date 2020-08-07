@@ -48,79 +48,7 @@ namespace starskywebftpcli.Services
 			_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
 			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 		}
-
-		/// <summary>
-		/// Makes a list of containing: the root folder, subfolders to create on the ftp service
-		/// </summary>
-		/// <returns></returns>
-		internal IEnumerable<string> CreateListOfRemoteDirectories()
-		{
-			var pushDirectory = _webFtpNoLogin + "/" + _appSettings.GenerateSlug(_appSettings.Name,true);
-
-			var createThisDirectories = new List<string>
-			{
-				_webFtpNoLogin, // <= the base dir
-				pushDirectory // <= current log item
-			};
-			
-			// make the 1000 and 500 dirs on ftp
-			
-			
-			// todo: CHANGE TEST!!
-			
-			
-			foreach ( var publishProfile in _appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value )
-			{
-				if ( publishProfile.ContentType == TemplateContentType.Jpeg )
-				{
-					createThisDirectories.Add(pushDirectory + "/" + publishProfile.Folder);
-				}
-			}
-
-			return createThisDirectories;
-		}
-
-		/// <summary>
-		/// Makes a list of 'full file paths' of files on disk to copy
-		/// </summary>
-		/// <returns></returns>
-		internal HashSet<string> CreateListOfRemoteFiles()
-		{
-			
-			// TODO: CHANGE TEST
-			
-			
-			// copy content of dir
-			var copyThisFiles = new List<string>();
-			foreach ( var publishProfile in _appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value )
-			{
-				switch ( publishProfile.ContentType )
-				{
-					case TemplateContentType.Jpeg when publishProfile.Copy:
-					{
-						var files = _storage.GetAllFilesInDirectory(publishProfile.Folder)
-							.Where(ExtensionRolesHelper.IsExtensionExifToolSupported).ToList();
-						copyThisFiles.AddRange(files);
-						break;
-					}
-					case TemplateContentType.Html when publishProfile.Copy:
-						copyThisFiles.Add(publishProfile.Path);
-						break;
-					case TemplateContentType.None:
-						break;
-					case TemplateContentType.MoveSourceFiles:
-						break;
-				}
-			}
-			
-			// Add PublishedContent (content in main-folder)
-			var publishedContent = _storage.GetAllFilesInDirectory("/").ToList();
-			copyThisFiles.AddRange(publishedContent);
-
-			return copyThisFiles.ToHashSet();
-		}
-
-
+		
 		/// <summary>
 		/// Copy all content to the ftp disk
 		/// </summary>
@@ -143,6 +71,44 @@ namespace starskywebftpcli.Services
 			Console.Write("\n");
 			return true;
 		}
+
+		/// <summary>
+		/// Makes a list of containing: the root folder, subfolders to create on the ftp service
+		/// make the 1000 and 500 dirs on ftp
+		/// </summary>
+		/// <returns></returns>
+		internal IEnumerable<string> CreateListOfRemoteDirectories(string slug, IEnumerable<Tuple<string, bool>> copyContent)
+		{
+			var pushDirectory = _webFtpNoLogin + "/" + slug;
+
+			var createThisDirectories = new List<string>
+			{
+				_webFtpNoLogin, // <= the base dir
+				pushDirectory // <= current log item
+			};
+			
+			foreach ( var copyItem in copyContent.Where(p => p.Item2) )
+			{
+				createThisDirectories.Add(pushDirectory + "/" + copyItem.Item1);
+			}
+			
+			return createThisDirectories;
+		}
+
+		/// <summary>
+		/// Makes a list of 'full file paths' of files on disk to copy
+		/// </summary>
+		/// <returns></returns>
+		internal HashSet<string> CreateListOfRemoteFiles(IEnumerable<Tuple<string, bool>> copyContent)
+		{
+			var copyThisFiles = new List<string>();
+			foreach ( var copyItem in copyContent.Where(p => p.Item2) )
+			{
+				copyThisFiles.Add("/" + copyItem.Item1);
+			}
+			return copyThisFiles.ToHashSet();
+		}
+
 
 		/// <summary>
 		/// Preflight + the upload to the service

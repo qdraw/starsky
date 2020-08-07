@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>starsky.feature.metaupdate</RootNamespace>
         <ProjectGuid>{9567d576-4dee-481b-b316-c55d493416f4}</ProjectGuid>
         <Version>0.3.0-beta.0</Version>
