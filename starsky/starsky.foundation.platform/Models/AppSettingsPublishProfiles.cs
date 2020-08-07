@@ -119,6 +119,7 @@ namespace starsky.foundation.platform.Models
         None = 0,
         Html = 1,
         Jpeg = 2,
-        MoveSourceFiles = 3
+        MoveSourceFiles = 3,
+        PublishContent = 4
     }
 }

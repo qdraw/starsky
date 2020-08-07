@@ -4,6 +4,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 {
 	public interface IOverlayImage
 	{
+		string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile);
 		public string FilePathOverlayImage(string outputParentFullFilePathFolder,
 			string sourceFilePath, AppSettingsPublishProfiles profile);
 

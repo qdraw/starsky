@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -34,9 +33,12 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IOverlayImage _overlayImage;
 	    private readonly PublishManifest _publishManifest;
 	    private readonly IPublishPreflight _publishPreflight;
+	    private readonly CopyPublishedContent _copyPublishedContent;
+	    private readonly ToCreateSubfolder _toCreateSubfolder;
 
-	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage selectorStorage, AppSettings appSettings, 
-		    IExifTool exifTool, IOverlayImage overlayImage, IConsole console)
+	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
+			    selectorStorage, AppSettings appSettings, IExifTool exifTool, 
+		    IOverlayImage overlayImage, IConsole console)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -47,37 +49,39 @@ namespace starsky.feature.webhtmlpublish.Services
             _exifTool = exifTool;
 		    _console = console;
 		    _overlayImage = overlayImage;
-		    _publishManifest = new PublishManifest(_publishPreflight, _hostFileSystemStorage, _appSettings,
+		    _publishManifest = new PublishManifest(_hostFileSystemStorage, _appSettings,
 			    new PlainTextFileHelper());
+		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
+		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
+			    selectorStorage);
 	    }
 	    
-	    public async Task<bool> RenderCopy(List<FileIndexItem> fileIndexItemsList, 
+	    public async Task<List<Dictionary<string, bool>>> RenderCopy(List<FileIndexItem> fileIndexItemsList, 
 		    string[] base64ImageArray, string publishProfileName, string itemName, string outputFullFilePath,
 		    bool moveSourceFiles = false)
 	    {
-		    var render = await Render(fileIndexItemsList, base64ImageArray, publishProfileName, itemName, outputFullFilePath, moveSourceFiles);
+		    var copyContent = await Render(fileIndexItemsList, base64ImageArray, 
+			    publishProfileName, itemName, outputFullFilePath, moveSourceFiles);
 
-		    _publishManifest.ExportManifest(outputFullFilePath, itemName, publishProfileName);
-		    
-		    // Copy all items in the subFolder content for example JavaScripts
-		    new Content(_subPathStorage).CopyPublishedContent();
-		    return render;
+		    _publishManifest.ExportManifest(outputFullFilePath, itemName, copyContent);
+
+		    return copyContent;
 	    }
 	    
-        public async Task<bool> Render(List<FileIndexItem> fileIndexItemsList,
+        public async Task<List<Dictionary<string, bool>>> Render(List<FileIndexItem> fileIndexItemsList,
 	        string[] base64ImageArray, string publishProfileName, string itemName, 
 	        string outputParentFullFilePathFolder, bool moveSourceFiles = false)
         {
 	        if ( !_appSettings.PublishProfiles.Any() )
 	        {
 		        _console.WriteLine("There are no config items");
-		        return false;
+		        return null;
 	        }
 	        
             if ( !_appSettings.PublishProfiles.ContainsKey(publishProfileName) )
             {
 	            _console.WriteLine("Key not found");
-	            return false;
+	            return null;
             }
             
             if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
@@ -85,26 +89,36 @@ namespace starsky.feature.webhtmlpublish.Services
             // Order alphabetically
             fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
 
+            var copyResult = new List<Dictionary<string, bool>>();
+            
 			var profiles = _publishPreflight.GetPublishProfileName(publishProfileName);
             foreach (var currentProfile in profiles)
             {
                 switch (currentProfile.ContentType)
                 {
                     case TemplateContentType.Html:
-                        await GenerateWebHtml(profiles, currentProfile, itemName, base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder);
+	                    copyResult.Add(await GenerateWebHtml(profiles, currentProfile, itemName, 
+		                    base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder));
                         break;
                     case TemplateContentType.Jpeg:
-                        GenerateJpeg(currentProfile, fileIndexItemsList, outputParentFullFilePathFolder);
+	                    copyResult.AddRange(GenerateJpeg(currentProfile, fileIndexItemsList, 
+		                    outputParentFullFilePathFolder));
                         break;
                     case TemplateContentType.MoveSourceFiles:
-                        await GenerateMoveSourceFiles(currentProfile,fileIndexItemsList, outputParentFullFilePathFolder, moveSourceFiles);
+	                    copyResult.AddRange(await GenerateMoveSourceFiles(currentProfile,fileIndexItemsList, 
+		                    outputParentFullFilePathFolder, moveSourceFiles));
                         break;
+                    case TemplateContentType.PublishContent:
+	                    // Copy all items in the subFolder content for example JavaScripts
+	                    copyResult.AddRange(_copyPublishedContent.CopyContent(currentProfile, outputParentFullFilePathFolder));
+	                    break;
+
                 }
             }
-            return true;
+            return copyResult;
         }
 
-        private async Task GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
+        private async Task<Dictionary<string, bool>> GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
 	        AppSettingsPublishProfiles currentProfile, string itemName, string[] base64ImageArray, 
 	        IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
@@ -132,19 +146,28 @@ namespace starsky.feature.webhtmlpublish.Services
 	            .EmbeddedViews(currentProfile.Template, viewModel);
 
 	        var stream = new PlainTextFileHelper().StringToStream(embeddedResult);
-	        await _hostFileSystemStorage.WriteStreamAsync(stream, Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
+	        await _hostFileSystemStorage.WriteStreamAsync(stream, 
+		        Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
 	        _console.Write(_appSettings.Verbose ? embeddedResult +"\n" : "•");
+	        
+	        return new Dictionary<string, bool>{
+		        {
+			        currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
+			        currentProfile.Copy
+		        }
+	        };
         }
 
-        private void GenerateJpeg(AppSettingsPublishProfiles profile, 
+        private IEnumerable<Dictionary<string, bool>> GenerateJpeg(AppSettingsPublishProfiles profile, 
 	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
         {
-	        ToCreateSubfolder(profile,outputParentFullFilePathFolder);
+	        _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
 
-            foreach (var item in fileIndexItemsList)
+	        foreach (var item in fileIndexItemsList)
             {
-                var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, item.FilePath, profile);
+                var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, 
+	                item.FilePath, profile);
                         
                 // for less than 1000px
                 if (profile.SourceMaxWidth <= 1000)
@@ -160,25 +183,34 @@ namespace starsky.feature.webhtmlpublish.Services
 	            if ( profile.MetaData )
 	            {
 		            // Write the metadata to the new created file
-		            var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), item);
+		            var comparedNames = FileIndexCompareHelper.Compare(
+			            new FileIndexItem(), item);
 		            comparedNames.Add(nameof(FileIndexItem.Software));
-		            new ExifToolCmdHelper(_exifTool,_hostFileSystemStorage, _thumbnailStorage, null)
-			            .Update(item, comparedNames, false);
+		            new ExifToolCmdHelper(_exifTool,_hostFileSystemStorage, 
+				            _thumbnailStorage, null).Update(item, comparedNames, false);
 	            }
             }
+	        
+	        return fileIndexItemsList.Select(item => new Dictionary<string, bool>
+	        {
+		        {_overlayImage.FilePathOverlayImage(item.FilePath, profile), 
+			        profile.Copy}
+	        });
         }
 
-        private async Task GenerateMoveSourceFiles(AppSettingsPublishProfiles profile, 
-	        IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder, bool moveSourceFiles)
+        private async Task<IEnumerable<Dictionary<string, bool>>> GenerateMoveSourceFiles(
+	        AppSettingsPublishProfiles profile, IReadOnlyCollection<FileIndexItem> fileIndexItemsList,
+	        string outputParentFullFilePathFolder, bool moveSourceFiles)
         {
-            ToCreateSubfolder(profile,outputParentFullFilePathFolder);
+	        _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
             
             var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
 
             foreach (var item in fileIndexItemsList)
             {
 	            // input: item.FilePath
-                var outputPath = overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, item.FilePath, profile);
+                var outputPath = overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
+	                item.FilePath, profile);
 
                 await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(item.FilePath),
 	                outputPath);
@@ -189,31 +221,14 @@ namespace starsky.feature.webhtmlpublish.Services
 	                _subPathStorage.FileDelete(item.FilePath);
                 }
             }
-        }
-
-        /// <summary>
-        /// Create SubFolders by the profile.Folder setting
-        /// </summary>
-        /// <param name="profile">config</param>
-        /// <param name="parentFolder">root folder</param>
-        private void ToCreateSubfolder(AppSettingsPublishProfiles profile, string parentFolder)
-        {
-            // check if subfolder '1000' exist on disk
-            // used for moving subfolders first
-            var profileFolderStringBuilder = new StringBuilder();
-            if (!string.IsNullOrEmpty(parentFolder))
+            
+            return fileIndexItemsList.Select(item => new Dictionary<string, bool>
             {
-                profileFolderStringBuilder.Append(parentFolder);
-                profileFolderStringBuilder.Append("/");
-            }
-	        
-            profileFolderStringBuilder.Append(profile.Folder);
-
-	        if ( _hostFileSystemStorage.IsFolderOrFile(profileFolderStringBuilder.ToString()) 
-	             == FolderOrFileModel.FolderOrFileTypeList.Deleted)
-	        {
-		        _hostFileSystemStorage.CreateDirectory(profileFolderStringBuilder.ToString());
-	        }
+	            {_overlayImage.FilePathOverlayImage(item.FilePath, profile), 
+		            profile.Copy}
+            });
         }
+
+        
     }
 }

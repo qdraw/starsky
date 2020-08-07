@@ -28,14 +28,17 @@ namespace starsky.feature.webhtmlpublish.Services
             _appSettings = appSettings;
         }
 
+	    public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+	    {
+		    return profile.Folder + _appSettings.GenerateSlug( 
+			                                        Path.GetFileNameWithoutExtension(sourceFilePath),true )
+		                                        + profile.Append + Path.GetExtension(sourceFilePath);
+	    }
+	    
         public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
         {
-            var outputFilePath = PathHelper.AddBackslash(outputParentFullFilePathFolder)  +
-                                 profile.Folder + _appSettings.GenerateSlug( 
-	                                 Path.GetFileNameWithoutExtension(sourceFilePath),true )
-                                 + profile.Append + Path.GetExtension(sourceFilePath);
-	        
-            return outputFilePath;
+            return PathHelper.AddBackslash(outputParentFullFilePathFolder)  +
+                                 FilePathOverlayImage(sourceFilePath,profile);
         }
         
         public void ResizeOverlayImageThumbnails(string fileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)

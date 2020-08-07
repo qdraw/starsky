@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Models;
@@ -16,13 +15,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly PlainTextFileHelper _plainTextFileHelper;
 		private readonly IStorage _storage;
-		private readonly IPublishPreflight _publishPreflight;
 
 		private const string ManifestName = "_settings.json";
 
-		public PublishManifest(IPublishPreflight publishPreflight, IStorage storage,  AppSettings appSettings, PlainTextFileHelper plainTextFileHelper)
+		public PublishManifest(IStorage storage,  AppSettings appSettings, PlainTextFileHelper plainTextFileHelper)
 		{
-			_publishPreflight = publishPreflight;
 			_storage = storage;
 			_appSettings = appSettings;
 			_plainTextFileHelper = plainTextFileHelper;
@@ -33,29 +30,14 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// </summary>
 		/// <param name="fullFilePath"></param>
 		/// <param name="itemName"></param>
-		/// <param name="publishProfileName"></param>
-		public void ExportManifest( string fullFilePath, string itemName, string publishProfileName)
+		/// <param name="copyContent"></param>
+		public void ExportManifest( string fullFilePath, string itemName, 
+			IEnumerable<Dictionary<string, bool>> copyContent)
 		{
-			
-			//t o todo!!
-			// missing appended items
-			// _bigimages-helper.js
-			
-			var copy = _publishPreflight.GetPublishProfileName(publishProfileName).Select(p
-				=> new Dictionary<string, bool>
-				{
-					{
-						!string.IsNullOrEmpty(p.Folder)
-							? p.Folder
-							: p.Path.Replace(fullFilePath, string.Empty),
-						p.Copy
-					}
-				});
-			
 			var manifest = new ManifestModel
 			{
 				Name = itemName,
-				Copy = copy
+				Copy = copyContent
 			};
 			var output = JsonConvert.SerializeObject(manifest, Formatting.Indented);
 			var outputLocation = Path.Combine(fullFilePath, ManifestName);
