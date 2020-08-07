@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
@@ -13,7 +12,6 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
@@ -112,7 +110,6 @@ namespace starsky.feature.webhtmlpublish.Services
 	                    // Copy all items in the subFolder content for example JavaScripts
 	                    copyResult.AddRange(_copyPublishedContent.CopyContent(currentProfile, outputParentFullFilePathFolder));
 	                    break;
-
                 }
             }
             return copyResult;
@@ -228,7 +225,5 @@ namespace starsky.feature.webhtmlpublish.Services
 		            profile.Copy}
             });
         }
-
-        
     }
 }

@@ -88,14 +88,6 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			
 			await _publishService.RenderCopy(fileIndexList, base64DataUri, profileName, 
 				itemName, inputFullPath, true);
-			
-
-			
-			// Export all
-			// new PublishManifest( startupHelper.SelectorStorage()
-			// 		.Get(SelectorStorage.StorageServices.HostFilesystem),appSettings,
-			// 	new PlainTextFileHelper()).ExportManifest();
-			
 		}
 	}
 }
