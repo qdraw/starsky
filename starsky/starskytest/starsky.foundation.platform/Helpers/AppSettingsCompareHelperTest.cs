@@ -146,7 +146,8 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.PublishProfiles, to.PublishProfiles);
+			
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
 		}
 		
 		[TestMethod]
@@ -189,7 +190,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.PublishProfiles, to.PublishProfiles);
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
 		}
 	}
 }

@@ -47,7 +47,6 @@ namespace starskytest.Models
 
 		}
 
-
 		[TestMethod]
 		public void AppSettingsPublishProfilesTest_Path_AssemblyDirectory()
 		{
@@ -70,8 +69,7 @@ namespace starskytest.Models
 				Path = null
 			};
 			
-			Assert.AreEqual(string.Empty, model.Path);
-
+			Assert.IsTrue(model.Path.Contains("default.png"));
 		}
 	}
 }
