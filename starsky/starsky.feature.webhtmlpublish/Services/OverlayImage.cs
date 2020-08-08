@@ -58,6 +58,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		        var result = ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
 			        outputFullFilePath);
 		        _hostFileSystem.WriteStream(result, outputFullFilePath);
+		        sourceImageStream.Dispose();
 	        }
         }
 	    
