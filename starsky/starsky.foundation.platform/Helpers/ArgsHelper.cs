@@ -307,7 +307,7 @@ namespace starsky.foundation.platform.Helpers
 					_console.WriteLine($"Config for {_appSettings.ApplicationType}");
 					foreach ( var publishProfiles in _appSettings.PublishProfiles )
 					{
-						Console.WriteLine($"ID: {publishProfiles.Key}" );
+						_console.WriteLine($"ID: {publishProfiles.Key}" );
 						foreach ( var publishProfile in publishProfiles.Value )
 						{
 							_console.WriteLine("--- " +

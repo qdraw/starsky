@@ -10,6 +10,7 @@ using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.platform.Helpers
 {
@@ -359,7 +360,39 @@ namespace starskytest.starsky.foundation.platform.Helpers
                 .NeedHelpShowDialog();
 			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
 				.NeedHelpShowDialog();
+        }
+        
+        	    
+        [TestMethod]
+        public void NeedHelpShowDialog_WebHtml_Verbose()
+        {
+	        var consoleWrapper = new FakeConsoleWrapper();
+	        var appSettings =
+		        new AppSettings {
+			        Verbose = true, 
+			        ApplicationType = AppSettings.StarskyAppType.WebHtml, 
+			        PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>{
+			        {
+				        "_d", new List<AppSettingsPublishProfiles>
+				        {
+					        new AppSettingsPublishProfiles
+					        {
+						        Append = "_append", 
+						        Copy = true, 
+						        Folder = "folder"
+					        }
+				        }
+			        }}
+		        };
+	        
+	        new ArgsHelper(appSettings, consoleWrapper )
+		        .NeedHelpShowDialog();
 
+	        var contains = consoleWrapper.WrittenLines.Contains(
+		        "--- Path:  Append: _append Copy: True Folder: folder/ Prepend:  Template:  " +
+		        "ContentType: None MetaData: True OverlayMaxWidth: 100 SourceMaxWidth: 100 ");
+	        
+	        Assert.IsTrue(contains);
         }
 	    
 	    [TestMethod]
@@ -482,5 +515,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		    var value = new ArgsHelper(_appSettings).GetColorClass(args);
 		    Assert.AreEqual(-1, value);
 	    }
+	    
+	    [TestMethod]
+	    public void Name()
+	    {
+		    _appSettings.StorageFolder = new CreateAnImage().BasePath;
+		    var args = new List<string> {"-n", "test"}.ToArray();
+		    Assert.AreEqual(new ArgsHelper(_appSettings).GetName(args), "test");
+	    }    
     }
 }
