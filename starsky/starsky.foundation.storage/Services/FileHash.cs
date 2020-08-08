@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -135,7 +135,8 @@ namespace starsky.foundation.storage.Services
                             md5.TransformBlock(block, 0, length, null, 0);
                         }
                         md5.TransformFinalBlock(block, 0, 0);
-                    }
+						stream.Close();
+					}
                     var hash = md5.Hash;
                     return Base32.Encode(hash);
                 }
