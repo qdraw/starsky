@@ -55,10 +55,8 @@ namespace starsky.feature.webhtmlpublish.Services
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
 	        using ( var outputStream  = new MemoryStream() )
 	        {
-		        var result = ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+		        ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
 			        outputFullFilePath);
-		        _hostFileSystem.WriteStream(result, outputFullFilePath);
-		        sourceImageStream.Dispose();
 	        }
         }
 	    
@@ -81,13 +79,12 @@ namespace starsky.feature.webhtmlpublish.Services
 		    using ( var overlayImage = Image.Load(overlayImageStream) )
 		    using ( var outputStream  = new MemoryStream() )
 		    {
-			    var result = ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
+			    ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
 				    outputFullFilePath);
-			    _hostFileSystem.WriteStream(result, outputFullFilePath);
 		    }
 	    }
 
-	    private Stream ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
+	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
 		    Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 	    {
 		    sourceImage.Mutate(x => x
@@ -109,7 +106,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			    PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
 		    sourceImage.SaveAsJpeg(outputStream);
-		    return outputStream;
+		    _hostFileSystem.WriteStream(outputStream, outputSubPath);
 	    }
     }
 }
