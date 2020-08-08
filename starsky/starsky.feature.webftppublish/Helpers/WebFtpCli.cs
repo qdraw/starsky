@@ -28,7 +28,7 @@ namespace starsky.feature.webftppublish.Helpers
 
 		public void Run(string[] args)
 		{
-			// Verbose is already defined
+			_appSettings.Verbose = _argsHelper.NeedVerbose(args);
 			
 			if (_argsHelper.NeedHelp(args))
 			{

@@ -67,7 +67,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="slug"></param>
 		/// <param name="copyContent"></param>
 		/// <returns>true == success</returns>
-		public bool Run(string parentDirectory, string slug, List<Tuple<string, bool>> copyContent)
+		public bool Run(string parentDirectory, string slug, Dictionary<string, bool> copyContent)
 		{
 			foreach ( var thisDirectory in 
 				CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
@@ -95,7 +95,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="copyContent"></param>
 		/// <returns></returns>
 		internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory, 
-			string slug, IEnumerable<Tuple<string, bool>> copyContent)
+			string slug, Dictionary<string, bool> copyContent)
 		{
 			var pushDirectory = _webFtpNoLogin + "/" + slug;
 
@@ -105,9 +105,9 @@ namespace starsky.feature.webftppublish.Services
 				pushDirectory // <= current log item
 			};
 			
-			foreach ( var copyItem in copyContent.Where(p => p.Item2) )
+			foreach ( var copyItem in copyContent.Where(p => p.Value) )
 			{
-				createThisDirectories.Add(pushDirectory + "/" + copyItem.Item1);
+				createThisDirectories.Add(pushDirectory + "/" + copyItem.Key);
 			}
 			
 			return createThisDirectories;
@@ -117,12 +117,12 @@ namespace starsky.feature.webftppublish.Services
 		/// Makes a list of 'full file paths' of files on disk to copy
 		/// </summary>
 		/// <returns></returns>
-		internal HashSet<string> CreateListOfRemoteFiles(IEnumerable<Tuple<string, bool>> copyContent)
+		internal HashSet<string> CreateListOfRemoteFiles(Dictionary<string, bool> copyContent)
 		{
 			var copyThisFiles = new List<string>();
-			foreach ( var copyItem in copyContent.Where(p => p.Item2) )
+			foreach ( var copyItem in copyContent.Where(p => p.Value) )
 			{
-				copyThisFiles.Add("/" + copyItem.Item1);
+				copyThisFiles.Add("/" + copyItem.Key);
 			}
 			return new HashSet<string>(copyThisFiles);
 		}

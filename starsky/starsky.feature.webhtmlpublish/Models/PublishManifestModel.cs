@@ -16,7 +16,7 @@ namespace starsky.feature.webhtmlpublish.Models
 		/// <summary>
 		/// Which files or folders need to be copied
 		/// </summary>
-		public IEnumerable<Tuple<string, bool>> Copy { get; set; } = new List<Tuple<string, bool>>();
+		public Dictionary<string, bool> Copy { get; set; } = new Dictionary<string, bool>();
 
 		/// <summary>
 		/// Slug, Name without spaces, but underscores are allowed

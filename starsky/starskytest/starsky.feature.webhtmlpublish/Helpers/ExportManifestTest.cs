@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +20,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			var storage = new FakeIStorage();
 			new PublishManifest(storage, plainTextFileHelper)
 				.ExportManifest(appSettings.StorageFolder, "Test", 
-					new List<Tuple<string, bool>>());
+					new Dictionary<string, bool>());
 
 			var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 			Assert.IsTrue(storage.ExistFile(expectedPath));

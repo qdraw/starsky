@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using starsky.feature.webhtmlpublish.Models;
-using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 
@@ -29,7 +27,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <param name="itemName"></param>
 		/// <param name="copyContent"></param>
 		public void ExportManifest( string parentFullFilePath, string itemName, 
-			IEnumerable<Tuple<string, bool>> copyContent)
+			Dictionary<string, bool> copyContent)
 		{
 			var manifest = new PublishManifestModel
 			{

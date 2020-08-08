@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.feature.webhtmlpublish.Extensions;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.ViewModels;
@@ -59,7 +60,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage);
 	    }
 	    
-	    public async Task<List<Tuple<string,bool>>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
+	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
 		    string publishProfileName, string itemName, string outputParentFullFilePathFolder,
 		    bool moveSourceFiles = false)
 	    {
@@ -102,7 +103,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return new ToBase64DataUriList(_subPathStorage, _thumbnailStorage).Create(fileIndexItemsList.ToList());
 	    }
 	    
-	    public async Task<List<Tuple<string,bool>>> Render(List<FileIndexItem> fileIndexItemsList,
+	    public async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
 		    string[] base64ImageArray, string publishProfileName, string itemName, 
 		    string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 	    {
@@ -128,7 +129,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // Order alphabetically
 		    fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
 
-		    var copyResult = new List<Tuple<string,bool>>();
+		    var copyResult = new Dictionary<string,bool>();
             
 		    var profiles = _publishPreflight.GetPublishProfileName(publishProfileName);
 		    foreach (var currentProfile in profiles)
@@ -136,32 +137,32 @@ namespace starsky.feature.webhtmlpublish.Services
 			    switch (currentProfile.ContentType)
 			    {
 				    case TemplateContentType.Html:
-					    copyResult.Add(await GenerateWebHtml(profiles, currentProfile, itemName, 
+					    copyResult.AddRangeOverride(await GenerateWebHtml(profiles, currentProfile, itemName, 
 						    base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder));
 					    break;
 				    case TemplateContentType.Jpeg:
-					    copyResult.AddRange(GenerateJpeg(currentProfile, fileIndexItemsList, 
+					    copyResult.AddRangeOverride(GenerateJpeg(currentProfile, fileIndexItemsList, 
 						    outputParentFullFilePathFolder));
 					    break;
 				    case TemplateContentType.MoveSourceFiles:
-					    copyResult.AddRange(await GenerateMoveSourceFiles(currentProfile,fileIndexItemsList, 
+					    copyResult.AddRangeOverride(await GenerateMoveSourceFiles(currentProfile,fileIndexItemsList, 
 						    outputParentFullFilePathFolder, moveSourceFiles));
 					    break;
 				    case TemplateContentType.PublishContent:
 					    // Copy all items in the subFolder content for example JavaScripts
-					    copyResult.AddRange(_copyPublishedContent.CopyContent(currentProfile, outputParentFullFilePathFolder));
+					    copyResult.AddRangeOverride(_copyPublishedContent.CopyContent(currentProfile, outputParentFullFilePathFolder));
 					    break;
 				    case TemplateContentType.PublishManifest:
-					    copyResult.Add(new Tuple<string, bool>(
+					    copyResult.Add(
 						    _overlayImage.FilePathOverlayImage("_settings.json", currentProfile)
-						    ,true));
+						    ,true);
 					    break;
 			    }
 		    }
 		    return copyResult;
 	    }
 
-	    private async Task<Tuple<string, bool>> GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
+	    private async Task<Dictionary<string, bool>> GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
 		    AppSettingsPublishProfiles currentProfile, string itemName, string[] base64ImageArray, 
 		    IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
@@ -194,12 +195,16 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		    _console.Write(_appSettings.Verbose ? embeddedResult +"\n" : "•");
 
-		    return new Tuple<string, bool>(
-			    currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
-			    currentProfile.Copy);
+		    return new Dictionary<string, bool>
+		    {
+			    {
+				    currentProfile.Path.Replace(outputParentFullFilePathFolder, string.Empty),
+				    currentProfile.Copy
+			    }
+		    };
 	    }
 
-	    private IEnumerable<Tuple<string, bool>> GenerateJpeg(AppSettingsPublishProfiles profile, 
+	    private Dictionary<string, bool> GenerateJpeg(AppSettingsPublishProfiles profile, 
 		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
@@ -231,12 +236,12 @@ namespace starsky.feature.webhtmlpublish.Services
 			    }
 		    }
 
-		    return fileIndexItemsList.Select(item =>
-			    new Tuple<string, bool>(_overlayImage.FilePathOverlayImage(item.FilePath, profile),
-				    profile.Copy));
+		    return fileIndexItemsList.ToDictionary(item =>
+			    _overlayImage.FilePathOverlayImage(item.FilePath, profile), 
+			    item => profile.Copy);
 	    }
 
-	    private async Task<IEnumerable<Tuple<string, bool>>> GenerateMoveSourceFiles(
+	    private async Task<Dictionary<string, bool>> GenerateMoveSourceFiles(
 		    AppSettingsPublishProfiles profile, IReadOnlyCollection<FileIndexItem> fileIndexItemsList,
 		    string outputParentFullFilePathFolder, bool moveSourceFiles)
 	    {
@@ -259,10 +264,9 @@ namespace starsky.feature.webhtmlpublish.Services
 				    _subPathStorage.FileDelete(item.FilePath);
 			    }
 		    }
-		    
-		    return fileIndexItemsList.Select(item =>
-			    new Tuple<string, bool>(_overlayImage.FilePathOverlayImage(item.FilePath, profile),
-				    profile.Copy));
+		    return fileIndexItemsList.ToDictionary(item =>
+				    _overlayImage.FilePathOverlayImage(item.FilePath, profile), 
+			    item => profile.Copy);
 	    }
 
 	    /// <summary>
@@ -273,9 +277,9 @@ namespace starsky.feature.webhtmlpublish.Services
 	    /// <param name="renderCopyResult"></param>
 	    /// <param name="deleteFolderAfterwards"></param>
 	    public async Task GenerateZip(string fullFileParentFolderPath, string itemName,
-		    IEnumerable<Tuple<string, bool>> renderCopyResult, bool deleteFolderAfterwards = false)
+		    Dictionary<string, bool> renderCopyResult, bool deleteFolderAfterwards = false)
 	    {
-		    var fileNames = renderCopyResult.Where(p => p.Item2).Select(p => p.Item1).ToList();
+		    var fileNames = renderCopyResult.Where(p => p.Value).Select(p => p.Key).ToList();
 
 		    var slugItemName = _appSettings.GenerateSlug(itemName, true);
 		    var filePaths = fileNames.Select(p => Path.Combine(fullFileParentFolderPath, slugItemName, p)).ToList();

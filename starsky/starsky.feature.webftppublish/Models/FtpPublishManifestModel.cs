@@ -13,6 +13,6 @@ namespace starsky.feature.webftppublish.Models
 		/// <summary>
 		/// List of files to Copy, string is relative path and bool is True for copy
 		/// </summary>
-		public List<Tuple<string, bool>> Copy { get; set; } = new List<Tuple<string, bool>>();
+		public Dictionary<string, bool> Copy { get; set; } = new Dictionary<string, bool>();
 	}
 }
