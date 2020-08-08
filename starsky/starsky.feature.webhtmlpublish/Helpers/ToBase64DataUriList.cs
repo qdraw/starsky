@@ -29,6 +29,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 					ExtensionRolesHelper.ImageFormat.png) )
 				{
 					base64ImageArray[i] = "data:image/png;base64," + Base64Helper.ToBase64(stream);
+					stream.Close();
 				}
 
 			}
