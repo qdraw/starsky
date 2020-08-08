@@ -89,7 +89,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    if ( _thumbnailService.CreateThumb(item.FilePath, item.FileHash)) continue;
+			    if ( !_thumbnailService.CreateThumb(item.FilePath, item.FileHash)) continue;
 			    _console.WriteLine($"Thumbnail failed for {item.FilePath}");
 		    }
 	    }

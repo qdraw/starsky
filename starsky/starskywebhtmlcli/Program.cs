@@ -19,26 +19,18 @@ namespace starskywebhtmlcli
 	        // Use args in application
 	        new ArgsHelper().SetEnvironmentByArgs(args);
 	        var services = new ServiceCollection();
-
-	        // Setup AppSettings
-	        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-	        var configurationRoot = SetupAppSettings.AppSettingsToBuilder();
-	        services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
+	        services = SetupAppSettings.FirstStepToAddSingleton(services);
 
 	        // Inject services
 	        new RegisterDependencies().Configure(services);
 	        var serviceProvider = services.BuildServiceProvider();
 	        var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-	        appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-
-	        // dont need database services?: new SetupDatabaseTypes(appSettings,services).BuilderDb();
 	        serviceProvider = services.BuildServiceProvider();
 
 	        var publishPreflight = serviceProvider.GetService<IPublishPreflight>();
 	        var publishService = serviceProvider.GetService<IWebHtmlPublishService>();
 	        var storageSelector = serviceProvider.GetService<ISelectorStorage>();
-
 	        var console = serviceProvider.GetRequiredService<IConsole>();
 
 	        // Help and args selectors are defined in the PublishCli

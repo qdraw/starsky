@@ -5,17 +5,23 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Web;
+using starsky.feature.webftppublish.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starskywebftpcli.Services
+namespace starsky.feature.webftppublish.Services
 {
-	public class FtpService
+	[Service(typeof(IFtpService), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class FtpService : IFtpService
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _storage;
+		private readonly IConsole _console;
+		private readonly IWebRequestAbstraction _webRequest;
 
 		/// <summary>
 		/// [0] is username, [1] password
@@ -34,10 +40,15 @@ namespace starskywebftpcli.Services
 		/// </summary>
 		/// <param name="appSettings">the location of the settings</param>
 		/// <param name="storage">storage provider for source files</param>
-		public FtpService(AppSettings appSettings, IStorage storage)
+		/// <param name="console"></param>
+		/// <param name="webRequest"></param>
+		public FtpService(AppSettings appSettings, IStorage storage, IConsole console, 
+			IWebRequestAbstraction webRequest)
 		{
 			_appSettings = appSettings;
 			_storage = storage;
+			_console = console;
+			_webRequest = webRequest;
 
 			var uri = new Uri(_appSettings.WebFtp);
 			_appSettingsCredentials = uri.UserInfo.Split(":".ToCharArray());
@@ -48,27 +59,30 @@ namespace starskywebftpcli.Services
 			_appSettingsCredentials[0] = HttpUtility.UrlDecode(_appSettingsCredentials[0]);
 			_appSettingsCredentials[1] = HttpUtility.UrlDecode(_appSettingsCredentials[1]);
 		}
-		
+
 		/// <summary>
 		/// Copy all content to the ftp disk
 		/// </summary>
+		/// <param name="parentDirectory"></param>
+		/// <param name="slug"></param>
+		/// <param name="copyContent"></param>
 		/// <returns>true == success</returns>
-		public bool Run()
+		public bool Run(string parentDirectory, string slug, List<Tuple<string, bool>> copyContent)
 		{
-			
-			foreach ( var thisDirectory in CreateListOfRemoteDirectories() )
+			foreach ( var thisDirectory in 
+				CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
-				Console.Write(",");
+				_console.Write(",");
 				if ( CreateFtpDirectory(thisDirectory) ) continue;
-				Console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
+				_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
 				return false;
 			}
 
 			// content of the publication folder
-			var copyThisFilesSubPaths = CreateListOfRemoteFiles();
+			var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
 			if(!MakeUpload(copyThisFilesSubPaths)) return false;
 
-			Console.Write("\n");
+			_console.Write("\n");
 			return true;
 		}
 
@@ -76,8 +90,12 @@ namespace starskywebftpcli.Services
 		/// Makes a list of containing: the root folder, subfolders to create on the ftp service
 		/// make the 1000 and 500 dirs on ftp
 		/// </summary>
+		/// <param name="parentDirectory"></param>
+		/// <param name="slug"></param>
+		/// <param name="copyContent"></param>
 		/// <returns></returns>
-		internal IEnumerable<string> CreateListOfRemoteDirectories(string slug, IEnumerable<Tuple<string, bool>> copyContent)
+		internal IEnumerable<string> CreateListOfRemoteDirectories(string parentDirectory, 
+			string slug, IEnumerable<Tuple<string, bool>> copyContent)
 		{
 			var pushDirectory = _webFtpNoLogin + "/" + slug;
 
@@ -106,7 +124,7 @@ namespace starskywebftpcli.Services
 			{
 				copyThisFiles.Add("/" + copyItem.Item1);
 			}
-			return copyThisFiles.ToHashSet();
+			return new HashSet<string>(copyThisFiles);
 		}
 
 
@@ -124,9 +142,9 @@ namespace starskywebftpcli.Services
 				                 _appSettings.GenerateSlug(_appSettings.Name,true) + pathDelimiter +
 				                 item;
 
-				Console.Write(".");
+				_console.Write(".");
 				if ( Upload(item, toFtpPath) ) continue;
-				Console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
+				_console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
 				return false;
 			}
 			return true;
@@ -167,9 +185,10 @@ namespace starskywebftpcli.Services
 			try
 			{
 				// create the directory
-				var requestDir = (FtpWebRequest) WebRequest.Create(directory);
+				var requestDir = (FtpWebRequest) _webRequest.Create(directory);
 				requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
-				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
+				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], 
+					_appSettingsCredentials[1]);
 				requestDir.UsePassive = true;
 				requestDir.UseBinary = true;
 				requestDir.KeepAlive = false;

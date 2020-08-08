@@ -9,7 +9,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Services;
 
 namespace starsky.feature.webhtmlpublish.Helpers
 {
@@ -21,7 +20,6 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		private readonly IConsole _console;
 		private readonly ArgsHelper _argsHelper;
 		private readonly IStorage _hostFileSystemStorage;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _subPathStorage;
 
 		public PublishCli(ISelectorStorage storageSelector, IPublishPreflight publishPreflight,
@@ -33,12 +31,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_console = console;
 			_argsHelper = new ArgsHelper(appSettings);
 			_hostFileSystemStorage = storageSelector.Get(SelectorStorage.StorageServices.HostFilesystem);
-			_thumbnailStorage = storageSelector.Get(SelectorStorage.StorageServices.Thumbnail);
 			_subPathStorage = storageSelector.Get(SelectorStorage.StorageServices.SubPath);
 		}
 		public async Task Publisher(string[] args)
 		{
-			// Verbose is already defined
+			_appSettings.Verbose = _argsHelper.NeedVerbose(args);
 			
 			if (_argsHelper.NeedHelp(args))
 			{

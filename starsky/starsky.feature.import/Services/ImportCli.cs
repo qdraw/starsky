@@ -13,7 +13,7 @@ namespace starsky.feature.import.Services
 	{
 		public async Task Importer(string[] args, IImport importService, AppSettings appSettings, IConsole console)
 		{
-			// Verbose is already defined
+			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 			
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(appSettings).GetPathFormArgs(args,false).Length <= 1)
 			{

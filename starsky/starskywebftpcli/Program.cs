@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
-using starsky.feature.webhtmlpublish.Helpers;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.webftppublish.Helpers;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Helpers;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
-using starskywebftpcli.Services;
+using starsky.foundation.storage.Interfaces;
 
 namespace starskywebftpcli
 {
@@ -15,35 +14,23 @@ namespace starskywebftpcli
 	{
 		static void Main(string[] args)
 		{
-			throw new Exception("remove starskyCore reference");
-			
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
 			
-			// inject services + appSettings
-			var startupHelper = new ConfigCliAppsStartupHelper();
-			var appSettings = startupHelper.AppSettings();
-            
-			
-			// verbose mode
-			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-            
-			
-			
+			// Setup AppSettings
+			var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
+			// Inject services
+			new RegisterDependencies().Configure(services);
+			var serviceProvider = services.BuildServiceProvider();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+            
+			serviceProvider = services.BuildServiceProvider();
 			
-			// TODO: Replace TEst with actual name
-			
-			// // get prepend path to show
-			// var prepend = appSettings.GetWebSafeReplacedName(
-			// 	appSettings.PublishProfiles.FirstOrDefault(p => p.Key == "test").Value
-			// 		.FirstOrDefault(p => !string.IsNullOrEmpty(p.Prepend))
-			// 		?.Prepend
-			// );
-			
-			// show prepend path!
-			// Console.WriteLine(prepend);
+			var storageSelector = serviceProvider.GetService<ISelectorStorage>();
+			var console = serviceProvider.GetRequiredService<IConsole>();
 
+			new WebFtpCli(appSettings, storageSelector, console).Run(args);
 		}
 	}
 }

@@ -17,6 +17,8 @@ namespace starskycore.Services
 		public void Sync(string[] args, ISync syncService, AppSettings appSettings, 
 			IConsole console, IThumbnailCleaner thumbnailCleaner, ISelectorStorage selectorStorage)
 		{
+			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+
 			if (new ArgsHelper().NeedHelp(args))
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;

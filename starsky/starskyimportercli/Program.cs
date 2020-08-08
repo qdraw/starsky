@@ -22,17 +22,13 @@ namespace starskyimportercli
             var services = new ServiceCollection();
 
             // Setup AppSettings
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            var configurationRoot = SetupAppSettings.AppSettingsToBuilder();
-            services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
+            services = SetupAppSettings.FirstStepToAddSingleton(services);
 
             // Inject services
             new RegisterDependencies().Configure(services);
             var serviceProvider = services.BuildServiceProvider();
             var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-            appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
-
             new SetupDatabaseTypes(appSettings,services).BuilderDb();
             serviceProvider = services.BuildServiceProvider();
 
