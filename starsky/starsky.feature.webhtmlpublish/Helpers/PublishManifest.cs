@@ -32,7 +32,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <param name="itemName"></param>
 		/// <param name="copyContent"></param>
 		public void ExportManifest( string fullFilePath, string itemName, 
-			IEnumerable<Dictionary<string, bool>> copyContent)
+			IEnumerable<Tuple<string, bool>> copyContent)
 		{
 			var manifest = new ManifestModel
 			{

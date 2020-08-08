@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -43,6 +44,7 @@ namespace starsky.feature.webhtmlpublish.Services
         
         public void ResizeOverlayImageThumbnails(string fileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
         {
+	        if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 	        if ( !_thumbnailStorage.ExistFile(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
 
 	        if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;

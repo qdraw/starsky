@@ -22,22 +22,19 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 		
-		public IEnumerable<Dictionary<string, bool>> CopyContent(
+		public IEnumerable<Tuple<string, bool>> CopyContent(
 			AppSettingsPublishProfiles profile,
 			string outputParentFullFilePathFolder)
 		{
 			_toCreateSubfolder.Create(profile, outputParentFullFilePathFolder);
 			var parentFolder = PathHelper.AddBackslash(_appSettings.GenerateSlug(profile.Folder, true));
 
-			var copyResult = new List<Dictionary<string, bool>>();
+			var copyResult = new List<Tuple<string, bool>>();
 			var files = _hostStorage.GetAllFilesInDirectory(GetContentFolder());
 			foreach ( var file in files)
 			{
 				var subPath = parentFolder + Path.GetFileName(file);
-				copyResult.Add(new Dictionary<string, bool>{
-				{
-					subPath, true
-				}});
+				copyResult.Add(new Tuple<string, bool>(subPath, true));
 				var fillFileOutputPath = Path.Combine(outputParentFullFilePathFolder, subPath);
 				if ( !_hostStorage.ExistFile(fillFileOutputPath) )
 				{

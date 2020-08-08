@@ -115,10 +115,10 @@ namespace starsky.foundation.platform.Models
         }
         
         // Used to template config > appsettingsPubProfile
-        public string GetWebSafeReplacedName(string input)
+        public string GetWebSafeReplacedName(string input, string name)
         {
             // Included slash dd the end of this file
-            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(name,true)));
         }
         
         /// <summary>

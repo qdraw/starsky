@@ -48,11 +48,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
+    <PropertyGroup>
+      <!-- starsky.feature.webhtmlpublish https://github.com/toddams/RazorLight/issues/258  -->
+      <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    </PropertyGroup>
+    <ItemGroup>
     <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
     <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
     <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
     <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
+    <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
     <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />

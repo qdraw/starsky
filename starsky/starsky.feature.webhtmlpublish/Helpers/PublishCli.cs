@@ -76,16 +76,10 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			      
 			var fileIndexList = new ReadMeta(_subPathStorage).ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
 			         
-			// Create thumbnails from the source images 
-			new Thumbnail(_subPathStorage, _thumbnailStorage).CreateThumb("/"); // <= subPath style
-			
-			// Get base64 uri lists 
-			var base64DataUri = new ToBase64DataUriList(_subPathStorage, _thumbnailStorage).Create(fileIndexList);
-			
 			// todo introduce selector
 			var profileName = new PublishPreflight(_appSettings,_console).GetPublishProfileNameByIndex(0);
 			
-			await _publishService.RenderCopy(fileIndexList, base64DataUri, profileName, 
+			await _publishService.RenderCopy(fileIndexList,  profileName, 
 				itemName, inputFullPath, true);
 		}
 	}

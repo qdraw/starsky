@@ -39,6 +39,11 @@ namespace starsky.feature.webhtmlpublish.Services
 			return returnList;
 		}
 
+		public IEnumerable<string> GetAllPublishProfileNames()
+		{
+			return _appSettings.PublishProfiles.Select(p => p.Key);
+		}
+
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)
 		{
 			return _appSettings.PublishProfiles
