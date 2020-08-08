@@ -2,9 +2,8 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
-using starskycore.Models;
 
-namespace starskytest.Models
+namespace starskytest.starsky.foundation.platform.Models
 {
 	[TestClass]
 	public class AppSettingsPublishProfilesTest

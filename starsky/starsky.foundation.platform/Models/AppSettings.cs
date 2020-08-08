@@ -382,34 +382,6 @@ namespace starsky.foundation.platform.Models
 		    } 
 	    } 
 	    
-	    //{
-	    // {"zz__example", new List<AppSettingsPublishProfiles>
-	    //  {
-	    //   new AppSettingsPublishProfiles
-	    //   {
-	    //    ContentType = TemplateContentType.Jpeg,
-	    //    SourceMaxWidth = 1000,
-	    //    OverlayMaxWidth = 380,
-	    //    Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-	    //    Folder =  "1000",
-	    //    Append = "_kl1k"
-	    //   }
-	    //  }},
-	    // {"zz__example2", new List<AppSettingsPublishProfiles>
-	    // {
-	    //  new AppSettingsPublishProfiles
-	    //  {
-	    //   ContentType = TemplateContentType.Jpeg,
-	    //   SourceMaxWidth = 1000,
-	    //   OverlayMaxWidth = 380,
-	    //   Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-	    //   Folder =  "1000",
-	    //   Append = "_kl1k"
-	    //  }
-	    // }
-	    //}
-    // };
-	    
 	    /// <summary>
 	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
 	    /// This setting is by default false. The only 2 build-in exceptions are when there are no accounts or you already logged in
