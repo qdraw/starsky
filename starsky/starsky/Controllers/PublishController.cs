@@ -51,6 +51,7 @@ namespace starsky.Controllers
 		/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
 		/// <param name="itemName">itemName</param>
 		/// <param name="publishProfileName">publishProfileName</param>
+		/// <param name="force"></param>
 		/// <returns>update json</returns>
 		/// <response code="200">start with generation</response>
 		/// <response code="409">item with the same name already exist</response>
@@ -60,7 +61,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		[HttpPost("/api/publish/create")]
 		[Produces("application/json")]
-		public async Task<IActionResult> PublishCreate(string f, string itemName, string publishProfileName)
+		public async Task<IActionResult> PublishCreate(string f, string itemName, string publishProfileName, bool force = false)
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
@@ -69,7 +70,11 @@ namespace starsky.Controllers
 			
 			if ( CheckIfNameExist(slugItemName) )
 			{
-				return Conflict($"name {slugItemName} exist");
+				if ( !force ) return Conflict($"name {slugItemName} exist");
+				if ( _hostStorage.ExistFolder(location) )
+				{
+					_hostStorage.FolderDelete(location);
+				}
 			}
 
 			var renderCopyResult = await _publishService.RenderCopy(info, 
@@ -96,7 +101,7 @@ namespace starsky.Controllers
 		{
 			return Json(CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
 		}
-		
+
 		private bool CheckIfNameExist(string slugItemName)
 		{
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
