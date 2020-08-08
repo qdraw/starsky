@@ -71,10 +71,7 @@ namespace starsky.Controllers
 			if ( CheckIfNameExist(slugItemName) )
 			{
 				if ( !force ) return Conflict($"name {slugItemName} exist");
-				if ( _hostStorage.ExistFolder(location) )
-				{
-					_hostStorage.FolderDelete(location);
-				}
+				ForceCleanPublishFolderAndZip(location);
 			}
 
 			var renderCopyResult = await _publishService.RenderCopy(info, 
@@ -106,6 +103,18 @@ namespace starsky.Controllers
 		{
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
 			return _hostStorage.ExistFolder(location) || _hostStorage.ExistFile(location + ".zip");
+		}
+
+		private void ForceCleanPublishFolderAndZip(string location)
+		{
+			if ( _hostStorage.ExistFolder(location) )
+			{
+				_hostStorage.FolderDelete(location);
+			}
+			if ( _hostStorage.ExistFile(location + ".zip") )
+			{
+				_hostStorage.FileDelete(location);
+			}
 		}
 	}
 }
