@@ -74,12 +74,9 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
 	        
-		    // only for overlay image
-		    var hostFileSystem = new StorageHostFullPathFilesystem();
-
 		    using ( var sourceImageStream = _iStorage.ReadStream(subPath))
 		    using ( var sourceImage = Image.Load(sourceImageStream) )
-		    using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
+		    using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
 		    using ( var overlayImage = Image.Load(overlayImageStream) )
 		    using ( var outputStream  = new MemoryStream() )
 		    {

@@ -68,7 +68,10 @@ namespace starsky.foundation.platform.Models
 		    }
 		    set
 		    {
-			    if (string.IsNullOrEmpty(value)) return;
+			    if ( string.IsNullOrEmpty(value) )
+			    {
+				    value = "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/default.png";
+			    }
 
 			    if ( !value.Contains("{AssemblyDirectory}") )
 			    {
