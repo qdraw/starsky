@@ -89,8 +89,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    if ( !_thumbnailService.CreateThumb(item.FilePath, item.FileHash)) continue;
-			    _console.WriteLine($"Thumbnail failed for {item.FilePath}");
+			    _thumbnailService.CreateThumb(item.FilePath, item.FileHash);
 		    }
 	    }
 
@@ -151,6 +150,11 @@ namespace starsky.feature.webhtmlpublish.Services
 				    case TemplateContentType.PublishContent:
 					    // Copy all items in the subFolder content for example JavaScripts
 					    copyResult.AddRange(_copyPublishedContent.CopyContent(currentProfile, outputParentFullFilePathFolder));
+					    break;
+				    case TemplateContentType.PublishManifest:
+					    copyResult.Add(new Tuple<string, bool>(
+						    _overlayImage.FilePathOverlayImage("_settings.json", currentProfile)
+						    ,true));
 					    break;
 			    }
 		    }

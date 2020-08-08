@@ -19,20 +19,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			var appSettings = new AppSettings();
 
 			var storage = new FakeIStorage();
-			new PublishManifest(storage, appSettings, plainTextFileHelper)
+			new PublishManifest(storage, plainTextFileHelper)
 				.ExportManifest(appSettings.StorageFolder, "Test", 
 					new List<Tuple<string, bool>>());
 
 			var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 			Assert.IsTrue(storage.ExistFile(expectedPath));
-		}
-
-		[TestMethod]
-		public void ExportManifestTest_Import()
-		{
-			var test = "{\"Name\":\"Test\",\"Slug\":\"test\"}";
-			var plainTextFileHelper = new FakePlainTextFileHelper(test);
-			var appSettings = new AppSettings { Name = "Test" };
 		}
 		
 	}

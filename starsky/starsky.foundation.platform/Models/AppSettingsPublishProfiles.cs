@@ -123,6 +123,14 @@ namespace starsky.foundation.platform.Models
         Html = 1,
         Jpeg = 2,
         MoveSourceFiles = 3,
-        PublishContent = 4
+        /// <summary>
+        /// Content to be copied from WebHtmlPublish/PublishedContent to include
+        /// For example javaScript files
+        /// </summary>
+        PublishContent = 4,
+        /// <summary>
+        /// Include manifest file _settings.json in Copy list
+        /// </summary>
+        PublishManifest = 6
     }
 }
