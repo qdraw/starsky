@@ -28,10 +28,10 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		/// <summary>
 		/// Export settings as manifest.json to the StorageFolder within appSettings
 		/// </summary>
-		/// <param name="fullFilePath"></param>
+		/// <param name="parentFullFilePath">without ManifestName</param>
 		/// <param name="itemName"></param>
 		/// <param name="copyContent"></param>
-		public void ExportManifest( string fullFilePath, string itemName, 
+		public void ExportManifest( string parentFullFilePath, string itemName, 
 			IEnumerable<Tuple<string, bool>> copyContent)
 		{
 			var manifest = new ManifestModel
@@ -40,7 +40,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				Copy = copyContent
 			};
 			var output = JsonConvert.SerializeObject(manifest, Formatting.Indented);
-			var outputLocation = Path.Combine(fullFilePath, ManifestName);
+			var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
 			_storage.FileDelete(outputLocation);
 
 			_storage.WriteStream(_plainTextFileHelper.StringToStream(output), outputLocation);

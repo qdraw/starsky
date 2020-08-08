@@ -72,7 +72,7 @@ namespace starsky.foundation.writemeta.Services
 		/// <param name="fromSubPath"></param>
 		/// <param name="toSubPath"></param>
 		/// <returns></returns>
-		private string CopyExifPublish(string fromSubPath, string toSubPath)
+		internal string CopyExifPublish(string fromSubPath, string toSubPath)
 		{
 			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);

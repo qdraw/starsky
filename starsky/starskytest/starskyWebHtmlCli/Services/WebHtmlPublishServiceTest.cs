@@ -70,9 +70,15 @@ namespace starskytest.starskyWebHtmlCli.Services
 	        fakeStorage.WriteStream(new PlainTextFileHelper().StringToStream(template),
 		        new EmbeddedViewsPath().GetViewFullPath("Index.cshtml"));
 	        
-            new WebHtmlPublishService(selectorStorage, appSettings,
-	            new FakeExifTool(fakeStorage,appSettings), new ReadMeta(fakeStorage), 
-	            new FakeConsoleWrapper()).Render(list,null,"default","FAIL");
+	        var publishPreflight = new PublishPreflight(appSettings, new FakeConsoleWrapper());
+		        
+            var service = new WebHtmlPublishService(publishPreflight, selectorStorage, appSettings,
+	            new FakeExifTool(fakeStorage,appSettings), new OverlayImage(selectorStorage,appSettings), 
+	            new FakeConsoleWrapper());
+	            
+            var base64ImageArray = new List<string>().ToArray();
+            
+            service.Render(list,base64ImageArray,"default","FAIL","/");
 
 	        var dir = fakeStorage.GetAllFilesInDirectory("/").ToList();
 

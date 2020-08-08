@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
-using starskycore.Middleware;
-using starskycore.Models;
 using starskytest.FakeCreateAn;
 using TimeZoneConverter;
 
@@ -143,9 +141,8 @@ namespace starskytest.Models
 		[TestMethod]
 		public void AppSettingsNameNoWebSafeNameTest()
 		{
-			var appSettings = new AppSettings {Name = "Non websafe name"};
-			Assert.AreEqual("non-websafe-name/", appSettings.GetWebSafeReplacedName("{name}"));
-
+			Assert.AreEqual("non-websafe-name/", 
+				new AppSettings().GetWebSafeReplacedName("{name}","Non websafe name"));
 		}
 
 		[TestMethod]
