@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeCreateAn;
@@ -44,25 +45,6 @@ namespace starskytest.starskyWebFtpCli
 			var t = _storage.GetAllFilesInDirectory("/").ToList();
 			
 		}
-		
-		// TODO FIX
-		
-		
-		// [TestMethod]
-		// public void StarskyWebHtmlCli_CreateListOfRemoteDirectoriesTest()
-		// {
-		// 	var item  = new FtpService(_appSettings, _storage)
-		// 		.CreateListOfRemoteDirectories().ToList();
-		// 	Assert.AreEqual("ftp://testmedia.be//test",item[1]);
-		// 	Assert.AreEqual("ftp://testmedia.be//test/large/",item[2]);
-		// }
-		//
-		// [TestMethod]
-		// public void StarskyWebHtmlCli_CreateListOfRemoteFilesTest()
-		// {
-		// 	var item  = new FtpService(_appSettings, _storage).CreateListOfRemoteFiles().ToList();
-		// 	Assert.AreEqual("/test.jpg",item.FirstOrDefault());
-		// }
 
 	}
 }

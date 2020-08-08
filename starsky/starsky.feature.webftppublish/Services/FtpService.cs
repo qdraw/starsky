@@ -111,7 +111,7 @@ namespace starsky.feature.webftppublish.Services
 				var parentItems = Breadcrumbs.BreadcrumbHelper(copyItem.Key);
 				foreach ( var item in parentItems.Where(p => p != Path.DirectorySeparatorChar.ToString()) )
 				{
-					if ( _storage.ExistFolder(parentDirectory + item) )
+					if ( _storage.ExistFolder(parentDirectory + item ) )
 					{
 						createThisDirectories.Add(pushDirectory + "/" + item);
 					}
