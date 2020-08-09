@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net;
 
 namespace starsky.feature.webftppublish.FtpAbstractions.Interfaces
@@ -12,5 +13,6 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Interfaces
 		bool KeepAlive { get; set; }
 
 		IFtpWebResponse GetResponse();
+		Stream GetRequestStream();
 	}
 }

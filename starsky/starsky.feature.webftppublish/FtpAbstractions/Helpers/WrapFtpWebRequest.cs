@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net;
 using starsky.feature.webftppublish.FtpAbstractions.Helpers;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
@@ -44,6 +45,11 @@ namespace starsky.feature.webftppublish.FtpAbstractions
 		public IFtpWebResponse GetResponse()
 		{
 			return new WrapFtpWebResponse((FtpWebResponse)_request.GetResponse());
+		}
+
+		public Stream GetRequestStream()
+		{
+			return _request.GetRequestStream();
 		}
 	}
 

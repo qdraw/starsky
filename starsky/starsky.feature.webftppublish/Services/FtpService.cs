@@ -177,8 +177,7 @@ namespace starsky.feature.webftppublish.Services
 		{
 			if(!_storage.ExistFile(parentDirectory + subPath)) return false;
 			
-			FtpWebRequest request =
-				(FtpWebRequest)WebRequest.Create(toFtpPath);
+			var  request = _webRequest.Create(toFtpPath);
 			request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
 			request.Method = WebRequestMethods.Ftp.UploadFile;  
 

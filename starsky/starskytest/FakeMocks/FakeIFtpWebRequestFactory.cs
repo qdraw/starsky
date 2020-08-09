@@ -33,6 +33,11 @@ namespace starskytest.FakeMocks
 			}
 			return new FakeIFtpWebResponse();
 		}
+
+		public Stream GetRequestStream()
+		{
+			return new MemoryStream();
+		}
 	}
 
 	public class FakeIFtpWebResponse : IFtpWebResponse

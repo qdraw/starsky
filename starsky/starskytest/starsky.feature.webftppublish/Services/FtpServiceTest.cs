@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.webftppublish.FtpAbstractions;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -106,7 +105,7 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		}
 
 		[TestMethod]
-		public void MakeUpload_Fail()
+		public void MakeUpload_Fail_FileNotFound()
 		{
 			var factory = new FakeIFtpWebRequestFactory();
 			var ftpService = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
@@ -114,6 +113,15 @@ namespace starskytest.starsky.feature.webftppublish.Services
 			var makeUpload = ftpService.MakeUpload("/", "test", new List<string> {"/test"});
 			Assert.IsFalse(makeUpload);
 		}
-
+		
+		[TestMethod]
+		public void MakeUpload_AndFile_Is_Found()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>{new byte[0]});
+			var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(), factory);
+			var makeUpload = ftpService.MakeUpload("/", "test", new List<string> {"/test.jpg"});
+			Assert.IsTrue(makeUpload);
+		}
 	}
 }
