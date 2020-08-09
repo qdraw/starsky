@@ -123,5 +123,18 @@ namespace starskytest.starsky.feature.webftppublish.Services
 			var makeUpload = ftpService.MakeUpload("/", "test", new List<string> {"/test.jpg"});
 			Assert.IsTrue(makeUpload);
 		}
+		
+		[TestMethod]
+		public void Run_False()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>{new byte[0]});
+			var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(), factory);
+			var makeUpload = ftpService.Run("/", "test", new Dictionary<string, bool>
+			{
+				{"/test.jpg", true}
+			});
+			Assert.IsFalse(makeUpload);
+		}
 	}
 }
