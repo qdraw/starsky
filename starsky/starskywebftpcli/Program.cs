@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -27,8 +28,9 @@ namespace starskywebftpcli
 			
 			var storageSelector = serviceProvider.GetService<ISelectorStorage>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
-
-			new WebFtpCli(appSettings, storageSelector, console).Run(args);
+			var webRequestFactory = serviceProvider.GetRequiredService<IFtpWebRequestFactory>();
+			
+			new WebFtpCli(appSettings, storageSelector, console, webRequestFactory).Run(args);
 		}
 	}
 }

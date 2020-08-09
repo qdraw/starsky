@@ -1,5 +1,5 @@
 using System.IO;
-using starsky.feature.webftppublish.FtpAbstractions.Services;
+using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Helpers;
@@ -18,13 +18,15 @@ namespace starsky.feature.webftppublish.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;
 		private readonly IStorage _hostStorageProvider;
+		private readonly IFtpWebRequestFactory _webRequestFactory;
 
-		public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage, IConsole console)
+		public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage, IConsole console, IFtpWebRequestFactory webRequestFactory)
 		{
 			_appSettings = appSettings;
-			_argsHelper = new ArgsHelper();
 			_console = console;
+			_argsHelper = new ArgsHelper(_appSettings,console);
 			_hostStorageProvider = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_webRequestFactory = webRequestFactory;
 		}
 
 		public void Run(string[] args)
@@ -69,6 +71,7 @@ namespace starsky.feature.webftppublish.Helpers
 			{
 				_console.WriteLine($"Please run 'starskywebhtmlcli' " +
 				                   $"first to generate a settings file"  );
+				return;
 			}
 
 			var settings =
@@ -76,12 +79,16 @@ namespace starsky.feature.webftppublish.Helpers
 					settingsFullFilePath);
 
 			var ftpService = new FtpService(_appSettings,_hostStorageProvider, 
-					_console, new FtpWebRequestFactory())
+					_console, _webRequestFactory)
 				.Run(inputFullFileDirectory, settings.Slug, settings.Copy);
+
+			if ( !ftpService )
+			{
+				_console.WriteLine("Ftp copy failed");
+				return;
+			};
 			
-			if ( !ftpService ) return;
-			
-			_console.WriteLine($"copy done: {settings.Slug}");
+			_console.WriteLine($"Ftp copy successful done: {settings.Slug}");
 		}
 	}
 }
