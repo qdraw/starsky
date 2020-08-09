@@ -20,16 +20,12 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 			GC.SuppressFinalize(this);
 		}
 
-		private void Dispose(bool disposing)
+		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
-			{
-				if (_response != null)
-				{
-					((IDisposable)_response).Dispose();
-					_response = null;
-				}
-			}
+			if ( !disposing ) return;
+			if ( _response == null ) return;
+			((IDisposable)_response).Dispose();
+			_response = null;
 		}
 
 		public Stream GetResponseStream()
