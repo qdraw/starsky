@@ -125,14 +125,26 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		}
 		
 		[TestMethod]
-		public void Run_False()
+		public void Run_UploadDone()
 		{
 			var factory = new FakeIFtpWebRequestFactory();
 			var fakeStorage = new FakeIStorage(new List<string>{"/"}, new List<string>{"//test.jpg"}, new List<byte[]>{new byte[0]});
 			var ftpService = new FtpService(_appSettings, fakeStorage, new FakeConsoleWrapper(), factory);
 			var makeUpload = ftpService.Run("/", "test", new Dictionary<string, bool>
 			{
-				{"/test.jpg", true}
+				{"test.jpg", true}
+			});
+			Assert.IsTrue(makeUpload);
+		}
+		
+		[TestMethod]
+		public void Run_UploadFail()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var ftpService = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			var makeUpload = ftpService.Run("/", "test", new Dictionary<string, bool>
+			{
+				{"non-existing-file.jpg", true}
 			});
 			Assert.IsFalse(makeUpload);
 		}
