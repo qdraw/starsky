@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace starsky.feature.webhtmlpublish.Extensions
 {
 	/// <summary>
+	/// Helpers for Dictionaries
 	/// @see: https://stackoverflow.com/a/28942210
 	/// </summary>
 	public static class DictionaryExtensions
