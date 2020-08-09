@@ -33,7 +33,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    return profile.Folder + _appSettings.GenerateSlug( 
 			                                        Path.GetFileNameWithoutExtension(sourceFilePath),true )
-		                                        + profile.Append + Path.GetExtension(sourceFilePath);
+		                                        + profile.Append + Path.GetExtension(sourceFilePath).ToLowerInvariant();
 	    }
 	    
         public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
