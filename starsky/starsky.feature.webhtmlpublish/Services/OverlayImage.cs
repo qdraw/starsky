@@ -48,6 +48,10 @@ namespace starsky.feature.webhtmlpublish.Services
 	        if ( !_thumbnailStorage.ExistFile(itemFileHash) ) throw new FileNotFoundException("fileHash " + itemFileHash);
 
 	        if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
+	        if ( !_hostFileSystem.ExistFile(profile.Path) )
+	        {
+		        throw new FileNotFoundException($"overlayImage is missing in profile.Path: {profile.Path}");
+	        }
 	        
 	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(itemFileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
@@ -69,10 +73,15 @@ namespace starsky.feature.webhtmlpublish.Services
         /// <exception cref="FileNotFoundException">source image not found</exception>
 	    public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile)
 	    {
+		    if ( string.IsNullOrWhiteSpace(itemFilePath) ) throw new ArgumentNullException(nameof(itemFilePath));
 		    if ( !_iStorage.ExistFile(itemFilePath) ) throw new FileNotFoundException("subPath " + itemFilePath);
 
 		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
-	        
+		    if ( !_hostFileSystem.ExistFile(profile.Path) )
+		    {
+			    throw new FileNotFoundException($"overlayImage is missing in profile.Path: {profile.Path}");
+		    }
+		    
 		    using ( var sourceImageStream = _iStorage.ReadStream(itemFilePath))
 		    using ( var sourceImage = Image.Load(sourceImageStream) )
 		    using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
