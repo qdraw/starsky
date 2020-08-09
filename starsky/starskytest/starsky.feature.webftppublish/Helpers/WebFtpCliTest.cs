@@ -23,6 +23,17 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			};
 			_webRequestFactory = new FakeIFtpWebRequestFactory();
 		}
+
+		private byte[] ExampleManifest()
+		{
+			var input = "{\n  \"Name\": \"Test\",\n  " +
+			            "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
+			            "true,\n    \"_settings.json\": false\n  },\n" +
+			            "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
+			            "  \"Version\": \"0.3.0.0\"\n}";
+			var stream = new PlainTextFileHelper().StringToStream(input) as MemoryStream;
+			return stream.ToArray();
+		}
 		
 		[TestMethod]
 		public void Run_Help()
@@ -84,42 +95,15 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 		public void Run_SettingsFile_successful()
 		{			
 			var console = new FakeConsoleWrapper();
-			
-			var stream = new PlainTextFileHelper().StringToStream("{\n  \"Name\": \"Test\",\n  " +
-			                                                               "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
-			                                                               "true,\n    \"_settings.json\": false\n  },\n" +
-			                                                               "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
-			                                                               "  \"Version\": \"0.3.0.0\"\n}") as MemoryStream;
 
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
-				new List<string>{"/test/_settings.json", "/test/1000/0_kl1k.jpg"}, new List<byte[]>{stream.ToArray(), new byte[0]}));
+				new List<string>{"/test/_settings.json", "/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), new byte[0]}));
 			
 			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
 			
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Ftp copy successful done"));
 		}
-		
-		[TestMethod]
-		public void Run_SettingsFile_fail()
-		{			
-			var console = new FakeConsoleWrapper();
-			
-			var stream = new PlainTextFileHelper().StringToStream("{\n  \"Name\": \"Test\",\n  " +
-			                                                      "\"Copy\": {\n    \"1000/0_kl1k.jpg\": " +
-			                                                      "true,\n    \"_settings.json\": false\n  },\n" +
-			                                                      "  \"Slug\": \"test\",\n  \"Export\": \"20200808121411\",\n" +
-			                                                      "  \"Version\": \"0.3.0.0\"\n}") as MemoryStream;
 
-			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
-				
-				new List<string>{"/test/_settings.json"}, new List<byte[]>{stream.ToArray(), new byte[0]}));
-			// = =  = = = = = = = == = = = == = = = = == = = == = = ^^^^ file removed here
-			
-			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
-				.Run(new []{"-p", "/test"});
-			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Ftp copy failed"));
-		}
 	}
 }
