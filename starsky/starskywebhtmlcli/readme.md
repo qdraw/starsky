@@ -100,7 +100,7 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
 {
     "app" :{
         "publishProfiles": {
-            "default": [
+            "_default": [
                 {
                     "ContentType":  "html",
                     "SourceMaxWidth":  0,
@@ -153,9 +153,19 @@ In ContentType `moveSourceFiles` this is the folder to move the file to.
                     "ContentType":  "moveSourceFiles",
                     "Folder": "orgineel",
                     "Copy": "false"
+                },
+                {
+                    "ContentType":  "publishContent",
+                    "Folder": "",
+                    "Copy": "true"
+                },
+                {
+                    "ContentType": "publishManifest",
+                    "Folder": "",
+                    "Copy": "true"
                 }
             ],
-            "2000px": [
+            "no_logo_2000px": [
                 {
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  2000,
