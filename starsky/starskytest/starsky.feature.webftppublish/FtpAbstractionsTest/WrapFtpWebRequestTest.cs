@@ -83,9 +83,16 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		
 		[TestMethod]
 		[ExpectedException(typeof(System.NullReferenceException))]
-		public void GetResponse_Set_Null()
+		public void GetResponse_Get_Null()
 		{
 			new WrapFtpWebRequest(null).GetResponse();
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(System.NullReferenceException))]
+		public void GetRequestStream_Get_Null()
+		{
+			new WrapFtpWebRequest(null).GetRequestStream();
 		}
 	}
 }
