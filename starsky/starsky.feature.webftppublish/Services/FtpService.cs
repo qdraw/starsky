@@ -5,6 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Web;
+using starsky.feature.webftppublish.FtpAbstractions;
+using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
+using starsky.feature.webftppublish.FtpAbstractions.Services;
 using starsky.feature.webftppublish.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -22,7 +25,7 @@ namespace starsky.feature.webftppublish.Services
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _storage;
 		private readonly IConsole _console;
-		private readonly IWebRequestAbstraction _webRequest;
+		private readonly IFtpWebRequestFactory _webRequest;
 
 		/// <summary>
 		/// [0] is username, [1] password
@@ -44,7 +47,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="console"></param>
 		/// <param name="webRequest"></param>
 		public FtpService(AppSettings appSettings, IStorage storage, IConsole console, 
-			IWebRequestAbstraction webRequest)
+			IFtpWebRequestFactory webRequest)
 		{
 			_appSettings = appSettings;
 			_storage = storage;
@@ -74,12 +77,9 @@ namespace starsky.feature.webftppublish.Services
 				CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
 				_console.Write(",");
-				if ( !DoesFtpDirectoryExist(thisDirectory) )
-				{
-					if ( CreateFtpDirectory(thisDirectory) ) continue;
-					_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
-					continue;
-				}
+				if ( DoesFtpDirectoryExist(thisDirectory) ) continue;
+				if ( CreateFtpDirectory(thisDirectory) ) continue;
+				_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
 			}
 
 			// content of the publication folder
@@ -193,19 +193,19 @@ namespace starsky.feature.webftppublish.Services
 		}
 
 		/// <summary>
-		/// 
+		/// Check if folder exist on ftp drive
 		/// @see: https://stackoverflow.com/a/24047971
 		/// </summary>
-		/// <param name="dirPath"></param>
-		/// <returns></returns>
-		private bool DoesFtpDirectoryExist(string dirPath)
+		/// <param name="dirPath">directory may contain slash</param>
+		/// <returns>exist or not</returns>
+		internal bool DoesFtpDirectoryExist(string dirPath)
 		{
 			try
 			{
-				FtpWebRequest request = ( FtpWebRequest )WebRequest.Create(dirPath);
+				var request = _webRequest.Create(dirPath);
 				request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
 				request.Method = WebRequestMethods.Ftp.ListDirectory;
-				FtpWebResponse response = ( FtpWebResponse )request.GetResponse();
+				request.GetResponse();
 				return true;
 			}
 			catch ( WebException ex )
@@ -219,31 +219,31 @@ namespace starsky.feature.webftppublish.Services
 		/// </summary>
 		/// <param name="directory">ftp path with directory name eg ftp://service.nl/drop</param>
 		/// <returns></returns>
-		private bool CreateFtpDirectory(string directory) 
+		internal bool CreateFtpDirectory(string directory) 
 		{
 			try
 			{
 				// create the directory
-				var requestDir = (FtpWebRequest) _webRequest.Create(directory);
+				var requestDir = _webRequest.Create(directory);
 				requestDir.Method = WebRequestMethods.Ftp.MakeDirectory;
 				requestDir.Credentials = new NetworkCredential(_appSettingsCredentials[0], 
 					_appSettingsCredentials[1]);
 				requestDir.UsePassive = true;
 				requestDir.UseBinary = true;
 				requestDir.KeepAlive = false;
-				var ftpWebResponse = (FtpWebResponse)requestDir.GetResponse();
+				var ftpWebResponse = requestDir.GetResponse();
 				var ftpStream = ftpWebResponse.GetResponseStream();
 
 				ftpStream?.Close();
-				ftpWebResponse.Close();
+				ftpWebResponse.Dispose();
 
 				return true;
 			}
 			catch (WebException ex)
 			{
 				var ftpWebResponse = (FtpWebResponse)ex.Response;
-				ftpWebResponse.Close();
-				return ftpWebResponse.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
+				ftpWebResponse?.Close();
+				return ftpWebResponse?.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable;
 			}
 		}
 		

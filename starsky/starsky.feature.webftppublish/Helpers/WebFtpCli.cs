@@ -1,4 +1,5 @@
 using System.IO;
+using starsky.feature.webftppublish.FtpAbstractions.Services;
 using starsky.feature.webftppublish.Models;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Helpers;
@@ -75,7 +76,7 @@ namespace starsky.feature.webftppublish.Helpers
 					settingsFullFilePath);
 
 			var ftpService = new FtpService(_appSettings,_hostStorageProvider, 
-					_console, new WebRequestAbstraction())
+					_console, new FtpWebRequestFactory())
 				.Run(inputFullFileDirectory, settings.Slug, settings.Copy);
 			
 			if ( !ftpService ) return;

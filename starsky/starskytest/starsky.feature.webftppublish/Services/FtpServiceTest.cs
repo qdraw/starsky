@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.webftppublish.FtpAbstractions;
 using starsky.feature.webftppublish.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -27,7 +28,7 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		public void CreateListOfRemoteDirectories_default()
 		{
 			var item  = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
-					new WebRequestAbstraction())
+					new FakeIFtpWebRequestFactory())
 				.CreateListOfRemoteDirectories("/", "item-name", 
 					new Dictionary<string, bool>() ).ToList();
 			
@@ -39,7 +40,7 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		public void CreateListOfRemoteDirectories_default_useCopyContent()
 		{
 			var item  = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
-					new WebRequestAbstraction())
+					new FakeIFtpWebRequestFactory())
 				.CreateListOfRemoteDirectories("/", "item-name", 
 					new Dictionary<string, bool>{{"large/test.jpg",true}} ).ToList();
 			
@@ -55,9 +56,55 @@ namespace starskytest.starsky.feature.webftppublish.Services
 				{"/test.jpg",true}
 			};
 			var item  = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(),
-				new WebRequestAbstraction()).CreateListOfRemoteFiles(copyContent).ToList();
+				new FakeIFtpWebRequestFactory()).CreateListOfRemoteFiles(copyContent).ToList();
 			
 			Assert.AreEqual("//test.jpg",item.FirstOrDefault());
 		}
+
+		[TestMethod]
+		public void DoesFtpDirectoryExist()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			
+			var result = item.DoesFtpDirectoryExist("/");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void DoesFtpDirectoryExist_NonExist()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			
+			var result = item.DoesFtpDirectoryExist("/web-exception");
+			
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void CreateFtpDirectory()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			
+			var result = item.CreateFtpDirectory("/new-folder");
+			
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void CreateFtpDirectory_Fail()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			
+			var result = item.CreateFtpDirectory("/web-exception");
+			
+			Assert.IsFalse(result);
+		}
+
+
 	}
 }
