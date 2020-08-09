@@ -98,13 +98,22 @@ namespace starskytest.starsky.feature.webftppublish.Services
 		public void CreateFtpDirectory_Fail()
 		{
 			var factory = new FakeIFtpWebRequestFactory();
-			var item = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			var ftpService = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
 			
-			var result = item.CreateFtpDirectory("/web-exception");
+			var result = ftpService.CreateFtpDirectory("/web-exception");
 			
 			Assert.IsFalse(result);
 		}
 
+		[TestMethod]
+		public void MakeUpload_Fail()
+		{
+			var factory = new FakeIFtpWebRequestFactory();
+			var ftpService = new FtpService(_appSettings, _storage, new FakeConsoleWrapper(), factory);
+			// And Fail
+			var makeUpload = ftpService.MakeUpload("/", "test", new List<string> {"/test"});
+			Assert.IsFalse(makeUpload);
+		}
 
 	}
 }

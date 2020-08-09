@@ -5,9 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Web;
-using starsky.feature.webftppublish.FtpAbstractions;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
-using starsky.feature.webftppublish.FtpAbstractions.Services;
 using starsky.feature.webftppublish.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -150,7 +148,7 @@ namespace starsky.feature.webftppublish.Services
 		/// <param name="slug">name</param>
 		/// <param name="copyThisFilesSubPaths">list of files (subPath style)</param>
 		/// <returns>false = fail</returns>
-		private bool MakeUpload( string parentDirectory, string slug, IEnumerable<string> copyThisFilesSubPaths)
+		internal bool MakeUpload( string parentDirectory, string slug, IEnumerable<string> copyThisFilesSubPaths)
 		{
 			foreach ( var item in copyThisFilesSubPaths )
 			{
