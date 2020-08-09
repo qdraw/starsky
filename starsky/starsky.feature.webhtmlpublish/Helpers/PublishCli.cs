@@ -33,6 +33,12 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_hostFileSystemStorage = storageSelector.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_subPathStorage = storageSelector.Get(SelectorStorage.StorageServices.SubPath);
 		}
+		
+		/// <summary>
+		/// Command Line Helper to server WebHtml Content
+		/// </summary>
+		/// <param name="args">arguments to adjust settings, see starskywebhtml/readme.md for more details</param>
+		/// <returns>void</returns>
 		public async Task Publisher(string[] args)
 		{
 			_appSettings.Verbose = _argsHelper.NeedVerbose(args);

@@ -86,7 +86,7 @@ namespace starsky.feature.webftppublish.Helpers
 			{
 				_console.WriteLine("Ftp copy failed");
 				return;
-			};
+			}
 			
 			_console.WriteLine($"Ftp copy successful done: {settings.Slug}");
 		}

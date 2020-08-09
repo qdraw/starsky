@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.FtpAbstractions;
+using starsky.feature.webftppublish.FtpAbstractions.Helpers;
 
 namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 {
