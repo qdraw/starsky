@@ -8,7 +8,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 		string FilePathOverlayImage(string outputParentFullFilePathFolder,
 			string sourceFilePath, AppSettingsPublishProfiles profile);
 
-		void ResizeOverlayImageThumbnails(string itemFileHash, string outputPath, AppSettingsPublishProfiles profile);
-		void ResizeOverlayImageLarge(string itemFilePath, string outputPath, AppSettingsPublishProfiles profile);
+		void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile);
+		void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile);
 	}
 }

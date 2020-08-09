@@ -208,7 +208,7 @@ namespace starsky.feature.webftppublish.Services
 				request.GetResponse();
 				return true;
 			}
-			catch ( WebException ex )
+			catch ( WebException )
 			{
 				return false;
 			}

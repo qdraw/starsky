@@ -42,14 +42,14 @@ namespace starsky.feature.webhtmlpublish.Services
                                  FilePathOverlayImage(sourceFilePath,profile);
         }
         
-        public void ResizeOverlayImageThumbnails(string fileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
+        public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
         {
-	        if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
-	        if ( !_thumbnailStorage.ExistFile(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
+	        if ( string.IsNullOrWhiteSpace(itemFileHash) ) throw new ArgumentNullException(nameof(itemFileHash));
+	        if ( !_thumbnailStorage.ExistFile(itemFileHash) ) throw new FileNotFoundException("fileHash " + itemFileHash);
 
 	        if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
 	        
-	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
+	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(itemFileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
 	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path)) // for example a logo
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
