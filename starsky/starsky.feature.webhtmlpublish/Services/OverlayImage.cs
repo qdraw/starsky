@@ -63,17 +63,17 @@ namespace starsky.feature.webhtmlpublish.Services
         /// <summary>
         /// Read from _iStorage to _hostFileSystem
         /// </summary>
-        /// <param name="subPath">input Image</param>
+        /// <param name="itemFilePath">input Image</param>
         /// <param name="outputFullFilePath">location where to store</param>
         /// <param name="profile">image profile that contains sizes</param>
         /// <exception cref="FileNotFoundException">source image not found</exception>
-	    public void ResizeOverlayImageLarge(string subPath, string outputFullFilePath, AppSettingsPublishProfiles profile)
+	    public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile)
 	    {
-		    if ( !_iStorage.ExistFile(subPath) ) throw new FileNotFoundException("subPath " + subPath);
+		    if ( !_iStorage.ExistFile(itemFilePath) ) throw new FileNotFoundException("subPath " + itemFilePath);
 
 		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
 	        
-		    using ( var sourceImageStream = _iStorage.ReadStream(subPath))
+		    using ( var sourceImageStream = _iStorage.ReadStream(itemFilePath))
 		    using ( var sourceImage = Image.Load(sourceImageStream) )
 		    using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
 		    using ( var overlayImage = Image.Load(overlayImageStream) )
