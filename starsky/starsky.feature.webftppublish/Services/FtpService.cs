@@ -74,16 +74,23 @@ namespace starsky.feature.webftppublish.Services
 				CreateListOfRemoteDirectories(parentDirectory, slug, copyContent) )
 			{
 				_console.Write(",");
-				if ( CreateFtpDirectory(thisDirectory) ) continue;
-				_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
-				return false;
+				if ( !DoesFtpDirectoryExist(thisDirectory) )
+				{
+					if ( CreateFtpDirectory(thisDirectory) ) continue;
+					_console.WriteLine($"Fail > create directory => {_webFtpNoLogin}");
+					continue;
+				}
 			}
 
 			// content of the publication folder
 			var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
-			if(!MakeUpload(parentDirectory, slug, copyThisFilesSubPaths)) return false;
+			if ( !MakeUpload(parentDirectory, slug, copyThisFilesSubPaths) )
+			{
+				return false;
+			}
 
 			_console.Write("\n");
+
 			return true;
 		}
 
@@ -184,7 +191,29 @@ namespace starsky.feature.webftppublish.Services
 			}
 			return true;
 		}
-		
+
+		/// <summary>
+		/// 
+		/// @see: https://stackoverflow.com/a/24047971
+		/// </summary>
+		/// <param name="dirPath"></param>
+		/// <returns></returns>
+		private bool DoesFtpDirectoryExist(string dirPath)
+		{
+			try
+			{
+				FtpWebRequest request = ( FtpWebRequest )WebRequest.Create(dirPath);
+				request.Credentials = new NetworkCredential(_appSettingsCredentials[0], _appSettingsCredentials[1]);
+				request.Method = WebRequestMethods.Ftp.ListDirectory;
+				FtpWebResponse response = ( FtpWebResponse )request.GetResponse();
+				return true;
+			}
+			catch ( WebException ex )
+			{
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Create a directory on the ftp service
 		/// </summary>
