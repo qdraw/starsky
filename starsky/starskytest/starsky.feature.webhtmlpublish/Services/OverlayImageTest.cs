@@ -136,6 +136,40 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
+		public void ResizeOverlayImageLarge_Ignore_If_Exist()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageLarge("test.jpg", "/test.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1,
+				Path = "/test.jpg"
+			});
+			
+			// Should return nothing
+			Assert.IsTrue(_storage.ExistFile("/test.jpg"));
+		}
+		
+		[TestMethod]
+		public void ResizeOverlayImageThumbnails_Ignore_If_Exist()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/test.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1,
+				Path = "/test.jpg"
+			});
+			
+			// Should return nothing
+			Assert.IsTrue(_storage.ExistFile("/test.jpg"));
+		}
+		
+		[TestMethod]
 		public void ResizeOverlayImageLarge_Done()
 		{
 			var overlayImage =
