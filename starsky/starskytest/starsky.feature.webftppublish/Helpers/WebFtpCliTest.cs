@@ -98,7 +98,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			var console = new FakeConsoleWrapper();
 
 			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
-				new List<string>{"/test/_settings.json", "/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), new byte[0]}));
+				new List<string>{$"/test{Path.DirectorySeparatorChar}_settings.json", "/test/1000/0_kl1k.jpg"}, new List<byte[]> {ExampleManifest(), new byte[0]}));
 			
 			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
