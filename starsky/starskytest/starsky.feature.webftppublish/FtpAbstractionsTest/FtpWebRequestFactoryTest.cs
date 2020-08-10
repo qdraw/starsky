@@ -16,8 +16,8 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(InvalidCastException))]
-		public void FtpWebRequestFactoryTestCreate_InvalidCastException()
+		[ExpectedException(typeof(System.Net.WebException))]
+		public void FtpWebRequestFactoryTestCreate_WebException()
 		{
 			var factory = new FtpWebRequestFactory();
 
