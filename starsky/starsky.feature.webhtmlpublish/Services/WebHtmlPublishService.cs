@@ -166,6 +166,12 @@ namespace starsky.feature.webhtmlpublish.Services
 		    AppSettingsPublishProfiles currentProfile, string itemName, string[] base64ImageArray, 
 		    IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
+		    if ( string.IsNullOrEmpty(currentProfile.Template) )
+		    {
+			    _console.WriteLine("CurrentProfile Template not configured");
+			    return new Dictionary<string, bool>();
+		    }
+		    
 		    // Generates html by razorLight
 		    var viewModel = new WebHtmlViewModel
 		    {
