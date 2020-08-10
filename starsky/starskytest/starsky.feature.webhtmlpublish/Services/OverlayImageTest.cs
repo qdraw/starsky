@@ -46,7 +46,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		public void FilePathOverlayImage_outputParentFullFilePathFolder()
 		{
 			var image =
-				new OverlayImage(_selectorStorage, new AppSettings()).FilePathOverlayImage(string.Empty,"TesT.Jpg",
+				new OverlayImage(_selectorStorage, new AppSettings()).FilePathOverlayImage(
+					string.Empty,"TesT.Jpg",
 					new AppSettingsPublishProfiles());
 			Assert.AreEqual(PathHelper.AddBackslash(string.Empty) + "test.jpg",image);
 		}
@@ -72,6 +73,21 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			overlayImage.ResizeOverlayImageLarge(null,null, new AppSettingsPublishProfiles());
 			// > ArgumentNullException
 		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(FileNotFoundException))]
+		public void ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1
+			});
+			// itemFileHash not found
+		}
 
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
@@ -90,6 +106,22 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
+		public void ResizeOverlayImageLarge_File_Not_Found()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
+				"/out.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1
+			});
+			// itemFileHash not found
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(FileNotFoundException))]
 		public void ResizeOverlayImageLarge_overlay_image_missing()
 		{
 			var overlayImage =
@@ -101,6 +133,38 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				OverlayMaxWidth = 1
 			});
 			// > overlay image missing
+		}
+		
+		[TestMethod]
+		public void ResizeOverlayImageLarge_Done()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageLarge("test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1,
+				Path = "/test.jpg"
+			});
+			
+			Assert.IsTrue(_storage.ExistFile("/out_large.jpg"));
+		}
+		
+		[TestMethod]
+		public void ResizeOverlayImageThumbnails_Done()
+		{
+			var overlayImage =
+				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
+			
+			overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
+			{
+				SourceMaxWidth = 100,
+				OverlayMaxWidth = 1,
+				Path = "/test.jpg"
+			});
+			
+			Assert.IsTrue(_storage.ExistFile("/out_thumb.jpg"));
 		}
 	}
 }
