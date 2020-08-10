@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -101,8 +102,20 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			
 			new WebFtpCli(_appSettings, fakeSelectorStorage , console, _webRequestFactory)
 				.Run(new []{"-p", "/test"});
+
+			var isSuccess = console.WrittenLines.LastOrDefault()
+				.Contains("Ftp copy successful done");
 			
-			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Ftp copy successful done"));
+			// To Debug why the test has failed
+			if ( !isSuccess )
+			{
+				foreach ( var line in console.WrittenLines )
+				{
+					Console.WriteLine(line);
+				}
+			}
+			
+			Assert.IsTrue(isSuccess);
 		}
 
 	}
