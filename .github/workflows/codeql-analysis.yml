@@ -3,9 +3,7 @@ name: "CodeQL"
 on:
   push:
     branches: [master, ]
-    paths:
-    - 'starsky/**'
-    - 'starsky-tools/**'
+    # all files because parent git hashes are used to compare in PR's
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [master]
