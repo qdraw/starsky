@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webftppublish.FtpAbstractions.Services;
 
@@ -15,13 +16,13 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		}
 		
 		[TestMethod]
-		[ExpectedException(typeof(System.InvalidCastException))]
+		[ExpectedException(typeof(InvalidCastException))]
 		public void FtpWebRequestFactoryTestCreate_InvalidCastException()
 		{
 			var factory = new FtpWebRequestFactory();
 
-			factory.Create("/");
-			// System.InvalidCastException:
+			var test = factory.Create("ftp://test:test@404.nl");
+			test.GetResponse();
 		}
 	}
 }
