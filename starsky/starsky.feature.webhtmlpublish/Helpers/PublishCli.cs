@@ -29,7 +29,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_publishService = publishService;
 			_appSettings = appSettings;
 			_console = console;
-			_argsHelper = new ArgsHelper(appSettings);
+			_argsHelper = new ArgsHelper(appSettings, console);
 			_hostFileSystemStorage = storageSelector.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_subPathStorage = storageSelector.Get(SelectorStorage.StorageServices.SubPath);
 		}

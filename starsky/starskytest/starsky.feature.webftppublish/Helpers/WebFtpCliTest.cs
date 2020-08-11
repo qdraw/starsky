@@ -43,7 +43,7 @@ namespace starskytest.starsky.feature.webftppublish.Helpers
 			new WebFtpCli(_appSettings, new FakeSelectorStorage(), console,_webRequestFactory )
 				.Run(new []{"-h"});
 			
-			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebHtml Cli ~ Help:"));
+			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebFtp Cli ~ Help:"));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("  use -v -help to show settings: "));
 		}
 
