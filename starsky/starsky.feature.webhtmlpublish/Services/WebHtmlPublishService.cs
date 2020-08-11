@@ -253,13 +253,11 @@ namespace starsky.feature.webhtmlpublish.Services
 		    string outputParentFullFilePathFolder, bool moveSourceFiles)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
-            
-		    var overlayImage = new OverlayImage(_selectorStorage, _appSettings);
-
+		    
 		    foreach (var item in fileIndexItemsList)
 		    {
 			    // input: item.FilePath
-			    var outputPath = overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
+			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder,
 				    item.FilePath, profile);
 
 			    await _hostFileSystemStorage.WriteStreamAsync(_subPathStorage.ReadStream(item.FilePath),
