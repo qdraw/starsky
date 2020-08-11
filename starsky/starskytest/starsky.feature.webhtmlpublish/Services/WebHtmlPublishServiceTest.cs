@@ -154,7 +154,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 							Template = "Index.cshtml"
 						}
 					}}
-				}
+				},
+				Verbose = true
 			};
 
 			// REAL FS
@@ -170,16 +171,57 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
 
-			var html = await service.GenerateWebHtml(profiles, profiles.FirstOrDefault(), "testItem", new string[1],
-				new List<FileIndexItem>(), AppDomain.CurrentDomain.BaseDirectory
+			var output = await service.GenerateWebHtml(profiles, profiles.FirstOrDefault(), "testItem", new string[1],
+				new List<FileIndexItem>{new FileIndexItem("test")}, AppDomain.CurrentDomain.BaseDirectory
 			);
 
 			var outputFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "index.html");
 			
-			Assert.AreEqual(true, storage.ExistFile(outputFile));
+			Assert.IsTrue( storage.ExistFile(outputFile));
+			Assert.IsTrue(output.ContainsKey("index.html"));
 
+			// this realFS
 			storage.FileDelete(outputFile);
 		}
 
+		[TestMethod]
+		public async Task GenerateJpeg_Test()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{
+						"default",
+						new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Html,
+								Path = "index.html",
+								Template = "Index.cshtml"
+							}
+						}
+					}
+				},
+				Verbose = true
+			};
+			var storage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper());
+			
+			var profiles = new PublishPreflight(appSettings, 
+				new ConsoleWrapper()).GetPublishProfileName("default");
+
+			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
+				"/");
+			
+			Assert.IsTrue(generateJpeg.ContainsKey(String.Empty));
+
+		}
 	}
 }

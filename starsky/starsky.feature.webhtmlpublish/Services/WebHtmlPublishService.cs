@@ -211,7 +211,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    };
 	    }
 
-	    private Dictionary<string, bool> GenerateJpeg(AppSettingsPublishProfiles profile, 
+	    internal Dictionary<string, bool> GenerateJpeg(AppSettingsPublishProfiles profile, 
 		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
