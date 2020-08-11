@@ -40,25 +40,5 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_storage.FileDelete(outputLocation);
 			_storage.WriteStream(_plainTextFileHelper.StringToStream(output), outputLocation);
 		}
-
-		// /// <summary>
-		// /// Imports name to the appSettings. 
-		// /// false > file not exist
-		// /// </summary>
-		// /// <returns>false > file not exist</returns>
-		// public bool ImportManifest()
-		// {
-		// 	var fullSettingsPath = Path.Combine(_appSettings.StorageFolder, ManifestName);
-		//
-		// 	if ( !_storage.ExistFile(fullSettingsPath) ) return false;
-		// 	
-		// 	var input = _plainTextFileHelper.StreamToString(_storage.ReadStream(fullSettingsPath));
-		// 	var manifestModel = JsonConvert.DeserializeObject<ManifestModel>(input);
-		// 	
-		// 	throw new Exception("_appSettings.Name is obsolete ");
-		// 	_appSettings.Name = manifestModel.Name;
-		// 	
-		// 	return true;
-		// }
 	}
 }
