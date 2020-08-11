@@ -189,8 +189,8 @@ namespace starskytest.FakeMocks
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
-			// Allow only 3 a-z extensions
-			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "\\/\\w+.[a-z]{3}$").Success;
+			// unescaped: (\/|\\)\w+.[a-z]{1,4}$
+			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
