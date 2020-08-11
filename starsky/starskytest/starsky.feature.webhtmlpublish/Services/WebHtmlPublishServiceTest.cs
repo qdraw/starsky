@@ -10,6 +10,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Storage;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
 
@@ -365,6 +366,33 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 			// is True instead of False
 			Assert.IsTrue(storage.ExistFile("/test.jpg"));
+		}
+
+		[TestMethod]
+		public void GenerateZip_RealFsTest()
+		{
+			var appSettings = new AppSettings();
+			
+			// RealFs
+			var storage = new StorageHostFullPathFilesystem();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
+				selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper());
+
+			service.GenerateZip(new CreateAnImage().BasePath, "test", 
+				new Dictionary<string, bool>{
+				{
+					new CreateAnImage().FileName,true
+				}}, true);
+
+			var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
+			
+			Assert.IsTrue(storage.ExistFile(outputFile));
+			
+			storage.FileDelete(outputFile);
 		}
 	}
 }
