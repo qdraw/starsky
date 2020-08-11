@@ -9,7 +9,8 @@ namespace starskytest.FakeMocks
 	{
 		public IEnumerable<string> GetAllPublishProfileNames()
 		{
-			throw new System.NotImplementedException();
+			Console.WriteLine("GetAllPublishProfileNames -> mocking data with test");
+			return new List<string>{"test"};
 		}
 
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)

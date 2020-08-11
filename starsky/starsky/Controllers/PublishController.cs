@@ -122,7 +122,7 @@ namespace starsky.Controllers
 			}
 			if ( _hostStorage.ExistFile(location + ".zip") )
 			{
-				_hostStorage.FileDelete(location);
+				_hostStorage.FileDelete(location+ ".zip");
 			}
 		}
 	}
