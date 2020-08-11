@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Extensions;
 using starsky.feature.webhtmlpublish.Helpers;
@@ -21,6 +21,7 @@ using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.webhtmlpublish.Services
 {
 	[Service(typeof(IWebHtmlPublishService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -77,7 +78,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return copyContent;
 	    }
 
-	    private List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
+	    internal List<FileIndexItem> AddFileHashIfNotExist(List<FileIndexItem> fileIndexItemsList)
 	    {
 		    foreach ( var item in fileIndexItemsList.Where(item => item.FileHash == null) )
 		    {
@@ -86,7 +87,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return fileIndexItemsList;
 	    }
 
-	    private void PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList)
+	    internal void PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
 		    foreach ( var item in fileIndexItemsList )
 		    {
@@ -162,7 +163,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return copyResult;
 	    }
 
-	    private async Task<Dictionary<string, bool>> GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
+	    internal async Task<Dictionary<string, bool>> GenerateWebHtml(List<AppSettingsPublishProfiles> profiles, 
 		    AppSettingsPublishProfiles currentProfile, string itemName, string[] base64ImageArray, 
 		    IEnumerable<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
