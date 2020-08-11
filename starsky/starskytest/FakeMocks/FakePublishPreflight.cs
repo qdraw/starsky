@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.platform.Models;
@@ -13,7 +14,8 @@ namespace starskytest.FakeMocks
 
 		public string GetNameConsole(string inputPath, IReadOnlyList<string> args)
 		{
-			throw new System.NotImplementedException();
+			Console.WriteLine("GetNameConsole = always test");
+			return "test";
 		}
 
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)

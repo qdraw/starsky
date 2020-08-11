@@ -60,7 +60,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			if ( _hostFileSystemStorage.IsFolderOrFile(inputFullPath) !=
 			     FolderOrFileModel.FolderOrFileTypeList.Folder )
 			{
-				_console.WriteLine("Please add a valid folder: " + inputFullPath);
+				_console.WriteLine("Please add a valid folder: " + inputFullPath + ". " +
+				                   "This folder is not found");
 				return;
 			}
 
@@ -86,6 +87,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			
 			await _publishService.RenderCopy(fileIndexList,  profileName, 
 				itemName, inputFullPath, true);
+			
+			_console.WriteLine("publish done");
 		}
 	}
 }
