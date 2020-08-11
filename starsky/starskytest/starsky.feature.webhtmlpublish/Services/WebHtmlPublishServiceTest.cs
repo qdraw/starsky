@@ -185,7 +185,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 
 		[TestMethod]
-		public async Task GenerateJpeg_Test()
+		public void GenerateJpeg_Thumbnail_Test()
 		{
 			var appSettings = new AppSettings
 			{
@@ -197,9 +197,9 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 						{
 							new AppSettingsPublishProfiles
 							{
-								ContentType = TemplateContentType.Html,
+								ContentType = TemplateContentType.Jpeg,
 								Path = "index.html",
-								Template = "Index.cshtml"
+								MetaData = true,
 							}
 						}
 					}
@@ -220,7 +220,48 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
 				"/");
 			
-			Assert.IsTrue(generateJpeg.ContainsKey(String.Empty));
+			Assert.IsTrue(generateJpeg.ContainsKey(string.Empty));
+
+		}
+		
+		[TestMethod]
+		public void GenerateJpeg_Large_Test()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{
+						"default",
+						new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								Path = "index.html",
+								MetaData = false,
+								SourceMaxWidth = 1001
+							}
+						}
+					}
+				},
+				Verbose = true
+			};
+			var storage = new FakeIStorage();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper());
+			
+			var profiles = new PublishPreflight(appSettings, 
+				new ConsoleWrapper()).GetPublishProfileName("default");
+
+			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
+				"/");
+			
+			Assert.IsTrue(generateJpeg.ContainsKey(string.Empty));
 
 		}
 	}
