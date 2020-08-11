@@ -6,7 +6,7 @@
       <ProjectGuid>{23e26a58-29c5-4d0c-813b-9f7bd991b107}</ProjectGuid>
       <RootNamespace>starsky.feature.geolookup</RootNamespace>
       <DebugType>Full</DebugType>
-      <Version>0.3.0-beta.0</Version>
+      <Version>0.3.0-beta.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
