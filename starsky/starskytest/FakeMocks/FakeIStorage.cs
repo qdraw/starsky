@@ -159,7 +159,7 @@ namespace starskytest.FakeMocks
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)
 		{
 			subPath = PathHelper.RemoveLatestSlash(subPath);
-			return _outputSubPathFiles.Where(p => p.StartsWith(subPath));
+			return _outputSubPathFiles.Where(p => p != null && p.StartsWith(subPath));
 		}
 
 		/// <summary>

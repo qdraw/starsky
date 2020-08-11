@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Helpers;
@@ -298,8 +299,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
 				true);
 
-			Assert.IsTrue(storage.ExistFile(Path.Combine("src","test.jpg")));
-			Assert.IsFalse(storage.ExistFile($"{Path.DirectorySeparatorChar}test.jpg"));
+			// True param situation
+			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/").Where(p => p != null)
+				.FirstOrDefault(p => p.Contains("src/test.jpg")) != null);
+
+			// is False instead of True
+			Assert.IsFalse(storage.ExistFile("/test.jpg"));
 		}
 		
 		[TestMethod]
@@ -335,9 +340,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
 				false);
 
-			Assert.IsTrue(storage.ExistFile(Path.Combine("src","test.jpg")));
+			// False situation
+			Assert.IsTrue(storage.GetAllFilesInDirectoryRecursive("/")
+				.FirstOrDefault(p => p != null && p.Contains("src/test.jpg")) != null);
+
 			// is True instead of False
-			Assert.IsTrue(storage.ExistFile($"{Path.DirectorySeparatorChar}test.jpg"));
+			Assert.IsTrue(storage.ExistFile("/test.jpg"));
 		}
 	}
 }
