@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -19,6 +20,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 		{
 			_appSettings = appSettings;
 			_toCreateSubfolder = toCreateSubfolder;
+			if ( selectorStorage == null ) return;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		}
 		
@@ -31,7 +33,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				_appSettings.GenerateSlug(profile.Folder, true));
 
 			var copyResult = new Dictionary<string, bool>();
-			var files = _hostStorage.GetAllFilesInDirectory(GetContentFolder());
+			var files = _hostStorage.GetAllFilesInDirectory(GetContentFolder()).ToList();
 			foreach ( var file in files)
 			{
 				var subPath = parentFolder + Path.GetFileName(file);
@@ -45,9 +47,9 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			return copyResult;
 		}
 
-		private string GetContentFolder()
+		internal string GetContentFolder()
 		{
-			return AppDomain.CurrentDomain.BaseDirectory +
+			return PathHelper.RemoveLatestBackslash(AppDomain.CurrentDomain.BaseDirectory)  +
 			       Path.DirectorySeparatorChar +
 			       "WebHtmlPublish" +
 			       Path.DirectorySeparatorChar +
