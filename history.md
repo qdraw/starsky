@@ -33,7 +33,11 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.0-beta.0 _(Unreleased)_  2020-08-XX
+# version 0.3.0-beta.1 _(Unreleased)_  2020-08-XX
+- [x]   __(Breaking change)__ Manifest (_settings.json) for exporting 
+- [x]   __(Breaking change)__ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
+
+# version 0.3.0-beta.0 - 2020-08-11
 - [x]   (Added) Update meta information for folders
 - [x]   (Added) Write component
 - [x]   (Added) Add read component (sync) [not implemented]
@@ -43,6 +47,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) GPX rename file does not work
 - [x]   (Added) FileSize update for add item
 - [x]   (Added) FileSize on add item
+- [x]   (Breaking change) Need to run migrations to add FileSize field (done by starting the mvc application)
 - [x]   (Added) Creating thumbnails from Web Interface (no status)
 - [x]   (Changed) Move options from display options to Synchronize manually in the UI
 
