@@ -221,7 +221,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				"/");
 			
 			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
-			Assert.IsTrue(storage.ExistFile("/test.jpg"));
+			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
 		}
 		
 		[TestMethod]
@@ -262,7 +262,45 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				"/");
 			
 			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
-			Assert.IsTrue(storage.ExistFile("/test.jpg"));
+			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+		}
+
+		[TestMethod]
+		public async Task Test()
+		{
+			var profile = new AppSettingsPublishProfiles
+			{
+				ContentType = TemplateContentType.MoveSourceFiles, Folder = "src",
+			};
+			
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"/test.jpg"});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{
+						"default",
+						new List<AppSettingsPublishProfiles>
+						{
+							profile
+						}
+					}
+				},
+				Verbose = true
+			};
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper());
+
+			await service.GenerateMoveSourceFiles(profile,
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg")}, "/", 
+				true);
+
+			Assert.IsTrue(storage.ExistFile("/src/test.jpg"));
+			Assert.IsFalse(storage.ExistFile("/test.jpg"));
+
 		}
 	}
 }
