@@ -1,6 +1,6 @@
 {
   "name": "thumbnail",
-  "version": "0.3.0-beta.0",
+  "version": "0.3.0-beta.1",
   "description": "Client side thumbnail generation interacting with a Starsky WebApi ",
   "main": "thumbnail.js",
   "scripts": {
