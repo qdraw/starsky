@@ -52,11 +52,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 		public string GetPublishProfileNameByIndex(int index)
 		{
-			if ( _appSettings.PublishProfiles.Count >= index )
-			{
-				return string.Empty;
-			}
-			return _appSettings.PublishProfiles.ElementAt(index).Key;
+			return _appSettings.PublishProfiles.ElementAtOrDefault(index).Key;
 		}
 
 		/// <summary>

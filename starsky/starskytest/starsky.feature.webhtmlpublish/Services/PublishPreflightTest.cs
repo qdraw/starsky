@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,6 +57,14 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var data = new PublishPreflight(_testAppSettings, 
 				new ConsoleWrapper()).GetPublishProfileNameByIndex(0);
 			Assert.AreEqual("test", data);
+		}
+		
+		[TestMethod]
+		public void GetPublishProfileNameByIndex_LargerThanIndex()
+		{
+			var data = new PublishPreflight(_testAppSettings, 
+				new ConsoleWrapper()).GetPublishProfileNameByIndex(1);
+			Assert.AreEqual(null, data);
 		}
 
 		[TestMethod]
