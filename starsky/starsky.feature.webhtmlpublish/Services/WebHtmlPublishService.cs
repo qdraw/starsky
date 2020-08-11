@@ -248,7 +248,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			    item => profile.Copy);
 	    }
 
-	    private async Task<Dictionary<string, bool>> GenerateMoveSourceFiles(
+	    internal async Task<Dictionary<string, bool>> GenerateMoveSourceFiles(
 		    AppSettingsPublishProfiles profile, IReadOnlyCollection<FileIndexItem> fileIndexItemsList,
 		    string outputParentFullFilePathFolder, bool moveSourceFiles)
 	    {

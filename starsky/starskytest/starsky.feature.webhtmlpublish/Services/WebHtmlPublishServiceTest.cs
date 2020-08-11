@@ -220,8 +220,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
 				"/");
 			
-			Assert.IsTrue(generateJpeg.ContainsKey(string.Empty));
-
+			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+			Assert.IsTrue(storage.ExistFile("/test.jpg"));
 		}
 		
 		[TestMethod]
@@ -261,8 +261,8 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
 				"/");
 			
-			Assert.IsTrue(generateJpeg.ContainsKey(string.Empty));
-
+			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+			Assert.IsTrue(storage.ExistFile("/test.jpg"));
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -16,13 +17,15 @@ namespace starskytest.FakeMocks
 		}
 		public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
 		{
-			return "";
+			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(
+				sourceFilePath, profile);
 		}
 
 		public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			return "";
+			return new OverlayImage(null,new AppSettings()).FilePathOverlayImage(outputParentFullFilePathFolder,
+				sourceFilePath, profile);
 		}
 
 		public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,

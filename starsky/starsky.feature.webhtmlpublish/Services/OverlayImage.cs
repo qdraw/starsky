@@ -23,10 +23,11 @@ namespace starsky.feature.webhtmlpublish.Services
 
 	    public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
         {
-	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-	        _hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-            _appSettings = appSettings;
+	        _appSettings = appSettings;
+            if ( selectorStorage == null ) return;
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+            _hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
         }
 
 	    public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
