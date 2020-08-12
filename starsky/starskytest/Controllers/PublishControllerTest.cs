@@ -146,7 +146,9 @@ namespace starskytest.Controllers
 		public async Task PublishCreate_existItem_NoForce()
 		{
 			var appSettings = new AppSettings{TempFolder = "/"};
-			var storage = new FakeIStorage(new List<string>{"/test"});
+			var storage = new FakeIStorage(new List<string> { Path.DirectorySeparatorChar + "test" },
+				new List<string> { Path.DirectorySeparatorChar + "test.zip" });
+
 			var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(storage),
 				_bgTaskQueue);
@@ -162,8 +164,8 @@ namespace starskytest.Controllers
 		public async Task PublishCreate_existItem_Force()
 		{
 			var appSettings = new AppSettings {TempFolder = "/"};
-			var storage = new FakeIStorage(new List<string> {"/test"}, 
-				new List<string>{"/test.zip"});
+			var storage = new FakeIStorage(new List<string> {Path.DirectorySeparatorChar + "test"}, 
+				new List<string>{ Path.DirectorySeparatorChar + "test.zip" });
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(storage),
@@ -174,8 +176,8 @@ namespace starskytest.Controllers
 			var result = actionResult.Value as string;
 			
 			Assert.AreEqual("test", result);
-			Assert.IsFalse(storage.ExistFolder("/test"));
-			Assert.IsFalse(storage.ExistFile("/test.zip"));
+			Assert.IsFalse(storage.ExistFolder(Path.DirectorySeparatorChar + "test"));
+			Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.zip"));
 		}
 		
 	}

@@ -182,7 +182,10 @@ namespace starskytest.FakeMocks
 		{
 			if ( parentFolder != string.Empty && !filePath.StartsWith(parentFolder) ) return false;
 			// unescaped: (\/|\\)\w+.[a-z]{1,4}$
-			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}"+ "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
+			//var regex =  $"{Regex.Escape(parentFolder)}" + "(\\/|\\)\\w+.[a-z]{1,4}$";
+			//var result = Regex.Match(filePath, regex).Success;
+			//return result;
+			return Regex.Match(filePath, $"^{Regex.Escape(parentFolder)}" + "(\\/|\\\\)\\w+.[a-z]{1,4}$").Success;
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
