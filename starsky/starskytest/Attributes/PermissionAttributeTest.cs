@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Attributes;
+using starsky.foundation.accountmanagement.Services;
 using starskycore.Services;
 
 namespace starskytest.Attributes

@@ -1,40 +1,37 @@
 using System;
+using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskyAdminCli.Models;
-using starskycore.Interfaces;
 
 namespace starskyAdminCli.Services
 {
 	public class ConsoleAdmin
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IUserManager _userManager;
 		private readonly IConsole _console;
 
-		public ConsoleAdmin(AppSettings appSettings, IUserManager userManager, IConsole console)
+		public ConsoleAdmin(IUserManager userManager, IConsole console)
 		{
-			_appSettings = appSettings;
 			_userManager = userManager;
 			_console = console;
 		}
-		public void Tool()
+		public void Tool(string userName)
 		{
-			if (_appSettings.Name == new AppSettings().Name)
+			if (string.IsNullOrEmpty(userName))
 			{
 				_console.WriteLine("\nWhat is the username/email?\n ");
-				var name = _console.ReadLine();
-				_appSettings.Name = name;
-				if (string.IsNullOrEmpty(name))
+				userName = _console.ReadLine();
+				if (string.IsNullOrEmpty(userName))
 				{
 					_console.WriteLine("No input selected");
 					return;
 				}
 			}
 
-			if ( _userManager.Exist(_appSettings.Name) == null)
+			if ( _userManager.Exist(userName) == null)
 			{
-				_console.WriteLine($"User {_appSettings.Name} does not exist");
+				_console.WriteLine($"User {userName} does not exist");
 				return;
 			}
 			
@@ -46,29 +43,29 @@ namespace starskyAdminCli.Services
 			switch ( selectedOption )
 			{
 				case ManageAdminOptions.RemoveAccount :
-					_userManager.RemoveUser("Email", _appSettings.Name);
-					_console.WriteLine($"User {_appSettings.Name} is removed");
+					_userManager.RemoveUser("Email", userName);
+					_console.WriteLine($"User {userName} is removed");
 					return;
 				case ManageAdminOptions.ToggleUserAdminRole:
-					ToggleUserAdminRole();
+					ToggleUserAdminRole(userName);
 					return;
 			}
 		}
 
-		private void ToggleUserAdminRole()
+		private void ToggleUserAdminRole(string userName)
 		{
-			var user = _userManager.GetUser("Email", _appSettings.Name);
-			var currentRole = _userManager.GetRole("Email", _appSettings.Name);
+			var user = _userManager.GetUser("Email", userName);
+			var currentRole = _userManager.GetRole("Email", userName);
 
 			_userManager.RemoveFromRole(user,currentRole);
 			if ( currentRole.Code == AccountRoles.AppAccountRoles.User.ToString() )
 			{
 				_userManager.AddToRole(user,AccountRoles.AppAccountRoles.Administrator.ToString());
-				_console.WriteLine($"User {_appSettings.Name} has now the role Administrator");
+				_console.WriteLine($"User {userName} has now the role Administrator");
 				return;
 			}
 			_userManager.AddToRole(user,AccountRoles.AppAccountRoles.User.ToString());
-			_console.WriteLine($"User {_appSettings.Name} has now the role User");
+			_console.WriteLine($"User {userName} has now the role User");
 		}
 	}
 }

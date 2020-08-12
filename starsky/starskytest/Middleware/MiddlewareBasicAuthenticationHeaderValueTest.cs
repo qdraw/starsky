@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.accountmanagement.Middleware;
 using starskycore.Middleware;
 
 namespace starskytest.Middleware

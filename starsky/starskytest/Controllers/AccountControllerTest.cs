@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,14 +16,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models.Account;
+using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
-using starskycore.Models;
-using starskycore.Services;
-using starskycore.ViewModels.Account;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers

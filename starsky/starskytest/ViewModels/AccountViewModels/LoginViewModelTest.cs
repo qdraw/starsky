@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.ViewModels.Account;
+using starsky.foundation.accountmanagement.Models.Account;
 
 namespace starskytest.ViewModels.AccountViewModels
 {

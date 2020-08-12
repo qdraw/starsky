@@ -1,9 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starskyAdminCli.Services;
-using starskycore.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starskyAdminCli
@@ -12,25 +15,35 @@ namespace starskyAdminCli
 	{
 		internal static void Main(string[] args)
 		{
-			
-			// todo fix NAME
-			
+			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
-			// todo :  remove reference to starskyCore
-			var startupHelper = new ConfigCliAppsStartupHelper();
-			var appSettings = startupHelper.AppSettings();
-			
+			var services = new ServiceCollection();
+
+			// Setup AppSettings
+			services = SetupAppSettings.FirstStepToAddSingleton(services);
+
+			// Inject services
+			new RegisterDependencies().Configure(services);
+			var serviceProvider = services.BuildServiceProvider();
+			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+            
+			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			serviceProvider = services.BuildServiceProvider();
+
 			// Use args in application
 			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 			
+			var userManager = serviceProvider.GetService<IUserManager>();
+
 			if (new ArgsHelper().NeedHelp(args))
 			{
 				appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
 				return;
 			}
-			new ConsoleAdmin(appSettings, startupHelper.UserManager(), new ConsoleWrapper()).Tool();
+			
+			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args));
 		}
 	}
 }

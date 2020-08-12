@@ -58,6 +58,7 @@
     <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
     <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
     <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+    <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
     <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
     <ProjectReference Include="..\starskycore\starskycore.csproj" />

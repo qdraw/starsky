@@ -29,7 +29,6 @@ namespace starskycore.Helpers
         private readonly IExifTool _exifTool;
 	    private readonly ThumbnailCleaner _thumbnailCleaner;
 	    private readonly IStorage _iStorage;
-	    private readonly UserManager _userManager;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly SelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
@@ -105,8 +104,6 @@ namespace starskycore.Helpers
 	        _hostFileSystemStorage =
 		        _selectorStorage.Get(starsky.foundation.storage.Storage.SelectorStorage.StorageServices.HostFilesystem);
             _readmeta = new ReadMeta(_iStorage,appSettings);
-            
-            _userManager = new UserManager(context,appSettings);
             
             _isync = new SyncService(query, appSettings, _selectorStorage);
             
@@ -197,15 +194,7 @@ namespace starskycore.Helpers
 	    {
 		    return _hostFileSystemStorage;
 	    }
-	    
-	    /// <summary>
-	    /// Returns an filled UserManager Interface
-	    /// </summary>
-	    /// <returns>UserManager</returns>
-	    public IUserManager UserManager()
-	    {
-		    return _userManager;
-	    }
+
 
 	    /// <summary>
 	    /// Thumbnail Storage

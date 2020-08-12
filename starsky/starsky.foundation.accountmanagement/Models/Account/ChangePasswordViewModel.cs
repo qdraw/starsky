@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace starskycore.ViewModels.Account
+namespace starsky.foundation.accountmanagement.Models.Account
 {
     public class ChangePasswordViewModel
     {

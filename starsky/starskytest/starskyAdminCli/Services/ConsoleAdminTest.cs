@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starskyAdminCli.Services;
-using starskycore.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.starskyAdminCli.Services
@@ -20,9 +19,10 @@ namespace starskytest.starskyAdminCli.Services
 			{
 				"dont@mail.me"
 			});
-			new ConsoleAdmin(new AppSettings(), new FakeUserManagerActiveUsers(),console ).Tool();
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty);
 			
-			Assert.AreEqual("User dont@mail.me does not exist", console.WrittenLines.LastOrDefault());
+			Assert.AreEqual("User dont@mail.me does not exist", 
+				console.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
@@ -32,9 +32,10 @@ namespace starskytest.starskyAdminCli.Services
 			{
 				string.Empty
 			});
-			new ConsoleAdmin(new AppSettings(), new FakeUserManagerActiveUsers(), console ).Tool();
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty);
 			
-			Assert.AreEqual("No input selected", console.WrittenLines.LastOrDefault());
+			Assert.AreEqual("No input selected", 
+				console.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
@@ -45,9 +46,11 @@ namespace starskytest.starskyAdminCli.Services
 				"test",
 				"2"
 			});
-			new ConsoleAdmin(new AppSettings(), new FakeUserManagerActiveUsers(), console ).Tool();
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console )
+				.Tool(string.Empty);
 			
-			Assert.AreEqual("User test is removed", console.WrittenLines.LastOrDefault());
+			Assert.AreEqual("User test is removed", 
+				console.WrittenLines.LastOrDefault());
 		}
 
 		[TestMethod]
@@ -58,8 +61,9 @@ namespace starskytest.starskyAdminCli.Services
 				"test",
 				"3"
 			});
-			new ConsoleAdmin(new AppSettings(), new FakeUserManagerActiveUsers(),console ).Tool();
-			Assert.AreEqual("User test has now the role Administrator", console.WrittenLines.LastOrDefault());
+			new ConsoleAdmin( new FakeUserManagerActiveUsers(),console ).Tool(string.Empty);
+			Assert.AreEqual("User test has now the role Administrator", 
+				console.WrittenLines.LastOrDefault());
 		}
 		
 		[TestMethod]
@@ -76,7 +80,7 @@ namespace starskytest.starskyAdminCli.Services
 				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
 			};
 			
-			new ConsoleAdmin(new AppSettings(), userMan,console ).Tool();
+			new ConsoleAdmin( userMan,console ).Tool(string.Empty);
 			Assert.AreEqual("User test has now the role User", console.WrittenLines.LastOrDefault());
 		}
 	}

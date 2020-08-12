@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.Helpers;
 using starskycore.Interfaces;
-using starskycore.ViewModels.Account;
 
 namespace starsky.Controllers
 {
