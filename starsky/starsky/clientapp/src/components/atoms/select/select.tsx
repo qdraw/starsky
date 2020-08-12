@@ -9,18 +9,19 @@ type SelectPropTypes = {
 
 const Select: React.FunctionComponent<SelectPropTypes> = ({ children, selectOptions, callback }) => {
 
-  // const close = () => {
-  //   const portal = document.getElementById(PortalId);
-  //   if (!portal) return;
-  //   portal.remove();
-  //   if (callback) callback();
-  // };
+  const change = (value: string) => {
+    if (!callback) {
+      return;
+    }
+    callback(value);
+  };
 
   return (
-    <select className="select">
+    <select className="select" onChange={e => change(e.target.value)}>
       {selectOptions.map((value, index) => {
         return <option key={index} value={value}>{value}</option>
       })}
+      {children}
     </select>
   );
 };
