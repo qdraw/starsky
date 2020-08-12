@@ -42,15 +42,16 @@ namespace starskytest.Controllers
 
 		private FileIndexItem InsertSearchData()
 		{
+			var fileHash = "home0012304590";
 			var item = new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				FileHash = "home0012304590",
+				FileHash = fileHash,
 				ColorClass = ColorClassParser.Color.Winner // 1
 			};
 
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash("home0012304590")) )
+			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHash)) )
 			{
 				_query.AddItem(item);
 			}
@@ -83,9 +84,9 @@ namespace starskytest.Controllers
 			// Arrange
 			var storage = ArrangeStorage();
 			var plainTextStream = new PlainTextFileHelper().StringToStream("CorruptImage");
-			storage.WriteStream(plainTextStream, "/hash-corrupt-image");
+			await storage.WriteStreamAsync(plainTextStream, "hash-corrupt-image");
 
-			_query.AddItem(new FileIndexItem("/test2.jpg"){FileHash= "hash-corrupt-image"});
+			await _query.AddItemAsync(new FileIndexItem("/test2.jpg"){FileHash= "hash-corrupt-image"});
 
 			// Act
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -95,7 +96,7 @@ namespace starskytest.Controllers
 			Assert.AreEqual(204,actionResult.StatusCode);
                
 			// remove files + database item
-			_query.RemoveItem(_query.GetObjectByFilePath("/test2.jpg"));
+			_query.RemoveItem(await _query.GetObjectByFilePathAsync("/test2.jpg"));
 		}
 		
 		[TestMethod]
@@ -120,6 +121,8 @@ namespace starskytest.Controllers
 			
 			// Check if exist
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
 			var actionResult = await controller.Thumbnail(createAnImage.FileHash,true,true) as JsonResult;
 			
 			// Thumbnail exist

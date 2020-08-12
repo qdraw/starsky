@@ -127,7 +127,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("test.jpg", "/out.jpg", new AppSettingsPublishProfiles
+			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1
@@ -141,7 +141,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("test.jpg", "/test.jpg", new AppSettingsPublishProfiles
+			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
@@ -158,7 +158,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/test.jpg", new AppSettingsPublishProfiles
+			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/test.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
@@ -175,7 +175,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
+			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out_large.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,
@@ -191,7 +191,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
+			overlayImage.ResizeOverlayImageThumbnails("/test.jpg", "/out_thumb.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1,

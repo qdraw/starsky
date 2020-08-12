@@ -158,15 +158,15 @@ namespace starskytest.Controllers
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 
 			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{_createAnImage.FileName},new List<byte[]>{CreateAnImage.Bytes});
+				new List<string>{_createAnImage.DbPath},new List<byte[]>{CreateAnImage.Bytes});
 			
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem
 			{
-				FileName = _createAnImage.FileName,
+				FileName = _createAnImage.DbPath,
 				ParentDirectory = "/",
-				FileHash = "t",
+				FileHash = "file-hash",
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
 			

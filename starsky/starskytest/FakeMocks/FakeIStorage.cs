@@ -33,7 +33,7 @@ namespace starskytest.FakeMocks
 			{
 				foreach ( var subPath in outputSubPathFolders )
 				{
-					_outputSubPathFolders.Add(PathHelper.PrefixDbSlash(subPath));
+					_outputSubPathFolders.Add(subPath);
 				}
 			}
 
@@ -41,7 +41,7 @@ namespace starskytest.FakeMocks
 			{
 				foreach ( var subPath in outputSubPathFiles )
 				{
-					_outputSubPathFiles.Add(PathHelper.PrefixDbSlash(subPath));
+					_outputSubPathFiles.Add(subPath);
 				}
 			}
 
@@ -64,12 +64,12 @@ namespace starskytest.FakeMocks
 		
 		public bool ExistFile(string path)
 		{
-			return _outputSubPathFiles.Contains(PathHelper.PrefixDbSlash(path));
+			return _outputSubPathFiles.Contains(path);
 		}
 		public bool ExistFolder(string path)
 		{
 			if ( _exception != null ) throw _exception;
-			return _outputSubPathFolders.Contains(PathHelper.PrefixDbSlash(path));
+			return _outputSubPathFolders.Contains(path);
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string subPath = "")
@@ -99,9 +99,6 @@ namespace starskytest.FakeMocks
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
-			inputSubPath = PathHelper.PrefixDbSlash(inputSubPath);
-			toSubPath = PathHelper.PrefixDbSlash(toSubPath);
-
 			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
 			if ( indexOfFiles == -1 )
 			{
@@ -112,8 +109,6 @@ namespace starskytest.FakeMocks
 
 		public void FileCopy(string fromPath, string toPath)
 		{
-			fromPath = PathHelper.PrefixDbSlash(fromPath);
-			toPath = PathHelper.PrefixDbSlash(toPath);
 			if ( !ExistFile(fromPath) ) return;
 			
 			_outputSubPathFiles.Add(toPath);
@@ -122,7 +117,6 @@ namespace starskytest.FakeMocks
 
 		public bool FileDelete(string path)
 		{
-			path = PathHelper.PrefixDbSlash(path);
 			if ( !ExistFile(path) ) return false;
 			var index = _outputSubPathFiles.IndexOf(path);
 			_outputSubPathFiles[index] = null;
@@ -136,7 +130,6 @@ namespace starskytest.FakeMocks
 
 		public bool FolderDelete(string path)
 		{
-			path = PathHelper.PrefixDbSlash(path);
 			if ( !ExistFolder(path) ) return false;
 			var index = _outputSubPathFolders.IndexOf(path);
 			_outputSubPathFolders[index] = null;
@@ -146,7 +139,6 @@ namespace starskytest.FakeMocks
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
 			subPath = PathHelper.RemoveLatestSlash(subPath);
-
 			// non recruisive
 			if ( subPath != string.Empty && !ExistFolder(subPath) )
 			{
@@ -183,7 +175,7 @@ namespace starskytest.FakeMocks
 
 		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
 		{
-			return Regex.Match(childFolder, $"^{Regex.Escape(PathHelper.AddSlash(parentFolder))}[^/]+$").Success;
+			return Regex.Match(childFolder, $"^{Regex.Escape(parentFolder)}[^/]+$").Success;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)
@@ -206,8 +198,6 @@ namespace starskytest.FakeMocks
 
 		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
-			path = PathHelper.PrefixDbSlash(path);
-			
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
@@ -223,8 +213,6 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)
 		{
-			path = PathHelper.PrefixDbSlash(path);
-
 			if ( !_outputSubPathFiles.Contains(path) )
 			{
 				_outputSubPathFiles.Add(path);
@@ -251,8 +239,6 @@ namespace starskytest.FakeMocks
 
 		public bool WriteStream(Stream stream, string path)
 		{
-			path = PathHelper.PrefixDbSlash(path);
-
 			_outputSubPathFiles.Add(path);
 
 			stream.Seek(0, SeekOrigin.Begin);
@@ -282,7 +268,6 @@ namespace starskytest.FakeMocks
 
 		public StorageInfo Info(string path)
 		{
-			path = PathHelper.PrefixDbSlash(path);
 			if ( ExistFolder(path) )
 			{
 				return new StorageInfo
