@@ -7,6 +7,7 @@ import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
 import Modal from '../../atoms/modal/modal';
+import Select from '../../atoms/select/select';
 
 interface IModalPublishProps {
   isOpen: boolean;
@@ -105,6 +106,13 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   //   setSingleFileThumbnailStatus(singleFileThumbResult.data !== false);
   // }, [singleFileThumbResult.data])
 
+  function updateName() {
+
+  }
+
+  function updateSetting() {
+
+  }
 
   return (<Modal
     id="detailview-publish-modal"
@@ -115,15 +123,17 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
     <div className="modal content--subheader">{isProcessing !== ProcessingState.server
       ? MessagePublishSelection : MessageOneMomentPlease}</div>
-    <div className="modal content--text">
+    <div className="modal content--text publish">
 
       {/* when selecting one file */}
       {isProcessing === ProcessingState.default && props.select ? <>
-        <FormControl contentEditable={true} name="test" ></FormControl>
-
-        {/* <a href={new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(props.select[0]), false)} data-test="orginal"
-          download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a> */}
+        <h4><b>Item Name</b></h4>
+        <FormControl contentEditable={true} onBlur={updateName} name="item-name" ></FormControl>
+        <h4><b>Instelling</b></h4>
+        <Select selectOptions={["_default"]} callback={updateSetting}></Select>
+        <button onClick={() => {
+          postZip(false)
+        }} className="btn btn--default" data-test="orginal">{MessageOrginalFile}</button>
 
       </> : null}
 
