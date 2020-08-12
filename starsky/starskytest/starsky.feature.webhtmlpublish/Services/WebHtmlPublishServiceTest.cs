@@ -234,7 +234,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
-				"/");
+				Path.DirectorySeparatorChar.ToString());
 			
 			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
 			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
@@ -276,7 +276,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
-				"/");
+				Path.DirectorySeparatorChar.ToString());
 			
 			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
 			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));

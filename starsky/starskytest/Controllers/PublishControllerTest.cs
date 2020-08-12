@@ -145,7 +145,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task PublishCreate_existItem_NoForce()
 		{
-			var appSettings = new AppSettings{TempFolder = "/"};
+			var appSettings = new AppSettings{TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> { Path.DirectorySeparatorChar + "test" },
 				new List<string> { Path.DirectorySeparatorChar + "test.zip" });
 
@@ -163,7 +163,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task PublishCreate_existItem_Force()
 		{
-			var appSettings = new AppSettings {TempFolder = "/"};
+			var appSettings = new AppSettings {TempFolder = Path.DirectorySeparatorChar.ToString() };
 			var storage = new FakeIStorage(new List<string> {Path.DirectorySeparatorChar + "test"}, 
 				new List<string>{ Path.DirectorySeparatorChar + "test.zip" });
 

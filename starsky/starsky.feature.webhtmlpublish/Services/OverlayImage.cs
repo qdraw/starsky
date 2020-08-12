@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -32,16 +32,18 @@ namespace starsky.feature.webhtmlpublish.Services
 
 	    public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
 	    {
-		    return profile.Folder + _appSettings.GenerateSlug( 
-			                                        Path.GetFileNameWithoutExtension(sourceFilePath),true )
-		                                        + profile.Append + Path.GetExtension(sourceFilePath).ToLowerInvariant();
-	    }
+			var result = profile.Folder + _appSettings.GenerateSlug(
+													Path.GetFileNameWithoutExtension(sourceFilePath), true)
+												+ profile.Append + Path.GetExtension(sourceFilePath).ToLowerInvariant();
+			return result;
+		}
 	    
         public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
         {
-            return PathHelper.AddBackslash(outputParentFullFilePathFolder)  +
-                                 FilePathOverlayImage(sourceFilePath,profile);
-        }
+			var result = PathHelper.AddBackslash(outputParentFullFilePathFolder) +
+								 FilePathOverlayImage(sourceFilePath, profile);
+			return result;
+		}
         
         public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
         {
