@@ -11,6 +11,14 @@ namespace starsky.foundation.platform.Helpers
 {
 	public static class SetupAppSettings
 	{
+		public static ServiceCollection FirstStepToAddSingleton(ServiceCollection services)
+		{
+			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+			var configurationRoot = AppSettingsToBuilder();
+			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
+			return services;
+		}
+		
 		/// <summary>
 		/// Default appSettings.json to builder
 		/// </summary>

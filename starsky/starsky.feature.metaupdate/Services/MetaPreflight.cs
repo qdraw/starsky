@@ -26,8 +26,7 @@ namespace starsky.feature.metaupdate.Services
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 
-		public (List<FileIndexItem> fileIndexResultsList, 
-			Dictionary<string, List<string>>
+		public (List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
 			changedFileIndexItemName) Preflight(FileIndexItem inputModel, string[] inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{

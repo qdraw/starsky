@@ -9,12 +9,12 @@ namespace starskytest.starskyWebHtmlCli
     public class starskyWebHtmlCli_IntegrationTest
     {
         [TestMethod]
-        [ExpectedException(typeof(DirectoryNotFoundException))]
         public void starskyWebHtmlCli_IntegrationTest_NotFoundTest()
         {
             var args = new List<string> {"-p", "not-found-folder" ,"-n", "testrun"
             }.ToArray();
             Program.Main(args);
+            // see console log ==> Please add a valid folder: not-found-folder
         }
         
         [TestMethod]

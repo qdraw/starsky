@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.Helpers
 		/// </summary>
 		public readonly IEnumerable<string> ShortNameList = new List<string>
 		{
-			"-d","-c","-b","-f","-e","-u","-g","-n", "-x"
+			"-d","-c","-b","-f","-e","-u","-g","-x"
 		}.AsReadOnly();
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace starsky.foundation.platform.Helpers
 		public readonly IEnumerable<string> LongNameList = new List<string>
 		{
 			"--databasetype","--connection","--basepath","--thumbnailtempfolder",
-			"--exiftoolpath","--structure","--subpathrelative","--name", "--clean"
+			"--exiftoolpath","--structure","--subpathrelative", "--clean"
 		}
 		.AsReadOnly();
 
@@ -119,7 +119,7 @@ namespace starsky.foundation.platform.Helpers
 		public readonly IEnumerable<string> EnvNameList = new List<string>
 		{
 			"app__DatabaseType","app__DatabaseConnection","app__StorageFolder","app__ThumbnailTempFolder",
-			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__name", "app__ExifToolImportXmpCreate"
+			"app__ExifToolPath", "app__Structure", "app__subpathrelative", "app__ExifToolImportXmpCreate"
 		}.AsReadOnly();
 
 		/// <summary>
@@ -229,8 +229,8 @@ namespace starsky.foundation.platform.Helpers
 				break;
 				case AppSettings.StarskyAppType.WebHtml:
 					// When this change please update ./readme.md
-					_console.WriteLine("--path or -p == parameter: (string) ; fullpath (select a folder), use '-p' for current directory");
-					_console.WriteLine("--name or -n == parameter: (string) ; name of blogitem ");
+					_console.WriteLine("--path or -p == parameter: (string) ; full path (select a folder), use '-p' for current directory");
+					_console.WriteLine("--name or -n == parameter: (string) ; name of blog item ");
 				break;
 				case AppSettings.StarskyAppType.Importer:
 					// When this change please update ./readme.md
@@ -240,11 +240,11 @@ namespace starsky.foundation.platform.Helpers
 					_console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
 					_console.WriteLine("--recursive or -r == Import Directory recursive " +
 					                   "(default: false / only the selected folder) ");
-					_console.WriteLine("--structure == overwrite appsettings with filedirectory structure "+
+					_console.WriteLine("--structure == overwrite app-settings with file-directory structure "+
 					                   "based on exif and filename create datetime");
 					_console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
 					_console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
-					_console.WriteLine("--colorclass == update colorclass to this number value, default don't change");
+					_console.WriteLine("--colorclass == update color-class to this number value, default don't change");
 				break;
 				case AppSettings.StarskyAppType.Sync:
 					// When this change please update ./readme.md
@@ -252,12 +252,12 @@ namespace starsky.foundation.platform.Helpers
 					                   "'full path', only child items of the database folder are supported," +
 					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
 					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
-					_console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
+					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
 					                   ", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					_console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
 					_console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files");
+					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder if thumbnails are needed, delete unused files");
 					_console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
 					                   "(heavy cpu usage), default false");
 					_console.WriteLine("--verbose or -v == verbose, more detailed info");
@@ -274,7 +274,7 @@ namespace starsky.foundation.platform.Helpers
 			
 			if (!_appSettings.Verbose) return;
 			
-			_console.WriteLine("");
+			_console.WriteLine(string.Empty);
 			_console.WriteLine("AppSettings:");
 			_console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
 			_console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
@@ -303,21 +303,25 @@ namespace starsky.foundation.platform.Helpers
 			
 			switch ( _appSettings.ApplicationType )
 			{
-				case AppSettings.StarskyAppType.WebHtml:
+				case AppSettings.StarskyAppType.WebHtml: 
 					_console.WriteLine($"Config for {_appSettings.ApplicationType}");
 					foreach ( var publishProfiles in _appSettings.PublishProfiles )
 					{
-						_console.WriteLine("--- " +
-						                   $"Path: {publishProfiles.Path} " +
-						                   $"Append: {publishProfiles.Append} " +
-						                   $"Copy: {publishProfiles.Copy} " +
-						                   $"Folder: {publishProfiles.Folder} " +
-						                   $"Prepend: {publishProfiles.Prepend} " +
-						                   $"Template: {publishProfiles.Template} " +
-						                   $"ContentType: {publishProfiles.ContentType} " +
-						                   $"MetaData: {publishProfiles.MetaData} " +
-						                   $"OverlayMaxWidth: {publishProfiles.OverlayMaxWidth} " +
-						                   $"SourceMaxWidth: {publishProfiles.SourceMaxWidth} ");
+						_console.WriteLine($"ID: {publishProfiles.Key}" );
+						foreach ( var publishProfile in publishProfiles.Value )
+						{
+							_console.WriteLine("--- " +
+							                   $"Path: {publishProfile.Path} " +
+							                   $"Append: {publishProfile.Append} " +
+							                   $"Copy: {publishProfile.Copy} " +
+							                   $"Folder: {publishProfile.Folder} " +
+							                   $"Prepend: {publishProfile.Prepend} " +
+							                   $"Template: {publishProfile.Template} " +
+							                   $"ContentType: {publishProfile.ContentType} " +
+							                   $"MetaData: {publishProfile.MetaData} " +
+							                   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
+							                   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
+						}
 					}
 					break;
 			}
@@ -404,15 +408,33 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
+		/// Get the user input from -n or --name
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>name</returns>
+		public string GetName(IReadOnlyList<string> args)
+		{
+			var name = string.Empty;
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--name" || args[arg].ToLower() == "-n") && (arg + 1) != args.Count )
+				{
+					name = args[arg + 1];
+				}
+			}
+			return name;
+		}
+		
+		/// <summary>
 		/// Get path from args
 		/// </summary>
 		/// <param name="args">args</param>
-		/// <param name="dbStyle">convert to subpath style, default=true</param>
+		/// <param name="dbStyle">convert to subPath style, default=true</param>
 		/// <returns>string path</returns>
-		/// <exception cref="FieldAccessException">appsettings is missing</exception>
+		/// <exception cref="FieldAccessException">appSettings is missing</exception>
 		public string GetPathFormArgs(IReadOnlyList<string> args, bool dbStyle = true)
 		{
-			if ( _appSettings == null ) throw new FieldAccessException("use with _appsettings");
+			if ( _appSettings == null ) throw new FieldAccessException("use with _appSettings");
 
 			var path = GetUserInputPathFromArg(args);
 			
@@ -462,7 +484,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <exception cref="FieldAccessException">missing appSettings</exception>
 		public int? GetRelativeValue(IReadOnlyList<string> args)
 		{
-			if (_appSettings == null) throw new FieldAccessException("use with _appsettings");
+			if (_appSettings == null) throw new FieldAccessException("use with _appSettings");
 			string subpathRelative = string.Empty;
 			
 			for (int arg = 0; arg < args.Count; arg++)
@@ -497,7 +519,7 @@ namespace starsky.foundation.platform.Helpers
 				return false;
 			}
 			
-			// Detect if a input is a fullpath or a subpath.
+			// Detect if a input is a fullPath or a subPath.
 			for (int arg = 0; arg < args.Count; arg++)
 			{
 				if ((args[arg].ToLower() == "--subpath" || args[arg].ToLower() == "-s") && (arg + 1) != args.Count)
@@ -530,7 +552,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 	 
 		/// <summary>
-		/// Check for parent/subitems feature
+		/// Check for parent/sub items feature
 		/// </summary>
 		/// <param name="args">args input</param>
 		/// <returns>bool</returns>
@@ -610,9 +632,9 @@ namespace starsky.foundation.platform.Helpers
 		{
 			bool needRecursive = false;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			foreach ( var arg in args )
 			{
-				if ((args[arg].ToLower() == "--recursive" || args[arg].ToLower() == "-r"))
+				if ((arg.ToLower() == "--recursive" || arg.ToLower() == "-r"))
 				{
 					needRecursive = true;
 				}
@@ -630,9 +652,9 @@ namespace starsky.foundation.platform.Helpers
 			// -x --clean
 			bool needCacheCleanup = false;
 			
-			for (int arg = 0; arg < args.Count; arg++)
+			foreach ( var arg in args )
 			{
-				if ((args[arg].ToLower() == "--clean" || args[arg].ToLower() == "-x"))
+				if ((arg.ToLower() == "--clean" || arg.ToLower() == "-x"))
 				{
 					needCacheCleanup = true;
 				}

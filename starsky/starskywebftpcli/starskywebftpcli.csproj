@@ -9,10 +9,9 @@
         <DebugType>Full</DebugType>
         <Version>0.3.0-beta.1</Version>
     </PropertyGroup>
+
     <ItemGroup>
-      <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+      <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
-      <ProjectReference Include="..\starskycore\starskycore.csproj" />
     </ItemGroup>
 </Project>

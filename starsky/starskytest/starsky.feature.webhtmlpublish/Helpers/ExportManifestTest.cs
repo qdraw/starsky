@@ -1,12 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Helpers;
 using starsky.foundation.platform.Models;
-using starskycore.Helpers;
-using starskycore.Models;
 using starskytest.FakeMocks;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 {
 	[TestClass]
 	public class ExportManifestTest
@@ -16,21 +15,15 @@ namespace starskytest.Helpers
 		public void ExportManifestTest_Export()
 		{
 			var plainTextFileHelper = new FakePlainTextFileHelper();
-			var appSettings = new AppSettings {Name = "Test"};
+			var appSettings = new AppSettings();
 
 			var storage = new FakeIStorage();
-			new PublishManifest(storage, appSettings, plainTextFileHelper).ExportManifest();
+			new PublishManifest(storage, plainTextFileHelper)
+				.ExportManifest(appSettings.StorageFolder, "Test", 
+					new Dictionary<string, bool>());
 
 			var expectedPath = Path.Combine(appSettings.StorageFolder, "_settings.json");
 			Assert.IsTrue(storage.ExistFile(expectedPath));
-		}
-
-		[TestMethod]
-		public void ExportManifestTest_Import()
-		{
-			var test = "{\"Name\":\"Test\",\"Slug\":\"test\"}";
-			var plainTextFileHelper = new FakePlainTextFileHelper(test);
-			var appSettings = new AppSettings { Name = "Test" };
 		}
 		
 	}

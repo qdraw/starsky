@@ -40,7 +40,8 @@ namespace starsky.foundation.writemeta.Services
 			var inputStream = _iStorage.ReadStream(subPath);
 			var runner = new StreamToStreamRunner(_appSettings, inputStream);
 			var stream = await runner.RunProcessAsync(command);
-			inputStream.Dispose();
+			// Need to Dispose for Windows
+			inputStream.Close();
 			Console.Write("‘");
 			return await _iStorage.WriteStreamAsync(stream, subPath);
 		}
@@ -53,8 +54,11 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns>true=success</returns>
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
 		{
-			var runner = new StreamToStreamRunner(_appSettings, _thumbnailStorage.ReadStream(fileHash));
+			var inputStream = _thumbnailStorage.ReadStream(fileHash);
+			var runner = new StreamToStreamRunner(_appSettings, inputStream);
 			var stream = await runner.RunProcessAsync(command);
+			// Need to Dispose for Windows
+			inputStream.Close();
 			return await _thumbnailStorage.WriteStreamAsync(stream, fileHash);
 		}
 

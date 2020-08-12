@@ -110,22 +110,44 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			var source = new AppSettings
 			{
-				PublishProfiles = new List<AppSettingsPublishProfiles>
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					new AppSettingsPublishProfiles{Folder = "test"}
+					{"zz__example", new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 1000,
+								OverlayMaxWidth = 380,
+								Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+								Folder =  "1000",
+								Append = "_kl1k"
+							}
+						}}
 				}
 			};
 			
 			var to = new AppSettings
 			{
-				PublishProfiles = new List<AppSettingsPublishProfiles>
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					new AppSettingsPublishProfiles{Folder = "test2"}
+					{"zz__example2", new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								SourceMaxWidth = 300,
+								OverlayMaxWidth = 380,
+								Folder =  "1000",
+								Append = "_kl1k"
+							}
+						}}
 				}
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.PublishProfiles, to.PublishProfiles);
+			
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
 		}
 		
 		[TestMethod]
@@ -133,22 +155,42 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			var source = new AppSettings
 			{
-				PublishProfiles = new List<AppSettingsPublishProfiles>
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					new AppSettingsPublishProfiles{Folder = "same"}
+					{"same", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.Jpeg,
+							SourceMaxWidth = 300,
+							OverlayMaxWidth = 380,
+							Folder =  "1000",
+							Append = "_kl1k"
+						}
+					}}
 				}
 			};
 			
 			var to = new AppSettings
 			{
-				PublishProfiles = new List<AppSettingsPublishProfiles>
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
-					new AppSettingsPublishProfiles{Folder = "same"}
+					{"same", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.Jpeg,
+							SourceMaxWidth = 300,
+							OverlayMaxWidth = 380,
+							Folder =  "1000",
+							Append = "_kl1k"
+						}
+					}}
 				}
 			};
 
 			AppSettingsCompareHelper.Compare(source, to);
-			Assert.AreEqual(source.PublishProfiles, to.PublishProfiles);
+			Assert.AreEqual(source.PublishProfiles.Keys.FirstOrDefault(), to.PublishProfiles.Keys.FirstOrDefault());
 		}
 	}
 }

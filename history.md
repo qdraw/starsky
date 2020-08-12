@@ -50,6 +50,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Breaking change) Need to run migrations to add FileSize field (done by starting the mvc application)
 - [x]   (Added) Creating thumbnails from Web Interface (no status)
 - [x]   (Changed) Move options from display options to Synchronize manually in the UI
+- [x]   __(Breaking change)__ Manifest (_settings.json) for exporting 
+- [x]   __(Breaking change)__ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
 
 # version 0.2.7 - 2020-07-31
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)

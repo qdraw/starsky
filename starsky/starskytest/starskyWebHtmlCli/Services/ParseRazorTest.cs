@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.webhtmlpublish.Helpers;
 using starsky.feature.webhtmlpublish.Services;
 using starskytest.FakeMocks;
-using starskywebhtmlcli.Services;
 
 namespace starskytest.starskyWebHtmlCli.Services
 {

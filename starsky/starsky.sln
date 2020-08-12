@@ -71,6 +71,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.export", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.rename", "starsky.feature.rename\starsky.feature.rename.csproj", "{D59FC5C7-11E8-4BE6-A500-74088D74F841}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.webftppublish", "starsky.feature.webftppublish\starsky.feature.webftppublish.csproj", "{AC9BF462-EB43-420A-B579-E2376B058FE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.accountmanagement", "starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj", "{243E9418-9819-44EE-A7E4-58A7D33C81C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +177,14 @@ Global
 		{D59FC5C7-11E8-4BE6-A500-74088D74F841}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D59FC5C7-11E8-4BE6-A500-74088D74F841}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D59FC5C7-11E8-4BE6-A500-74088D74F841}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9BF462-EB43-420A-B579-E2376B058FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC9BF462-EB43-420A-B579-E2376B058FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC9BF462-EB43-420A-B579-E2376B058FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC9BF462-EB43-420A-B579-E2376B058FE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{243E9418-9819-44EE-A7E4-58A7D33C81C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{243E9418-9819-44EE-A7E4-58A7D33C81C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{243E9418-9819-44EE-A7E4-58A7D33C81C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{243E9418-9819-44EE-A7E4-58A7D33C81C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -204,5 +216,7 @@ Global
 		{FBB448C3-A995-469C-8004-11FA006F65C5} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{A0B7AE0F-14A7-4882-91BD-ADF2B9DCE5C6} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{D59FC5C7-11E8-4BE6-A500-74088D74F841} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{AC9BF462-EB43-420A-B579-E2376B058FE1} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{243E9418-9819-44EE-A7E4-58A7D33C81C3} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

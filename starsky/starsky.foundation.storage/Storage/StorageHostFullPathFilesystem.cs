@@ -254,7 +254,7 @@ namespace starsky.foundation.storage.Storage
 			stream.Seek(0, SeekOrigin.Begin);
 			
 			using (var fileStream = new FileStream(path, 
-				FileMode.OpenOrCreate, 
+				FileMode.OpenOrCreate, // <= that's the difference
 				FileAccess.Write,FileShare.ReadWrite,
 				4096, 
 				FileOptions.Asynchronous))

@@ -81,7 +81,10 @@ namespace starskytest.starsky.feature.rename.Services
 			var fileAlreadyExist = Path.Join(_newImage.BasePath, "already.txt");
 			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
 			var renameFs = new RenameService( _query,_iStorageSubPath).Rename(_newImage.DbPath, "/already.txt");
-			Assert.AreEqual(new PlainTextFileHelper().ReadFile(fileAlreadyExist).Contains("test"), true);
+			
+			var result = new PlainTextFileHelper().StreamToString(
+				new StorageHostFullPathFilesystem().ReadStream(fileAlreadyExist));
+			Assert.AreEqual(result.Contains("test"), true);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
 			// test with newline at the end

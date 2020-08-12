@@ -11,6 +11,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 
 namespace starsky.foundation.thumbnailgeneration.Services
@@ -28,22 +29,36 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 		/// <summary>
 		///  This feature is used to crawl over directories and add this to the thumbnail-folder
+		///  Or File
 		/// </summary>
 		/// <param name="subPath">folder subPath style</param>
 		/// <returns>fail/pass</returns>
-		/// <exception cref="FileNotFoundException">if folder not exist</exception>
+		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
 		public bool CreateThumb(string subPath)
 		{
-			if ( !_iStorage.ExistFolder(subPath) ) throw new DirectoryNotFoundException("should enter some valid dir");
-
-			var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
-				.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
-			foreach ( var singleSubPath in contentOfDir )
+			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
+			switch ( isFolderOrFile )
 			{
-				var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath).Key;
-				CreateThumb(singleSubPath, fileHash);
+				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
+					throw new FileNotFoundException("should enter some valid dir or file");
+				case FolderOrFileModel.FolderOrFileTypeList.Folder:
+				{
+					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
+						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
+					foreach ( var singleSubPath in contentOfDir )
+					{
+						var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath).Key;
+						CreateThumb(singleSubPath, fileHash);
+					}
+					return true;
+				}
+				default:
+				{
+					var fileHash = new FileHash(_iStorage).GetHashCode(subPath).Key;
+					CreateThumb(subPath, fileHash);
+					return true;
+				}
 			}
-			return true;
 		}
 
 		/// <summary>
@@ -54,6 +69,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// <returns>true, if succesfull</returns>
 		public bool CreateThumb(string subPath, string fileHash)
 		{
+			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
 			     !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(fileHash) ) return false;
@@ -67,7 +83,6 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			
 			// check if output any good
 			RemoveCorruptImage(fileHash);
-			
 			
 			if ( ! _thumbnailStorage.ExistFile(fileHash) )
 			{

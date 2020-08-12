@@ -115,10 +115,10 @@ namespace starsky.foundation.platform.Models
         }
         
         // Used to template config > appsettingsPubProfile
-        public string GetWebSafeReplacedName(string input)
+        public string GetWebSafeReplacedName(string input, string name)
         {
             // Included slash dd the end of this file
-            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(Name,true)));
+            return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(name,true)));
         }
         
         /// <summary>
@@ -361,11 +361,26 @@ namespace starsky.foundation.platform.Models
 
 		    }
 	    }
+	    
+	    /// <summary>
+	    /// Private field: Publishing profiles
+	    /// </summary>
+	    private Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfilesPrivate { get; set; } =
+		    new Dictionary<string, List<AppSettingsPublishProfiles>>();
 
 	    /// <summary>
-	    /// Publishing profiles used within the publishing module
+	    /// Publishing profiles used within the publishing module (Order by Key)
 	    /// </summary>
-	    public List<AppSettingsPublishProfiles> PublishProfiles { get; set; } = new List<AppSettingsPublishProfiles>();
+	    public Dictionary<string, List<AppSettingsPublishProfiles>> PublishProfiles {
+		    get => PublishProfilesPrivate;
+		    set
+		    {
+			    if ( value == null ) return;
+			    PublishProfilesPrivate = value.OrderBy(obj => obj.Key)
+				    .ToDictionary(obj => obj.Key, 
+					    obj => obj.Value);
+		    } 
+	    } 
 	    
 	    /// <summary>
 	    /// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)

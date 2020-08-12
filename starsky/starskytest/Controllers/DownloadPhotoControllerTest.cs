@@ -42,7 +42,7 @@ namespace starskytest.Controllers
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
-				FileHash = "home0012304590",
+				FileHash = "/home0012304590.jpg",
 				ColorClass = ColorClassParser.Color.Winner // 1
 			};
 

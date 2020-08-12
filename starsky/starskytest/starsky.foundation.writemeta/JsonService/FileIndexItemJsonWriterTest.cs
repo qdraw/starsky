@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -50,7 +49,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			MakeModel = "test|test|",
 			FocalLength = 200,
 		};
-		
+
 		[TestMethod]
 		public async Task Json_Write_Read()
 		{
@@ -59,32 +58,32 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 			await itemJsonParser.Write(ExampleItem);
 
 			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
-			
-			Assert.AreEqual(ExampleItem.Tags,result.Tags);
-			Assert.AreEqual(ExampleItem.FileHash,result.FileHash);
-			Assert.AreEqual(ExampleItem.IsDirectory,result.IsDirectory);
-			Assert.AreEqual(ExampleItem.Description,result.Description);
-			Assert.AreEqual(ExampleItem.Title,result.Title);
-			Assert.AreEqual(ExampleItem.DateTime,result.DateTime);
-			Assert.AreEqual(ExampleItem.AddToDatabase,result.AddToDatabase);
-			Assert.AreEqual(ExampleItem.LastEdited,result.LastEdited);
-			Assert.AreEqual(ExampleItem.Latitude,result.Latitude);
-			Assert.AreEqual(ExampleItem.Longitude,result.Longitude);
-			Assert.AreEqual(ExampleItem.LocationAltitude,result.LocationAltitude);
-			Assert.AreEqual(ExampleItem.LocationCity,result.LocationCity);
-			Assert.AreEqual(ExampleItem.LocationCountry,result.LocationCountry);
-			Assert.AreEqual(ExampleItem.LocationState,result.LocationState);
-			Assert.AreEqual(ExampleItem.ColorClass,result.ColorClass);
-			Assert.AreEqual(ExampleItem.Orientation,result.Orientation);
-			Assert.AreEqual(ExampleItem.ImageWidth,result.ImageWidth);
-			Assert.AreEqual(ExampleItem.ImageHeight,result.ImageHeight);
-			Assert.AreEqual(ExampleItem.ImageFormat,result.ImageFormat);
-			Assert.AreEqual(ExampleItem.Aperture,result.Aperture);
-			Assert.AreEqual(ExampleItem.ShutterSpeed,result.ShutterSpeed);
-			Assert.AreEqual(ExampleItem.IsoSpeed,result.IsoSpeed);
-			Assert.AreEqual(ExampleItem.Software,result.Software);
-			Assert.AreEqual(ExampleItem.MakeModel,result.MakeModel);
-			Assert.AreEqual(ExampleItem.FocalLength,result.FocalLength);
+
+			Assert.AreEqual(ExampleItem.Tags, result.Tags);
+			Assert.AreEqual(ExampleItem.FileHash, result.FileHash);
+			Assert.AreEqual(ExampleItem.IsDirectory, result.IsDirectory);
+			Assert.AreEqual(ExampleItem.Description, result.Description);
+			Assert.AreEqual(ExampleItem.Title, result.Title);
+			Assert.AreEqual(ExampleItem.DateTime, result.DateTime);
+			Assert.AreEqual(ExampleItem.AddToDatabase, result.AddToDatabase);
+			Assert.AreEqual(ExampleItem.LastEdited, result.LastEdited);
+			Assert.AreEqual(ExampleItem.Latitude, result.Latitude);
+			Assert.AreEqual(ExampleItem.Longitude, result.Longitude);
+			Assert.AreEqual(ExampleItem.LocationAltitude, result.LocationAltitude);
+			Assert.AreEqual(ExampleItem.LocationCity, result.LocationCity);
+			Assert.AreEqual(ExampleItem.LocationCountry, result.LocationCountry);
+			Assert.AreEqual(ExampleItem.LocationState, result.LocationState);
+			Assert.AreEqual(ExampleItem.ColorClass, result.ColorClass);
+			Assert.AreEqual(ExampleItem.Orientation, result.Orientation);
+			Assert.AreEqual(ExampleItem.ImageWidth, result.ImageWidth);
+			Assert.AreEqual(ExampleItem.ImageHeight, result.ImageHeight);
+			Assert.AreEqual(ExampleItem.ImageFormat, result.ImageFormat);
+			Assert.AreEqual(ExampleItem.Aperture, result.Aperture);
+			Assert.AreEqual(ExampleItem.ShutterSpeed, result.ShutterSpeed);
+			Assert.AreEqual(ExampleItem.IsoSpeed, result.IsoSpeed);
+			Assert.AreEqual(ExampleItem.Software, result.Software);
+			Assert.AreEqual(ExampleItem.MakeModel, result.MakeModel);
+			Assert.AreEqual(ExampleItem.FocalLength, result.FocalLength);
 		}
 
 		[TestMethod]
@@ -104,78 +103,41 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 				" \"MakeModel\": \"test|test|\",\n  \"Make\": \"test\",\n  \"Model\": \"test\",\n  \"FocalLength\": 200\n}";
 
 			var fakeStorage = new FakeIStorage();
-			var jsonSubPath = PathHelper.AddSlash("") + ".starsky." +
-			                  "test.jpg" + ".json";
-			
+			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
+
 			fakeStorage.WriteStream(
 				new PlainTextFileHelper().StringToStream(input), jsonSubPath);
-				
+
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
 
 			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
-			
-			Assert.AreEqual(ExampleItem.Tags,result.Tags);
-			Assert.AreEqual(ExampleItem.FileHash,result.FileHash);
-			Assert.AreEqual(ExampleItem.IsDirectory,result.IsDirectory);
-			Assert.AreEqual(ExampleItem.Description,result.Description);
-			Assert.AreEqual(ExampleItem.Title,result.Title);
-			Assert.AreEqual(ExampleItem.DateTime,result.DateTime);
-			Assert.AreEqual(ExampleItem.AddToDatabase,result.AddToDatabase);
-			Assert.AreEqual(ExampleItem.LastEdited,result.LastEdited);
-			Assert.AreEqual(ExampleItem.Latitude,result.Latitude);
-			Assert.AreEqual(ExampleItem.Longitude,result.Longitude);
-			Assert.AreEqual(ExampleItem.LocationAltitude,result.LocationAltitude);
-			Assert.AreEqual(ExampleItem.LocationCity,result.LocationCity);
-			Assert.AreEqual(ExampleItem.LocationCountry,result.LocationCountry);
-			Assert.AreEqual(ExampleItem.LocationState,result.LocationState);
-			Assert.AreEqual(ExampleItem.ColorClass,result.ColorClass);
-			Assert.AreEqual(ExampleItem.Orientation,result.Orientation);
-			Assert.AreEqual(ExampleItem.ImageWidth,result.ImageWidth);
-			Assert.AreEqual(ExampleItem.ImageHeight,result.ImageHeight);
-			Assert.AreEqual(ExampleItem.ImageFormat,result.ImageFormat);
-			Assert.AreEqual(ExampleItem.Aperture,result.Aperture);
-			Assert.AreEqual(ExampleItem.ShutterSpeed,result.ShutterSpeed);
-			Assert.AreEqual(ExampleItem.IsoSpeed,result.IsoSpeed);
-			Assert.AreEqual(ExampleItem.Software,result.Software);
-			Assert.AreEqual(ExampleItem.MakeModel,result.MakeModel);
-			Assert.AreEqual(ExampleItem.FocalLength,result.FocalLength);
-		}
 
-		[TestMethod]
-		public void ReadTest_FromCopiedText_T_Model()
-		{
-			var input =
-				"{\n  \"Title\": \"Title\",\n  \"Price\": 200,\n  \"ShowButtons\": " +
-				"true}";
-			var fakeStorage = new FakeIStorage();
-			fakeStorage.WriteStream(
-				new PlainTextFileHelper().StringToStream(input), "/test.json");
-			
-			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
-
-			var result = itemJsonParser.Read<FileIndexItemJsonParserTest_TestModel>("/test.json");
-			
-			Assert.AreEqual(200, result.Price);
-			Assert.AreEqual("Title", result.Title);
-			Assert.AreEqual(true, result.ShowButtons);
-		}
-		
-		[TestMethod]
-		[ExpectedException(typeof(FileNotFoundException))]
-		public void ReadTest_NotFound()
-		{
-			var fakeStorage = new FakeIStorage();
-			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
-
-			itemJsonParser.Read<FileIndexItemJsonParserTest_TestModel>("/notfound.json");
-			// expect error
+			Assert.AreEqual(ExampleItem.Tags, result.Tags);
+			Assert.AreEqual(ExampleItem.FileHash, result.FileHash);
+			Assert.AreEqual(ExampleItem.IsDirectory, result.IsDirectory);
+			Assert.AreEqual(ExampleItem.Description, result.Description);
+			Assert.AreEqual(ExampleItem.Title, result.Title);
+			Assert.AreEqual(ExampleItem.DateTime, result.DateTime);
+			Assert.AreEqual(ExampleItem.AddToDatabase, result.AddToDatabase);
+			Assert.AreEqual(ExampleItem.LastEdited, result.LastEdited);
+			Assert.AreEqual(ExampleItem.Latitude, result.Latitude);
+			Assert.AreEqual(ExampleItem.Longitude, result.Longitude);
+			Assert.AreEqual(ExampleItem.LocationAltitude, result.LocationAltitude);
+			Assert.AreEqual(ExampleItem.LocationCity, result.LocationCity);
+			Assert.AreEqual(ExampleItem.LocationCountry, result.LocationCountry);
+			Assert.AreEqual(ExampleItem.LocationState, result.LocationState);
+			Assert.AreEqual(ExampleItem.ColorClass, result.ColorClass);
+			Assert.AreEqual(ExampleItem.Orientation, result.Orientation);
+			Assert.AreEqual(ExampleItem.ImageWidth, result.ImageWidth);
+			Assert.AreEqual(ExampleItem.ImageHeight, result.ImageHeight);
+			Assert.AreEqual(ExampleItem.ImageFormat, result.ImageFormat);
+			Assert.AreEqual(ExampleItem.Aperture, result.Aperture);
+			Assert.AreEqual(ExampleItem.ShutterSpeed, result.ShutterSpeed);
+			Assert.AreEqual(ExampleItem.IsoSpeed, result.IsoSpeed);
+			Assert.AreEqual(ExampleItem.Software, result.Software);
+			Assert.AreEqual(ExampleItem.MakeModel, result.MakeModel);
+			Assert.AreEqual(ExampleItem.FocalLength, result.FocalLength);
 		}
 	}
 
-	public class FileIndexItemJsonParserTest_TestModel
-	{
-		public string Title { get; set; }
-		public int Price { get; set; }
-		public bool ShowButtons { get; set; }
-	}
 }

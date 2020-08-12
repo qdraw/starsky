@@ -1,18 +1,16 @@
-﻿// Copyright © 2017 Dmitry Sikorsky. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.Helpers;
 using starskycore.Interfaces;
-using starskycore.ViewModels.Account;
 
 namespace starsky.Controllers
 {

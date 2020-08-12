@@ -54,7 +54,7 @@ namespace starsky.foundation.platform.Models
 	    /// <summary>
 	    /// private: used for template url or overlay image
 	    /// </summary>
-	    private string _path { get; set; } = string.Empty;
+	    private string pathPrivate { get; set; } = string.Empty;
 
 	    /// <summary>
 	    /// used for template url or overlay image
@@ -64,15 +64,18 @@ namespace starsky.foundation.platform.Models
 		    get
 		    {
 			    // return: if null > string.Empty
-			    return string.IsNullOrEmpty(_path) ? string.Empty : _path;
+			    return string.IsNullOrEmpty(pathPrivate) ? string.Empty : pathPrivate;
 		    }
 		    set
 		    {
-			    if (string.IsNullOrEmpty(value)) return;
+			    if ( string.IsNullOrEmpty(value) )
+			    {
+				    value = "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/default.png";
+			    }
 
 			    if ( !value.Contains("{AssemblyDirectory}") )
 			    {
-				    _path = value;
+				    pathPrivate = value;
 				    return;
 			    }
 				// get current dir
@@ -81,7 +84,7 @@ namespace starsky.foundation.platform.Models
 			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", string.Empty, RegexOptions.IgnoreCase);
 			    
 			    // append and replace
-			    _path = assemblyDirectory + subPath
+			    pathPrivate = assemblyDirectory + subPath
 				    .Replace("starskywebftpcli", "starskywebhtmlcli");
 		    }
 	    }
@@ -99,7 +102,6 @@ namespace starsky.foundation.platform.Models
 					return;
 				}
 	            _folder = PathHelper.AddSlash(value);
-
 			}
 		}
 
@@ -120,6 +122,15 @@ namespace starsky.foundation.platform.Models
         None = 0,
         Html = 1,
         Jpeg = 2,
-        MoveSourceFiles = 3
+        MoveSourceFiles = 3,
+        /// <summary>
+        /// Content to be copied from WebHtmlPublish/PublishedContent to include
+        /// For example javaScript files
+        /// </summary>
+        PublishContent = 4,
+        /// <summary>
+        /// Include manifest file _settings.json in Copy list
+        /// </summary>
+        PublishManifest = 6
     }
 }

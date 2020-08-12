@@ -11,6 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Middleware;
+using starsky.foundation.accountmanagement.Models.Account;
+using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -19,7 +23,6 @@ using starskycore.Interfaces;
 using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
-using starskycore.ViewModels.Account;
 using starskytest.FakeMocks;
 
 namespace starskytest.Middleware

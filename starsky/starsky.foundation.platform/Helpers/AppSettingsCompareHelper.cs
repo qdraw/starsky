@@ -58,16 +58,13 @@ namespace starsky.foundation.platform.Helpers
 			            newListStringValue, differenceList);
 	            }
 
-	            if ( propertyB.PropertyType == typeof(List<AppSettingsPublishProfiles>) )
+	            if ( propertyB.PropertyType == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 	            {
-		            var oldListPublishProfilesValue = ( List<AppSettingsPublishProfiles> ) propertyInfoFromA.GetValue(sourceIndexItem, null);
-		            var newListPublishProfilesValue = ( List<AppSettingsPublishProfiles> ) propertyB.GetValue(updateObject, null);
+		            var oldListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) propertyB.GetValue(updateObject, null);
 		            CompareListPublishProfiles(propertyB.Name, sourceIndexItem, oldListPublishProfilesValue,
 			            newListPublishProfilesValue, differenceList);
-
 	            }
-
-
             }
             return differenceList;
         }
@@ -116,7 +113,8 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="newListPublishValue">newListPublishValue to compare with oldListPublishValue</param>
 	    /// <param name="differenceList">list of different values</param>
 	    private static void CompareListPublishProfiles(string propertyName, AppSettings sourceIndexItem, 
-		    List<AppSettingsPublishProfiles> oldListPublishValue, List<AppSettingsPublishProfiles> newListPublishValue, List<string> differenceList)
+		    Dictionary<string, List<AppSettingsPublishProfiles>> oldListPublishValue, 
+		    Dictionary<string, List<AppSettingsPublishProfiles>> newListPublishValue, List<string> differenceList)
 	    {
 		    if ( oldListPublishValue == null || newListPublishValue.Count == 0 ) return;
 		    if ( oldListPublishValue.Equals(newListPublishValue) ) return;

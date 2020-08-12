@@ -46,25 +46,12 @@ namespace starsky.foundation.storage.Helpers
 		    return stream;
 	    }
 
-	    /// <summary>
-        /// [Obsolete] Read a text based file (not binary) file
-        /// </summary>
-        /// <param name="fullFilePath">path on filesystem</param>
-        /// <returns>content of the file as string</returns>
-        [Obsolete("Has a direct dependency on the filesystem")]
-        public string ReadFile(string fullFilePath)
-        {
-            if (!File.Exists(fullFilePath)) return string.Empty;
-            
-            return File.ReadAllText(fullFilePath);
-        }
-        
         /// <summary>
         /// [Obsolete] Write and create a new plain text file to the filesystem
         /// </summary>
         /// <param name="fullFilePath">path on filesystem</param>
         /// <param name="writeString">content of the file</param>
-        [Obsolete("Has a direct dependency on the filesystem")]
+        [Obsolete("Has a direct dependency on the filesystem",false)]
         public virtual void WriteFile(string fullFilePath, string writeString)
         {
             if (File.Exists(fullFilePath)) return;

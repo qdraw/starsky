@@ -19,6 +19,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;

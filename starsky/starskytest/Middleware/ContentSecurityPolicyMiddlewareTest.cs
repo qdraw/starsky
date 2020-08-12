@@ -3,6 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.accountmanagement.Middleware;
 using starskycore.Middleware;
 
 namespace starskytest.Middleware

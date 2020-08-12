@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
@@ -44,24 +43,8 @@ namespace starsky.foundation.writemeta.JsonService
 			// when sidecar file does not exist
 			if ( !_iStorage.ExistFile(jsonSubPath) ) return fileIndexItem;
 			
-			var returnFileIndexItem = Read<FileIndexItem>(jsonSubPath);
+			var returnFileIndexItem = new DeserializeJson(_iStorage).Read<FileIndexItem>(jsonSubPath);
 			returnFileIndexItem.Status = FileIndexItem.ExifStatus.ExifWriteNotSupported;
-			return returnFileIndexItem;
-		}
-		
-		/// <summary>
-		/// Read Json
-		/// </summary>
-		/// <param name="jsonSubPath">location on disk</param>
-		/// <typeparam name="T">Typed</typeparam>
-		/// <returns>Data</returns>
-		/// <exception cref="FileNotFoundException">when file is not found</exception>
-		public T Read<T>(string jsonSubPath)
-		{
-			if ( !_iStorage.ExistFile(jsonSubPath) ) throw new FileNotFoundException(jsonSubPath);
-			var stream = _iStorage.ReadStream(jsonSubPath);
-			var jsonAsString = new PlainTextFileHelper().StreamToString(stream);
-			var returnFileIndexItem = JsonSerializer.Deserialize<T>(jsonAsString);
 			return returnFileIndexItem;
 		}
 	}

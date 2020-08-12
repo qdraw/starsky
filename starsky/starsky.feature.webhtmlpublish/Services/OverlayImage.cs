@@ -1,15 +1,20 @@
-﻿using System.IO;
+using System;
+using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.webhtmlpublish.Services
 {
-    public class OverlayImage
+	[Service(typeof(IOverlayImage), InjectionLifetime = InjectionLifetime.Scoped)]
+    public class OverlayImage : IOverlayImage
     {
         private readonly AppSettings _appSettings;
         private readonly IStorage _thumbnailStorage;
@@ -18,55 +23,76 @@ namespace starsky.feature.webhtmlpublish.Services
 
 	    public OverlayImage(ISelectorStorage selectorStorage, AppSettings appSettings)
         {
-	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-	        _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-	        _hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-            _appSettings = appSettings;
+	        _appSettings = appSettings;
+            if ( selectorStorage == null ) return;
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+            _hostFileSystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
         }
 
-        public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+	    public string FilePathOverlayImage(string sourceFilePath, AppSettingsPublishProfiles profile)
+	    {
+			var result = profile.Folder + _appSettings.GenerateSlug(
+													Path.GetFileNameWithoutExtension(sourceFilePath), true)
+												+ profile.Append + Path.GetExtension(sourceFilePath).ToLowerInvariant();
+			return result;
+		}
+	    
+        public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
         {
-            var outputFilePath = 
-	            profile.Folder + _appSettings.GenerateSlug( Path.GetFileNameWithoutExtension(sourceFilePath),true )
-	                           + profile.Append + Path.GetExtension(sourceFilePath);
-	        
-            return outputFilePath;
-        }
+			var result = PathHelper.AddBackslash(outputParentFullFilePathFolder) +
+								 FilePathOverlayImage(sourceFilePath, profile);
+			return result;
+		}
         
-        public void ResizeOverlayImageThumbnails(string fileHash, string outputSubPath, AppSettingsPublishProfiles profile)
+        public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile)
         {
-	        if ( !_thumbnailStorage.ExistFile(fileHash) ) throw new FileNotFoundException("fileHash " + fileHash);
+	        if ( string.IsNullOrWhiteSpace(itemFileHash) ) throw new ArgumentNullException(nameof(itemFileHash));
+	        if ( !_thumbnailStorage.ExistFile(itemFileHash) ) throw new FileNotFoundException("fileHash " + itemFileHash);
 
-	        if ( _iStorage.ExistFile(outputSubPath)  ) return;
+	        if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
+	        if ( !_hostFileSystem.ExistFile(profile.Path) )
+	        {
+		        throw new FileNotFoundException($"overlayImage is missing in profile.Path: {profile.Path}");
+	        }
 	        
-	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(fileHash))
+	        using ( var sourceImageStream = _thumbnailStorage.ReadStream(itemFileHash))
 	        using ( var sourceImage = Image.Load(sourceImageStream) )
-	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
+	        using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path)) // for example a logo
 	        using ( var overlayImage = Image.Load(overlayImageStream) )
 	        using ( var outputStream  = new MemoryStream() )
 	        {
 		        ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
-			        outputSubPath);
+			        outputFullFilePath);
 	        }
         }
 	    
-	    public void ResizeOverlayImageLarge(string subPath, string outputSubPath, AppSettingsPublishProfiles profile)
+        /// <summary>
+        /// Read from _iStorage to _hostFileSystem
+        /// </summary>
+        /// <param name="itemFilePath">input Image</param>
+        /// <param name="outputFullFilePath">location where to store</param>
+        /// <param name="profile">image profile that contains sizes</param>
+        /// <exception cref="FileNotFoundException">source image not found</exception>
+	    public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile)
 	    {
-		    if ( !_iStorage.ExistFile(subPath) ) throw new FileNotFoundException("subPath " + subPath);
+		    if ( string.IsNullOrWhiteSpace(itemFilePath) ) throw new ArgumentNullException(nameof(itemFilePath));
+		    if ( !_iStorage.ExistFile(itemFilePath) ) throw new FileNotFoundException("subPath " + itemFilePath);
 
-		    if ( _iStorage.ExistFile(outputSubPath)  ) return;
-	        
-		    // only for overlay image
-		    var hostFileSystem = new StorageHostFullPathFilesystem();
-
-		    using ( var sourceImageStream = _iStorage.ReadStream(subPath))
+		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;
+		    if ( !_hostFileSystem.ExistFile(profile.Path) )
+		    {
+			    throw new FileNotFoundException($"overlayImage is missing in profile.Path: {profile.Path}");
+		    }
+		    
+		    using ( var sourceImageStream = _iStorage.ReadStream(itemFilePath))
 		    using ( var sourceImage = Image.Load(sourceImageStream) )
-		    using ( var overlayImageStream = hostFileSystem.ReadStream(profile.Path))
+		    using ( var overlayImageStream = _hostFileSystem.ReadStream(profile.Path))
 		    using ( var overlayImage = Image.Load(overlayImageStream) )
 		    using ( var outputStream  = new MemoryStream() )
 		    {
 			    ResizeOverlayImageShared(sourceImage, overlayImage, outputStream, profile,
-				    outputSubPath);
+				    outputFullFilePath);
 		    }
 	    }
 
@@ -88,11 +114,11 @@ namespace starsky.feature.webhtmlpublish.Services
 		    // sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
 		    
 		    // For ImageSharp-0005
-		    sourceImage.Mutate(x => x.DrawImage(overlayImage, PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, 
+			    PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
 
 		    sourceImage.SaveAsJpeg(outputStream);
-
-		    _iStorage.WriteStream(outputStream, outputSubPath);
+		    _hostFileSystem.WriteStream(outputStream, outputSubPath);
 	    }
     }
 }

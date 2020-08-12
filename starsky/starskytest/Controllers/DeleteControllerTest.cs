@@ -130,6 +130,8 @@ namespace starskytest.Controllers
 		{
 			var createAnImage = InsertSearchData(true);
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+			
+			// RealFs Storage
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 			
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
@@ -138,6 +140,8 @@ namespace starskytest.Controllers
 			Console.WriteLine("createAnImage.FilePath");
 			Console.WriteLine(createAnImage.FilePath);
 
+			new CreateAnImage();
+			
 			var actionResult = controller.Delete(createAnImage.FilePath) as JsonResult;
 			Assert.AreNotEqual(actionResult,null);
 			var jsonCollection = actionResult.Value as List<FileIndexItem>;

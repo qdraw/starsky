@@ -40,6 +40,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 
 		/// <summary>
 		/// To Create the zip file in the storeZipFolderFullPath folder
+		/// Skip if zip file already exist
 		/// </summary>
 		/// <param name="storeZipFolderFullPath">folder to create zip in</param>
 		/// <param name="filePaths">list of full file paths</param>
@@ -64,7 +65,8 @@ namespace starsky.foundation.storage.ArchiveFormats
 			{
 				if ( File.Exists(filePaths[i]) )
 				{
-					zip.CreateEntryFromFile(filePaths[i], fileNames[i]);
+					var fileName = fileNames[i];
+					zip.CreateEntryFromFile(filePaths[i], fileName);
 				}
 			}
 			zip.Dispose();

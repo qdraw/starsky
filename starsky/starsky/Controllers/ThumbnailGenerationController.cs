@@ -36,7 +36,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public IActionResult ThumbnailGeneration(string f)
 		{
-			var subPath = PathHelper.RemoveLatestSlash(f);
+			var subPath = f != "/" ? PathHelper.RemoveLatestSlash(f) : "/";
 			var subPathStorage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			var thumbnailStorage = _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
