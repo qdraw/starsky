@@ -67,8 +67,7 @@ namespace starsky.foundation.storage.Services
 		private string ApplyStructureRangeToStorage(List<List<StructureRange>> parsedStructuredList)
 		{
 			var parentFolderBuilder = new StringBuilder();
-			foreach ( var subStructureItem in 
-				parsedStructuredList )
+			foreach ( var subStructureItem in parsedStructuredList )
 			{
 				
 				var currentChildFolderBuilder = new StringBuilder();

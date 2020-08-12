@@ -175,7 +175,16 @@ namespace starskytest.FakeMocks
 
 		private bool CheckAndFixChildFolders(string parentFolder, string childFolder)
 		{
-			return Regex.Match(childFolder, $"^{Regex.Escape(parentFolder)}[^/]+$").Success;
+			var replaced = childFolder.Replace(parentFolder, childFolder);
+			if ( replaced.Contains("/") ||  replaced.Contains(Path.DirectorySeparatorChar))
+			{
+				return true;
+			}
+			return false;
+			
+			var regex = $"^{Regex.Escape(parentFolder)}[^/]+$";
+			var match = Regex.Match(childFolder, regex).Success;
+			return match;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)

@@ -103,8 +103,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 				" \"MakeModel\": \"test|test|\",\n  \"Make\": \"test\",\n  \"Model\": \"test\",\n  \"FocalLength\": 200\n}";
 
 			var fakeStorage = new FakeIStorage();
-			var jsonSubPath = PathHelper.AddSlash("") + ".starsky." +
-			                  "test.jpg" + ".json";
+			var jsonSubPath = "/.starsky." + "test.jpg" + ".json";
 
 			fakeStorage.WriteStream(
 				new PlainTextFileHelper().StringToStream(input), jsonSubPath);
