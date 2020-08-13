@@ -78,6 +78,11 @@ describe("ModalPublish", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
     jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
+    var connectionDefault2: IConnectionDefault = { statusCode: 206, data: 'key' };
+    const mockIConnectionDefault2: Promise<IConnectionDefault> = Promise.resolve(connectionDefault2);
+
+    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockIConnectionDefault2);
+
     await act(async () => {
       await modal.find('[data-test="publish"]').simulate('click');
     })
@@ -116,11 +121,9 @@ describe("ModalPublish", () => {
 
     var modal = mount(<ModalPublish select={["/"]} isOpen={true} handleExit={() => { }}></ModalPublish>)
 
-    act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      modal.find('[data-name="item-name"]').simulate('input', { key: 'a' });
-    })
+    // update component + now press a key
+    modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
+    modal.find('[data-name="item-name"]').simulate('input', { key: 'a' });
 
     expect(useFetchSpy).toBeCalled();
     expect(modal.exists('[data-test="publish"]')).toBeTruthy();
@@ -128,60 +131,13 @@ describe("ModalPublish", () => {
     var connectionDefault: IConnectionDefault = { statusCode: 500, data: null };
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
     jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
-
-    await act(async () => {
-      await modal.find('[data-test="publish"]').simulate('click');
-    })
-
-    expect(modal.find('.content--text').text()).toBe('Something went wrong with exporting')
-
-    // and clean afterwards
-    act(() => {
-      jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-      modal.unmount();
-    });
-  });
-
-  it("Download entire flow", async () => {
-    jest.spyOn(useInterval, 'default')
-      .mockImplementationOnce(() => { })
-      .mockImplementationOnce(() => { })
-      .mockImplementationOnce(() => { })
-
-    // use ==> import * as useFetch from '../hooks/use-fetch';
-    const mockGetIConnectionDefault = {
-      statusCode: 200, data: ["_default"]
-    } as IConnectionDefault;
-    var useFetchSpy = jest.spyOn(useFetch, 'default')
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-      .mockImplementationOnce(() => mockGetIConnectionDefault)
-
-    var modal = mount(<ModalPublish select={["/"]} isOpen={true} handleExit={() => { }}></ModalPublish>)
-
-    await act(async () => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      await modal.find('[data-name="item-name"]').simulate('input', { key: 'a' });
-    })
-
-    expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
-
-    var connectionDefault: IConnectionDefault = { statusCode: 200, data: JSON.stringify('key') };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
-    jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
-
     jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
       await modal.find('[data-test="publish"]').simulate('click');
     })
 
-    await expect(modal.find('.content--text').text()).toBe('The file "key" has finished exporting.Download as a zip archive')
+    expect(modal.find('.content--text').text()).toBe('Something went wrong with exporting')
 
     // and clean afterwards
     act(() => {
