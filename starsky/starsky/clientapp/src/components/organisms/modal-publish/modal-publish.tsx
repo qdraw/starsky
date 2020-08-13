@@ -47,8 +47,6 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   const [publishProfileName, setPublishProfileName] = React.useState("");
 
   async function postZip() {
-    console.log(props.select);
-
     if (!props.select) {
       setProcessing(ProcessingState.fail);
       return;
@@ -68,6 +66,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
     setCreateZipKey(zipKeyResult.data);
+    await intervalUpdate(zipKeyResult.data);
   }
 
   var allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), 'get').data;
@@ -79,8 +78,14 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
-    if (!createZipKey) return;
-    var result = await FetchGet(new UrlQuery().UrlExportZipApi(createZipKey, true));
+    await intervalUpdate(createZipKey);
+  }, 1500);
+
+  async function intervalUpdate(zipKey: string) {
+    // need to check if ProcessingState = server
+    if (!zipKey) return;
+    var result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
+
     if (result.statusCode === 200) {
       setProcessing(ProcessingState.ready);
       return;
@@ -89,7 +94,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return; // not ready jet
     }
     setProcessing(ProcessingState.fail);
-  }, 1500);
+  }
 
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
