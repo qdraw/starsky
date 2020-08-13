@@ -176,6 +176,24 @@ describe("url-path", () => {
       expect(test.length).toStrictEqual(1)
     });
   });
+
+  describe("ArrayToCommaSeperatedString", () => {
+
+    it("default", () => {
+      var test = urlPath.ArrayToCommaSeperatedString([]);
+      expect(test).toStrictEqual("")
+    });
+
+    it("list 1 item", () => {
+      var test = urlPath.ArrayToCommaSeperatedString(["/test.jpg"]);
+      expect(test).toStrictEqual("/test.jpg")
+    });
+    it("list 2 items", () => {
+      var test = urlPath.ArrayToCommaSeperatedString(["/parent/test.jpg", "/parent/test2.jpg"]);
+      expect(test).toStrictEqual("/parent/test.jpg;/parent/test2.jpg")
+    });
+  });
+
   describe("ArrayToCommaSeperatedStringOneParent", () => {
 
     it("default", () => {
