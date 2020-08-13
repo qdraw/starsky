@@ -181,7 +181,7 @@ describe("ModalPublish", () => {
       await modal.find('[data-test="publish"]').simulate('click');
     })
 
-    await expect(modal.find('.content--text').text()).toBe('The file \"key\" has finished exporting.Download as a zip archive')
+    await expect(modal.find('.content--text').text()).toBe('The file "key" has finished exporting.Download as a zip archive')
 
     // and clean afterwards
     act(() => {
