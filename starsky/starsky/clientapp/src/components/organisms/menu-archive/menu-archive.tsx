@@ -19,6 +19,7 @@ import ModalArchiveSynchronizeManually from '../modal-archive-synchronize-manual
 import ModalDisplayOptions from '../modal-display-options/modal-display-options';
 import ModalDownload from '../modal-download/modal-download';
 import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
+import ModalPublish from '../modal-publish/modal-publish';
 
 interface IMenuArchiveProps {
 }
@@ -40,6 +41,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
   const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
+  const MessagePublish = language.text("Publiceren", "Publish");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -66,6 +68,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   var toggleLabels = () => new Sidebar(sidebar, setSidebar, history).toggleSidebar()
 
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+  const [isModalPublishOpen, setModalPublishOpen] = React.useState(false);
 
   // Selection
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
@@ -123,6 +126,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
         collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
         isOpen={isModalExportOpen} /> : null}
+
+      {isModalPublishOpen ? <ModalPublish handleExit={() => setModalPublishOpen(!isModalPublishOpen)}
+        select={new URLPath().MergeSelectParent(select, new URLPath().StringToIUrl(history.location.search).f)}
+        isOpen={isModalPublishOpen} /> : null}
 
       {/* Modal Display options */}
       {isDisplayOptionsOpen ? <ModalDisplayOptions parentFolder={new URLPath().StringToIUrl(history.location.search).f} handleExit={() =>
@@ -185,6 +192,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length === state.fileIndexItems.length ? <li className="menu-option" onClick={() => undoSelection()}>{MessageUndoSelection}</li> : null}
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li> : null}
             {select.length >= 1 ? <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
+            {select.length >= 1 ? <li data-test="publish" className="menu-option" onClick={() => setModalPublishOpen(!isModalPublishOpen)}>{MessagePublish}</li> : null}
+
             {select.length >= 1 ? <li data-test="trash" className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
             <li className="menu-option" data-test="display-options"

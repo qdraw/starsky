@@ -15,6 +15,7 @@ import * as ModalArchiveRename from '../modal-archive-rename/modal-archive-renam
 import * as ModalArchiveSynchronizeManually from '../modal-archive-synchronize-manually/modal-archive-synchronize-manually';
 import * as ModalDisplayOptions from '../modal-display-options/modal-display-options';
 import * as ModalDownload from '../modal-download/modal-download';
+import * as ModalPublish from '../modal-publish/modal-publish';
 import MenuArchive from './menu-archive';
 
 describe("MenuArchive", () => {
@@ -494,6 +495,43 @@ describe("MenuArchive", () => {
       var component = mount(<MenuArchive />);
 
       var item = component.find('[data-test="export"]');
+
+      act(() => {
+        item.simulate('click');
+      });
+
+      expect(exportModalSpy).toBeCalled();
+
+      component.unmount();
+
+    });
+
+    it("menu click publish", () => {
+      jest.spyOn(React, 'useContext').mockReset();
+
+      globalHistory.navigate("/?select=test1.jpg");
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [{ status: IExifStatus.Ok, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() }
+
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => newIConnectionDefault())
+
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+
+      var exportModalSpy = jest.spyOn(ModalPublish, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+
+      var component = mount(<MenuArchive />);
+
+      var item = component.find('[data-test="publish"]');
 
       act(() => {
         item.simulate('click');
