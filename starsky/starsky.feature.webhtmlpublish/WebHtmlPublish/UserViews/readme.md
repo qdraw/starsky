@@ -1,0 +1,1 @@
+When using `pm2-deploy-on-env.sh` this directory is not deleted when you create a release
