@@ -17,6 +17,9 @@ var apiUpdate__Starsky01dif20180101170001_Deleted = require('./api/update/__star
 var apiUpdate__Starsky01dif20180101170001_Ok = require('./api/update/__starsky_01-dif-2018.01.01.17.00.01_Ok.json')
 
 var apiEnvIndex = require('./api/env/index.json');
+var apiPublishIndex = require('./api/publish/index.json');
+var apiPublishCreateIndex = require('./api/publish/create/index.json');
+
 
 function setRouter(app) {
   var prefix = "/starsky";
@@ -157,6 +160,34 @@ function setRouter(app) {
     res.set('Content-Type', 'application/javascript');
     return res.send("");
   });
+
+  app.get(prefix + '/api/publish', (req, res) => {
+    return res.json(apiPublishIndex)
+  });
+
+  app.post(prefix + '/api/publish/create', (req, res) => {
+    return res.json(apiPublishCreateIndex)
+  });
+
+  // Simulate waiting
+  var fakeLoading = {};
+  app.get(prefix + '/export/zip/:id', (req, res) => {
+
+    if (!fakeLoading[req.params.id]) {
+      fakeLoading[req.params.id] = 0;
+    }
+
+    fakeLoading[req.params.id]++;
+
+    if (fakeLoading[req.params.id] >= 4) {
+      fakeLoading[req.params.id] = 0;
+      return res.send("\"OK\"");
+    }
+
+    res.statusCode = 206;
+    return res.send("\"Not ready\"");
+  });
+
 }
 
 module.exports = {

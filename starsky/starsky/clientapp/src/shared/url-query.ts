@@ -276,4 +276,11 @@ export class UrlQuery {
     return this.prefix + "/api/thumbnail-generation";
   }
 
-}
+  public UrlPublish(): string {
+    return this.prefix + "/api/publish";
+  }
+
+  public UrlPublishCreate(): string {
+    return this.prefix + "/api/publish/create";
+  }
+} 

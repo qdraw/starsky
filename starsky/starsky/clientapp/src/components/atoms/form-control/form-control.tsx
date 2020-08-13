@@ -10,7 +10,7 @@ export interface IFormControlProps {
   name: string;
   className?: string;
   maxlength?: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   warning?: boolean;
   spellcheck?: boolean;
 }

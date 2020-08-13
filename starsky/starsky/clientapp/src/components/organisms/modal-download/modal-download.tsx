@@ -56,17 +56,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     */
     var bodyParams = new URLSearchParams();
 
-    var selectString = "";
-    for (let index = 0; index < props.select.length; index++) {
-      const element = props.select[index];
-      if (index === 0) {
-        selectString = element;
-        continue;
-      }
-      selectString += ";" + element;
-    }
-
-    bodyParams.set("f", selectString);
+    bodyParams.set("f", new URLPath().ArrayToCommaSeperatedString(props.select));
     bodyParams.set("json", "true");
     bodyParams.set("thumbnail", isThumbnail.toString());
     bodyParams.set("collections", props.collections.toString());
