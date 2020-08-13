@@ -77,6 +77,14 @@ describe("url-query", () => {
     expect(result).toContain("delete")
   });
 
+  it("UrlPublish", () => {
+    var result = urlQuery.UrlPublish();
+    expect(result).toContain("publish")
+  });
+  it("UrlPublishCreate", () => {
+    var result = urlQuery.UrlPublishCreate();
+    expect(result).toContain("publish/create")
+  });
   it("UrlSearchTrashApi", () => {
     var result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash")
