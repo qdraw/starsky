@@ -296,6 +296,23 @@ export class URLPath {
     return subPaths;
   }
 
+  /**
+   * Combine select to dot comma seperated
+   * @param select Array with path
+   */
+  public ArrayToCommaSeperatedString(select: string[]): string {
+    var selectString = "";
+    for (let index = 0; index < select.length; index++) {
+      const element = select[index];
+      if (index === 0) {
+        selectString = element;
+        continue;
+      }
+      selectString += ";" + element;
+    }
+    return selectString;
+  }
+
   public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {

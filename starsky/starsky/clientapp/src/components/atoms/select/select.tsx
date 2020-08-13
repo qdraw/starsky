@@ -16,6 +16,12 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({ children, selectOpti
     callback(value);
   };
 
+  if (!selectOptions) {
+    return (
+      <select className="select"></select>
+    );
+  }
+
   return (
     <select className="select" onChange={e => change(e.target.value)}>
       {selectOptions.map((value, index) => {

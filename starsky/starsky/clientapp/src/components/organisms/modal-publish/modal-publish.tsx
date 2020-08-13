@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useFetch from '../../../hooks/use-fetch';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useInterval from '../../../hooks/use-interval';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
+import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
 import Modal from '../../atoms/modal/modal';
@@ -32,45 +34,34 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessagePublishSelection = language.text("Publiceer selectie", "Publish selection");
-  const MessageOrginalFile = language.text("Origineel bestand", "Original file");
-  const MessageThumbnailFile = "Thumbnail";
-  const MessageGenericExportFail = language.text("Er is iets misgegaan met exporteren", "Something went wrong with exporting");
-  const MessageExportReady = language.text("Het bestand {createZipKey} is klaar met exporteren.", "The file {createZipKey} has finished exporting.");
+  const MessageGenericExportFail = language.text("Er is iets misgegaan met exporteren",
+    "Something went wrong with exporting");
+  const MessageExportReady = language.text("Het bestand {createZipKey} is klaar met exporteren.",
+    "The file {createZipKey} has finished exporting.");
   const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
   const MessageOneMomentPlease = language.text("Een moment geduld alstublieft", "One moment please");
 
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
+  const [itemName, setItemName] = React.useState("");
+  const [publishProfileName, setPublishProfileName] = React.useState("");
 
-  async function postZip(isThumbnail: boolean) {
+  async function postZip() {
+    console.log(props.select);
+
     if (!props.select) {
       setProcessing(ProcessingState.fail);
       return;
     }
-    /*
-    f	/__starsky/0001-readonly/4.jpg;/__starsky/0001-readonly/3.jpg
-    json	true
-    thumbnail	false
-    collections	true
-    */
+
     var bodyParams = new URLSearchParams();
+    bodyParams.set("f", new URLPath().ArrayToCommaSeperatedString(props.select));
+    bodyParams.set("itemName", itemName);
+    bodyParams.set("publishProfileName", publishProfileName);
 
-    var selectString = "";
-    for (let index = 0; index < props.select.length; index++) {
-      const element = props.select[index];
-      if (index === 0) {
-        selectString = element;
-        continue;
-      }
-      selectString += ";" + element;
-    }
-
-    bodyParams.set("f", selectString);
-    bodyParams.set("json", "true");
-    bodyParams.set("thumbnail", isThumbnail.toString());
     setProcessing(ProcessingState.server);
 
-    var zipKeyResult = await FetchPost(new UrlQuery().UrlExportPostZipApi(), bodyParams.toString());
+    var zipKeyResult = await FetchPost(new UrlQuery().UrlPublishCreate(), bodyParams.toString());
 
     if (zipKeyResult.statusCode !== 200 || !zipKeyResult.data) {
       setProcessing(ProcessingState.fail);
@@ -78,6 +69,13 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     }
     setCreateZipKey(zipKeyResult.data);
   }
+
+  var allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), 'get').data;
+  useEffect(() => {
+    // set the default option
+    if (!allPublishProfiles) return;
+    setPublishProfileName(allPublishProfiles[0])
+  }, [allPublishProfiles])
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
@@ -94,24 +92,8 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 1500);
 
 
-  // const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
-
-  // function getFirstSelectResult(): string {
-  //   if (!props.select || props.select.length !== 1) return "";
-  //   return props.select[0];
-  // }
-
-  // var singleFileThumbResult = useFetch(new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()), "get");
-  // useEffect(() => {
-  //   setSingleFileThumbnailStatus(singleFileThumbResult.data !== false);
-  // }, [singleFileThumbResult.data])
-
-  function updateName() {
-
-  }
-
-  function updateSetting() {
-
+  function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
+    setItemName(event.target.textContent ? event.target.textContent : "")
   }
 
   return (<Modal
@@ -127,24 +109,12 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
       {/* when selecting one file */}
       {isProcessing === ProcessingState.default && props.select ? <>
-        <h4><b>Item Name</b></h4>
-        <FormControl contentEditable={true} onBlur={updateName} name="item-name" ></FormControl>
-        <h4><b>Instelling</b></h4>
-        <Select selectOptions={["_default"]} callback={updateSetting}></Select>
-        <button onClick={() => {
-          postZip(false)
-        }} className="btn btn--default" data-test="orginal">{MessageOrginalFile}</button>
+        <h4>Item Name</h4>
+        <FormControl contentEditable={true} onInput={updateItemName} name="item-name"></FormControl>
+        <h4>Instelling </h4>
+        <Select selectOptions={allPublishProfiles} callback={setPublishProfileName}></Select>
+        <button disabled={!itemName} onClick={postZip} className="btn btn--default" data-test="publish">{MessagePublishSelection}</button>
 
-      </> : null}
-
-      {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
-        <button onClick={() => {
-          postZip(false)
-        }} className="btn btn--info" data-test="orginal">{MessageOrginalFile}</button>
-
-        <button onClick={() => {
-          postZip(true)
-        }} className="btn btn--default" data-test="thumbnail">{MessageThumbnailFile}</button>
       </> : null}
 
       {isProcessing === ProcessingState.server ? <>

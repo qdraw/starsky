@@ -30,4 +30,10 @@ describe("SwitchButton", () => {
 
     expect(component.find('option').text()).toBe('Test')
   });
+
+  it("null option", () => {
+    var component = shallow(<Select selectOptions={[]} />);
+
+    expect(component.exists('select')).toBeTruthy();
+  });
 });
