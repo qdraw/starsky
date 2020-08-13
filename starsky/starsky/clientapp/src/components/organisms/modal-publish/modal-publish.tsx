@@ -25,7 +25,7 @@ enum ProcessingState {
 }
 
 /**
- * ModalExport
+ * ModalPublish
  * @param props input stats
  */
 const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
@@ -93,7 +93,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
-    setItemName(event.target.textContent ? event.target.textContent : "")
+    setItemName(event.target.textContent ? event.target.textContent.trim() : "")
   }
 
   return (<Modal
