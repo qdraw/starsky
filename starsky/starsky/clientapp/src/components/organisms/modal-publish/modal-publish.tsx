@@ -56,6 +56,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     bodyParams.set("f", new URLPath().ArrayToCommaSeperatedString(props.select));
     bodyParams.set("itemName", itemName);
     bodyParams.set("publishProfileName", publishProfileName);
+    bodyParams.set("force", "true");
 
     setProcessing(ProcessingState.server);
 
@@ -86,16 +87,19 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     if (!zipKey) return;
     var result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
 
-    if (result.statusCode === 200) {
-      setProcessing(ProcessingState.ready);
-      return;
+    switch (result.statusCode) {
+      case 200:
+        setProcessing(ProcessingState.ready);
+        // not ready jet
+        return;
+      case 206:
+      case 404:
+        // not ready yet status 404 and 206
+        break;
+      default:
+        setProcessing(ProcessingState.fail);
     }
-    else if (result.statusCode === 206) {
-      return; // not ready jet
-    }
-    setProcessing(ProcessingState.fail);
   }
-
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     setItemName(event.target.textContent ? event.target.textContent.trim() : "")
