@@ -44,6 +44,11 @@ fi
 
 pm2 stop $PM2NAME
 
+# Keep UserViews over a release
+if [ -d "WebHtmlPublish/UserViews" ]; then
+  cp -r "WebHtmlPublish/UserViews" "UserViews/"
+fi
+
 if [ -f starsky.dll ]; then
     echo "delete dlls so, and everything except pm2 helpers, and"
     echo "configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
@@ -54,6 +59,7 @@ if [ -f starsky.dll ]; then
         if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
         && $ENTRY != "thumbnailTempFolder"
         && $ENTRY != "temp"
+        && $ENTRY != "UserViews"* # Keep UserViews
         && $ENTRY != "starsky-"*
         && $ENTRY != *".db" ]];
         then
@@ -66,6 +72,8 @@ else
    echo "> starsky.dll File not found"
 fi
 
+echo "Now Unzipping the archive"
+
 # UnZIP archive
 if [ -f starsky-$RUNTIME.zip ]; then
    unzip -o starsky-$RUNTIME.zip
@@ -77,6 +85,12 @@ fi
 # reset rights if those are wrong
 /usr/bin/find . -type d -exec chmod 755 {} \;
 /usr/bin/find . -type f -exec chmod 644 {} \;
+
+# to keep the content UserViews
+if [ -d "UserViews" ]; then
+  cp -fr "UserViews" "WebHtmlPublish"
+  rm -rf "UserViews"
+fi
 
 # excute right for specific files
 if [ -f starsky ]; then
