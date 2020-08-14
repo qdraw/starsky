@@ -85,9 +85,9 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 3000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
-    var itemName = event.target.textContent ? event.target.textContent.trim() : "";
-    setItemName(itemName);
-    FetchGet(new UrlQuery().UrlPublishExist(itemName)).then((result) => {
+    var toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";
+    setItemName(toUpdateItemName);
+    FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName)).then((result) => {
       if (result.statusCode !== 200) return;
       setExistItemName(result.data);
     });
