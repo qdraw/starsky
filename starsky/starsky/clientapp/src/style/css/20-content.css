@@ -194,3 +194,7 @@
 .content .legal-text-row a{
   text-decoration: underline;
 }
+
+.publish .warning-box{
+  margin-top: 4px;
+}

@@ -4,6 +4,7 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useInterval from '../../../hooks/use-interval';
 import { ExportIntervalUpdate } from '../../../shared/export/export-interval-update';
 import { ProcessingState } from '../../../shared/export/processing-state';
+import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -35,14 +36,19 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
   const MessageOneMomentPlease = language.text("Een moment geduld alstublieft", "One moment please");
   const MessageItemName = language.text("Item naam", "Item name");
+  const MessageItemNameInUse = language.text("Deze naam is al in gebruik, kies een andere naam",
+    "This name is already in use, please choose another name");
   const MessagePublishProfileName = language.text("Profiel instelling", "Profile setting");
 
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
   const [itemName, setItemName] = React.useState("");
+  const [existItemName, setExistItemName] = React.useState(false);
   const [publishProfileName, setPublishProfileName] = React.useState("");
 
   async function postZip() {
+    setExistItemName(false);
+
     if (!props.select) {
       setProcessing(ProcessingState.fail);
       return;
@@ -79,7 +85,12 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }, 3000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
-    setItemName(event.target.textContent ? event.target.textContent.trim() : "")
+    var itemName = event.target.textContent ? event.target.textContent.trim() : "";
+    setItemName(itemName);
+    FetchGet(new UrlQuery().UrlPublishExist(itemName)).then((result) => {
+      if (result.statusCode !== 200) return;
+      setExistItemName(result.data);
+    });
   }
 
   return (<Modal
@@ -97,6 +108,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       {isProcessing === ProcessingState.default && props.select ? <>
         <h4>{MessageItemName}</h4>
         <FormControl contentEditable={true} onInput={updateItemName} name="item-name"></FormControl>
+        {existItemName ? <div className="warning-box">
+          {MessageItemNameInUse}
+          {/* optional you could overwrite by pressing Publish*/}
+        </div> : null}
         <h4>{MessagePublishProfileName}</h4>
         <Select selectOptions={allPublishProfiles} callback={setPublishProfileName}></Select>
         <button disabled={!itemName} onClick={postZip} className="btn btn--default" data-test="publish">{MessagePublishSelection}</button>

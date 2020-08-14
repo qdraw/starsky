@@ -169,6 +169,10 @@ function setRouter(app) {
     return res.json(apiPublishCreateIndex)
   });
 
+  app.get(prefix + '/api/publish/exist', (req, res) => {
+    return res.json(req.query.itemName === "test");
+  });
+
   // Simulate waiting
   var fakeLoading = {};
   app.get(prefix + '/export/zip/:id', (req, res) => {

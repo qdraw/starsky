@@ -283,4 +283,8 @@ export class UrlQuery {
   public UrlPublishCreate(): string {
     return this.prefix + "/api/publish/create";
   }
+
+  public UrlPublishExist(itemName: string | null): string {
+    return this.prefix + `/api/publish/exist?itemName=${itemName}`;
+  }
 } 
