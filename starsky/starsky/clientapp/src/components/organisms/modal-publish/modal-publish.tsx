@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import useFetch from '../../../hooks/use-fetch';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useInterval from '../../../hooks/use-interval';
-import FetchGet from '../../../shared/fetch-get';
+import { ExportIntervalUpdate } from '../../../shared/export/export-interval-update';
+import { ProcessingState } from '../../../shared/export/processing-state';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -15,13 +16,6 @@ interface IModalPublishProps {
   isOpen: boolean;
   select: Array<string> | undefined;
   handleExit: Function;
-}
-
-enum ProcessingState {
-  default,
-  server,
-  ready,
-  fail
 }
 
 /**
@@ -40,6 +34,8 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "The file {createZipKey} has finished exporting.");
   const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
   const MessageOneMomentPlease = language.text("Een moment geduld alstublieft", "One moment please");
+  const MessageItemName = language.text("Item naam", "Item name");
+  const MessagePublishProfileName = language.text("Profiel instelling", "Profile setting");
 
   const [isProcessing, setProcessing] = React.useState(ProcessingState.default);
   const [createZipKey, setCreateZipKey] = React.useState("");
@@ -67,7 +63,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       return;
     }
     setCreateZipKey(zipKeyResult.data);
-    await intervalUpdate(zipKeyResult.data);
+    await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
   }
 
   var allPublishProfiles = useFetch(new UrlQuery().UrlPublish(), 'get').data;
@@ -79,27 +75,8 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
-    await intervalUpdate(createZipKey);
-  }, 1500);
-
-  async function intervalUpdate(zipKey: string) {
-    // need to check if ProcessingState = server
-    if (!zipKey) return;
-    var result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));
-
-    switch (result.statusCode) {
-      case 200:
-        setProcessing(ProcessingState.ready);
-        // not ready jet
-        return;
-      case 206:
-      case 404:
-        // not ready yet status 404 and 206
-        break;
-      default:
-        setProcessing(ProcessingState.fail);
-    }
-  }
+    await ExportIntervalUpdate(createZipKey, setProcessing);
+  }, 3000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     setItemName(event.target.textContent ? event.target.textContent.trim() : "")
@@ -118,12 +95,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
 
       {/* when selecting one file */}
       {isProcessing === ProcessingState.default && props.select ? <>
-        <h4>Item Name</h4>
+        <h4>{MessageItemName}</h4>
         <FormControl contentEditable={true} onInput={updateItemName} name="item-name"></FormControl>
-        <h4>Instelling </h4>
+        <h4>{MessagePublishProfileName}</h4>
         <Select selectOptions={allPublishProfiles} callback={setPublishProfileName}></Select>
         <button disabled={!itemName} onClick={postZip} className="btn btn--default" data-test="publish">{MessagePublishSelection}</button>
-
       </> : null}
 
       {isProcessing === ProcessingState.server ? <>

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import useFetch from '../../../hooks/use-fetch';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useInterval from '../../../hooks/use-interval';
-import FetchGet from '../../../shared/fetch-get';
+import { ExportIntervalUpdate } from '../../../shared/export/export-interval-update';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
 import { Language } from '../../../shared/language';
@@ -69,22 +69,13 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       return;
     }
     setCreateZipKey(zipKeyResult.data);
+    await ExportIntervalUpdate(zipKeyResult.data, setProcessing);
   }
 
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
-    if (!createZipKey) return;
-    var result = await FetchGet(new UrlQuery().UrlExportZipApi(createZipKey, true));
-    if (result.statusCode === 200) {
-      setProcessing(ProcessingState.ready);
-      return;
-    }
-    else if (result.statusCode === 206) {
-      return; // not ready jet
-    }
-    setProcessing(ProcessingState.fail);
-  }, 1500);
-
+    await ExportIntervalUpdate(createZipKey, setProcessing);
+  }, 3000);
 
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
 
