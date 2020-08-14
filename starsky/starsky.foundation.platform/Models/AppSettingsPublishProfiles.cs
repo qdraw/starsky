@@ -20,7 +20,10 @@ namespace starsky.foundation.platform.Models
     
     public class AppSettingsPublishProfiles
     {
-	    
+	  
+	    /// <summary>
+	    /// Type of template
+	    /// </summary>
 #if SYSTEM_TEXT_ENABLED
 	    [JsonConverter(typeof(JsonStringEnumConverter))]
 #else
@@ -28,18 +31,32 @@ namespace starsky.foundation.platform.Models
 #endif
         public TemplateContentType ContentType { get; set; } = TemplateContentType.None;
 
-        private int _sourceMaxWith;
+        /// <summary>
+        /// Private name of SourceMaxWidth
+        /// </summary>
+        private int _sourceMaxWidth;
+        
+        /// <summary>
+        /// The size of the main image after resizing
+        /// </summary>
         public int SourceMaxWidth
         {
             get
             {
-                if (_sourceMaxWith >= 100) return _sourceMaxWith;
+                if (_sourceMaxWidth >= 100) return _sourceMaxWidth;
                 return 100;
             }
-            set => _sourceMaxWith = value;
+            set => _sourceMaxWidth = value;
         }
 
+        /// <summary>
+        /// Private name for Overlay Image
+        /// </summary>
         private int _overlayMaxWidth;
+        
+        /// <summary>
+        /// Size of the overlay Image / logo
+        /// </summary>
         public int OverlayMaxWidth
         {
             get
@@ -54,7 +71,7 @@ namespace starsky.foundation.platform.Models
 	    /// <summary>
 	    /// private: used for template url or overlay image
 	    /// </summary>
-	    private string pathPrivate { get; set; } = string.Empty;
+	    private string PathPrivate { get; set; } = string.Empty;
 
 	    /// <summary>
 	    /// used for template url or overlay image
@@ -64,7 +81,7 @@ namespace starsky.foundation.platform.Models
 		    get
 		    {
 			    // return: if null > string.Empty
-			    return string.IsNullOrEmpty(pathPrivate) ? string.Empty : pathPrivate;
+			    return string.IsNullOrEmpty(PathPrivate) ? string.Empty : PathPrivate;
 		    }
 		    set
 		    {
@@ -75,7 +92,7 @@ namespace starsky.foundation.platform.Models
 
 			    if ( !value.Contains("{AssemblyDirectory}") )
 			    {
-				    pathPrivate = value;
+				    PathPrivate = value;
 				    return;
 			    }
 				// get current dir
@@ -84,12 +101,19 @@ namespace starsky.foundation.platform.Models
 			    var subPath = Regex.Replace(value, "{AssemblyDirectory}", string.Empty, RegexOptions.IgnoreCase);
 			    
 			    // append and replace
-			    pathPrivate = assemblyDirectory + subPath
+			    PathPrivate = assemblyDirectory + subPath
 				    .Replace("starskywebftpcli", "starskywebhtmlcli");
 		    }
 	    }
 
+	    /// <summary>
+	    /// Private Name for folder
+	    /// </summary>
 	    private string _folder = string.Empty;
+	    
+	    /// <summary>
+	    /// To copy folder
+	    /// </summary>
         public string Folder
         {
             get { return _folder; }
@@ -105,9 +129,24 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
-        public string Append { get; set; } = string.Empty; // do not add slash check, used for _kl
-        public string Template { get; set; } // index.cshtml for example
+        /// <summary>
+        /// do not add slash check, used for _kl
+        /// </summary>
+        public string Append { get; set; } = string.Empty;
+       
+        /// <summary>
+        /// index.cshtml for example
+        /// </summary>
+        public string Template { get; set; }
+        
+        /// <summary>
+        /// To add before
+        /// </summary>
         public string Prepend { get; set; } = string.Empty;
+        
+        /// <summary>
+        /// Include Exif Data
+        /// </summary>
         public bool MetaData { get; set; } = true;
 
 	    /// <summary>
@@ -119,9 +158,21 @@ namespace starsky.foundation.platform.Models
 
     public enum TemplateContentType
     {
+	    /// <summary>
+	    /// Default, should pick one of the other options
+	    /// </summary>
         None = 0,
+        /// <summary>
+        /// Generate Html lists
+        /// </summary>
         Html = 1,
+        /// <summary>
+        /// Create a Jpeg Image
+        /// </summary>
         Jpeg = 2,
+        /// <summary>
+        /// To move the source images to a folder, when using the web ui, this means copying 
+        /// </summary>
         MoveSourceFiles = 3,
         /// <summary>
         /// Content to be copied from WebHtmlPublish/PublishedContent to include
@@ -131,6 +182,6 @@ namespace starsky.foundation.platform.Models
         /// <summary>
         /// Include manifest file _settings.json in Copy list
         /// </summary>
-        PublishManifest = 6
+        PublishManifest = 6,
     }
 }
