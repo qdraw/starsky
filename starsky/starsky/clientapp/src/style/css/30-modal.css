@@ -69,7 +69,6 @@ div.modal-content > .modal-close-bar {
 @media (prefers-color-scheme: dark) {
 	div.modal-content > .modal-close-bar {
       background-color: #263238;
-
   }
 }
 

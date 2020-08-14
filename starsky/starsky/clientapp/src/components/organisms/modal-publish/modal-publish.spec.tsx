@@ -63,6 +63,10 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault)
 
+    var connectionDefault: IConnectionDefault = { statusCode: 200, data: 'key' };
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockIConnectionDefault)
+
     var modal = mount(<ModalPublish select={["/"]} isOpen={true} handleExit={() => { }}></ModalPublish>)
 
     act(() => {
@@ -74,8 +78,6 @@ describe("ModalPublish", () => {
     expect(useFetchSpy).toBeCalled();
     expect(modal.exists('[data-test="publish"]')).toBeTruthy();
 
-    var connectionDefault: IConnectionDefault = { statusCode: 200, data: 'key' };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
     jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     var connectionDefault2: IConnectionDefault = { statusCode: 206, data: 'key' };
@@ -97,6 +99,9 @@ describe("ModalPublish", () => {
   });
 
   it("Fail - Publish flow with default options -> and waiting 2", async () => {
+    var connectionDefault: IConnectionDefault = { statusCode: 500, data: null };
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+
     jest.spyOn(useInterval, 'default')
       .mockImplementationOnce(() => { })
       .mockImplementationOnce(() => { })
@@ -120,6 +125,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
 
     var modal = mount(<ModalPublish select={["/"]} isOpen={true} handleExit={() => { }}></ModalPublish>)
+    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockIConnectionDefault).mockImplementationOnce(() => mockIConnectionDefault).mockImplementationOnce(() => mockIConnectionDefault);
 
     // update component + now press a key
     modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
@@ -128,10 +134,8 @@ describe("ModalPublish", () => {
     expect(useFetchSpy).toBeCalled();
     expect(modal.exists('[data-test="publish"]')).toBeTruthy();
 
-    var connectionDefault: IConnectionDefault = { statusCode: 500, data: null };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
+
     jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
-    jest.spyOn(FetchGet, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
       await modal.find('[data-test="publish"]').simulate('click');

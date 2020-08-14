@@ -18,6 +18,7 @@
     <ItemGroup>
         <None Update="WebHtmlPublish\EmbeddedViews\**" CopyToOutputDirectory="PreserveNewest" />
         <None Update="WebHtmlPublish\PublishedContent\**" CopyToOutputDirectory="PreserveNewest" />
+        <None Update="WebHtmlPublish\UserViews\**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
     
     <ItemGroup>

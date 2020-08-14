@@ -85,6 +85,12 @@ describe("url-query", () => {
     var result = urlQuery.UrlPublishCreate();
     expect(result).toContain("publish/create")
   });
+
+  it("UrlPublishExist", () => {
+    var result = urlQuery.UrlPublishExist('name');
+    expect(result).toContain("itemName=name")
+  });
+
   it("UrlSearchTrashApi", () => {
     var result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash")

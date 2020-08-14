@@ -34,8 +34,8 @@ function Search(archive: IArchiveProps) {
     setQuery(new URLPath().StringToIUrl(history.location.search).t)
   }, [history.location.search]);
 
-  if (!archive) return (<>(Search) => no archive</>);
-  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>);
+  if (!archive) return (<>(Search) no archive</>);
+  if (!archive.colorClassUsage) return (<>(Search) no colorClassUsage</>);
 
   return (<>
     <MenuSearch />
