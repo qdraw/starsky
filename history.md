@@ -33,7 +33,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.0-beta.1 _(Unreleased)_  2020-08-XX
+# version 0.3.0 _(Unreleased)_  2020-08-XX
+_Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
+
+# version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting 
 - [x]   __(Breaking change)__ _Back-end_ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
 - [x]   (Added) Add new Publish UI in Web Interface
@@ -56,7 +59,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.2.7 - 2020-07-31
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
 - [x]   (Fixed) _Back-end_ Fix GPS Tracking issue with 'Local' time.
-- [x]   (Deprecated) Starsky Net Framework will be removed in 0.3
+- [x]   (Deprecated) Starsky Net Framework will be unsupported in 0.3
 - [x]   (Added) _Back-end_ Docker support,
 
 # version 0.2.6 - 2020-06-08
