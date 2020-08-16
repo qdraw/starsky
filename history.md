@@ -36,6 +36,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.3.0 _(Unreleased)_  2020-08-XX
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
 - [x]   (Fixed) _Back-end_ publish with metadata did not work
+- [x]   (Fixed) _Back-end_ Publisher did rotate images when using Exif Orientation
 
 # version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting 
