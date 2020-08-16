@@ -31,7 +31,6 @@ namespace starsky.feature.webhtmlpublish.Services
         private readonly IExifTool _exifToolHostStorage;
 	    private readonly IStorage _subPathStorage;
 	    private readonly IStorage _thumbnailStorage;
-	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IConsole _console;
 	    private readonly IOverlayImage _overlayImage;
@@ -49,7 +48,6 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		    _selectorStorage = selectorStorage;
             _appSettings = appSettings;
             _exifToolHostStorage = exifToolHostStorage;
 		    _console = console;
