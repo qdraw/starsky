@@ -28,10 +28,9 @@ namespace starsky.feature.webhtmlpublish.Services
     public class WebHtmlPublishService : IWebHtmlPublishService
     {
         private readonly AppSettings _appSettings;
-        private readonly IExifTool _exifTool;
+        private readonly IExifTool _exifToolHostStorage;
 	    private readonly IStorage _subPathStorage;
 	    private readonly IStorage _thumbnailStorage;
-	    private readonly ISelectorStorage _selectorStorage;
 	    private readonly IStorage _hostFileSystemStorage;
 	    private readonly IConsole _console;
 	    private readonly IOverlayImage _overlayImage;
@@ -42,16 +41,15 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly Thumbnail _thumbnailService;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
-			    selectorStorage, AppSettings appSettings, IExifTool exifTool, 
+			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifToolHostStorage, 
 		    IOverlayImage overlayImage, IConsole console)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
-		    _selectorStorage = selectorStorage;
             _appSettings = appSettings;
-            _exifTool = exifTool;
+            _exifToolHostStorage = exifToolHostStorage;
 		    _console = console;
 		    _overlayImage = overlayImage;
 		    _publishManifest = new PublishManifest(_hostFileSystemStorage, new PlainTextFileHelper());
@@ -238,8 +236,10 @@ namespace starsky.feature.webhtmlpublish.Services
 				    var comparedNames = FileIndexCompareHelper.Compare(
 					    new FileIndexItem(), item);
 				    comparedNames.Add(nameof(FileIndexItem.Software));
-				    new ExifToolCmdHelper(_exifTool,_hostFileSystemStorage, 
-					    _thumbnailStorage, null).Update(item, comparedNames, false);
+				    
+				    new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
+					    _thumbnailStorage, null).Update(item, 
+					    new List<string> {outputPath}, comparedNames);
 			    }
 		    }
 

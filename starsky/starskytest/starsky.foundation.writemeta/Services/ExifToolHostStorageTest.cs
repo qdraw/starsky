@@ -1,20 +1,18 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Services;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
-	public class ExifToolTest
+	public class ExifToolHostStorageTest
 	{
-
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentException))]
-		public async Task ExifTool_NotFound_Exception()
+		public async Task ExifToolHostStorageService_NotFound_Exception()
 		{
 			var appSettings = new AppSettings
 			{
@@ -25,13 +23,13 @@ namespace starskytest.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentException))]
-		public async Task ExifTool_WriteTagsThumbnailAsync_NotFound_Exception()
+		public async Task ExifToolHostStorageService_WriteTagsThumbnailAsync_NotFound_Exception()
 		{
 			var appSettings = new AppSettings
 			{
@@ -42,7 +40,7 @@ namespace starskytest.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 	}

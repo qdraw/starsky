@@ -21,6 +21,13 @@ namespace starsky.foundation.writemeta.Helpers
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly IReadMeta _readMeta;
 
+	    /// <summary>
+	    /// Run ExifTool 
+	    /// </summary>
+	    /// <param name="exifTool">ExifTool Abstraction</param>
+	    /// <param name="iStorage">Source storage provider</param>
+	    /// <param name="thumbnailStorage">Thumbnail Storage Abstraction provider</param>
+	    /// <param name="readMeta">ReadMeta abstraction</param>
 	    public ExifToolCmdHelper(IExifTool exifTool, IStorage iStorage, IStorage thumbnailStorage, IReadMeta readMeta)
         {
             _exifTool = exifTool;
@@ -46,16 +53,17 @@ namespace starsky.foundation.writemeta.Helpers
         }
 
 	    /// <summary>
-	    /// To update Exiftool (both Thumbnail as Storage item)
+	    /// To update ExifTool (both Thumbnail as Storage item)
 	    /// </summary>
 	    /// <param name="updateModel"></param>
 	    /// <param name="inputSubPaths"></param>
 	    /// <param name="comparedNames"></param>
+	    /// <param name="includeSoftware"></param>
 	    /// <returns></returns>
 	    public string Update(FileIndexItem updateModel, List<string> inputSubPaths,
-		    List<string> comparedNames)
+		    List<string> comparedNames, bool includeSoftware = true)
 	    {
-		    return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames).Result;
+		    return UpdateAsyncWrapperBoth(updateModel, inputSubPaths, comparedNames, includeSoftware).Result;
 	    }
 
         /// <summary>
@@ -87,8 +95,11 @@ namespace starsky.foundation.writemeta.Helpers
         /// <param name="comparedNames"></param>
         /// <param name="includeSoftware"></param>
         /// <returns></returns>
-        private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware = true)
-	    {
+#pragma warning disable 1998
+        private async Task<string> UpdateAsyncWrapperBoth(FileIndexItem updateModel, List<string> inputSubPaths,
+	        List<string> comparedNames, bool includeSoftware = true)
+#pragma warning restore 1998
+        {
 		    var task = Task.Run(() => UpdateASyncBoth(updateModel,inputSubPaths,comparedNames,includeSoftware));
 		    return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result : string.Empty;
 	    }
@@ -166,7 +177,8 @@ namespace starsky.foundation.writemeta.Helpers
 		    }
 	    }
 
-        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware )
+        private async Task<string> UpdateASyncBoth(FileIndexItem updateModel, List<string> inputSubPaths, 
+	        List<string> comparedNames, bool includeSoftware)
         {
 	        // Creation and update .xmp file with all available content
 	        await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
