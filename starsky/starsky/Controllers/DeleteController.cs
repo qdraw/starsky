@@ -19,7 +19,8 @@ namespace starsky.Controllers
         /// Remove files from the disk, but the file must contain the !delete! tag
         /// </summary>
         /// <param name="f">subPaths, separated by dot comma</param>
-        /// <param name="collections">true is to update files with the same name before the extenstion</param>
+        /// <param name="collections">true is to update files with the same name before the extenstion,
+        /// not recommend to use</param>
         /// <returns>list of deleted files</returns>
         /// <response code="200">file is gone</response>
         /// <response code="404">item not found on disk or !delete! tag is missing</response>
@@ -28,7 +29,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [Produces("application/json")]
-        public IActionResult Delete(string f, bool collections = true)
+        public IActionResult Delete(string f, bool collections = false)
 		{
 			var fileIndexResultsList = _deleteItem.Delete(f, collections);
             // When all items are not found

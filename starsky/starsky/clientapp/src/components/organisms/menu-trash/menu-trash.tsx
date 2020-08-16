@@ -55,6 +55,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
+    bodyParams.append("collections", "false");
 
     undoSelection();
 
