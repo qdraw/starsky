@@ -48,6 +48,8 @@ There are options to do predefined tasks
 - `html`, uses razor to generate html files
 - `jpeg`, resizes images to smaller files
 - `moveSourceFiles`, move action to child folder
+- `publishContent` move content from `WebHtmlPublish/PublishedContent` to the output directory
+- `publishManifest` include manifest in output folder. Manifest is needed to use `starskyWebFtpCli`
 
 #### SourceMaxWidth
 
@@ -91,7 +93,8 @@ In ContentType `jpeg` this used to add text after the current filename
 
 When using ContentType `jpeg` there are child folders created with this name.
 In the example there are 'sub folders' created with names 1000 and 500.
-In ContentType `moveSourceFiles` this is the folder to move the file to.
+In ContentType `moveSourceFiles` this is the folder to move the file to. 
+The only exception is when using it from the WebUI, then move means copy
 
 
 #### Example configuration
