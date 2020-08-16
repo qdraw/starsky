@@ -232,20 +232,32 @@ namespace starsky.feature.webhtmlpublish.Services
                             
 			    if ( profile.MetaData )
 			    {
-				    // Write the metadata to the new created file
-				    var comparedNames = FileIndexCompareHelper.Compare(
-					    new FileIndexItem(), item);
-				    comparedNames.Add(nameof(FileIndexItem.Software));
-				    
-				    new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
-					    _thumbnailStorage, null).Update(item, 
-					    new List<string> {outputPath}, comparedNames);
+				    MetaData(item, outputPath);
 			    }
 		    }
 
 		    return fileIndexItemsList.ToDictionary(item =>
 			    _overlayImage.FilePathOverlayImage(item.FilePath, profile), 
 			    item => profile.Copy);
+	    }
+
+	    private void MetaData(FileIndexItem item, string outputPath)
+	    {
+		    // Write the metadata to the new created file
+		    var comparedNames = FileIndexCompareHelper.Compare(
+			    new FileIndexItem(), item);
+
+		    // Output has already rotated the image
+		    var rotation = nameof(FileIndexItem.Orientation).ToLowerInvariant();
+		    if ( comparedNames.Contains(rotation) )
+		    {
+			    comparedNames.Remove(rotation);
+		    }
+
+		    // Write it back
+		    new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
+			    _thumbnailStorage, null).Update(item, 
+			    new List<string> {outputPath}, comparedNames, false);
 	    }
 
 	    internal async Task<Dictionary<string, bool>> GenerateMoveSourceFiles(

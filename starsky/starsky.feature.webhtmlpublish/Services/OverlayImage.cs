@@ -99,6 +99,8 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
 		    Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 	    {
+		    sourceImage.Mutate(x => x.AutoOrient());
+
 		    sourceImage.Mutate(x => x
 			    .Resize(profile.SourceMaxWidth, 0)
 		    );
