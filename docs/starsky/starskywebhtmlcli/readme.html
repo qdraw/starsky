@@ -57,6 +57,8 @@ The <code>publishProfiles</code> are executed during runtime.</p>
 <li><code>html</code>, uses razor to generate html files</li>
 <li><code>jpeg</code>, resizes images to smaller files</li>
 <li><code>moveSourceFiles</code>, move action to child folder</li>
+<li><code>publishContent</code> move content from <code>WebHtmlPublish/PublishedContent</code> to the output directory</li>
+<li><code>publishManifest</code> include manifest in output folder. Manifest is needed to use <code>starskyWebFtpCli</code></li>
 </ul>
 <h4 id="sourcemaxwidth">SourceMaxWidth</h4>
 <p>The width in pixels of the output image. This is used only for ContentType <code>jpeg</code>.</p>
@@ -80,7 +82,8 @@ This is <strong>not</strong> using <code>AppSettings.BaseDirectoryProject</code>
 <h4 id="folder">Folder</h4>
 <p>When using ContentType <code>jpeg</code> there are child folders created with this name.<br />
 In the example there are 'sub folders' created with names 1000 and 500.<br />
-In ContentType <code>moveSourceFiles</code> this is the folder to move the file to.</p>
+In ContentType <code>moveSourceFiles</code> this is the folder to move the file to. <br />
+The only exception is when using it from the WebUI, then move means copy</p>
 <h4 id="example-configuration">Example configuration</h4>
 <pre><code class="json language-json">{
     "app" :{
