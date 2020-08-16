@@ -34,24 +34,24 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.3.0-beta.1 _(Unreleased)_  2020-08-XX
-- [x]   __(Breaking change)__ Manifest (_settings.json) for exporting 
-- [x]   __(Breaking change)__ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
+- [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting 
+- [x]   __(Breaking change)__ _Back-end_ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
+- [x]   (Added) Add new Publish UI in Web Interface
+- [x]   (Fixed) _Back-end_ change `/api/delete` collections default option
 
 # version 0.3.0-beta.0 - 2020-08-11
-- [x]   (Added) Update meta information for folders
-- [x]   (Added) Write component
-- [x]   (Added) Add read component (sync) [not implemented]
-- [x]   (Added) Move json sidecar file
-- [x]   (Added) Directory sidecar write file
-- [x]   (Fixed) Unknown/GPX files sidecar files
-- [x]   (Fixed) GPX rename file does not work
-- [x]   (Added) FileSize update for add item
-- [x]   (Added) FileSize on add item
-- [x]   (Breaking change) Need to run migrations to add FileSize field (done by starting the mvc application)
-- [x]   (Added) Creating thumbnails from Web Interface (no status)
-- [x]   (Changed) Move options from display options to Synchronize manually in the UI
-- [x]   __(Breaking change)__ Manifest (_settings.json) for exporting 
-- [x]   __(Breaking change)__ AppSettings config for: AppSettingsPublishProfiles __(need manual config changes)__
+- [x]   (Added) _Back-end_ Update meta information for folders
+- [x]   (Added) _Back-end_ Write component
+- [x]   (Added) _Back-end_ Add read component (sync) [not implemented]
+- [x]   (Added) _Back-end_ Move json sidecar file
+- [x]   (Added) _Back-end_ Directory sidecar write file
+- [x]   (Fixed) _Back-end_ Unknown/GPX files sidecar files
+- [x]   (Fixed) _Back-end_ GPX rename file does not work
+- [x]   (Added) _Back-end_ FileSize update for add item
+- [x]   (Added) _Back-end_ FileSize on add item
+- [x]   (Breaking change) _Back-end_ Need to run migrations to add FileSize field (done by starting the mvc application)
+- [x]   (Added) _Back-end_ Creating thumbnails from Web Interface (no status)
+- [x]   (Changed) _Front-end_ Move options from display options to Synchronize manually in the UI
 
 # version 0.2.7 - 2020-07-31
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.5 (using SDK 3.1.301)
