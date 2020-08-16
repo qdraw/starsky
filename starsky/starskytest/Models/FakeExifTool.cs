@@ -11,7 +11,7 @@ using starskycore.Models;
 
 namespace starskytest.Models
 {
-    public class FakeExifTool : IExifTool
+    public class FakeExifTool : IExifTool, IExifToolHostStorage
     {
 	    private AppSettings _appSettings;
 	    private readonly IStorage _iStorage;

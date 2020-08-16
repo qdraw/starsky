@@ -401,7 +401,7 @@ namespace starsky.feature.import.Services
 		    if ( _appSettings.ExifToolImportXmpCreate)
 		    {
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
-				    new ExifTool(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
+				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 

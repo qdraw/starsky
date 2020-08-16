@@ -2,33 +2,30 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
-using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using static Medallion.Shell.Shell;
 
-namespace starsky.foundation.writemeta.Services
+namespace starsky.foundation.writemeta.Helpers
 {
 	/// <summary>
 	/// Only for writing commands 
 	/// Check for mapping objects to exifTool commandline args -> 'ExifToolCmdHelper'
 	/// </summary>
-	[Service(typeof(IExifTool), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ExifTool : IExifTool
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 
-		public ExifTool(ISelectorStorage selectorStorage, AppSettings appSettings)
+		public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings)
 		{
 			_appSettings = appSettings;
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_iStorage = sourceStorage;
+			_thumbnailStorage = thumbnailStorage;
 		}
-		
+
 		/// <summary>
 		/// Write commands to ExifTool for ReadStream (Does NOT work with mono/legacy)
 		/// </summary>

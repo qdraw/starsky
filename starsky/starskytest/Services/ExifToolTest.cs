@@ -25,7 +25,7 @@ namespace starskytest.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings)
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 		
@@ -42,7 +42,7 @@ namespace starskytest.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifTool(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings)
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 	}
