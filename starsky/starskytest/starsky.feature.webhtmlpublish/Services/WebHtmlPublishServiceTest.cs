@@ -160,7 +160,6 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				"test", "test", "/");
 			
 			Assert.IsNotNull(result);
-			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test__fi_kl.jpg"));
 		}
 
 		[TestMethod]
