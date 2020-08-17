@@ -147,9 +147,10 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					}}
 				}
 			};
+			var overlayService = new FakeIOverlayImage(selectorStorage);
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
 					new ConsoleWrapper()), selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new FakeExifTool(storage, appSettings), overlayService,
 				new ConsoleWrapper());
 			
 			var result = await service.RenderCopy(new List<FileIndexItem>
@@ -159,6 +160,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				"test", "test", "/");
 			
 			Assert.IsNotNull(result);
+			Assert.IsTrue(storage.ExistFile("/1000/test__fi_kl.jpg"));
 		}
 
 		[TestMethod]
