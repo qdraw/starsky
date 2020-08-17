@@ -37,6 +37,8 @@ node starsky-tools/build-tools/app-version-update.js
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
 - [x]   (Fixed) _Back-end_ publish with metadata did not work
 - [x]   (Fixed) _Back-end_ Publisher did rotate images when using Exif Orientation
+- [x]   (Fixed) _Back-end_ fix issue where ExifTool executables did not have write access on *nix
+- [x]   (Added) _Back-end_ Download Geo-Data from geonames.org on startup
 
 # version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting 
