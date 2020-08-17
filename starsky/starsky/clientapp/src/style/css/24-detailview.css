@@ -188,3 +188,46 @@
 .detailview .main.main--mp4 {
   background-image: url('../images/baseline-file-mp4-24px.svg');
 }
+
+.gpx-controls {
+  position: absolute;
+  z-index: 1002;
+  bottom: 10px;
+  left: 20px;
+  width: 300px;
+  height: 35px;
+  border-radius: 3px;
+}
+
+.gpx-controls .icon{
+  float: left;
+  height: 35px;
+  background-repeat: no-repeat;
+  background-position: left;
+  padding-left: 25px;
+  padding-right:5px;
+  margin-right: 5px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.gpx-controls .icon.icon--lock {
+  background-image: url('../images/baseline-lock-24px.svg');
+}
+
+.gpx-controls .icon.icon--lock_open {
+  background-image: url('../images/baseline-lock_open-24px.svg');
+}
+
+.gpx-controls .icon.icon--lock,
+.gpx-controls .icon.icon--lock_open {
+  min-width: 78px;
+}
+
+.gpx-controls .icon.icon--zoom_in {
+  background-image: url('../images/baseline-zoom_in-24px.svg');
+}
+
+.gpx-controls .icon.icon--zoom_out {
+  background-image: url('../images/baseline-zoom_out-24px.svg');
+}
