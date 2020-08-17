@@ -99,7 +99,7 @@ namespace starskyGeoCli
 			}
 
 			fileIndexList =
-				new GeoReverseLookup(appSettings).LoopFolderLookup(fileIndexList,
+				new GeoReverseLookup(appSettings, new GeoFileDownload(appSettings)).LoopFolderLookup(fileIndexList,
 					new ArgsHelper().GetAll(args));
 			if ( fileIndexList.Count >= 1 )
 			{
