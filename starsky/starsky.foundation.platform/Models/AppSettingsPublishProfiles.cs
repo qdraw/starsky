@@ -183,5 +183,9 @@ namespace starsky.foundation.platform.Models
         /// Include manifest file _settings.json in Copy list
         /// </summary>
         PublishManifest = 6,
+        /// <summary>
+        /// Only the first image, useful for og:image in template
+        /// </summary>
+        OnlyFirstJpeg = 7,
     }
 }

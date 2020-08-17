@@ -90,6 +90,14 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 						},
 						new AppSettingsPublishProfiles
 						{
+							ContentType = TemplateContentType.OnlyFirstJpeg,
+							SourceMaxWidth = 300,
+							OverlayMaxWidth = 380,
+							Folder =  "1000",
+							Append = "__fi_kl"
+						},
+						new AppSettingsPublishProfiles
+						{
 							ContentType = TemplateContentType.MoveSourceFiles,
 						},
 						new AppSettingsPublishProfiles
