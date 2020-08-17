@@ -156,6 +156,12 @@ namespace starsky.feature.webhtmlpublish.Services
 						    _overlayImage.FilePathOverlayImage("_settings.json", currentProfile)
 						    ,true);
 					    break;
+				    case TemplateContentType.OnlyFirstJpeg:
+					    if ( !fileIndexItemsList.Any() ) break;
+					    var firstInList = new List<FileIndexItem>{fileIndexItemsList.FirstOrDefault()};
+					    copyResult.AddRangeOverride(GenerateJpeg(currentProfile, firstInList, 
+						    outputParentFullFilePathFolder));
+					    break;
 			    }
 		    }
 		    return copyResult;

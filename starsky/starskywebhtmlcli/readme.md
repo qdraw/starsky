@@ -50,6 +50,7 @@ There are options to do predefined tasks
 - `moveSourceFiles`, move action to child folder
 - `publishContent` move content from `WebHtmlPublish/PublishedContent` to the output directory
 - `publishManifest` include manifest in output folder. Manifest is needed to use `starskyWebFtpCli`
+- `onlyFirstJpeg`, resize only the first Image, useful for og:images
 
 #### SourceMaxWidth
 
@@ -150,7 +151,8 @@ The only exception is when using it from the WebUI, then move means copy
                     "Path": "{AssemblyDirectory}/WebHtmlPublish/EmbeddedViews/qdrawsmall.png",
                     "Folder": "500",
                     "Append": "_kl",
-                    "Copy": "true"
+                    "Copy": "true",
+                    "MetaData": "false"
                 },
                 {
                     "ContentType":  "moveSourceFiles",
@@ -166,6 +168,14 @@ The only exception is when using it from the WebUI, then move means copy
                     "ContentType": "publishManifest",
                     "Folder": "",
                     "Copy": "true"
+                },
+                {
+                    "ContentType":  "onlyFirstJpeg",
+                    "SourceMaxWidth":  213,
+                    "Folder": "",
+                    "Append": "___og_image",
+                    "Copy": "true",
+                    "MetaData": "false"
                 }
             ],
             "no_logo_2000px": [
@@ -173,7 +183,7 @@ The only exception is when using it from the WebUI, then move means copy
                     "ContentType":  "jpeg",
                     "SourceMaxWidth":  2000,
                     "OverlayMaxWidth":  0,
-                    "Folder": "2000",
+                    "Folder": "",
                     "Append": "_kl2k",
                     "Copy": "true"
                 }
