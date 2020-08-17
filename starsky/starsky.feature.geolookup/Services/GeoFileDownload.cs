@@ -1,11 +1,14 @@
 using System.IO;
 using NGeoNames;
+using starsky.feature.geolookup.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.feature.geolookup.Helpers
+namespace starsky.feature.geolookup.Services
 {
-	public class GeoFileDownload
+	[Service(typeof(IGeoFileDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class GeoFileDownload : IGeoFileDownload
 	{
 		private readonly AppSettings _appSettings;
 		
@@ -23,15 +26,18 @@ namespace starsky.feature.geolookup.Helpers
 
 			RemoveFailedDownload();
 	        
-			if(!new StorageHostFullPathFilesystem().ExistFile(Path.Combine(_appSettings.TempFolder,CountryName + ".txt")) )
+			if(!new StorageHostFullPathFilesystem().ExistFile(
+				Path.Combine(_appSettings.TempFolder,CountryName + ".txt")) )
 			{
 				downloader.DownloadFile(CountryName + ".zip", _appSettings.TempFolder);    
 				// Zip file will be automatically extracted
 			}
 
-			if(!new StorageHostFullPathFilesystem().ExistFile(Path.Combine(_appSettings.TempFolder,"admin1CodesASCII.txt")))
+			if(!new StorageHostFullPathFilesystem().ExistFile(
+				Path.Combine(_appSettings.TempFolder,"admin1CodesASCII.txt")))
 			{
-				// code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80)
+				// code for the second administrative division,
+				// a county in the US, see file admin2Codes.txt; varchar(80)
 				downloader.DownloadFile("admin1CodesASCII.txt", _appSettings.TempFolder);
 			}
 		}

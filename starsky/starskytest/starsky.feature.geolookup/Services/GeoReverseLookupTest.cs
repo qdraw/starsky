@@ -4,13 +4,12 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
-using starskycore.Helpers;
-using starskycore.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
-namespace starskytest.starskyGeoCore.Services
+namespace starskytest.starsky.feature.geolookup.Services
 {
     [TestClass]
     public class GeoReverseLookupTest
@@ -50,7 +49,6 @@ namespace starskytest.starskyGeoCore.Services
 
 			new PlainTextFileHelper().WriteFile(Path.Combine(_appSettings.TempFolder, "admin1CodesASCII.txt"), admin1CodesASCII);
 
-
 		}
 
 		[TestMethod]
@@ -80,7 +78,7 @@ namespace starskytest.starskyGeoCore.Services
 
 	        Console.WriteLine(NGeoNames.GeoFileDownloader.DEFAULTGEOFILEBASEURI);
 		        
-            new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos,false);
+            new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload()).LoopFolderLookup(folderOfPhotos,false);
 
             Assert.AreEqual("Argentina", buenosAires.LocationCountry);
             Assert.AreEqual(string.Empty, northSea.LocationCountry);
@@ -101,7 +99,7 @@ namespace starskytest.starskyGeoCore.Services
 	        };
 	        var folderOfPhotos = new List<FileIndexItem> {vaticanCity};
 
-	        new GeoReverseLookup(_appSettings).LoopFolderLookup(folderOfPhotos,false);
+	        new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload()).LoopFolderLookup(folderOfPhotos,false);
 	        Assert.AreEqual("Vatican City", vaticanCity.LocationCity);
         }
 
@@ -113,7 +111,8 @@ namespace starskytest.starskyGeoCore.Services
 			    new FileIndexItem(),
 			    new FileIndexItem{ Latitude = 50, Longitude = 50}
 		    };
-		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,true);
+		    var result = new GeoReverseLookup(_appSettings, new FakeIGeoFileDownload())
+			    .RemoveNoUpdateItems(list,true);
 		    Assert.AreEqual(1, result.Count);
 	    }
 
@@ -127,7 +126,8 @@ namespace starskytest.starskyGeoCore.Services
 		    };
 		    
 		    // ignore city
-		    var result = new GeoReverseLookup(_appSettings).RemoveNoUpdateItems(list,false);
+		    var result = new GeoReverseLookup(_appSettings, 
+			    new FakeIGeoFileDownload()).RemoveNoUpdateItems(list,false);
 		    Assert.AreEqual(0, result.Count);
 
 	    }

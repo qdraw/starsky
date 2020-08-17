@@ -117,7 +117,7 @@ namespace starsky.Controllers
 				}
 
 				fileIndexList =
-					new GeoReverseLookup(_appSettings,_cache)
+					new GeoReverseLookup(_appSettings, new GeoFileDownload(_appSettings), _cache)
 						.LoopFolderLookup(fileIndexList, overwriteLocationNames);
 				
 				if ( fileIndexList.Count >= 1 )

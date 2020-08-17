@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
-using starsky.feature.geolookup.Helpers;
+using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -26,11 +26,12 @@ namespace starsky.feature.geolookup.Services
         /// Getting GeoData
         /// </summary>
         /// <param name="appSettings">to know where to store the temp files</param>
+        /// <param name="geoFileDownload">Abstraction to download Geo Data</param>
         /// <param name="memoryCache">for keeping status</param>
-        public GeoReverseLookup(AppSettings appSettings, IMemoryCache memoryCache = null)
+        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null)
         {
 	        // Needed when not having this, application will fail
-			new GeoFileDownload(appSettings).Download();
+	        geoFileDownload.Download();
 	        
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
