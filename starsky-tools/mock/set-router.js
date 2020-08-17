@@ -161,6 +161,18 @@ function setRouter(app) {
     return res.send("");
   });
 
+
+  app.get(prefix + '/api/downloadPhoto', (req, res) => {
+
+    if (req.query.f == "/test.gpx") {
+      const file = `${__dirname}/api/downloadPhoto/test.gpx`;
+      return res.download(file); // Set disposition and send it.
+    }
+
+    res.statusCode = 404;
+    return res.send("not found");
+  });
+
   app.get(prefix + '/api/publish', (req, res) => {
     return res.json(apiPublishIndex)
   });
