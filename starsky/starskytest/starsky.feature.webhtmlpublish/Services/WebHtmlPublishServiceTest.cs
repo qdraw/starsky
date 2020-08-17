@@ -141,7 +141,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 							ContentType = TemplateContentType.OnlyFirstJpeg,
 							SourceMaxWidth = 300,
 							OverlayMaxWidth = 380,
-							Folder =  "1000",
+							Folder =  "",
 							Append = "__fi_kl"
 						}
 					}}
@@ -160,7 +160,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				"test", "test", "/");
 			
 			Assert.IsNotNull(result);
-			Assert.IsTrue(storage.ExistFile("/1000/test__fi_kl.jpg"));
+			Assert.IsTrue(storage.ExistFile("/test__fi_kl.jpg"));
 		}
 
 		[TestMethod]
