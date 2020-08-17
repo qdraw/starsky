@@ -116,7 +116,7 @@ const DetailViewGpx: React.FC = () => {
 
   function disableLock() {
     if (!mapState) return;
-    mapState.dragging.disable();
+    mapState.dragging.enable();
     setIsMapLocked(false)
   }
 
