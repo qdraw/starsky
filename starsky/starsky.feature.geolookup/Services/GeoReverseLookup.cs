@@ -12,7 +12,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
-using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.geolookup.Services
 {
@@ -43,11 +42,11 @@ namespace starsky.feature.geolookup.Services
             _cache = memoryCache;
         }
 
-        private string GetAdmin1Name(string countryCode, string[] admincodes)
+        private string GetAdmin1Name(string countryCode, string[] adminCodes)
         {
-            if (admincodes.Length != 4) return null;
+            if (adminCodes.Length != 4) return null;
 
-            var admin1Code = countryCode + "." + admincodes[0];
+            var admin1Code = countryCode + "." + adminCodes[0];
             
             var admin2Object = _admin1CodesAscii.FirstOrDefault(p => p.Code == admin1Code);
             return admin2Object?.NameASCII;
