@@ -193,7 +193,7 @@
   position: absolute;
   z-index: 1002;
   bottom: 10px;
-  left: 20px;
+  left: 10px;
   width: 300px;
   height: 35px;
   border-radius: 3px;
@@ -201,11 +201,11 @@
 
 .gpx-controls .icon{
   float: left;
-  height: 35px;
+  height: 40px;
   background-repeat: no-repeat;
-  background-position: left;
-  padding-left: 25px;
-  padding-right:5px;
+  background-position: 5px;
+  padding-left: 33px;
+  padding-right: 7px;
   margin-right: 5px;
   background-color: #fff;
   cursor: pointer;
@@ -221,7 +221,7 @@
 
 .gpx-controls .icon.icon--lock,
 .gpx-controls .icon.icon--lock_open {
-  min-width: 78px;
+  min-width: 86px;
 }
 
 .gpx-controls .icon.icon--zoom_in {
@@ -230,4 +230,13 @@
 
 .gpx-controls .icon.icon--zoom_out {
   background-image: url('../images/baseline-zoom_out-24px.svg');
+}
+
+.gpx-controls .icon.icon--zoom_in,
+.gpx-controls .icon.icon--zoom_out {
+  text-indent: -999px;
+  padding-left: 40px;
+  background-position: 12px;
+  max-width: 40px;
+
 }
