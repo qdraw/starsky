@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
+using starsky.feature.geolookup.Helpers;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -21,9 +22,6 @@ namespace starsky.feature.geolookup.Services
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
         private readonly IMemoryCache _cache;
 
-        private const string CountryName = "cities1000";
-        private const long MinimumSizeInBytes = 7000000; // 7 MB
-
         /// <summary>
         /// Getting GeoData
         /// </summary>
@@ -31,49 +29,17 @@ namespace starsky.feature.geolookup.Services
         /// <param name="memoryCache">for keeping status</param>
         public GeoReverseLookup(AppSettings appSettings, IMemoryCache memoryCache = null)
         {
-	        var downloader = GeoFileDownloader.CreateGeoFileDownloader();
-
-	        RemoveFailedDownload(appSettings);
-	        
-	        if(!new StorageHostFullPathFilesystem().ExistFile(Path.Combine(appSettings.TempFolder,CountryName + ".txt")) )
-	        {
-		        downloader.DownloadFile(CountryName + ".zip", appSettings.TempFolder);    
-		        // Zipfile will be automatically extracted
-	        }
-
-	        if(!new StorageHostFullPathFilesystem().ExistFile(Path.Combine(appSettings.TempFolder,"admin1CodesASCII.txt")))
-	        {
-	            // code for the second administrative division, a county in the US, see file admin2Codes.txt; varchar(80)
-	            downloader.DownloadFile("admin1CodesASCII.txt", appSettings.TempFolder);
-	        }
+	        // Needed when not having this, application will fail
+			new GeoFileDownload(appSettings).Download();
 	        
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
             
             // Create our ReverseGeoCode class and supply it with data
             _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-                GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder, CountryName + ".txt"))
+                GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt"))
             );
-            
             _cache = memoryCache;
-        }
-
-        /// <summary>
-        /// Check if the .zip file exist and if its larger then MinimumSizeInBytes
-        /// </summary>
-        /// <param name="appSettings">to find temp folder</param>
-        private void RemoveFailedDownload(AppSettings appSettings)
-        {
-	        if ( !new StorageHostFullPathFilesystem().ExistFile(Path.Combine(appSettings.TempFolder,
-		        CountryName + ".zip")) ) return;
-	        
-	        // When trying to download a file
-	        var zipLength = new StorageHostFullPathFilesystem()
-		        .ReadStream(Path.Combine(appSettings.TempFolder, CountryName + ".zip"))
-		        .Length;
-	        if ( zipLength > MinimumSizeInBytes ) return;
-	        new StorageHostFullPathFilesystem().FileDelete(Path.Combine(appSettings.TempFolder,
-		        CountryName + ".zip"));
         }
 
         private string GetAdmin1Name(string countryCode, string[] admincodes)

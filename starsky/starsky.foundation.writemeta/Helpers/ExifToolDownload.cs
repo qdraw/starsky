@@ -43,6 +43,12 @@ namespace starsky.foundation.writemeta.Helpers
 			{
 				return await StartDownloadForUnix();
 			}
+			
+			// When running deploy scripts rights will reset
+			if ( !isWindows )
+			{
+				return await RunChmodOnExifToolUnixExe();
+			}
 
 			return true;
 		}
@@ -97,11 +103,14 @@ namespace starsky.foundation.writemeta.Helpers
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
 
+			return await RunChmodOnExifToolUnixExe();
+		}
+
+		private async Task<bool> RunChmodOnExifToolUnixExe()
+		{
 			// need to check again
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
-
 			if ( _appSettings.IsWindows ) return true;
-			
 			var result = await Command.Run("chmod","0755", $"{ExeExifToolUnixFullFilePath()}").Task;
 			if ( result.Success ) return true;
 			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
