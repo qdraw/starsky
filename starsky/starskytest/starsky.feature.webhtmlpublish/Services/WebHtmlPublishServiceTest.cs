@@ -123,6 +123,45 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 
 		[TestMethod]
+		public async Task RenderCopy_OnlyFirstJpeg_ShouldNotCrash()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{CreateAnImage.Bytes});
+			
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{"test", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
+						{
+							ContentType = TemplateContentType.OnlyFirstJpeg,
+							SourceMaxWidth = 300,
+							OverlayMaxWidth = 380,
+							Folder =  "1000",
+							Append = "__fi_kl"
+						}
+					}}
+				}
+			};
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
+					new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper());
+			
+			var result = await service.RenderCopy(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg")
+				}, 
+				"test", "test", "/");
+			
+			Assert.IsNotNull(result);
+		}
+
+		[TestMethod]
 		public void AddFileHashIfNotExist_Test()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
