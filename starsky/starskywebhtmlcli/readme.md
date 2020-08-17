@@ -50,6 +50,7 @@ There are options to do predefined tasks
 - `moveSourceFiles`, move action to child folder
 - `publishContent` move content from `WebHtmlPublish/PublishedContent` to the output directory
 - `publishManifest` include manifest in output folder. Manifest is needed to use `starskyWebFtpCli`
+- `onlyFirstJpeg`, resize only the first Image, useful for og:images
 
 #### SourceMaxWidth
 
