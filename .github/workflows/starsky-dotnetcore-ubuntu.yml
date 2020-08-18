@@ -32,9 +32,3 @@ jobs:
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=TestNetCore
-    - uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}  
-        file: ./starsky/starskytest/netcore-coverage.opencover.xml
-        flags: netcore # flags must match pattern ^[\w\,]+$
-        name: codecov # optional
