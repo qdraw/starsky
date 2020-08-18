@@ -44,3 +44,15 @@ jobs:
         with:
           name: starsky-generic-netcore
           path: ./starsky/starsky-generic-netcore.zip
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  
+          file: ./starsky/starskytest/netcore-coverage.opencover.xml
+          flags: all # flags must match pattern ^[\w\,]+$
+          name: codecov # optional
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  
+          file: ./starsky/starskytest/coverage-merge-cobertura.xml
+          flags: all # flags must match pattern ^[\w\,]+$
+          name: codecov # optional
