@@ -7,11 +7,11 @@ on:
   push:
     branches: [ master ]
     paths:
-    - 'starsky/starsky-tools/mock**'
+    - 'starsky-tools/mock**'
   pull_request:
     branches: [ master ]
     paths:
-    - 'starsky/starsky-tools/mock**'
+    - 'starsky-tools/mock**'
     - '.github/workflows/**'
 
 jobs:
@@ -30,8 +30,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: NpmCi
-      working-directory: ./starsky/starsky-tools/mock
+      working-directory: ./starsky-tools/mock
       run: npm ci
     - name: NpmBuild
-      working-directory: ./starsky/starsky-tools/mock
+      working-directory: ./starsky-tools/mock
       run: node set-router.js
