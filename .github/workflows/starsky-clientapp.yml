@@ -38,10 +38,3 @@ jobs:
     - name: NpmTest
       working-directory: ./starsky/starsky/clientapp
       run: npm run test:ci
-    - uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}  
-        timeout-minutes: 10 
-        file: ./starsky/starsky/clientapp/coverage/coverage-final.json
-        flags: clientapp # flags must match pattern ^[\w\,]+$
-        name: codecov # optional
