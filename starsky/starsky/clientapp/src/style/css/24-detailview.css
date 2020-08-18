@@ -199,6 +199,7 @@
   border-radius: 3px;
 }
 
+.current-location.icon,
 .gpx-controls .icon{
   float: left;
   height: 40px;
@@ -238,5 +239,14 @@
   padding-left: 40px;
   background-position: 12px;
   max-width: 40px;
-
 }
+
+
+.current-location.icon.icon--location_on {
+  background-image: url('../images/baseline-location_on-24px.svg');
+}
+
+.current-location.icon.icon--wrong_location {
+  background-image: url('../images/baseline-wrong_location-24px.svg');
+}
+

@@ -10,6 +10,7 @@ import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import MarkerBlueSvg from '../../../style/images/fa-map-marker-blue.svg';
 import MarkerShadowPng from '../../../style/images/marker-shadow.png';
+import CurrentLocationButton from '../../atoms/current-location-button/current-location-button';
 import Preloader from '../../atoms/preloader/preloader';
 
 const DetailViewGpx: React.FC = () => {
@@ -75,7 +76,7 @@ const DetailViewGpx: React.FC = () => {
     var firstTrack = tracks[0];
     var lastTrack = tracks[tracks.length - 1];
 
-    L.marker(tracks[0], { icon: blueIcon }).addTo(map);
+    L.marker(tracks[0], { title: 'gpx', icon: blueIcon }).addTo(map);
 
     if (new Geo().Distance(firstTrack, lastTrack) >= 500) {
       L.marker(lastTrack, { icon: blueIcon }).addTo(map);
@@ -132,6 +133,12 @@ const DetailViewGpx: React.FC = () => {
     disableLock();
   }
 
+  function changeLocation(coords: Coordinates) {
+    if (!mapState) return;
+    mapState.setView(new L.LatLng(coords.latitude, coords.longitude), 15, { animate: true });
+    disableLock();
+  }
+
   return (
     <>
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
@@ -143,6 +150,7 @@ const DetailViewGpx: React.FC = () => {
           onClick={zoomIn}>Zoom in</button>
         <button data-test="zoom_out" className="icon icon--zoom_out"
           onClick={zoomOut}>Zoom out</button>
+        <CurrentLocationButton callback={changeLocation}></CurrentLocationButton>
       </div>
     </>
   );

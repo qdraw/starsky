@@ -1,0 +1,125 @@
+
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:gpxtpx="http://www8.garmin.com/xmlschemas/TrackPointExtensionv2.xsd" xmlns:trailsio="http://trails.io/GPX/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1" creator="Adze - http://kobotsw.com/apps/adze" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://trails.io/GPX/1/0 https://trails.io/GPX/1/0/trails_1.0.xsd">
+    <metadata>
+        <name>Untitled Document</name>
+        <time>2018-09-11T19:41:10.482Z</time>
+    </metadata>
+    <trk>
+        <name>Test</name>
+        <extensions>
+            <trailsio:TrackExtension>
+                <trailsio:activity>biking</trailsio:activity>
+            </trailsio:TrackExtension>
+            <gpxx:TrackExtension>
+                <gpxx:DisplayColor>DarkRed</gpxx:DisplayColor>
+            </gpxx:TrackExtension>
+        </extensions>
+        <trkseg>
+            <trkpt lon="5.485941" lat="51.809360">
+                <ele>7.263000</ele>
+                <time>2018-09-05T17:31:53Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>5.49</gpxtpx:speed>
+                        <gpxtpx:course>189.49</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>4.00</trailsio:vacc>
+                        <trailsio:steps>5511</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.485724" lat="51.807968">
+                <ele>7.772000</ele>
+                <time>2018-09-05T17:32:21Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>4.59</gpxtpx:speed>
+                        <gpxtpx:course>185.62</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>4.00</trailsio:vacc>
+                        <trailsio:steps>5552</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.485631" lat="51.807019">
+                <ele>9.957000</ele>
+                <time>2018-09-05T17:32:43Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>4.63</gpxtpx:speed>
+                        <gpxtpx:course>180.70</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>3.00</trailsio:vacc>
+                        <trailsio:steps>5556</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.485610" lat="51.806702">
+                <ele>10.808000</ele>
+                <time>2018-09-05T17:32:50Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>5.64</gpxtpx:speed>
+                        <gpxtpx:course>186.33</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>3.00</trailsio:vacc>
+                        <trailsio:steps>5566</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.485633" lat="51.805663">
+                <ele>10.866000</ele>
+                <time>2018-09-05T17:33:11Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>5.58</gpxtpx:speed>
+                        <gpxtpx:course>169.10</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>3.00</trailsio:vacc>
+                        <trailsio:steps>5607</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.485738" lat="51.805500">
+                <ele>9.242000</ele>
+                <time>2018-09-05T17:33:15Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>5.66</gpxtpx:speed>
+                        <gpxtpx:course>151.88</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>3.00</trailsio:vacc>
+                        <trailsio:steps>5612</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+            <trkpt lon="5.486056" lat="51.805115">
+                <ele>9.122000</ele>
+                <time>2018-09-05T17:33:24Z</time>
+                <extensions>
+                    <gpxtpx:TrackPointExtension>
+                        <gpxtpx:speed>4.76</gpxtpx:speed>
+                        <gpxtpx:course>154.34</gpxtpx:course>
+                    </gpxtpx:TrackPointExtension>
+                    <trailsio:TrackPointExtension>
+                        <trailsio:hacc>5.00</trailsio:hacc>
+                        <trailsio:vacc>3.00</trailsio:vacc>
+                        <trailsio:steps>5621</trailsio:steps>
+                    </trailsio:TrackPointExtension>
+                </extensions>
+            </trkpt>
+        </trkseg>
+    </trk>
+</gpx>
