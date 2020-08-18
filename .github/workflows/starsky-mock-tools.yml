@@ -1,0 +1,37 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Starsky Mock Tools (smoke test)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/mock**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky-tools/mock**'
+    - '.github/workflows/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: NpmCi
+      working-directory: ./starsky-tools/mock
+      run: npm ci
+    - name: Node Run SetRouter
+      working-directory: ./starsky-tools/mock
+      run: node set-router.js
