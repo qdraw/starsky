@@ -10,6 +10,7 @@ import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import MarkerBlueSvg from '../../../style/images/fa-map-marker-blue.svg';
 import MarkerShadowPng from '../../../style/images/marker-shadow.png';
+import CurrentLocationButton from '../../atoms/current-location-button/current-location-button';
 import Preloader from '../../atoms/preloader/preloader';
 
 const DetailViewGpx: React.FC = () => {
@@ -17,6 +18,9 @@ const DetailViewGpx: React.FC = () => {
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
+
+  const [mapState, setMapState] = useState<L.Map>();
+  const [isMapLocked, setIsMapLocked] = useState(true);
 
   function updateMap(response: IConnectionDefault) {
     if (!response.data) return;
@@ -40,7 +44,7 @@ const DetailViewGpx: React.FC = () => {
     if (!tracks || tracks.length <= 2) return;
 
     // create map
-    var map = L.map(mapReference.current, {
+    const map = L.map(mapReference.current, {
       layers: [
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution:
@@ -72,13 +76,14 @@ const DetailViewGpx: React.FC = () => {
     var firstTrack = tracks[0];
     var lastTrack = tracks[tracks.length - 1];
 
-    L.marker(tracks[0], { icon: blueIcon }).addTo(map);
+    L.marker(tracks[0], { title: 'gpx', icon: blueIcon }).addTo(map);
 
     if (new Geo().Distance(firstTrack, lastTrack) >= 500) {
       L.marker(lastTrack, { icon: blueIcon }).addTo(map);
     }
 
     L.polyline(tracks, { color: '#455A64', fill: false }).addTo(map);
+    setMapState(map)
   }
 
   // Due a strict CSP policy the following line is not allowed ==> 
@@ -104,10 +109,49 @@ const DetailViewGpx: React.FC = () => {
     })
   }, [filePathEncoded]);
 
+  function unLockLockToggle() {
+    if (!mapState) return;
+    isMapLocked ? mapState.dragging.enable() : mapState.dragging.disable();
+    setIsMapLocked(!isMapLocked)
+  }
+
+  function disableLock() {
+    if (!mapState) return;
+    mapState.dragging.enable();
+    setIsMapLocked(false)
+  }
+
+  function zoomIn() {
+    if (!mapState) return;
+    mapState.zoomIn();
+    disableLock();
+  }
+
+  function zoomOut() {
+    if (!mapState) return;
+    mapState.zoomOut();
+    disableLock();
+  }
+
+  function changeLocation(coords: Coordinates) {
+    if (!mapState) return;
+    mapState.setView(new L.LatLng(coords.latitude, coords.longitude), 15, { animate: true });
+    disableLock();
+  }
+
   return (
     <>
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
       <div className={"main main--error main--gpx"} ref={mapReference} />
+      <div className="gpx-controls">
+        <button data-test="lock" className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
+          onClick={unLockLockToggle}>{isMapLocked ? "Unlock" : "Lock"}</button>
+        <button data-test="zoom_in" className="icon icon--zoom_in"
+          onClick={zoomIn}>Zoom in</button>
+        <button data-test="zoom_out" className="icon icon--zoom_out"
+          onClick={zoomOut}>Zoom out</button>
+        <CurrentLocationButton callback={changeLocation}></CurrentLocationButton>
+      </div>
     </>
   );
 };
