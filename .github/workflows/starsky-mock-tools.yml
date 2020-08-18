@@ -32,6 +32,6 @@ jobs:
     - name: NpmCi
       working-directory: ./starsky-tools/mock
       run: npm ci
-    - name: NpmBuild
+    - name: Node Run SetRouter
       working-directory: ./starsky-tools/mock
       run: node set-router.js
