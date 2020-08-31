@@ -43,7 +43,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Added) _Front-end_  Gpx view, Add ZoomIn/ZoomOut (only in GPX mode)
 - [x]   (Added) _Front-end_  Gpx View, unlock button (you change the map location now)
 - [x]   (Added) _Front-end_  Gpx view, go to current location (no marker, only change view)
-- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.3 2020-03-21)_
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.3 2020-08-12)_
 
 # version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting
