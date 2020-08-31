@@ -146,7 +146,6 @@ npm install --save enzyme
 npm install --save @types/enzyme
 npm install --save enzyme-adapter-react-16
 npm install --save-dev @storybook/react
-npm install --save-dev @storybook/preset-create-react-app
 ```
 
 #### Update the name of the project
