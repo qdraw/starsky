@@ -80,7 +80,6 @@
     ]
   },
   "devDependencies": {
-    "@storybook/preset-create-react-app": "^3.1.4",
     "@storybook/react": "^6.0.21"
   }
 }
