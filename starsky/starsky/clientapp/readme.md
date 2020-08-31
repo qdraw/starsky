@@ -173,7 +173,7 @@ This is added to the `package.json`
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20200831 3.4.3 (2020-03-21)'"
+"upgrade": "echo 'check readme.md 20200831 3.4.3 (2020-08-12)'"
 ```
 
 ### collectCoverageFrom and coverageReporters
