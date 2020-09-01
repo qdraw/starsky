@@ -1,8 +1,10 @@
 import React from 'react';
 import useGlobalSettings from '../../../hooks/use-global-settings';
+import useLocation from '../../../hooks/use-location';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { isValidDate, leftPad, parseDate, parseDateDate, parseDateMonth, parseDateYear, parseTime, parseTimeHour } from '../../../shared/date';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
@@ -16,6 +18,7 @@ interface IModalDatetimeProps {
 }
 
 const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
+  var history = useLocation();
 
   // content
   const settings = useGlobalSettings();
@@ -52,6 +55,7 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(result => {
       if (result.statusCode !== 200) return;
+      ClearFileListCache(history.location.search);
       props.handleExit(result.data);
     });
   }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
-import { DifferenceInDate } from '../shared/date';
+import { GetCachedData } from '../shared/filelist-cache';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -26,39 +26,6 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState('/');
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
-  const cacheName = `starsky`;
-
-  // Get data from the cache.
-  async function getCachedData(cacheLocalName: string, url: string): Promise<any | false> {
-
-    // not supported in your browser
-    if (!('caches' in window)) {
-      return false;
-    }
-
-    let cacheStorage: Cache;
-    try {
-      // not allowed witin the http context
-      cacheStorage = await caches.open(cacheLocalName)
-    } catch (error) {
-      return false;
-    }
-
-    const cachedResponse = await cacheStorage.match(url);
-
-    if (!cachedResponse || !cachedResponse.ok || !checkIfOld(cachedResponse)) {
-      return false;
-    }
-    return await cachedResponse.json();
-  }
-
-  const checkIfOld = (cachedResponse: Response) => {
-    var date = cachedResponse.headers.get('date');
-    if (!date) return false;
-    var diff = DifferenceInDate(new Date(date).valueOf());
-    var diffResult = diff < 2; // 2 minutes
-    return diffResult;
-  }
 
   const fetchContent = async (location: string, abortController: AbortController): Promise<void> => {
 
@@ -66,7 +33,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
       // force start with a loading icon 
       if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
 
-      let cachedData = await getCachedData(cacheName, location);
+      let cachedData = await GetCachedData(location);
       if (cachedData) {
         console.log('Retrieved cached data', cachedData);
         setPageTypeHelper(cachedData);
@@ -96,7 +63,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
       setPageTypeHelper(responseObject);
 
       // add it to the cache
-      const cacheStorage = await caches.open(cacheName);
+      const cacheStorage = await caches.open('starsky');
       await cacheStorage.put(location, new Response(JSON.stringify(responseObject), response));
 
     } catch (e) {

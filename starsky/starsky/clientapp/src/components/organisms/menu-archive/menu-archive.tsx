@@ -5,6 +5,7 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { Select } from '../../../shared/select';
 import { Sidebar } from '../../../shared/sidebar';
@@ -96,8 +97,10 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
       return;
     }
+
+    ClearFileListCache(history.location.search);
     undoSelection();
-    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList })
+    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList });
   }
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);

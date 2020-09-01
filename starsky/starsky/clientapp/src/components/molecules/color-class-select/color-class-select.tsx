@@ -77,7 +77,6 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
         setIsError(MessageErrorReadOnly);
         return;
       }
-
       setCurrentColorClass(colorClass);
       props.onToggle(colorClass);
     });

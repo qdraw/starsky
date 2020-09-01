@@ -13,6 +13,7 @@ import { CastToInterface } from '../../../shared/cast-to-interface';
 import { IsEditedNow } from '../../../shared/date';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -150,6 +151,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       setIsLoading(false);
     }
     clearSearchCache();
+    ClearFileListCache(history.location.search);
   }
 
   function clearSearchCache() {
@@ -163,6 +165,7 @@ const MenuDetailView: React.FunctionComponent = () => {
    * Checks if the hash is changes and update Context:  orientation + fileHash
    */
   async function requestNewFileHash(): Promise<boolean | null> {
+    ClearFileListCache(history.location.search)
     var resultGet = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }));
     if (resultGet.statusCode !== 200) {
       console.error(resultGet);
@@ -195,6 +198,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       return;
     }
 
+    // clean cache in requestNewFileHash
     // there is an async backend event triggered, sometimes there is an que
     setTimeout(async () => {
       var result = await requestNewFileHash();

@@ -11,6 +11,7 @@ import AspectRatio from '../../../shared/aspect-ratio';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../../../shared/date';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -132,6 +133,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       setFileIndexItem(currentItem);
       dispatch({ 'type': 'update', ...currentItem });
 
+      ClearFileListCache(history.location.search);
       // clear search cache
       var searchTag = new URLPath().StringToIUrl(history.location.search).t;
       if (!searchTag) return;
@@ -206,7 +208,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
         onToggle={() => {
           setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
-          dispatch({ 'type': 'update', lastEdited: '' })
+          dispatch({ 'type': 'update', lastEdited: '' });
+          ClearFileListCache(history.location.search);
         }}
         filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass}

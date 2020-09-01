@@ -7,6 +7,7 @@ import { IArchiveProps } from '../../../interfaces/IArchiveProps';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
@@ -58,7 +59,8 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then((_) => {
       setTimeout(() => {
-        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
+        ClearFileListCache(history.location.search);
+        FetchGet(new UrlQuery().UrlQueryServerApi(history.location.search)).then((connectionResult) => {
           var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
@@ -105,7 +107,8 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     setIsLoading(true);
     FetchGet(new UrlQuery().UrlSync(new URLPath().encodeURI(parentFolder))).then((_) => {
       setTimeout(() => {
-        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
+        ClearFileListCache(history.location.search);
+        FetchGet(new UrlQuery().UrlQueryServerApi(history.location.search)).then((connectionResult) => {
           var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
