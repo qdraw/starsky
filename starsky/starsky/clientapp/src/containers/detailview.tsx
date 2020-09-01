@@ -8,7 +8,7 @@ import MenuDetailView from '../components/organisms/menu-detail-view/menu-detail
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
-import { IDetailView, newDetailView, newIRelativeObjects } from '../interfaces/IDetailView';
+import { IDetailView, newDetailView } from '../interfaces/IDetailView';
 import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import DocumentTitle from '../shared/document-title';
@@ -25,7 +25,7 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // if there is no state
   if (!state) {
-    state = { relativeObjects: newIRelativeObjects(), fileIndexItem: { fileHash: '' }, ...newDetailView() };
+    state = { ...newDetailView() };
   }
 
   // next + prev state

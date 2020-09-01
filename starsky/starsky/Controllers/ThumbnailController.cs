@@ -30,7 +30,7 @@ namespace starsky.Controllers
         /// <param name="f">one single file</param>
         /// <param name="isSingleitem">true = load orginal</param>
         /// <param name="json">text as output</param>
-        /// <returns>thumbnail or status</returns>
+        /// <returns>thumbnail or status IActionResult Thumbnail</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
         /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
