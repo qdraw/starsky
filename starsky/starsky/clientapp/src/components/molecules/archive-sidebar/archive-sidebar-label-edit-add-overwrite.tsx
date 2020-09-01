@@ -7,6 +7,7 @@ import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../../../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchPost from '../../../shared/fetch-post';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { SidebarUpdate } from '../../../shared/sidebar-update';
 import { URLPath } from '../../../shared/url-path';
@@ -95,6 +96,8 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       // loading + update button
       setIsLoading(false);
       setInputEnabled(true);
+
+      ClearFileListCache(history.location.search);
 
       // clear search cache * when you refresh the search page this is needed to display the correct labels
       var searchTag = new URLPath().StringToIUrl(history.location.search).t;

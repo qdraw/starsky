@@ -3,6 +3,7 @@ import { ArchiveContext } from '../../../contexts/archive-context';
 import useLocation from '../../../hooks/use-location';
 import { PageType } from '../../../interfaces/IDetailView';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
+import { ClearFileListCache } from '../../../shared/filelist-cache';
 import { URLPath } from '../../../shared/url-path';
 import ColorClassSelect from '../color-class-select/color-class-select';
 
@@ -38,6 +39,7 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
     collections={props.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false) : false}
     onToggle={(colorclass) => {
       dispatch({ type: 'update', colorclass, select });
+      ClearFileListCache(history.location.search);
     }}
     filePath={selectParams} isEnabled={!props.isReadOnly && select.length !== 0} clearAfter={true} />)
 });
