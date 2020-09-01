@@ -38,7 +38,7 @@ namespace starsky.Controllers
 	    /// <param name="collections">StackCollections bool, default true</param>
 	    /// <param name="append">only for stings, add update to existing items</param>
 	    /// <param name="rotateClock">relative orientation -1 or 1</param>
-	    /// <returns>update json</returns>
+	    /// <returns>update json (IActionResult Update)</returns>
 	    /// <response code="200">the item including the updated content</response>
 	    /// <response code="404">item not found in the database or on disk</response>
 	    /// <response code="401">User unauthorized</response>
