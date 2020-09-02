@@ -32,7 +32,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
-# version 0.3.0 _(Unreleased)_  2020-09-??
+
+# version 0.3.1 _(Unreleased)_  2020-09-??
+Nothing yet
 
 # version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
