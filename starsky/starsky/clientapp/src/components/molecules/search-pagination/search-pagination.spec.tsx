@@ -29,4 +29,25 @@ describe("SearchPagination", () => {
     expect(component.find('a.prev').props().href).toBe('/?p=0')
   });
 
+  it("prev page exist + remove select param", () => {
+    act(() => {
+      // to use with: => import { act } from 'react-dom/test-utils';
+      globalHistory.navigate("/?p=1&select=test");
+    });
+
+    var component = mount(<SearchPagination lastPageNumber={2} />);
+
+    expect(component.find('a.prev').props().href).toBe('/?p=0&select=')
+  });
+
+  it("next page exist + remove select param", () => {
+    act(() => {
+      // to use with: => import { act } from 'react-dom/test-utils';
+      globalHistory.navigate("/?p=0&select=test");
+    });
+
+    var component = mount(<SearchPagination lastPageNumber={2} />)
+    expect(component.find('a.next').props().href).toBe('/?p=1&select=')
+  });
+
 });

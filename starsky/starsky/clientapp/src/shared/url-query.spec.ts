@@ -131,7 +131,12 @@ describe("url-query", () => {
       var test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1", "test1");
       expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1")
     });
-  });
 
+    it("keep search query and remove select", () => {
+      var test = urlQuery.updateFilePathHash("?f=test&colorclass=1&t=1&select=t5", "test1", false, true);
+      expect(test).toStrictEqual("/?f=test1&colorClass=1&t=1&select=");
+    });
+
+  });
 
 });

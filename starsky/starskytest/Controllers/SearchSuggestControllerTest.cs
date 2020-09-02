@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -60,6 +62,19 @@ namespace starskytest.Controllers
 	        var result = await controller.Suggest("e") as JsonResult;
 	        var list = result.Value as List<string>;
 			CollectionAssert.AreEqual(new List<string>{"enter","exit"}, list);
+        }
+
+        [TestMethod]
+        public async Task Suggestion_Nothing()
+        {
+	        var controller = new SearchSuggestController(_searchSuggest)
+	        {
+		        ControllerContext = {HttpContext = new DefaultHttpContext()}
+	        };
+	        var result = await controller.Suggest(string.Empty) as JsonResult;
+	        var list = result.Value as List<string>;
+	        
+			Assert.IsFalse(list.Any());
         }
 
         [TestMethod]

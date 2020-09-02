@@ -35,7 +35,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "The file {createZipKey} has finished exporting.");
   const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
   const MessageOneMomentPlease = language.text("Een moment geduld alstublieft", "One moment please");
-  const MessageItemName = language.text("Item naam", "Item name");
+  const MessageItemName = language.text("Waar gaat het item over?", "What is the item about?");
   const MessageItemNameInUse = language.text("Deze naam is al in gebruik, kies een andere naam",
     "This name is already in use, please choose another name");
   const MessagePublishProfileName = language.text("Profiel instelling", "Profile setting");
@@ -82,7 +82,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
     await ExportIntervalUpdate(createZipKey, setProcessing);
-  }, 3000);
+  }, 5000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     var toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";

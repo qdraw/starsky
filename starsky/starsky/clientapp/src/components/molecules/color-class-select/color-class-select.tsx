@@ -9,6 +9,8 @@ import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import Notification, { NotificationType } from '../../atoms/notification/notification';
+import Portal from '../../atoms/portal/portal';
+import Preloader from '../../atoms/preloader/preloader';
 
 export interface IColorClassSelectProps {
   currentColorClass?: number;
@@ -55,6 +57,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   // for showing a notification
   const [isError, setIsError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Used for Updating Colorclasses
@@ -64,6 +67,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
     if (!props.isEnabled) return;
 
+    setIsLoading(true);
     var updateApiUrl = new UrlQuery().UrlUpdateApi();
 
     var bodyParams = new URLSearchParams();
@@ -73,11 +77,11 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
     FetchPost(updateApiUrl, bodyParams.toString()).then(anyData => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+      setIsLoading(false);
       if (!result || result.find((item) => { return item.status === IExifStatus.ReadOnly; })) {
         setIsError(MessageErrorReadOnly);
         return;
       }
-
       setCurrentColorClass(colorClass);
       props.onToggle(colorClass);
     });
@@ -96,6 +100,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   return (<>
     {isError ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
+    {isLoading ? <Portal><Preloader isDetailMenu={false} isOverlay={true} /></Portal> : null}
     <div className={props.isEnabled ? "colorclass colorclass--select" : "colorclass colorclass--select colorclass--disabled"}>
       {
         colorContent.map((item, index) => (
