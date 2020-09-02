@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -255,18 +256,16 @@ namespace starsky
 			
 			void PrepareResponse(StaticFileResponseContext ctx)
 			{
+				// Cache static files for 30 days
+				ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(30)
+					.ToString("R", CultureInfo.InvariantCulture));
 				ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
 			}
 			
 	        // Allow Current Directory and wwwroot in Base Directory
 	        app.UseStaticFiles(new StaticFileOptions
 		        {
-			        OnPrepareResponse = ctx =>
-			        {
-				        const int durationInSeconds = 60 * 60 * 24;
-				        ctx.Context.Response.Headers[HeaderNames.CacheControl] =
-					        "public,max-age=" + durationInSeconds;
-			        }
+			        OnPrepareResponse = PrepareResponse
 	        });
     
 	        // Use in wwwroot in build directory; the default option assumes Current Directory

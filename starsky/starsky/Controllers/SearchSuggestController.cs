@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.Helpers;
 using starskycore.Interfaces;
 using starskycore.ViewModels;
 
@@ -28,6 +29,10 @@ namespace starsky.Controllers
 		// ^ ^ ^ ^ = = = = = = = = = = = = = = = = = =
 		public async Task<IActionResult> Suggest(string t)
 		{
+			if ( string.IsNullOrEmpty(t) )
+			{
+				CacheControlOverwrite.SetExpiresResponseHeaders(Request,29030400); // 4 weeks
+			}
 			var model = await _suggest.SearchSuggest(t);
 			return Json(model);
 		}

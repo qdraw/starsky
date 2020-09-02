@@ -25,7 +25,7 @@ const leftPad = (n: number) => {
  * @param date a Javascript Datetime stamp (unix*1000)
  * @param now Javascript now
  */
-const differenceInDate = (date: number, now: number = new Date().valueOf()): number => {
+const DifferenceInDate = (date: number, now: number = new Date().valueOf()): number => {
   return (now - date) / 60000;
 };
 
@@ -37,7 +37,7 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
   if (!inputDateTime) return null;
   let input = new Date(inputDateTime).valueOf();
   if (!input) return null;
-  let difference = differenceInDate(input);
+  let difference = DifferenceInDate(input);
   return difference <= 0.2;
 };
 
@@ -54,7 +54,7 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
 
   if (!input) return date;
 
-  let difference = differenceInDate(input);
+  let difference = DifferenceInDate(input);
 
   switch (true) {
     case (difference <= 1):
@@ -170,5 +170,8 @@ const secondsToHours = (seconds: number): string => {
   return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
 }
 
-export { IsEditedNow, isValidDate, parseRelativeDate, parseDate, parseTime, leftPad, secondsToHours, parseTimeHour, parseDateDate, parseDateMonth, parseDateYear };
+export {
+  IsEditedNow, DifferenceInDate, isValidDate, parseRelativeDate, parseDate, parseTime,
+  leftPad, secondsToHours, parseTimeHour, parseDateDate, parseDateMonth, parseDateYear
+};
 
