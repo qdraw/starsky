@@ -307,13 +307,6 @@ describe("DetailView", () => {
     });
 
     it('keydown t/i should be fired', () => {
-      var navigateSpy = jest.fn();
-      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
-        return {
-          location: { ...globalHistory.location, search: "" },
-          navigate: navigateSpy,
-        }
-      });
 
       var component = mount(<TestComponent />);
 
