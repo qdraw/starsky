@@ -10,7 +10,7 @@ describe("Archive", () => {
 
   it("no colorclass usage", () => {
     const container = shallow(<Archive {...newIArchive()} />);
-    expect(container.text()).toBe('(Archive) => no colorClassLists')
+    expect(container.text()).toBe('(Archive) = no colorClassLists')
   });
 
   it("check if warning exist with no items in the list", () => {

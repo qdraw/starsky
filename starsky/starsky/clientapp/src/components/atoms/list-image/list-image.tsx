@@ -30,9 +30,9 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }, [props.fileHash]);
 
   var intersected = useIntersection(target, {
-    rootMargin: '250px',
+    rootMargin: '300px',
     once: true,
-    threshold: 0.3
+    threshold: 0,
   });
   // threshold = indicate at what percentage of the target's visibility the callback is executed. (default = 0)
 
