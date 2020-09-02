@@ -269,7 +269,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       }])
     });
 
-    it('keydown shoudl be fired', () => {
+    it('keydown should be fired', () => {
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
       var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
