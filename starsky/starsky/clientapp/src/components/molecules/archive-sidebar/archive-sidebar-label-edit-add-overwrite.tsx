@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArchiveContext } from '../../../contexts/archive-context';
 import useGlobalSettings from '../../../hooks/use-global-settings';
+import useKeyboardEvent from '../../../hooks/use-keyboard-event';
 import useLocation from '../../../hooks/use-location';
 import { PageType } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { ISidebarUpdate } from '../../../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchPost from '../../../shared/fetch-post';
+import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { SidebarUpdate } from '../../../shared/sidebar-update';
 import { URLPath } from '../../../shared/url-path';
@@ -108,6 +110,16 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     })
   }
 
+  // To fast go the tags field
+  const tagsReference = useRef<HTMLDivElement>(null);
+  useKeyboardEvent(/^([ti])$/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    event.preventDefault();
+    var current = tagsReference.current as HTMLDivElement;
+    new Keyboard().SetFocusOnEndField(current);
+  }, []);
+
+
   // noinspection HtmlUnknownAttribute
   return (
     <>
@@ -116,7 +128,8 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="tags" contentEditable={!state.isReadOnly && select.length !== 0}>
+      <FormControl spellcheck={true} reference={tagsReference} onInput={handleUpdateChange}
+        name="tags" contentEditable={!state.isReadOnly && select.length !== 0}>
       </FormControl>
 
       <h4>Info:</h4>
