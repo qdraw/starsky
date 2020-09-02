@@ -32,8 +32,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
+# version 0.3.0 _(Unreleased)_  2020-09-??
 
-# version 0.3.0 _(Unreleased)_  2020-08-XX
+# version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
 - [x]   (Fixed) _Back-end_ publish with metadata did not work
 - [x]   (Fixed) _Back-end_ Publisher did rotate images when using Exif Orientation
@@ -44,6 +45,8 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Added) _Front-end_  Gpx View, unlock button (you change the map location now)
 - [x]   (Added) _Front-end_  Gpx view, go to current location (no marker, only change view)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.3 2020-08-12)_
+- [x]   (Fixed) _Front-end_ Add Preloader icon when pressing ColorClassSelect
+- [x]   (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to the select mode is still on but there are no items selected
 
 # version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting

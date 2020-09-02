@@ -116,13 +116,17 @@ export class UrlQuery {
   /**
    * Keep colorClass in URL
    */
-  public updateFilePathHash(historyLocationHash: string, toUpdateFilePath: string, clearTSearchQuery?: boolean): string {
+  public updateFilePathHash(historyLocationHash: string, toUpdateFilePath: string, clearTSearchQuery?: boolean, emthySelectQuery?: boolean): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
     // when browsing to a parent folder from a detailview item
     if (clearTSearchQuery) {
       delete url.t;
       delete url.p;
+    }
+    // when in select mode and navigate next to the select mode is still on but there are no items selected
+    if (emthySelectQuery && url.select && url.select?.length >= 1) {
+      url.select = [];
     }
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/${new URLPath().IUrlToString(url)}` : `${this.prefix}/${new URLPath().IUrlToString(url)}`;
   }

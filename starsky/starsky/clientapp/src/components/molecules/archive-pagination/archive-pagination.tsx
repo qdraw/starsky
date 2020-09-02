@@ -29,8 +29,9 @@ const ArchivePagination: React.FunctionComponent<IRelativeLink> = memo((props) =
   if (!relativeObjects) return (<div className="relativelink" />)
 
   // to the next/prev relative object
-  var prevUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath);
-  var nextUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath);
+  // when in select mode and navigate next to the select mode is still on but there are no items selected
+  var prevUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath, false, true);
+  var nextUrl = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath, false, true);
 
   let prev = relativeObjects.prevFilePath !== null ?
     <Link className="prev" to={prevUrl}>{MessagePrevious}</Link> : null;

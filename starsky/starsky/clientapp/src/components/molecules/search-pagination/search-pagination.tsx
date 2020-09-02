@@ -36,6 +36,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     urlObject.p = urlObject.p ? urlObject.p : 0;
     var prevObject = { ...urlObject };
     prevObject.p = prevObject.p ? prevObject.p - 1 : 1;
+    resetSelect();
     if (!urlObject.p || urlObject.p < 0 || lastPageNumber < urlObject.p) return <></>;
     return <Link onClick={() => window.scrollTo(0, 0)} className="prev" to={new URLPath().IUrlToString(prevObject)}> {MessagePrevious}</ Link>;
   }
@@ -46,8 +47,19 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo((props) =>
     var nextObject = { ...urlObject };
     nextObject.p = nextObject.p ? nextObject.p + 1 : 1;
     // if(urlObject.p) also means 0
+    resetSelect();
     if (urlObject.p === undefined || urlObject.p < 0 || lastPageNumber <= urlObject.p) return <></>; // undefined=0
     return <Link onClick={() => window.scrollTo(0, 0)} className="next" to={new URLPath().IUrlToString(nextObject)}> {MessageNext}</ Link>;
+  }
+
+  /**
+   * when in select mode and navigate next to the select mode is still on but there are no items selected
+   */
+  function resetSelect() {
+    if (!urlObject.select || urlObject.select?.length === 0) {
+      return;
+    }
+    urlObject.select = [];
   }
 
   return (<>
