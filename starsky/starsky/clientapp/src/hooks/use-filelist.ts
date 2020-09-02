@@ -52,35 +52,64 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
       }
 
       const responseObject = await res.json();
-
-      setParent(new URLPath().getParent(locationSearch));
-
-      if (!responseObject || !responseObject.pageType
-        || responseObject.pageType === PageType.NotFound
-        || responseObject.pageType === PageType.ApplicationException) return;
-
-      setPageType(responseObject.pageType);
-      switch (responseObject.pageType) {
-        case PageType.Archive:
-          var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-          setArchive(archiveMedia.data);
-          break;
-        case PageType.DetailView:
-          var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
-          setDetailView(detailViewMedia.data);
-          break;
-        default:
-          break;
-      }
+      setPageTypeHelper(responseObject);
+      cacheSet(responseObject);
 
     } catch (e) {
       console.error(e);
     }
   }
 
+  const setPageTypeHelper = (responseObject: any) => {
+    setParent(new URLPath().getParent(locationSearch));
+
+    if (!responseObject || !responseObject.pageType
+      || responseObject.pageType === PageType.NotFound
+      || responseObject.pageType === PageType.ApplicationException) return;
+
+    setPageType(responseObject.pageType);
+    switch (responseObject.pageType) {
+      case PageType.Archive:
+        var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        setArchive(archiveMedia.data);
+        break;
+      case PageType.DetailView:
+        var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
+        setDetailView(detailViewMedia.data);
+        break;
+      default:
+        break;
+    }
+  }
+
+  const cacheGet = (): any => {
+    var urlObject = new URLPath().StringToIUrl(locationSearch);
+    if (!urlObject.f) urlObject.f = "/";
+
+    if (!sessionStorage) return null;
+    return sessionStorage.getItem(urlObject.f);
+  }
+
+  const cacheSet = (value: any): void => {
+    var urlObject = new URLPath().StringToIUrl(locationSearch);
+    if (!urlObject.f) urlObject.f = "/";
+
+    if (!sessionStorage) return;
+    sessionStorage.setItem(urlObject.f, value);
+  }
+
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContent(location, abortController);
+
+    var content = cacheGet();
+    if (!content) {
+      setPageTypeHelper(content);
+    }
+    else {
+      fetchContent(location, abortController);
+
+    }
+
 
     return () => {
       abortController.abort();
