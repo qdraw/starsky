@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{4b3990c9-171b-4d53-a821-f458e8ac072f}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.3.0-beta.1</Version>
+        <Version>0.3.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
