@@ -10,15 +10,19 @@ export class FileListCache {
 
   private timeoutInMinutes = 3;
 
-  public CacheSetObject = (urlObject: IUrl, value: any): any => {
+  public CacheSetObject(urlObject: IUrl, value: any): any {
     if (!sessionStorage) return;
 
     value.dateCache = Date.now();
-    sessionStorage.setItem(this.cachePrefix +
-      `c${urlObject.colorClass};l${urlObject.collections}` + urlObject.f, JSON.stringify(value));
+    sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
 
     this.CacheCleanOld();
     return value;
+  }
+
+  public CacheKeyGenerator(urlObject: IUrl) {
+    return this.cachePrefix +
+      `c${urlObject.colorClass};l${urlObject.collections}` + urlObject.f;
   }
 
   public CacheSet(locationSearch: string, value: any): any {
@@ -35,11 +39,10 @@ export class FileListCache {
     return this.CacheGetObject(urlObject);
   }
 
-  public CacheGetObject = (urlObject: IUrl): IArchive | IDetailView | null => {
+  public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
     if (!sessionStorage) return null;
 
-    var cache = this.parseJson(sessionStorage.getItem(this.cachePrefix +
-      `c${urlObject.colorClass};l${urlObject.collections}` + urlObject.f))
+    var cache = this.parseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)))
     if (!cache) return null;
 
     if (DifferenceInDate(cache.dateCache) > this.timeoutInMinutes) {
@@ -51,7 +54,7 @@ export class FileListCache {
   /**
    * And clean the old ones
    */
-  public CacheCleanOld = (): void => {
+  public CacheCleanOld(): void {
     if (!sessionStorage) return;
 
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
@@ -71,6 +74,7 @@ export class FileListCache {
     try {
       cacheData = JSON.parse(cacheString);
     } catch (error) {
+      console.error(error);
       return null;
     }
     return cacheData.dateCache ? cacheData : null;
