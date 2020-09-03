@@ -45,6 +45,7 @@ namespace starskytest.ViewModels
 		        SubPath = "/",
 		        IsReadOnly = false,
 		        CollectionsCount= 0,
+		        Collections = true,
 	        };
 	        
 	        Assert.AreEqual("/", archiveViewModel.Breadcrumb.FirstOrDefault());      
@@ -53,6 +54,7 @@ namespace starskytest.ViewModels
 	        Assert.AreEqual("/", archiveViewModel.SubPath);      
 	        Assert.AreEqual(false, archiveViewModel.IsReadOnly);      
 	        Assert.AreEqual(0, archiveViewModel.CollectionsCount);      
+	        Assert.IsTrue(archiveViewModel.Collections);
         }
     }
 }

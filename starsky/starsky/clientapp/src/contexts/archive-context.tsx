@@ -5,7 +5,9 @@ import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { IRelativeObjects, newIRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IUrl } from '../interfaces/IUrl';
 import ArrayHelper from '../shared/array-helper';
+import { FileListCache } from '../shared/filelist-cache';
 
 const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContext)
 
@@ -49,6 +51,7 @@ const initialState: State = {
   colorClassUsage: [],
   isReadOnly: false,
   pageType: PageType.Loading,
+  dateCache: Date.now()
 };
 
 export function archiveReducer(state: State, action: Action): State {
@@ -72,7 +75,7 @@ export function archiveReducer(state: State, action: Action): State {
       // to update the total results
       var collectionsCount = state.collectionsCount - deletedFilesCount;
 
-      return { ...state, fileIndexItems: afterFileIndexItems, collectionsCount, lastUpdated: new Date() };
+      return updateCache({ ...state, fileIndexItems: afterFileIndexItems, collectionsCount, lastUpdated: new Date() });
     case "update":
 
       var { select, tags, description, title, append, colorclass } = action;
@@ -97,9 +100,9 @@ export function archiveReducer(state: State, action: Action): State {
       });
 
       // Need to update otherwise other events are not triggerd
-      return { ...state, lastUpdated: new Date() };
+      return updateCache({ ...state, lastUpdated: new Date() });
     case "force-reset":
-      return action.payload;
+      return updateCache(action.payload);
 
     case "add":
       var filterOkCondition = (value: IFileIndexItem) => {
@@ -113,8 +116,17 @@ export function archiveReducer(state: State, action: Action): State {
       var fileIndexItems = concattedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
-      return { ...state, fileIndexItems, lastUpdated: new Date() };
+      return updateCache({ ...state, fileIndexItems, lastUpdated: new Date() });
   }
+}
+
+/**
+ * Update the cache based on the keys
+ */
+function updateCache(stateLocal: IArchiveProps): IArchiveProps {
+  var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
+  new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
+  return stateLocal;
 }
 
 function ArchiveContextProvider({ children }: ReactNodeProps) {

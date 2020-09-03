@@ -15,4 +15,6 @@ export interface IArchiveProps {
   lastPageNumber?: number;
   isReadOnly: boolean;
   searchQuery?: string;
+  collections?: boolean;
+  dateCache: number;
 }

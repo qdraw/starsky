@@ -32,5 +32,9 @@ namespace starskycore.ViewModels
         /// </summary>
         public List<ColorClassParser.Color> ColorClassUsage { get; set; }
 
+        /// <summary>
+        /// For display only
+        /// </summary>
+        public bool Collections { get; set; } = true;
     }
 }

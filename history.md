@@ -35,6 +35,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.3.1 _(Unreleased)_  2020-09-??
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
+- [x]   (Added) _Front-end_ Client Side caching for 3 minutes to avoid requests and speed on slow devices
 
 # version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_

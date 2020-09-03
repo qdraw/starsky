@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
+import { FileListCache } from '../shared/filelist-cache';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -11,6 +12,7 @@ export interface IFileList {
   pageType: PageType,
   parent: string,
   fetchContent: (location: string, abortController: AbortController) => Promise<void>;
+  fetchContentCache: (location: string, abortController: AbortController) => Promise<void>;
 }
 
 /**
@@ -52,35 +54,51 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
       }
 
       const responseObject = await res.json();
-
-      setParent(new URLPath().getParent(locationSearch));
-
-      if (!responseObject || !responseObject.pageType
-        || responseObject.pageType === PageType.NotFound
-        || responseObject.pageType === PageType.ApplicationException) return;
-
-      setPageType(responseObject.pageType);
-      switch (responseObject.pageType) {
-        case PageType.Archive:
-          var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-          setArchive(archiveMedia.data);
-          break;
-        case PageType.DetailView:
-          var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
-          setDetailView(detailViewMedia.data);
-          break;
-        default:
-          break;
-      }
+      setPageTypeHelper(responseObject);
+      new FileListCache().CacheSet(locationSearch, responseObject);
 
     } catch (e) {
       console.error(e);
     }
   }
 
+  const setPageTypeHelper = (responseObject: any) => {
+    setParent(new URLPath().getParent(locationSearch));
+
+    if (!responseObject || !responseObject.pageType
+      || responseObject.pageType === PageType.NotFound
+      || responseObject.pageType === PageType.ApplicationException) return;
+
+    setPageType(responseObject.pageType);
+    switch (responseObject.pageType) {
+      case PageType.Archive:
+        var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        setArchive(archiveMedia.data);
+        break;
+      case PageType.DetailView:
+        var detailViewMedia = new CastToInterface().MediaDetailView(responseObject);
+        setDetailView(detailViewMedia.data);
+        break;
+      default:
+        break;
+    }
+  }
+
+  const fetchContentCache = async (location: string, abortController: AbortController): Promise<void> => {
+    var content = new FileListCache().CacheGet(locationSearch);
+    if (content) {
+      console.log('-- Gets Cache', new Date(content.dateCache).toLocaleTimeString());
+      setPageTypeHelper(content);
+    }
+    else {
+      console.log(' -- Fetch Content');
+      await fetchContent(location, abortController);
+    }
+  }
+
   useEffect(() => {
     const abortController = new AbortController();
-    fetchContent(location, abortController);
+    fetchContentCache(location, abortController);
 
     return () => {
       abortController.abort();
@@ -96,6 +114,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     pageType,
     parent,
     fetchContent,
+    fetchContentCache
   };
 };
 
