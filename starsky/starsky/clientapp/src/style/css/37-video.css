@@ -71,7 +71,7 @@
 	top: calc(100% - 55px);
 	width: 100%;
 	color: #fff;
-	z-index: 20;
+	z-index: 6;
 }
 
 .detailview--edit .video > .controls {

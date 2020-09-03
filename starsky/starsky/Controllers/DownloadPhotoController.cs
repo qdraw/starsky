@@ -6,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
+using starsky.Helpers;
 using starskycore.Helpers;
 
 namespace starsky.Controllers
@@ -29,6 +30,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="f">string, 'sub path' to find the file</param>
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
+        /// <param name="cache">true = send client headers to cache</param>
         /// <returns>FileStream with image</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">source image missing</response>
@@ -38,7 +40,7 @@ namespace starsky.Controllers
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(500)] // "Thumbnail generation failed"
-        public async Task<IActionResult> DownloadPhoto(string f, bool isThumbnail = true)
+        public async Task<IActionResult> DownloadPhoto(string f, bool isThumbnail = true, bool cache = true)
         {
             // f = subpath/filepath
             if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
@@ -53,6 +55,7 @@ namespace starsky.Controllers
             // Return full image
             if (!isThumbnail)
             {
+	            if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
 	            var fs = _iStorage.ReadStream(singleItem.FileIndexItem.FilePath);
                 // Return the right mime type (enableRangeProcessing = needed for safari and mp4)
                 return File(fs, MimeHelper.GetMimeTypeByFileName(singleItem.FileIndexItem.FilePath),true);

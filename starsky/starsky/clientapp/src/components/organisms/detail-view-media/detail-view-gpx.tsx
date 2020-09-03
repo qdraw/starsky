@@ -103,7 +103,7 @@ const DetailViewGpx: React.FC = () => {
   /** update only on intial load */
   useEffect(() => {
     setIsLoading(true);
-    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false)).then((response) => {
+    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)).then((response) => {
       updateMap(response);
       setIsLoading(false);
     })

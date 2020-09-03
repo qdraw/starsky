@@ -1,6 +1,11 @@
+import { act } from '@testing-library/react';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { IDetailView } from '../../../interfaces/IDetailView';
+import { IExifStatus } from '../../../interfaces/IExifStatus';
+import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
+import * as Notification from '../../atoms/notification/notification';
 import DetailViewMp4 from './detail-view-mp4';
 
 describe("DetailViewMp4", () => {
@@ -10,7 +15,14 @@ describe("DetailViewMp4", () => {
   });
 
   describe("with Context", () => {
-    it("click to play video", () => {
+
+    beforeEach(() => {
+      jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementationOnce(() => {
+        return Promise.resolve();
+      })
+    })
+
+    it("click to play video resolve", () => {
       var component = mount(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
@@ -22,6 +34,27 @@ describe("DetailViewMp4", () => {
       expect(playSpy).toBeCalled();
 
       component.unmount();
+    });
+
+    it("click to play video rejected", async () => {
+      var component = mount(<DetailViewMp4></DetailViewMp4>);
+
+      jest.spyOn(HTMLMediaElement.prototype, 'play').mockReset();
+
+      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
+        return Promise.reject();
+      });
+
+      await act(async () => {
+        await component.find('[data-test="video"]').simulate("click");
+      })
+
+
+      expect(playSpy).toBeCalled();
+      expect(playSpy).toBeCalledTimes(1);
+      await act(async () => {
+        await component.unmount();
+      })
     });
 
     it("click to play video and timeupdate", () => {
@@ -73,33 +106,29 @@ describe("DetailViewMp4", () => {
       component.unmount();
     });
 
-    // it("timeupdate", () => {
+    it("state not found and show error", () => {
+      const state = {
+        fileIndexItem: {
+          status: IExifStatus.NotFoundSourceMissing
+        } as IFileIndexItem
+      } as IDetailView;
 
-    //   var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
-    //     return Promise.resolve();
-    //   })
+      var contextValues = { state, dispatch: jest.fn() }
 
-
-    //   const component = document.createElement('div');
-    //   ReactDOM.render(<DetailViewMp4 />, component);
-
-
-    //   var video = component.querySelector('video');
-    //   if (video == null) throw new Error('missing video tag');
-
-    //   console.log(video.play());
-
-    //   video.currentTime = 50;
-
-    //   video.dispatchEvent(new CustomEvent('timeupdate1', {
-    //     bubbles: true,
-    //   }));
-
-    //   video.dispatchEvent(new Event('timeupdate1', { bubbles: true }));
-    //   video.dispatchEvent(new CustomEvent('timeupdate1', { bubbles: true }))
-
-    // });
+      var useContextSpy = jest
+        .spyOn(React, 'useContext')
+        .mockImplementation(() => contextValues);
 
 
+      var notificationSpy = jest.spyOn(Notification, 'default').mockImplementationOnce(() => {
+        return <></>
+      })
+      var component = mount(<DetailViewMp4></DetailViewMp4>);
+
+      expect(useContextSpy).toBeCalled();
+      expect(notificationSpy).toBeCalled();
+
+      component.unmount();
+    });
   });
 });
