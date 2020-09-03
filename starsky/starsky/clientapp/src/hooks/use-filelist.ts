@@ -12,6 +12,7 @@ export interface IFileList {
   pageType: PageType,
   parent: string,
   fetchContent: (location: string, abortController: AbortController) => Promise<void>;
+  fetchContentCache: (location: string, abortController: AbortController) => Promise<void>;
 }
 
 /**
@@ -83,9 +84,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     }
   }
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
+  const fetchContentCache = async (location: string, abortController: AbortController): Promise<void> => {
     var content = new FileListCache().CacheGet(locationSearch);
     if (content) {
       console.log('-- Gets Cache', new Date(content.dateCache).toLocaleTimeString());
@@ -93,8 +92,13 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     }
     else {
       console.log(' -- Fetch Content');
-      fetchContent(location, abortController);
+      await fetchContent(location, abortController);
     }
+  }
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    fetchContentCache(location, abortController);
 
     return () => {
       abortController.abort();
@@ -110,6 +114,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     pageType,
     parent,
     fetchContent,
+    fetchContentCache
   };
 };
 

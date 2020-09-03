@@ -21,14 +21,14 @@ export class FileListCache {
     return value;
   }
 
-  public CacheSet = (locationSearch: string, value: any): any => {
+  public CacheSet(locationSearch: string, value: any): any {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     if (!urlObject.f) urlObject.f = "/";
     if (urlObject.collections === undefined) urlObject.collections = true;
     return this.CacheSetObject(urlObject, value);
   }
 
-  public CacheGet = (locationSearch: string): IArchive | IDetailView | null => {
+  public CacheGet(locationSearch: string): IArchive | IDetailView | null {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     if (!urlObject.f) urlObject.f = "/";
     if (urlObject.collections === undefined) urlObject.collections = true;

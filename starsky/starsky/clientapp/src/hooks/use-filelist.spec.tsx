@@ -2,6 +2,7 @@ import { act } from 'react-dom/test-utils';
 import { newIArchive } from '../interfaces/IArchive';
 import { PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
+import { FileListCache } from '../shared/filelist-cache';
 import useFileList, { IFileList } from './use-filelist';
 import { mountReactHook } from './___tests___/test-hook';
 
@@ -119,6 +120,32 @@ describe("UseFileList", () => {
 
     });
 
+    it("get from cache", async () => {
+
+      var cacheGetSpy = jest.spyOn(FileListCache.prototype, 'CacheGet').mockImplementationOnce(() => {
+        return { ...newIArchive(), dateCache: Date.now() };
+      });
+
+      hook.fetchContentCache('location', new AbortController());
+      expect(cacheGetSpy).toBeCalled();
+
+    });
+
+    it("check cache first and then query", async () => {
+
+      var cacheSetSpy = jest.spyOn(FileListCache.prototype, 'CacheGet').mockImplementationOnce(() => {
+        return null;
+      });
+
+      setFetchSpy(200, PageType.Archive);
+
+      hook.fetchContentCache('location', new AbortController());
+
+      expect(cacheSetSpy).toBeCalled();
+      expect(fetchSpy).toBeCalled();
+    });
+
   });
+
 
 });
