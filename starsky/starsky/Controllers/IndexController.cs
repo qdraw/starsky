@@ -77,7 +77,8 @@ namespace starsky.Controllers
 	                subPath,null,false,hidedelete)
 	                .Select( p => p.ColorClass).Distinct()
 	                .OrderBy(p => (int) (p)).ToList(),
-                IsReadOnly =  _appSettings.IsReadOnly(subPath)
+                IsReadOnly =  _appSettings.IsReadOnly(subPath),
+                Collections = collections,
             };
 
             if (singleItem == null)

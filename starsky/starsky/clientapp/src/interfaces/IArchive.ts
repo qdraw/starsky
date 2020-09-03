@@ -12,6 +12,8 @@ export interface IArchive {
     collectionsCount: number;
     isReadOnly: boolean;
     searchQuery?: string;
+    collections?: boolean;
+    dateCache: number;
 }
 
 export function newIArchive(): IArchive {

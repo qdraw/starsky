@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IDetailView, newDetailView, PageType } from '../interfaces/IDetailView';
 import { CastToInterface } from '../shared/cast-to-interface';
+import { FileListCache } from '../shared/filelist-cache';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -53,7 +54,7 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
 
       const responseObject = await res.json();
       setPageTypeHelper(responseObject);
-      cacheSet(responseObject);
+      new FileListCache().CacheSet(locationSearch, responseObject);
 
     } catch (e) {
       console.error(e);
@@ -82,34 +83,18 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
     }
   }
 
-  const cacheGet = (): any => {
-    var urlObject = new URLPath().StringToIUrl(locationSearch);
-    if (!urlObject.f) urlObject.f = "/";
-
-    if (!sessionStorage) return null;
-    return sessionStorage.getItem(urlObject.f);
-  }
-
-  const cacheSet = (value: any): void => {
-    var urlObject = new URLPath().StringToIUrl(locationSearch);
-    if (!urlObject.f) urlObject.f = "/";
-
-    if (!sessionStorage) return;
-    sessionStorage.setItem(urlObject.f, value);
-  }
-
   useEffect(() => {
     const abortController = new AbortController();
 
-    var content = cacheGet();
-    if (!content) {
+    var content = new FileListCache().CacheGet(locationSearch);
+    if (content) {
+      console.log('-- Gets Cache', new Date(content.dateCache).toLocaleTimeString());
       setPageTypeHelper(content);
     }
     else {
+      console.log(' -- Fetch Content');
       fetchContent(location, abortController);
-
     }
-
 
     return () => {
       abortController.abort();

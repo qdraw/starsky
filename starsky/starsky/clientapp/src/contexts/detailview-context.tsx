@@ -2,6 +2,8 @@ import React from 'react';
 import { IDetailView, IRelativeObjects, PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { newIFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
+import { IUrl } from '../interfaces/IUrl';
+import { FileListCache } from '../shared/filelist-cache';
 
 const DetailViewContext = React.createContext<IContext>({} as IContext)
 
@@ -15,7 +17,8 @@ const initialState: State = {
   subPath: "/",
   pageType: PageType.DetailView,
   colorClassActiveList: [],
-  isReadOnly: false
+  isReadOnly: false,
+  dateCache: Date.now()
 }
 
 type Action = {
@@ -53,13 +56,13 @@ export function detailviewReducer(state: State, action: Action): State {
       var { tags } = action;
       if (tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(tags, "");
       // Need to update otherwise other events are not triggerd
-      return { ...state, lastUpdated: new Date() };
+      return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
       /* eslint-disable-next-line no-redeclare */
       var { tags } = action;
       if (tags) state.fileIndexItem.tags += "," + tags;
       // Need to update otherwise other events are not triggerd
-      return { ...state, lastUpdated: new Date() };
+      return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
       /* eslint-disable-next-line no-redeclare */
       var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
@@ -75,10 +78,19 @@ export function detailviewReducer(state: State, action: Action): State {
       if (dateTime) state.fileIndexItem.dateTime = dateTime;
 
       // Need to update otherwise other events are not triggerd
-      return { ...state, lastUpdated: new Date() };
+      return updateCache({ ...state, lastUpdated: new Date() });
     case "reset":
-      return action.payload;
+      return updateCache(action.payload);
   }
+}
+
+/**
+ * Update the cache based on the keys
+ */
+function updateCache(stateLocal: IDetailView): IDetailView {
+  var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
+  new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
+  return stateLocal;
 }
 
 function DetailViewContextProvider({ children }: ReactNodeProps) {

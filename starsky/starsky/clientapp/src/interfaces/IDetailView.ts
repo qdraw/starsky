@@ -39,6 +39,8 @@ export interface IDetailView {
     colorClassActiveList: Array<number>;
     lastUpdated?: Date;
     isReadOnly: boolean;
+    collections?: boolean;
+    dateCache: number;
 }
 
 export function newDetailView(): IDetailView {
