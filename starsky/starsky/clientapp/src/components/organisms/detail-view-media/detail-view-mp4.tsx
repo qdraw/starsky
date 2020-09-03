@@ -1,8 +1,10 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { DetailViewContext } from '../../../contexts/detailview-context';
+import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { secondsToHours } from '../../../shared/date';
+import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import Notification, { NotificationType } from '../../atoms/notification/notification';
@@ -10,6 +12,16 @@ import Preloader from '../../atoms/preloader/preloader';
 
 
 const DetailViewMp4: React.FunctionComponent = memo(() => {
+
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageVideoPlayBackError = language.text("Er is iets mis met het afspelen van deze video. " +
+    "Probeer eens via het menu 'Meer' en 'Download'.",
+    "There is something wrong with the playback of this video.  Try 'More' and 'Download'. ");
+  const MessageVideoNotFound = language.text("Deze video is niet gevonden",
+    "This video is not found");
+
   var history = useLocation();
 
   // preloading icon
@@ -23,7 +35,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   );
 
   useEffect(() => {
-    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false, true);
+    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(
+      new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false, true);
     setDownloadPhotoApi(downloadApiLocal);
 
     if (!videoRef.current || !scrubberRef.current || !progressRef.current || !timeRef.current) return;
@@ -43,13 +56,11 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   useEffect(() => {
     if (!state || !state.fileIndexItem || !state.fileIndexItem.status) return;
     if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing) {
-      setIsError('Video Not Found');
+      setIsError(MessageVideoNotFound);
       return;
     }
-    console.log('---dsfsndflk', state.subPath);
-
     setIsError('');
-  }, [state])
+  }, [state, MessageVideoNotFound])
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLProgressElement>(null);
@@ -67,10 +78,6 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     // As the video is playing, update the progress bar
     videoRefCurrent.addEventListener('timeupdate', timeUpdate);
     videoRefCurrent.addEventListener('waiting', waiting);
-    videoRefCurrent.addEventListener('abort', () => {
-      console.log('abort');
-
-    });
 
     return () => {
       // Unbind the event listener on clean up
@@ -90,7 +97,14 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     setStarted(true);
 
     if (isPaused) {
-      videoRef.current.play();
+
+      var promise = videoRef.current.play();
+
+      promise.catch(() => {
+        setIsError(MessageVideoPlayBackError);
+        return;
+      });
+
       setPaused(false);
       setIsLoading(true);
       return;
@@ -143,12 +157,14 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
     {isError ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
 
-    {!isError ? <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
+    {!isError ? <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"}
+      onClick={() => { playPause(); timeUpdate(); }}>
       <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
         <source src={downloadApi} type="video/mp4" />
       </video>
       <div className="controls">
-        <button className={isPaused ? "play" : "pause"} onClick={playPause} type="button"><span className="icon"></span>{isPaused ? "Play" : "Pause"}</button>
+        <button className={isPaused ? "play" : "pause"} onClick={playPause} type="button">
+          <span className="icon"></span>{isPaused ? "Play" : "Pause"}</button>
         <span ref={timeRef} className="time"></span>
         <div className="progress">
           <span ref={scrubberRef} className="scrubber"></span>
