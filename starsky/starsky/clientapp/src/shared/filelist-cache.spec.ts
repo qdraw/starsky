@@ -49,15 +49,44 @@ describe("FileListCache", () => {
       var cacheGetter = fileListCache.CacheGet("?f=2");
 
       expect(cacheGetter).toBeNull();
+
+      sessionStorage.removeItem(fileListCache.CacheKeyGenerator({ f: '2', collections: true }))
     });
 
-    it("clean old ", () => {
 
-      sessionStorage.setItem(fileListCache.CacheKeyGenerator({ f: '2', collections: true }), JSON.stringify({
+    it("should ignore other keys", () => {
+
+      sessionStorage.setItem("some_other_key", JSON.stringify({
         data: 1,
         dateCache: 1,
       } as any));
 
+      fileListCache.CacheCleanOld();
+
+      // should ignore other keys
+      expect(sessionStorage.getItem("some_other_key")).toBeTruthy();
+
+    });
+
+    it("should ignore key Without dateCache", () => {
+
+      var key = fileListCache.CacheKeyGenerator({ f: '3', collections: true });
+      sessionStorage.setItem(key, JSON.stringify({
+        data: 2,
+      } as any));
+      fileListCache.CacheCleanOld();
+
+      // its ignored by the getter
+      var cacheGetter2 = fileListCache.CacheGet("?f=3");
+      expect(cacheGetter2).toBeNull();
+
+      // but the key does exist
+      expect(sessionStorage.getItem(key)).toBeTruthy();
+
+    });
+
+
+    it("clean old items", () => {
       sessionStorage.setItem(fileListCache.CacheKeyGenerator({ f: '3', collections: true }), JSON.stringify({
         data: 2,
         dateCache: 2,
@@ -71,13 +100,12 @@ describe("FileListCache", () => {
 
       fileListCache.CacheCleanOld();
 
-      var cacheGetter2 = fileListCache.CacheGet("?f=2");
+      var cacheGetter2 = fileListCache.CacheGet("?f=3");
       expect(cacheGetter2).toBeNull();
 
       var cacheGetter4 = fileListCache.CacheGet("?f=4");
 
       expect(cacheGetter4).toStrictEqual(data4);
-
     });
 
   });

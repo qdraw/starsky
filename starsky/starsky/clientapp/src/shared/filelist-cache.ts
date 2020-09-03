@@ -6,13 +6,16 @@ import { URLPath } from './url-path';
 
 export class FileListCache {
 
+  constructor() {
+    if (sessionStorage) return;
+    throw Error("Session Storage is needed")
+  }
+
   private cachePrefix = "starsky;";
 
   private timeoutInMinutes = 3;
 
   public CacheSetObject(urlObject: IUrl, value: any): any {
-    if (!sessionStorage) return;
-
     value.dateCache = Date.now();
     sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
 
@@ -40,8 +43,6 @@ export class FileListCache {
   }
 
   public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
-    if (!sessionStorage) return null;
-
     var cache = this.parseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)))
     if (!cache) return null;
 
@@ -55,8 +56,6 @@ export class FileListCache {
    * And clean the old ones
    */
   public CacheCleanOld(): void {
-    if (!sessionStorage) return;
-
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
       const itemName = Object.keys(sessionStorage)[index];
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
@@ -79,6 +78,4 @@ export class FileListCache {
     }
     return cacheData.dateCache ? cacheData : null;
   }
-
-
 }
