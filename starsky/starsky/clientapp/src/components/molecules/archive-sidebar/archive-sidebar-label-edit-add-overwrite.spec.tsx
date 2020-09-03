@@ -8,6 +8,7 @@ import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import * as FetchPost from '../../../shared/fetch-post';
+import { Keyboard } from '../../../shared/keyboard';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
 import Notification from '../../atoms/notification/notification';
@@ -267,5 +268,26 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         status: IExifStatus.Ok
       }])
     });
+
+    it('keydown should be fired', () => {
+      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+
+      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "t",
+        shiftKey: true,
+      });
+      window.dispatchEvent(event);
+
+      expect(keyboardSpy).toBeCalled();
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
   });
 });

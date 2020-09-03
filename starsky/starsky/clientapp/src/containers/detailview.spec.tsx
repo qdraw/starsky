@@ -10,6 +10,7 @@ import { IDetailView, IRelativeObjects, newDetailView, PageType } from '../inter
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { IFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
 import * as FetchGet from '../shared/fetch-get';
+import { Keyboard } from '../shared/keyboard';
 import { UrlQuery } from '../shared/url-query';
 import DetailView from './detailview';
 
@@ -303,6 +304,27 @@ describe("DetailView", () => {
       expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", { "state": { "filePath": "/parentDirectory/test.jpg" } });
 
       component.unmount();
+    });
+
+    it('keydown t/i should be fired', () => {
+
+      var component = mount(<TestComponent />);
+
+      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "t",
+        shiftKey: true,
+      });
+      window.dispatchEvent(event);
+
+      expect(keyboardSpy).toBeCalled();
+
+      act(() => {
+        component.unmount();
+      });
     });
 
   });

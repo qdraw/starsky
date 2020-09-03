@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{842d2080-b847-43c3-8535-e5065970dd47}</ProjectGuid>
         <RootNamespace>starsky.foundation.accountmanagement</RootNamespace>
-        <Version>0.3.0-beta.1</Version>
+        <Version>0.3.1</Version>
     </PropertyGroup>
     
 

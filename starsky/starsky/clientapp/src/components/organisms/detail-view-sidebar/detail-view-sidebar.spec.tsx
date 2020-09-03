@@ -18,7 +18,7 @@ describe("DetailViewSidebar", () => {
 
   it("renders (without state component)", () => {
     shallow(<DetailViewSidebar status={IExifStatus.Default}
-      filePath={"/t"}>></DetailViewSidebar>)
+      filePath={"/t"}></DetailViewSidebar>)
   });
 
   it("test warning (without state component)", () => {
@@ -61,7 +61,7 @@ describe("DetailViewSidebar", () => {
 
       TestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
-          <DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}>></DetailViewSidebar>
+          <DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
       Component = mount(<TestComponent />);
@@ -232,7 +232,7 @@ describe("DetailViewSidebar", () => {
 
       var DeletedTestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
-          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}>></DetailViewSidebar>
+          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
       var component = mount(<DeletedTestComponent />);
@@ -252,7 +252,7 @@ describe("DetailViewSidebar", () => {
 
       var DeletedTestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
-          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}>></DetailViewSidebar>
+          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
       var component = mount(<DeletedTestComponent />);
