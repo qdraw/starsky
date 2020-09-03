@@ -106,6 +106,7 @@ describe("DetailViewMp4", () => {
       expect(useContextSpy).toBeCalled();
       expect(notificationSpy).toBeCalled();
 
+      component.unmount();
     });
   });
 });
