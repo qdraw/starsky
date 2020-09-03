@@ -1,3 +1,4 @@
+import { act } from '@testing-library/react';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -21,7 +22,7 @@ describe("DetailViewMp4", () => {
       })
     })
 
-    it("click to play video", () => {
+    it("click to play video resolve", () => {
       var component = mount(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
@@ -33,6 +34,27 @@ describe("DetailViewMp4", () => {
       expect(playSpy).toBeCalled();
 
       component.unmount();
+    });
+
+    it("click to play video rejected", async () => {
+      var component = mount(<DetailViewMp4></DetailViewMp4>);
+
+      jest.spyOn(HTMLMediaElement.prototype, 'play').mockReset();
+
+      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
+        return Promise.reject();
+      });
+
+      await act(async () => {
+        await component.find('[data-test="video"]').simulate("click");
+      })
+
+
+      expect(playSpy).toBeCalled();
+      expect(playSpy).toBeCalledTimes(1);
+      await act(async () => {
+        await component.unmount();
+      })
     });
 
     it("click to play video and timeupdate", () => {
