@@ -34,7 +34,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.3.1 _(Unreleased)_  2020-09-??
-Nothing yet
+- [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
 
 # version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
