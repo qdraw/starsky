@@ -1,8 +1,11 @@
 import React, { memo, useEffect, useRef, useState } from "react";
+import { DetailViewContext } from '../../../contexts/detailview-context';
 import useLocation from '../../../hooks/use-location';
+import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { secondsToHours } from '../../../shared/date';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
+import Notification, { NotificationType } from '../../atoms/notification/notification';
 import Preloader from '../../atoms/preloader/preloader';
 
 
@@ -11,6 +14,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState("");
+  let { state } = React.useContext(DetailViewContext);
 
   /** update to make useEffect simpler te read */
   const [downloadApi, setDownloadPhotoApi] = useState(new UrlQuery().UrlDownloadPhotoApi(
@@ -18,7 +23,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
   );
 
   useEffect(() => {
-    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false);
+    var downloadApiLocal = new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(new URLPath().getFilePath(history.location.search)), false, true);
     setDownloadPhotoApi(downloadApiLocal);
 
     if (!videoRef.current || !scrubberRef.current || !progressRef.current || !timeRef.current) return;
@@ -33,6 +38,18 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     timeRef.current.innerHTML = "";
 
   }, [history.location.search]);
+
+  // Check if media is found
+  useEffect(() => {
+    if (!state || !state.fileIndexItem || !state.fileIndexItem.status) return;
+    if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing) {
+      setIsError('Video Not Found');
+      return;
+    }
+    console.log('---dsfsndflk', state.subPath);
+
+    setIsError('');
+  }, [state])
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLProgressElement>(null);
@@ -50,6 +67,10 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     // As the video is playing, update the progress bar
     videoRefCurrent.addEventListener('timeupdate', timeUpdate);
     videoRefCurrent.addEventListener('waiting', waiting);
+    videoRefCurrent.addEventListener('abort', () => {
+      console.log('abort');
+
+    });
 
     return () => {
       // Unbind the event listener on clean up
@@ -120,7 +141,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
-    <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
+    {isError ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
+
+    {!isError ? <figure data-test="video" className={isPaused ? isStarted ? "video play" : "video first" : "video pause"} onClick={() => { playPause(); timeUpdate(); }}>
       <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
         <source src={downloadApi} type="video/mp4" />
       </video>
@@ -134,7 +157,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
           </progress>
         </div>
       </div>
-    </figure>
+    </figure> : null}
   </>);
 });
 export default DetailViewMp4

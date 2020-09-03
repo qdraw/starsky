@@ -31,7 +31,7 @@ namespace starsky.Controllers
 		{
 			if ( string.IsNullOrEmpty(t) )
 			{
-				CacheControlOverwrite.SetExpiresResponseHeaders(Request,29030400); // 4 weeks
+				CacheControlOverwrite.SetExpiresResponseHeaders(Request); // 4 weeks
 			}
 			var model = await _suggest.SearchSuggest(t);
 			return Json(model);

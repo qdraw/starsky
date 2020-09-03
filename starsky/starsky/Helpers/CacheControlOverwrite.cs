@@ -8,7 +8,10 @@ namespace starsky.Helpers
 		/// <summary>
 		/// For Performance on slow devices
 		/// </summary>
-		public static void SetExpiresResponseHeaders(HttpRequest request, int time)
+		/// </summary>
+		/// <param name="request"></param>
+		/// <param name="time">29030400 = 4 weeks</param>
+		public static void SetExpiresResponseHeaders(HttpRequest request, int time = 29030400)
 		{
 			request.HttpContext.Response.Headers.Remove("Cache-Control");
 			request.HttpContext.Response.Headers.Add("Cache-Control", $"private,max-age={time}");

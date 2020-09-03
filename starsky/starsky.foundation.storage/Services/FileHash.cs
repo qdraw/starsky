@@ -58,7 +58,7 @@ namespace starsky.foundation.storage.Services
         // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
         private async Task<KeyValuePair<string,bool>> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
         {
-            //adding .ConfigureAwait(false) may NOT be what you want but google it.
+            // adding .ConfigureAwait(false) may NOT be what you want, but google it.
             return await Task.Run(() => GetHashCodeAsync(fullFileName,timeoutSeconds)).ConfigureAwait(false);
         }
 
