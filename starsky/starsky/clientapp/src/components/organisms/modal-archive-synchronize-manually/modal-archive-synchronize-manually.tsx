@@ -66,7 +66,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           }
           props.handleExit();
         });
-      }, 500);
+      }, 600);
     });
   }
 
@@ -113,7 +113,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           }
           props.handleExit();
         });
-      }, 10000);
+      }, 12000);
     });
   }
 
