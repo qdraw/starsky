@@ -236,7 +236,7 @@
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
   text-indent: -999px;
-  padding-left: 40px;
+  padding-left: 37px; /* needed for safari instead of 40 */
   background-position: 12px;
   max-width: 40px;
 }
