@@ -126,7 +126,9 @@ namespace starsky.feature.webhtmlpublish.Services
 		    if(base64ImageArray == null) base64ImageArray = new string[fileIndexItemsList.Count];
             
 		    // Order alphabetically
-		    fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName).ToList();
+		    // Ignore Items with Errors
+		    fileIndexItemsList = fileIndexItemsList.OrderBy(p => p.FileName)
+			    .Where(p=> p.Status == FileIndexItem.ExifStatus.Ok).ToList();
 
 		    var copyResult = new Dictionary<string,bool>();
             

@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -13,18 +10,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
-using starsky.feature.export.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Services;
 using starskytest.FakeCreateAn;
@@ -95,31 +87,11 @@ namespace starskytest.Controllers
 			
 		}
 
-		private FileIndexItem InsertSearchData(bool delete = false)
-		{
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
-			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath).Key;
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
-			{
-				var isDelete = string.Empty;
-				if ( delete ) isDelete = "!delete!";
-				_query.AddItem(new FileIndexItem
-				{
-					FileName = _createAnImage.FileName,
-					ParentDirectory = "/",
-					FileHash = fileHashCode,
-					ColorClass = ColorClassParser.Color.Winner, // 1
-					Tags = isDelete
-				});
-			}
-			return _query.GetObjectByFilePath(_createAnImage.DbPath);
-		}
-
 		[TestMethod]
 		public void PublishGet_List()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(),
+				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null), new FakeSelectorStorage(),
 				_bgTaskQueue);
 			
 			var actionResult = controller.PublishGet() as JsonResult;
@@ -132,7 +104,9 @@ namespace starskytest.Controllers
 		public async Task PublishCreate_newItem()
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
+				new FakeSelectorStorage(),
 				_bgTaskQueue);
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 
@@ -143,6 +117,25 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task PublishCreate_NotFound()
+		{
+			var controller = new PublishController(new AppSettings(), 
+				new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(
+					new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+						{Status = FileIndexItem.ExifStatus.NotFoundNotInIndex}}
+					),
+				new FakeSelectorStorage(),
+				_bgTaskQueue);
+			
+			var actionResult = await controller.PublishCreate("/not-found.jpg", 
+				"test", "test", true) as NotFoundObjectResult;
+			
+			Assert.AreEqual(404, actionResult.StatusCode);
+		}
+		
+		[TestMethod]
 		public async Task PublishCreate_existItem_NoForce()
 		{
 			var appSettings = new AppSettings{TempFolder = Path.DirectorySeparatorChar.ToString() };
@@ -150,7 +143,9 @@ namespace starskytest.Controllers
 				new List<string> { Path.DirectorySeparatorChar + "test.zip" });
 
 			var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(storage),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
+				new FakeSelectorStorage(storage),
 				_bgTaskQueue);
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 
@@ -167,8 +162,13 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage(new List<string> {Path.DirectorySeparatorChar + "test"}, 
 				new List<string>{ Path.DirectorySeparatorChar + "test.zip" });
 
-		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(), new FakeSelectorStorage(storage),
+			var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}
+				}),
+				new FakeSelectorStorage(storage),
 				_bgTaskQueue);
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 

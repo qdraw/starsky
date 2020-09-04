@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -70,6 +71,9 @@ namespace starsky.Controllers
 		{
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
+			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+				return NotFound(info);
+
 			var slugItemName = _appSettings.GenerateSlug(itemName);
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
 			
