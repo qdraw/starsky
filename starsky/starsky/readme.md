@@ -97,6 +97,7 @@ Advanced queries are supported by the basic search engine.
 
 __All text (not number or date) driven search queries use a contain search__
 
+#### Search operators documentation
 
 | Search options       | example                            | description                   |
 |----------------------|------------------------------------|-------------------------------|
@@ -134,6 +135,16 @@ __All text (not number or date) driven search queries use a contain search__
 | -isdirectory         | -isdirectory=false                 | search for items              |
 | __-make__            | -make=Apple                        | brand name of the camera      |
 | __-model__           | -model="iPhone SE"                 | search for camera model       |
+| __-colorclass__      | -colorclass=1                      | search for colorClass         |
+| -colorclass          | -colorclass=0                      | No Color / None               |
+| -colorclass          | -colorclass=1                      | Purple / Winner               |
+| -colorclass          | -colorclass=2                      | Red / WinnerAlt               |
+| -colorclass          | -colorclass=3                      | Orange / Superior             |
+| -colorclass          | -colorclass=4                      | Yellow / SuperiorAlt          |
+| -colorclass          | -colorclass=5                      | Green / Typical               |
+| -colorclass          | -colorclass=6                      | Azure / TypicalAlt            |
+| -colorclass          | -colorclass=7                      | Blue / Extras                 |
+| -colorclass          | -colorclass=8                      | Grey / No name                |
 
 ### Rest API documentation
 Starsky has a Json restful API. Please read the documentation

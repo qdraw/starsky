@@ -23,6 +23,7 @@
   box-shadow: inset 0 1px 4px #CFD8DC;
   transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s, background-color ease-in-out .15s;
   font-family: "Gloriola Std", sans-serif;
+  word-break: break-word;
 }
 
 .form-control.disabled, 

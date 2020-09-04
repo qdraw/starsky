@@ -450,7 +450,8 @@ namespace starsky.foundation.database.Models
 						propertyInfo.PropertyType == typeof(bool?) || 
 						propertyInfo.PropertyType == typeof(string) || 
 						propertyInfo.PropertyType == typeof(DateTime) ||
-						propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat)
+						propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) || 
+						propertyInfo.PropertyType == typeof(ColorClassParser.Color)
                     ) && propertyInfo.CanRead)
                 {
                     fileIndexPropList.Add(propertyInfo.Name);

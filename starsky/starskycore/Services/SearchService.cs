@@ -222,13 +222,21 @@ namespace starskycore.Services
 					    model.SearchFor[i] = boolIsDirectory.ToString();
 					    break;
 				    case SearchViewModel.SearchInTypes.lastedited:
-					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
+					    predicates.Add(new SearchWideDateTime().
+						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.LastEdited));
 					    break;
 				    case SearchViewModel.SearchInTypes.addtodatabase:
-					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
+					    predicates.Add(new SearchWideDateTime().
+						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.AddToDatabase));
 					    break;
 				    case SearchViewModel.SearchInTypes.datetime:
-					    predicates.Add(new SearchWideDateTime().WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
+					    predicates.Add(new SearchWideDateTime().
+						    WideSearchDateTimeGet(model,i,SearchWideDateTime.WideSearchDateTimeGetType.DateTime));
+					    break;
+				    case SearchViewModel.SearchInTypes.colorclass:
+					    Enum.TryParse<ColorClassParser.Color>(
+						    model.SearchFor[i].ToLowerInvariant(), out var castColorClass);
+					    predicates.Add(x => x.ColorClass == castColorClass);
 					    break;
 				    case SearchViewModel.SearchInTypes.tags:
 				    default:
@@ -236,6 +244,7 @@ namespace starskycore.Services
 					    predicates.Add(x => x.Tags.ToLower().Contains(tags));
 					    break;
 			    }
+			    // Need to have the type registered in FileIndexPropList
 		    }
 		    
 		    Console.WriteLine($"search --> {model.SearchQuery}");

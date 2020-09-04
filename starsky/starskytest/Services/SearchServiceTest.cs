@@ -58,7 +58,8 @@ namespace starskytest.Services
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 	                DateTime = new DateTime(2014,1,1,1,1,1),
 	                MakeModel = "Apple|iPhone SE|",
-	                IsDirectory = false
+	                IsDirectory = false,
+	                ColorClass = ColorClassParser.Color.WinnerAlt
                 });
             }
 
@@ -456,6 +457,14 @@ namespace starskytest.Services
 	    {
 		    InsertSearchData();
 		    Assert.AreEqual(1, _search.Search("-ImageFormat:jpg").SearchCount);
+	    }
+	    
+	    [TestMethod]
+	    public void SearchService_SearchForColorClass()
+	    {
+		    InsertSearchData();
+		    Assert.AreEqual(1, _search.Search("-ColorClass:2").SearchCount);
+		    // red aka WinnerAlt
 	    }
         
         [TestMethod]

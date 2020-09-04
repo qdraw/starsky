@@ -124,6 +124,7 @@ export function archiveReducer(state: State, action: Action): State {
  * Update the cache based on the keys
  */
 function updateCache(stateLocal: IArchiveProps): IArchiveProps {
+  if (stateLocal.pageType !== PageType.Archive) return stateLocal;
   var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;

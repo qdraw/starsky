@@ -9,6 +9,7 @@ import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import AspectRatio from '../../../shared/aspect-ratio';
 import { CastToInterface } from '../../../shared/cast-to-interface';
+import { ClipboardHelper } from '../../../shared/clipboard-helper';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../../../shared/date';
 import FetchPost from '../../../shared/fetch-post';
 import { Keyboard } from '../../../shared/keyboard';
@@ -16,6 +17,7 @@ import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
+import Notification from '../../atoms/notification/notification';
 import ColorClassSelect from '../../molecules/color-class-select/color-class-select';
 import ModalDatetime from '../modal-edit-date-time/modal-edit-datetime';
 
@@ -45,6 +47,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const MessageDeletedRestoreInstruction = language.text("'Zet terug uit prullenmand' om het item te bewerken", "'Restore from Trash' to edit the item");
   const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
   const MessageCreationDateUnknownTime = language.text("is op een onbekend moment", "is at an unknown time");
+  const MessageCopiedLabels = language.text("De labels zijn gekopieerd", "The labels have been copied");
+  const MessagePasteLabels = language.text("De labels zijn overschreven", "The labels have been overwritten");
 
   let { state, dispatch } = useDetailViewContext();
   var history = useLocation();
@@ -139,6 +143,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     });
   }
 
+  const descriptionReference = useRef<HTMLDivElement>(null);
+  const titleReference = useRef<HTMLDivElement>(null);
+  const [copyPasteAction, setCopyPasteAction] = React.useState("");
+
   // To fast go the tags field
   const tagsReference = useRef<HTMLDivElement>(null);
   useKeyboardEvent(/^([ti])$/, (event: KeyboardEvent) => {
@@ -148,10 +156,30 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     new Keyboard().SetFocusOnEndField(current);
   }, [props]);
 
+  useKeyboardEvent(/^([c])$/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    event.preventDefault();
+    if (!new ClipboardHelper().Copy(tagsReference, descriptionReference, titleReference)) return;
+    setCopyPasteAction(MessageCopiedLabels);
+  }, [props]);
+
+  // next page the message should be gone
+  useEffect(() => {
+    setCopyPasteAction("");
+  }, [state]);
+
+  useKeyboardEvent(/^([v])$/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    event.preventDefault();
+    new ClipboardHelper().Paste(tagsReference, descriptionReference, titleReference);
+    setCopyPasteAction(MessagePasteLabels);
+  }, [props]);
+
   const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
 
   // noinspection HtmlUnknownAttribute
   return (<div className="detailview-sidebar">
+    {copyPasteAction ? <Notification callback={() => setCopyPasteAction("")}>{copyPasteAction}</Notification> : null}
     {fileIndexItem.status === IExifStatus.Deleted || fileIndexItem.status === IExifStatus.ReadOnly
       || fileIndexItem.status === IExifStatus.NotFoundSourceMissing || fileIndexItem.status === IExifStatus.ServerError ? <>
         <div className="content--header">
@@ -186,6 +214,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       <FormControl onBlur={handleChange}
         maxlength={1024}
         name="description"
+        reference={descriptionReference}
         contentEditable={isFormEnabled}>
         {fileIndexItem.description}
       </FormControl>
@@ -193,6 +222,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       <FormControl onBlur={handleChange}
         name="title"
         maxlength={1024}
+        reference={titleReference}
         contentEditable={isFormEnabled}>
         {fileIndexItem.title}
       </FormControl>

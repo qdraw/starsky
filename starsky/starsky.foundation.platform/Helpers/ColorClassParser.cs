@@ -36,7 +36,7 @@ namespace starsky.foundation.platform.Helpers
 			[Display(Name = "Typical")]
 			Typical = 5, // Groen - groen
 			/// <summary>
-			/// Turquoise (6)
+			/// Turquoise/Azure (6)
 			/// </summary>
 			[Display(Name = "Typical Alt")]
 			TypicalAlt = 6, // Turquoise
