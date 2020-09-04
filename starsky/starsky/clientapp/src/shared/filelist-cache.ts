@@ -1,5 +1,5 @@
 import { IArchive } from '../interfaces/IArchive';
-import { IDetailView } from '../interfaces/IDetailView';
+import { IDetailView, PageType } from '../interfaces/IDetailView';
 import { IUrl } from '../interfaces/IUrl';
 import { DifferenceInDate } from './date';
 import { URLPath } from './url-path';
@@ -15,12 +15,60 @@ export class FileListCache {
 
   private timeoutInMinutes = 3;
 
-  public CacheSetObject(urlObject: IUrl, value: any): any {
+  public CacheSetObject(urlObject: IUrl, value: IArchive | IDetailView): any {
+    this.CacheSetObjectWithoutParent(urlObject, value);
+    this.CacheCleanOld();
+    this.setParentItem(urlObject, value);
+    return value;
+  }
+
+  private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
+    if (!urlObject.f) urlObject.f = "/";
+    if (urlObject.collections === undefined) urlObject.collections = true;
+    if (!urlObject.colorClass) urlObject.colorClass = [];
+    return urlObject;
+  }
+
+  private CacheSetObjectWithoutParent(urlObject: IUrl, value: IArchive | IDetailView): any {
+    if (localStorage.getItem('clientCache') === 'false') return;
+    urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
     sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
-
-    this.CacheCleanOld();
     return value;
+  }
+
+  /**
+   * Only updates the parent item with the same colorclass + collections indexer
+   * @param urlObject where to look for
+   * @param value the detailview object that contains parent path
+   */
+  private setParentItem(urlObject: IUrl, value: IDetailView | IArchive): void {
+    if (!value.pageType || value.pageType !== PageType.DetailView) {
+      return;
+    }
+    var detailview = value as IDetailView
+    if (!detailview.fileIndexItem) {
+      return;
+    }
+
+    var parentItem = this.CacheGetObject({ ...urlObject, f: detailview.fileIndexItem.parentDirectory }) as IArchive;
+    if (!parentItem || parentItem.pageType !== PageType.Archive) {
+      return;
+    }
+
+    parentItem.fileIndexItems.forEach((item, index) => {
+      if (!urlObject.collections) {
+        if (item.fileName && item.fileName === detailview.fileIndexItem.fileName) {
+          parentItem.fileIndexItems[index] = detailview.fileIndexItem;
+        }
+      }
+      if (urlObject.collections) {
+        if (item.fileName && item.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)) {
+          parentItem.fileIndexItems[index] = detailview.fileIndexItem;
+        }
+      }
+    });
+    this.CacheSetObjectWithoutParent({ ...urlObject, f: detailview.fileIndexItem.parentDirectory }, parentItem)
   }
 
   public CacheKeyGenerator(urlObject: IUrl) {
@@ -28,22 +76,21 @@ export class FileListCache {
       `c${urlObject.colorClass};l${urlObject.collections}` + urlObject.f;
   }
 
-  public CacheSet(locationSearch: string, value: any): any {
+  public CacheSet(locationSearch: string, value: IArchive | IDetailView): any {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
-    if (!urlObject.f) urlObject.f = "/";
-    if (urlObject.collections === undefined) urlObject.collections = true;
     return this.CacheSetObject(urlObject, value);
   }
 
   public CacheGet(locationSearch: string): IArchive | IDetailView | null {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
-    if (!urlObject.f) urlObject.f = "/";
-    if (urlObject.collections === undefined) urlObject.collections = true;
     return this.CacheGetObject(urlObject);
   }
 
   public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
-    var cache = this.parseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)))
+    if (localStorage.getItem('clientCache') === 'false') return null;
+    urlObject = this.SetDefaultUrlObjectValues(urlObject);
+
+    var cache = this.ParseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)));
     if (!cache) return null;
 
     if (DifferenceInDate(cache.dateCache) > this.timeoutInMinutes) {
@@ -59,7 +106,7 @@ export class FileListCache {
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
       const itemName = Object.keys(sessionStorage)[index];
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
-      var item = this.parseJson(sessionStorage.getItem(itemName));
+      var item = this.ParseJson(sessionStorage.getItem(itemName));
       if (!item || !item.dateCache) continue;
       if (DifferenceInDate(item.dateCache) > this.timeoutInMinutes) {
         sessionStorage.removeItem(itemName)
@@ -67,7 +114,7 @@ export class FileListCache {
     }
   }
 
-  private parseJson(cacheString: string | null): IArchive | IDetailView | null {
+  public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
     var cacheData: any = {};
     try {

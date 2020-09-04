@@ -1,9 +1,10 @@
 import { Link } from '@reach/router';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
+import Preloader from '../../atoms/preloader/preloader';
 
 //  <ColorClassFilter itemsCount={this.props.collectionsCount} subPath={this.props.subPath} 
 // colorClassActiveList={this.props.colorClassActiveList} colorClassUsage={this.props.colorClassUsage}></ColorClassFilter>
@@ -36,6 +37,12 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   // used for reading current location
   var history = useLocation();
 
+  const [isLoading, setIsLoading] = useState(false);
+  // When change-ing page the loader should be gone
+  useEffect(() => {
+    setIsLoading(false);
+  }, [props.colorClassActiveList])
+
   function cleanColorClass(): string {
     if (!props.subPath) return "/";
     var urlObject = new URLPath().StringToIUrl(history.location.search);
@@ -45,6 +52,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
 
   function updateColorClass(item: number): string {
     var urlObject = new URLPath().StringToIUrl(history.location.search);
+
     if (!urlObject.colorClass) {
       urlObject.colorClass = [];
     }
@@ -69,12 +77,13 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
 
   if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);
   return (<div className="colorclass colorclass--filter">
+    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : null}
     {
       props.colorClassActiveList.length !== 0 ? resetButton : resetButtonDisabled
     }
     {
       props.colorClassUsage.map((item, index) => (
-        item >= 0 && item <= 8 ? <Link key={item} to={updateColorClass(item)}
+        item >= 0 && item <= 8 ? <Link onClick={() => setIsLoading(true)} key={item} to={updateColorClass(item)}
           className={props.colorClassActiveList.indexOf(item) >= 0 ?
             "btn btn--default colorclass colorclass--" + item + " active" : "btn colorclass colorclass--" + item}>
           <label /><span>{colorContent[item]}</span> </Link>
