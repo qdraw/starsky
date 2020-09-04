@@ -99,7 +99,8 @@ describe("FileListCache", () => {
       // this should be an Archive not Detailview
       fileListCache.CacheSet("?f=/test_non_valid", detailView);
 
-      fileListCache.CacheSet("?f=/test_non_valid/image.jpg&collections=false", {} as any);
+      // the detailview value needs to have a fileIndexItem value
+      fileListCache.CacheSet("?f=/test_non_valid/image.jpg&collections=false", newDetailView());
 
       // expect nothing happend
     });
