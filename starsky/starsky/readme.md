@@ -26,14 +26,16 @@ The command line arguments are shortcuts to set an in-app environment variable.
 
 ### The order of reading settings
 You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
-1.  You can use `appsettings.json` inside the application folder to set base settings. The order of this files is used to get the values from the appsettings
+1.  You can use `appsettings.json` inside the application folder to set base settings. 
+    The order of this files is used to get the values from the appsettings
     -    `/bin/Debug/netcoreapp3.1/appsettings.patch.json`
     -    `/bin/Debug/netcoreapp3.1/appsettings.computername.patch.json`
     -    `/bin/Debug/netcoreapp3.1/appsettings.json`
     -    `/bin/Debug/netcoreapp3.1/appsettings.computername.json`
 
 2.  Use Environment variables to overwrite those base settings
-   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
+   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` 
+   ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
 3.  Command line argumements in the Cli applications to set in-app environment variables
 
 ### Required settings to start
@@ -48,7 +50,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
 3.  `AddMemoryCache` - Enable caching _(default true)_
-4.  `IsAccountRegisterOpen`  - Keep registrations always open. The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
+4.  `IsAccountRegisterOpen`  - Keep registrations always open. 
+     The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
 5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
 6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
 7.  `AddSwaggerExport` - _Temporary disabled due known issue_ To Export Swagger defentions on startup _(default false)_
@@ -86,7 +89,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  When using Windows please double escape (`\\`) system path's
 
 ### Warmup script
-The default behavior of .NET is to load everything first. To be sure that the application is warm before someone arrives, please check `tools/starsky-warmup.sh`.
+The default behavior of .NET is to load everything first. 
+To be sure that the application is warm before someone arrives, please check `tools/starsky-warmup.sh`.
 
 ### Search Docs
 Advanced queries are supported by the basic search engine.
@@ -137,7 +141,9 @@ Starsky has a Json restful API. Please read the documentation
 > Tip: Breaking changes are documentated in `./history.md`
 
 ### Swagger / OpenAPI
-Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:
+Swagger is an open-source software framework backed by a large ecosystem 
+of tools that helps developers design, build, document, and consume RESTful Web services. 
+There is an swagger definition. You could enable this by setting the following values:
 
 By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable:
 
