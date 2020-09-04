@@ -44,14 +44,16 @@ The command line arguments are shortcuts to set an in-app environment variable.<
 <h3 id="the-order-of-reading-settings">The order of reading settings</h3>
 <p>You could use machine specific configuration files: appsettings.{machinename}.json <em>(and replace {machinename} with your computer name in lowercase)</em></p>
 <ol>
-<li><p>You can use <code>appsettings.json</code> inside the application folder to set base settings. The order of this files is used to get the values from the appsettings</p>
+<li><p>You can use <code>appsettings.json</code> inside the application folder to set base settings. <br />
+The order of this files is used to get the values from the appsettings</p>
 <ul>
 <li><code>/bin/Debug/netcoreapp3.1/appsettings.patch.json</code></li>
 <li><code>/bin/Debug/netcoreapp3.1/appsettings.computername.patch.json</code></li>
 <li><code>/bin/Debug/netcoreapp3.1/appsettings.json</code></li>
 <li><code>/bin/Debug/netcoreapp3.1/appsettings.computername.json</code></li></ul></li>
 <li><p>Use Environment variables to overwrite those base settings<br />
-For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> (<a href="https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916">source</a>)  </p></li>
+For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> <br />
+(<a href="https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916">source</a>)  </p></li>
 <li><p>Command line argumements in the Cli applications to set in-app environment variables</p></li>
 </ol>
 <h3 id="required-settings-to-start">Required settings to start</h3>
@@ -71,7 +73,8 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> (
 <li><code>Structure</code> - The structure that will be used when you import files, has a default fallback.</li>
 <li><code>ReadOnlyFolders</code> - Accepts a list of folders that never may be edited, defaults a empty list</li>
 <li><code>AddMemoryCache</code> - Enable caching <em>(default true)</em></li>
-<li><code>IsAccountRegisterOpen</code>  - Keep registrations always open. The only 2 build-in exceptions are when there are no accounts or you already logged in <em>(default false)</em></li>
+<li><code>IsAccountRegisterOpen</code>  - Keep registrations always open. <br />
+ The only 2 build-in exceptions are when there are no accounts or you already logged in <em>(default false)</em></li>
 <li><code>AddSwagger</code> - To show a user interface to show al REST-services <em>(default false)</em></li>
 <li><code>ExifToolImportXmpCreate</code> - is used to create at import time a xmp file based on the raw image <em>(default false)</em></li>
 <li><code>AddSwaggerExport</code> - <em>Temporary disabled due known issue</em> To Export Swagger defentions on startup <em>(default false)</em></li>
@@ -109,7 +112,8 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> (
 <li>When using Windows please double escape (<code>\\</code>) system path's</li>
 </ol>
 <h3 id="warmup-script">Warmup script</h3>
-<p>The default behavior of .NET is to load everything first. To be sure that the application is warm before someone arrives, please check <code>tools/starsky-warmup.sh</code>.</p>
+<p>The default behavior of .NET is to load everything first. <br />
+To be sure that the application is warm before someone arrives, please check <code>tools/starsky-warmup.sh</code>.</p>
 <h3 id="search-docs">Search Docs</h3>
 <p>Advanced queries are supported by the basic search engine.</p>
 <p><strong>All text (not number or date) driven search queries use a contain search</strong></p>
@@ -300,7 +304,9 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> (
   <p>Tip: Breaking changes are documentated in <code>./history.md</code></p>
 </blockquote>
 <h3 id="swagger--openapi">Swagger / OpenAPI</h3>
-<p>Swagger is an open-source software framework backed by a large ecosystem of tools that helps developers design, build, document, and consume RESTful Web services. There is an swagger definition. You could enable this by setting the following values:</p>
+<p>Swagger is an open-source software framework backed by a large ecosystem <br />
+of tools that helps developers design, build, document, and consume RESTful Web services. <br />
+There is an swagger definition. You could enable this by setting the following values:</p>
 <p>By default this feature is disabled, please use the <code>AddSwagger</code> definition in the AppSettings or use the following environment variable:</p>
 <pre><code>app__AddSwagger=true</code></pre>
 <p>This is the default location of the swagger documentation</p>
