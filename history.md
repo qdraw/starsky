@@ -43,7 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Add updating parent items in the front-end cache
 - [x]   (Added) _Back-end_ Publish - Files that are not found while publishing are ignored
 - [x]   (Added) _Back-end_ Publish - Show status when there a no items found before publishing
-
+- [x]   (Added) _Back-end_ Search - search for colorClass by indexer `--colorclass=1`
 
 # version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
