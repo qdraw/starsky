@@ -17,6 +17,7 @@ export interface IFileIndexItem {
     lastEdited?: string;
     filePath: string;
     fileName: string;
+    fileCollectionName: string;
     fileHash: string;
     parentDirectory: string;
     status: IExifStatus;

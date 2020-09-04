@@ -39,6 +39,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Warning when video is not found
 - [x]   (Added) _Front-end_ Warning when playback is not supported or not working
 - [x]   (Added) _Back-end_ Download API has now default client side caching
+- [x]   (Added) _Front-end_ Add Preloader for ColorClass filter, only used when using this app on a slow server
+- [x]   (Added) _Front-end_ Add updating parent items in the front-end cache
+- [x]   (Added) _Back-end_ Publish - Files that are not found while publishing are ignored
+- [x]   (Added) _Back-end_ Publish - Show status when there a no items found before publishing
 
 
 # version 0.3.0 - 2020-09-02

@@ -66,7 +66,6 @@ export function detailviewReducer(state: State, action: Action): State {
     case "update":
       /* eslint-disable-next-line no-redeclare */
       var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
-
       if (tags !== undefined) state.fileIndexItem.tags = tags;
       if (description !== undefined) state.fileIndexItem.description = description;
       if (title !== undefined) state.fileIndexItem.title = title;
@@ -80,7 +79,8 @@ export function detailviewReducer(state: State, action: Action): State {
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "reset":
-      return updateCache(action.payload);
+      // this is triggert a lot when loading a page
+      return action.payload;
   }
 }
 
@@ -88,6 +88,9 @@ export function detailviewReducer(state: State, action: Action): State {
  * Update the cache based on the keys
  */
 function updateCache(stateLocal: IDetailView): IDetailView {
+  if (!stateLocal.fileIndexItem) {
+    return stateLocal;
+  }
   var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;

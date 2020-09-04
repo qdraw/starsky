@@ -44,6 +44,5 @@ export interface IDetailView {
 }
 
 export function newDetailView(): IDetailView {
-    return {
-    } as IDetailView;
+    return { pageType: PageType.DetailView } as IDetailView;
 }
