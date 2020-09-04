@@ -7,6 +7,7 @@ import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/I
 import { IRelativeObjects, PageType } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem } from '../../../interfaces/IFileIndexItem';
+import { ClipboardHelper } from '../../../shared/clipboard-helper';
 import { parseDate, parseTime } from '../../../shared/date';
 import * as FetchPost from '../../../shared/fetch-post';
 import { SupportedLanguages } from '../../../shared/language';
@@ -297,6 +298,38 @@ describe("DetailViewSidebar", () => {
       expect(fetchPostSpy).toBeCalledTimes(2);
       expect(fetchPostSpy).toHaveBeenNthCalledWith(2, `${new UrlQuery().prefix}/api/search/removeCache`, 't=test')
     });
+
+    it("Press c to copy", () => {
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "c",
+      });
+
+      var copySpy = jest.spyOn(ClipboardHelper.prototype, 'Copy').mockImplementationOnce(() => { })
+
+      act(() => {
+        window.dispatchEvent(event);
+      });
+
+      expect(copySpy).toBeCalled();
+    })
+
+    it("Press v to paste", () => {
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "v",
+      });
+
+      var pasteSpy = jest.spyOn(ClipboardHelper.prototype, 'Paste').mockImplementationOnce(() => { })
+
+      act(() => {
+        window.dispatchEvent(event);
+      });
+
+      expect(pasteSpy).toBeCalled();
+    })
 
   });
 });
