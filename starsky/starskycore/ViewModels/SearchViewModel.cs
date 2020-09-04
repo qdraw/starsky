@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -74,7 +75,8 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Types to search in e.g. -Title=Test
 	    /// </summary>
-        public enum SearchInTypes
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
+	    public enum SearchInTypes
         {
 	        tags = 0,
 	        filepath = 1,
@@ -88,8 +90,9 @@ namespace starskycore.ViewModels
 	        isdirectory = 9,
 	        imageformat = 10,
 	        lastedited = 11,
-	        make,
-	        model
+	        make = 12,
+	        model = 13,
+	        colorclass = 14
         }
 
         
