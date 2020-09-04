@@ -299,6 +299,18 @@ between 1 and 2 items
   background-image: url("../images/baseline-file-mp4-24px.svg");
 }
 
+.list-image-box > .box-content.isDirectory-false > .img-box--jpg {
+  background-image: url("../images/baseline-file-jpg-24px.svg");
+}
+
+.list-image-box > .box-content.isDirectory-false > .img-box--bmp {
+  background-image: url("../images/baseline-file-bmp-24px.svg");
+}
+
+.list-image-box > .box-content.isDirectory-false > .img-box--png {
+  background-image: url("../images/baseline-file-png-24px.svg");
+}
+
 .list-image-box > .box-content > .img-box--loading > img {
   width: 0px;
   height: 0px;

@@ -19,6 +19,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   const [src, setSrc] = useState(props.fileHash);
 
+  const [issingleitem] = useState(localStorage.getItem("issingleitem") !== "false");
+
   // Reset Loading after changing page
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -48,8 +50,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(EmptyImage) // 26 bytes
       return;
     }
-    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, localStorage.getItem("issingleitem") !== "false"))
-  }, [props.fileHash, history.location.search, historyLocation, isLoading]);
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, issingleitem))
+  }, [props.fileHash, history.location.search, historyLocation, isLoading, issingleitem]);
 
 
   if (props.fileHash === 'null' || props.fileHash === null || !props.fileHash || !props.imageFormat) {
@@ -63,7 +65,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   }
 
   return (
-    <div ref={target} className={error ? "img-box--error" : isLoading ? "img-box img-box--loading" : "img-box"}>
+    <div ref={target} className={error ? `img-box--error img-box--${props.imageFormat}` : isLoading ? "img-box img-box--loading" : "img-box"}>
       {intersected ? <img src={src} alt={alt}
         onLoad={() => {
           setError(false);
