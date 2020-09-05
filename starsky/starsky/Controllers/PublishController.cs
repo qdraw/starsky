@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,6 +70,7 @@ namespace starsky.Controllers
 		public async Task<IActionResult> PublishCreate(string f, string itemName, 
 			string publishProfileName, bool force = false)
 		{
+			Console.WriteLine("Press publish: " + f + DateTime.UtcNow);
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
 			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

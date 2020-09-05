@@ -47,6 +47,7 @@ describe("DetailView", () => {
     pageType: PageType.DetailView,
     colorClassActiveList: [],
     subPath: "/___test___",
+    dateCache: Date.now(),
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {

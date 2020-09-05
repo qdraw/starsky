@@ -16,10 +16,10 @@ app.all("/*", function (req, res, next) {
     res.json("not allowed");
   }
 
-  if (req.originalUrl.startsWith("/api") ||
-    req.originalUrl.startsWith("/account") ||
-    req.originalUrl.startsWith("/sync/") ||
-    req.originalUrl.startsWith("/export/")) {
+  if (req.originalUrl.startsWith("/starsky/api") ||
+    req.originalUrl.startsWith("/starsky/account") ||
+    req.originalUrl.startsWith("/starsky/sync/") ||
+    req.originalUrl.startsWith("/starsky/export/")) {
     NetCoreAppRouteRoute(req, res, next);
   }
   else {
@@ -36,7 +36,7 @@ function CreateReactAppRoute(req, res, next) {
       changeOrigin: true,
       secure: false,
       autoRewrite: true,
-      xfwd: true
+      xfwd: false
     }
   );
   // res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net 'nonce-53b3ebf63787426db506e8e49d4400c4'; connect-src 'self' https://dc.services.visualstudio.com; style-src 'unsafe-inline'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
@@ -84,13 +84,15 @@ function NetCoreAppRouteRoute(req, res, next) {
     }
   });
 
+  console.log(req.headers);
+
   apiProxy.web(req, res,
     {
       target: netCoreAppRouteUrl,
       changeOrigin: true,
       secure: false,
       autoRewrite: true,
-      xfwd: true,
+      xfwd: false,
       cookieDomainRewrite: {
         '*': req.headers.host
       },
@@ -114,30 +116,30 @@ var port = process.env.PORT || process.env.port || 6501;
 app.listen(port);
 console.log("http://localhost:" + port);
 
-const localtunnel = require('localtunnel');
-
-(async () => {
-
-  // lt -p 8080 -h http://localtunnel.me --local-https false
-  const tunnel = await localtunnel({
-    subdomain: process.env.SUBDOMAIN,
-    host: 'http://localtunnel.me',
-    port: port,
-    local_https: false
-  }).catch(err => {
-    throw err;
-  });
-
-  // the assigned public url for your tunnel
-  // i.e. https://abcdefgjhij.localtunnel.me
-  console.log("Your localtunnel is ready on:");
-  console.log(tunnel.url);
-
-  tunnel.on('error', () => {
-    console.log('err');
-  });
-
-  tunnel.on('close', () => {
-    console.log('tunnels are closed');
-  });
-})();
+// const localtunnel = require('localtunnel');
+//
+// (async () => {
+//
+//   // lt -p 8080 -h http://localtunnel.me --local-https false
+//   const tunnel = await localtunnel({
+//     subdomain: process.env.SUBDOMAIN,
+//     host: 'http://localtunnel.me',
+//     port: port,
+//     local_https: false
+//   }).catch(err => {
+//     throw err;
+//   });
+//
+//   // the assigned public url for your tunnel
+//   // i.e. https://abcdefgjhij.localtunnel.me
+//   console.log("Your localtunnel is ready on:");
+//   console.log(tunnel.url);
+//
+//   tunnel.on('error', () => {
+//     console.log('err');
+//   });
+//
+//   tunnel.on('close', () => {
+//     console.log('tunnels are closed');
+//   });
+// })();

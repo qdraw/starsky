@@ -59,7 +59,7 @@ const Login: React.FC<ILoginProps> = () => {
   const authHandler = async () => {
     try {
       setLoading(true);
-      const response = await FetchPost(new UrlQuery().UrlLoginPage(), 'Email=' + userEmail + '&Password=' + userPassword);
+      const response = await FetchPost(new UrlQuery().UrlLoginApi(), 'Email=' + userEmail + '&Password=' + userPassword);
       if (!response || !response.data) {
         setError(MessageConnection);
       }

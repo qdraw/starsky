@@ -162,7 +162,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			}
 			catch (Exception ex)            
 			{
-				if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
+				Console.WriteLine(subPath);
 				Console.WriteLine(ex);
 				return null;
 			}
