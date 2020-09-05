@@ -46,7 +46,8 @@ describe("DetailView", () => {
     status: IExifStatus.Default,
     pageType: PageType.DetailView,
     colorClassActiveList: [],
-    subPath: "/___test___",
+    subPath: '/parentDirectory/test.jpg',
+    dateCache: Date.now(),
   } as IDetailView;
 
   describe("With context and test if image is loaded", () => {
@@ -242,12 +243,18 @@ describe("DetailView", () => {
       })
 
       var navigateSpy = jest.fn();
-      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+      var locationFaker = () => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy,
         }
-      });
+      };
+
+      var locationSpy = jest.spyOn(useLocation, 'default')
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker);
 
       // Now fake the search/realtive api
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
@@ -258,12 +265,12 @@ describe("DetailView", () => {
 
       var spyGet = jest.spyOn(FetchGet, 'default')
         .mockImplementationOnce(() => mockGetIConnectionDefault)
-        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       var detailview = mount(<TestComponent />);
       var item = detailview.find(".nextprev--prev");
-      act(() => {
-        item.simulate('click');
+
+      await act(async () => {
+        await item.simulate('click');
       })
 
       expect(locationSpy).toBeCalled();
@@ -310,7 +317,9 @@ describe("DetailView", () => {
 
       var component = mount(<TestComponent />);
 
-      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
+      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField')
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { });
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,

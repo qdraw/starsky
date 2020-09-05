@@ -8,12 +8,12 @@ import MenuDetailView from '../components/organisms/menu-detail-view/menu-detail
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
-import { IDetailView, newDetailView } from '../interfaces/IDetailView';
+import { IDetailView, IRelativeObjects, newDetailView } from '../interfaces/IDetailView';
 import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import DocumentTitle from '../shared/document-title';
-import FetchGet from '../shared/fetch-get';
 import { Keyboard } from '../shared/keyboard';
+import { UpdateRelativeObject } from '../shared/update-relative-object';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -57,16 +57,9 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // update relative next prev buttons for search queries
   useEffect(() => {
-    if (state.subPath === "/" || !isSearchQuery) return;
-    FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath,
-      new URLPath().StringToIUrl(history.location.search).t,
-      new URLPath().StringToIUrl(history.location.search).p)
-    ).then((result) => {
-      if (result.statusCode !== 200) return;
-      setRelativeObjects(result.data);
-    }).catch((err) => {
-      console.log(err);
-    });
+    new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).catch(() => { });
+    // function UpdateRelativeObject  is not subject to change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.search, isSearchQuery, state.subPath]);
 
   // previous item
@@ -128,22 +121,53 @@ const DetailView: React.FC<IDetailView> = () => {
   */
   function next() {
     if (!relativeObjects) return;
-    var nextPath = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.nextFilePath, false);
+    if (relativeObjects.nextFilePath === state.subPath) {
+      // when changing next very fast it might skip a check
+      new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).then((data) => {
+        navigateNext(data);
+      }).catch(() => { });
+      return;
+    }
+    navigateNext(relativeObjects);
+  }
+
+  /**
+   * Navigate to Next
+   * @param relative object to move from 
+   */
+  function navigateNext(relative: IRelativeObjects) {
+    var nextPath = new UrlQuery().updateFilePathHash(history.location.search, relative.nextFilePath, false);
     // Prevent keeps loading forever
-    if (relativeObjects.nextHash !== state.fileIndexItem.fileHash) {
+    if (relative.nextHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
     history.navigate(nextPath, { replace: true });
   }
 
   /**
-   * navigation function to go to previous photo
-   */
+  * navigation function to go to prev photo
+  */
   function prev() {
     if (!relativeObjects) return;
+    if (relativeObjects.prevFilePath === state.subPath) {
+      // when changing prev very fast it might skip a check
+      new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).then((data) => {
+        navigatePrev(data);
+      });
+      return;
+    }
+    navigatePrev(relativeObjects);
+  }
+
+  /**
+   * Navigate to previous
+   * @param relative object to move from 
+   */
+  function navigatePrev(relative: IRelativeObjects) {
     var prevPath = new UrlQuery().updateFilePathHash(history.location.search, relativeObjects.prevFilePath, false);
+
     // Prevent keeps loading forever
-    if (relativeObjects.prevHash !== state.fileIndexItem.fileHash) {
+    if (relative.prevHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
     history.navigate(prevPath, { replace: true });

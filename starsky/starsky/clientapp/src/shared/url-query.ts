@@ -61,10 +61,13 @@ export class UrlQuery {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
   }
 
+  public UrlLoginApi(): string {
+    return this.prefix + `/account/login`;
+  }
+
   public UrlLogoutPage(returnUrl: string): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout?ReturnUrl=${returnUrl}` : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
   }
-
 
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
