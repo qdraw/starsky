@@ -84,8 +84,6 @@ function NetCoreAppRouteRoute(req, res, next) {
     }
   });
 
-  console.log(req.headers);
-
   apiProxy.web(req, res,
     {
       target: netCoreAppRouteUrl,
@@ -116,30 +114,31 @@ var port = process.env.PORT || process.env.port || 6501;
 app.listen(port);
 console.log("http://localhost:" + port);
 
-// const localtunnel = require('localtunnel');
-//
-// (async () => {
-//
-//   // lt -p 8080 -h http://localtunnel.me --local-https false
-//   const tunnel = await localtunnel({
-//     subdomain: process.env.SUBDOMAIN,
-//     host: 'http://localtunnel.me',
-//     port: port,
-//     local_https: false
-//   }).catch(err => {
-//     throw err;
-//   });
-//
-//   // the assigned public url for your tunnel
-//   // i.e. https://abcdefgjhij.localtunnel.me
-//   console.log("Your localtunnel is ready on:");
-//   console.log(tunnel.url);
-//
-//   tunnel.on('error', () => {
-//     console.log('err');
-//   });
-//
-//   tunnel.on('close', () => {
-//     console.log('tunnels are closed');
-//   });
-// })();
+// LocalTunnel Setup
+const localtunnel = require('localtunnel');
+
+(async () => {
+
+  // lt -p 8080 -h http://localtunnel.me --local-https false
+  const tunnel = await localtunnel({
+    subdomain: process.env.SUBDOMAIN,
+    host: 'http://localtunnel.me',
+    port: port,
+    local_https: false
+  }).catch(err => {
+    throw err;
+  });
+
+  // the assigned public url for your tunnel
+  // i.e. https://abcdefgjhij.localtunnel.me
+  console.log("Your localtunnel is ready on:");
+  console.log(tunnel.url);
+
+  tunnel.on('error', () => {
+    console.log('err');
+  });
+
+  tunnel.on('close', () => {
+    console.log('tunnels are closed');
+  });
+})();
