@@ -23,8 +23,6 @@ export class UpdateRelativeObject {
         new URLPath().StringToIUrl(historyLocationSearch).t,
         new URLPath().StringToIUrl(historyLocationSearch).p)
       ).then((result) => {
-        console.log(result);
-
         if (result.statusCode !== 200) {
           rejects();
           return;
