@@ -7,15 +7,13 @@ import { UrlQuery } from './url-query';
 export class UpdateRelativeObject {
 
   /**
-   * Update FetchGet
+   * UrlSearchRelativeApi using FetchGet
    */
   public Update(state: IDetailView, isSearchQuery: boolean, historyLocationSearch: string,
     setRelativeObjects: React.Dispatch<React.SetStateAction<IRelativeObjects>>):
     Promise<IRelativeObjects> {
 
     return new Promise((resolve, rejects) => {
-      console.log('--updateSetRelativeObjects', isSearchQuery, state.subPath);
-
       if (state.subPath === "/" || !isSearchQuery) {
         rejects();
         return;
