@@ -46,7 +46,7 @@ describe("DetailView", () => {
     status: IExifStatus.Default,
     pageType: PageType.DetailView,
     colorClassActiveList: [],
-    subPath: "/___test___",
+    subPath: '/parentDirectory/test.jpg',
     dateCache: Date.now(),
   } as IDetailView;
 
@@ -243,12 +243,18 @@ describe("DetailView", () => {
       })
 
       var navigateSpy = jest.fn();
-      var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
+      var locationFaker = () => {
         return {
           location: globalHistory.location,
           navigate: navigateSpy,
         }
-      });
+      };
+
+      var locationSpy = jest.spyOn(useLocation, 'default')
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker);
 
       // Now fake the search/realtive api
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
@@ -259,12 +265,12 @@ describe("DetailView", () => {
 
       var spyGet = jest.spyOn(FetchGet, 'default')
         .mockImplementationOnce(() => mockGetIConnectionDefault)
-        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       var detailview = mount(<TestComponent />);
       var item = detailview.find(".nextprev--prev");
-      act(() => {
-        item.simulate('click');
+
+      await act(async () => {
+        await item.simulate('click');
       })
 
       expect(locationSpy).toBeCalled();
@@ -279,6 +285,69 @@ describe("DetailView", () => {
       })
     });
 
+    it("xxxxxxxx [SearchResult] Next", async () => {
+
+      console.log(' xxxx [SearchResult] Next');
+
+      // add search query to url
+      act(() => {
+        globalHistory.navigate("/?t=test&p=0");
+      })
+
+      var navigateSpy = jest.fn();
+      var locationFaker = () => {
+        return {
+          location: globalHistory.location,
+          navigate: navigateSpy,
+        }
+      };
+
+      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => newIConnectionDefault())
+
+      var locationSpy = jest.spyOn(useLocation, 'default')
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker)
+        .mockImplementationOnce(locationFaker);
+
+      // Now fake the search/realtive api
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        statusCode: 200, data: {
+          nextFilePath: '/parentDirectory/test.jpg'
+        } as IRelativeObjects
+      } as IConnectionDefault);
+
+      // const mockGetIConnectionDefault2: Promise<IConnectionDefault> = Promise.resolve({
+      //   statusCode: 200, data: {
+      //     nextFilePath: '/parentDirectory/test22.jpg'
+      //   } as IRelativeObjects
+      // } as IConnectionDefault);
+
+      var spyGet = jest.spyOn(FetchGet, 'default')
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+      // .mockImplementationOnce(() => mockGetIConnectionDefault2)
+      // .mockImplementationOnce(() => mockGetIConnectionDefault2);
+
+      var detailview = mount(<TestComponent />);
+      var item = detailview.find(".nextprev--prev");
+
+      console.log(detailview.html());
+
+      await act(async () => {
+        await item.simulate('click');
+      })
+
+      expect(locationSpy).toBeCalled();
+      expect(navigateSpy).toBeCalled();
+
+      // could not check values :(
+      expect(spyGet).toBeCalled();
+
+      // reset afterwards
+      act(() => {
+        detailview.unmount();
+      })
+    });
 
     it("Escape key Keyboard", () => {
       var navigateSpy = jest.fn();
@@ -311,7 +380,9 @@ describe("DetailView", () => {
 
       var component = mount(<TestComponent />);
 
-      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
+      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField')
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { });
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,

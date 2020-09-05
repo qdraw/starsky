@@ -12,8 +12,8 @@ import { IDetailView, IRelativeObjects, newDetailView } from '../interfaces/IDet
 import { ImageFormat } from '../interfaces/IFileIndexItem';
 import { INavigateState } from '../interfaces/INavigateState';
 import DocumentTitle from '../shared/document-title';
-import FetchGet from '../shared/fetch-get';
 import { Keyboard } from '../shared/keyboard';
+import { UpdateRelativeObject } from '../shared/update-relative-object';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 
@@ -57,33 +57,10 @@ const DetailView: React.FC<IDetailView> = () => {
 
   // update relative next prev buttons for search queries
   useEffect(() => {
-    updateSetRelativeObjects();
-    // function is not subject to change
+    new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).catch(() => { });
+    // function UpdateRelativeObject  is not subject to change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.search, isSearchQuery, state.subPath]);
-
-  /**
-   * Update FetchGet
-   */
-  function updateSetRelativeObjects(): Promise<IRelativeObjects> {
-    return new Promise((resolve, rejects) => {
-      if (state.subPath === "/" || !isSearchQuery) return;
-      FetchGet(new UrlQuery().UrlSearchRelativeApi(state.subPath,
-        new URLPath().StringToIUrl(history.location.search).t,
-        new URLPath().StringToIUrl(history.location.search).p)
-      ).then((result) => {
-        if (result.statusCode !== 200) {
-          rejects();
-          return;
-        }
-        setRelativeObjects(result.data);
-        resolve(result.data);
-      }).catch((err) => {
-        console.log(err);
-        rejects();
-      });
-    });
-  }
 
   // previous item
   useKeyboardEvent(/ArrowLeft/, (event: KeyboardEvent) => {
@@ -146,9 +123,9 @@ const DetailView: React.FC<IDetailView> = () => {
     if (!relativeObjects) return;
     if (relativeObjects.nextFilePath === state.subPath) {
       // when changing next very fast it might skip a check
-      updateSetRelativeObjects().then((data) => {
+      new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).then((data) => {
         navigateNext(data);
-      });
+      }).catch(() => { });
       return;
     }
     navigateNext(relativeObjects);
@@ -174,7 +151,7 @@ const DetailView: React.FC<IDetailView> = () => {
     if (!relativeObjects) return;
     if (relativeObjects.prevFilePath === state.subPath) {
       // when changing prev very fast it might skip a check
-      updateSetRelativeObjects().then((data) => {
+      new UpdateRelativeObject().Update(state, isSearchQuery, history.location.search, setRelativeObjects).then((data) => {
         navigatePrev(data);
       });
       return;
