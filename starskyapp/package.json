@@ -1,6 +1,6 @@
 {
   "name": "starsky",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Starsky",
   "main": "index.js",
   "scripts": {
