@@ -33,7 +33,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.1 _(Unreleased)_  2020-09-??
+# version 0.3.2 _(Unreleased)_  2020-09-??
+- add here features
+
+# version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
 - [x]   (Added) _Front-end_ Client Side caching for 3 minutes to avoid requests and speed on slow devices
 - [x]   (Added) _Front-end_ Warning when video is not found
