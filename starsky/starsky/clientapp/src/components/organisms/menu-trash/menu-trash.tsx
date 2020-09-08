@@ -7,6 +7,7 @@ import { Language } from '../../../shared/language';
 import { Select } from '../../../shared/select';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
+import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import Modal from '../../atoms/modal/modal';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
@@ -109,13 +110,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
       <header className={select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
 
-          {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
-            <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i />
-              <i />
-              <i />
-            </div>
-          </button> : null}
+          <HamburgerMenuToggle select={select} hamburgerMenu={hamburgerMenu} setHamburgerMenu={setHamburgerMenu} />
 
           {select && select.length === 0 ? <button onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{MessageNoneSelected}</button> : null}

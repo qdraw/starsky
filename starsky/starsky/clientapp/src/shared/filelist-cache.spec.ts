@@ -194,6 +194,26 @@ describe("FileListCache", () => {
       expect(cacheGetter4).toStrictEqual(data4);
     });
 
+    it("clean everything", () => {
+      sessionStorage.setItem(fileListCache.CacheKeyGenerator({ f: '9', collections: true, colorClass: [] }), JSON.stringify({
+        data: 2,
+        dateCache: 2,
+      } as any));
+
+      sessionStorage.setItem(fileListCache.CacheKeyGenerator({ f: '10', collections: true, colorClass: [] }), JSON.stringify({
+        data: 2,
+        dateCache: Date.now(),
+      } as any));
+
+      fileListCache.CacheCleanEverything();
+
+      var cacheGetter9 = fileListCache.CacheGet("?f=9");
+      expect(cacheGetter9).toBeNull();
+
+      var cacheGetter10 = fileListCache.CacheGet("?f=10");
+      expect(cacheGetter10).toBeNull();
+    });
+
     it("setter ignore when feature toggle is off", () => {
       localStorage.setItem('clientCache', 'false');
 
