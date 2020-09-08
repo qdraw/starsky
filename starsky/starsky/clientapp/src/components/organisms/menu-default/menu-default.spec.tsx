@@ -1,5 +1,6 @@
 import { mount, shallow } from 'enzyme';
 import React from 'react';
+import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MenuDefault from './menu-default';
 
 describe("MenuDefault", () => {
@@ -11,7 +12,7 @@ describe("MenuDefault", () => {
   describe("with Context", () => {
     it("has hamburger", () => {
       var component = shallow(<MenuDefault isEnabled={true} />);
-      expect(component.exists('[data-test="hamburger"]')).toBeTruthy();
+      expect(component.exists(HamburgerMenuToggle)).toBeTruthy();
     });
 
     it("check if on click the hamburger opens", () => {

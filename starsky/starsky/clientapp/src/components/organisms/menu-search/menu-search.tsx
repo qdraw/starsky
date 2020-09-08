@@ -6,9 +6,11 @@ import { Language } from '../../../shared/language';
 import { Select } from '../../../shared/select';
 import { Sidebar } from '../../../shared/sidebar';
 import { URLPath } from '../../../shared/url-path';
+import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import ModalDownload from '../modal-download/modal-download';
+import NavContainer from '../nav-container/nav-container';
 
 export const MenuSearch: React.FunctionComponent<any> = (_) => {
 
@@ -60,13 +62,7 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
       <header className={sidebar ? "header header--main header--select header--edit" : select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
 
-          {!select ? <button className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
-            <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i />
-              <i />
-              <i />
-            </div>
-          </button> : null}
+          <HamburgerMenuToggle select={select} hamburgerMenu={hamburgerMenu} setHamburgerMenu={setHamburgerMenu} />
 
           {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{MessageNoneSelected}</button> : null}
@@ -101,13 +97,9 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
               <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             </MoreMenu> : null}
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
         </div>
       </header>
 

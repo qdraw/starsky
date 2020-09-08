@@ -11,6 +11,7 @@ import { Sidebar } from '../../../shared/sidebar';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import DropArea from '../../atoms/drop-area/drop-area';
+import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import ModalArchiveMkdir from '../modal-archive-mkdir/modal-archive-mkdir';
@@ -20,6 +21,7 @@ import ModalDisplayOptions from '../modal-display-options/modal-display-options'
 import ModalDownload from '../modal-download/modal-download';
 import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
 import ModalPublish from '../modal-publish/modal-publish';
+import NavContainer from '../nav-container/nav-container';
 
 interface IMenuArchiveProps {
 }
@@ -156,13 +158,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       <header className={sidebar ? "header header--main header--select header--edit" :
         select ? "header header--main header--select" : "header header--main "}>
         <div className="wrapper">
-          {!select ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
-            <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i />
-              <i />
-              <i />
-            </div>
-          </button> : null}
+
+          <HamburgerMenuToggle select={select} hamburgerMenu={hamburgerMenu} setHamburgerMenu={setHamburgerMenu} />
 
           {select && select.length === 0 ? <button data-test="selected-0" onClick={() => { removeSidebarSelection() }}
             className="item item--first item--close">{MessageNoneSelected}</button> : null}
@@ -204,13 +201,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           </MoreMenu> : null}
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
         </div>
       </header>
 

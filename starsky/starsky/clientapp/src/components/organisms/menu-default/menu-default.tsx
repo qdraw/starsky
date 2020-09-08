@@ -1,5 +1,7 @@
 import React from 'react';
+import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
+import NavContainer from '../nav-container/nav-container';
 
 interface IMenuDefaultProps {
   isEnabled: boolean;
@@ -13,21 +15,12 @@ const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = (props) => {
       <header className={"header header--main"}>
         <div className="wrapper">
 
-          {props.isEnabled ? <button data-test="hamburger" className="hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
-            <div className={hamburgerMenu ? "hamburger open" : "hamburger"}>
-              <i />
-              <i />
-              <i />
-            </div>
-          </button> : null}
+          <HamburgerMenuToggle select={false} hamburgerMenu={hamburgerMenu} setHamburgerMenu={setHamburgerMenu} />
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
+
         </div>
       </header>
     </>);

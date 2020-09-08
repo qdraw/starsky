@@ -114,6 +114,19 @@ export class FileListCache {
     }
   }
 
+  /**
+   * And clean the old ones
+   */
+  public CacheCleanEverything(): void {
+    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
+      const itemName = Object.keys(sessionStorage)[index];
+      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
+      var item = this.ParseJson(sessionStorage.getItem(itemName));
+      if (!item || !item.dateCache) continue;
+      sessionStorage.removeItem(itemName)
+    }
+  }
+
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
     var cacheData: any = {};
