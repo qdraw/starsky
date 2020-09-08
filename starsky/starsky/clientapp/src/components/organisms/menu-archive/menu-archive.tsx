@@ -21,6 +21,7 @@ import ModalDisplayOptions from '../modal-display-options/modal-display-options'
 import ModalDownload from '../modal-download/modal-download';
 import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
 import ModalPublish from '../modal-publish/modal-publish';
+import NavContainer from '../nav-container/nav-container';
 
 interface IMenuArchiveProps {
 }
@@ -200,13 +201,9 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 
           </MoreMenu> : null}
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
         </div>
       </header>
 

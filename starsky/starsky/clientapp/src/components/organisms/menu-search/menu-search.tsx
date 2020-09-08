@@ -10,6 +10,7 @@ import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-men
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import ModalDownload from '../modal-download/modal-download';
+import NavContainer from '../nav-container/nav-container';
 
 export const MenuSearch: React.FunctionComponent<any> = (_) => {
 
@@ -96,13 +97,9 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
               <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             </MoreMenu> : null}
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
         </div>
       </header>
 

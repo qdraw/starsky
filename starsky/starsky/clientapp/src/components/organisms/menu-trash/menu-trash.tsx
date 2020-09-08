@@ -11,6 +11,7 @@ import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-men
 import Modal from '../../atoms/modal/modal';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
+import NavContainer from '../nav-container/nav-container';
 
 const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
@@ -146,13 +147,9 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
               <li className="menu-option" data-test="delete" onClick={() => setModalDeleteOpen(true)}>{MessageDeleteImmediately}</li>
             </MoreMenu> : null}
 
-          <nav className={hamburgerMenu ? "nav open" : "nav"}>
-            <div className="nav__container">
-              <ul className="menu">
-                <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
-              </ul>
-            </div>
-          </nav>
+          <NavContainer hamburgerMenu={hamburgerMenu}>
+            <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
+          </NavContainer>
         </div>
       </header>
     </>);
