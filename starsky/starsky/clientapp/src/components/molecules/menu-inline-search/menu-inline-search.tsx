@@ -99,32 +99,35 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
   return (
     <div className="menu-inline-search">
       <div className={!formFocus ? "blur" : ""} onFocus={() => setFormFocus(true)}>
-        <li className="menu-item menu-item--half-extra">
-          <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
-            <label htmlFor="search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"} />
-            <input
-              maxLength={80}
-              className={"form-control icon-addon--input"}
-              onBlur={() => { setInputFocus(!inputFocus) }}
-              onFocus={() => { setInputFocus(!inputFocus) }}
-              autoComplete="off"
-              defaultValue={query}
-              ref={inputFormControlReference}
-              onKeyDown={_ => { setInputFocus(false) }}
-              onChange={e => { setQuery(e.target.value); }}
-            />
-          </form>
-        </li>
-        {suggest && suggest.length === 0 ?
-          defaultMenu.map((value, index) => {
-            return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
-          }) : null
-        }
-        {suggest && suggest.map((item, index) => (
-          index <= 8 ? <li key={item} className="menu-item menu-item--results">
-            <button onClick={() => navigate(item)} className="search-icon">{item}</button>
-          </li> : null
-        ))}
+        <ul>
+          <li className="menu-item menu-item--half-extra">
+            <form className="form-inline form-nav icon-addon" onSubmit={onFormSubmit}>
+              <label htmlFor="menu-inline-search" className={inputFocus ? "icon-addon--search" : "icon-addon--search-focus"}>Search</label>
+              <input
+                id={"menu-inline-search"}
+                maxLength={80}
+                className={"form-control icon-addon--input"}
+                onBlur={() => { setInputFocus(!inputFocus) }}
+                onFocus={() => { setInputFocus(!inputFocus) }}
+                autoComplete="off"
+                defaultValue={query}
+                ref={inputFormControlReference}
+                onKeyDown={_ => { setInputFocus(false) }}
+                onChange={e => { setQuery(e.target.value); }}
+              />
+            </form>
+          </li>
+          {suggest && suggest.length === 0 ?
+            defaultMenu.map((value, index) => {
+              return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
+            }) : null
+          }
+          {suggest && suggest.map((item, index) => (
+            index <= 8 ? <li key={item} className="menu-item menu-item--results">
+              <button onClick={() => navigate(item)} className="search-icon">{item}</button>
+            </li> : null
+          ))}
+        </ul>
       </div>
     </div>
   );

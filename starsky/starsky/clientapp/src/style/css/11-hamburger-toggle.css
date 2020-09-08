@@ -5,9 +5,7 @@
   margin: -1rem;
   cursor: pointer;
   margin-left: 15px;
-}
-.hamburger-menu-toggle.hamburger__container span {
-  display: none;
+  font-size: 0;
 }
 
 .hamburger-menu-toggle .hamburger {
