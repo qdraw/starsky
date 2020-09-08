@@ -49,6 +49,9 @@ namespace starsky
         {
 	        _appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, _configuration);
 
+	        // before anything else
+			EnableCompression(services);
+	        
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
                  
@@ -167,9 +170,6 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-			// Cache the response at the browser
-			services.AddResponseCaching();
-
 #if SYSTEM_TEXT_ENABLED
 			// NET Core 3 -> removed newtonsoft from core
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
@@ -198,16 +198,34 @@ namespace starsky
 					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
 				});
 			}
-			
-			// Gzip Compression Provider
-			services.AddResponseCompression();
-			services.Configure<GzipCompressionProviderOptions>(options => 
-			{
-				options.Level = CompressionLevel.Fastest;
-			});
 
 			new RegisterDependencies().Configure(services);
 
+        }
+
+        /// <summary>
+        /// Enable Gzip Compression Provider (.NET Core Compression)
+        /// You need to enable this before anything else
+        /// also needed to UseResponseCompression before using static content
+        /// test without: `curl http://localhost:5000/starsky/manifest.json --silent --write-out "%{size_download}\n" --output /dev/null`
+        /// test with: `curl http://localhost:5000/starsky/manifest.json --silent
+        /// -H "Accept-Encoding: gzip,deflate" --write-out "%{size_download}\n" --output /dev/null`
+        /// </summary>
+        /// <param name="services"></param>
+        private void EnableCompression(IServiceCollection services)
+        {
+	        services.AddResponseCompression(options =>
+	        {
+		        options.Providers.Add<GzipCompressionProvider>();
+		        options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] {
+			        "application/xhtml+xml",
+			        "image/svg+xml",
+		        });
+	        });
+	        services.Configure<GzipCompressionProviderOptions>(options => 
+	        {
+		        options.Level = CompressionLevel.Fastest;
+	        });
         }
         
         /// <summary>
@@ -235,7 +253,8 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-	        			
+	        app.UseResponseCompression();
+
 	        if ( env.IsDevelopment())
 	        {
 		        app.UseDeveloperExceptionPage();
@@ -262,7 +281,7 @@ namespace starsky
 	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
 			app.UseContentSecurityPolicy();
-			
+
 			void PrepareResponse(StaticFileResponseContext ctx)
 			{
 				// Cache static files for 356 days
