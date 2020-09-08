@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -196,6 +198,13 @@ namespace starsky
 					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
 				});
 			}
+			
+			// Gzip Compression Provider
+			services.AddResponseCompression();
+			services.Configure<GzipCompressionProviderOptions>(options => 
+			{
+				options.Level = CompressionLevel.Fastest;
+			});
 
 			new RegisterDependencies().Configure(services);
 
@@ -256,10 +265,10 @@ namespace starsky
 			
 			void PrepareResponse(StaticFileResponseContext ctx)
 			{
-				// Cache static files for 30 days
-				ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(30)
+				// Cache static files for 356 days
+				ctx.Context.Response.Headers.Append("Expires", DateTime.UtcNow.AddDays(365)
 					.ToString("R", CultureInfo.InvariantCulture));
-				ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=604800");
+				ctx.Context.Response.Headers.Append("Cache-Control", "public, max-age=31536000");
 			}
 			
 	        // Allow Current Directory and wwwroot in Base Directory

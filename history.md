@@ -49,6 +49,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ DetailView - Show Notification dialog when Copy or Paste action happens
 - [x]   (Fixed) _Front-end_ Search/DetailView - When going fast to the next/prev items this is requesting 
                             relativeObjects again to avoid displaying the next icon but not able to click on it
+- [x]   (Added) _Back-end_ Add Response compression in ASP.NET Core
+- [x]   (Fixed) _Back-end_ Change Cache time to 365 days for clientapp and wwwroot
 
 # version 0.3.0 - 2020-09-02
 _Note: When you upgrade from 0.2.7 please make sure you have applied the configuration updates_
