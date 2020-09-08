@@ -19,7 +19,7 @@ const HamburgerMenuToggle: React.FunctionComponent<HamburgerMenuPropTypes> = ({ 
     <>
       {!select ? <button data-test="hamburger"
         className="hamburger-menu-toggle hamburger__container" onClick={() => setHamburgerMenu(!hamburgerMenu)}>
-        <span>Enable Navigation Menu</span>
+        Enable Navigation Menu
         <div aria-hidden="true" className={hamburgerMenu ? "hamburger open" : "hamburger"}>
           <i />
           <i />

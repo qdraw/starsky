@@ -57,6 +57,9 @@
   /* fixes for webkit */
   -webkit-mask-position: 0px 50%;
   -webkit-mask-image: url('../images/baseline-search-24px.svg');
+
+  display: inline-block;
+  text-indent: -9999px;
 }
 
 .icon-addon label.icon-addon--search-focus {

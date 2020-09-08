@@ -9,9 +9,9 @@ const NavContainer: React.FunctionComponent<NavContainerPropTypes> = ({ children
   return (
     <nav className={hamburgerMenu ? "nav open" : "nav"}>
       <div className="nav__container">
-        <ul className="menu">
+        <div className="menu">
           {children}
-        </ul>
+        </div>
       </div>
     </nav>
   );
