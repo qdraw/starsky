@@ -1,7 +1,9 @@
 import { Link } from '@reach/router';
 import React, { memo, useEffect, useState } from 'react';
+import { ArchiveContext } from '../../../contexts/archive-context';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
+import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
 import Preloader from '../../atoms/preloader/preloader';
@@ -37,6 +39,15 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   // used for reading current location
   var history = useLocation();
 
+  let { state } = React.useContext(ArchiveContext);
+  const [colorClassUsage, setIsColorClassUsage] = useState(props.colorClassUsage);
+
+  useEffect(() => {
+    setIsColorClassUsage(state.colorClassUsage);
+    // it should not update when the prop are changing
+    // eslint-disable-next-line
+  }, [state.colorClassUsage])
+
   const [isLoading, setIsLoading] = useState(false);
   // When change-ing page the loader should be gone
   useEffect(() => {
@@ -57,6 +68,8 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
       urlObject.colorClass = [];
     }
 
+    checkIfSelectIsActive(urlObject.select, urlObject.colorClass, state.fileIndexItems)
+
     if (!urlObject.colorClass || urlObject.colorClass.indexOf(item) === -1) {
       urlObject.colorClass.push(item)
     }
@@ -67,6 +80,23 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     return new URLPath().IUrlToString(urlObject);
   }
 
+  function checkIfSelectIsActive(select: string[] | undefined, colorClassList: number[], fileIndexItems: IFileIndexItem[]) {
+    if (!select || !colorClassList) return;
+
+    // todo merge
+    // check if file exist in state or remove the selected item from the selection
+    colorClassList.forEach(usage => {
+      const even = (element: IFileIndexItem) => element.colorClass === usage;
+      if (!state.fileIndexItems.some(even).valueOf()) {
+        var indexer = colorClassList.indexOf(usage);
+        state.colorClassUsage.splice(indexer, 1);
+
+      }
+
+      // console.log(element);
+    });
+  }
+
   let resetButton = <Link to={cleanColorClass()} className="btn colorclass colorclass--reset">{colorContent[9]}</Link>;
   let resetButtonDisabled = <div className="btn colorclass colorclass--reset disabled">{colorContent[9]}</div>;
 
@@ -75,14 +105,14 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
     <div className="colorclass colorclass--filter"> {resetButton}</div>
   );
 
-  if (props.itemsCount === 0 || props.colorClassUsage.length === 1) return (<></>);
+  if (props.itemsCount === 0 || colorClassUsage.length === 1) return (<></>);
   return (<div className="colorclass colorclass--filter">
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : null}
     {
       props.colorClassActiveList.length !== 0 ? resetButton : resetButtonDisabled
     }
     {
-      props.colorClassUsage.map((item, index) => (
+      colorClassUsage.map((item) => (
         item >= 0 && item <= 8 ? <Link onClick={() => setIsLoading(true)} key={item} to={updateColorClass(item)}
           className={props.colorClassActiveList.indexOf(item) >= 0 ?
             "btn btn--default colorclass colorclass--" + item + " active" : "btn colorclass colorclass--" + item}>

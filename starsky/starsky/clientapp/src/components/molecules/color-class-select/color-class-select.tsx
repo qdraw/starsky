@@ -105,7 +105,8 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
       {
         colorContent.map((item, index) => (
           <button key={index} onClick={() => { handleChange(index); }}
-            className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
+            className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" :
+              "btn colorclass colorclass--" + index}>
             <label /><span>{item}</span>
           </button>
         ))
