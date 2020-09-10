@@ -23,7 +23,7 @@ describe("DetailViewSidebar", () => {
   });
 
   it("test warning (without state component)", () => {
-    var wrapper = shallow(<DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}>></DetailViewSidebar>);
+    var wrapper = shallow(<DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}></DetailViewSidebar>);
     expect(wrapper.find('.detailview-sidebar').find('.warning-box')).toHaveLength(1);
   });
 
