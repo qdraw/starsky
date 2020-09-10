@@ -249,7 +249,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         Details
       </div> : null}
 
-    {/* when the image is created */}
+    {/* dateTime when the image is created */}
     {isModalDatetimeOpen ? <ModalDatetime
       subPath={fileIndexItem.filePath}
       dateTime={fileIndexItem.dateTime}
@@ -257,7 +257,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         setModalDatetimeOpen(false);
         if (!result || !result[0]) return;
         setFileIndexItem(result[0]);
-        dispatch({ 'type': 'update', ...result[0], lastEdited: '' })
+        dispatch({ 'type': 'update', dateTime: result[0].dateTime, lastEdited: '' })
       }} isOpen={true} /> : null}
 
     <div className="content--text">
