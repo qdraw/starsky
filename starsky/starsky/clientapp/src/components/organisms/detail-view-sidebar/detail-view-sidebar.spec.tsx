@@ -306,7 +306,7 @@ describe("DetailViewSidebar", () => {
         key: "c",
       });
 
-      var copySpy = jest.spyOn(ClipboardHelper.prototype, 'Copy').mockImplementationOnce(() => { })
+      var copySpy = jest.spyOn(ClipboardHelper.prototype, 'Copy').mockImplementationOnce(() => { return true })
 
       act(() => {
         window.dispatchEvent(event);
@@ -322,7 +322,7 @@ describe("DetailViewSidebar", () => {
         key: "v",
       });
 
-      var pasteSpy = jest.spyOn(ClipboardHelper.prototype, 'Paste').mockImplementationOnce(() => { })
+      var pasteSpy = jest.spyOn(ClipboardHelper.prototype, 'Paste').mockImplementationOnce(() => { return true })
 
       act(() => {
         window.dispatchEvent(event);
