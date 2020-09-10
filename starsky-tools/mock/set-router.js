@@ -9,6 +9,9 @@ var apiIndex__Starsky01dif = require('./api/index/__starsky_01-dif.json')
 var apiIndex__Starsky01difColorclass0 = require('./api/index/__starsky_01-dif_colorclass0.json')
 
 var apiIndex__Starsky01dif20180101170001 = require('./api/index/__starsky_01-dif-2018.01.01.17.00.01.json')
+
+var apiInfo__testJpg = require('./api/info/test.jpg.json');
+
 var apiSearchTrash = require('./api/search/trash/index.json')
 var apiSearch = require('./api/search/index.json')
 var apiSearchTest = require('./api/search/test.json')
@@ -56,6 +59,15 @@ function setRouter(app) {
   app.get(prefix + '/api/health/details', (req, res) => {
     res.status(503);
     res.json(apiHealthDetails)
+  });
+
+  app.get(prefix + '/api/info', (req, res) => {
+
+    if (req.query.f === "/test.jpg") {
+      return res.json(apiInfo__testJpg);
+    }
+    res.statusCode = 404;
+    return res.json("not found");
   });
 
   app.get(prefix + '/api/index', (req, res) => {

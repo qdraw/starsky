@@ -63,13 +63,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
   // To Get information from Info Api
   var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
-  const responseObject = useFetch(location, 'get');
+  const infoResponseObject = useFetch(location, 'get');
   useEffect(() => {
-    if (!responseObject.data) return;
-    var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(responseObject.data);
+    if (!infoResponseObject.data) return;
+    var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
     updateCollections(infoFileIndexItem);
     dispatch({ 'type': 'update', ...infoFileIndexItem[0], lastEdited: '' })
-  }, [dispatch, responseObject]);
+  }, [dispatch, infoResponseObject]);
 
   // use time from state and not the update api
   useEffect(() => {
@@ -317,7 +317,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
-        <Link to={new UrlQuery().updateFilePathHash(history.location.search, item)}
+        <Link to={new UrlQuery().updateFilePathHash(history.location.search + "&details=true", item)}
           key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
           {index !== 1 ? <div className="icon icon--photo" /> : null}
           <b>{new URLPath().getChild(item)}</b>
