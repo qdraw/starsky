@@ -256,7 +256,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       handleExit={(result) => {
         setModalDatetimeOpen(false);
         if (!result || !result[0]) return;
-        setFileIndexItem(result[0]);
+        // only update the content that can be changed
+        setFileIndexItem({ ...fileIndexItem, dateTime: result[0].dateTime });
         dispatch({ 'type': 'update', dateTime: result[0].dateTime, lastEdited: '' })
       }} isOpen={true} /> : null}
 
@@ -317,6 +318,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </a> : ""}
 
       {collections.map((item, index) => (
+        // some senarios details is set off, this is linked from details
         <Link to={new UrlQuery().updateFilePathHash(history.location.search + "&details=true", item)}
           key={index} className={index !== 1 ? "box" : "box box--child"} data-test="collections">
           {index !== 1 ? <div className="icon icon--photo" /> : null}
