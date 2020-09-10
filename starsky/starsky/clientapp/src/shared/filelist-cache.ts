@@ -99,6 +99,17 @@ export class FileListCache {
     return cache;
   }
 
+  public CacheRemove(locationSearch: string) {
+    var urlObject = new URLPath().StringToIUrl(locationSearch);
+    this.CacheRemoveObject(urlObject);
+  }
+
+  public CacheRemoveObject(urlObject: IUrl) {
+    if (localStorage.getItem('clientCache') === 'false') return null;
+    urlObject = this.SetDefaultUrlObjectValues(urlObject);
+    sessionStorage.removeItem(this.CacheKeyGenerator(urlObject))
+  }
+
   /**
    * And clean the old ones
    */
