@@ -5,6 +5,11 @@ import { SelectCheckIfActive } from './select-check-if-active';
 describe("SelectCheckIfActive", () => {
   describe("IsActive", () => {
 
+    it("select is null", () => {
+      var result = new SelectCheckIfActive().IsActive(undefined, [1], []);
+      expect(result.length).toBe(0)
+    });
+
     it("filter nr 2 out", () => {
 
       var result = new SelectCheckIfActive().IsActive(["test1.jpg", "test2.jpg"], [1], [
