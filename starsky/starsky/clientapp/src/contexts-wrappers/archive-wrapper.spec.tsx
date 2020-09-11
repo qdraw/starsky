@@ -46,7 +46,7 @@ describe("ArchiveContextWrapper", () => {
       var args = { ...newIArchive(), fileIndexItems: [], pageType: PageType.Search } as IArchiveProps;
       var compontent = mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
 
-      expect(compontent.text()).toBe('(ArchiveWrapper) => no state')
+      expect(compontent.text()).toBe('(ArchiveWrapper) = no state')
     });
 
     it("No fileIndexItems", () => {

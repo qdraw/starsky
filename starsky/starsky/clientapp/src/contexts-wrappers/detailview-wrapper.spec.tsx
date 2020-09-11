@@ -8,7 +8,7 @@ import DetailViewWrapper from './detailview-wrapper';
 describe("DetailViewWrapper", () => {
 
   it("renders", () => {
-    shallow(<DetailViewWrapper {...newDetailView()}/>)
+    shallow(<DetailViewWrapper {...newDetailView()} />)
   });
 
   describe("with mount", () => {
@@ -16,7 +16,7 @@ describe("DetailViewWrapper", () => {
       var args = { ...newDetailView() } as IDetailView;
       var archive = jest.spyOn(DetailView, 'default').mockImplementationOnce(() => { return <></> })
 
-      mount(<DetailViewWrapper {...args}/>);
+      mount(<DetailViewWrapper {...args} />);
       expect(archive).toBeCalled();
     });
   });
@@ -25,9 +25,9 @@ describe("DetailViewWrapper", () => {
     it("No context if used", () => {
       jest.spyOn(React, 'useContext').mockImplementationOnce(() => { return { state: null, dispatch: jest.fn() } })
       var args = { ...newDetailView() } as IDetailView;
-      var compontent = mount(<DetailViewWrapper {...args}/>);
+      var compontent = mount(<DetailViewWrapper {...args} />);
 
-      expect(compontent.text()).toBe('(DetailViewWrapper) => no state')
+      expect(compontent.text()).toBe('(DetailViewWrapper) = no state')
     });
   });
 
