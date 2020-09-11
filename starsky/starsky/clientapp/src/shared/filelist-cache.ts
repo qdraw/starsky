@@ -115,29 +115,6 @@ export class FileListCache {
     return cache;
   }
 
-  public CacheRemove(locationSearch: string) {
-    var urlObject = new URLPath().StringToIUrl(locationSearch);
-    this.CacheRemoveObject(urlObject);
-  }
-
-  public CacheRemoveObject(urlObject: IUrl) {
-    if (localStorage.getItem('clientCache') === 'false') return null;
-    urlObject = this.SetDefaultUrlObjectValues(urlObject);
-
-    this.CleanAllLookingNames(urlObject);
-  }
-
-  private CleanAllLookingNames(urlObject: IUrl) {
-    if (!urlObject.f) {
-      return;
-    }
-    this.GetAll().forEach(item => {
-      if (item.name.endsWith(urlObject.f as string)) {
-        sessionStorage.removeItem(item.name)
-      }
-    });
-  }
-
   private GetAll(): IGetAllTransferObject[] {
     var list = [];
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
@@ -165,7 +142,7 @@ export class FileListCache {
   }
 
   /**
-   * And clean the old ones
+   * And clean All Items
    */
   public CacheCleanEverything(): void {
     this.GetAll().forEach(item => {
