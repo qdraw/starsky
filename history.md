@@ -39,7 +39,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (to avoid next/prev issues)
 - [x]   (Fixed) _Front-end_ Archive - When selecting a new colorClass this is added to the filter
 - [x]   (Fixed) _Front-end_ DetailView - Safari 12 and lower does autorotate the image correct
-
+- [x]   (Added) _CLI_ Stop with warning when running WebHtmlPublish over the same folder (checks for `_settings.json`)
+ 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
 - [x]   (Added) _Front-end_ Client Side caching for 3 minutes to avoid requests and speed on slow devices
