@@ -151,7 +151,9 @@ namespace starskytest.FakeMocks
 			Console.WriteLine("CacheUpdateItem is called");
 		}
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task AddParentItemsAsync(string subPath)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 		{
 		}
 
