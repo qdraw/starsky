@@ -1,3 +1,4 @@
+import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { archiveReducer } from './archive-context';
@@ -26,14 +27,16 @@ describe("ArchiveContext", () => {
 
   it("update - check if item is update (append false)", () => {
     var state = {
+      ...newIArchive(),
       fileIndexItems: [{
         fileName: 'test.jpg'
       },
       {
         fileName: 'test1.jpg'
       },
-      ]
-    } as IArchiveProps;
+      ],
+      colorClassUsage: [] as number[],
+    } as IArchive;
     var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', append: false, select: ['test.jpg'] } as any
 
     var result = archiveReducer(state, action);

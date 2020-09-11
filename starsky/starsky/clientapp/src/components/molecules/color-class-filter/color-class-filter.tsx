@@ -3,6 +3,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { ArchiveContext } from '../../../contexts/archive-context';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
+import { newIArchive } from '../../../interfaces/IArchive';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -40,6 +41,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
   var history = useLocation();
 
   let { state } = React.useContext(ArchiveContext);
+  if (!state) state = { ...newIArchive(), colorClassUsage: [] }
   const [colorClassUsage, setIsColorClassUsage] = useState(props.colorClassUsage);
 
   useEffect(() => {
