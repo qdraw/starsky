@@ -4,6 +4,11 @@ import { IUrl } from '../interfaces/IUrl';
 import { DifferenceInDate } from './date';
 import { URLPath } from './url-path';
 
+interface IGetAllTransferObject {
+  name: string,
+  item: IDetailView | IArchive
+}
+
 export class FileListCache {
 
   private cachePrefix = "starsky;";
@@ -110,43 +115,55 @@ export class FileListCache {
     return cache;
   }
 
-  public CacheRemove(locationSearch: string) {
+  public CacheSingleRemove(locationSearch: string) {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
-    this.CacheRemoveObject(urlObject);
+    this.CacheSingleRemoveObject(urlObject);
   }
 
-  public CacheRemoveObject(urlObject: IUrl) {
+  public CacheSingleRemoveObject(urlObject: IUrl) {
     if (localStorage.getItem('clientCache') === 'false') return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
+
+    var colorClassOptions = [];
+    this.GetAll().forEach(item => {
+      // item.name.endsWith(urlObject.f)
+    });
     sessionStorage.removeItem(this.CacheKeyGenerator(urlObject))
+  }
+
+  private GetAll(): IGetAllTransferObject[] {
+    var list = [];
+    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
+      const itemName = Object.keys(sessionStorage)[index];
+      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
+      var item = this.ParseJson(sessionStorage.getItem(itemName));
+      if (!item || !item.dateCache) continue;
+      list.push({
+        name: itemName,
+        item
+      })
+    }
+    return list;
   }
 
   /**
    * And clean the old ones
    */
   public CacheCleanOld(): void {
-    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
-      const itemName = Object.keys(sessionStorage)[index];
-      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
-      var item = this.ParseJson(sessionStorage.getItem(itemName));
-      if (!item || !item.dateCache) continue;
-      if (DifferenceInDate(item.dateCache) > this.timeoutInMinutes) {
-        sessionStorage.removeItem(itemName)
+    this.GetAll().forEach(item => {
+      if (DifferenceInDate(item.item.dateCache) > this.timeoutInMinutes) {
+        sessionStorage.removeItem(item.name)
       }
-    }
+    });
   }
 
   /**
    * And clean the old ones
    */
   public CacheCleanEverything(): void {
-    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
-      const itemName = Object.keys(sessionStorage)[index];
-      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
-      var item = this.ParseJson(sessionStorage.getItem(itemName));
-      if (!item || !item.dateCache) continue;
-      sessionStorage.removeItem(itemName)
-    }
+    this.GetAll().forEach(item => {
+      sessionStorage.removeItem(item.name)
+    });
   }
 
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {

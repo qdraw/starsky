@@ -157,8 +157,8 @@ const MenuDetailView: React.FunctionComponent = () => {
     if (!state.relativeObjects) {
       return;
     }
-    if (state.relativeObjects.nextFilePath) new FileListCache().CacheRemoveObject({ f: state.relativeObjects.nextFilePath });
-    if (state.relativeObjects.prevFilePath) new FileListCache().CacheRemoveObject({ f: state.relativeObjects.prevFilePath });
+    if (state.relativeObjects.nextFilePath) new FileListCache().CacheSingleRemoveObject({ f: state.relativeObjects.nextFilePath });
+    if (state.relativeObjects.prevFilePath) new FileListCache().CacheSingleRemoveObject({ f: state.relativeObjects.prevFilePath });
   }
 
   function clearSearchCache() {
