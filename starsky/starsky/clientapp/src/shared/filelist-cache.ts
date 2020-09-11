@@ -41,7 +41,6 @@ export class FileListCache {
       return value;
     } catch (error) {
       console.error(error);
-      return null;
     }
   }
 
