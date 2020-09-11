@@ -34,7 +34,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.3.2 _(Unreleased)_  2020-09-??
-- add here features
+- [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
+- [x]   (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
+- [x]   (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (to avoid next/prev issues)
+- [x]   (Fixed) _Front-end_ Archive - When selecting a new colorClass this is added to the filter
+- [x]   (Fixed) _Front-end_ DetailView - Safari 12 and lower does autorotate the image correct
 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
