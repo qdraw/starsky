@@ -154,11 +154,8 @@ const MenuDetailView: React.FunctionComponent = () => {
     clearSearchCache();
 
     // Client side Caching: the order of files in a normal folder has changed
-    if (!state.relativeObjects) {
-      return;
-    }
-    if (state.relativeObjects.nextFilePath) new FileListCache().CacheSingleRemoveObject({ f: state.relativeObjects.nextFilePath });
-    if (state.relativeObjects.prevFilePath) new FileListCache().CacheSingleRemoveObject({ f: state.relativeObjects.prevFilePath });
+    // Entire cache becouse the relativeObjects objects can reference to this page
+    new FileListCache().CacheCleanEverything();
   }
 
   function clearSearchCache() {

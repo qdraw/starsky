@@ -115,20 +115,27 @@ export class FileListCache {
     return cache;
   }
 
-  public CacheSingleRemove(locationSearch: string) {
+  public CacheRemove(locationSearch: string) {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
-    this.CacheSingleRemoveObject(urlObject);
+    this.CacheRemoveObject(urlObject);
   }
 
-  public CacheSingleRemoveObject(urlObject: IUrl) {
+  public CacheRemoveObject(urlObject: IUrl) {
     if (localStorage.getItem('clientCache') === 'false') return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
 
-    var colorClassOptions = [];
+    this.CleanAllLookingNames(urlObject);
+  }
+
+  private CleanAllLookingNames(urlObject: IUrl) {
+    if (!urlObject.f) {
+      return;
+    }
     this.GetAll().forEach(item => {
-      // item.name.endsWith(urlObject.f)
+      if (item.name.endsWith(urlObject.f as string)) {
+        sessionStorage.removeItem(item.name)
+      }
     });
-    sessionStorage.removeItem(this.CacheKeyGenerator(urlObject))
   }
 
   private GetAll(): IGetAllTransferObject[] {
