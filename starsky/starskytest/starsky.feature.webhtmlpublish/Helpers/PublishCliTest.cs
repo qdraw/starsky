@@ -53,6 +53,20 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("done"));
 		}
+		
+		[TestMethod]
+		public void Publisher_WarnWhenAlreadyRun()
+		{			
+			var console = new FakeConsoleWrapper();
+			var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/test"}, 
+				new List<string>{"/test/_settings.json"}));
+
+			new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
+				new AppSettings(), console).Publisher(new []{"-p", "/test"});
+
+			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("_settings.json"));
+		}
+
 
 	}
 }

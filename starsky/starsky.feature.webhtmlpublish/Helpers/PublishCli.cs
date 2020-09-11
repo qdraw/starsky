@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
@@ -62,6 +63,14 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			{
 				_console.WriteLine("Please add a valid folder: " + inputFullPath + ". " +
 				                   "This folder is not found");
+				return;
+			}
+			
+			var settingsFullFilePath = Path.Combine(inputFullPath, "_settings.json");
+			if ( _hostFileSystemStorage.ExistFile(settingsFullFilePath) )
+			{
+				_console.WriteLine($"You have already run this program for this folder remove the " +
+				                   $"_settings.json first and try it again"  );
 				return;
 			}
 
