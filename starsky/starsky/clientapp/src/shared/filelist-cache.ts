@@ -6,11 +6,6 @@ import { URLPath } from './url-path';
 
 export class FileListCache {
 
-  constructor() {
-    if (sessionStorage) return;
-    throw Error("Session Storage is needed")
-  }
-
   private cachePrefix = "starsky;";
 
   private timeoutInMinutes = 3;
@@ -21,6 +16,7 @@ export class FileListCache {
     this.setParentItem(urlObject, value);
     return value;
   }
+
 
   private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
     if (!urlObject.f) urlObject.f = "/";
@@ -88,11 +84,19 @@ export class FileListCache {
     return this.CacheSetObject(urlObject, value);
   }
 
+  /**
+  * GETTER of cache
+  * @param locationSearch where to look for
+  */
   public CacheGet(locationSearch: string): IArchive | IDetailView | null {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheGetObject(urlObject);
   }
 
+  /**
+   * GETTER of cache
+   * @param urlObject where to look for 
+   */
   public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
     if (localStorage.getItem('clientCache') === 'false') return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
