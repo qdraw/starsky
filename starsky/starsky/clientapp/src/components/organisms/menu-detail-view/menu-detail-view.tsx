@@ -13,6 +13,7 @@ import { CastToInterface } from '../../../shared/cast-to-interface';
 import { IsEditedNow } from '../../../shared/date';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
@@ -149,7 +150,12 @@ const MenuDetailView: React.FunctionComponent = () => {
       dispatch({ 'type': 'update', status: IExifStatus.Ok, lastEdited: new Date().toISOString() });
       setIsLoading(false);
     }
+
     clearSearchCache();
+
+    // Client side Caching: the order of files in a normal folder has changed
+    // Entire cache becouse the relativeObjects objects can reference to this page
+    new FileListCache().CacheCleanEverything();
   }
 
   function clearSearchCache() {

@@ -1,3 +1,4 @@
+import BrowserDetect from './browser-detect';
 import DetectAutomaticRotation, { testAutoOrientationImageURL } from './detect-automatic-rotation';
 
 describe("select", () => {
@@ -19,5 +20,13 @@ describe("select", () => {
       var result = await DetectAutomaticRotation();
       expect(result).toBeFalsy();
     });
+
+    it("iOS should be true", async () => {
+      jest.spyOn(BrowserDetect.prototype, 'IsIOS').mockImplementationOnce(() => { return true });
+
+      var result = await DetectAutomaticRotation();
+      expect(result).toBeTruthy();
+    });
+
   });
 });

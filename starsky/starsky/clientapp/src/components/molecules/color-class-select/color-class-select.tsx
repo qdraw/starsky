@@ -1,5 +1,5 @@
 import 'core-js/modules/es.array.find';
-import React, { memo, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useKeyboardEvent from '../../../hooks/use-keyboard-event';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
@@ -24,7 +24,7 @@ export interface IColorClassSelectProps {
 /**
  * Used to update colorclasses
  */
-const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((props) => {
+const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (props) => {
 
   // content
   const settings = useGlobalSettings();
@@ -63,7 +63,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
    * Used for Updating Colorclasses
    * @param colorClass value to update
    */
-  var handleChange = (colorClass: number) => {
+  var handleColorClassUpdate = (colorClass: number) => {
 
     if (!props.isEnabled) return;
 
@@ -95,7 +95,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
-    handleChange(Number(event.key));
+    handleColorClassUpdate(Number(event.key));
   });
 
   return (<>
@@ -104,13 +104,14 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = memo((
     <div className={props.isEnabled ? "colorclass colorclass--select" : "colorclass colorclass--select colorclass--disabled"}>
       {
         colorContent.map((item, index) => (
-          <button key={index} onClick={() => { handleChange(index); }}
-            className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" : "btn colorclass colorclass--" + index}>
+          <button key={index} onClick={() => { handleColorClassUpdate(index); }}
+            className={currentColorClass === index ? "btn btn--default colorclass colorclass--" + index + " active" :
+              "btn colorclass colorclass--" + index}>
             <label /><span>{item}</span>
           </button>
         ))
       }
     </div></>)
-});
+};
 
 export default ColorClassSelect

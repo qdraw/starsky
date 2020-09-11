@@ -1,4 +1,6 @@
+import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
+import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
 import { archiveReducer } from './archive-context';
 
@@ -26,14 +28,16 @@ describe("ArchiveContext", () => {
 
   it("update - check if item is update (append false)", () => {
     var state = {
+      ...newIArchive(),
       fileIndexItems: [{
         fileName: 'test.jpg'
       },
       {
         fileName: 'test1.jpg'
       },
-      ]
-    } as IArchiveProps;
+      ],
+      colorClassUsage: [] as number[],
+    } as IArchive;
     var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', append: false, select: ['test.jpg'] } as any
 
     var result = archiveReducer(state, action);
@@ -63,6 +67,64 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].tags).toBe('tags1, tags');
     expect(result.fileIndexItems[0].description).toBe('description1description');
     expect(result.fileIndexItems[0].title).toBe('title1title');
+  });
+
+  it("update - colorclass", () => {
+    var state = {
+      ...newIArchive(),
+      fileIndexItems: [{
+        fileName: 'test.jpg',
+        tags: 'tags1',
+        description: 'description1',
+        title: 'title1',
+        colorClass: 1
+      } as any],
+      colorClassUsage: [1, 2],
+      colorClassActiveList: [],
+      breadcrumb: [],
+      collectionsCount: 0,
+      pageType: PageType.ApplicationException,
+      dateCache: 0,
+      isReadOnly: false,
+    } as IArchive;
+
+    var action = { type: 'update', colorClass: 2, select: ['test.jpg'] } as any
+
+    console.log(state.colorClassUsage);
+
+    var result = archiveReducer(state, action);
+
+    expect(result.colorClassUsage.length).toBe(2);
+    expect(result.colorClassUsage[0]).toBe(1);
+    expect(result.colorClassUsage[1]).toBe(2);
+
+  });
+
+  it("update - colorclass 2", () => {
+    var state = {
+      ...newIArchive(),
+      fileIndexItems: [{
+        fileName: 'test.jpg',
+        tags: 'tags1',
+        description: 'description1',
+        title: 'title1',
+        colorClass: 1
+      } as any],
+      colorClassUsage: [2],
+      colorClassActiveList: [],
+      breadcrumb: [],
+      collectionsCount: 0,
+      pageType: PageType.ApplicationException,
+      dateCache: 0,
+      isReadOnly: false,
+    } as IArchive;
+
+    var action = { type: 'update', colorClass: 3, select: ['test.jpg'] } as any
+
+    var result = archiveReducer(state, action);
+
+    expect(result.colorClassUsage.length).toBe(1);
+    expect(result.colorClassUsage[0]).toBe(2);
   });
 
   it("add -- and check if is orderd", () => {

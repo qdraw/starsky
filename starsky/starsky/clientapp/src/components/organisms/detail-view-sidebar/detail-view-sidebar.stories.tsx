@@ -13,6 +13,7 @@ storiesOf("components/organisms/detail-view-sidebar", module)
       state: {
         breadcrumb: [],
         fileIndexItem: {
+          filePath: '/test.jpg',
           tags: 'tags!',
           description: 'description!',
           title: 'title!',
@@ -25,15 +26,16 @@ storiesOf("components/organisms/detail-view-sidebar", module)
           focalLength: 10,
           longitude: 1,
           latitude: 1,
+          isoSpeed: 100,
         } as IFileIndexItem,
         relativeObjects: {} as IRelativeObjects,
-        subPath: "/",
+        subPath: "/test.jpg",
         status: IExifStatus.Default,
         pageType: PageType.DetailView,
         colorClassActiveList: [],
       } as any
     };
     return <DetailViewContext.Provider value={contextProvider}>
-      <DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}>></DetailViewSidebar>
+      <DetailViewSidebar status={IExifStatus.Default} filePath={"/test.jpg"}></DetailViewSidebar>
     </DetailViewContext.Provider>
   })

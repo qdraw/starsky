@@ -94,7 +94,26 @@ export function archiveReducer(state: State, action: Action): State {
             if (title) state.fileIndexItems[index].title = title;
           }
           // colorclass = 0 ==> colorless/no-color
-          if (colorclass !== undefined && colorclass !== -1) state.fileIndexItems[index].colorClass = colorclass;
+          if (colorclass !== undefined && colorclass !== -1) {
+            state.fileIndexItems[index].colorClass = colorclass;
+            // add to list of colorclasses that can be selected
+            if (state.colorClassUsage && state.colorClassUsage.indexOf(colorclass) === -1) state.colorClassUsage.push(colorclass);
+
+            // checks the list of colorclasses that can be selected and removes the ones without 
+            // only usefull when there are no colorclasses selected
+
+            if (state.colorClassActiveList === undefined) state.colorClassActiveList = [];
+            if (state.colorClassActiveList.length === 0) {
+              state.colorClassUsage.forEach(usage => {
+                const even = (element: IFileIndexItem) => element.colorClass === usage;
+                // some is not working in context of jest
+                if (!state.fileIndexItems.some(even).valueOf()) {
+                  var indexer = state.colorClassUsage.indexOf(usage);
+                  state.colorClassUsage.splice(indexer, 1);
+                }
+              });
+            }
+          }
           state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
       });

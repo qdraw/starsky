@@ -431,7 +431,11 @@ describe("MenuDetailView", () => {
 
       var state = {
         subPath: "/trashed/test1.jpg",
-        fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" },
+        relativeObjects: {
+          nextFilePath: '/',
+          prevFilePath: '/'
+        }
       } as IDetailView;
       var contextValues = { state, dispatch: jest.fn() }
 

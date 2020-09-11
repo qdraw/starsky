@@ -4,12 +4,12 @@ import { IUrl } from '../interfaces/IUrl';
 import { DifferenceInDate } from './date';
 import { URLPath } from './url-path';
 
-export class FileListCache {
+interface IGetAllTransferObject {
+  name: string,
+  item: IDetailView | IArchive
+}
 
-  constructor() {
-    if (sessionStorage) return;
-    throw Error("Session Storage is needed")
-  }
+export class FileListCache {
 
   private cachePrefix = "starsky;";
 
@@ -22,6 +22,7 @@ export class FileListCache {
     return value;
   }
 
+
   private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
     if (!urlObject.f) urlObject.f = "/";
     if (urlObject.collections === undefined) urlObject.collections = true;
@@ -33,8 +34,14 @@ export class FileListCache {
     if (localStorage.getItem('clientCache') === 'false') return;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
-    sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
-    return value;
+
+    try {
+      // old versions of safari don't allow sessionStorage in private navigation
+      sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
+      return value;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -81,11 +88,19 @@ export class FileListCache {
     return this.CacheSetObject(urlObject, value);
   }
 
+  /**
+  * GETTER of cache
+  * @param locationSearch where to look for
+  */
   public CacheGet(locationSearch: string): IArchive | IDetailView | null {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheGetObject(urlObject);
   }
 
+  /**
+   * GETTER of cache
+   * @param urlObject where to look for 
+   */
   public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
     if (localStorage.getItem('clientCache') === 'false') return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
@@ -99,32 +114,39 @@ export class FileListCache {
     return cache;
   }
 
-  /**
-   * And clean the old ones
-   */
-  public CacheCleanOld(): void {
+  private GetAll(): IGetAllTransferObject[] {
+    var list = [];
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
       const itemName = Object.keys(sessionStorage)[index];
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
       var item = this.ParseJson(sessionStorage.getItem(itemName));
       if (!item || !item.dateCache) continue;
-      if (DifferenceInDate(item.dateCache) > this.timeoutInMinutes) {
-        sessionStorage.removeItem(itemName)
-      }
+      list.push({
+        name: itemName,
+        item
+      })
     }
+    return list;
   }
 
   /**
    * And clean the old ones
    */
+  public CacheCleanOld(): void {
+    this.GetAll().forEach(item => {
+      if (DifferenceInDate(item.item.dateCache) > this.timeoutInMinutes) {
+        sessionStorage.removeItem(item.name)
+      }
+    });
+  }
+
+  /**
+   * And clean All Items
+   */
   public CacheCleanEverything(): void {
-    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
-      const itemName = Object.keys(sessionStorage)[index];
-      if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
-      var item = this.ParseJson(sessionStorage.getItem(itemName));
-      if (!item || !item.dateCache) continue;
-      sessionStorage.removeItem(itemName)
-    }
+    this.GetAll().forEach(item => {
+      sessionStorage.removeItem(item.name)
+    });
   }
 
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {

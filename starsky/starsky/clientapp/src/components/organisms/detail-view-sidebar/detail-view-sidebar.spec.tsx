@@ -2,9 +2,11 @@ import { globalHistory } from '@reach/router';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
+import * as useDetailViewContext from '../../../contexts/detailview-context';
 import { DetailViewContext } from '../../../contexts/detailview-context';
+import * as useFetch from '../../../hooks/use-fetch';
 import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import { IRelativeObjects, PageType } from '../../../interfaces/IDetailView';
+import { IRelativeObjects, newDetailView, PageType } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { ClipboardHelper } from '../../../shared/clipboard-helper';
@@ -23,7 +25,7 @@ describe("DetailViewSidebar", () => {
   });
 
   it("test warning (without state component)", () => {
-    var wrapper = shallow(<DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}>></DetailViewSidebar>);
+    var wrapper = shallow(<DetailViewSidebar status={IExifStatus.Default} filePath={"/t"}></DetailViewSidebar>);
     expect(wrapper.find('.detailview-sidebar').find('.warning-box')).toHaveLength(1);
   });
 
@@ -39,6 +41,8 @@ describe("DetailViewSidebar", () => {
         state: {
           breadcrumb: [],
           fileIndexItem: {
+            filePath: '/test.jpg',
+            status: IExifStatus.Ok,
             tags: 'tags!',
             description: 'description!',
             title: 'title!',
@@ -194,6 +198,7 @@ describe("DetailViewSidebar", () => {
       expect(fetchPostSpy).toBeCalled();
 
       var expectedBodyParams = new URLSearchParams();
+      expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "a");
 
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyParams.toString());
@@ -219,7 +224,9 @@ describe("DetailViewSidebar", () => {
       expect(fetchPostSpy).toBeCalled();
 
       var expectedBodyParams = new URLSearchParams();
+      expectedBodyParams.append("f", "/test.jpg");
       expectedBodyParams.append("tags", "\0");
+
       var expectedBodyString = expectedBodyParams.toString().replace(/%00/ig, nullChar);
 
       expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlUpdateApi(), expectedBodyString);
@@ -267,6 +274,41 @@ describe("DetailViewSidebar", () => {
 
     });
 
+    xit("SKIPPED test /info content ---- d", () => {
+
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      var fetchContent = {
+        ...newIConnectionDefault(), statusCode: 200, data: [{
+          filePath: 'a',
+          lastEdited: '',
+          status: IExifStatus.Ok,
+        } as IFileIndexItem] as IFileIndexItem[]
+      };
+      jest.spyOn(useFetch, 'default')
+        .mockImplementationOnce(() => fetchContent)
+        .mockImplementationOnce(() => fetchContent)
+        .mockImplementationOnce(() => fetchContent)
+
+
+      var contextObject = {
+        dispatch: jest.fn(),
+        state: { ...newDetailView(), lastEdited: '' }
+      } as useDetailViewContext.IDetailViewContext;
+
+      jest.spyOn(useDetailViewContext, 'useDetailViewContext')
+        .mockImplementationOnce(() => contextObject)
+        .mockImplementationOnce(() => contextObject)
+
+
+      var component = mount(<DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>);
+
+      // FAIL!!!
+
+      console.log(component.html());
+
+
+    });
+
     it("search cache clear AND when a tag is updated ", async () => {
 
       act(() => {
@@ -306,7 +348,7 @@ describe("DetailViewSidebar", () => {
         key: "c",
       });
 
-      var copySpy = jest.spyOn(ClipboardHelper.prototype, 'Copy').mockImplementationOnce(() => { })
+      var copySpy = jest.spyOn(ClipboardHelper.prototype, 'Copy').mockImplementationOnce(() => { return true })
 
       act(() => {
         window.dispatchEvent(event);
@@ -322,7 +364,7 @@ describe("DetailViewSidebar", () => {
         key: "v",
       });
 
-      var pasteSpy = jest.spyOn(ClipboardHelper.prototype, 'Paste').mockImplementationOnce(() => { })
+      var pasteSpy = jest.spyOn(ClipboardHelper.prototype, 'Paste').mockImplementationOnce(() => { return true })
 
       act(() => {
         window.dispatchEvent(event);
