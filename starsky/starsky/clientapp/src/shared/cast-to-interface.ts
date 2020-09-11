@@ -45,6 +45,7 @@ export class CastToInterface {
    * Return casted list
    */
   InfoFileIndexArray = (data: any): Array<IFileIndexItem> => {
+    if (typeof data === 'string') return [];
     return data as Array<IFileIndexItem>;
   }
 

@@ -33,8 +33,15 @@ export class FileListCache {
     if (localStorage.getItem('clientCache') === 'false') return;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
-    sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
-    return value;
+
+    try {
+      // old versions of safari don't allow sessionStorage in private navigation
+      sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
+      return value;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 
   /**

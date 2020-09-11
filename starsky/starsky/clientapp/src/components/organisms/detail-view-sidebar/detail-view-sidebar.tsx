@@ -67,6 +67,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   useEffect(() => {
     if (!infoResponseObject.data) return;
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
+    if (!infoFileIndexItem) return;
     updateCollections(infoFileIndexItem);
     dispatch({ 'type': 'update', ...infoFileIndexItem[0], lastEdited: '' })
   }, [dispatch, infoResponseObject]);
