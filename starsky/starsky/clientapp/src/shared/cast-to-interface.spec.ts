@@ -46,6 +46,11 @@ describe("cast-to-interface", () => {
       ]);
       expect(test[0].tags).toBe("test");
     });
+
+    it("should ignore string", () => {
+      var test = new CastToInterface().InfoFileIndexArray("test");
+      expect(test).toStrictEqual([]);
+    });
   });
 
 });
