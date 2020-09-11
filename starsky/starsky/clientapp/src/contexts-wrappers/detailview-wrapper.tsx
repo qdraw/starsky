@@ -31,7 +31,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
-  if (!state) return (<>(DetailViewWrapper) => no state</>)
+  if (!state) return (<>(DetailViewWrapper) = no state</>)
   if (!state.fileIndexItem) return (<></>);
 
   return (

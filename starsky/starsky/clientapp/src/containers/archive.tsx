@@ -20,7 +20,7 @@ function Archive(archive: IArchiveProps) {
     setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar)
   }, [history.location.search]);
 
-  if (archive && (!archive.colorClassUsage || !archive.colorClassActiveList)) return (<>(Archive) => no colorClassLists</>)
+  if (archive && (!archive.colorClassUsage || !archive.colorClassActiveList)) return (<>(Archive) = no colorClassLists</>)
 
   return (
     <>
