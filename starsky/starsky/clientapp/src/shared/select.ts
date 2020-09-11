@@ -13,6 +13,7 @@ export class Select {
     setSelect: React.Dispatch<React.SetStateAction<string[] | undefined>>,
     state: IArchiveProps,
     history: IUseLocation) {
+    // props
     this.select = select;
     this.setSelect = setSelect;
     this.state = state;
@@ -63,4 +64,5 @@ export class Select {
     }
     this.history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
+
 }
