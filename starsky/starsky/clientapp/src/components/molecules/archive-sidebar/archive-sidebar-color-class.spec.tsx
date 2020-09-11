@@ -4,10 +4,9 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import * as AppContext from '../../../contexts/archive-context';
 import { newIArchive } from '../../../interfaces/IArchive';
-import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import { PageType } from '../../../interfaces/IDetailView';
 import { newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
-import * as FetchPost from '../../../shared/fetch-post';
+import * as ColorClassSelect from '../color-class-select/color-class-select';
 import ArchiveSidebarColorClass from './archive-sidebar-color-class';
 
 describe("ArchiveSidebarColorClass", () => {
@@ -26,7 +25,7 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapper.exists('.disabled')).toBeFalsy()
     });
 
-    it("Fire event when clicked", () => {
+    it("Fire event when clicked", async () => {
 
 
       // Warning: An update to null inside a test was not wrapped in act(...)
@@ -44,39 +43,40 @@ describe("ArchiveSidebarColorClass", () => {
         dispatch,
       } as AppContext.IArchiveContext;
 
-      // use this: ==> import * as AppContext from '../contexts/archive-context';
-      // var useContext = jest
-      //   .spyOn(AppContext, 'useArchiveContext')
-      //   .mockImplementation(() => contextValues);
-
       jest.mock('@reach/router', () => ({
         navigate: jest.fn(),
         globalHistory: jest.fn(),
       }));
 
+      // to use with: => import { act } from 'react-dom/test-utils';
+      globalHistory.navigate("/?select=test.jpg");
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        globalHistory.navigate("/?select=test.jpg");
-      });
-
-      // spy on fetch
-      // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(newIConnectionDefault());
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      var isCalled = false;
+      jest.spyOn(ColorClassSelect, 'default').mockImplementationOnce(() => { return <></> })
+        .mockImplementationOnce(() => { return <></> })
+        .mockImplementationOnce((data) => {
+          return <button onClick={() => {
+            data.onToggle(1);
+            isCalled = true;
+          }} className="colorclass--1"></button>
+        })
 
       const element = mount(<ArchiveSidebarColorClass pageType={PageType.Archive} isReadOnly={false} fileIndexItems={newIFileIndexItemArray()} />);
 
       // Make sure that the element exist in the first place
-      expect(element.find('a.colorclass--1')).toBeTruthy();
+      expect(element.find('button.colorclass--1')).toBeTruthy();
 
-      element.find('button.colorclass--1').simulate("click");
+      await act(async () => {
+        await element.find('button.colorclass--1').simulate("click");
+      });
 
-      expect(fetchPostSpy).toHaveBeenCalledTimes(1);
+      expect(isCalled).toBeTruthy();
+      expect(dispatch).toBeCalled();
+      expect(dispatch).toBeCalledWith({ "colorclass": 1, "select": ["test.jpg"], "type": "update" });
 
       useContextSpy.mockClear()
-
     });
+
   });
 });
 
