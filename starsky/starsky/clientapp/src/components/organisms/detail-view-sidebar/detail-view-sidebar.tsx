@@ -53,7 +53,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   let { state, dispatch } = useDetailViewContext();
   var history = useLocation();
 
-  const [fileIndexItem, setFileIndexItem] = React.useState(state ? state.fileIndexItem : { status: IExifStatus.ServerError } as IFileIndexItem);
+  const [fileIndexItem, setFileIndexItem] = React.useState(state ? state.fileIndexItem : {
+    filePath: '/',
+    status: IExifStatus.ServerError,
+    lastEdited: ''
+  } as IFileIndexItem);
+
   useEffect(() => {
     if (!state) return;
     setFileIndexItem(state.fileIndexItem);
@@ -64,16 +69,19 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   // To Get information from Info Api
   var location = new UrlQuery().UrlQueryInfoApi(props.filePath);
   const infoResponseObject = useFetch(location, 'get');
+
   useEffect(() => {
     if (!infoResponseObject.data) return;
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
     if (!infoFileIndexItem) return;
     updateCollections(infoFileIndexItem);
+
     dispatch({ 'type': 'update', ...infoFileIndexItem[0], lastEdited: '' })
   }, [dispatch, infoResponseObject]);
 
   // use time from state and not the update api
   useEffect(() => {
+    if (!fileIndexItem.lastEdited) return;
     // there is a bug in the api
     dispatch({ 'type': 'update', lastEdited: fileIndexItem.lastEdited })
   }, [dispatch, fileIndexItem.lastEdited]);
@@ -126,7 +134,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     updateObject[name] = value.trim();
 
     var bodyParams = new URLPath().ObjectToSearchParams(updateObject).toString().replace(/%00/ig, nullChar);
-    console.log(bodyParams);
 
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then(item => {
       if (item.statusCode !== 200 || !item.data) return;
@@ -167,7 +174,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   // next page the message should be gone
   useEffect(() => {
     setCopyPasteAction("");
-  }, [state]);
+  }, [fileIndexItem.filePath]);
 
   useKeyboardEvent(/^([v])$/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
@@ -177,6 +184,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   }, [props]);
 
   const [isModalDatetimeOpen, setModalDatetimeOpen] = React.useState(false);
+
+  if (!fileIndexItem) {
+    return <>No status</>
+  }
 
   // noinspection HtmlUnknownAttribute
   return (<div className="detailview-sidebar">

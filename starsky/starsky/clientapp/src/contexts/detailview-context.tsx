@@ -5,12 +5,11 @@ import { newIFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
 import { IUrl } from '../interfaces/IUrl';
 import { FileListCache } from '../shared/filelist-cache';
 
-const DetailViewContext = React.createContext<IContext>({} as IContext)
+const DetailViewContext = React.createContext<IDetailViewContext>({} as IDetailViewContext)
 
-type State = IDetailView
 type ReactNodeProps = { children: React.ReactNode }
 
-const initialState: State = {
+const initialState: IDetailView = {
   breadcrumb: [],
   fileIndexItem: newIFileIndexItem(),
   relativeObjects: {} as IRelativeObjects,
@@ -46,11 +45,11 @@ type Action = {
   payload: IDetailView
 };
 
-type IContext = {
-  state: State,
+export type IDetailViewContext = {
+  state: IDetailView,
   dispatch: React.Dispatch<Action>,
 }
-export function detailviewReducer(state: State, action: Action): State {
+export function detailviewReducer(state: IDetailView, action: Action): IDetailView {
   switch (action.type) {
     case "remove":
       var { tags } = action;
