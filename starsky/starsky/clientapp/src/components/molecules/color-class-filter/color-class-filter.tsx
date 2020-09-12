@@ -80,7 +80,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo((props) 
       if (index !== -1) urlObject.colorClass.splice(index, 1);
     }
 
-    urlObject.select = new SelectCheckIfActive().IsActive(urlObject.select, urlObject.colorClass, state.fileIndexItems);
+    if (urlObject.select) urlObject.select = new SelectCheckIfActive().IsActive(urlObject.select, urlObject.colorClass, state.fileIndexItems);
 
     return new URLPath().IUrlToString(urlObject);
   }
