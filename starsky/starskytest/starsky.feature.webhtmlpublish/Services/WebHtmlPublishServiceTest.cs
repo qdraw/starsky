@@ -434,7 +434,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new Dictionary<string, bool>{
 				{
 					new CreateAnImage().FileName,true
-				}}, true);
+				}}, true).ConfigureAwait(false);
 
 			var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
 			

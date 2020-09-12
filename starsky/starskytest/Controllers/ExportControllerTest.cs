@@ -118,7 +118,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task ExportController_CreateZipNotFound()
+		public void ExportController_CreateZipNotFound()
 		{
 			var iStorage = new StorageSubPathFilesystem(_appSettings);
 			var storageSelector = new FakeSelectorStorage(iStorage);

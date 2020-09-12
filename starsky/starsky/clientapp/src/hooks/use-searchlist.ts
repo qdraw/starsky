@@ -21,7 +21,7 @@ const useSearchList = (query: string | undefined, pageNumber = 0, resetPageTypeB
     try {
 
       if (!location) {
-        setArchive({ pageType: PageType.Search, ...newIArchive(), fileIndexItems: [], colorClassUsage: [], searchQuery: '' });
+        setArchive({ ...newIArchive(), pageType: PageType.Search, fileIndexItems: [], colorClassUsage: [], searchQuery: '' });
         setPageType(PageType.Search);
         return;
       }
@@ -40,7 +40,7 @@ const useSearchList = (query: string | undefined, pageNumber = 0, resetPageTypeB
         return;
       }
       else if (res.status === 401) {
-        setArchive({ pageType: PageType.Unauthorized, ...newIArchive(), fileIndexItems: [], colorClassUsage: [] });
+        setArchive({ ...newIArchive(), pageType: PageType.Unauthorized, fileIndexItems: [], colorClassUsage: [] });
         setPageType(PageType.Unauthorized);
         return;
       }

@@ -37,8 +37,8 @@ function Trash(archive: IArchiveProps) {
     setCollectionsCount(state.collectionsCount);
   }, [state.collectionsCount]);
 
-  if (!archive) return (<>(Search) => no archive</>);
-  if (!archive.colorClassUsage) return (<>(Search) => no colorClassUsage</>);
+  if (!archive) return (<>(Search) = no archive</>);
+  if (!archive.colorClassUsage) return (<>(Search) = no colorClassUsage</>);
 
   return (
     <>

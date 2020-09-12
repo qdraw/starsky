@@ -36,7 +36,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
-  if (!state) return (<>(ArchiveWrapper) => no state</>)
+  if (!state) return (<>(ArchiveWrapper) = no state</>)
   if (!state.fileIndexItems) return (<></>);
   if (!state.pageType) return (<></>);
 
