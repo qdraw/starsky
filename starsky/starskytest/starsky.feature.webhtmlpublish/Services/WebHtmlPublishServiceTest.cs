@@ -417,7 +417,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 
 		[TestMethod]
-		public async Task GenerateZip_RealFsTest()
+		public void GenerateZip_RealFsTest()
 		{
 			var appSettings = new AppSettings();
 			
@@ -430,11 +430,11 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 				new ConsoleWrapper());
 
-			await service.GenerateZip(new CreateAnImage().BasePath, "test", 
+			service.GenerateZip(new CreateAnImage().BasePath, "test", 
 				new Dictionary<string, bool>{
 				{
 					new CreateAnImage().FileName,true
-				}}, true);
+				}}, true).ConfigureAwait(false);
 
 			var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
 			
