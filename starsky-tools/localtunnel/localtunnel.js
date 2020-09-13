@@ -100,6 +100,9 @@ function NetCoreAppRouteRoute(req, res, next) {
 
   // Error: socket hang up
   apiProxy.on('error', function (error, req, res) {
+    if (error && error.code && error.code === 'ECONNRESET') {
+      return;
+    }
     var json;
     if (!res.headersSent) {
       res.writeHead(500, { 'content-type': 'application/json' });

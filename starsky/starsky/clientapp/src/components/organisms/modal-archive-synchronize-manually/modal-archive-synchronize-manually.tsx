@@ -7,6 +7,7 @@ import { IArchiveProps } from '../../../interfaces/IArchiveProps';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
@@ -54,11 +55,12 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
    */
   function removeCache() {
     setIsLoading(true);
-
+    new FileListCache().CacheCleanEverything();
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then((_) => {
       setTimeout(() => {
-        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
+        var url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(history.location.search));
+        FetchGet(url).then((connectionResult) => {
           var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
@@ -98,14 +100,18 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     });
   }
 
-  useInterval(() => fetchGeoSyncStatus(), 4333);
+  useInterval(() => fetchGeoSyncStatus(), 10000);
 
   function forceSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     setIsLoading(true);
-    FetchGet(new UrlQuery().UrlSync(new URLPath().encodeURI(parentFolder))).then((_) => {
+    new FileListCache().CacheCleanEverything();
+
+    var urlSync = new UrlQuery().UrlSync(parentFolder);
+    FetchGet(urlSync).then((_) => {
       setTimeout(() => {
-        FetchGet(new UrlQuery().UrlIndexServerApiPath(new URLPath().encodeURI(parentFolder))).then((connectionResult) => {
+        var url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(history.location.search));
+        FetchGet(url).then((connectionResult) => {
           var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
@@ -132,7 +138,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   }
 
   return (<Modal
-    id="detailview-export-modal"
+    id="modal-archive-synchronize-manually"
     isOpen={props.isOpen}
     handleExit={() => {
       props.handleExit()

@@ -233,6 +233,10 @@ export class UrlQuery {
     return this.prefix + "/export/zip/" + createZipId + ".zip?json=" + json;
   }
 
+  /**
+   * Url of Sync (no need to encode url)
+   * @param parentFolder no need to encode url
+   */
   public UrlSync(parentFolder: string): string {
     return this.prefix + "/sync?f=" + new URLPath().encodeURI(parentFolder);
   }
