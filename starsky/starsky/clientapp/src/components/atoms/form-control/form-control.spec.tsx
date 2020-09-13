@@ -51,6 +51,40 @@ describe("FormControl", () => {
       component.unmount();
     });
 
+    it("limitLengthKey - keydown max limit but allow control/command a", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "12345678901";
+        component.simulate('keydown', { key: 'a', metaKey: true, preventDefault: preventDefaultSpy })
+      });
+
+      // command a is to select all
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
+    it("limitLengthKey - keydown max limit but allow control/command e", () => {
+
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456789</FormControl>);
+
+      var preventDefaultSpy = jest.fn();
+
+      act(() => {
+        component.getDOMNode().innerHTML = "12345678901";
+        component.simulate('keydown', { key: 'e', ctrlKey: true, preventDefault: preventDefaultSpy })
+      });
+
+      // ctrl e to go the begin of the field
+      expect(preventDefaultSpy).toBeCalledTimes(0);
+
+      component.unmount();
+    });
+
     it("limitLengthKey - keydown ok", () => {
 
       var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">123456</FormControl>);

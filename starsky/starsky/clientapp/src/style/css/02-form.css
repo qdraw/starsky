@@ -92,7 +92,8 @@
 .form-control[data-name="sec"],
 .form-control[data-name="minute"],
 .form-control[data-name="hour"] {
-    width: 35px;
+    width: 38px; 
+    /* test with 00 or 40 */
     padding: 6px 8px;
 }
 
