@@ -30,6 +30,7 @@
 		"typescript.preferences.quoteStyle": "single",
 		"typescript.updateImportsOnFileMove.enabled": "always",
 		"cSpell.words": [
+			"Exif",
 			"Starsky",
 			"unmount"
 		],

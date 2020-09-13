@@ -82,7 +82,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   useInterval(async () => {
     if (isProcessing !== ProcessingState.server) return;
     await ExportIntervalUpdate(createZipKey, setProcessing);
-  }, 5000);
+  }, 9000);
 
   function updateItemName(event: React.ChangeEvent<HTMLDivElement>) {
     var toUpdateItemName = event.target.textContent ? event.target.textContent.trim() : "";
