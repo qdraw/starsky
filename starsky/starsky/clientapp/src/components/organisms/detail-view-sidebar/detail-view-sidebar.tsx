@@ -246,9 +246,9 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     <div className="content--text">
       <ColorClassSelect
         collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
-        onToggle={() => {
-          setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString() });
-          dispatch({ 'type': 'update', lastEdited: '' })
+        onToggle={(result) => {
+          setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString(), colorClass: result });
+          dispatch({ 'type': 'update', lastEdited: new Date().toString(), colorclass: result })
         }}
         filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass}
