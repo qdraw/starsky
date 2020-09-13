@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,12 +46,21 @@ namespace starskytest.starskyAdminCli.Services
 			});
 			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty, string.Empty);
 
-			foreach ( var line in console.WrittenLines )
-			{
-				Console.WriteLine(line);
-			}
-			
 			Assert.AreEqual("username / password is not valid", 
+				console.WrittenLines.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void UserCreate_NoInput()
+		{
+			var console = new FakeConsoleWrapper(new List<string>
+			{
+				"dont@mail.me",
+				string.Empty
+			});
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
+			
+			Assert.AreEqual("No input selected", 
 				console.WrittenLines.LastOrDefault());
 		}
 		

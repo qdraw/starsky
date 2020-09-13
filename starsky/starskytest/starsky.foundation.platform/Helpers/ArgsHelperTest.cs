@@ -112,6 +112,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
             var args = new List<string> {"-p", "/"}.ToArray();
             Assert.AreEqual(new ArgsHelper(_appSettings).GetPathFormArgs(args), "/");
         }
+        
+        [TestMethod]
+        public void GetUserInputPassword()
+        {
+	        var args = new List<string> {"-p", "test"}.ToArray();
+	        Assert.AreEqual(new ArgsHelper(_appSettings).GetUserInputPassword(args), "test");
+        }
+        
+        [TestMethod]
+        public void GetUserInputPasswordLong()
+        {
+	        var args = new List<string> {"--password", "test"}.ToArray();
+	        Assert.AreEqual(new ArgsHelper(_appSettings).GetUserInputPassword(args), "test");
+        }
 
 	    [TestMethod]
 	    [ExpectedException(typeof(FieldAccessException))]

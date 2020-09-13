@@ -1,5 +1,5 @@
+using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,9 +9,8 @@ using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.accountmangement.Services
 {
 	[TestClass]
 	public class UserManagerTest
@@ -156,5 +155,27 @@ namespace starskytest.Services
 
 			Assert.AreEqual("GetUser",user.Name);
 		}
+
+		[TestMethod]
+		public void PreflightValidate_Fail_stringEmpty()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			Assert.IsFalse(userManager.PreflightValidate(string.Empty, string.Empty, string.Empty));
+		}
+		
+		[TestMethod]
+		public void PreflightValidate_Fail_wrongEmail()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			Assert.IsFalse(userManager.PreflightValidate("no_mail", "123456789012345", "123456789012345"));
+		}
+		
+		[TestMethod]
+		public void PreflightValidate_Ok()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			Assert.IsTrue(userManager.PreflightValidate("dont@mail.me", "123456789012345", "123456789012345"));
+		}
+		
 	}
 }
