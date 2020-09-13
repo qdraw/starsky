@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -40,7 +41,7 @@ namespace starskytest.FakeMocks
 
 		public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
 		{
-			throw new System.NotImplementedException();
+			return new SignUpResult();
 		}
 
 		public void AddToRole(User user, string roleCode)
@@ -123,6 +124,11 @@ namespace starskytest.FakeMocks
 		public Role GetRole(string credentialTypeCode, string identifier)
 		{
 			return Role;
+		}
+
+		public bool PreflightValidate(string userName, string password, string confirmPassword)
+		{
+			return password != "false";
 		}
 	}
 }

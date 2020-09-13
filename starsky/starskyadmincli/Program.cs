@@ -43,7 +43,7 @@ namespace starskyAdminCli
 				return;
 			}
 			
-			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args));
+			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 		}
 	}
 }

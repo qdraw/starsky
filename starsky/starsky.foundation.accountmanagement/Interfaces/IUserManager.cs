@@ -86,5 +86,6 @@ namespace starsky.foundation.accountmanagement.Interfaces
         ValidateResult RemoveUser(string credentialTypeCode, string identifier);
         User Exist(string identifier);
         Role GetRole(string credentialTypeCode, string identifier);
+        bool PreflightValidate(string userName, string password, string confirmPassword);
     }
 }
