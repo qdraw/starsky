@@ -32,6 +32,12 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   var preloader = <Preloader isOverlay={true} isDetailMenu={false} />
   const [isPreloaderState, setPreloaderState] = React.useState(false);
 
+  function preloaderStateOnClick(event: React.MouseEvent) {
+    // Command (mac) or ctrl click means open new window
+    if (event.metaKey || event.ctrlKey) return;
+    setPreloaderState(true)
+  }
+
   // selected state
   if (select) {
     return (
@@ -50,7 +56,6 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
             </div>
           </div>
         </button>
-
       </div>
     )
   }
@@ -61,7 +66,8 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
     <div className="list-image-box box--view" data-filepath={item.filePath}>
       {/* for slow connections show preloader icon */}
       {isPreloaderState ? preloader : null}
-      <Link onClick={() => setPreloaderState(true)} title={item.fileName} to={new UrlQuery().updateFilePathHash(history.location.search, item.filePath)}
+      {/* the a href to the child page */}
+      <Link onClick={preloaderStateOnClick} title={item.fileName} to={new UrlQuery().updateFilePathHash(history.location.search, item.filePath)}
         className={"box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>
         <ListImage imageFormat={item.imageFormat} alt={item.tags} fileHash={item.fileHash} />
         <div className="caption">
