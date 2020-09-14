@@ -84,9 +84,10 @@
   padding: 6px 8px;
 }
 
-.form-control[data-name="day"],
+.form-control[data-name="date"],
 .form-control[data-name="month"] {
-  width: 47px;
+  width: 38px;
+  padding: 6px 5px;
 }
 
 .form-control[data-name="sec"],
