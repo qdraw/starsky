@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <RootNamespace>starsky.foundation.sockets</RootNamespace>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{3720464f-485f-4e4d-acd3-e807e97a8b3d}</ProjectGuid>
+        <Version>0.3.2</Version>
     </PropertyGroup>
 
     <ItemGroup>
