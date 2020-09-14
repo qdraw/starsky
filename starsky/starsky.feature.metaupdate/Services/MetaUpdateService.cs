@@ -65,14 +65,16 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
+		/// <param name="requestId">the id to find the request back</param>
 		public async Task Update(Dictionary<string, List<string>> changedFileIndexItemName, 
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, 
 			bool collections, 
 			bool append, 
 			int rotateClock,
-			Guid? requestId)
+			Guid? requestId = null)
 		{
+			
 			if ( changedFileIndexItemName == null )
 			{
 				changedFileIndexItemName = _metaPreflight.Preflight(inputModel,
