@@ -29,6 +29,7 @@ namespace starsky.foundation.sockets.Helpers
 			if ( !context.WebSockets.IsWebSocketRequest )
 			{
 				context.Response.StatusCode = 400;
+				context.Response.Headers.Add("x-debug-reason", "IsWebSocketRequest:false" );
 				return;
 			}
 			
