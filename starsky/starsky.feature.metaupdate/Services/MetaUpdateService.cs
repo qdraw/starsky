@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,6 +10,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.sockets.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -30,6 +32,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IConsole _console;
 		private readonly ITelemetryService _telemetryService;
+		private readonly ISockets _sockets;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -37,7 +40,9 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IConsole console, ITelemetryService telemetryService = null)
+			IConsole console, 
+			ISockets sockets,
+			ITelemetryService telemetryService = null)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -47,6 +52,7 @@ namespace starsky.feature.metaupdate.Services
 			_metaPreflight = metaPreflight;
 			_console = console;
 			_telemetryService = telemetryService;
+			_sockets = sockets;
 		}
 
 		/// <summary>
@@ -59,10 +65,13 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public void Update(Dictionary<string, List<string>> changedFileIndexItemName, 
+		public async Task Update(Dictionary<string, List<string>> changedFileIndexItemName, 
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, 
-			bool collections, bool append, int rotateClock)
+			bool collections, 
+			bool append, 
+			int rotateClock,
+			Guid? requestId)
 		{
 			if ( changedFileIndexItemName == null )
 			{
@@ -84,6 +93,8 @@ namespace starsky.feature.metaupdate.Services
 					var comparedNamesList = changedFileIndexItemName[item.FilePath];
 
 					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
+					await _sockets.BroadcastAll(requestId, detailView.FileIndexItem);
+
 					continue;
 				}
 
@@ -148,7 +159,6 @@ namespace starsky.feature.metaupdate.Services
 			
 			// Do a database sync + cache sync
 			_query.UpdateItem(detailView.FileIndexItem);
-                        
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image

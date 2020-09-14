@@ -27,6 +27,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.sockets.Helpers;
+using starsky.foundation.sockets.Middleware;
 using starsky.Health;
 using starsky.Helpers;
 using starskycore.Middleware;
@@ -326,6 +328,10 @@ namespace starsky
 			app.UseAuthorization();
 #endif
 
+	        // Enable websockets
+	        app.UseWebSockets(DefaultWebSocketOptions.GetDefault());
+	        app.UseCustomWebSocketManager();
+	        
 #if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseEndpoints(endpoints =>
 			{

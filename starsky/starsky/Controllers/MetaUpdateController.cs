@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.sockets.Interfaces;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -17,17 +20,18 @@ namespace starsky.Controllers
 		private readonly IMetaUpdateService _metaUpdateService;
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly ISockets _sockets;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
-			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue)
+			IMetaReplaceService metaReplaceService, IBackgroundTaskQueue queue)
 		{
 			_metaPreflight = metaPreflight;
 			_metaUpdateService = metaUpdateService;
 			_metaReplaceService = metaReplaceService;
 			_bgTaskQueue = queue;
 		}
-	    
-	    /// <summary>
+		
+		/// <summary>
 	    /// Update Exif and Rotation API
 	    /// </summary>
 	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
@@ -51,6 +55,7 @@ namespace starsky.Controllers
 		    bool collections = true, int rotateClock = 0)
 	    {
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+		    var requestId = Guid.NewGuid();
 
 			var preflightResult =  _metaPreflight.Preflight(inputModel, inputFilePaths,
 				append, collections, rotateClock);
@@ -59,10 +64,11 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				_metaUpdateService
+				await _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
-						fileIndexResultsList, inputModel,collections, append, rotateClock);
+						fileIndexResultsList, inputModel,collections, append, rotateClock, requestId);
 			});
+			Response.Headers.Add("x-request-id", requestId.ToString());
 			
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
