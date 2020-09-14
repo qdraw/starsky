@@ -55,9 +55,7 @@ namespace starsky.Controllers
 		    bool collections = true, int rotateClock = 0)
 	    {
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-		    var requestId = Guid.NewGuid();
-
-			var preflightResult =  _metaPreflight.Preflight(inputModel, inputFilePaths,
+		    var preflightResult =  _metaPreflight.Preflight(inputModel, inputFilePaths,
 				append, collections, rotateClock);
 			var fileIndexResultsList = preflightResult.fileIndexResultsList;
 
@@ -66,9 +64,8 @@ namespace starsky.Controllers
 			{
 				await _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
-						fileIndexResultsList, inputModel,collections, append, rotateClock, requestId);
+						fileIndexResultsList, inputModel,collections, append, rotateClock);
 			});
-			Response.Headers.Add("x-request-id", requestId.ToString());
 			
             // When all items are not found
             if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

@@ -10,6 +10,8 @@ namespace starsky.feature.metaupdate.Interfaces
 		Task Update(Dictionary<string, List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel,
-			bool collections, bool append, int rotateClock, Guid? requestId = null);
+			bool collections,
+			bool append,
+			int rotateClock);
 	}
 }

@@ -71,8 +71,7 @@ namespace starsky.feature.metaupdate.Services
 			FileIndexItem inputModel, 
 			bool collections, 
 			bool append, 
-			int rotateClock,
-			Guid? requestId = null)
+			int rotateClock)
 		{
 			
 			if ( changedFileIndexItemName == null )
@@ -95,8 +94,7 @@ namespace starsky.feature.metaupdate.Services
 					var comparedNamesList = changedFileIndexItemName[item.FilePath];
 
 					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
-					await _sockets.BroadcastAll(requestId, detailView.FileIndexItem);
-
+					await _sockets.BroadcastAll(Guid.NewGuid(), detailView.FileIndexItem);
 					continue;
 				}
 
