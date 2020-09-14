@@ -5,6 +5,7 @@ import { WebSocketService } from '../shared/websocket-service';
 export const useSocketsEventName = 'USE_SOCKETS';
 
 export interface IUseSockets {
+  countRetry: number;
 }
 
 const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
@@ -73,7 +74,9 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
 
   }, [socketService]);
 
-  return {};
+  return {
+    countRetry: countRetry.current
+  };
 };
 
 export default useSockets;
