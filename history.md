@@ -45,6 +45,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Modal Sync Manually - When ColorClass is selected, its now updating the state to keep the selection
 - [x]   (Fixed) _Front-end_ Modal Sync Manually - Sync Manual and Clears Cache cleans now also the client cache.
 - [x]   (Fixed) _Front-end_ DetailView - When pressing ColorClass it also updated when going to the next and back to the same image.
+- [x]   (Fixed) _Front-end_ DetailView formcontrol fix styling issue when insert 40 or 00 on a datetime input
+- [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
