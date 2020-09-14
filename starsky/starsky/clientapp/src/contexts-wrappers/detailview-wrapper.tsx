@@ -26,6 +26,22 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
     setDetailView(state);
   }, [state]);
 
+
+  // useEffect(() => {
+  //   function updateDetailView(event: Event) {
+  //     const pushMessage = event as CustomEvent<IFileIndexItem>;
+  //     dispatch({ type: 'reset', payload: { ...state, fileIndexItem: pushMessage.detail } });
+  //   }
+
+  //   document.body.addEventListener(useSocketsEventName, updateDetailView);
+  //   return () => {
+  //     document.body.removeEventListener(useSocketsEventName, updateDetailView);
+  //   };
+  //   // only when start of view
+  //   // eslint-disable-next-line
+  // }, []);
+
+
   useEffect(() => {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);

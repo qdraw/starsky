@@ -6,6 +6,7 @@ import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
 import DetailViewContextWrapper from '../contexts-wrappers/detailview-wrapper';
 import useFileList from '../hooks/use-filelist';
 import useLocation from '../hooks/use-location';
+import useSockets from '../hooks/use-sockets';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import NotFoundPage from '../pages/not-found-page';
@@ -15,6 +16,7 @@ const MediaContent: React.FC = () => {
 
   var history = useLocation();
   var usesFileList = useFileList(history.location.search, false);
+  useSockets();
 
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
   const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;

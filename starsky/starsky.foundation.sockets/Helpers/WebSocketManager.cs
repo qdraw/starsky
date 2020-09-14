@@ -20,7 +20,7 @@ namespace starsky.foundation.sockets.Helpers
 		public async Task Invoke(HttpContext context, ICustomWebSocketFactory wsFactory,
 			ICustomWebSocketMessageHandler wsmHandler)
 		{
-			if ( context.Request.Path != "/api/websocket" )
+			if ( context.Request.Path != "/realtime" )
 			{
 				await _next(context);
 				return;

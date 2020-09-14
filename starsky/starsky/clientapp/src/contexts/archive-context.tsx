@@ -79,6 +79,7 @@ export function archiveReducer(state: State, action: Action): State {
     case "update":
 
       var { select, tags, description, title, append, colorclass } = action;
+      console.log(action);
 
       state.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {

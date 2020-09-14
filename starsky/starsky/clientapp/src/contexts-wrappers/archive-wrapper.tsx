@@ -5,8 +5,10 @@ import Login from '../containers/login';
 import Search from '../containers/search';
 import Trash from '../containers/trash';
 import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
+import { useSocketsEventName } from '../hooks/use-sockets';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import DocumentTitle from '../shared/document-title';
 
 /**
@@ -30,6 +32,22 @@ function ArchiveWrapper(archive: IArchiveProps) {
     // disable to prevent duplicate api calls
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [archive.subPath, archive.searchQuery, archive.pageNumber, archive.colorClassUsage]);
+
+
+  useEffect(() => {
+    function updateDetailView(event: Event) {
+      const pushMessage = event as CustomEvent<IFileIndexItem>;
+      dispatch({ type: 'update', select: [pushMessage.detail.fileName], ...pushMessage.detail });
+    }
+
+    document.body.addEventListener(useSocketsEventName, updateDetailView);
+    return () => {
+      document.body.removeEventListener(useSocketsEventName, updateDetailView);
+    };
+    // only when start of view
+    // eslint-disable-next-line
+  }, []);
+
 
   useEffect(() => {
     if (!state) return;

@@ -13,10 +13,15 @@ namespace starsky.foundation.sockets.Services
 	[Service(typeof(ICustomWebSocketMessageHandler), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class CustomWebSocketMessageHandler : ICustomWebSocketMessageHandler
 	{
+		
+		private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+		{
+			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+		};
+		
 		public async Task SendInitialMessages(CustomWebSocket userWebSocket)
 		{
 			WebSocket webSocket = userWebSocket.WebSocket;
-			
 			
 			var msg = new CustomWebSocketMessage
 			{
@@ -25,11 +30,12 @@ namespace starsky.foundation.sockets.Services
 				Data = null
 			};
 
-			string serialisedMessage = JsonSerializer.Serialize(msg);
+			string serialisedMessage = JsonSerializer.Serialize(msg,_serializerOptions);
 			byte[] bytes = Encoding.ASCII.GetBytes(serialisedMessage);
 			await webSocket.SendAsync(new ArraySegment<byte>(bytes, 0, bytes.Length), 
 				WebSocketMessageType.Text, true, CancellationToken.None);
 		}
+
 
 		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, CustomWebSocket userWebSocket, 
 			ICustomWebSocketFactory wsFactory)
@@ -66,10 +72,7 @@ namespace starsky.foundation.sockets.Services
 
 			var webSocketMessage = new CustomWebSocketMessage {Data = msg, RequestId = requestId};
 			
-			string serialisedMessage = JsonSerializer.Serialize(webSocketMessage, new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-			});
+			string serialisedMessage = JsonSerializer.Serialize(webSocketMessage, _serializerOptions);
 			byte[] bytes = Encoding.ASCII.GetBytes(serialisedMessage);
 			await BroadcastAll(bytes, wsFactory);
 		}
@@ -79,9 +82,18 @@ namespace starsky.foundation.sockets.Services
 			var all = wsFactory.All();
 			foreach (var uws in all)
 			{
-				await uws.WebSocket.SendAsync(
-					new ArraySegment<byte>(buffer, 0, buffer.Length), 
-					WebSocketMessageType.Text, true, CancellationToken.None);
+				try
+				{
+					await uws.WebSocket.SendAsync(
+						new ArraySegment<byte>(buffer, 0, buffer.Length), 
+						WebSocketMessageType.Text, true, CancellationToken.None);
+				}
+				catch ( Exception e )
+				{
+					wsFactory.Remove(uws.Id);
+					Console.WriteLine(e);
+				}
+
 			}
 		}
 	}
