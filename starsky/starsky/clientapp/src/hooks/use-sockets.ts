@@ -13,7 +13,14 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
   const ws = useRef({} as WebSocketService);
 
   const newWebSocketService = (): WebSocketService => {
-    return new WebSocketService("ws://localhost:5000/realtime");
+    var url = "";
+    if (window.location.protocol === "https:") {
+      url = "wss:";
+    } else {
+      url = "ws:";
+    }
+    url += "//" + window.location.host.replace(":3000", ":5000") + "/starsky/realtime";
+    return new WebSocketService(url);
   }
 
   const intervalRef = useRef({} as NodeJS.Timeout);
