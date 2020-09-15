@@ -23,6 +23,7 @@ const useFileListCacheWatcher = (): IUseFileListCacheWatcher => {
           archive.fileIndexItems.forEach(item => {
             if (item.filePath === pushMessage.detail.filePath) {
               item = pushMessage.detail;
+              // todo finish
               return;
             }
           });

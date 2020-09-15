@@ -1,5 +1,5 @@
 import { IUrl, newIUrl } from '../interfaces/IUrl';
-import isDev from './process';
+import isDev from './is-dev';
 import { URLPath } from './url-path';
 
 export class UrlQuery {

@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.sockets.Interfaces;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -20,7 +17,6 @@ namespace starsky.Controllers
 		private readonly IMetaUpdateService _metaUpdateService;
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly ISockets _sockets;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
 			IMetaReplaceService metaReplaceService, IBackgroundTaskQueue queue)
@@ -60,7 +56,7 @@ namespace starsky.Controllers
 			var fileIndexResultsList = preflightResult.fileIndexResultsList;
 
 			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+		    _bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 				await _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
