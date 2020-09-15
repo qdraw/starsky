@@ -13,6 +13,7 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
   const ws = useRef({} as WebSocketService);
 
   const newWebSocketService = (): WebSocketService => {
+    // TODO: move to url function
     var url = "";
     if (window.location.protocol === "https:") {
       url = "wss:";
