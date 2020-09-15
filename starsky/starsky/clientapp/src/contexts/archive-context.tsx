@@ -28,7 +28,8 @@ type Action = {
   description?: string,
   title?: string,
   append?: boolean,
-  select: string[]
+  select: string[],
+  fileHash?: string
 } |
 {
   type: 'force-reset',
@@ -78,8 +79,8 @@ export function archiveReducer(state: State, action: Action): State {
       return updateCache({ ...state, fileIndexItems: afterFileIndexItems, collectionsCount, lastUpdated: new Date() });
     case "update":
 
-      var { select, tags, description, title, append, colorclass } = action;
-      console.log(action);
+      var { select, tags, description, title, append, colorclass, fileHash } = action;
+      console.log(select, action, state.fileIndexItems);
 
       state.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {
@@ -94,6 +95,7 @@ export function archiveReducer(state: State, action: Action): State {
             if (description) state.fileIndexItems[index].description = description;
             if (title) state.fileIndexItems[index].title = title;
           }
+          if (fileHash) state.fileIndexItems[index].fileHash = fileHash;
           // colorclass = 0 ==> colorless/no-color
           if (colorclass !== undefined && colorclass !== -1) {
             state.fileIndexItems[index].colorClass = colorclass;

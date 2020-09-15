@@ -128,6 +128,7 @@ const MenuDetailView: React.FunctionComponent = () => {
       var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
       if (resultDo.statusCode !== 200 && resultDo.statusCode !== 404) {
         // 404: file can already been deleted
+        console.log('file can already been deleted');
         console.error(resultDo);
         setIsLoading(false);
         return;

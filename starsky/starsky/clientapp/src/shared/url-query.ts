@@ -1,4 +1,5 @@
 import { IUrl, newIUrl } from '../interfaces/IUrl';
+import isDev from './process';
 import { URLPath } from './url-path';
 
 export class UrlQuery {
@@ -297,5 +298,23 @@ export class UrlQuery {
 
   public UrlPublishExist(itemName: string | null): string {
     return this.prefix + `/api/publish/exist?itemName=${itemName}`;
+  }
+
+  public UrlRealtime(): string {
+    var url = "";
+    if (window.location.protocol === "https:") {
+      url = "wss:";
+    } else {
+      url = "ws:";
+    }
+    url += "//" + window.location.host + "/starsky/realtime";
+
+    // Create React is not supporting websockets. At least is isn't working
+    if (isDev()) {
+      url = url.replace(":3000", ":5000")
+    }
+    console.log(url);
+
+    return url;
   }
 } 

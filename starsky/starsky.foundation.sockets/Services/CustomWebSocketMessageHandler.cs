@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -50,6 +51,7 @@ namespace starsky.foundation.sockets.Services
 			}
 			catch (Exception e)
 			{
+				Console.WriteLine(">>> >>>> HandleMessage");
 				Console.WriteLine(e);
 				await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), 
 					result.MessageType, result.EndOfMessage, CancellationToken.None);
@@ -80,20 +82,11 @@ namespace starsky.foundation.sockets.Services
 		public async Task BroadcastAll(byte[] buffer, ICustomWebSocketFactory wsFactory)
 		{
 			var all = wsFactory.All();
-			foreach (var uws in all)
+			foreach ( var uws in all.Where(uws => uws.WebSocket != null) )
 			{
-				try
-				{
-					await uws.WebSocket.SendAsync(
-						new ArraySegment<byte>(buffer, 0, buffer.Length), 
-						WebSocketMessageType.Text, true, CancellationToken.None);
-				}
-				catch ( Exception e )
-				{
-					wsFactory.Remove(uws.Id);
-					Console.WriteLine(e);
-				}
-
+				await uws.WebSocket.SendAsync(
+					new ArraySegment<byte>(buffer, 0, buffer.Length), 
+					WebSocketMessageType.Text, true, CancellationToken.None);
 			}
 		}
 	}

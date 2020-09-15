@@ -29,7 +29,7 @@ namespace starsky.foundation.sockets.Helpers
 			if ( !context.WebSockets.IsWebSocketRequest )
 			{
 				context.Response.StatusCode = 400;
-				context.Response.Headers.Add("x-debug-reason", "IsWebSocketRequest:false" );
+				await context.Response.WriteAsync("This request is not a websocket");
 				return;
 			}
 			
@@ -53,28 +53,44 @@ namespace starsky.foundation.sockets.Helpers
 			
 			await Listen(userWebSocket, wsFactory, wsmHandler);
 
+			if ( context.Response.HasStarted )
+			{
+				// to avoid  StatusCode cannot be set because the response has already started.
+				return;
+			}
 			await _next(context);
 		}
 
 		private async Task Listen(CustomWebSocket userWebSocket,
 			ICustomWebSocketFactory wsFactory, ICustomWebSocketMessageHandler wsmHandler)
 		{
-			WebSocket webSocket = userWebSocket.WebSocket;
-			var buffer = new byte[1024 * 4];
-			WebSocketReceiveResult result =
-				await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
-					CancellationToken.None);
-			while ( !result.CloseStatus.HasValue )
+			try
 			{
-				await wsmHandler.HandleMessage(result, buffer, userWebSocket, wsFactory);
-				buffer = new byte[1024 * 4];
-				result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
+				WebSocket webSocket = userWebSocket.WebSocket;
+
+				var buffer = new byte[1024 * 4];
+				WebSocketReceiveResult result =
+					await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
+						CancellationToken.None);
+				while ( !result.CloseStatus.HasValue )
+				{
+					await wsmHandler.HandleMessage(result, buffer, userWebSocket, wsFactory);
+					buffer = new byte[1024 * 4];
+					result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
+						CancellationToken.None);
+				}
+				wsFactory.Remove(userWebSocket.Id);
+				await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription,
 					CancellationToken.None);
+				
+			}
+			catch ( WebSocketException e )
+			{
+				wsFactory.Remove(userWebSocket.Id);
+				Console.WriteLine(">>>>>>>>>>>>   WebSocketException");
+				Console.WriteLine(e);
 			}
 
-			wsFactory.Remove(userWebSocket.Id);
-			await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription,
-				CancellationToken.None);
 		}
 	}
 }

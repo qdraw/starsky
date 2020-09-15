@@ -75,7 +75,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     var infoFileIndexItem = new CastToInterface().InfoFileIndexArray(infoResponseObject.data);
     if (!infoFileIndexItem) return;
     updateCollections(infoFileIndexItem);
-
     dispatch({ 'type': 'update', ...infoFileIndexItem[0], lastEdited: '' })
   }, [dispatch, infoResponseObject]);
 
@@ -140,6 +139,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       var currentItem = item.data[0] as IFileIndexItem;
       currentItem.lastEdited = new Date().toISOString();
+
+      console.log(currentItem);
 
       setFileIndexItem(currentItem);
       dispatch({ 'type': 'update', ...currentItem });

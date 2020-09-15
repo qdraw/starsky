@@ -1,29 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { UrlQuery } from '../shared/url-query';
 import { WebSocketService } from '../shared/websocket-service';
 
 export const useSocketsEventName = 'USE_SOCKETS';
+export const useSocketsMaxTry = 10;
 
 export interface IUseSockets {
-  countRetry: number;
+  socketsFailed: boolean;
 }
 
-const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
+const useSockets = (socketService?: WebSocketService): IUseSockets => {
 
   const ws = useRef({} as WebSocketService);
 
   const newWebSocketService = (): WebSocketService => {
-    // TODO: move to url function
-    var url = "";
-    if (window.location.protocol === "https:") {
-      url = "wss:";
-    } else {
-      url = "ws:";
-    }
-    url += "//" + window.location.host.replace(":3000", ":5000") + "/starsky/realtime";
-    return new WebSocketService(url);
+    return new WebSocketService(new UrlQuery().UrlRealtime());
   }
 
+  const [socketsFailed, setSocketsFailed] = useState(false);
   const intervalRef = useRef({} as NodeJS.Timeout);
 
   function onOpen() {
@@ -36,7 +31,6 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
 
   function parseMessage(data: string) {
     var fileIndexItem: IFileIndexItem | undefined;
-    console.log(data);
 
     try {
       fileIndexItem = JSON.parse(data).data;
@@ -45,11 +39,9 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
 
     }
     if (!fileIndexItem) return;
-    console.log(fileIndexItem);
+    console.log('update', fileIndexItem.filePath);
     document.body.dispatchEvent(new CustomEvent(useSocketsEventName, { detail: fileIndexItem, bubbles: false }))
   }
-
-
 
   // useState does not update in a sync way
   const countRetry = useRef(0);
@@ -57,17 +49,18 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
   useEffect(() => {
     ws.current = socketService ? socketService : newWebSocketService();
     ws.current.onClose(() => {
-
       intervalRef.current = setInterval(() => {
-        if (countRetry.current > 10) {
+        if (countRetry.current > useSocketsMaxTry) {
           clearInterval(intervalRef.current);
-          throw new Error('connection issues tried more than 10 times');
+          setSocketsFailed(true);
+          return;
         }
         console.log('retry number: ', countRetry.current);
         ws.current = newWebSocketService();
         onOpen();
         ws.current.onMessage((event) => parseMessage(event.data));
         countRetry.current++;
+        // change to 10000
       }, 10000)
     })
 
@@ -75,15 +68,13 @@ const useSockets = (socketService?: WebSocketService): IUseSockets | null => {
     ws.current.onMessage((event) => parseMessage(event.data));
 
     return () => {
-      console.log('--close');
-
       ws.current.close(() => { });
     };
 
   }, [socketService]);
 
   return {
-    countRetry: countRetry.current
+    socketsFailed
   };
 };
 

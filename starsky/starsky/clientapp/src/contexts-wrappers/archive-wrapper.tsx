@@ -37,7 +37,11 @@ function ArchiveWrapper(archive: IArchiveProps) {
   useEffect(() => {
     function updateDetailView(event: Event) {
       const pushMessage = event as CustomEvent<IFileIndexItem>;
-      dispatch({ type: 'update', select: [pushMessage.detail.fileName], ...pushMessage.detail });
+      dispatch({
+        type: 'update', select: [pushMessage.detail.fileName],
+        ...pushMessage.detail,
+        colorclass: pushMessage.detail.colorClass
+      });
     }
 
     document.body.addEventListener(useSocketsEventName, updateDetailView);
