@@ -18,6 +18,10 @@ RUN dotnet restore
 
 RUN dotnet publish -c Release -o out
 
+# insert demo user and content
+ARG ISDEMO=""
+ENV E_ISDEMO=$MYARG
+RUN chmod +x /app/starsky/starsky/demo_setup.sh && /app/starsky/starsky/demo_setup.sh
 
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
