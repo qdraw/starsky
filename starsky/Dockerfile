@@ -21,6 +21,7 @@ RUN dotnet publish -c Release -o out
 # insert demo user and content
 ARG ISDEMO=""
 ENV E_ISDEMO=$MYARG
+RUN ls /app/starsky
 RUN chmod +x /app/starsky/starsky/docker_demo_setup.sh && /app/starsky/starsky/docker_demo_setup.sh
 
 # build runtime image
