@@ -11,6 +11,8 @@ on:
     paths:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'
     - '.github/workflows/**'
 
 jobs:
