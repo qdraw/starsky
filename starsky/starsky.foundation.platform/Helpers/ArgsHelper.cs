@@ -408,6 +408,24 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
+		/// Get the user input from -p or --password
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>path</returns>
+		public string GetUserInputPassword(IReadOnlyList<string> args)
+		{
+			var path = string.Empty;
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--password" || args[arg].ToLower() == "-p") && (arg + 1) != args.Count )
+				{
+					path = args[arg + 1];
+				}
+			}
+			return path;
+		}
+		
+		/// <summary>
 		/// Get the user input from -n or --name
 		/// </summary>
 		/// <param name="args">arg list</param>

@@ -21,9 +21,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
@@ -340,8 +340,7 @@ namespace starsky
 					 });
 #endif
 
-	        EfCoreMigrationsOnProject(app);
-
+	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
         }
 
 
@@ -350,19 +349,12 @@ namespace starsky
         /// To start over with a SQLite database please remove it and
         /// it will add a new one
         /// </summary>
-        private void EfCoreMigrationsOnProject(IApplicationBuilder app)
+        private async Task EfCoreMigrationsOnProject(IApplicationBuilder app)
         {
-	        try
-	        {
-		        using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
-			        .CreateScope();
-		        var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
-		        dbContext.Database.Migrate();
-	        }
-	        catch (MySql.Data.MySqlClient.MySqlException e)
-	        {
-		        Console.WriteLine(e);
-	        }
+	        using var serviceScope = app.ApplicationServices
+		        .GetRequiredService<IServiceScopeFactory>()
+		        .CreateScope();
+	        await RunMigrations.Run(serviceScope);
         }
     }
 }

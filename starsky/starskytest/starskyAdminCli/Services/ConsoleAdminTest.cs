@@ -13,15 +13,54 @@ namespace starskytest.starskyAdminCli.Services
 	public class ConsoleAdminTest
 	{
 		[TestMethod]
-		public void StarskyAdminCliProgramTest_UserDoesNotExist()
+		public void StarskyAdminCliProgramTest_UserDoesNotExist_AndCreateAccount()
 		{
 			var console = new FakeConsoleWrapper(new List<string>
 			{
-				"dont@mail.me"
+				"dont@mail.me",
+				"1234567890123456"
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty);
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("User dont@mail.me is created", 
+				console.WrittenLines.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void CreateAccount_AsInput()
+		{
+			var console = new FakeConsoleWrapper();
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool("dont@mail.me", "1234567890123456");
+
+			Assert.AreEqual("User dont@mail.me is created", 
+				console.WrittenLines.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void UserCreate_ValidationShouldFail()
+		{
+			var console = new FakeConsoleWrapper(new List<string>
+			{
+				"no_email",
+				"false"
+			});
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(),console ).Tool(string.Empty, string.Empty);
+
+			Assert.AreEqual("username / password is not valid", 
+				console.WrittenLines.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public void UserCreate_NoInput()
+		{
+			var console = new FakeConsoleWrapper(new List<string>
+			{
+				"dont@mail.me",
+				string.Empty
+			});
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
 			
-			Assert.AreEqual("User dont@mail.me does not exist", 
+			Assert.AreEqual("No input selected", 
 				console.WrittenLines.LastOrDefault());
 		}
 		
@@ -32,7 +71,7 @@ namespace starskytest.starskyAdminCli.Services
 			{
 				string.Empty
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty);
+			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console ).Tool(string.Empty,string.Empty);
 			
 			Assert.AreEqual("No input selected", 
 				console.WrittenLines.LastOrDefault());
@@ -47,7 +86,7 @@ namespace starskytest.starskyAdminCli.Services
 				"2"
 			});
 			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console )
-				.Tool(string.Empty);
+				.Tool(string.Empty,string.Empty);
 			
 			Assert.AreEqual("User test is removed", 
 				console.WrittenLines.LastOrDefault());
@@ -61,7 +100,7 @@ namespace starskytest.starskyAdminCli.Services
 				"test",
 				"3"
 			});
-			new ConsoleAdmin( new FakeUserManagerActiveUsers(),console ).Tool(string.Empty);
+			new ConsoleAdmin( new FakeUserManagerActiveUsers(),console ).Tool(string.Empty,string.Empty);
 			Assert.AreEqual("User test has now the role Administrator", 
 				console.WrittenLines.LastOrDefault());
 		}
@@ -80,7 +119,7 @@ namespace starskytest.starskyAdminCli.Services
 				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
 			};
 			
-			new ConsoleAdmin( userMan,console ).Tool(string.Empty);
+			new ConsoleAdmin( userMan,console ).Tool(string.Empty,string.Empty);
 			Assert.AreEqual("User test has now the role User", console.WrittenLines.LastOrDefault());
 		}
 	}

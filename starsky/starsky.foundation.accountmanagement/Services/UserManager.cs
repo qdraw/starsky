@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
@@ -359,8 +361,24 @@ namespace starsky.foundation.accountmanagement.Services
 
 	        return credentialType;
         }
-        
-       
+
+        public bool PreflightValidate(string userName, string password, string confirmPassword)
+        {
+	        var model = new RegisterViewModel
+	        {
+		        Email = userName, 
+		        Password = password, 
+		        ConfirmPassword = confirmPassword
+	        };
+	        
+	        var context = new ValidationContext(model, null, null);
+	        var results = new List<ValidationResult>();
+	        return Validator.TryValidateObject(
+		        model, context, results, 
+		        true
+	        );
+        }
+
         /// <summary>
         /// Is the username and password combination correct
         /// </summary>

@@ -16,7 +16,7 @@ namespace starskyAdminCli.Services
 			_userManager = userManager;
 			_console = console;
 		}
-		public void Tool(string userName)
+		public void Tool(string userName, string password)
 		{
 			if (string.IsNullOrEmpty(userName))
 			{
@@ -31,7 +31,25 @@ namespace starskyAdminCli.Services
 
 			if ( _userManager.Exist(userName) == null)
 			{
-				_console.WriteLine($"User {userName} does not exist");
+				if ( string.IsNullOrEmpty(password) )
+				{
+					_console.WriteLine("\nWe are going to create an account.\n What is the password?\n ");
+					password = _console.ReadLine();
+					if (string.IsNullOrEmpty(password))
+					{
+						_console.WriteLine("No input selected");
+						return;
+					}
+				}
+
+				if ( !_userManager.PreflightValidate(userName, password,password) )
+				{
+					_console.WriteLine("username / password is not valid");
+					return;
+				}
+				
+				_userManager.SignUp(string.Empty, "email", userName, password);
+				_console.WriteLine($"User {userName} is created");
 				return;
 			}
 			
