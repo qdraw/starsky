@@ -1,4 +1,4 @@
-# Stage 1
+# # Stage 1 Front-end
 FROM node:14 as react-build
 WORKDIR /app/starsky/clientapp
 COPY starsky/clientapp/. ./
@@ -16,13 +16,16 @@ COPY . ./
 WORKDIR /app/starsky
 RUN dotnet restore
 
-RUN dotnet publish -c Release -o out
-
 # insert demo user and content
 ARG ISDEMO=""
 ENV E_ISDEMO=$MYARG
 RUN ls /app
 RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
+
+RUN dotnet publish -c Release -o out
+
+RUN echo "ls out -->"
+RUN ls /out/
 
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
