@@ -10,6 +10,7 @@ function makeDemoUser {
 }
 
 function getSampleImages {
+  ls starsky/bin
   mkdir -p starsky/bin/Release/netcoreapp*/storageFolder
   curl https://media.qdraw.nl/download/starsky-sample-photos.zip --output starsky/bin/Release/netcoreapp*/storageFolder/sample-photos.zip
   unzip starsky/bin/Release/netcoreapp*/storageFolder/sample-photos.zip
