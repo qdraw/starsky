@@ -48,6 +48,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ DetailView formcontrol fix styling issue when insert 40 or 00 on a datetime input
 - [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
+- [x]   (Added) _CLI_ Add account creation by StarskyAdminCli
 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
