@@ -26,7 +26,8 @@ RUN dotnet publish -c Release -o out
 
 RUN echo "ls out -->"
 RUN ls out/
-RUN ls out/storageFolder
+RUN ls out/starsky
+RUN ls out/starsky/storageFolder
 
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
