@@ -6,7 +6,7 @@ pushd $DIR
 
 function makeDemoUser {
   mylist=($(find . -type f -name "starskyadmincli.csproj"))
-  dotnet run --project ${mylist[0]} -h -v
+  dotnet run --project ${mylist[0]} --verbose --help
   dotnet run --project ${mylist[0]} --name demo@qdraw.nl --password demopassword
 }
 
@@ -17,9 +17,10 @@ function getSamplePhotos {
   echo "-"
   ls starsky/bin
 
-  mkdir -p starsky/bin/Release/netcoreapp*/storageFolder
-  curl https://media.qdraw.nl/download/starsky-sample-photos.zip --output starsky/bin/Release/netcoreapp*/storageFolder/sample-photos.zip
-  unzip starsky/bin/Release/netcoreapp*/storageFolder/sample-photos.zip
+  mkdir -p out/storageFolder
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output out/storageFolder/20190530_134303_DSC00279_e.jpg
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output out/storageFolder/20190530_142906_DSC00373_e.jpg
+  
 }
 
 if [ -z "$E_ISDEMO" ]; then
