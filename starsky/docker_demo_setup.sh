@@ -19,6 +19,7 @@ function getSampleImages {
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
     makeDemoUser
+    getSampleImages
 else
     echo $E_ISDEMO
 fi
