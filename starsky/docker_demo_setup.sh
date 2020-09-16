@@ -5,7 +5,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pushd $DIR
 
 function makeDemoUser {
-  dotnet run --project ../starsky/starskyadmincli/starskyadmincli.csproj --name demo@qdraw.nl --password demopassword
+  mylist=($(find . -type f -name "starskyadmincli.csproj"))
+  dotnet run --project ${mylist[0]} --name demo@qdraw.nl --password demopassword
 }
 
 function getSampleImages {
