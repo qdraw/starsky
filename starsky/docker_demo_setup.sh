@@ -43,10 +43,10 @@ function  end_popd {
 
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
+else
+    echo $E_ISDEMO
     start_pushd
     makeDemoUser
     getSamplePhotos
     end_popd
-else
-    echo $E_ISDEMO
 fi
