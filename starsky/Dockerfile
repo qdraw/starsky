@@ -24,6 +24,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
+COPY --from=build-env /app/starsky/docker_demo_setup.sh .
 
 # insert demo user and content
 ARG ISDEMO=""
