@@ -13,6 +13,11 @@ WORKDIR /app
 # copy everything else and build
 COPY . ./
 
+# insert demo user and content
+ARG ISDEMO=""
+ENV E_ISDEMO=$MYARG
+RUN chmod +x /app/starsky/docker_demo_setup.sh && /app/starsky/docker_demo_setup.sh
+
 WORKDIR /app/starsky
 RUN dotnet restore
 
@@ -26,10 +31,7 @@ COPY --from=build-env /app/starsky/starsky/docker_demo_setup.sh .
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
 
-# insert demo user and content
-ARG ISDEMO=""
-ENV E_ISDEMO=$MYARG
-RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
+
 
 ENV ASPNETCORE_Environment=Production
 

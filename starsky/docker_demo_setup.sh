@@ -10,8 +10,8 @@ if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
     exit 1
 } fi
 
-APPLICATION_DIR=/app/
-STORAGE_FOLDER=/app/storageFolder
+APPLICATION_DIR=/app/starsky/out/
+STORAGE_FOLDER=/app/starsky/out/storageFolder
 
 function makeDemoUser {
   starskyadmincli=($(find . -type f -name "starskyadmincli.csproj"))
