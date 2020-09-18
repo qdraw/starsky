@@ -21,15 +21,14 @@ RUN dotnet publish -c Release -o out
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
 
-# insert demo user and content
-ARG ISDEMO=""
-ENV E_ISDEMO=$MYARG
-RUN ls /app
-RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
-
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
+
+# insert demo user and content
+ARG ISDEMO=""
+ENV E_ISDEMO=$MYARG
+RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
 
 ENV ASPNETCORE_Environment=Production
 

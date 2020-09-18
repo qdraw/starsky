@@ -4,9 +4,10 @@
 ## This script uses /app
 
 if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
-    echo "in docker"
+    echo "in docker (continue)"
 } else {
-    echo "not in docker"
+    echo "This script is only usefull witin the docker container"
+    exit 1
 } fi
 
 APPLICATION_DIR=/app/
