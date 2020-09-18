@@ -16,17 +16,16 @@ COPY . ./
 WORKDIR /app/starsky
 RUN dotnet restore
 
+RUN dotnet publish -c Release -o out
+
+# build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
+
 # insert demo user and content
 ARG ISDEMO=""
 ENV E_ISDEMO=$MYARG
 RUN ls /app
 RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
-
-RUN dotnet publish -c Release -o out
-
-# build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
-#RUN apt-get install -y nano
 
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
