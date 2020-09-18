@@ -15,7 +15,7 @@ COPY . ./
 
 # insert demo user and content
 ARG ISDEMO=""
-ENV E_ISDEMO=$MYARG
+ENV E_ISDEMO=$ISDEMO
 RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
 
 WORKDIR /app/starsky
