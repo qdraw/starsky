@@ -14,6 +14,11 @@ cd starsky
 docker build -t starsky .
 ```
 
+    ### Optional: Build Starsky with demo user and demo content
+    ```sh
+    docker build -t starsky . --build-arg ISDEMO=true
+    ```
+
 ## run
 ```sh
 docker run -it --rm -p 8000:80 starsky
