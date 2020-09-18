@@ -25,9 +25,9 @@ RUN chmod +x /app/docker_demo_setup.sh && /app/docker_demo_setup.sh
 RUN dotnet publish -c Release -o out
 
 RUN echo "ls out -->"
-RUN ls out/
-RUN ls out/starsky
-RUN ls out/starsky/storageFolder
+RUN ls out
+RUN echo "ls out/storageFolder -->"
+RUN ls /app/out/storageFolder
 
 # build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release

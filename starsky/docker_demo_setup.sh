@@ -19,14 +19,14 @@ function getSamplePhotos {
   echo "-"
   ls starsky/bin
 
-  mkdir -p out/starsky/storageFolder
-  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output out/starsky/storageFolder/20190530_134303_DSC00279_e.jpg
-  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output out/starsky/storageFolder/20190530_142906_DSC00373_e.jpg
+  mkdir -p out/storageFolder
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output out/storageFolder/20190530_134303_DSC00279_e.jpg
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output out/storageFolder/20190530_142906_DSC00373_e.jpg
 
   starskysynccli=($(find . -type f -name "starskysynccli.csproj"))
   dotnet run --project ${starskysynccli[0]} -- --verbose --help
-  dotnet run --project ${starskysynccli[0]} -- --path /20190530_134303_DSC00279_e.jpg
-  dotnet run --project ${starskysynccli[0]} -- --path /20190530_142906_DSC00373_e.jpg
+  dotnet run --project ${starskysynccli[0]} -- -s /20190530_134303_DSC00279_e.jpg
+  dotnet run --project ${starskysynccli[0]} -- -s /20190530_142906_DSC00373_e.jpg
 }
 
 if [ -z "$E_ISDEMO" ]; then
