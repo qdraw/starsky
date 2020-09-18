@@ -1,5 +1,14 @@
 #!/bin/bash
 
+## Use this only in a docker env.
+## This script uses /app
+
+if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
+    echo "in docker"
+} else {
+    echo "not in docker"
+} fi
+
 APPLICATION_DIR=/app/
 STORAGE_FOLDER=/app/storageFolder
 
