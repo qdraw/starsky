@@ -27,11 +27,8 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
 
 WORKDIR /app
-COPY --from=build-env /app/starsky/starsky/docker_demo_setup.sh .
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
-
-
 
 ENV ASPNETCORE_Environment=Production
 
