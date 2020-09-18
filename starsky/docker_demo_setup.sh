@@ -10,7 +10,7 @@ if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
     exit 1
 } fi
 
-SOURCE_DIR=/app/starsky
+SOURCE_DIR=/app
 APPLICATION_DIR=/app/starsky/out/
 STORAGE_FOLDER=/app/starsky/out/storageFolder
 
