@@ -6,6 +6,7 @@ import useLocation from '../hooks/use-location';
 import BrowserDetect from '../shared/browser-detect';
 import { DocumentTitle } from '../shared/document-title';
 import FetchPost from '../shared/fetch-post';
+import { FileListCache } from '../shared/filelist-cache';
 import { Language } from '../shared/language';
 import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
@@ -152,7 +153,7 @@ const Login: React.FC<ILoginProps> = () => {
           <div className="content">
             <form className="content--login-form">
               <div className="content--error-true">{LogoutWarning}</div>
-              <a className="btn btn--default" data-test="logout"
+              <a className="btn btn--default" data-test="logout" onClick={() => new FileListCache().CacheCleanEverything()}
                 href={new UrlQuery().UrlLogoutPage(new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search)))}>{MessageLogout}</a>
               <a className="btn btn--info" data-test="stayLoggedin"
                 href={new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search))}>{MessageStayLoggedIn}</a>
