@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
