@@ -267,6 +267,8 @@ namespace starsky
 		        app.UseCors("CorsProduction");   
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
+
+	        if ( !env.IsDevelopment() && _appSettings.UseHttpsRedirection ) app.UseHttpsRedirection();
 	        
 			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 			app.UseForwardedHeaders();

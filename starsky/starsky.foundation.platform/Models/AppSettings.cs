@@ -419,6 +419,12 @@ namespace starsky.foundation.platform.Models
 	    }
 
 	    public int MaxDegreesOfParallelism => 6;
+	    
+	    /// <summary>
+	    /// Disable this option when running on http-only service.
+	    /// Ignored in Debug/Develop mode
+	    /// </summary>
+	    public bool UseHttpsRedirection { get; set; } = true;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
