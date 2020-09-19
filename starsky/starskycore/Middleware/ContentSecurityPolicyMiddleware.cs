@@ -20,11 +20,14 @@ namespace starskycore.Middleware
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Content-Security-Policy"]) )
 			{
 				// When change also update in Electron
+				var csp = $"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net; " +
+				          $"connect-src 'self' {SocketUrl(httpContext)} https://dc.services.visualstudio.com; style-src 'self'; " +
+				          $"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none' ";
+#if DEBUG
+				csp = csp.Replace("connect-src", "connect-src ws://bs-local.com");
+#endif
 				httpContext.Response.Headers
-					.Add("Content-Security-Policy",
-						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net; " +
-						$"connect-src 'self' {SocketUrl(httpContext)} https://dc.services.visualstudio.com; style-src 'self'; " +
-						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none' ");
+					.Add("Content-Security-Policy",csp );
 			}
 			await _next(httpContext);
 		}

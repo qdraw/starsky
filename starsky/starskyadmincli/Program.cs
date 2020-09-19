@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -43,7 +44,8 @@ namespace starskyAdminCli
 				return;
 			}
 			
-			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args));
+			RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>()).ConfigureAwait(false);
+			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 		}
 	}
 }

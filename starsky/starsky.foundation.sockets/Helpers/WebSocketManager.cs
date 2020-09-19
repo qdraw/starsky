@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sockets.Interfaces;
 using starsky.foundation.sockets.Models;
 
@@ -17,14 +18,43 @@ namespace starsky.foundation.sockets.Helpers
 			_next = next;
 		}
 
-		public async Task Invoke(HttpContext context, ICustomWebSocketFactory wsFactory,
-			ICustomWebSocketMessageHandler wsmHandler)
+		private async Task<bool> StatusUpdate(HttpContext context, AppSettings appSettings)
 		{
-			if ( context.Request.Path != "/realtime" )
+			if ( context.Request.Path != "/realtime/status" ) return false;
+
+			if ( !appSettings.Realtime)
+			{
+				context.Response.StatusCode = 403;
+				await context.Response.WriteAsync("Feature toggle disabled");
+				return true;
+			}
+			
+			if (context.User.Identity.IsAuthenticated)
+			{
+				context.Response.StatusCode = 200;
+				await context.Response.WriteAsync("User is logged in");
+				return true;
+			}
+
+			context.Response.StatusCode = 401;
+			await context.Response.WriteAsync("Login first");
+			return true;
+		}
+
+		public async Task Invoke(HttpContext context, ICustomWebSocketFactory wsFactory,
+			ICustomWebSocketMessageHandler wsmHandler, AppSettings appSettings)
+		{
+			if ( context.Request.Path != "/realtime" && context.Request.Path != "/realtime/status"  )
 			{
 				await _next(context);
 				return;
 			}
+
+			if ( await StatusUpdate(context,appSettings) )
+			{
+				return;
+			}
+
 
 			if ( !context.WebSockets.IsWebSocketRequest )
 			{
@@ -33,13 +63,11 @@ namespace starsky.foundation.sockets.Helpers
 				return;
 			}
 			
-			// TODO ENABLE
-
-			// if ( !context.User.Identity.IsAuthenticated )
-			// {
-			// 	context.Response.StatusCode = 401;
-			// 	return;
-			// }
+			if ( !context.User.Identity.IsAuthenticated )
+			{
+				context.Response.StatusCode = 401;
+				return;
+			}
 
 			WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
 			var userWebSocket = new CustomWebSocket()

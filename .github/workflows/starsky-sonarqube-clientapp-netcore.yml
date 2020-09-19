@@ -9,7 +9,9 @@ on:
     - 'starsky/**'
     - '!starsky/starsky/clientapp/**'
     - '.github/workflows/**'
-    
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'    
+
 jobs:
   build:
 

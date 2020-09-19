@@ -62,6 +62,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode _(default false)_
 
 ### Appsettings.json example
 ```json

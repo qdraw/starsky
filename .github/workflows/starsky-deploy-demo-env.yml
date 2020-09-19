@@ -23,5 +23,5 @@ jobs:
       run: |
         cd ./starsky
         docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-        heroku container:push web -a $APP_NAME
+        heroku container:push web -a $APP_NAME --arg ISDEMO=true 
         heroku container:release web -a $APP_NAME
