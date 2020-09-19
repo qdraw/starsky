@@ -28,6 +28,10 @@ var configuration = Argument("Configuration", "Release");
 var genericName = "generic-netcore";
 var runtimeInput = Argument("runtime", genericName);
 var branchName = Argument("branch", "");
+/* when running from Azure Devops $(Build.SourceBranch) */
+if(branchName.StartsWith("refs/heads/")) {
+  branchName  = branchName.Replace("refs/heads/","");
+}
 var noSonar = HasArgument("no-sonar") || HasArgument("nosonar");
 
 /* to get a list with the generic item */

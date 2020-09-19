@@ -1,6 +1,6 @@
 {
   "name": "clientapp",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "proxy": "http://localhost:5000",
   "homepage": "/starsky/",
   "private": true,
