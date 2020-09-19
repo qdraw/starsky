@@ -32,5 +32,4 @@ COPY --from=react-build /app/starsky/clientapp ./clientapp
 
 ENV ASPNETCORE_Environment=Production
 
-#ENTRYPOINT ["dotnet", "starsky.dll"]
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
+CMD ASPNETCORE_Environment=Production ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
