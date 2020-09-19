@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import FetchGet from '../shared/fetch-get';
 import { UrlQuery } from '../shared/url-query';
 import { WebSocketService } from '../shared/websocket-service';
 
@@ -52,12 +51,15 @@ const useSockets = (effectStates: boolean[] | string[], socketService?: WebSocke
   // useState does not update in a sync way
   const countRetry = useRef(0);
 
+  // var featureEnabledStatusCode = useFetch(new UrlQuery().UrlRealtimeStatus(), 'get').statusCode;
+
   useEffect(() => {
+    // console.log(featureEnabledStatusCode);
 
-    FetchGet(new UrlQuery().UrlRealtimeStatus()).then((data) => {
-      console.log(data.statusCode);
-
-    });
+    // if (featureEnabledStatusCode === 999 || featureEnabledStatusCode === 403 || featureEnabledStatusCode === 401) {
+    //   console.log('featureEnabledStatusCode', featureEnabledStatusCode);
+    //   return;
+    // }
 
     ws.current = socketService ? socketService : newWebSocketService();
     ws.current.onClose(() => {
@@ -83,6 +85,7 @@ const useSockets = (effectStates: boolean[] | string[], socketService?: WebSocke
       ws.current.close(() => { });
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...effectStates, socketService]);
 
   return {
