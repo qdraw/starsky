@@ -70,7 +70,10 @@ const Login: React.FC<ILoginProps> = () => {
       else {
         // redirect
         var returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
-        console.log("returnUrl", returnUrl);
+        // only used in the dev, because you have the same url
+        if (`/${history.location.search}` === returnUrl) {
+          returnUrl += "&details=true"
+        }
         history.navigate(returnUrl, { replace: true });
       }
     } catch (err) {
