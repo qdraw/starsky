@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -331,16 +332,15 @@ namespace starsky.foundation.platform.Helpers
 
 		/// <summary>
 		/// Show in Console the .NET Version (Runtime) and Starsky Version
+		/// @see: https://stackoverflow.com/a/58136318
 		/// </summary>
 		private void ShowVersions()
 		{
-			var framework = Assembly
-				.GetEntryAssembly()?
-				.GetCustomAttribute<TargetFrameworkAttribute>()?
-				.FrameworkName;
-			_console.WriteLine($".NET Version - {framework}");
+			var version = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+			_console.WriteLine($".NET Version - {version}");
 			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
-			                   $"- build at: {DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly())}");
+			                   "- build at: " +
+			                   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(new CultureInfo("nl-NL")));
 		}
 		
 		/// <summary>
