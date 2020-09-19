@@ -33,7 +33,11 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.2 _(Unreleased)_  2020-09-??
+# version 0.3.3 _(Unreleased)_  2020-09-??
+- [x]   (Added) _Back-end_ Sockets
+- [x]   (Added) _Front-end_ Show Realtime information in front-end
+
+# version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
 - [x]   (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
 - [x]   (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (to avoid next/prev issues)
@@ -49,7 +53,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
 - [x]   (Added) _CLI_ Add account creation by StarskyAdminCli
-- [x]   (Changed) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode
+- [x]   (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode
+- [x]   (Added) _CLI_ Show DateTime when the Assemblies are build with the flags: `-h -v`
 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
