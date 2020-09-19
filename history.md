@@ -49,7 +49,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
 - [x]   (Added) _CLI_ Add account creation by StarskyAdminCli
-- [x]   (Changed) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should disable this when running an http-only site. Always disabled in debug/develop mode
+- [x]   (Changed) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode
 
 # version 0.3.1 - 2020-09-08
 - [x]   (Added) _Front-end_ UI improvement on Archive add t/i keyboard shortcut to select tags
