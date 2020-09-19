@@ -30,5 +30,26 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var date = DateAssembly.GetBuildDate(typeof(short).Assembly);
 			Assert.IsTrue(date.Year == 1 );
 		}
+		
+		[TestMethod]
+		public void GetBuildDate_NonExist_DateAssemblyTest()
+		{
+			var date = DateAssembly.GetBuildDate(typeof(DateAssemblyTest).Assembly);
+			Assert.IsTrue(date.Year == 1 );
+		}
+
+		[TestMethod]
+		public void ParseBuildTime_WrongInput_NotContainBuild()
+		{
+			var date = DateAssembly.ParseBuildTime("111");
+			Assert.IsTrue(date.Year == 1 );
+		}
+		
+		[TestMethod]
+		public void ParseBuildTime_WrongInput_NotContainValidDate()
+		{
+			var date = DateAssembly.ParseBuildTime("000+build");
+			Assert.IsTrue(date.Year == 1 );
+		}
 	}
 }

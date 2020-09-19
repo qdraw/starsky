@@ -1,7 +1,9 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.platform.Helpers
 {
 	public static class DateAssembly
@@ -17,10 +19,15 @@ namespace starsky.foundation.platform.Helpers
 			// <PropertyGroup>
 			// <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
 			// </PropertyGroup>
-			const string buildVersionMetadataPrefix = "+build";
 			var attribute = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 			if ( attribute?.InformationalVersion == null ) return new DateTime();
 			var value = attribute.InformationalVersion;
+			return ParseBuildTime(value);
+		}
+
+		internal static DateTime ParseBuildTime(string value)
+		{
+			const string buildVersionMetadataPrefix = "+build";
 			var index = value.IndexOf(buildVersionMetadataPrefix, StringComparison.Ordinal);
 			if ( index <= 0 ) return new DateTime();
 			value = value.Substring(index + buildVersionMetadataPrefix.Length);
