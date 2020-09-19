@@ -27,5 +27,7 @@
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
     </ItemGroup>
-
+    <PropertyGroup>
+        <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    </PropertyGroup>
 </Project>

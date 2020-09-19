@@ -339,7 +339,8 @@ namespace starsky.foundation.platform.Helpers
 				.GetCustomAttribute<TargetFrameworkAttribute>()?
 				.FrameworkName;
 			_console.WriteLine($".NET Version - {framework}");
-			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion}");
+			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
+			                   $"- build at: {DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly())}");
 		}
 		
 		/// <summary>
