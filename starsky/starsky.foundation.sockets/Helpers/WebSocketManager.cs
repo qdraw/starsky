@@ -9,40 +9,17 @@ using starsky.foundation.sockets.Models;
 
 namespace starsky.foundation.sockets.Helpers
 {
-	public class CustomWebSocketManager
+	public class WebSocketManager
 	{
 		private readonly RequestDelegate _next;
 
-		public CustomWebSocketManager(RequestDelegate next)
+		public WebSocketManager(RequestDelegate next)
 		{
 			_next = next;
 		}
 
-		private async Task<bool> StatusUpdate(HttpContext context, AppSettings appSettings)
-		{
-			if ( context.Request.Path != "/realtime/status" ) return false;
-
-			if ( !appSettings.Realtime)
-			{
-				context.Response.StatusCode = 403;
-				await context.Response.WriteAsync("Feature toggle disabled");
-				return true;
-			}
-			
-			if (context.User.Identity.IsAuthenticated)
-			{
-				context.Response.StatusCode = 200;
-				await context.Response.WriteAsync("User is logged in");
-				return true;
-			}
-
-			context.Response.StatusCode = 401;
-			await context.Response.WriteAsync("Login first");
-			return true;
-		}
-
-		public async Task Invoke(HttpContext context, ICustomWebSocketFactory wsFactory,
-			ICustomWebSocketMessageHandler wsmHandler, AppSettings appSettings)
+		public async Task Invoke(HttpContext context, IRealtimeWebSocketFactory wsFactory,
+			IRealtimeWebSocketMessageHandler wsmHandler, AppSettings appSettings)
 		{
 			if ( context.Request.Path != "/realtime" && context.Request.Path != "/realtime/status"  )
 			{
@@ -52,6 +29,12 @@ namespace starsky.foundation.sockets.Helpers
 
 			if ( await StatusUpdate(context,appSettings) )
 			{
+				return;
+			}
+
+			if (!appSettings.Realtime ||  !context.User.Identity.IsAuthenticated )
+			{
+				context.Response.StatusCode = 403;
 				return;
 			}
 
@@ -70,7 +53,7 @@ namespace starsky.foundation.sockets.Helpers
 			}
 
 			WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-			var userWebSocket = new CustomWebSocket()
+			var userWebSocket = new RealtimeWebSocket()
 			{
 				WebSocket = webSocket, 
 				Id = $"user_{Guid.NewGuid()}"  
@@ -89,8 +72,8 @@ namespace starsky.foundation.sockets.Helpers
 			await _next(context);
 		}
 
-		private async Task Listen(CustomWebSocket userWebSocket,
-			ICustomWebSocketFactory wsFactory, ICustomWebSocketMessageHandler wsmHandler)
+		private async Task Listen(RealtimeWebSocket userWebSocket,
+			IRealtimeWebSocketFactory wsFactory, IRealtimeWebSocketMessageHandler wsmHandler)
 		{
 			try
 			{
@@ -120,5 +103,40 @@ namespace starsky.foundation.sockets.Helpers
 			}
 
 		}
+		
+		
+		private async Task<bool> StatusUpdate(HttpContext context, AppSettings appSettings)
+		{
+			if ( context.Request.Path != "/realtime/status" ) return false;
+
+			if ( !appSettings.Realtime)
+			{
+				await StatusFeatureToggleDisabled(context);
+				return true;
+			}
+			
+			if (context.User.Identity.IsAuthenticated)
+			{
+				context.Response.StatusCode = 200;
+				await context.Response.WriteAsync("\"User is logged in\"");
+				return true;
+			}
+
+			await StatusUserLoginFirst(context);
+			return true;
+		}
+
+		private async Task StatusFeatureToggleDisabled(HttpContext context)
+		{
+			context.Response.StatusCode = 403;
+			await context.Response.WriteAsync("\"Feature toggle disabled\"");
+		}
+		
+		private async Task StatusUserLoginFirst(HttpContext context)
+		{
+			context.Response.StatusCode = 401;
+			await context.Response.WriteAsync("\"Login first\"");
+		}
+
 	}
 }

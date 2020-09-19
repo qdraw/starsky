@@ -8,11 +8,11 @@ namespace starsky.foundation.sockets.Services
 	[Service(typeof(ISockets), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class SocketsService : ISockets
 	{
-		private readonly ICustomWebSocketFactory _socketFactory;
-		private readonly ICustomWebSocketMessageHandler _messageHandler;
+		private readonly IRealtimeWebSocketFactory _socketFactory;
+		private readonly IRealtimeWebSocketMessageHandler _messageHandler;
 		
-		public SocketsService(ICustomWebSocketFactory socketFactory, 
-			ICustomWebSocketMessageHandler messageHandler)
+		public SocketsService(IRealtimeWebSocketFactory socketFactory, 
+			IRealtimeWebSocketMessageHandler messageHandler)
 		{
 			_socketFactory = socketFactory;
 			_messageHandler = messageHandler;

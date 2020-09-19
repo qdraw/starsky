@@ -20,12 +20,12 @@ const MediaContent: React.FC = () => {
 
   var history = useLocation();
   var usesFileList = useFileList(history.location.search, false);
-  const { socketsFailed } = useSockets();
   useFileListCacheWatcher();
 
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
   const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
   const detailView: IDetailView | undefined = usesFileList ? usesFileList.detailView : undefined;
+  const { socketsFailed } = useSockets([pageType === PageType.Unauthorized]);
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

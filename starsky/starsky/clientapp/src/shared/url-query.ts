@@ -307,7 +307,7 @@ export class UrlQuery {
     } else {
       url = "ws:";
     }
-    url += "//" + window.location.host + "/starsky/realtime";
+    url += "//" + window.location.host + this.prefix + "/realtime";
 
     // Create React is not supporting websockets. At least is isn't working
     if (isDev()) {
@@ -316,5 +316,9 @@ export class UrlQuery {
     console.log(url);
 
     return url;
+  }
+
+  public UrlRealtimeStatus(): string {
+    return this.prefix + "/realtime/status";
   }
 } 

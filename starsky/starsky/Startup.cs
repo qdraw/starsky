@@ -332,7 +332,7 @@ namespace starsky
 
 	        // Enable websockets
 	        app.UseWebSockets(DefaultWebSocketOptions.GetDefault());
-	        app.UseCustomWebSocketManager();
+	        app.UseWebSocketManager();
 	        
 #if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseEndpoints(endpoints =>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import FetchGet from '../shared/fetch-get';
 import { UrlQuery } from '../shared/url-query';
 import { WebSocketService } from '../shared/websocket-service';
 
@@ -10,7 +11,12 @@ export interface IUseSockets {
   socketsFailed: boolean;
 }
 
-const useSockets = (socketService?: WebSocketService): IUseSockets => {
+/**
+ * 
+ * @param effectStates where to watch for
+ * @param socketService a socket Service to replace
+ */
+const useSockets = (effectStates: boolean[] | string[], socketService?: WebSocketService): IUseSockets => {
 
   const ws = useRef({} as WebSocketService);
 
@@ -47,6 +53,12 @@ const useSockets = (socketService?: WebSocketService): IUseSockets => {
   const countRetry = useRef(0);
 
   useEffect(() => {
+
+    FetchGet(new UrlQuery().UrlRealtimeStatus()).then((data) => {
+      console.log(data.statusCode);
+
+    });
+
     ws.current = socketService ? socketService : newWebSocketService();
     ws.current.onClose(() => {
       intervalRef.current = setInterval(() => {
@@ -71,7 +83,7 @@ const useSockets = (socketService?: WebSocketService): IUseSockets => {
       ws.current.close(() => { });
     };
 
-  }, [socketService]);
+  }, [...effectStates, socketService]);
 
   return {
     socketsFailed

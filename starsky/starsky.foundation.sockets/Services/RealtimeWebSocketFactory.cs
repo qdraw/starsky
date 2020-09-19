@@ -6,17 +6,17 @@ using starsky.foundation.sockets.Models;
 
 namespace starsky.foundation.sockets.Services
 {
-	[Service(typeof(ICustomWebSocketFactory), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class CustomWebSocketFactory : ICustomWebSocketFactory
+	[Service(typeof(IRealtimeWebSocketFactory), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class RealtimeWebSocketFactory : IRealtimeWebSocketFactory
 	{
-		private readonly List<CustomWebSocket> _list;
+		private readonly List<RealtimeWebSocket> _list;
 
-		public CustomWebSocketFactory()
+		public RealtimeWebSocketFactory()
 		{
-			_list = new List<CustomWebSocket>();
+			_list = new List<RealtimeWebSocket>();
 		}
 
-		public void Add(CustomWebSocket uws)
+		public void Add(RealtimeWebSocket uws)
 		{
 			_list.Add(uws);
 		}
@@ -27,17 +27,17 @@ namespace starsky.foundation.sockets.Services
 			_list.Remove(Client(username));
 		}
 
-		public List<CustomWebSocket> All()
+		public List<RealtimeWebSocket> All()
 		{
 			return _list;
 		}
    
-		public List<CustomWebSocket> Others(CustomWebSocket client)
+		public List<RealtimeWebSocket> Others(RealtimeWebSocket client)
 		{
 			return _list.Where(c => c.Id != client.Id).ToList();
 		}
  
-		public CustomWebSocket Client(string username)
+		public RealtimeWebSocket Client(string username)
 		{
 			return _list.First(c=>c.Id == username);
 		}

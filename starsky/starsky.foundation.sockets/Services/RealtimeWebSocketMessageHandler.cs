@@ -11,8 +11,8 @@ using starsky.foundation.sockets.Models;
 
 namespace starsky.foundation.sockets.Services
 {
-	[Service(typeof(ICustomWebSocketMessageHandler), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class CustomWebSocketMessageHandler : ICustomWebSocketMessageHandler
+	[Service(typeof(IRealtimeWebSocketMessageHandler), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class RealtimeWebSocketMessageHandler : IRealtimeWebSocketMessageHandler
 	{
 		
 		private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
@@ -20,7 +20,7 @@ namespace starsky.foundation.sockets.Services
 			PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 		};
 		
-		public async Task SendInitialMessages(CustomWebSocket userWebSocket)
+		public async Task SendInitialMessages(RealtimeWebSocket userWebSocket)
 		{
 			WebSocket webSocket = userWebSocket.WebSocket;
 			
@@ -38,8 +38,8 @@ namespace starsky.foundation.sockets.Services
 		}
 
 
-		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, CustomWebSocket userWebSocket, 
-			ICustomWebSocketFactory wsFactory)
+		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket, 
+			IRealtimeWebSocketFactory wsFactory)
 		{
 			string msg = Encoding.ASCII.GetString(buffer);
 			try
@@ -58,7 +58,7 @@ namespace starsky.foundation.sockets.Services
 			}
 		}
 
-		public async Task BroadcastOthers(byte[] buffer, CustomWebSocket userWebSocket, ICustomWebSocketFactory wsFactory)
+		public async Task BroadcastOthers(byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory)
 		{
 			var others = wsFactory.Others(userWebSocket);
 			foreach (var uws in others)
@@ -67,7 +67,7 @@ namespace starsky.foundation.sockets.Services
 					WebSocketMessageType.Text, true, CancellationToken.None);
 			}
 		}
-		public async Task BroadcastAll(object msg, Guid? requestId,  ICustomWebSocketFactory wsFactory)
+		public async Task BroadcastAll(object msg, Guid? requestId,  IRealtimeWebSocketFactory wsFactory)
 		{
 			if ( requestId == null ) throw new ArgumentNullException(nameof(requestId));
 			if ( msg == null ) throw new ArgumentNullException(nameof(msg));
@@ -79,7 +79,7 @@ namespace starsky.foundation.sockets.Services
 			await BroadcastAll(bytes, wsFactory);
 		}
 
-		public async Task BroadcastAll(byte[] buffer, ICustomWebSocketFactory wsFactory)
+		public async Task BroadcastAll(byte[] buffer, IRealtimeWebSocketFactory wsFactory)
 		{
 			var all = wsFactory.All();
 			foreach ( var uws in all.Where(uws => uws.WebSocket != null) )
