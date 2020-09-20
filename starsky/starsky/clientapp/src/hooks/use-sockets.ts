@@ -43,6 +43,8 @@ const useSockets = (): IUseSockets => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [showSocketError, setShowSocketError] = useState(false);
 
+  const [isEnabled, setIsEnabled] = useState(true);
+
   // const timeoutRef = useRef({} as NodeJS.Timeout);
 
   const [pong, setPong] = useState(new Date());
@@ -54,6 +56,8 @@ const useSockets = (): IUseSockets => {
 
   useInterval(() => {
     if (!ws.current) return;
+    if (!isEnabled) return;
+    setShowSocketError(countRetry.current >= 1)
 
     if (socketConnected) {
       ws.current.send("ping");
@@ -68,9 +72,6 @@ const useSockets = (): IUseSockets => {
       setSocketConnected(false);
       countRetry.current++;
       ws.current.close();
-
-      setShowSocketError(countRetry.current > 2)
-
       ws.current = wsCurrentStart();
     }
 
@@ -109,7 +110,6 @@ const useSockets = (): IUseSockets => {
     });
 
     socket.onMessage((e) => {
-      console.log(e.data);
       if (isPong(e.data)) {
         handlePong(e.data);
         return;
@@ -123,8 +123,9 @@ const useSockets = (): IUseSockets => {
     console.log('--run effect');
 
     FetchGet(new UrlQuery().UrlRealtimeStatus()).then((data) => {
-      console.log(data.statusCode);
-
+      if (data.statusCode === 401 || data.statusCode === 403) {
+        setIsEnabled(false);
+      }
     });
 
     var socket1 = wsCurrentStart();
