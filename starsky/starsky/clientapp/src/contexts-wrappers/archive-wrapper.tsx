@@ -26,7 +26,8 @@ function ArchiveWrapper(archive: IArchiveProps) {
    * Running on changing searchQuery or subpath
    */
   useEffect(() => {
-    dispatch({ type: 'force-reset', payload: archive })
+    // dont update the cache
+    dispatch({ type: 'set', payload: archive })
     // disable to prevent duplicate api calls
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [archive.subPath, archive.searchQuery, archive.pageNumber, archive.colorClassUsage]);
