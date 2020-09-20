@@ -11,8 +11,8 @@ using starsky.foundation.sockets.Models;
 
 namespace starsky.foundation.sockets.Services
 {
-	[Service(typeof(IRealtimeWebSocketMessageHandler), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class RealtimeWebSocketMessageHandler : IRealtimeWebSocketMessageHandler
+	[Service(typeof(IWebSocketMessageHandler), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class WebSocketMessageHandler : IWebSocketMessageHandler
 	{
 		
 		private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
@@ -41,21 +41,33 @@ namespace starsky.foundation.sockets.Services
 		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket, 
 			IRealtimeWebSocketFactory wsFactory)
 		{
-			string msg = Encoding.ASCII.GetString(buffer);
-			try
+			var msg = Encoding.ASCII.GetString(buffer);
+			if ( msg.StartsWith("ping"))
 			{
-				var message = JsonSerializer.Deserialize<CustomWebSocketMessage>(msg);
-				// message.type as anytype
-				await BroadcastOthers(buffer, userWebSocket, wsFactory);
+				string serialisedMessage = JsonSerializer.Serialize("pong_" + DateTime.UtcNow, _serializerOptions);
+				byte[] bytes = Encoding.ASCII.GetBytes(serialisedMessage);
 
+				await userWebSocket.WebSocket.SendAsync(
+					new ArraySegment<byte>(bytes, 0, bytes.Length),
+					WebSocketMessageType.Text, true, CancellationToken.None);
+				return;
 			}
-			catch (Exception e)
-			{
-				Console.WriteLine(">>> >>>> HandleMessage");
-				Console.WriteLine(e);
-				await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), 
-					result.MessageType, result.EndOfMessage, CancellationToken.None);
-			}
+			
+			//
+			// try
+			// {
+			// 	var message = JsonSerializer.Deserialize<CustomWebSocketMessage>(msg);
+			// 	// message.type as anytype
+			// 	await BroadcastOthers(buffer, userWebSocket, wsFactory);
+			//
+			// }
+			// catch (Exception e)
+			// {
+			// 	Console.WriteLine(">>> >>>> HandleMessage");
+			// 	Console.WriteLine(e);
+			// 	await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), 
+			// 		result.MessageType, result.EndOfMessage, CancellationToken.None);
+			// }
 		}
 
 		public async Task BroadcastOthers(byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory)
@@ -82,11 +94,14 @@ namespace starsky.foundation.sockets.Services
 		public async Task BroadcastAll(byte[] buffer, IRealtimeWebSocketFactory wsFactory)
 		{
 			var all = wsFactory.All();
-			foreach ( var uws in all.Where(uws => uws.WebSocket != null) )
+			foreach ( var uws in all.Where(uws => uws?.WebSocket != null) )
 			{
-				await uws.WebSocket.SendAsync(
-					new ArraySegment<byte>(buffer, 0, buffer.Length), 
-					WebSocketMessageType.Text, true, CancellationToken.None);
+				if ( uws.WebSocket.State == WebSocketState.Open )
+				{
+					await uws.WebSocket.SendAsync(
+						new ArraySegment<byte>(buffer, 0, buffer.Length), 
+						WebSocketMessageType.Text, true, CancellationToken.None);
+				}
 			}
 		}
 	}

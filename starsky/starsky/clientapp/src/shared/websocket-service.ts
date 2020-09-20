@@ -9,35 +9,44 @@ export class WebSocketService {
     }
   }
 
-  public onOpen(callback: (ev: Event) => void) {
+
+  public onOpen(callback: (ev: Event) => void): void {
     if (!this.websocket) return;
-    return this.websocket.onopen = callback;
+    this.websocket.onopen = callback;
   }
 
-  public onClose(callback: (ev: CloseEvent) => void) {
+  public onClose(callback: (ev: CloseEvent) => void): void {
     if (!this.websocket) return;
-    return this.websocket.onclose = callback;
+    this.websocket.onclose = callback;
   }
 
-  public onError(callback: (ev: Event) => void) {
+  public onError(callback: (ev: Event) => void): void {
     if (!this.websocket) {
       return callback(new Event('err'))
     }
-    return this.websocket.onerror = callback;
+    this.websocket.onerror = callback;
   }
 
 
-  public close(callback: (code?: number, reason?: string) => void) {
-    if (!this.websocket) return;
-    return this.websocket.close = callback;
+  public close(): void {
+    if (!this.websocket) {
+      return;
+    };
+    this.websocket.close();
   }
 
+  public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
+    if (!this.websocket) {
+      return;
+    };
+    this.websocket.send(data);
+  }
 
-  public onMessage(callback: (event: MessageEvent) => void) {
+  public onMessage(callback: (event: MessageEvent) => void): void {
     if (!this.websocket) {
       return;
     }
-    return this.websocket.onmessage = callback;
+    this.websocket.onmessage = callback;
   }
 
 }

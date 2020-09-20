@@ -25,7 +25,7 @@ const MediaContent: React.FC = () => {
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
   const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
   const detailView: IDetailView | undefined = usesFileList ? usesFileList.detailView : undefined;
-  const { socketsFailed } = useSockets([pageType === PageType.Unauthorized]);
+  const { showSocketError } = useSockets();
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -43,7 +43,7 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
-      {socketsFailed ? <Notification type={NotificationType.default}>{MessageConnectionRealtimeError}&nbsp;
+      {showSocketError ? <Notification type={NotificationType.default}>{MessageConnectionRealtimeError}&nbsp;
         {MessageRefreshPageTryAgain}</Notification> : null}
       <HealthStatusError />
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} /> : null}

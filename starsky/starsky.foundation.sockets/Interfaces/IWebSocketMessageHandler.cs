@@ -5,7 +5,7 @@ using starsky.foundation.sockets.Models;
 
 namespace starsky.foundation.sockets.Interfaces
 {
-	public interface IRealtimeWebSocketMessageHandler
+	public interface IWebSocketMessageHandler
 	{
 		Task SendInitialMessages(RealtimeWebSocket userWebSocket);
 		Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory);

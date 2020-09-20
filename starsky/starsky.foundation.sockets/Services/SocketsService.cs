@@ -9,10 +9,10 @@ namespace starsky.foundation.sockets.Services
 	public class SocketsService : ISockets
 	{
 		private readonly IRealtimeWebSocketFactory _socketFactory;
-		private readonly IRealtimeWebSocketMessageHandler _messageHandler;
+		private readonly IWebSocketMessageHandler _messageHandler;
 		
 		public SocketsService(IRealtimeWebSocketFactory socketFactory, 
-			IRealtimeWebSocketMessageHandler messageHandler)
+			IWebSocketMessageHandler messageHandler)
 		{
 			_socketFactory = socketFactory;
 			_messageHandler = messageHandler;

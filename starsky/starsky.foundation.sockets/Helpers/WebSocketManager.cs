@@ -19,7 +19,7 @@ namespace starsky.foundation.sockets.Helpers
 		}
 
 		public async Task Invoke(HttpContext context, IRealtimeWebSocketFactory wsFactory,
-			IRealtimeWebSocketMessageHandler wsmHandler, AppSettings appSettings)
+			IWebSocketMessageHandler wsmHandler, AppSettings appSettings)
 		{
 			if ( context.Request.Path != "/realtime" && context.Request.Path != "/realtime/status"  )
 			{
@@ -73,7 +73,7 @@ namespace starsky.foundation.sockets.Helpers
 		}
 
 		private async Task Listen(RealtimeWebSocket userWebSocket,
-			IRealtimeWebSocketFactory wsFactory, IRealtimeWebSocketMessageHandler wsmHandler)
+			IRealtimeWebSocketFactory wsFactory, IWebSocketMessageHandler wsmHandler)
 		{
 			try
 			{
@@ -89,6 +89,8 @@ namespace starsky.foundation.sockets.Helpers
 					buffer = new byte[1024 * 4];
 					result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
 						CancellationToken.None);
+
+					Console.WriteLine(result);
 				}
 				wsFactory.Remove(userWebSocket.Id);
 				await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription,
