@@ -136,7 +136,7 @@ const useSockets = (): IUseSockets => {
   /// /    // eslint-disable-next-line react-hooks/exhaustive-deps
 
   return {
-    showSocketError: false
+    showSocketError
   };
 };
 
