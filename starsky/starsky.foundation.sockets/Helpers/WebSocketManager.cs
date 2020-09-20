@@ -56,7 +56,7 @@ namespace starsky.foundation.sockets.Helpers
 			var userWebSocket = new RealtimeWebSocket()
 			{
 				WebSocket = webSocket, 
-				Id = $"user_{Guid.NewGuid()}"  
+				Id = $"u_{Guid.NewGuid()}"  
 			};
 			wsFactory.Add(userWebSocket);
 			
@@ -102,9 +102,7 @@ namespace starsky.foundation.sockets.Helpers
 				Console.WriteLine(">>>>>>>>>>>>   WebSocketException");
 				Console.WriteLine(e);
 			}
-
 		}
-		
 		
 		private async Task<bool> StatusUpdate(HttpContext context, AppSettings appSettings)
 		{
