@@ -85,7 +85,7 @@ namespace starsky.foundation.sockets.Helpers
 						CancellationToken.None);
 				while ( !result.CloseStatus.HasValue )
 				{
-					await wsmHandler.HandleMessage(result, buffer, userWebSocket, wsFactory);
+					await wsmHandler.HandleMessage(result, buffer, userWebSocket);
 					buffer = new byte[1024 * 4];
 					result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
 						CancellationToken.None);

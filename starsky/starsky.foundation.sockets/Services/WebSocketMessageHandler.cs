@@ -38,8 +38,14 @@ namespace starsky.foundation.sockets.Services
 		}
 
 
-		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket, 
-			IRealtimeWebSocketFactory wsFactory)
+		/// <summary>
+		/// Handle incomming messages
+		/// </summary>
+		/// <param name="result">incomming message</param>
+		/// <param name="buffer"></param>
+		/// <param name="userWebSocket">user </param>
+		/// <returns></returns>
+		public async Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket)
 		{
 			var msg = Encoding.ASCII.GetString(buffer);
 			if ( msg.StartsWith("ping"))
@@ -50,24 +56,7 @@ namespace starsky.foundation.sockets.Services
 				await userWebSocket.WebSocket.SendAsync(
 					new ArraySegment<byte>(bytes, 0, bytes.Length),
 					WebSocketMessageType.Text, true, CancellationToken.None);
-				return;
 			}
-			
-			//
-			// try
-			// {
-			// 	var message = JsonSerializer.Deserialize<CustomWebSocketMessage>(msg);
-			// 	// message.type as anytype
-			// 	await BroadcastOthers(buffer, userWebSocket, wsFactory);
-			//
-			// }
-			// catch (Exception e)
-			// {
-			// 	Console.WriteLine(">>> >>>> HandleMessage");
-			// 	Console.WriteLine(e);
-			// 	await userWebSocket.WebSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), 
-			// 		result.MessageType, result.EndOfMessage, CancellationToken.None);
-			// }
 		}
 
 		public async Task BroadcastOthers(byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory)

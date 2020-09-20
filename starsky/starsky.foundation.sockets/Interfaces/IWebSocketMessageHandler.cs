@@ -8,7 +8,9 @@ namespace starsky.foundation.sockets.Interfaces
 	public interface IWebSocketMessageHandler
 	{
 		Task SendInitialMessages(RealtimeWebSocket userWebSocket);
-		Task HandleMessage(WebSocketReceiveResult result, byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory);
+
+		Task HandleMessage(WebSocketReceiveResult result, byte[] buffer,
+			RealtimeWebSocket userWebSocket);
 		Task BroadcastOthers(byte[] buffer, RealtimeWebSocket userWebSocket, IRealtimeWebSocketFactory wsFactory);
 
 		Task BroadcastAll(object msg, Guid? requestId, IRealtimeWebSocketFactory wsFactory);
