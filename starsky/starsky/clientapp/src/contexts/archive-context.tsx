@@ -32,6 +32,10 @@ type Action = {
   fileHash?: string
 } |
 {
+  type: 'set',
+  payload: IArchiveProps
+} |
+{
   type: 'force-reset',
   payload: IArchiveProps
 } |
@@ -123,9 +127,12 @@ export function archiveReducer(state: State, action: Action): State {
 
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
+    case "set":
+      // ignore the cache
+      return action.payload;
     case "force-reset":
+      // also update the cache
       return updateCache(action.payload);
-
     case "add":
       var filterOkCondition = (value: IFileIndexItem) => {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
