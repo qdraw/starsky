@@ -313,8 +313,6 @@ export class UrlQuery {
     if (isDev()) {
       url = url.replace(":3000", ":5000")
     }
-    console.log(url);
-
     return url;
   }
 

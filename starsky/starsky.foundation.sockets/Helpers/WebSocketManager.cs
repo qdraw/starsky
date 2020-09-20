@@ -89,8 +89,7 @@ namespace starsky.foundation.sockets.Helpers
 					buffer = new byte[1024 * 4];
 					result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer),
 						CancellationToken.None);
-
-					Console.WriteLine(result);
+					// result is System.Net.WebSockets.WebSocketReceiveResult
 				}
 				wsFactory.Remove(userWebSocket.Id);
 				await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription,

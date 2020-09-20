@@ -45,8 +45,6 @@ const useSockets = (): IUseSockets => {
 
   const [isEnabled, setIsEnabled] = useState(true);
 
-  // const timeoutRef = useRef({} as NodeJS.Timeout);
-
   const [pong, setPong] = useState(new Date());
 
   // useState does not update in a sync way
@@ -54,7 +52,7 @@ const useSockets = (): IUseSockets => {
   // const [countRetry, setCountRetry] = useState(0);
 
 
-  useInterval(() => {
+  function intervalCheck() {
     if (!ws.current) return;
     if (!isEnabled) return;
     setShowSocketError(countRetry.current >= 1)
@@ -64,21 +62,19 @@ const useSockets = (): IUseSockets => {
       return;
     }
 
-    console.log(pong.getTime());
-    console.log(DifferenceInDate(pong.getTime()));
-
-
-    if (DifferenceInDate(pong.getTime()) > 0.2) {
+    if (DifferenceInDate(pong.getTime()) > 0.3) {
+      console.log('[use-sockets] --retry sockets');
       setSocketConnected(false);
       countRetry.current++;
       ws.current.close();
       ws.current = wsCurrentStart();
     }
 
-    // 10000 milliseconds = 0.16 minutes
-  }, 10000)
+  };
 
-
+  // ALSO UPDATE DIFF time
+  useInterval(intervalCheck, 15000);
+  // 15000 milliseconds = 0.25 minutes
 
   function isPong(data: string) {
     if (!data.startsWith("\"pong")) return false;
@@ -94,19 +90,18 @@ const useSockets = (): IUseSockets => {
   function wsCurrentStart(): WebSocketService {
     var socket = newWebSocketService();
     socket.onOpen((e) => {
-      console.log(e);
-      socket.send("ping");
+      socket.send("[use-sockets] socket connection opened send ping");
       if (!socketConnected) setSocketConnected(true);
     });
 
     socket.onClose(() => {
       setSocketConnected(false);
-      console.log('Web Socket Connection Closed');
+      console.log('[use-sockets] Web Socket Connection Closed');
     });
 
     socket.onError((e) => {
       setSocketConnected(false);
-      console.log(e);
+      console.log('[use-sockets] onError triggerd');
     });
 
     socket.onMessage((e) => {
@@ -120,7 +115,7 @@ const useSockets = (): IUseSockets => {
   }
 
   useEffect(() => {
-    console.log('--run effect');
+    console.log('[use-sockets] run effect');
 
     FetchGet(new UrlQuery().UrlRealtimeStatus()).then((data) => {
       if (data.statusCode === 401 || data.statusCode === 403) {
@@ -131,10 +126,11 @@ const useSockets = (): IUseSockets => {
     var socket1 = wsCurrentStart();
     ws.current = socket1;
     return () => {
+      console.log('[use-sockets] --end');
       socket1.close();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  /// /    // eslint-disable-next-line react-hooks/exhaustive-deps
 
   return {
     showSocketError

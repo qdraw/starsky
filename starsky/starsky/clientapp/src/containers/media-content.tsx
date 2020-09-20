@@ -29,9 +29,10 @@ const MediaContent: React.FC = () => {
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageConnectionRealtimeError = language.text("Er zijn verbindingsproblemen, " +
-    "realtime verversen staat hierdoor uit.",
-    "There are connection problems, real-time refresh is disabled because of this. ");
+
+  const MessageConnectionRealtimeError = language.text("De verbinding is niet helemaal oké. " +
+    "We proberen het te herstellen",
+    "The connection is not quite right. We are trying to fix it");
   const MessageRefreshPageTryAgain = language.text("Herlaad de pagina om het opnieuw te proberen",
     "Please reload the page to try again");
 
@@ -43,8 +44,7 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
-      {showSocketError ? <Notification type={NotificationType.default}>{MessageConnectionRealtimeError}&nbsp;
-        {MessageRefreshPageTryAgain}</Notification> : null}
+      {showSocketError ? <Notification type={NotificationType.default}>{MessageConnectionRealtimeError}</Notification> : null}
       <HealthStatusError />
       {pageType === PageType.Loading ? <Preloader isOverlay={true} isDetailMenu={false} /> : null}
       {pageType === PageType.NotFound ? <NotFoundPage>Page Not found</NotFoundPage> : null}
