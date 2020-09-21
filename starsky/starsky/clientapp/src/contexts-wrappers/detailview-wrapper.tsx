@@ -17,6 +17,7 @@ function DetailViewContextWrapper(detailview: IDetailView) {
 function DetailViewWrapper(detailViewProp: IDetailView) {
   let { state, dispatch } = useDetailViewContext();
 
+  // Gets the content of the props and inject into the state
   useEffect(() => {
     if (!detailViewProp || !detailViewProp.fileIndexItem) return;
     dispatch({ type: 'reset', payload: detailViewProp });
