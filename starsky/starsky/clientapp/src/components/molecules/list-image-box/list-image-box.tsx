@@ -34,7 +34,8 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
 
   function preloaderStateOnClick(event: React.MouseEvent) {
     // Command (mac) or ctrl click means open new window
-    if (event.metaKey || event.ctrlKey) return;
+    // event.button = is only trigged in safari
+    if (event.metaKey || event.ctrlKey || event.button === 1) return;
     setPreloaderState(true)
   }
 

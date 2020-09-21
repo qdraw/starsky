@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import DetailView from '../containers/detailview';
-import { DetailViewContext, DetailViewContextProvider } from '../contexts/detailview-context';
+import { DetailViewContextProvider, useDetailViewContext } from '../contexts/detailview-context';
 import { IDetailView } from '../interfaces/IDetailView';
 import DocumentTitle from '../shared/document-title';
 
@@ -15,16 +15,14 @@ function DetailViewContextWrapper(detailview: IDetailView) {
 }
 
 function DetailViewWrapper(detailViewProp: IDetailView) {
-  let { state, dispatch } = React.useContext(DetailViewContext);
-  dispatch({ type: 'reset', payload: detailViewProp });
+  let { state, dispatch } = useDetailViewContext();
 
-  // To update the list of items
-  const [detailView, setDetailView] = React.useState(detailViewProp);
   useEffect(() => {
-    if (!state) return;
-    if (!state.fileIndexItem) return;
-    setDetailView(state);
-  }, [state]);
+    if (!detailViewProp || !detailViewProp.fileIndexItem) return;
+    dispatch({ type: 'reset', payload: detailViewProp });
+    // should run only at start or change page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detailViewProp.subPath]);
 
   useEffect(() => {
     if (!state) return;
@@ -34,11 +32,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
   if (!state) return (<>(DetailViewWrapper) = no state</>)
   if (!state.fileIndexItem) return (<></>);
 
-  return (
-    <>
-      <DetailView {...detailView} />
-    </>
-  )
+  return (<DetailView {...state} />)
 }
 
 export default DetailViewContextWrapper;

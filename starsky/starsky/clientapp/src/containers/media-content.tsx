@@ -5,10 +5,12 @@ import MenuDefault from '../components/organisms/menu-default/menu-default';
 import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
 import DetailViewContextWrapper from '../contexts-wrappers/detailview-wrapper';
 import useFileList from '../hooks/use-filelist';
+import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import NotFoundPage from '../pages/not-found-page';
+import { Language } from '../shared/language';
 import Login from './login';
 
 const MediaContent: React.FC = () => {
@@ -19,6 +21,12 @@ const MediaContent: React.FC = () => {
   const pageType = usesFileList ? usesFileList.pageType : PageType.Loading;
   const archive: IArchive | undefined = usesFileList ? usesFileList.archive : undefined;
   const detailView: IDetailView | undefined = usesFileList ? usesFileList.detailView : undefined;
+
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageApplicationException = language.text("We hebben een op dit moment een verstoring op de applicatie", "We have a disruption on the application right now")
+  const MessageRefreshPageTryAgain = language.text("Herlaad de pagina om het opnieuw te proberen",
+    "Please reload the page to try again");
 
   console.log(`-----------------MediaContent ${pageType} (rendered again)-------------------`);
 
@@ -33,8 +41,8 @@ const MediaContent: React.FC = () => {
       {pageType === PageType.NotFound ? <NotFoundPage>not found</NotFoundPage> : null}
       {pageType === PageType.Unauthorized ? <Login /> : null}
       {pageType === PageType.ApplicationException ? <><MenuDefault isEnabled={false} />
-        <div className="content--header">We hebben op dit moment een verstoring op de applicatie</div>
-        <div className="content--subheader">Probeer de pagina te herladen</div></> : null}
+        <div className="content--header">{MessageApplicationException}</div>
+        <div className="content--subheader">{MessageRefreshPageTryAgain}</div></> : null}
       {pageType === PageType.Archive && archive && archive.fileIndexItems !== undefined ?
         <ArchiveContextWrapper {...archive} /> : null}
       {pageType === PageType.DetailView && detailView ? <DetailViewContextWrapper {...detailView} /> : null}
