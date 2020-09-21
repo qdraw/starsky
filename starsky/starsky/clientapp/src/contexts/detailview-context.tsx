@@ -68,7 +68,7 @@ export function detailviewReducer(state: IDetailView, action: Action): IDetailVi
       if (tags !== undefined) state.fileIndexItem.tags = tags;
       if (description !== undefined) state.fileIndexItem.description = description;
       if (title !== undefined) state.fileIndexItem.title = title;
-      if (colorclass) state.fileIndexItem.colorClass = colorclass;
+      if (colorclass !== undefined && colorclass !== -1) state.fileIndexItem.colorClass = colorclass;
       if (status) state.fileIndexItem.status = status;
       if (fileHash) state.fileIndexItem.fileHash = fileHash;
       if (orientation) state.fileIndexItem.orientation = orientation;

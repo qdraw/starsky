@@ -72,4 +72,14 @@ describe("DetailViewContext", () => {
     expect(result.fileIndexItem.tags).toBe('');
   });
 
+  it("reset - it should overwrite", () => {
+    state.fileIndexItem.tags = "!delete!"
+
+    const action = { type: 'reset', payload: { fileIndexItem: { tags: 'test' } } } as any;
+
+    var result = detailviewReducer(state, action);
+
+    expect(result.fileIndexItem.tags).toBe('test');
+  });
+
 });

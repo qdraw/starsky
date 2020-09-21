@@ -66,7 +66,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
       }
       {
         items.map((item, index) => (
-          <ListImageBox item={item} key={item.fileName + item.lastEdited}></ListImageBox>
+          <ListImageBox item={item} key={item.fileName + item.lastEdited + item.colorClass}></ListImageBox>
         ))
       }
     </div>)

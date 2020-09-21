@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme';
 import React from 'react';
 import * as DetailView from '../containers/detailview';
 import { IDetailView, newDetailView } from '../interfaces/IDetailView';
+import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
 import DetailViewWrapper from './detailview-wrapper';
 
 
@@ -12,12 +13,26 @@ describe("DetailViewWrapper", () => {
   });
 
   describe("with mount", () => {
-    it("check if archive is mounted", () => {
+    it("check if DetailView is mounted", () => {
       var args = { ...newDetailView() } as IDetailView;
-      var archive = jest.spyOn(DetailView, 'default').mockImplementationOnce(() => { return <></> })
+      var detailView = jest.spyOn(DetailView, 'default').mockImplementationOnce(() => { return <></> })
 
       mount(<DetailViewWrapper {...args} />);
-      expect(archive).toBeCalled();
+      expect(detailView).toBeCalled();
+    });
+
+    it("check if dispatch is called", () => {
+      var contextValues = { state: newIFileIndexItem(), dispatch: jest.fn() }
+      jest.spyOn(React, 'useContext')
+        .mockImplementationOnce(() => { return contextValues })
+
+      var args = { ...newDetailView(), fileIndexItem: newIFileIndexItem() } as IDetailView;
+      var detailView = jest.spyOn(DetailView, 'default').mockImplementationOnce(() => { return <></> })
+
+      mount(<DetailViewWrapper {...args} />);
+
+      expect(contextValues.dispatch).toBeCalled();
+      expect(detailView).toBeCalled();
     });
   });
 
