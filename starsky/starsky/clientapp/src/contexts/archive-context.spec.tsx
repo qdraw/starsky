@@ -38,12 +38,16 @@ describe("ArchiveContext", () => {
       ],
       colorClassUsage: [] as number[],
     } as IArchive;
-    var action = { type: 'update', tags: 'tags', colorclass: 1, description: 'description', title: 'title', append: false, select: ['test.jpg'] } as any
+    var action = {
+      type: 'update', fileHash: '1', tags: 'tags', colorclass: 1, description: 'description',
+      title: 'title', append: false, select: ['test.jpg']
+    } as any
 
     var result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
     expect(result.fileIndexItems[0].tags).toBe('tags');
+    expect(result.fileIndexItems[0].fileHash).toBe('1');
     expect(result.fileIndexItems[0].colorClass).toBe(1);
     expect(result.fileIndexItems[0].description).toBe('description');
     expect(result.fileIndexItems[0].title).toBe('title');
