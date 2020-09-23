@@ -279,12 +279,13 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
 			_console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
 			_console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");
-			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
 			_console.WriteLine($"ExifToolPath  (-e --exiftoolpath) {_appSettings.ExifToolPath} ");
 			_console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
 			_console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 			_console.WriteLine("Name " + _appSettings.Name);
+			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
+			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
 				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);

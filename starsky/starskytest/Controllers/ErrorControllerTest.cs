@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.platform.Models;
 
 namespace starskytest.Controllers
 {
@@ -12,7 +13,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ErrorControllerTest_Error()
 		{
-			var controller = new ErrorController
+			var controller = new ErrorController(new AppSettings())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
