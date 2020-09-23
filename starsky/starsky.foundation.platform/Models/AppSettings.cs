@@ -44,7 +44,6 @@ namespace starsky.foundation.platform.Models
             AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
-            SetDefaultExifToolPath();
         }
 
         /// <summary>
@@ -333,27 +332,28 @@ namespace starsky.foundation.platform.Models
         public bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         /// <summary>
-        /// Set the default location to ExifTool
-        /// Run in the ctor of AppSettings
+        /// Private Location of ExifTool.exe
         /// </summary>
-        private void SetDefaultExifToolPath()
-        {
-	        // ReSharper disable StringLiteralTypo
-	        if (IsWindows && string.IsNullOrEmpty(ExifToolPath)  )
-	        {
-		        ExifToolPath = Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
-	        }
-	        else if (!IsWindows && string.IsNullOrEmpty(ExifToolPath) )
-	        {
-		        ExifToolPath = Path.Combine(TempFolder, "exiftool-unix", "exiftool");
-	        }
-	        // ReSharper restore StringLiteralTypo
-        }
+        private string ExifToolPathPrivate { get; set; }
         
         /// <summary>
         /// Location of ExifTool.exe
         /// </summary>
-        public string ExifToolPath { get; set; }
+        public string ExifToolPath {
+	        get
+	        {
+		        if (IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate)  )
+		        {
+			        return Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
+		        }
+		        if (!IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate) )
+		        {
+			         return Path.Combine(TempFolder, "exiftool-unix", "exiftool");
+		        }
+		        return ExifToolPathPrivate;
+	        }
+	        set => ExifToolPathPrivate = value;
+        }
         
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
