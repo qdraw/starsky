@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Streaming;
-using starsky.foundation.platform.Middleware;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;

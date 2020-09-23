@@ -25,6 +25,7 @@ using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.Health;
@@ -176,12 +177,8 @@ namespace starsky
 #else
 	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
-	        
-			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
-			services.Configure<ForwardedHeadersOptions>(options =>
-			{
-				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-			});
+
+	        ConfigureForwardedHeaders(services);
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -200,7 +197,22 @@ namespace starsky
 			}
 
 			new RegisterDependencies().Configure(services);
+        }
 
+        /// <summary>
+        /// Respect ForwardedHeaders
+        /// </summary>
+        private void ConfigureForwardedHeaders(IServiceCollection services)
+        {
+	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
+	        services.Configure<ForwardedHeadersOptions>(options =>
+	        {
+		        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+		        // https://medium.com/@laimis/couple-issues-with-https-redirect-asp-net-core-7021cf383e00
+		        // Without the explicit Clear() call, it continued to do the infinite redirect.
+		        options.KnownNetworks.Clear();
+		        options.KnownProxies.Clear();
+	        });
         }
 
         /// <summary>
@@ -268,11 +280,16 @@ namespace starsky
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
 
-	        if ( !env.IsDevelopment() && _appSettings.UseHttpsRedirection ) app.UseHttpsRedirection();
+	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
+	        app.UseForwardedHeaders();
 	        
-			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
-			app.UseForwardedHeaders();
-	        
+	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection )
+	        {
+		        app.UseHttpsRedirection();
+	        }
+
+
+
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );
 

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.platform.Middleware;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
 namespace starskytest.Middleware

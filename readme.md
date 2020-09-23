@@ -20,8 +20,8 @@
 > [Check the introduction page to learn more about the scope of the application](index.md)
 
 ## Demo app
-Starsky has a demo application online. To get started make a temperary account
-> [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
+Starsky has a demo application online. Use the following credentials: username: `demo@qdraw.nl` and password: `demo@qdraw.nl`
+> [Starsky Demo App Account Register](https://starskydemo.herokuapp.com)
 
 ## Project Readme   
 

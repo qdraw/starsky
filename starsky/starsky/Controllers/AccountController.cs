@@ -62,11 +62,12 @@ namespace starsky.Controllers
 
 		
 		/// <summary>
-		/// Login form page
+		/// Login form page (HTML)
 		/// </summary>
 		/// <returns></returns>
 		/// <response code="200">Login form page</response>
 		[HttpGet("/account/login")]
+		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
 		public IActionResult Login(string returnUrl = null)
