@@ -94,4 +94,12 @@
 <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
 </PropertyGroup>
+    
+<!--    for azure creates the folders after build-->
+<Target Name="MakeMyDir" AfterTargets="Build">
+    <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
+    <MakeDir Directories="$(OutDir)storageFolder" />
+    <MakeDir Directories="$(OutDir)temp" />
+</Target>
+    
 </Project>

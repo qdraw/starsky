@@ -22,25 +22,45 @@ namespace starsky.foundation.platform.Models
         {
             ReadOnlyFolders = new List<string>();
             DatabaseConnection = SqLiteFullPath("Data Source=data.db",BaseDirectoryProject);
-            
-            if(!Directory.Exists(BaseDirectoryProject)) Directory.CreateDirectory(BaseDirectoryProject);
-	            
+
             // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
-            if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
-
+			// Main Storage for source files (default)
             StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
-            if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
-
-            // may be cleaned after restart (not implemented)
+            // Temp folder, should be cleaned
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
-            if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+
+            try
+            {
+	            CreateDefaultFolders();
+            }
+            catch ( FileNotFoundException e )
+            {
+	            Console.WriteLine(e);
+            }
             
             // Set the default write to appSettings file
             AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
             SetDefaultExifToolPath();
+        }
+
+        /// <summary>
+        /// @see: https://tomasherceg.com/blog/post/azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
+        /// </summary>
+        private void CreateDefaultFolders()
+        {
+	        if(!Directory.Exists(BaseDirectoryProject)) Directory.CreateDirectory(BaseDirectoryProject);
+
+	        // Cache for thumbs
+	        if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
+
+	        // default location to store source images. you should change this
+	        if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
+
+	        // may be cleaned after restart (not implemented)
+	        if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
         }
 
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
