@@ -23,6 +23,8 @@ namespace starsky.foundation.platform.Models
             ReadOnlyFolders = new List<string>();
             DatabaseConnection = SqLiteFullPath("Data Source=data.db",BaseDirectoryProject);
             
+            if(!Directory.Exists(BaseDirectoryProject)) Directory.CreateDirectory(BaseDirectoryProject);
+	            
             // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
             if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
