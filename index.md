@@ -9,7 +9,10 @@ You could add how to add users, set up your archives, upload content, control me
 Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database.  The goal is to have a application that store, organize, find, retrieve and share digital content. [Read more about how to get started](readme.md)
 
 ## Demo app
-There is a online demo of the Starsky Application. You can create unlimited accounts but all input and data will be deleted after restarting. Heroku quits the application after 30 minutes of inactivity. Email addresses in the demo environment are not stored. [Starsky Demo App Account Register](https://starskydemo.herokuapp.com/account/register)
+There is a online demo of the Starsky Application. 
+Use the following credentials: username: `demo@qdraw.nl` and password: `demo@qdraw.nl`
+Heroku quits the application after 30 minutes of inactivity. 
+Content changes in the demo environment are not stored. [Starsky Demo App Account](https://starskydemo.herokuapp.com)
 
 # Main features
 
