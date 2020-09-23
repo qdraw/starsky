@@ -1,8 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Middleware;
-using starskycore.Middleware;
 
 namespace starskytest.starsky.foundation.platform.Middleware
 {
@@ -21,7 +21,9 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			
 			//test
 			var forwardedProto = httpContext.Response.Headers["X-Forwarded-Proto"].ToString();
-			// Assert.AreEqual(true,forwardedProto.Contains("default-src"));
+
+			Console.WriteLine(forwardedProto);
+			// Assert.AreEqual("1",forwardedProto);
 		}
 	}
 }

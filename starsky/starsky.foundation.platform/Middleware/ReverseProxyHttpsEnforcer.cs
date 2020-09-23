@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -20,12 +21,22 @@ namespace starsky.foundation.platform.Middleware
 		/// <returns>Nothing, its a middleware Invoke</returns>
 		public async Task Invoke(HttpContext context) {
 			var headers = context.Request.Headers;
-			if ( string.IsNullOrEmpty(headers[ForwardedProtoHeader]) || headers[ForwardedProtoHeader] == "https") {
+
+			if ( context.Request.Method.ToLowerInvariant() != "get" || 
+			     string.IsNullOrEmpty(headers[ForwardedProtoHeader]) || 
+			     headers[ForwardedProtoHeader] == "https" )
+			{
 				await _next(context);
 				return;
 			}
 			
-			var withHttps = $"https://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+			var withHttps = string.Concat(
+				"https://",
+				context.Request.Host.ToUriComponent(),
+				context.Request.PathBase.ToUriComponent(),
+				context.Request.Path.ToUriComponent(),
+				context.Request.QueryString.ToUriComponent());
+			
 			context.Response.Redirect(withHttps);
 		}
 	}
