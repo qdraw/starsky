@@ -286,7 +286,6 @@ namespace starsky
 	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection )
 	        {
 		        app.UseHttpsRedirection();
-		        // app.UseReverseProxyHttpsEnforcer();
 	        }
 
 
