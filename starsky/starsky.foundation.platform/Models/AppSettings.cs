@@ -275,20 +275,45 @@ namespace starsky.foundation.platform.Models
             throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " + structure);
         }
 
+        /// <summary>
+        /// Private: Location of storage of Thumbnails
+        /// </summary>
         private string _thumbnailTempFolder;
+        
+        /// <summary>
+        /// Location of storage of Thumbnails
+        /// </summary>
         public string ThumbnailTempFolder
         {
-            get => _thumbnailTempFolder;
-	        set => _thumbnailTempFolder = PathHelper.AddBackslash(value);
+	        get => _thumbnailTempFolder;
+	        set
+	        {
+		        var thumbnailTempFolder = ReplaceEnvironmentVariable(value);
+		        _thumbnailTempFolder = PathHelper.AddBackslash(thumbnailTempFolder);
+	        }
         }
         
+        /// <summary>
+        /// Private: Location of temp folder
+        /// </summary>
         private string _tempFolder;
+
+        /// <summary>
+        /// Location of temp folder
+        /// </summary>
         public string TempFolder
         {
-            get => AssemblyDirectoryReplacer(_tempFolder);
-	        set => _tempFolder = PathHelper.AddBackslash(value);
+	        get => AssemblyDirectoryReplacer(_tempFolder);
+	        set
+	        {
+		        var tempFolder = ReplaceEnvironmentVariable(value);
+		        _tempFolder = PathHelper.AddBackslash(tempFolder);
+	        }
         }
 
+        /// <summary>
+        /// Private: Location of AppSettings Path
+        /// </summary>
         private string _appSettingsPathPrivate;
         
         /// <summary>
@@ -301,7 +326,6 @@ namespace starsky.foundation.platform.Models
 	        // ReSharper disable once MemberCanBePrivate.Global
 	        set => _appSettingsPathPrivate = value; // set by ctor
         }
-        
         
         /// <summary>
         /// Is the host of the Application Windows
@@ -325,6 +349,10 @@ namespace starsky.foundation.platform.Models
 	        }
 	        // ReSharper restore StringLiteralTypo
         }
+        
+        /// <summary>
+        /// Location of ExifTool.exe
+        /// </summary>
         public string ExifToolPath { get; set; }
         
         // C# 6+ required for this
