@@ -96,7 +96,7 @@
 </PropertyGroup>
     
 <!--    for azure creates the folders after build-->
-<Target Name="MakeMyDir" AfterTargets="Build">
+<Target Name="MakeMyDir" AfterTargets="Publish">
     <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
     <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False"/>
     <MakeDir Directories="$(OutDir)storageFolder" />
