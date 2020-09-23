@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using starsky.foundation.platform.Middleware;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]

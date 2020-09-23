@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace starsky.foundation.platform.Middleware
+namespace starsky.foundation.platform.Extensions
 {
     public static class AppSettingsExtensions
     {
