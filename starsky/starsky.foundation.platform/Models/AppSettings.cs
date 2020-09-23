@@ -36,6 +36,7 @@ namespace starsky.foundation.platform.Models
             }
             catch ( FileNotFoundException e )
             {
+	            Console.WriteLine("> Not allowed to create default folders: ");
 	            Console.WriteLine(e);
             }
             
@@ -190,7 +191,8 @@ namespace starsky.foundation.platform.Models
             get { return _databaseConnection; }
             set
             {
-                _databaseConnection = SqLiteFullPath(value,BaseDirectoryProject);
+	            var connection = ReplaceEnvironmentVariable(value);
+                _databaseConnection = SqLiteFullPath(connection, BaseDirectoryProject);
             }
         }
 
@@ -571,6 +573,18 @@ namespace starsky.foundation.platform.Models
                 return fileExist;
             }
             return Directory.Exists(filepath) ? filepath : null;
+        }
+
+        /// <summary>
+        /// Used to reference other environment variables in the config
+        /// </summary>
+        /// <param name="input">the input, the env should start with a $</param>
+        /// <returns>the value or the input when nothing is found</returns>
+        internal string ReplaceEnvironmentVariable(string input)
+        {
+	        if ( string.IsNullOrEmpty(input) || !input.StartsWith("$") ) return input;
+	        var value = Environment.GetEnvironmentVariable(input.Remove(0, 1));
+	        return string.IsNullOrEmpty(value) ? input : value;
         }
 
         /// <summary>
