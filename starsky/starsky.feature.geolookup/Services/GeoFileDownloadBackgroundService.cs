@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +40,15 @@ namespace starsky.feature.geolookup.Services
 				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo ) return;
 
 				var geoFileDownload = scope.ServiceProvider.GetRequiredService<IGeoFileDownload>();
-				geoFileDownload.Download();
+				try
+				{
+					geoFileDownload.Download();
+				}
+				catch ( FileNotFoundException e )
+				{
+					Console.WriteLine("> Not allowed to write to disk:");
+					Console.WriteLine(e);
+				}
 			}
 		}
 	}
