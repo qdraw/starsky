@@ -15,6 +15,8 @@ namespace starsky
 				.UseKestrel(options =>
 				{
 					options.Limits.MaxRequestLineSize = 65536; //64Kb
+					// AddServerHeader removes the header: Server: Kestrel
+					options.AddServerHeader = false;
 				})
 				.UseStartup<Startup>();
 	
