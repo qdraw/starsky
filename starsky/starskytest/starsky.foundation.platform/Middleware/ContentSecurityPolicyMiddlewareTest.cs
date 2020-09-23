@@ -7,7 +7,7 @@ using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.platform.Extensions;
 using starskycore.Middleware;
 
-namespace starskytest.Middleware
+namespace starskytest.starsky.foundation.platform.Middleware
 {
 	[TestClass]
 	public class ContentSecurityPolicyMiddlewareTest
@@ -41,7 +41,5 @@ namespace starskytest.Middleware
 			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
 			Assert.AreEqual(true,csp.Contains("default-src"));
 		}
-
-
 	}
 }

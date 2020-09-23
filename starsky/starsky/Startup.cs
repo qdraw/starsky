@@ -276,7 +276,8 @@ namespace starsky
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
 
-	        if ( !env.IsDevelopment() && _appSettings.UseHttpsRedirection )
+	        // !env.IsDevelopment() &&
+	        if (  _appSettings.UseHttpsRedirection )
 	        {
 		        app.UseHttpsRedirection();
 		        app.UseReverseProxyHttpsEnforcer();

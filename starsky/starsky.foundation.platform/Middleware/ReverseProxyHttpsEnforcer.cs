@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace starsky.foundation.platform.Middleware
 {
 	public class ReverseProxyHttpsEnforcer {
+		
 		private const string ForwardedProtoHeader = "X-Forwarded-Proto";
 		private readonly RequestDelegate _next;
 
@@ -11,15 +12,21 @@ namespace starsky.foundation.platform.Middleware
 			_next = next;
 		}
 
-		public async Task Invoke(HttpContext ctx) {
-			var headers = ctx.Request.Headers;
-			if (headers[ForwardedProtoHeader] == string.Empty || headers[ForwardedProtoHeader] == "https") {
-				await _next(ctx);
+		/// <summary>
+		/// When the header `X-Forwarded-Proto` is http this will be redirected to https
+		/// Its does nothing when this header is not present
+		/// </summary>
+		/// <param name="context">user http context</param>
+		/// <returns>Nothing, its a middleware Invoke</returns>
+		public async Task Invoke(HttpContext context) {
+			var headers = context.Request.Headers;
+			if ( string.IsNullOrEmpty(headers[ForwardedProtoHeader]) || headers[ForwardedProtoHeader] == "https") {
+				await _next(context);
 				return;
-			} 
+			}
 			
-			var withHttps = $"https://{ctx.Request.Host}{ctx.Request.Path}{ctx.Request.QueryString}";
-			ctx.Response.Redirect(withHttps);
+			var withHttps = $"https://{context.Request.Host}{context.Request.Path}{context.Request.QueryString}";
+			context.Response.Redirect(withHttps);
 		}
 	}
 }
