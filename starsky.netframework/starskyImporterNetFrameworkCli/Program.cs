@@ -9,9 +9,9 @@ using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Middleware;
 using starsky.foundation.platform.Models;
 
 namespace starskyImporterNetFrameworkCli
