@@ -208,6 +208,10 @@ namespace starsky
 	        services.Configure<ForwardedHeadersOptions>(options =>
 	        {
 		        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+		        // https://medium.com/@laimis/couple-issues-with-https-redirect-asp-net-core-7021cf383e00
+		        // Without the explicit Clear() call, it continued to do the infinite redirect.
+		        options.KnownNetworks.Clear();
+		        options.KnownProxies.Clear();
 	        });
         }
 
@@ -276,15 +280,16 @@ namespace starsky
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
 
-	        // !env.IsDevelopment() &&
-	        if (  _appSettings.UseHttpsRedirection )
+	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
+	        app.UseForwardedHeaders();
+	        
+	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection )
 	        {
 		        app.UseHttpsRedirection();
-		        app.UseReverseProxyHttpsEnforcer();
+		        // app.UseReverseProxyHttpsEnforcer();
 	        }
 
-	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
-			app.UseForwardedHeaders();
+
 
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );
