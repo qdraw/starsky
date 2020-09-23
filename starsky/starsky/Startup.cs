@@ -176,12 +176,8 @@ namespace starsky
 #else
 	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
 #endif
-	        
-			// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
-			services.Configure<ForwardedHeadersOptions>(options =>
-			{
-				options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-			});
+
+	        ConfigureBehindProxy(_appSettings, services);
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -201,6 +197,22 @@ namespace starsky
 
 			new RegisterDependencies().Configure(services);
 
+        }
+
+        /// <summary>
+        /// Allow the headers set by a Reverse Proxy
+        /// @see: https://gist.github.com/jincod/5d1cec864da231f60611daf20a9ac75f
+        /// </summary>
+        private void ConfigureBehindProxy(AppSettings appSettings, IServiceCollection services)
+        {
+	        // Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
+	        services.Configure<ForwardedHeadersOptions>(options =>
+	        {
+		        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+	        });
+	        
+	        if(!appSettings.UseHttpsRedirection) return;
+	        services.AddHttpsRedirection(options => { options.HttpsPort = 443; });
         }
 
         /// <summary>
@@ -267,12 +279,12 @@ namespace starsky
 		        app.UseCors("CorsProduction");   
 		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 	        }
-
-	        if ( !env.IsDevelopment() && _appSettings.UseHttpsRedirection ) app.UseHttpsRedirection();
 	        
 			// Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 			app.UseForwardedHeaders();
 	        
+			if ( !env.IsDevelopment() && _appSettings.UseHttpsRedirection ) app.UseHttpsRedirection();
+
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );
 
