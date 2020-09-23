@@ -18,6 +18,7 @@ namespace starsky.foundation.database.Helpers
 		}
 		public void BuilderDb()
 		{
+			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
 			switch (_appSettings.DatabaseType)
 			{
 				case (AppSettings.DatabaseTypeList.Mysql):

@@ -89,6 +89,30 @@ namespace starskytest.starsky.foundation.platform.Models
 			var value = _appSettings.ReplaceEnvironmentVariable("$test123456789");
 			Assert.AreEqual("123456789", value);
 		}
+
+		[TestMethod]
+		public void ReplaceWrongPortOrderInMysql_NotMySQL()
+		{
+			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
+			var result = _appSettings.ReplaceWrongPortOrderInMysql(string.Empty);
+			Assert.AreEqual(string.Empty, result);
+		}
+
+		[TestMethod]
+		public void ReplaceWrongPortOrderInMysql_PortNotIncluded()
+		{
+			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
+			var result = _appSettings.ReplaceWrongPortOrderInMysql("Server=test;database=db;uid=user;pwd=pass;");
+			Assert.AreEqual("Server=test;database=db;uid=user;pwd=pass;", result);
+		}
+		
+		[TestMethod]
+		public void ReplaceWrongPortOrderInMysql_PortIncluded()
+		{
+			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.Mysql;
+			var result = _appSettings.ReplaceWrongPortOrderInMysql("Database=localdb;Data Source=127.0.0.1:29488;User Id=azure;Password=pass");
+			Assert.AreEqual("Database=localdb;Data Source=127.0.0.1;User Id=azure;Password=pass;Port=29488", result);
+		}
 		
 		[TestMethod]
 		public void AppSettingsProviderTest_SqLiteFullPathStarskyCliTest()

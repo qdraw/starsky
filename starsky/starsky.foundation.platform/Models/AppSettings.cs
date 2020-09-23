@@ -588,6 +588,23 @@ namespace starsky.foundation.platform.Models
         }
 
         /// <summary>
+        /// Replaces Azure format 'Database=localdb;Data Source=127.0.0.1:82451;User Id=azure;Password=password' to supported one
+        /// @see: https://stackoverflow.com/a/51564449
+        /// </summary>
+        /// <param name="input">source input </param>
+        /// <returns>replaced one</returns>
+        internal string ReplaceWrongPortOrderInMysql(string input)
+        {
+	        if ( DatabaseType != DatabaseTypeList.Mysql ) return input;
+	        var portNumber = Regex.Match(input, @"(?<=Data Source.+:)\d+")?.Value;
+	        if ( string.IsNullOrEmpty(portNumber) ) return input;
+	        // Add port to the end of the string
+	        input += ";Port=" + portNumber;
+	        input = input.Replace(":" + portNumber, "");
+	        return input;
+        }
+
+        /// <summary>
         /// Replaces a SQLite url with a full directory path in the connection string
         /// </summary>
         /// <param name="connectionString">SQLite</param>
