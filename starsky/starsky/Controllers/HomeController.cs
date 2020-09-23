@@ -23,7 +23,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Home page
+		/// Home page (HTML)
 		/// </summary>
 		/// <param name="f">subPath</param>
 		/// <returns>client app html</returns>
@@ -39,7 +39,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Redirect to search GET page
+		/// Redirect to search GET page (HTML)
 		/// </summary>
 		/// <param name="t">search query</param>
 		/// <param name="p">page number</param>
@@ -67,7 +67,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Search GET page
+		/// Search GET page (HTML)
 		/// </summary>
 		/// <param name="t">search query</param>
 		/// <param name="p">page number</param>
@@ -105,7 +105,7 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// Trash page
+		/// Trash page (HTML)
 		/// </summary>
 		/// <param name="p">page number</param>
 		/// <returns>client app html</returns>
@@ -127,7 +127,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Import page
+		/// Import page (HTML)
 		/// </summary>
 		/// <returns>client app html</returns>
 		/// <response code="200">client app html</response>
@@ -146,7 +146,7 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// Preferences page
+		/// Preferences page (HTML)
 		/// </summary>
 		/// <returns>client app html</returns>
 		/// <response code="200">client app html</response>
@@ -165,7 +165,7 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// View the Register form
+		/// View the Register form (HTML)
 		/// </summary>
 		/// <param name="returnUrl">when successful continue</param>
 		/// <returns>client app html</returns>
