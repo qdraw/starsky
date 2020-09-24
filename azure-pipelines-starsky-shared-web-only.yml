@@ -20,9 +20,6 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: ls $(Build.SourcesDirectory)/starsky/starsky
-  displayName: 'Run a one-line script'
 - task: PowerShell@2
   displayName: 'Cake ClientRestore'
   enabled: false
@@ -55,8 +52,13 @@ steps:
     publishWebProjects: true
     arguments: '-o generic-site'
     workingDirectory: '$(Build.SourcesDirectory)/starsky/starsky/'
+
+steps:
+- script: ls $(Build.SourcesDirectory)/starsky/starsky
+  displayName: 'Run a one-line script'
+
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/generic-site'
+    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky/generic-site'
     ArtifactName: 'generic-site'
     publishLocation: 'Container'
