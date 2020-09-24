@@ -11,16 +11,25 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: echo Hello, world!
+- script: ls $(Build.SourcesDirectory)/starsky
   displayName: 'Run a one-line script'
 - task: PowerShell@2
-  displayName: 'Cake Client'
+  displayName: 'Cake ClientRestore'
   enabled: true
   inputs:
     filePath: 'starsky/build.ps1'
-    arguments: '-target="Client"'
+    arguments: '-target="ClientRestore"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+- task: PowerShell@2
+  displayName: 'Cake ClientBuild'
+  enabled: true
+  inputs:
+    filePath: 'starsky/build.ps1'
+    arguments: '-target="ClientBuild"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
