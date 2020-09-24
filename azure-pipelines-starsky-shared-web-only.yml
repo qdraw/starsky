@@ -20,6 +20,7 @@ pr:
 pool:
   vmImage: 'ubuntu-latest'
 
+steps:
 - task: PowerShell@2
   displayName: 'Cake ClientRestore'
   enabled: false
@@ -53,7 +54,7 @@ pool:
     arguments: '-o generic-site'
     workingDirectory: '$(Build.SourcesDirectory)/starsky/starsky/'
 
-steps:
+
 - script: ls $(Build.SourcesDirectory)/starsky/starsky
   displayName: 'Run a one-line script'
 
