@@ -48,4 +48,4 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: true
-    arguments: '$(Build.SourcesDirectory)/starsky/starsky/starsky.csproj'
+    workingDirectory: '$(Build.SourcesDirectory)/starsky/starsky/'
