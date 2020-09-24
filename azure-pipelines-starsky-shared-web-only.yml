@@ -51,6 +51,8 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: true
+    arguments: '-o generic-site'
+    zipAfterPublish: false
     workingDirectory: '$(Build.SourcesDirectory)/starsky/starsky/'
 
 
