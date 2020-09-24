@@ -26,6 +26,7 @@ steps:
     arguments: '-target="ClientRestore"'
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
 - task: PowerShell@2
   displayName: 'Cake ClientBuild'
   enabled: false
@@ -35,15 +36,16 @@ steps:
     pwsh: true
     workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
-
 - task: DotNetCoreCLI@2
-  displayName: 'Build Generic Site'
+  displayName: 'Net Core - Build Generic Site'
   enabled: true
   inputs:
     command: 'build'
     projects: '$(Build.SourcesDirectory)/starsky/starsky/starsky.csproj'
 - task: DotNetCoreCLI@2
+  displayName: 'Net Core - Publish Generic Site'
+  enabled: true
   inputs:
     command: 'publish'
     publishWebProjects: true
-    workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+    arguments: '$(Build.SourcesDirectory)/starsky/starsky/starsky.csproj'
