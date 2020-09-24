@@ -17,17 +17,17 @@ steps:
   displayName: 'Cake Client'
   enabled: true
   inputs:
-    filePath: 'starsky\build.ps1'
+    filePath: 'starsky/build.ps1'
     arguments: '-target="Client"'
     pwsh: true
-    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+    workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: 'starsky/starsky.csproj'
-    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+    workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     publishWebProjects: true
-    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+    workingDirectory: '$(Build.SourcesDirectory)/starsky/'
