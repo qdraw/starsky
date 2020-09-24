@@ -17,3 +17,7 @@ steps:
   inputs:
     command: 'build'
     projects: 'starsky/starsky.csproj'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
