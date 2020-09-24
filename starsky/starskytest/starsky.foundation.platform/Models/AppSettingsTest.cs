@@ -13,11 +13,11 @@ using TimeZoneConverter;
 namespace starskytest.starsky.foundation.platform.Models
 {
 	[TestClass]
-	public class AppSettingsProviderTest
+	public class AppSettingsTest
 	{
 		private readonly AppSettings _appSettings;
 
-		public AppSettingsProviderTest()
+		public AppSettingsTest()
 		{
 			// Add a dependency injection feature
 			var services = new ServiceCollection();
@@ -282,6 +282,20 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			var appSettings = new AppSettings {PublishProfiles = null};
 			Assert.AreEqual(0, appSettings.PublishProfiles.Count );
+		}
+
+		[TestMethod]
+		public void AppVersionBuildDateTime()
+		{
+			var appVersionBuildDateTime = new AppSettings().AppVersionBuildDateTime;
+			Assert.IsNotNull(appVersionBuildDateTime);
+		}
+		
+		[TestMethod]
+		public void AppVersion()
+		{
+			var appVersionBuildDateTime = new AppSettings().AppVersion;
+			Assert.IsNotNull(appVersionBuildDateTime);
 		}
 	}
 }

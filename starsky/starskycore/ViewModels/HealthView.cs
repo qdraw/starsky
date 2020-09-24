@@ -7,7 +7,6 @@ namespace starskycore.ViewModels
 	{
 		public bool IsHealthy { get; set; } = false;
 		public List<HealthEntry> Entries { get; set; } = new List<HealthEntry>();
-		
 		public TimeSpan TotalDuration { get; set; }
 	}
 	
