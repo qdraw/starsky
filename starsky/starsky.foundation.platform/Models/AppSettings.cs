@@ -105,8 +105,9 @@ namespace starsky.foundation.platform.Models
 				return new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
 			}
 		}
+		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
-        // Can be used in the cli session to select files out of the file database system
+		// Can be used in the cli session to select files out of the file database system
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
         {

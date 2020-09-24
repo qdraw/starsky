@@ -9,8 +9,9 @@ using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.Helpers;
-using starskycore.Interfaces;
 
 namespace starsky.Controllers
 {
@@ -19,12 +20,14 @@ namespace starsky.Controllers
         private readonly IUserManager _userManager;
         private readonly AppSettings _appSettings;
         private readonly IAntiforgery _antiForgery;
+        private readonly IStorage _storageHostFullPathFilesystem;
 
-        public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery)
+        public AccountController(IUserManager userManager, AppSettings appSettings, IAntiforgery antiForgery, ISelectorStorage selectorStorage)
         {
             _userManager = userManager;
             _appSettings = appSettings;
             _antiForgery = antiForgery;
+            _storageHostFullPathFilesystem = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
         }
         
 		/// <summary>
@@ -75,6 +78,8 @@ namespace starsky.Controllers
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
+
+			if ( !_storageHostFullPathFilesystem.ExistFile(clientApp) ) return Content("Please check if the client code exist");
 			return PhysicalFile(clientApp, "text/html");
 		}
 		
