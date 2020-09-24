@@ -9,6 +9,7 @@ using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starsky.Helpers;
 using starskycore.Interfaces;
 
@@ -75,6 +76,8 @@ namespace starsky.Controllers
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
+
+			if ( !new StorageHostFullPathFilesystem().ExistFile(clientApp) ) return Content("Please check if the client code exist");
 			return PhysicalFile(clientApp, "text/html");
 		}
 		
