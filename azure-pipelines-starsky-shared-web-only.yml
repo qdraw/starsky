@@ -1,8 +1,5 @@
-# Starter pipeline
-
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# Build shared .NET Core Application to run wihin IIS
+# For the full suite please check the other pipelines
 
 trigger:
   branches:
@@ -23,7 +20,7 @@ pool:
 steps:
 - task: PowerShell@2
   displayName: 'Cake ClientRestore'
-  enabled: false
+  enabled: true
   inputs:
     filePath: 'starsky/build.ps1'
     arguments: '-target="ClientRestore"'
@@ -32,7 +29,7 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Cake ClientBuild'
-  enabled: false
+  enabled: true
   inputs:
     filePath: 'starsky/build.ps1'
     arguments: '-target="ClientBuild"'
