@@ -13,11 +13,21 @@ pool:
 steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
+- task: PowerShell@2
+  displayName: 'Cake Client'
+  enabled: true
+  inputs:
+    filePath: 'starsky\build.ps1'
+    arguments: '-target="Client"'
+    pwsh: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
     projects: 'starsky/starsky.csproj'
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     publishWebProjects: true
+    workingDirectory: '$(Build.SourcesDirectory)\starsky\'
