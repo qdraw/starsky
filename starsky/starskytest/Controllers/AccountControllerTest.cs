@@ -23,6 +23,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -36,6 +38,7 @@ namespace starskytest.Controllers
 	    private readonly ApplicationDbContext _dbContext;
 	    private readonly AppSettings _appSettings;
 	    private readonly FakeAntiforgery _antiForgery;
+	    private readonly ISelectorStorage _selectorStorage;
 
 	    public AccountControllerTest()
         {
@@ -88,6 +91,7 @@ namespace starskytest.Controllers
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
             _userManager = new UserManager(_dbContext,_appSettings);
+            _selectorStorage = new FakeSelectorStorage(new StorageHostFullPathFilesystem());
 
             _antiForgery = new FakeAntiforgery();
         }
@@ -119,7 +123,7 @@ namespace starskytest.Controllers
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
-			AccountController controller = new AccountController(_userManager,_appSettings,_antiForgery);
+			AccountController controller = new AccountController(_userManager,_appSettings,_antiForgery, _selectorStorage);
 			controller.ControllerContext.HttpContext = httpContext;
 
 			// Get context for url (netcore3)
@@ -178,7 +182,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_is_not_correct_NoUsersActive()
         {
-            var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery);
+            var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery, _selectorStorage);
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
             controller.ControllerContext.HttpContext = httpContext;
 
@@ -192,7 +196,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_WithUsersActive_GetRegisterPage_Forbid()
         {
-	        var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,_antiForgery);
+	        var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,_antiForgery, _selectorStorage);
 	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 	        controller.ControllerContext.HttpContext = httpContext;
 
@@ -207,7 +211,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_ChangeSecret_NotLoggedIn()
         {
-	        var controller = new AccountController(_userManager, _appSettings,_antiForgery);
+	        var controller = new AccountController(_userManager, _appSettings,_antiForgery, _selectorStorage);
 	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 	        controller.ControllerContext.HttpContext = httpContext;
 
@@ -220,7 +224,7 @@ namespace starskytest.Controllers
         public void AccountController_ChangeSecret_WrongInput()
         {
 	        
-	        var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+	        var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {
@@ -239,7 +243,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_ChangeSecret_PasswordChange_Success_Injected()
         {
-	        var controller = new AccountController(new FakeUserManagerActiveUsers("test"), _appSettings, _antiForgery)
+	        var controller = new AccountController(new FakeUserManagerActiveUsers("test"), _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {
@@ -260,7 +264,7 @@ namespace starskytest.Controllers
         {
 	        var userManager = new FakeUserManagerActiveUsers("reject");
 
-	        var controller = new AccountController(userManager, _appSettings, _antiForgery)
+	        var controller = new AccountController(userManager, _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {
@@ -278,7 +282,7 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
         {
-	        var controller = new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = false}, _antiForgery);
+	        var controller = new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = false}, _antiForgery,_selectorStorage);
 	        var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 	        controller.ControllerContext.HttpContext = httpContext;
 
@@ -295,7 +299,7 @@ namespace starskytest.Controllers
         {
 	        var user = new User() { Name = "JohnDoe2"};
    
-	        var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+	        var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {
@@ -324,7 +328,7 @@ namespace starskytest.Controllers
 		    _dbContext.Users.Add(user);
 		    _dbContext.SaveChanges();
 
-		    var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+		    var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 		    {
 			    ControllerContext = {HttpContext = new DefaultHttpContext
 			    {
@@ -346,7 +350,7 @@ namespace starskytest.Controllers
 	    public void AccountController_WithActiveUsers_IndexGetLoginFail()
 	    {
 		    // There are users active
-		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery);
+		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage);
 
 		    var identity = new ClaimsIdentity();
 		    var claimsPrincipal = new ClaimsPrincipal(identity);
@@ -370,11 +374,18 @@ namespace starskytest.Controllers
 	    [TestMethod]
 	    public void AccountController_LogInGet()
 	    {
-		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery);
+		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage);
 		    controller.Login();
 	    }
 
-
+	    [TestMethod]
+	    public void AccountController_LogInGet_NotFound()
+	    {
+		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, new FakeSelectorStorage());
+		    var result = controller.Login() as ContentResult;
+		    Assert.AreEqual("Please check if the client code exist",result.Content);
+	    }
+	    
 	     [TestMethod]
         public async Task AccountController_newAccount_TryToOverwrite_ButItKeepsTheSamePassword()
         {
@@ -392,7 +403,7 @@ namespace starskytest.Controllers
             _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
             var controller =
-	            new AccountController(_userManager, _appSettings, _antiForgery)
+	            new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 	            {
 		            ControllerContext = {HttpContext = httpContext}
 	            };
@@ -463,7 +474,7 @@ namespace starskytest.Controllers
         public void AccountController_RegisterStatus_NoAccounts()
         {
 	        var controller =
-		        new AccountController(_userManager, _appSettings, _antiForgery)
+		        new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 		        {
 			        ControllerContext = {HttpContext = new DefaultHttpContext()}
 		        };
@@ -477,7 +488,7 @@ namespace starskytest.Controllers
         public void AccountController_RegisterStatus_ActiveUsers()
         {
 	        var controller =
-		        new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery)
+		        new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage)
 		        {
 			        ControllerContext = {HttpContext = new DefaultHttpContext()}
 		        };
@@ -491,7 +502,7 @@ namespace starskytest.Controllers
         public void AccountController_LoginStatus_NoAccounts()
         {
 	        var controller =
-		        new AccountController(_userManager, _appSettings, _antiForgery)
+		        new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 		        {
 			        ControllerContext = {HttpContext = new DefaultHttpContext()}
 		        };
@@ -504,9 +515,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void Permissions()
         {
-
 	        var claims = SetTestClaimsSet("test", "1");
-	        var controller = new AccountController(_userManager, _appSettings, _antiForgery)
+	        var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {

@@ -100,7 +100,7 @@ namespace starskytest.Middleware
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
 
             var controller =
-	            new AccountController(_userManager, new AppSettings(), new FakeAntiforgery())
+	            new AccountController(_userManager, new AppSettings(), new FakeAntiforgery(), new FakeSelectorStorage())
 	            {
 		            ControllerContext = {HttpContext = httpContext}
 	            };
