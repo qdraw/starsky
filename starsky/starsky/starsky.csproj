@@ -94,4 +94,15 @@
 <PropertyGroup>
     <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
 </PropertyGroup>
+    
+<!--    for azure creates the folders after build-->
+<Target Name="MakeMyDir" AfterTargets="Publish">
+    <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
+    <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False"/>
+    <MakeDir Directories="$(OutDir)storageFolder" />
+    <WriteLinesToFile File="$(OutDir)storageFolder\.gitkeep" Lines="keep this directory" Overwrite="False"/>
+    <MakeDir Directories="$(OutDir)temp" />
+    <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False"/>
+</Target>
+    
 </Project>

@@ -326,13 +326,13 @@ namespace starsky
 		        });
 	        }
 			
-			if ( Directory.Exists(Path.Combine(env.ContentRootPath, "clientapp", "build", "static")) )
+			if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")) )
 			{
 				app.UseStaticFiles(new StaticFileOptions
 					{
 						OnPrepareResponse = PrepareResponse,
 						FileProvider = new PhysicalFileProvider(
-							Path.Combine(env.ContentRootPath, "clientapp", "build", "static")),
+							Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")),
 						RequestPath = $"/static",
 					}
 				);

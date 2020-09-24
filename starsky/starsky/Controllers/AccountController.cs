@@ -73,7 +73,9 @@ namespace starsky.Controllers
 		public IActionResult Login(string returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
-			return PhysicalFile(Path.Combine(Directory.GetCurrentDirectory(), "clientapp", "build", "index.html"), "text/html");
+			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
+				"clientapp", "build", "index.html");
+			return PhysicalFile(clientApp, "text/html");
 		}
 		
         /// <summary>

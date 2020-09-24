@@ -1,9 +1,9 @@
-using System;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
@@ -23,7 +23,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_Index()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(), _antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -34,7 +34,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_IsCaseSensitiveRedirect_true()
 		{
-			var controller = new HomeController(_antiForgery);
+			var controller = new HomeController(new AppSettings(),_antiForgery);
 			var caseSensitive =  controller.IsCaseSensitiveRedirect("/Search","/search");
 			Assert.IsTrue(caseSensitive);
 		}
@@ -42,7 +42,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_IsCaseSensitiveRedirect_false()
 		{
-			var controller = new HomeController(_antiForgery);
+			var controller = new HomeController(new AppSettings(),_antiForgery);
 			var caseSensitive =  controller.IsCaseSensitiveRedirect("/search","/search");
 			Assert.IsFalse(caseSensitive);
 		}
@@ -50,7 +50,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_SearchPost_Controller_CaseSensitive_Redirect()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(),_antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -63,7 +63,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_SearchGet_Controller_CaseSensitive_Redirect()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(),_antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -77,7 +77,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_Trash_Controller_CaseSensitive_Redirect()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(),_antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -89,7 +89,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void HomeController_Import_Controller_CaseSensitive_Redirect()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(), _antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -101,7 +101,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void AccountController_RegisterGet()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(), _antiForgery)
 			{
 				ControllerContext =
 				{
@@ -114,7 +114,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Preferences()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(),_antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};
@@ -128,7 +128,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void Preferences_Expect_Capital()
 		{
-			var controller = new HomeController(_antiForgery)
+			var controller = new HomeController(new AppSettings(),_antiForgery)
 			{
 				ControllerContext = {HttpContext = _httpContext}
 			};

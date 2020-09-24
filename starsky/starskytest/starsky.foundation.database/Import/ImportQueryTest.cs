@@ -110,13 +110,19 @@ namespace starskytest.starsky.foundation.database.Import
 		[TestMethod]
 		public async Task History()
 		{
-			var expectedResult = new ImportIndexItem { AddToDatabase = DateTime.UtcNow, FileHash = "TEST8"};
+			var expectedResult = new ImportIndexItem
+			{
+				AddToDatabase = DateTime.UtcNow, 
+				FileHash = "TEST8"
+			};
 			var serviceScopeFactory = CreateNewScope();
 			
 			await new ImportQuery(serviceScopeFactory).AddAsync(expectedResult);
 
 			var historyResult = new ImportQuery(serviceScopeFactory).History();
 
+			if ( !historyResult.Any() ) throw new ArgumentNullException("should not be 0");
+			
 			Assert.IsTrue(historyResult.Any(p => p.FileHash == "TEST8"));
 		}
 		
