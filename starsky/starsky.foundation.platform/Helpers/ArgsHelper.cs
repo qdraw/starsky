@@ -284,6 +284,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("Structure  (-u --structure) "+ _appSettings.Structure);
 			_console.WriteLine("CameraTimeZone "+ _appSettings.CameraTimeZone);
 			_console.WriteLine("Name " + _appSettings.Name);
+			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
+			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
 				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);

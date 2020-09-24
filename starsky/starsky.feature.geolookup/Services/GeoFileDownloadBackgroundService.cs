@@ -1,9 +1,12 @@
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.geolookup.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.feature.geolookup.Services
@@ -32,13 +35,22 @@ namespace starsky.feature.geolookup.Services
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
 
 				// Geo Helper has a direct need of this, other are downloaded when needed
 				// This Background service is for running offline 
 				if ( appSettings.ApplicationType == AppSettings.StarskyAppType.Geo ) return;
 
 				var geoFileDownload = scope.ServiceProvider.GetRequiredService<IGeoFileDownload>();
-				geoFileDownload.Download();
+				try
+				{
+					geoFileDownload.Download();
+				}
+				catch ( FileNotFoundException e )
+				{
+					console.WriteLine("> Not allowed to write to disk:");
+					console.WriteLine(e.ToString());
+				}
 			}
 		}
 	}

@@ -45,8 +45,11 @@ namespace starsky.Health
 
 		private static (bool Exists, long ActualFreeMegabytes) GetSystemDriveInfo(string driveName)
 		{
-			if ( string.IsNullOrWhiteSpace(driveName) ) return ( false, 0L );
-			DriveInfo driveInfo = DriveInfo.GetDrives().FirstOrDefault(drive => drive != null && string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));
+			var drivesList = DriveInfo.GetDrives();
+			if ( !drivesList.Any() || string.IsNullOrWhiteSpace(driveName) ) return ( false, 0L );
+			DriveInfo driveInfo = DriveInfo.GetDrives().FirstOrDefault(
+				drive => drive != null && 
+				         string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));
 			return driveInfo != null ? (true, driveInfo.AvailableFreeSpace / 1024L / 1024L) : (false, 0L);
 		}
 	}
