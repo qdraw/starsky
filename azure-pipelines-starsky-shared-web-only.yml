@@ -48,4 +48,10 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: true
+    arguments: '-o generic-site'
     workingDirectory: '$(Build.SourcesDirectory)/starsky/starsky/'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/generic-site'
+    ArtifactName: 'generic-site'
+    publishLocation: 'Container'
