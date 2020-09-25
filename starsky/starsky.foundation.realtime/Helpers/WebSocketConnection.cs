@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -7,86 +8,106 @@ using System.Threading.Tasks;
 namespace starsky.foundation.realtime.Helpers
 {
 	public class WebSocketConnection
-    {
-        #region Fields
-        private WebSocket _webSocket;
-        private int _receivePayloadBufferSize;
-        #endregion
+	{
+		#region Fields
+		private readonly WebSocket _webSocket;
+		private readonly int _receivePayloadBufferSize;
+		#endregion
 
-        #region Properties
-        public Guid Id { get; } = Guid.NewGuid();
+		#region Properties
+		public Guid Id { get; } = Guid.NewGuid();
 
-        public WebSocketCloseStatus? CloseStatus { get; private set; } = null;
+		public WebSocketCloseStatus? CloseStatus { get; private set; } = null;
 
-        public string CloseStatusDescription { get; private set; } = null;
-        #endregion
+		public string CloseStatusDescription { get; private set; } = null;
+		#endregion
 
-        #region Events
-        public event EventHandler<string> ReceiveText;
+		#region Events
+		public event EventHandler<string> ReceiveText;
 
-        public event EventHandler<byte[]> ReceiveBinary;
-        #endregion
+		public event EventHandler<byte[]> ReceiveBinary;
+		#endregion
 
-        #region Constructor
-        public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize)
-        {
-            _webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
-            _receivePayloadBufferSize = receivePayloadBufferSize;
-        }
-        #endregion
+		#region Constructor
+		public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize)
+		{
+			_webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
+			_receivePayloadBufferSize = receivePayloadBufferSize;
+		}
+		#endregion
 
-        #region Methods
-        public Task SendAsync(string message, CancellationToken cancellationToken)
-        {
-            // return _textSubProtocol.SendAsync(message, _webSocket, _webSocketCompressionProvider, cancellationToken);
+		#region Methods
+		public Task SendAsync(string message, CancellationToken cancellationToken)
+		{
+			byte[] bytes = Encoding.ASCII.GetBytes(message);
+			return _webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancellationToken);
+		}
 
-            
-            Console.WriteLine("111");
-            byte[] bytes = Encoding.ASCII.GetBytes(message);
+		private async Task<WebSocketCloseStatus?> GetMessage(WebSocketReceiveResult webSocketReceiveResult)
+		{
+			try
+			{
+				while ( webSocketReceiveResult.MessageType != WebSocketMessageType.Close )
+				{
 
-            return _webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
-        }
+					WebSocketReceiveResult result;
 
-        public async Task ReceiveMessagesUntilCloseAsync()
-        {
-            try
-            {
-                byte[] receivePayloadBuffer = new byte[_receivePayloadBufferSize];
-                WebSocketReceiveResult webSocketReceiveResult = await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer), CancellationToken.None);
-                while (webSocketReceiveResult.MessageType != WebSocketMessageType.Close)
-                {
-                    // if (webSocketReceiveResult.MessageType == WebSocketMessageType.Binary)
-                    // {
-                    //     byte[] webSocketMessage = await _webSocketCompressionProvider.DecompressBinaryMessageAsync(_webSocket, webSocketReceiveResult, receivePayloadBuffer);
-                    //     OnReceiveBinary(webSocketMessage);
-                    // }
-                    // else
-                    // {
-                    //     string webSocketMessage = await _webSocketCompressionProvider.DecompressTextMessageAsync(_webSocket, webSocketReceiveResult, receivePayloadBuffer);
-                    //     OnReceiveText(webSocketMessage);
-                    // }
+					string receivedMessage = "";
+					var message = new ArraySegment<byte>(new byte[4096]);
+					do
+					{
+						Console.WriteLine(webSocketReceiveResult.MessageType == WebSocketMessageType.Close);
 
-                    webSocketReceiveResult = await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer), CancellationToken.None);
-                }
+						result = await _webSocket.ReceiveAsync(message, CancellationToken.None);
+						if ( result.MessageType != WebSocketMessageType.Text )
+							break;
+						var messageBytes =
+							message.Skip(message.Offset).Take(result.Count).ToArray();
+						receivedMessage += Encoding.UTF8.GetString(messageBytes);
+				        
+					} 
+					while ( !result.EndOfMessage );
 
-                CloseStatus = webSocketReceiveResult.CloseStatus.Value;
-                CloseStatusDescription = webSocketReceiveResult.CloseStatusDescription;
-            }
-            catch (WebSocketException wsex) when (wsex.WebSocketErrorCode == WebSocketError.ConnectionClosedPrematurely)
-            { }
-        }
+					if ( receivedMessage == "{}" || string.IsNullOrEmpty(receivedMessage) )
+						continue;
 
-        private void OnReceiveText(string webSocketMessage)
-        {
-            // string message = _textSubProtocol.Read(webSocketMessage);
+					OnReceiveText(receivedMessage);
+					Console.WriteLine("Received: {0}", receivedMessage);
+				}
 
-            ReceiveText?.Invoke(this, webSocketMessage);
-        }
+			}
+			catch ( WebSocketException wsex ) when ( wsex.WebSocketErrorCode ==
+			                                         WebSocketError.InvalidState )
+			{
+				return WebSocketCloseStatus.NormalClosure;
+			}
 
-        private void OnReceiveBinary(byte[] webSocketMessage)
-        {
-            ReceiveBinary?.Invoke(this, webSocketMessage);
-        }
-        #endregion
-    }
+			return webSocketReceiveResult?.CloseStatus;
+		}
+
+		public async Task ReceiveMessagesUntilCloseAsync()
+		{
+			try
+			{
+				byte[] receivePayloadBuffer = new byte[_receivePayloadBufferSize];
+				WebSocketReceiveResult webSocketReceiveResult =
+					await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer),
+						CancellationToken.None);
+
+				CloseStatus = await GetMessage(webSocketReceiveResult);
+				CloseStatusDescription = webSocketReceiveResult.CloseStatusDescription;
+			}
+			catch ( WebSocketException wsex ) when ( wsex.WebSocketErrorCode ==
+			                                         WebSocketError.ConnectionClosedPrematurely )
+			{
+				Console.WriteLine("connection ConnectionClosedPrematurely");
+			}
+		}
+
+		private void OnReceiveText(string webSocketMessage)
+		{
+			ReceiveText?.Invoke(this, webSocketMessage);
+		}
+		#endregion
+	}
 }

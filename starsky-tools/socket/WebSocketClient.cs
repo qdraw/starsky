@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using ChannelWSClient.Model;
 
 namespace ChannelWSClient
 {
@@ -14,12 +16,21 @@ namespace ChannelWSClient
         private static CancellationTokenSource SocketLoopTokenSource;
         private static CancellationTokenSource KeystrokeLoopTokenSource;
 
-        public static async Task StartAsync(string wsUri)
-            => await StartAsync(new Uri(wsUri));
 
-        public static async Task StartAsync(Uri wsUri)
+        /// <summary>
+        /// Normal string to base64-formated-string
+        /// </summary>
+        /// <param name="plainText">Normal string</param>
+        /// <returns>base64-string</returns>
+        private static string EncodeToString(string plainText)
         {
-            Console.WriteLine($"Connecting to server {wsUri.ToString()}");
+	        var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+	        return Convert.ToBase64String(plainTextBytes);
+        }
+        
+        public static async Task StartAsync(AppSettings appSettings)
+        {
+            Console.WriteLine($"Connecting to server {appSettings.Url}");
 
             KeystrokeQueue = Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
 
@@ -29,7 +40,10 @@ namespace ChannelWSClient
             try
             {
                 Socket = new ClientWebSocket();
-                await Socket.ConnectAsync(wsUri, CancellationToken.None);
+                var value = EncodeToString(appSettings.Username + ":" + appSettings.Password);
+                Socket.Options.SetRequestHeader("Authorization", "Basic " + value);
+
+                await Socket.ConnectAsync(new Uri(appSettings.Url), CancellationToken.None);
                 _ = Task.Run(() => SocketProcessingLoopAsync().ConfigureAwait(false));
                 _ = Task.Run(() => KeystrokeTransmitLoopAsync().ConfigureAwait(false));
             }

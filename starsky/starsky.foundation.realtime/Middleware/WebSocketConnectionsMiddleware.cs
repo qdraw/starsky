@@ -32,14 +32,20 @@ namespace starsky.foundation.realtime.Middleware
             {
                 if (ValidateOrigin(context))
                 {
-                    // ITextWebSocketSubprotocol textSubProtocol = NegotiateSubProtocol(context.WebSockets.WebSocketRequestedProtocols);
-                    //
-                    // IWebSocketCompressionProvider webSocketCompressionProvider = _compressionService.NegotiateCompression(context);
-
                     WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-
+                    
+                    if ( !context.User.Identity.IsAuthenticated)
+                    {
+	                    await webSocket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, 
+		                    "Please login first", CancellationToken.None);
+	                    return;
+                    }
+                    
                     WebSocketConnection webSocketConnection = new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
-                    webSocketConnection.ReceiveText += async (sender, message) => { await webSocketConnection.SendAsync(message, CancellationToken.None); };
+                    webSocketConnection.ReceiveText += async (sender, message) =>
+                    {
+	                    await webSocketConnection.SendAsync(message, CancellationToken.None);
+                    };
 
                     _connectionsService.AddConnection(webSocketConnection);
 
@@ -47,7 +53,8 @@ namespace starsky.foundation.realtime.Middleware
 
                     if (webSocketConnection.CloseStatus.HasValue)
                     {
-                        await webSocket.CloseAsync(webSocketConnection.CloseStatus.Value, webSocketConnection.CloseStatusDescription, CancellationToken.None);
+                        await webSocket.CloseOutputAsync(webSocketConnection.CloseStatus.Value, 
+	                        webSocketConnection.CloseStatusDescription, CancellationToken.None);
                     }
 
                     _connectionsService.RemoveConnection(webSocketConnection.Id);
@@ -65,7 +72,8 @@ namespace starsky.foundation.realtime.Middleware
 
         private bool ValidateOrigin(HttpContext context)
         {
-            return (_options.AllowedOrigins == null) || (_options.AllowedOrigins.Count == 0) || (_options.AllowedOrigins.Contains(context.Request.Headers["Origin"].ToString()));
+            return (_options.AllowedOrigins == null) || (_options.AllowedOrigins.Count == 0) || (
+	            _options.AllowedOrigins.Contains(context.Request.Headers["Origin"].ToString()));
         }
 
         #endregion
