@@ -1,5 +1,6 @@
 using System;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +42,9 @@ namespace starsky.foundation.realtime.Helpers
 
             
             Console.WriteLine("111");
-            return _webSocket.SendAsync(message, WebSocketMessageType.Text, true, cancellationToken)
+            byte[] bytes = Encoding.ASCII.GetBytes(message);
+
+            return _webSocket.SendAsync(bytes, WebSocketMessageType.Text, true, cancellationToken);
         }
 
         public async Task ReceiveMessagesUntilCloseAsync()
