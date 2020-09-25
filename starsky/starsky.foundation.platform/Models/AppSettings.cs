@@ -22,23 +22,45 @@ namespace starsky.foundation.platform.Models
         {
             ReadOnlyFolders = new List<string>();
             DatabaseConnection = SqLiteFullPath("Data Source=data.db",BaseDirectoryProject);
-            
+
             // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
-            if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
-
+			// Main Storage for source files (default)
             StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
-            if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
-
-            // may be cleaned after restart (not implemented)
+            // Temp folder, should be cleaned
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
-            if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
+
+            try
+            {
+	            CreateDefaultFolders();
+            }
+            catch ( FileNotFoundException e )
+            {
+	            Console.WriteLine("> Not allowed to create default folders: ");
+	            Console.WriteLine(e);
+            }
             
             // Set the default write to appSettings file
             AppSettingsPath = Path.Combine(BaseDirectoryProject, "appsettings.patch.json");
             
             // AddMemoryCache defaults in prop
-            SetDefaultExifToolPath();
+        }
+
+        /// <summary>
+        /// @see: https://tomasherceg.com/blog/post/azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
+        /// </summary>
+        private void CreateDefaultFolders()
+        {
+	        if(!Directory.Exists(BaseDirectoryProject)) Directory.CreateDirectory(BaseDirectoryProject);
+
+	        // Cache for thumbs
+	        if(!Directory.Exists(ThumbnailTempFolder)) Directory.CreateDirectory(ThumbnailTempFolder);
+
+	        // default location to store source images. you should change this
+	        if(!Directory.Exists(StorageFolder)) Directory.CreateDirectory(StorageFolder);
+
+	        // may be cleaned after restart (not implemented)
+	        if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
         }
 
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
@@ -83,8 +105,9 @@ namespace starsky.foundation.platform.Models
 				return new Regex("\\.0$").Replace(assemblyVersion, string.Empty);
 			}
 		}
+		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
-        // Can be used in the cli session to select files out of the file database system
+		// Can be used in the cli session to select files out of the file database system
         private string _storageFolder; // in old versions: basePath 
         public string StorageFolder
         {
@@ -168,7 +191,8 @@ namespace starsky.foundation.platform.Models
             get { return _databaseConnection; }
             set
             {
-                _databaseConnection = SqLiteFullPath(value,BaseDirectoryProject);
+	            var connection = ReplaceEnvironmentVariable(value);
+                _databaseConnection = SqLiteFullPath(connection, BaseDirectoryProject);
             }
         }
 
@@ -251,20 +275,45 @@ namespace starsky.foundation.platform.Models
             throw new ArgumentException("(StructureCheck) Structure is not confirm regex - " + structure);
         }
 
+        /// <summary>
+        /// Private: Location of storage of Thumbnails
+        /// </summary>
         private string _thumbnailTempFolder;
+        
+        /// <summary>
+        /// Location of storage of Thumbnails
+        /// </summary>
         public string ThumbnailTempFolder
         {
-            get => _thumbnailTempFolder;
-	        set => _thumbnailTempFolder = PathHelper.AddBackslash(value);
+	        get => _thumbnailTempFolder;
+	        set
+	        {
+		        var thumbnailTempFolder = ReplaceEnvironmentVariable(value);
+		        _thumbnailTempFolder = PathHelper.AddBackslash(thumbnailTempFolder);
+	        }
         }
         
+        /// <summary>
+        /// Private: Location of temp folder
+        /// </summary>
         private string _tempFolder;
+
+        /// <summary>
+        /// Location of temp folder
+        /// </summary>
         public string TempFolder
         {
-            get => AssemblyDirectoryReplacer(_tempFolder);
-	        set => _tempFolder = PathHelper.AddBackslash(value);
+	        get => AssemblyDirectoryReplacer(_tempFolder);
+	        set
+	        {
+		        var tempFolder = ReplaceEnvironmentVariable(value);
+		        _tempFolder = PathHelper.AddBackslash(tempFolder);
+	        }
         }
 
+        /// <summary>
+        /// Private: Location of AppSettings Path
+        /// </summary>
         private string _appSettingsPathPrivate;
         
         /// <summary>
@@ -278,30 +327,34 @@ namespace starsky.foundation.platform.Models
 	        set => _appSettingsPathPrivate = value; // set by ctor
         }
         
-        
         /// <summary>
         /// Is the host of the Application Windows
         /// </summary>
         public bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
         /// <summary>
-        /// Set the default location to ExifTool
-        /// Run in the ctor of AppSettings
+        /// Private Location of ExifTool.exe
         /// </summary>
-        private void SetDefaultExifToolPath()
-        {
-	        // ReSharper disable StringLiteralTypo
-	        if (IsWindows && string.IsNullOrEmpty(ExifToolPath)  )
+        private string ExifToolPathPrivate { get; set; }
+        
+        /// <summary>
+        /// Location of ExifTool.exe
+        /// </summary>
+        public string ExifToolPath {
+	        get
 	        {
-		        ExifToolPath = Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
+		        if (IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate)  )
+		        {
+			        return Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
+		        }
+		        if (!IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate) )
+		        {
+			         return Path.Combine(TempFolder, "exiftool-unix", "exiftool");
+		        }
+		        return ExifToolPathPrivate;
 	        }
-	        else if (!IsWindows && string.IsNullOrEmpty(ExifToolPath) )
-	        {
-		        ExifToolPath = Path.Combine(TempFolder, "exiftool-unix", "exiftool");
-	        }
-	        // ReSharper restore StringLiteralTypo
+	        set => ExifToolPathPrivate = value;
         }
-        public string ExifToolPath { get; set; }
         
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
@@ -549,6 +602,18 @@ namespace starsky.foundation.platform.Models
                 return fileExist;
             }
             return Directory.Exists(filepath) ? filepath : null;
+        }
+
+        /// <summary>
+        /// Used to reference other environment variables in the config
+        /// </summary>
+        /// <param name="input">the input, the env should start with a $</param>
+        /// <returns>the value or the input when nothing is found</returns>
+        internal string ReplaceEnvironmentVariable(string input)
+        {
+	        if ( string.IsNullOrEmpty(input) || !input.StartsWith("$") ) return input;
+	        var value = Environment.GetEnvironmentVariable(input.Remove(0, 1));
+	        return string.IsNullOrEmpty(value) ? input : value;
         }
 
         /// <summary>

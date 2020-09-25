@@ -12,8 +12,9 @@ namespace starsky
 
 		private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseKestrel(options =>
+				.ConfigureKestrel((_, options) =>
 				{
+					// instead of UseKestrel @see: https://stackoverflow.com/a/55926191
 					options.Limits.MaxRequestLineSize = 65536; //64Kb
 					// AddServerHeader removes the header: Server: Kestrel
 					options.AddServerHeader = false;

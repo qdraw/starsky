@@ -80,7 +80,7 @@ namespace starsky.foundation.database.Import
 		public List<ImportIndexItem> History()
 		{
 			var dbContext = new InjectServiceScope( _scopeFactory).Context();
-			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.Today).ToList();
+			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 

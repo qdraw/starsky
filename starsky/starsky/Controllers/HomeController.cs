@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Antiforgery;
+using starsky.foundation.platform.Models;
 using starsky.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -15,10 +16,10 @@ namespace starsky.Controllers
 		private readonly string  _clientApp;
 		private readonly IAntiforgery _antiForgery;
 
-		public HomeController(IAntiforgery antiForgery)
+		public HomeController(AppSettings appSettings, IAntiforgery antiForgery)
 		{
 			_antiForgery = antiForgery;
-			_clientApp = Path.Combine(Directory.GetCurrentDirectory(),
+			_clientApp = Path.Combine(appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
 		}
 

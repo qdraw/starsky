@@ -13,11 +13,11 @@ using TimeZoneConverter;
 namespace starskytest.starsky.foundation.platform.Models
 {
 	[TestClass]
-	public class AppSettingsProviderTest
+	public class AppSettingsTest
 	{
 		private readonly AppSettings _appSettings;
 
-		public AppSettingsProviderTest()
+		public AppSettingsTest()
 		{
 			// Add a dependency injection feature
 			var services = new ServiceCollection();
@@ -59,7 +59,36 @@ namespace starskytest.starsky.foundation.platform.Models
 			Assert.AreEqual(true, dataSource.Contains("data.db") );
 			Assert.AreEqual(true, dataSource.Contains("Data Source="));
 		}
+		
+		[TestMethod]
+		public void ReplaceEnvironmentVariable_Nothing()
+		{
+			var value = _appSettings.ReplaceEnvironmentVariable(string.Empty);
+			Assert.AreEqual(string.Empty, value);
+		}
 
+		[TestMethod]
+		public void ReplaceEnvironmentVariable_SomethingThatShouldBeIgnored()
+		{
+			var value = _appSettings.ReplaceEnvironmentVariable("/test");
+			Assert.AreEqual("/test", value);
+		}
+
+		[TestMethod]
+		public void ReplaceEnvironmentVariable_Non_Existing_EnvVariable()
+		{
+			var value = _appSettings.ReplaceEnvironmentVariable("$sdhfdskfbndsfjb38");
+			Assert.AreEqual("$sdhfdskfbndsfjb38", value);
+		}
+		
+		[TestMethod]
+		public void ReplaceEnvironmentVariable_Existing_EnvVariable()
+		{
+			Environment.SetEnvironmentVariable("test123456789","123456789");
+			// should start with a dollar sign
+			var value = _appSettings.ReplaceEnvironmentVariable("$test123456789");
+			Assert.AreEqual("123456789", value);
+		}
 
 		[TestMethod]
 		public void AppSettingsProviderTest_SqLiteFullPathStarskyCliTest()
@@ -253,6 +282,20 @@ namespace starskytest.starsky.foundation.platform.Models
 		{
 			var appSettings = new AppSettings {PublishProfiles = null};
 			Assert.AreEqual(0, appSettings.PublishProfiles.Count );
+		}
+
+		[TestMethod]
+		public void AppVersionBuildDateTime()
+		{
+			var appVersionBuildDateTime = new AppSettings().AppVersionBuildDateTime;
+			Assert.IsNotNull(appVersionBuildDateTime);
+		}
+		
+		[TestMethod]
+		public void AppVersion()
+		{
+			var appVersionBuildDateTime = new AppSettings().AppVersion;
+			Assert.IsNotNull(appVersionBuildDateTime);
 		}
 	}
 }

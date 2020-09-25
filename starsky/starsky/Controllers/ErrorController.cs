@@ -1,5 +1,6 @@
 using System.IO;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.platform.Models;
 
 namespace starsky.Controllers
 {
@@ -7,9 +8,9 @@ namespace starsky.Controllers
 	{
 		private readonly string  _clientApp;
 
-		public ErrorController()
+		public ErrorController(AppSettings appSettings)
 		{
-			_clientApp = Path.Combine(Directory.GetCurrentDirectory(),
+			_clientApp = Path.Combine(appSettings.BaseDirectoryProject,
 				"clientapp", "build", "index.html");
 		}
 		
