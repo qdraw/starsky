@@ -480,6 +480,8 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool UseHttpsRedirection { get; set; } = false;
 
+	    public bool UseRealtime { get; set; }
+
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------

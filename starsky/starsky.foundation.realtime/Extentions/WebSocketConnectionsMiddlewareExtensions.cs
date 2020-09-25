@@ -8,14 +8,24 @@ namespace starsky.foundation.realtime.Extentions
 {
 	public static class WebSocketConnectionsMiddlewareExtensions
 	{
-		public static IApplicationBuilder MapWebSocketConnections(this IApplicationBuilder app, PathString pathMatch, WebSocketConnectionsOptions options)
+		public static IApplicationBuilder MapWebSocketConnections(this IApplicationBuilder app, 
+			PathString pathMatch, WebSocketConnectionsOptions options, 
+			bool featureToggleEnabled = true)
 		{
 			if (app == null)
 			{
 				throw new ArgumentNullException(nameof(app));
 			}
 
-			return app.Map(pathMatch, branchedApp => branchedApp.UseMiddleware<WebSocketConnectionsMiddleware>(options));
+			return app.Map(pathMatch, branchedApp =>
+			{
+				if ( featureToggleEnabled )
+				{
+					branchedApp.UseMiddleware<WebSocketConnectionsMiddleware>(options);
+					return;
+				}
+				branchedApp.UseMiddleware<DisabledWebSocketsMiddleware>();
+			});
 		}
 	}
 }

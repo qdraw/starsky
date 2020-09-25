@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +12,8 @@ namespace starsky.foundation.realtime.Services
 	public class HeartbeatService : IHostedService
 	{
 		#region Fields
-		private const string HEARTBEAT_MESSAGE = "Demo.AspNetCore.WebSockets Heartbeat";
+		private const string InsertDateToken = "INSERT_DATE";
+		private const string HeartbeatMessage = "{ \"time\": \"" + InsertDateToken + "\"} ";
 
 		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
 
@@ -52,9 +54,10 @@ namespace starsky.foundation.realtime.Services
 		{
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				await _webSocketConnectionsService.SendToAllAsync(HEARTBEAT_MESSAGE, cancellationToken);
+				await _webSocketConnectionsService.SendToAllAsync(HeartbeatMessage.Replace(InsertDateToken, 
+					DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)), cancellationToken);
 
-				await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+				await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
 			}
 		}
 		#endregion
