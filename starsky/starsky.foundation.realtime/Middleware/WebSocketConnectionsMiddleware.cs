@@ -17,7 +17,7 @@ namespace starsky.foundation.realtime.Middleware
         #endregion
 
         #region Constructor
-        public WebSocketConnectionsMiddleware(RequestDelegate next, WebSocketConnectionsOptions options, 
+        public WebSocketConnectionsMiddleware(RequestDelegate _, WebSocketConnectionsOptions options, 
 	        IWebSocketConnectionsService connectionsService)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));

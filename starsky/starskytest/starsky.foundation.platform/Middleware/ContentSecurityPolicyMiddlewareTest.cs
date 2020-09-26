@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		public async Task MiddlewareExtensionsTest_CSPBasicSetupTest()
 		{
 			var host = WebHost.CreateDefaultBuilder()
-				.UseUrls("http://localhost:5050")
+				.UseUrls("http://localhost:5051")
 				.Configure(app =>
 				{
 					app.UseContentSecurityPolicy();

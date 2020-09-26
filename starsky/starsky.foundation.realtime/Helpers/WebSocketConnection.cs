@@ -25,11 +25,10 @@ namespace starsky.foundation.realtime.Helpers
 		#region Events
 		public event EventHandler<string> ReceiveText;
 
-		public event EventHandler<byte[]> ReceiveBinary;
 		#endregion
 
 		#region Constructor
-		public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize)
+		public WebSocketConnection(WebSocket webSocket, int receivePayloadBufferSize = 4096)
 		{
 			_webSocket = webSocket ?? throw new ArgumentNullException(nameof(webSocket));
 			_receivePayloadBufferSize = receivePayloadBufferSize;
