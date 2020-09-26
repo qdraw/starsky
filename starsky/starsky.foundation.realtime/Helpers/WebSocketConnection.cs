@@ -51,7 +51,7 @@ namespace starsky.foundation.realtime.Helpers
 
 					WebSocketReceiveResult result;
 
-					var receivedMessage = "";
+					var receivedMessageStringBuilder = new StringBuilder();
 					var message = new ArraySegment<byte>(new byte[4096]);
 					do
 					{
@@ -61,10 +61,11 @@ namespace starsky.foundation.realtime.Helpers
 							break;
 						// skip the offset of the message and check the length
 						var messageBytes = message.Skip(message.Offset).Take(result.Count).ToArray();
-						receivedMessage += Encoding.UTF8.GetString(messageBytes);
+						receivedMessageStringBuilder.Append(Encoding.UTF8.GetString(messageBytes));
 					} 
 					while ( !result.EndOfMessage );
 
+					var receivedMessage = receivedMessageStringBuilder.ToString();
 					if ( receivedMessage == "{}" || string.IsNullOrEmpty(receivedMessage) )
 						continue;
 

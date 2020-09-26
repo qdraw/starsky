@@ -12,8 +12,8 @@ namespace starsky.foundation.realtime.Middleware
 	public class WebSocketConnectionsMiddleware
 	{
 		#region Fields
-		private WebSocketConnectionsOptions _options;
-		private IWebSocketConnectionsService _connectionsService;
+		private readonly WebSocketConnectionsOptions _options;
+		private readonly IWebSocketConnectionsService _connectionsService;
 		#endregion
 
 		#region Constructor
