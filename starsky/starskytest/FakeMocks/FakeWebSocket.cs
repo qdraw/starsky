@@ -22,10 +22,11 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
-		public override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription,
+#pragma warning disable 1998
+		public async override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription,
+#pragma warning restore 1998
 			CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
 		}
 
 		public override void Dispose()
