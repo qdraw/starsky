@@ -6,8 +6,6 @@ namespace starsky.foundation.realtime.Model
 	{
 		public HashSet<string> AllowedOrigins { get; set; }
 
-		public int? SendSegmentSize { get; set; }
-
 		public int ReceivePayloadBufferSize { get; set; }
 
 		public WebSocketConnectionsOptions()
