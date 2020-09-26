@@ -482,7 +482,8 @@ namespace starsky.foundation.platform.Models
 
 	    /// <summary>
 	    /// Use WebSockets to update the UI realtime
-	    /// Its now disabled by default, but this will change in a future version
+	    ///                     Its now disabled by default,
+	    ///                            but this will change in a future version
 	    /// </summary>
 	    public bool UseRealtime { get; set; } = false;
 
