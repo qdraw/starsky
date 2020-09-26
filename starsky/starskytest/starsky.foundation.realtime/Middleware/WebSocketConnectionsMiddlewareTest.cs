@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
@@ -48,9 +49,16 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		
 		private class FakeWebSocketHttpContext : HttpContext
 		{
-			public FakeWebSocketHttpContext(bool isWebSocketRequest)
+			public FakeWebSocketHttpContext(bool userLoggedIn = true)
 			{
-				WebSockets = new FakeWebSocketManager(isWebSocketRequest);
+				WebSockets = new FakeWebSocketManager(true);
+				if ( userLoggedIn )
+				{
+					User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+					return;
+				}
+				User = new ClaimsPrincipal(new ClaimsIdentity());
+				Response = new DefaultHttpContext().Response;
 			}
 			public override void Abort() { }
 			public override ConnectionInfo Connection { get; }
@@ -62,7 +70,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			public override HttpResponse Response { get; }
 			public override ISession Session { get; set; }
 			public override string TraceIdentifier { get; set; }
-			public override ClaimsPrincipal User { get; set; } = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+			public override ClaimsPrincipal User { get; set; }
 			public override WebSocketManager WebSockets { get; }
 		}
 		private class FakeWebSocketManager : WebSocketManager
@@ -71,9 +79,14 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			{
 				IsWebSocketRequest = isWebSocketRequest;
 			}
+			public WebSocket FakeWebSocket { get; set; } = new FakeWebSocket();
+			
+#pragma warning disable 1998
+			// ReSharper disable once ArrangeModifiersOrder
 			public async override Task<WebSocket> AcceptWebSocketAsync(string subProtocol)
+#pragma warning restore 1998
 			{
-				return new FakeWebSocket();
+				return FakeWebSocket;
 			}
 
 			public override bool IsWebSocketRequest { get; }
@@ -83,13 +96,46 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		[TestMethod]
 		public async Task WebSocketConnection()
 		{
-			var httpContext = new FakeWebSocketHttpContext(true);
+			var httpContext = new FakeWebSocketHttpContext();
 
 			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
 				new WebSocketConnectionsOptions(), new WebSocketConnectionsService());
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 
-			Assert.IsNull(httpContext.Response);
+			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+			
+			Assert.AreEqual(WebSocketCloseStatus.NormalClosure, 
+				(socketManager.FakeWebSocket as FakeWebSocket).FakeCloseOutputAsync.LastOrDefault());
+		}
+		
+		[TestMethod]
+		public async Task WebSocketConnection_UserNotLoggedIn()
+		{
+			var httpContext = new FakeWebSocketHttpContext(false);
+
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+				new WebSocketConnectionsOptions(), new WebSocketConnectionsService());
+			await disabledWebSocketsMiddleware.Invoke(httpContext);
+			
+			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+			Assert.AreEqual(WebSocketCloseStatus.PolicyViolation, 
+				(socketManager.FakeWebSocket as FakeWebSocket).FakeCloseOutputAsync.LastOrDefault());
+		}
+
+		[TestMethod]
+		public async Task WebSocketConnectionValidateOrigin()
+		{
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Headers["Origin"] = "fake";
+			
+			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
+				new WebSocketConnectionsOptions
+				{
+					AllowedOrigins = new HashSet<string>{"google"}
+				}, new WebSocketConnectionsService());
+			await disabledWebSocketsMiddleware.Invoke(httpContext);
+
+			Assert.AreEqual(403,httpContext.Response.StatusCode);
 		}
 
 	}
