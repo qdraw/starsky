@@ -33,9 +33,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.3 _(Unreleased)_  2020-09-??
+# version 0.3.3 _(Unreleased)_  2020-10-??
 - [x]   (Fixed) _Back-end_ Allow web app to run outside current folder
 - [x]   (Fixed) _Back-end_ Allow linking existing env variables to make configuration easier
+- [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
