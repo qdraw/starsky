@@ -55,23 +55,21 @@ namespace starsky.foundation.realtime.Helpers
 					var message = new ArraySegment<byte>(new byte[4096]);
 					do
 					{
-						Console.WriteLine(webSocketReceiveResult.MessageType == WebSocketMessageType.Close);
-
+						// Check again to get the content of the buffer
 						result = await _webSocket.ReceiveAsync(message, CancellationToken.None);
 						if ( result.MessageType != WebSocketMessageType.Text )
 							break;
-						var messageBytes =
-							message.Skip(message.Offset).Take(result.Count).ToArray();
+						// skip the offset of the message and check the lenght
+						var messageBytes = message.Skip(message.Offset).Take(result.Count).ToArray();
 						receivedMessage += Encoding.UTF8.GetString(messageBytes);
-				        
 					} 
 					while ( !result.EndOfMessage );
 
 					if ( receivedMessage == "{}" || string.IsNullOrEmpty(receivedMessage) )
 						continue;
 
+					// there is a public EventHandler
 					OnReceiveText(receivedMessage);
-					Console.WriteLine("Received: {0}", receivedMessage);
 				}
 
 			}
