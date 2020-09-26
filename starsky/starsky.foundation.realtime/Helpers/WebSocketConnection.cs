@@ -17,9 +17,9 @@ namespace starsky.foundation.realtime.Helpers
 		#region Properties
 		public Guid Id { get; } = Guid.NewGuid();
 
-		public WebSocketCloseStatus? CloseStatus { get; private set; } = null;
+		public WebSocketCloseStatus? CloseStatus { get; private set; }
 
-		public string CloseStatusDescription { get; private set; } = null;
+		public string CloseStatusDescription { get; private set; }
 		#endregion
 
 		#region Events
@@ -51,7 +51,7 @@ namespace starsky.foundation.realtime.Helpers
 
 					WebSocketReceiveResult result;
 
-					string receivedMessage = "";
+					var receivedMessage = "";
 					var message = new ArraySegment<byte>(new byte[4096]);
 					do
 					{
@@ -59,7 +59,7 @@ namespace starsky.foundation.realtime.Helpers
 						result = await _webSocket.ReceiveAsync(message, CancellationToken.None);
 						if ( result.MessageType != WebSocketMessageType.Text )
 							break;
-						// skip the offset of the message and check the lenght
+						// skip the offset of the message and check the length
 						var messageBytes = message.Skip(message.Offset).Take(result.Count).ToArray();
 						receivedMessage += Encoding.UTF8.GetString(messageBytes);
 					} 
@@ -79,7 +79,7 @@ namespace starsky.foundation.realtime.Helpers
 				return WebSocketCloseStatus.NormalClosure;
 			}
 
-			return webSocketReceiveResult?.CloseStatus;
+			return webSocketReceiveResult.CloseStatus;
 		}
 
 		public async Task ReceiveMessagesUntilCloseAsync()
@@ -94,7 +94,7 @@ namespace starsky.foundation.realtime.Helpers
 				CloseStatus = await GetMessage(webSocketReceiveResult);
 				CloseStatusDescription = webSocketReceiveResult.CloseStatusDescription;
 			}
-			catch ( WebSocketException wsex ) when ( wsex.WebSocketErrorCode ==
+			catch ( WebSocketException webSocketException ) when ( webSocketException.WebSocketErrorCode ==
 			                                         WebSocketError.ConnectionClosedPrematurely )
 			{
 				Console.WriteLine("connection ConnectionClosedPrematurely");

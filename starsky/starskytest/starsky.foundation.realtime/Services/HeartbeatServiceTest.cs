@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Services;
 using starskytest.FakeMocks;
 

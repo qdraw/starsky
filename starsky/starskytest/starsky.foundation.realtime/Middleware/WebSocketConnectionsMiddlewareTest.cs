@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullOptions()
 		{
-			new WebSocketConnectionsMiddleware(null,
+			var _ = new WebSocketConnectionsMiddleware(null,
 				null, new WebSocketConnectionsService());
 			// expect exception
 		}
@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void NullService()
 		{
-			new WebSocketConnectionsMiddleware(null,
+			var _ = new WebSocketConnectionsMiddleware(null,
 				new WebSocketConnectionsOptions(), null);
 			// expect exception
 		}
@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			public override HttpResponse Response { get; }
 			public override ISession Session { get; set; }
 			public override string TraceIdentifier { get; set; }
-			public override ClaimsPrincipal User { get; set; }
+			public sealed override ClaimsPrincipal User { get; set; }
 			public override WebSocketManager WebSockets { get; }
 		}
 		private class FakeWebSocketManager : WebSocketManager
@@ -103,9 +103,12 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+
+			if ( !( socketManager?.FakeWebSocket is FakeWebSocket ) ) throw new  NullReferenceException(nameof(socketManager));
 			
-			Assert.AreEqual(WebSocketCloseStatus.NormalClosure, 
-				(socketManager.FakeWebSocket as FakeWebSocket).FakeCloseOutputAsync.LastOrDefault());
+			Assert.AreEqual(WebSocketCloseStatus.NormalClosure,
+				( socketManager.FakeWebSocket as FakeWebSocket ).FakeCloseOutputAsync
+				.LastOrDefault());
 		}
 		
 		[TestMethod]
