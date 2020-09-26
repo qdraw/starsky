@@ -480,7 +480,11 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool UseHttpsRedirection { get; set; } = false;
 
-	    public bool UseRealtime { get; set; }
+	    /// <summary>
+	    /// Use WebSockets to update the UI realtime
+	    /// Its now disabled by default, but this will change in a future version
+	    /// </summary>
+	    public bool UseRealtime { get; set; } = false;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
