@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.realtime.Helpers;
@@ -18,9 +19,13 @@ namespace starskytest.FakeMocks
 			throw new NotImplementedException();
 		}
 
-		public Task SendToAllAsync(string message, CancellationToken cancellationToken)
+		public List<string> FakeSendToAllAsync { get; set; } = new List<string>();
+		
+#pragma warning disable 1998
+		public async Task SendToAllAsync(string message, CancellationToken cancellationToken)
+#pragma warning restore 1998
 		{
-			throw new NotImplementedException();
+			FakeSendToAllAsync.Add(message);
 		}
 	}
 }
