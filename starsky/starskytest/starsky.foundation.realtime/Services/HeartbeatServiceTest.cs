@@ -27,6 +27,21 @@ namespace starskytest.starsky.foundation.realtime.Services
 		}
 		
 		[TestMethod]
+		public async Task StartAsync_CancelBeforeStart()
+		{
+			var connectionService = new FakeIWebSocketConnectionsService();
+			var service = new HeartbeatService(connectionService);
+			
+			CancellationTokenSource source = new CancellationTokenSource();
+			CancellationToken token = source.Token;
+			
+			source.Cancel();
+			await service.StartAsync(token);
+			
+			Assert.AreEqual(0,connectionService.FakeSendToAllAsync.Count);
+		}
+		
+		[TestMethod]
 		public async Task StartAsyncStop()
 		{
 			var connectionService = new FakeIWebSocketConnectionsService();
