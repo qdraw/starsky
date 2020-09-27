@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.storage.Interfaces;
@@ -102,9 +103,14 @@ namespace starsky.foundation.storage.Storage
 			return imageFilesList;
 		}
 
+		/// <summary>
+		/// List of child directories ordered by name
+		/// </summary>
+		/// <param name="path">full path on disk</param>
+		/// <returns>list child directories in full paths style</returns>
 		public IEnumerable<string> GetDirectories(string path)
 		{
-			return Directory.GetDirectories(path);
+			return Directory.GetDirectories(path).OrderBy(p => p);
 		}
 
 		public IEnumerable<string> GetDirectoryRecursive(string path)
@@ -132,7 +138,7 @@ namespace starsky.foundation.storage.Storage
 					Console.WriteLine("UnauthorizedAccessException => " + e);
 				}
 			}
-			return folderList;
+			return folderList.OrderBy(p => p);
 		}
 
 		public Stream ReadStream(string path, int maxRead = -1)

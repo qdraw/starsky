@@ -145,8 +145,7 @@ namespace starsky.foundation.storage.Services
 			
 			// When a regex folder is matched
 			var childFolderName = 
-				PathHelper.PrefixDbSlash(
-			FilenamesHelper.GetFileName(matchingFoldersPath));
+				PathHelper.PrefixDbSlash(FilenamesHelper.GetFileName(matchingFoldersPath));
 			
 			parentFolderBuilder.Append(childFolderName);
 			return parentFolderBuilder;
