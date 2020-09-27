@@ -37,6 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Allow linking existing env variables to make configuration easier
 - [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates (start on issue #75)
 - [x]   (Added) _Back-end_ Importer asterisk does not always pick first item (fix issue #140)
+- [x]   (Added) _Back-end_ Health Details are logged without Json Exception in Application Insights
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
