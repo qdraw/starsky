@@ -16,7 +16,7 @@ namespace starskytest.Controllers
 	{
 		
 		[TestMethod]
-		public async Task HealthControllerTest_Details()
+		public async Task HealthControllerTest_Details_True()
 		{
 			var fakeHealthCheckService = new FakeHealthCheckService(true);
 			var controller = new HealthController(fakeHealthCheckService, new FakeTelemetryService())
@@ -29,6 +29,26 @@ namespace starskytest.Controllers
 
 			Assert.IsTrue(castedResult.IsHealthy);
 			Assert.IsTrue(castedResult.Entries.FirstOrDefault().IsHealthy);
+			Assert.AreEqual("test", castedResult.Entries.FirstOrDefault().Name );
+			Assert.IsTrue(castedResult.Entries.FirstOrDefault().Duration == TimeSpan.Zero);
+			Assert.IsTrue(castedResult.Entries.Any());
+			Assert.IsTrue(castedResult.TotalDuration == TimeSpan.Zero);
+		}
+		
+		[TestMethod]
+		public async Task HealthControllerTest_Details_False()
+		{
+			var fakeHealthCheckService = new FakeHealthCheckService(false);
+			var controller = new HealthController(fakeHealthCheckService, new FakeTelemetryService())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var actionResult = await controller.Details() as JsonResult;
+			var castedResult = actionResult.Value as HealthView;
+
+			Assert.IsFalse(castedResult.IsHealthy);
+			Assert.IsFalse(castedResult.Entries.FirstOrDefault().IsHealthy);
 			Assert.AreEqual("test", castedResult.Entries.FirstOrDefault().Name );
 			Assert.IsTrue(castedResult.Entries.FirstOrDefault().Duration == TimeSpan.Zero);
 			Assert.IsTrue(castedResult.Entries.Any());
