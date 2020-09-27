@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.realtime.Interfaces;
 using starskycore.Services;
 
 namespace starsky.Controllers
@@ -17,14 +19,16 @@ namespace starsky.Controllers
 		private readonly IMetaUpdateService _metaUpdateService;
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
-			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue)
+			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, IWebSocketConnectionsService connectionsService)
 		{
 			_metaPreflight = metaPreflight;
 			_metaUpdateService = metaUpdateService;
 			_metaReplaceService = metaReplaceService;
 			_bgTaskQueue = queue;
+			_connectionsService = connectionsService;
 		}
 	    
 	    /// <summary>
@@ -59,9 +63,10 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				_metaUpdateService
+				var updated = _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
-						fileIndexResultsList, inputModel,collections, append, rotateClock);
+						fileIndexResultsList, inputModel, collections, append, rotateClock);
+				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
 			});
 			
             // When all items are not found
@@ -119,10 +124,11 @@ namespace starsky.Controllers
 						}
 					};
 					
-					_metaUpdateService
+					var updated = _metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
-					
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
+
 				}
 			});
 					

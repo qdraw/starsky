@@ -28,9 +28,10 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Extentions;
+using starsky.foundation.realtime.Model;
 using starsky.Health;
 using starsky.Helpers;
-using starskycore.Middleware;
 
 namespace starsky
 {
@@ -288,14 +289,10 @@ namespace starsky
 		        app.UseHttpsRedirection();
 	        }
 
-
-
             // Use the name of the application to use behind a reverse proxy
             app.UsePathBase( PathHelper.PrefixDbSlash("starsky") );
 
-#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseRouting();
-#endif
 
 	        new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 			
@@ -341,23 +338,14 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
 
-#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseAuthorization();
-#endif
-
-#if NETCOREAPP3_0 || NETCOREAPP3_1
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 			});
-#else
-	        app.UseMvc(routes =>
-					 {
-						 routes.MapRoute(
-							 name: "default",
-							 template: "{controller=Home}/{action=Index}/{id?}");
-					 });
-#endif
+			
+			if ( _appSettings.UseRealtime ) app.UseWebSockets();
+			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings.UseRealtime);
 
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
         }

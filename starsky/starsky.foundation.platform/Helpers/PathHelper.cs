@@ -98,17 +98,17 @@ namespace starsky.foundation.platform.Helpers
 	    /// <summary>
 	    /// Add / (always) before string
 	    /// </summary>
-	    /// <param name="thumbnailTempFolder">the subpath</param>
+	    /// <param name="subPath">the subpath</param>
 	    /// <returns>/subpath</returns>
-        public static string PrefixDbSlash(string thumbnailTempFolder) { 
+        public static string PrefixDbSlash(string subPath) { 
             // Add normal linux slash to beginning of the configuration
-            if (string.IsNullOrWhiteSpace(thumbnailTempFolder)) return "/";
+            if (string.IsNullOrWhiteSpace(subPath)) return "/";
             
-            if (thumbnailTempFolder.Substring(0,1) != "/")
+            if (subPath.Substring(0,1) != "/")
             {
-                thumbnailTempFolder = "/" + thumbnailTempFolder;
+                subPath = "/" + subPath;
             }
-            return thumbnailTempFolder;
+            return subPath;
         }
         
 	    /// <summary>

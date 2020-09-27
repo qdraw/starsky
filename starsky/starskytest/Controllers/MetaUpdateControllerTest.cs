@@ -39,12 +39,11 @@ namespace starskytest.Controllers
         private readonly AppSettings _appSettings;
         private readonly CreateAnImage _createAnImage;
         private readonly IBackgroundTaskQueue _bgTaskQueue;
-        private readonly ApplicationDbContext _context;
         private readonly IStorage _iStorage;
 
 	    public MetaUpdateControllerTest()
         {
-            var provider = new ServiceCollection()
+	        var provider = new ServiceCollection()
                 .AddMemoryCache()
                 .BuildServiceProvider();
             var memoryCache = provider.GetService<IMemoryCache>();
@@ -52,8 +51,8 @@ namespace starskytest.Controllers
             var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
             builderDb.UseInMemoryDatabase("test1234");
             var options = builderDb.Options;
-            _context = new ApplicationDbContext(options);
-            _query = new Query(_context,memoryCache);
+            var context = new ApplicationDbContext(options);
+            _query = new Query(context,memoryCache);
             
             // Inject Fake ExifTool; dependency injection
             var services = new ServiceCollection();
@@ -99,7 +98,7 @@ namespace starskytest.Controllers
 
         }
         
-        private FileIndexItem InsertSearchData(bool delete = false)
+        private void InsertSearchData(bool delete = false)
         {
             var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
@@ -116,7 +115,8 @@ namespace starskytest.Controllers
                     Tags = isDelete
                 });
             }
-            return _query.GetObjectByFilePath(_createAnImage.DbPath);
+
+            _query.GetObjectByFilePath(_createAnImage.DbPath);
         }
 
         [TestMethod]
@@ -131,7 +131,8 @@ namespace starskytest.Controllers
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
 		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
-	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue);
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
+		        new FakeIWebSocketConnectionsService());
 
 	        var input = new FileIndexItem
 	        {
@@ -139,9 +140,12 @@ namespace starskytest.Controllers
 	        };
 	        var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath,false,
 		        false) as JsonResult;
+	        if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
 	        var fileModel = jsonResult.Value as List<FileIndexItem>;
 	        //you could not test because exiftool is an external dependency
-	        Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
+
+	        if ( fileModel == null ) throw new NullReferenceException(nameof(fileModel));
+	        Assert.AreNotEqual(null,fileModel.FirstOrDefault()?.Tags);
         }
         
         [TestMethod]
@@ -160,7 +164,8 @@ namespace starskytest.Controllers
 		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
-	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue)
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
+		        new FakeIWebSocketConnectionsService())
 		        {
 			        ControllerContext = {HttpContext = new DefaultHttpContext()}
 		        };
@@ -168,6 +173,8 @@ namespace starskytest.Controllers
 	        var testElement = new FileIndexItem();
 	        var notFoundResult = await controller.UpdateAsync(testElement, "/345678765434567.jpg",
 		        false,false) as NotFoundObjectResult;
+	        if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
+
 	        Assert.AreEqual(404,notFoundResult.StatusCode);
 
 	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
@@ -189,13 +196,16 @@ namespace starskytest.Controllers
 		        metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
-	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue)
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
+		        new FakeIWebSocketConnectionsService())
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext()}
 	        };
 
 	        var notFoundResult = controller.Replace( "/345678765434567.jpg", "test", "search", 
-		        String.Empty, true) as NotFoundObjectResult;
+		        string.Empty) as NotFoundObjectResult;
+	        if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
+
 	        Assert.AreEqual(404,notFoundResult.StatusCode);
 
 	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
@@ -218,14 +228,17 @@ namespace starskytest.Controllers
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
 		        metaPreflight, new FakeConsoleWrapper());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
-	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue);
+	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
+		        new FakeIWebSocketConnectionsService());
 
 	        var jsonResult =  controller.Replace("/test09.jpg","Tags", "test", 
 		        string.Empty) as JsonResult;
+	        if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
 	        var fileModel = jsonResult.Value as List<FileIndexItem>;
+	        if ( fileModel == null ) throw new NullReferenceException(nameof(fileModel));
 
-	        Assert.AreNotEqual(null,fileModel.FirstOrDefault().Tags);
-	        Assert.AreEqual("7", fileModel.FirstOrDefault().Tags);
+	        Assert.AreNotEqual(null,fileModel.FirstOrDefault()?.Tags);
+	        Assert.AreEqual("7", fileModel.FirstOrDefault()?.Tags);
 
 	        _query.RemoveItem(item);
         }

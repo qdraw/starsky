@@ -21,10 +21,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Features todo (in random order)
 - [ ]   (Added) _Frond-end_  Search details show exact query behind modal
-- [ ]   (Added) _Frond-end_  Info Messages to show actions (e.g. pressed copy all fields shortcut )
 - [ ]   (Added) _Front-end_ Zoom in picture
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
-- [ ]   (Added) _Back-end_ Realtime Files API  __not implemented__
+- [ ]   (Added) _Back-end_ Realtime Files API (issue #75) __not implemented__
 
 # Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
@@ -33,9 +32,11 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.3 _(Unreleased)_  2020-09-??
+# version 0.3.3 _(Unreleased)_  2020-10-??
 - [x]   (Fixed) _Back-end_ Allow web app to run outside current folder
 - [x]   (Fixed) _Back-end_ Allow linking existing env variables to make configuration easier
+- [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates (start on issue #75)
+- [x]   (Added) _Back-end_ Importer asterisk does not always pick first item (fix issue #140)
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore

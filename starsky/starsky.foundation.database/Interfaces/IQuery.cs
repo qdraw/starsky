@@ -8,7 +8,6 @@ namespace starsky.foundation.database.Interfaces
 {
     public interface IQuery
     {
-
         List<FileIndexItem> GetAllFiles(string subPath);
         
         List<FileIndexItem> GetAllRecursive(string subPath = "");
