@@ -37,6 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Allow web app to run outside current folder
 - [x]   (Fixed) _Back-end_ Allow linking existing env variables to make configuration easier
 - [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates
+- [x]   (Added) _Back-end_ Importer asterisk does not always pick first item #140 
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
