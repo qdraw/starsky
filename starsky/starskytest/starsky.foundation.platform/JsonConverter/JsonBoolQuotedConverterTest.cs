@@ -29,7 +29,8 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		private class KeyExample
 		{
 			// ReSharper disable once UnassignedGetOnlyAutoProperty
-			public bool Key { get; }
+			// ReSharper disable once UnusedAutoPropertyAccessor.Local
+			public bool Key { get; set; }
 		}
 		
 		[TestMethod]
