@@ -66,7 +66,7 @@ namespace starsky.Controllers
 				var updated = _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
-				_connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
+				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
 			});
 			
             // When all items are not found
@@ -124,10 +124,11 @@ namespace starsky.Controllers
 						}
 					};
 					
-					_metaUpdateService
+					var updated = _metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
-					
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
+
 				}
 			});
 					
