@@ -16,29 +16,29 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		[TestMethod]
 		public void TimeSpanSerializationTest()
 		{
-			string Json = JsonSerializer.Serialize(
+			var json = JsonSerializer.Serialize(
 				new TestClass
 				{
 					TimeSpan = new TimeSpan(1, 2, 3)
 				});
 
-			Assert.AreEqual(@"{""TimeSpan"":""01:02:03""}", Json);
+			Assert.AreEqual(@"{""TimeSpan"":""01:02:03""}", json);
 		}
 
 		[TestMethod]
 		public void NullableTimeSpanSerializationTest()
 		{
-			string Json = JsonSerializer.Serialize(
+			var json = JsonSerializer.Serialize(
 				new NullableTestClass
 				{
 					TimeSpan = new TimeSpan(1, 2, 3)
 				});
 
-			Assert.AreEqual(@"{""TimeSpan"":""01:02:03""}", Json);
+			Assert.AreEqual(@"{""TimeSpan"":""01:02:03""}", json);
 
-			Json = JsonSerializer.Serialize(new NullableTestClass());
+			json = JsonSerializer.Serialize(new NullableTestClass());
 
-			Assert.AreEqual(@"{""TimeSpan"":null}", Json);
+			Assert.AreEqual(@"{""TimeSpan"":null}", json);
 		}
 
 		[TestMethod]
@@ -47,24 +47,25 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 			JsonSerializerOptions options = new JsonSerializerOptions();
 			options.Converters.Add(new JsonTimeSpanConverter());
 
-			string Json = JsonSerializer.Serialize(new TimeSpan(1, 2, 3), options);
+			string json = JsonSerializer.Serialize(new TimeSpan(1, 2, 3), options);
 
-			Assert.AreEqual(@"""01:02:03""", Json);
+			Assert.AreEqual(@"""01:02:03""", json);
 
-			TimeSpan? NullableTimeSpan = null;
+			TimeSpan? nullableTimeSpan = null;
 
-			Json = JsonSerializer.Serialize(NullableTimeSpan, options);
+			// ReSharper disable once ExpressionIsAlwaysNull
+			json = JsonSerializer.Serialize(nullableTimeSpan, options);
 
-			Assert.AreEqual(@"null", Json);
+			Assert.AreEqual(@"null", json);
 		}
 
 		[TestMethod]
 		public void TimeSpanDeserializationTest()
 		{
-			TestClass Actual = JsonSerializer.Deserialize<TestClass>(@"{""TimeSpan"":""01:02:03""}");
+			var actual = JsonSerializer.Deserialize<TestClass>(@"{""TimeSpan"":""01:02:03""}");
 
-			Assert.IsNotNull(Actual);
-			Assert.AreEqual(new TimeSpan(1, 2, 3), Actual.TimeSpan);
+			Assert.IsNotNull(actual);
+			Assert.AreEqual(new TimeSpan(1, 2, 3), actual.TimeSpan);
 		}
 
 		[ExpectedException(typeof(JsonException))]
@@ -75,17 +76,17 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		[TestMethod]
 		public void NullableTimeSpanDeserializationTest()
 		{
-			NullableTestClass Actual = JsonSerializer.Deserialize<
+			NullableTestClass actual = JsonSerializer.Deserialize<
 				NullableTestClass>(@"{""TimeSpan"":""01:02:03""}");
 
-			Assert.IsNotNull(Actual);
-			Assert.IsTrue(Actual.TimeSpan.HasValue);
-			Assert.AreEqual(new TimeSpan(1, 2, 3), Actual.TimeSpan);
+			Assert.IsNotNull(actual);
+			Assert.IsTrue(actual.TimeSpan.HasValue);
+			Assert.AreEqual(new TimeSpan(1, 2, 3), actual.TimeSpan);
 
-			Actual = JsonSerializer.Deserialize<NullableTestClass>(@"{""TimeSpan"":null}");
+			actual = JsonSerializer.Deserialize<NullableTestClass>(@"{""TimeSpan"":null}");
 
-			Assert.IsNotNull(Actual);
-			Assert.IsFalse(Actual.TimeSpan.HasValue);
+			Assert.IsNotNull(actual);
+			Assert.IsFalse(actual.TimeSpan.HasValue);
 		}
 
 		[TestMethod]
@@ -94,14 +95,14 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 			JsonSerializerOptions options = new JsonSerializerOptions();
 			options.Converters.Add(new JsonTimeSpanConverter());
 
-			TimeSpan? Actual = JsonSerializer.Deserialize<TimeSpan>(@"""01:02:03""", options);
+			TimeSpan? actual = JsonSerializer.Deserialize<TimeSpan>(@"""01:02:03""", options);
 
-			Assert.IsTrue(Actual.HasValue);
-			Assert.AreEqual(new TimeSpan(1, 2, 3), Actual);
+			Assert.IsTrue(actual.HasValue);
+			Assert.AreEqual(new TimeSpan(1, 2, 3), actual);
 
-			Actual = JsonSerializer.Deserialize<TimeSpan?>(@"null", options);
+			actual = JsonSerializer.Deserialize<TimeSpan?>(@"null", options);
 
-			Assert.IsFalse(Actual.HasValue);
+			Assert.IsFalse(actual.HasValue);
 		}
 
 		[ExpectedException(typeof(JsonException))]
