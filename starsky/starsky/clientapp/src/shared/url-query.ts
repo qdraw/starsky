@@ -75,7 +75,7 @@ export class UrlQuery {
   }
 
   public UrlAccountRegister(): string {
-    return `${this.prefix}/account/register?json=true`;
+    return `${this.prefix}/account/register`;
   }
 
   public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {

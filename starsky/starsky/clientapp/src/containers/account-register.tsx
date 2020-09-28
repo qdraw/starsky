@@ -33,6 +33,7 @@ const AccountRegister: FunctionComponent = () => {
     "This request was rejected because the security requirements were not met  (Error 400)");
   const MessageRegistrationTurnedOff = language.text("Registratie is uitgezet",
     "Registration is turned off");
+  const MessageSignInInstead = language.text("In plaats daarvan inloggen", "Sign in instead");
 
   const MessageLegalCreateAccountHtml = language.text(`Door het creëren van een account gaat u akkoord met de
    <a href="/legal/toc.nl.html">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
@@ -169,6 +170,9 @@ const AccountRegister: FunctionComponent = () => {
         <ButtonStyled className="btn btn--default" type="submit" disabled={loading || !isFormEnabled} onClick={e => { }}>
           {loading ? "Loading..." : MessageCreateNewAccount}
         </ButtonStyled>
+        <a className="alternative" href={new UrlQuery().UrlLoginPage()}>
+          {MessageSignInInstead}
+        </a>
       </form>
     </div>
   </>)
