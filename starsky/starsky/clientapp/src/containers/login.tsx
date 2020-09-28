@@ -41,6 +41,7 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageExampleUsername = "dont@mail.me";
   const MessageLogin = language.text("Inloggen", "Login");
   const MessageLogout = language.text("Uitloggen", "Logout");
+  const MessageCreateAccount = language.text("Account maken", "Create account");
 
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
@@ -143,6 +144,9 @@ const Login: React.FC<ILoginProps> = () => {
               <ButtonStyled className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
                 {loading ? "Loading..." : MessageLogin}
               </ButtonStyled>
+              <a className="alternative" href={new UrlQuery().UrlAccountRegister()}>
+                {MessageCreateAccount}
+              </a>
             </form>
           </div>
         </>

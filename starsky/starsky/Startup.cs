@@ -4,7 +4,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Authentication;
@@ -132,10 +134,10 @@ namespace starsky
                         options.Cookie.HttpOnly = true;
                         options.Cookie.IsEssential = true;
                         options.Cookie.Path = "/";
-                        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax; // allow links from non-domain sites
+                        options.Cookie.SameSite = SameSiteMode.Lax; // allow links from non-domain sites
                         options.LoginPath = "/account/login";
                         options.LogoutPath = "/account/logout";
-                        options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
+                        options.Events.OnRedirectToLogin = ReplaceReDirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                     }
                 );
             
@@ -145,7 +147,7 @@ namespace starsky
                 {
                     options.Cookie.Name = "_af";
                     options.Cookie.HttpOnly = true; // only used by .NET, there is a separate method to generate a X-XSRF-TOKEN cookie
-                    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                    options.Cookie.SameSite = SameSiteMode.Lax;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                     options.Cookie.Path = "/";
                     options.Cookie.IsEssential = true;
@@ -245,18 +247,19 @@ namespace starsky
         /// Does the current user get a redirect or 401 page
         /// </summary>
         /// <param name="statusCode">current status code</param>
-        /// <param name="existingRedirector">func of RedirectContext</param>
+        /// <param name="existingReDirector">func of RedirectContext</param>
         /// <returns></returns>
-        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, 
-	        Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) => 
-	        context => 
+        private static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceReDirector(HttpStatusCode statusCode, 
+	        Func<RedirectContext<CookieAuthenticationOptions>, Task> existingReDirector) => context => 
 			{
 				if ( !context.Request.Path.StartsWithSegments("/api") )
-					return existingRedirector(context);
+					return existingReDirector(context);
 				context.Response.StatusCode = ( int ) statusCode;
-				// used to fetch in the process to catch
-				context.Response.Headers["X-Status"] = new StringValues((( int ) statusCode).ToString());
-				return Task.CompletedTask;
+				var jsonString = "{\"errors\": [{\"status\": \""+ (int) statusCode + "\" }]}";
+
+				context.Response.ContentType = "application/json";
+				var data = Encoding.UTF8.GetBytes(jsonString);
+				return context.Response.Body.WriteAsync(data,0, data.Length);
 			};
 
         /// <summary>
@@ -268,18 +271,10 @@ namespace starsky
         {
 	        app.UseResponseCompression();
 
-	        if ( env.IsDevelopment())
-	        {
-		        app.UseDeveloperExceptionPage();
-
-		        // Allow in dev to use localhost services
-		        app.UseCors("CorsDevelopment");
-	        }
-	        else
-	        {
-		        app.UseCors("CorsProduction");   
-		        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-	        }
+	        if ( env.IsDevelopment()) app.UseDeveloperExceptionPage();
+	        app.UseCors(env.IsDevelopment() ? "CorsDevelopment": "CorsProduction");
+	        // use ErrorController with Error
+	        app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
 
 	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        app.UseForwardedHeaders();

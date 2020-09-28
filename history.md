@@ -38,6 +38,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates (start on issue #75)
 - [x]   (Added) _Back-end_ Importer asterisk does not always pick first item (fix issue #140)
 - [x]   (Added) _Back-end_ Health Details are logged without Json Exception in Application Insights
+- [x]   (Added) _Front-end_ Add link to register page on login screen
+- [x]   (Added) _Front-end_ Add link to login page on register screen
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore

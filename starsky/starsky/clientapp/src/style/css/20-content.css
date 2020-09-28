@@ -173,8 +173,28 @@
   background-color: #78909C;
 }
 
+.content > .content--login-form > button {
+  margin-bottom: 8px;
+}
 
-.content > .content--login-form > button,
+.content > .content--login-form > .alternative {
+  margin-left: 15px;
+  font-size: 14px;
+  font-weight: normal;
+  color: #263238;
+  position: relative;
+  top:-3px;
+}
+
+@media screen and (max-width: 370px) {
+  .content > .content--login-form > .alternative {
+    display: block;
+    margin-top: 12px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }
+}
+
 .content > .content--login-form > label {
   display: block;
   margin-bottom: 8px;
@@ -189,6 +209,7 @@
 }
 
 .content .legal-text-row {
+  line-height: 1.3;
   margin-bottom: 15px;
 }
 .content .legal-text-row a{
