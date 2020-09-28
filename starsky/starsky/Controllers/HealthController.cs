@@ -43,14 +43,21 @@ namespace starsky.Controllers
 			if ( result.Status == HealthStatus.Healthy ) return Content(result.Status.ToString());
 
 			Response.StatusCode = 503;
-			_telemetryService.TrackException(
-				new TelemetryServiceException(JsonSerializer.Serialize(
-					result.Entries.Where(
-						p => p.Value.Status != HealthStatus.Healthy
-					)
-				))
-			);
+			PushNonHealthResultsToTelemetry(result);
 			return Content(result.Status.ToString());
+		}
+
+		/// <summary>
+		/// Push Non Healthy results to Telemetry Service
+		/// </summary>
+		/// <param name="result">report</param>
+		private void PushNonHealthResultsToTelemetry(HealthReport result)
+		{
+			if ( result.Status == HealthStatus.Healthy ) return;
+			var message = JsonSerializer.Serialize(CreateHealthEntryLog(result).Entries.Where(p => !p.IsHealthy));
+			_telemetryService.TrackException(
+				new TelemetryServiceException(message)
+			);
 		}
 
 		/// <summary>
@@ -70,21 +77,35 @@ namespace starsky.Controllers
 		public async Task<IActionResult> Details()
 		{
 			var result = await _service.CheckHealthAsync();
+			PushNonHealthResultsToTelemetry(result);
 
+			var health = CreateHealthEntryLog(result);
+			if ( !health.IsHealthy ) Response.StatusCode = 503;
+			
+			return Json(health);
+		}
+
+		private HealthView CreateHealthEntryLog(HealthReport result)
+		{
 			var health = new HealthView
 			{
 				IsHealthy = result.Status == HealthStatus.Healthy,
 				TotalDuration = result.TotalDuration
 			};
+			
 			foreach ( var (key, value) in result.Entries )
 			{
-				health.Entries.Add(new HealthEntry{Duration = value.Duration, Name = key, IsHealthy = value.Status == HealthStatus.Healthy});
+				health.Entries.Add(
+					new HealthEntry{
+							Duration = value.Duration, 
+							Name = key, 
+							IsHealthy = value.Status == HealthStatus.Healthy,
+							Description = value.Description + value.Exception?.Message + value.Exception?.StackTrace
+						}
+					);
 			}
-
-			if ( !health.IsHealthy ) Response.StatusCode = 503;
-			
-			return Json(health);
-		}	
+			return health;
+		}
 		
 				
 		/// <summary>
