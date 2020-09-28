@@ -16,7 +16,7 @@ namespace starsky.foundation.realtime.Middleware
 			if ( context.WebSockets.IsWebSocketRequest )
 			{
 				var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-				await webSocket.CloseOutputAsync(WebSocketCloseStatus.EndpointUnavailable, 
+				await webSocket.CloseOutputAsync(WebSocketCloseStatus.MessageTooBig, 
 					"Feature toggle disabled", CancellationToken.None);
 				return;
 			}

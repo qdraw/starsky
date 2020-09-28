@@ -12,8 +12,11 @@ namespace starsky.foundation.realtime.Services
 	public class HeartbeatService : IHostedService
 	{
 		#region Fields
-		private const string InsertDateToken = "INSERT_DATE";
-		private const string HeartbeatMessage = "{ \"time\": \"" + InsertDateToken + "\"} ";
+
+		private const int SpeedInSeconds = 30;
+		private const string InsertDateToken = "INSERT_DATE_TOKEN";
+		private const string SpeedInSecondsToken = "SPEED_TOKEN";
+		private const string HeartbeatMessage = "{ \"speed\": " + SpeedInSecondsToken + ",  \"time\": \"" + InsertDateToken + "\"} ";
 
 		private readonly IWebSocketConnectionsService _webSocketConnectionsService;
 
@@ -54,13 +57,10 @@ namespace starsky.foundation.realtime.Services
 		{
 			while (!cancellationToken.IsCancellationRequested)
 			{
-				await _webSocketConnectionsService.SendToAllAsync(HeartbeatMessage.Replace(InsertDateToken, 
-					DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)), cancellationToken);
-
-				var speed = 60;
-				if ( Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ) speed = 10;
-
-				await Task.Delay(TimeSpan.FromSeconds(speed), cancellationToken);
+				var message = HeartbeatMessage.Replace(SpeedInSecondsToken, SpeedInSeconds.ToString()).Replace(
+					InsertDateToken, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+				await _webSocketConnectionsService.SendToAllAsync(message, cancellationToken);
+				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}
 		#endregion

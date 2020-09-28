@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import { DifferenceInDate } from '../shared/date';
 import { WebSocketService } from '../shared/realtime/websocket-service';
 import { UrlQuery } from '../shared/url-query';
-import useInterval from './use-interval';
 
 export const useSocketsEventName = 'USE_SOCKETS';
 export const useSocketsMaxTry = 10;
@@ -16,17 +14,19 @@ const newWebSocketService = (): WebSocketService => {
   return new WebSocketService(new UrlQuery().UrlRealtime());
 }
 
-function parseMessage(data: string) {
-  var fileIndexItem: IFileIndexItem | undefined;
-
+function parseJson(data: string): any {
   try {
-    fileIndexItem = JSON.parse(data).data;
+    return JSON.parse(data);
   } catch (error) {
     console.log(error);
   }
-  if (!fileIndexItem) return;
-  console.log('update', fileIndexItem.filePath);
-  document.body.dispatchEvent(new CustomEvent(useSocketsEventName, { detail: fileIndexItem, bubbles: false }))
+}
+
+function parseMessage(item: string) {
+
+  if (!item) return;
+  console.log('update', item);
+  // document.body.dispatchEvent(new CustomEvent(useSocketsEventName, { detail: fileIndexItem, bubbles: false }))
 }
 
 
@@ -39,82 +39,81 @@ const useSockets = (): IUseSockets => {
 
   const ws = useRef({} as WebSocketService);
   const [socketConnected, setSocketConnected] = useState(false);
-  const [showSocketError, setShowSocketError] = useState(false);
+  // const [showSocketError, setShowSocketError] = useState(false);
 
   const [isEnabled, setIsEnabled] = useState(true);
 
-  const [pong, setPong] = useState(new Date());
+  const [keepAliveTime, setKeepAliveTime] = useState(new Date());
 
   // useState does not update in a sync way
-  const countRetry = useRef(0);
+  // const countRetry = useRef(0);
   // const [countRetry, setCountRetry] = useState(0);
 
-
-  function intervalCheck() {
+  function doIntervalCheck() {
     if (!ws.current) return;
     if (!isEnabled) return;
-    setShowSocketError(countRetry.current >= 1)
+    // setShowSocketError(countRetry.current >= 1)
 
-    if (DifferenceInDate(pong.getTime()) > 0.3) {
+    if (DifferenceInDate(keepAliveTime.getTime()) > 1.1) {
       console.log('[use-sockets] --retry sockets');
       setSocketConnected(false);
-      countRetry.current++;
+      // countRetry.current++;
       ws.current.close();
       ws.current = wsCurrentStart();
     }
-
   };
 
-  // ALSO UPDATE DIFF time
-  useInterval(intervalCheck, 15000);
-  // 15000 milliseconds = 0.25 minutes
+  // // ALSO UPDATE DIFF time
+  // useInterval(intervalCheck, 60020);
+  // // 15000 milliseconds = 0.25 minutes
 
-  function isPong(data: string) {
-    if (!data.startsWith("\"pong")) return false;
-    return true;
+  function isKeepAliveMessage(item: any) {
+    if (item.welcome || item.time) return true;
+    return false;
   }
 
-  function handlePong(data: string) {
-    if (!isPong(data)) return;
-    setPong(new Date());
-    countRetry.current = 0;
+  function handleKeepAliveMessage(item: any) {
+    if (!isKeepAliveMessage(item)) return;
+    setKeepAliveTime(new Date());
   }
 
   function wsCurrentStart(): WebSocketService {
+
+    setSocketConnected(true);
+
     var socket = newWebSocketService();
     socket.onOpen(() => {
       console.log("[use-sockets] socket connection opened send ping");
-
       if (!socketConnected) setSocketConnected(true);
     });
 
     socket.onClose((e) => {
-      if (e.code === 1008 || e.code === 1006) {
+      if (e.code === 1008 || e.code === 1004) {
         // 1008 = please login first
-        // 1006 = feature toggle disabled
-        console.log('------ login or feature toggle');
+        // 1004 = feature toggle disabled
+        console.log('------ login or feature toggle' + e.code);
         setIsEnabled(false);
         return;
       }
 
-
-      console.log(e.code);
-
-      setSocketConnected(false);
-      console.log('[use-sockets] Web Socket Connection Closed');
+      // console.log(e.code);
+      if (socketConnected) setSocketConnected(false);
+      console.log('[use-sockets] Web Socket Connection Closed ' + e.code);
     });
 
     socket.onError((e) => {
-      setSocketConnected(false);
+      if (socketConnected) setSocketConnected(false);
       console.log('[use-sockets] onError triggerd');
     });
 
     socket.onMessage((e) => {
-      if (isPong(e.data)) {
-        handlePong(e.data);
+      var item = parseJson(e.data)
+
+      if (isKeepAliveMessage(item)) {
+        handleKeepAliveMessage(item);
         return;
       }
-      parseMessage(e.data);
+      parseMessage(item);
     })
     return socket;
   }
@@ -122,23 +121,19 @@ const useSockets = (): IUseSockets => {
   useEffect(() => {
     console.log('[use-sockets] run effect');
 
-    // FetchGet(new UrlQuery().UrlRealtimeStatus()).then((data) => {
-    //   if (data.statusCode === 401 || data.statusCode === 403) {
-    //     setIsEnabled(false);
-    //   }
-    // });
+    ws.current = wsCurrentStart();
+    var intervalCheck = setInterval(doIntervalCheck, 30000)
 
-    var socket1 = wsCurrentStart();
-    ws.current = socket1;
     return () => {
       console.log('[use-sockets] --end');
-      socket1.close();
+      ws.current.close();
+      clearInterval(intervalCheck);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    showSocketError
+    showSocketError: false
   };
 };
 
