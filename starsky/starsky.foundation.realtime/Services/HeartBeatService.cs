@@ -57,7 +57,10 @@ namespace starsky.foundation.realtime.Services
 				await _webSocketConnectionsService.SendToAllAsync(HeartbeatMessage.Replace(InsertDateToken, 
 					DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)), cancellationToken);
 
-				await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
+				var speed = 60;
+				if ( Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development" ) speed = 10;
+
+				await Task.Delay(TimeSpan.FromSeconds(speed), cancellationToken);
 			}
 		}
 		#endregion

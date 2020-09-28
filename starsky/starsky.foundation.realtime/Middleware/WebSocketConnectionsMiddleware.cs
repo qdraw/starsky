@@ -24,9 +24,7 @@ namespace starsky.foundation.realtime.Middleware
 			_connectionsService = connectionsService ?? throw new ArgumentNullException(nameof(connectionsService));
 		}
 		#endregion
-
-		public const string WebSocketHeaderStatus = "x-web-socket";
-
+		
 		#region Methods
 		public async Task Invoke(HttpContext context)
 		{

@@ -339,7 +339,7 @@ namespace starsky
 				endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 			});
 			
-			if ( _appSettings.UseRealtime ) app.UseWebSockets();
+			app.UseWebSockets();
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings.UseRealtime);
 
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
