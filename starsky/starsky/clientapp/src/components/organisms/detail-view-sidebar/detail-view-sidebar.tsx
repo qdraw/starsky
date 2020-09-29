@@ -38,7 +38,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
   const MessageDateLessThan1Minute = language.text("minder dan één minuut", "less than one minute");
   const MessageDateMinutes = language.text("minuten", "minutes");
   const MessageDateHour = language.text("uur", "hour");
-  const MessageNounUnknown = language.text("Onbekende", "Unknown");
+  const MessageNounNameless = language.text("Naamloze", "Unnamed");
   const MessageLocation = language.text("locatie", "location");
   const MessageReadOnlyFile = language.text("Alleen lezen bestand", "Read only file");
   const MessageNotFoundSourceMissing = language.text("Mist in de index", "Misses in the index");
@@ -324,7 +324,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
               <b>{fileIndexItem.locationCity}</b>
               <p>{fileIndexItem.locationCountry}</p>
             </> : <>
-              <b>{MessageNounUnknown}</b>
+              <b>{MessageNounNameless}</b>
               <p>{MessageLocation}</p>
             </>}
         </a> : ""}

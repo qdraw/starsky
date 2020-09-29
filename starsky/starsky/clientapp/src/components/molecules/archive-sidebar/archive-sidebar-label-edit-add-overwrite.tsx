@@ -28,6 +28,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     "Alleen de bestanden met schrijfrechten zijn geupdate.",
     "One or more files are read only. " +
     "Only the files with write permissions have been updated.");
+  const MessageErrorNotFoundSourceMissing = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn al verdwenen. " +
+    "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
+    "One or more files are already gone. " +
+    "Only the files that are present are updated. Run a manual sync");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -90,8 +95,10 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
       var result = new CastToInterface().InfoFileIndexArray(anyData.data);
       result.forEach(element => {
         if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
-        if (element.status !== IExifStatus.Ok) return;
-        dispatch({ type: 'update', ...element, select: [element.fileName] });
+        if (element.status === IExifStatus.NotFoundSourceMissing) setIsError(MessageErrorNotFoundSourceMissing);
+        if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
+          dispatch({ type: 'update', ...element, select: [element.fileName] });
+        }
       });
 
       // loading + update button
