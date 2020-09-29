@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -222,12 +223,38 @@ namespace starsky.foundation.database.Query
 	            // Set state to edit mode
                 _context.Attach(item).State = EntityState.Modified;
             }
-            
-	        _context.SaveChanges();
-            
-	        CacheUpdateItem(updateStatusContentList);
+
+            try
+            {
+	            _context.SaveChanges();
+            }
+            catch (ObjectDisposedException e)
+            {
+	            RetrySaveChanges(e);
+            }
+            catch (InvalidOperationException e)
+            {
+	            RetrySaveChanges(e);
+            }
+
+            CacheUpdateItem(updateStatusContentList);
             return updateStatusContentList;
         }
+
+        /// <summary>
+        /// Retry when an Exception has occured
+        /// </summary>
+        /// <param name="e">Exception</param>
+        private void RetrySaveChanges(Exception e)
+        {
+	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
+	        // https://go.microsoft.com/fwlink/?linkid=2097913
+	        Thread.Sleep(10);
+	        if ( _appSettings.Verbose ) Console.WriteLine("Retry Exception\n" + e);
+	        _context = new InjectServiceScope(_scopeFactory).Context();
+	        _context.SaveChanges();
+        }
+        
 
         /// <summary>
         /// Update one single item in the database
@@ -244,12 +271,9 @@ namespace starsky.foundation.database.Query
 				_context.Attach(updateStatusContent).State = EntityState.Modified;
 	            _context.SaveChanges();
             }
-            catch ( ObjectDisposedException)
+            catch ( ObjectDisposedException e)
             {
-	            if ( _appSettings.Verbose ) Console.WriteLine("Retry ObjectDisposedException");
-	            _context = new InjectServiceScope(_scopeFactory).Context();
-	            _context.Attach(updateStatusContent).State = EntityState.Modified;
-	            _context.SaveChanges();
+	            RetrySaveChanges(e);
             }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
