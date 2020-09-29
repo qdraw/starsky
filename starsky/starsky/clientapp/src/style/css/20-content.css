@@ -112,6 +112,13 @@
   display: block;
 }
 
+@media (prefers-color-scheme: dark) {
+  .content--text h4,
+  .content--text label {
+    color: #fff;
+  }
+}
+
 .content--header .btn,
 .content--text .btn {
   margin-right:10px;
@@ -192,6 +199,12 @@
     margin-top: 12px;
     margin-left: 10px;
     margin-bottom: 10px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .content > .content--login-form > .alternative {
+    color: #fff;
   }
 }
 
