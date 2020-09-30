@@ -8,6 +8,7 @@ import { ISidebarUpdate } from '../../../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
+import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { SidebarUpdate } from '../../../shared/sidebar-update';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
@@ -26,6 +27,11 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     "Alleen de bestanden met schrijfrechten zijn geupdate.",
     "One or more files are read only. " +
     "Only the files with write permissions have been updated.");
+  const MessageErrorNotFoundSourceMissing = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn al verdwenen. " +
+    "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
+    "One or more files are already gone. " +
+    "Only the files that are present are updated. Run a manual sync");
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -101,19 +107,18 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
           var result = new CastToInterface().InfoFileIndexArray(anyData.data);
           result.forEach(element => {
             if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
-            if (element.status !== IExifStatus.Ok) return;
-            dispatch({ type: 'update', ...element, select: [element.fileName] });
+            if (element.status === IExifStatus.NotFoundSourceMissing) setIsError(MessageErrorNotFoundSourceMissing);
+            if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
+              dispatch({ type: 'update', ...element, select: [element.fileName] });
+            }
           });
+
 
           // loading + update button
           setIsLoading(false);
           setInputEnabled(true);
 
-          // clear search cache * when you refresh the search page this is needed to display the correct labels
-          var searchTag = new URLPath().StringToIUrl(history.location.search).t;
-          if (!searchTag) return;
-          FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
-
+          ClearSearchCache(history.location.search);
         }).catch(() => {
           // loading + update button
           setIsLoading(false);

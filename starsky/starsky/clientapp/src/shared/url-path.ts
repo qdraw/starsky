@@ -317,11 +317,16 @@ export class URLPath {
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
-      selectParams += parent + "/" + element;
+
+      // no double slash in front of path
+      var slash = !parent && element.startsWith("/") ? "" : "/";
+      selectParams += parent + slash + element;
+
       if (index !== select.length - 1) {
         selectParams += ";";
       }
     }
+    console.log(selectParams);
     return selectParams;
   }
 

@@ -45,12 +45,12 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
         
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
-        
+
         /// <summary>
         /// Clear the directory name from the cache
         /// </summary>
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
-        void RemoveCacheParentItem(string directoryName);
+        bool RemoveCacheParentItem(string directoryName);
 
         string GetSubPathByHash(string fileHash);
 	    void ResetItemByHash(string fileHash);

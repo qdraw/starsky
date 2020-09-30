@@ -13,11 +13,11 @@ const ArchiveContext = React.createContext<IArchiveContext>({} as IArchiveContex
 
 export type IArchiveContext = {
   state: State,
-  dispatch: React.Dispatch<Action>,
+  dispatch: React.Dispatch<ArchiveAction>,
 }
 
 type ReactNodeProps = { children: React.ReactNode }
-type Action = {
+export type ArchiveAction = {
   type: 'remove',
   toRemoveFileList: string[]
 } |
@@ -59,7 +59,7 @@ const initialState: State = {
   dateCache: Date.now()
 };
 
-export function archiveReducer(state: State, action: Action): State {
+export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
     case "remove":
       // files == subpath style not only the name (/dir/file.jpg)

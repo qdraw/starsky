@@ -16,6 +16,7 @@ import FetchPost from '../../../shared/fetch-post';
 import { FileListCache } from '../../../shared/filelist-cache';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
+import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import MoreMenu from '../../atoms/more-menu/more-menu';
@@ -151,18 +152,11 @@ const MenuDetailView: React.FunctionComponent = () => {
       setIsLoading(false);
     }
 
-    clearSearchCache();
+    ClearSearchCache(history.location.search);
 
     // Client side Caching: the order of files in a normal folder has changed
     // Entire cache becouse the relativeObjects objects can reference to this page
     new FileListCache().CacheCleanEverything();
-  }
-
-  function clearSearchCache() {
-    // clear search cache * when you refresh the search page this is needed to display the correct labels
-    var searchTag = new URLPath().StringToIUrl(history.location.search).t;
-    if (!searchTag) return;
-    FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
   }
 
   /**

@@ -56,14 +56,15 @@ function Search(archive: IArchiveProps) {
           </> : null}
         </div>
         <SearchPagination {...archive} />
-        {archive.collectionsCount >= 1 ? <ItemListView {...archive} colorClassUsage={archive.colorClassUsage}>
-        </ItemListView> : null}
+        {archive.collectionsCount >= 1 ? <ItemListView
+          {...archive} colorClassUsage={archive.colorClassUsage}> </ItemListView> : null}
         {archive.collectionsCount === 0 ? <div className="folder">
           <div className="warning-box">
             {MessageTryOtherQuery}
           </div>
         </div> : null}
-        {archive.fileIndexItems.length >= 20 ? <SearchPagination {...archive} /> : null}
+        {archive.lastPageNumber !== 0 ? <SearchPagination {...archive} /> : null}
+
       </div>
     </div>
   </>
