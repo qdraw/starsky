@@ -14,6 +14,7 @@ import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../../../s
 import FetchPost from '../../../shared/fetch-post';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
+import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
@@ -143,11 +144,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       setFileIndexItem(currentItem);
       dispatch({ 'type': 'update', ...currentItem });
-
-      // clear search cache
-      var searchTag = new URLPath().StringToIUrl(history.location.search).t;
-      if (!searchTag) return;
-      FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
+      ClearSearchCache(history.location.search);
     });
   }
 
@@ -248,7 +245,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         collections={new URLPath().StringToIUrl(history.location.search).collections !== false}
         onToggle={(result) => {
           setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString(), colorClass: result });
-          dispatch({ 'type': 'update', lastEdited: new Date().toString(), colorclass: result })
+          dispatch({ 'type': 'update', lastEdited: new Date().toString(), colorclass: result });
+          ClearSearchCache(history.location.search);
         }}
         filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass}

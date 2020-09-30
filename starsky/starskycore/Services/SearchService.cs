@@ -47,6 +47,8 @@ namespace starskycore.Services
 		    {
 			    throw new ArgumentException("Search Input Query is longer then 500 chars");
 		    }
+		    
+		    if ( query == "!delete!" ) enableCache = false;
 
             if(!enableCache || 
                _cache == null || _appSettings?.AddMemoryCache == false) 
@@ -396,11 +398,12 @@ namespace starskycore.Services
 	    /// <summary>
 	    /// Allow -inurl shortcut
 	    /// </summary>
-	    /// <param name="query"></param>
-	    /// <returns></returns>
+	    /// <param name="query">search Query</param>
+	    /// <returns>replaced Url</returns>
         public string QueryShortcuts(string query)
         {
-            query = query.Replace("-inurl", "-FilePath");
+	        // should be ignoring case
+            query = Regex.Replace(query, "-inurl", "-FilePath", RegexOptions.IgnoreCase);
             return query;
         }
 

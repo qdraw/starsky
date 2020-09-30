@@ -4,7 +4,6 @@ import { ArchiveContext, defaultStateFallback } from '../../../contexts/archive-
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
-import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
 import { Select } from '../../../shared/select';
 import { Sidebar } from '../../../shared/sidebar';
@@ -14,6 +13,7 @@ import DropArea from '../../atoms/drop-area/drop-area';
 import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
+import MenuOptionMoveToTrash from '../../molecules/menu-option-move-to-trash/menu-option-move-to-trash';
 import ModalArchiveMkdir from '../modal-archive-mkdir/modal-archive-mkdir';
 import ModalArchiveRename from '../modal-archive-rename/modal-archive-rename';
 import ModalArchiveSynchronizeManually from '../modal-archive-synchronize-manually/modal-archive-synchronize-manually';
@@ -42,7 +42,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   const MessageSelectFurther = language.text("Verder selecteren", "Select further");
   const MessageSelectAll = language.text("Alles selecteren", "Select all");
   const MessageUndoSelection = language.text("Undo selectie", "Undo selection");
-  const MessageMoveToTrash = language.text("Verplaats naar prullenmand", "Move to Trash");
   const MessagePublish = language.text("Publiceren", "Publish");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -77,30 +76,6 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   useEffect(() => {
     setSelect(new URLPath().StringToIUrl(history.location.search).select)
   }, [history.location.search]);
-
-  async function moveToTrashSelection() {
-    if (!select || isReadOnly) return;
-
-    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-    if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");
-    if (selectParams.length === 0) return;
-
-    var bodyParams = new URLSearchParams();
-
-    bodyParams.append("f", selectParams);
-    bodyParams.set("Tags", "!delete!");
-    bodyParams.set("append", "true");
-    bodyParams.set("Colorclass", "8");
-    bodyParams.set("collections", (new URLPath().StringToIUrl(history.location.search).collections !== false).toString());
-
-    var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
-    if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
-      return;
-    }
-    undoSelection();
-    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList })
-  }
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
   const [isSynchronizeManuallyOpen, setSynchronizeManuallyOpen] = React.useState(false);
@@ -190,9 +165,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
             {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>{MessageSelectAll}</li> : null}
             {select.length >= 1 ? <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li> : null}
             {select.length >= 1 ? <li data-test="publish" className="menu-option" onClick={() => setModalPublishOpen(!isModalPublishOpen)}>{MessagePublish}</li> : null}
-
-            {select.length >= 1 ? <li data-test="trash" className={!isReadOnly ? "menu-option" : "menu-option disabled"}
-              onClick={() => moveToTrashSelection()}>{MessageMoveToTrash}</li> : null}
+            <MenuOptionMoveToTrash state={state} dispatch={dispatch} select={select} setSelect={setSelect} isReadOnly={isReadOnly} />
             <li className="menu-option" data-test="display-options"
               onClick={() => setDisplayOptionsOpen(!isDisplayOptionsOpen)}>{MessageDisplayOptions}</li>
             <li className="menu-option" data-test="synchronize-manually"

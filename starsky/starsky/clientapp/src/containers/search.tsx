@@ -63,7 +63,8 @@ function Search(archive: IArchiveProps) {
             {MessageTryOtherQuery}
           </div>
         </div> : null}
-        <SearchPagination {...archive} />
+        {archive.lastPageNumber !== 0 ? <SearchPagination {...archive} /> : null}
+
       </div>
     </div>
   </>

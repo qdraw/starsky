@@ -50,13 +50,11 @@ namespace starsky.Controllers
             }
 
             var singleItem = _query.SingleItem(f);
-            if (singleItem != null && singleItem.IsDirectory)
-            {
-                _query.RemoveCacheParentItem(f);
-                return Json("cache successful cleared");
-            }
-
-            return BadRequest("ignored, please check if the 'f' path exist or use a folder string to clear the cache");
+            if ( singleItem == null || !singleItem.IsDirectory )
+	            return BadRequest(
+		            "ignored, please check if the 'f' path exist or use a folder string to clear the cache");
+            
+            return Json(_query.RemoveCacheParentItem(f) ? "cache successful cleared" : "cache did not exist");
         }
 
     }

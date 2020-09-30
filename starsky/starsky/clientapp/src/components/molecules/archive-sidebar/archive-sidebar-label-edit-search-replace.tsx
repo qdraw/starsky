@@ -8,6 +8,7 @@ import { ISidebarUpdate } from '../../../interfaces/ISidebarUpdate';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
+import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { SidebarUpdate } from '../../../shared/sidebar-update';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
@@ -117,11 +118,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
           setIsLoading(false);
           setInputEnabled(true);
 
-          // clear search cache * when you refresh the search page this is needed to display the correct labels
-          var searchTag = new URLPath().StringToIUrl(history.location.search).t;
-          if (!searchTag) return;
-          FetchPost(new UrlQuery().UrlSearchRemoveCacheApi(), `t=${searchTag}`);
-
+          ClearSearchCache(history.location.search);
         }).catch(() => {
           // loading + update button
           setIsLoading(false);
