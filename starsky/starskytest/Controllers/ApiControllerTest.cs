@@ -180,6 +180,29 @@ namespace starskytest.Controllers
         }
 
         [TestMethod]
+        public void RemoveCache_CacheDidNotExist()
+        {
+	        var selectorStorage =
+		        new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+
+	        // Act
+	        var controller = new ApiController(_query, _exifTool, _appSettings, _bgTaskQueue,
+		        selectorStorage, null);
+	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+	        
+	        _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "cacheDeleteTest2",
+		        ParentDirectory = "/",
+		        IsDirectory = true
+	        });
+	        
+	        // Act, remove content from cache
+	        var actionResult = controller.RemoveCache("/cacheDeleteTest2") as JsonResult;
+	        Assert.AreEqual("cache did not exist", actionResult.Value);
+        }
+
+        [TestMethod]
         public void ApiController_NonExistingCacheRemove()
         {
 	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
