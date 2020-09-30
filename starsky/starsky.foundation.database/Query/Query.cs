@@ -215,25 +215,24 @@ namespace starsky.foundation.database.Query
         /// <returns>the same list, and updated in the database</returns>
         public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
         {
-            foreach (var item in updateStatusContentList)
-            {
-	            //  Update te last edited time manual
-	            item.SetLastEdited();
-	            
-	            // Set state to edit mode
-                _context.Attach(item).State = EntityState.Modified;
-            }
-            
             void CatchLoop(Exception e)
             {
 	            foreach ( var item in updateStatusContentList )
 	            {
+		            item.SetLastEdited();
 		            RetrySaveChanges(item, e);
 	            }
             }
 
             try
             {
+	            foreach (var item in updateStatusContentList)
+	            {
+		            //  Update te last edited time manual
+		            item.SetLastEdited();
+		            // Set state to edit mode
+		            _context.Attach(item).State = EntityState.Modified;
+	            }
 	            _context.SaveChanges();
             }
             catch (ObjectDisposedException e)
