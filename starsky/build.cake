@@ -564,9 +564,9 @@ Task("SonarBegin")
         if (branchName == "(no branch)" || branchName == "") {
           branchName = "master";
         }
-
+        /* this should fix No inputs were found in config file 'tsconfig.json'.  */
         var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
-        
+
         Information($">> Selecting Branch: {branchName}");
 
         IEnumerable<string> redirectedStandardOutput;
