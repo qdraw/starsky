@@ -78,7 +78,7 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
-		public void RemoveCacheParentItem(string directoryName)
+		public bool RemoveCacheParentItem(string directoryName)
 		{
 			throw new System.NotImplementedException();
 		}

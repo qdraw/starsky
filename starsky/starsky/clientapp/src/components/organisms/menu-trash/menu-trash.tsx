@@ -4,12 +4,14 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import FetchPost from '../../../shared/fetch-post';
 import { Language } from '../../../shared/language';
+import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { Select } from '../../../shared/select';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import Modal from '../../atoms/modal/modal';
 import MoreMenu from '../../atoms/more-menu/more-menu';
+import Preloader from '../../atoms/preloader/preloader';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import NavContainer from '../nav-container/nav-container';
 
@@ -31,6 +33,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
   const MessageCancel = language.text("Annuleren", "Cancel");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   var history = useLocation();
 
@@ -49,6 +52,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
   function forceDelete() {
     if (!select) return;
+    setIsLoading(true);
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
@@ -62,11 +66,14 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
     FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), 'delete').then(() => {
       dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
+      ClearSearchCache(history.location.search);
+      setIsLoading(false);
     });
   }
 
   function undoTrash() {
     if (!select) return;
+    setIsLoading(true);
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
     if (!toUndoTrashList) return;
@@ -83,6 +90,8 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
     // to replace
     FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(() => {
       dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
+      ClearSearchCache(history.location.search);
+      setIsLoading(false);
     });
   }
 
@@ -90,6 +99,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 
   return (
     <>
+      {isLoading ? <Preloader isOverlay={true} /> : null}
       {isModalDeleteOpen ? <Modal
         id="delete-modal"
         isOpen={isModalDeleteOpen}

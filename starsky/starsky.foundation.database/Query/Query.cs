@@ -223,6 +223,14 @@ namespace starsky.foundation.database.Query
 	            // Set state to edit mode
                 _context.Attach(item).State = EntityState.Modified;
             }
+            
+            void CatchLoop(Exception e)
+            {
+	            foreach ( var item in updateStatusContentList )
+	            {
+		            RetrySaveChanges(item, e);
+	            }
+            }
 
             try
             {
@@ -230,11 +238,11 @@ namespace starsky.foundation.database.Query
             }
             catch (ObjectDisposedException e)
             {
-	            RetrySaveChanges(e);
+	            CatchLoop(e);
             }
             catch (InvalidOperationException e)
             {
-	            RetrySaveChanges(e);
+	            CatchLoop(e);
             }
 
             CacheUpdateItem(updateStatusContentList);
@@ -244,15 +252,18 @@ namespace starsky.foundation.database.Query
         /// <summary>
         /// Retry when an Exception has occured
         /// </summary>
+        /// <param name="updateStatusContent"></param>
         /// <param name="e">Exception</param>
-        private void RetrySaveChanges(Exception e)
+        private void RetrySaveChanges(FileIndexItem updateStatusContent, Exception e)
         {
 	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 	        // https://go.microsoft.com/fwlink/?linkid=2097913
 	        Thread.Sleep(10);
-	        if ( _appSettings.Verbose ) Console.WriteLine("Retry Exception\n" + e);
-	        _context = new InjectServiceScope(_scopeFactory).Context();
-	        _context.SaveChanges();
+	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
+	        var context = new InjectServiceScope(_scopeFactory).Context();
+	        context.Attach(updateStatusContent).State = EntityState.Modified;
+	        context.SaveChanges();
+	        context.Attach(updateStatusContent).State = EntityState.Detached; 
         }
         
 
@@ -270,16 +281,15 @@ namespace starsky.foundation.database.Query
 	        {
 				_context.Attach(updateStatusContent).State = EntityState.Modified;
 	            _context.SaveChanges();
-            }
+	            _context.Attach(updateStatusContent).State = EntityState.Detached;
+	        }
             catch ( ObjectDisposedException e)
             {
-	            RetrySaveChanges(e);
+	            RetrySaveChanges(updateStatusContent, e);
             }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-			
-	        _context.Attach(updateStatusContent).State = EntityState.Detached;
-	        
+
             return updateStatusContent;
         }
 
@@ -369,16 +379,17 @@ namespace starsky.foundation.database.Query
         /// Clear the directory name from the cache
         /// </summary>
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
-        public void RemoveCacheParentItem(string directoryName)
+        public bool RemoveCacheParentItem(string directoryName)
         {
             // Add protection for disabled caching
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+            if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
                 PathHelper.RemoveLatestSlash(directoryName));
-            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return false;
             
             _cache.Remove(queryCacheName);
+            return true;
         }
 
 	    /// <summary>

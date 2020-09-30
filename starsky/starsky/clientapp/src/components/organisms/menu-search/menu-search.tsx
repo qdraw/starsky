@@ -9,12 +9,13 @@ import { URLPath } from '../../../shared/url-path';
 import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
+import MenuOptionMoveToTrash from '../../molecules/menu-option-move-to-trash/menu-option-move-to-trash';
 import ModalDownload from '../modal-download/modal-download';
 import NavContainer from '../nav-container/nav-container';
 
 export const MenuSearch: React.FunctionComponent<any> = (_) => {
 
-  let { state } = React.useContext(ArchiveContext);
+  let { state, dispatch } = React.useContext(ArchiveContext);
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
@@ -94,6 +95,7 @@ export const MenuSearch: React.FunctionComponent<any> = (_) => {
                 {MessageUndoSelection}</li> : null}
               {select.length !== state.fileIndexItems.length ? <li className="menu-option" onClick={() => allSelection()}>
                 {MessageSelectAll}</li> : null}
+              <MenuOptionMoveToTrash state={state} dispatch={dispatch} select={select} setSelect={setSelect} isReadOnly={false} />
               <li data-test="export" className="menu-option" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
             </MoreMenu> : null}
 

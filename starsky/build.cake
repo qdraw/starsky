@@ -564,6 +564,9 @@ Task("SonarBegin")
         if (branchName == "(no branch)" || branchName == "") {
           branchName = "master";
         }
+        /* this should fix No inputs were found in config file 'tsconfig.json'.  */
+        var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
+
         Information($">> Selecting Branch: {branchName}");
 
         IEnumerable<string> redirectedStandardOutput;
@@ -581,6 +584,7 @@ Task("SonarBegin")
                       .Append($"/d:sonar.login=\"{login}\"")
                       .Append($"/d:sonar.branch.name=\"{branchName}\"")
                       .Append($"/o:" + organisation)
+                      .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
                       .Append($"/d:sonar.cs.opencover.reportsPaths=\"{netCoreCoverageFile}\"")
                       .Append($"/d:sonar.typescript.lcov.reportPaths=\"{jestCoverageFile}\"")
                       .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")

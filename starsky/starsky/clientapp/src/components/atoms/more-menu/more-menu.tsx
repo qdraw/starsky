@@ -4,17 +4,17 @@ import { Language } from '../../../shared/language';
 
 type MoreMenuPropTypes = {
   children?: React.ReactNode;
+  defaultEnableMenu?: boolean
 }
 
 export const MoreMenuEventCloseConst = "CLOSE_MORE_MENU";
 
-const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children }) => {
+const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children, defaultEnableMenu }) => {
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageMore = language.text("Meer", "More");
-
-  const [enabledMenu, setEnabledMenu] = React.useState(false);
+  const [enabledMenu, setEnabledMenu] = React.useState(defaultEnableMenu);
 
   function toggleMoreMenu() {
     if (!children) return;

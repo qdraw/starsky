@@ -46,7 +46,7 @@ export class UrlQuery {
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/trash` : `${this.prefix}/trash`;
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `/trash?t=!delete!` : `${this.prefix}/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {

@@ -26,14 +26,16 @@ namespace starsky.Health
 			{
 				foreach ((string, long) valueTuple in _options.ConfiguredDrives.Values)
 				{
-					string driveName = valueTuple.Item1;
-					long num = valueTuple.Item2;
-					(bool exists4, long actualFreeMegabytes4) = GetSystemDriveInfo(driveName);
+					var driveName = valueTuple.Item1;
+					var num = valueTuple.Item2;
+					var (exists4, actualFreeMegabytes4) = GetSystemDriveInfo(driveName);
 					if (!exists4)
-						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, "Configured drive " + driveName + " is not present on system"));
+						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus, 
+							"Configured drive " + driveName + " is not present on system"));
 					if (actualFreeMegabytes4 < num)
 						return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,
-							$"Minimum configured megabytes for disk {driveName} is {num} but actual free space are {actualFreeMegabytes4} megabytes"));
+							$"Minimum configured megabytes for disk {driveName} is {num} " +
+							$"but actual free space are {actualFreeMegabytes4} megabytes"));
 				}
 				return Task.FromResult(HealthCheckResult.Healthy());
 			}
