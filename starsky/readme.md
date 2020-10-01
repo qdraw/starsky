@@ -67,7 +67,7 @@ http://localhost:64556/account/register
 
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 3.1.201
+From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
 1.  Clone the repo on your x86/x64 machine
