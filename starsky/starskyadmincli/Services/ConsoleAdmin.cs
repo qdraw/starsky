@@ -33,7 +33,7 @@ namespace starskyAdminCli.Services
 			{
 				if ( string.IsNullOrEmpty(password) )
 				{
-					_console.WriteLine("\nWe are going to create an account.\n What is the password?\n ");
+					_console.WriteLine("\nWe are going to create an account. \nWhat is the password?\n ");
 					password = _console.ReadLine();
 					if (string.IsNullOrEmpty(password))
 					{
