@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.realtime.Middleware;
-using starsky.foundation.realtime.Model;
-using starsky.foundation.realtime.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.realtime.Middleware
@@ -21,6 +19,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			Assert.AreEqual(400,httpContext.Response.StatusCode);
 		}
+		
 		[TestMethod]
 		public async Task WebSocketConnection_MessageTooBig()
 		{
