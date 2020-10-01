@@ -68,7 +68,7 @@ from the root folder of the repository</p></li>
 <li>Create a account in the Starsky application. Those credentials are only required by the web application</li>
 </ol>
 <blockquote>
-  <p>Security issue: After creating the first account this endpoint is closed, do not set the env variable <code>app__isAccountRegisterOpen</code> to <code>true</code></p>
+  <p>Security issue: After creating the first account this endpoint is closed, keep the env variable <code>app__isAccountRegisterOpen</code> to <code>false</code></p>
 </blockquote>
 <pre><code>http://localhost:64556/account/register</code></pre>
 <h2 id="dev-dependencies">Dev-dependencies:</h2>
@@ -108,9 +108,6 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 <ol start="9">
 <li>Create a account in the Starsky Web application. Those credentials are only required by the web application</li>
 </ol>
-<blockquote>
-  <p>This endpoint is open to anyone when there are no accounts or for a logged in user or when you update appsettings.json</p>
-</blockquote>
 <pre><code>http://localhost:5000/account/register</code></pre>
 <h3 id="optional-steps">Optional steps</h3>
 <ol start="10">
