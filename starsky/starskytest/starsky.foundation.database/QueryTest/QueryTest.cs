@@ -395,6 +395,56 @@ namespace starskytest.starsky.foundation.database.QueryTest
         }
 
         [TestMethod]
+        public void Query_UpdateItem_1_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        var item = new FileIndexItem("/test/010101.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        query.RemoveItem(getItem);
+        }
+        
+        [TestMethod]
+        public void Query_UpdateItem_Multiple_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        var item = new FileIndexItem("/test/010101.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(new List<FileIndexItem>{item});
+
+	        var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        query.RemoveItem(getItem);
+        }
+
+        [TestMethod]
         public void QueryTest_PrevFilePathCachingConflicts_Deleted()
         {
             // For previous item check if caching has no conflicts

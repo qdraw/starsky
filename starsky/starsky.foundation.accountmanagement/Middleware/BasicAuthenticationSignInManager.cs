@@ -23,12 +23,8 @@ namespace starsky.foundation.accountmanagement.Middleware
 
         public async Task TrySignInUser()
         {
-                
             if (_authenticationHeaderValue.IsValidBasicAuthenticationHeaderValue)
             {
-                // _authenticationHeaderValue.UserIdentifier
-                // _authenticationHeaderValue.UserPassword
-
                 var validateResult = _userManager.Validate("email",
                     _authenticationHeaderValue.UserIdentifier,
                     _authenticationHeaderValue.UserPassword);
@@ -44,14 +40,7 @@ namespace starsky.foundation.accountmanagement.Middleware
                 }
 
                 await _userManager.SignIn(_context, validateResult.User);
-	            
-
-//                // Add ClaimsIdentity
-//                var claims = new[] { new Claim("name", _authenticationHeaderValue.UserPassword), new Claim(ClaimTypes.Role, "Admin") };
-//                var identity = new ClaimsIdentity(claims, "Basic");
-//                _context.User = new ClaimsPrincipal(identity);
             }
         }
-
     }
 }

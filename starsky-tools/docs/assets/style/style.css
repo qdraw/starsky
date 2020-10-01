@@ -118,7 +118,13 @@ blockquote:before {
   vertical-align: -0.4em;
 }
 blockquote p {
-  display: inline;
+  display: block;
+  margin-left: 28px;
+}
+
+blockquote p:first-child {
+  display: inline-block;
+  margin-left: 0px;
 }
 
 blockquote blockquote {

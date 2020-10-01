@@ -8,7 +8,6 @@ namespace starsky.Helpers
 		/// <summary>
 		/// For Performance on slow devices
 		/// </summary>
-		/// </summary>
 		/// <param name="request"></param>
 		/// <param name="time">29030400 = 4 weeks</param>
 		public static void SetExpiresResponseHeaders(HttpRequest request, int time = 29030400)

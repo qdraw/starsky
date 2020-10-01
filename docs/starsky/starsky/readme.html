@@ -77,15 +77,15 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> <
  The only 2 build-in exceptions are when there are no accounts or you already logged in <em>(default false)</em></li>
 <li><code>AddSwagger</code> - To show a user interface to show al REST-services <em>(default false)</em></li>
 <li><code>ExifToolImportXmpCreate</code> - is used to create at import time a xmp file based on the raw image <em>(default false)</em></li>
-<li><code>AddSwaggerExport</code> - <em>Temporary disabled due known issue</em> To Export Swagger defentions on startup <em>(default false)</em></li>
+<li><code>AddSwaggerExport</code> - To Export Swagger definitions on startup <em>(default false)</em></li>
 <li><code>AddLegacyOverwrite</code>- Read Only value for ("Mono.Runtime") <em>(default false)</em></li>
 <li><code>Verbose</code> - show more console logging  <em>(default false)</em></li>
-<li><code>WebFtp</code> - used by starskyWebFtpCli</li>
-<li><code>PublishProfiles</code> - used by starskyWebHtmlCli</li>
+<li><code>WebFtp</code> - ftp path, this is used by starskyWebFtpCli</li>
+<li><code>PublishProfiles</code> - settings to configure publish output, used by starskyWebHtmlCli and publish button</li>
 <li><code>ExifToolPath</code> - A path to Exiftool.exe <em>to ignore the included ExifTool</em></li>
 <li><code>isAccountRegisterOpen</code> - Allow everyone to register an account <em>(default false)</em></li>
 <li><code>applicationInsightsInstrumentationKey</code> - Track telementry with Microsoft Application Insights <em>(default disabled)</em></li>
-<li><code>useHttpsRedirection</code> - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode <em>(default false)</em></li>
+<li><code>useHttpsRedirection</code> - Redirect users to https page. You should enable before going to production. This toggle is always disabled in debug/develop mode <em>(default false)</em></li>
 </ol>
 <h3 id="appsettingsjson-example">Appsettings.json example</h3>
 <pre><code class="json language-json">{
@@ -371,7 +371,7 @@ There is an swagger definition. You could enable this by setting the following v
 <li><strong>Storage_ThumbnailTempFolder</strong> There is not enough disk space available on the thumbnails folder location </li>
 <li><strong>Storage_TempFolder</strong> There is not enough disk space available on the temp folder location </li>
 </ul>
-<h4 id="not-exist-errors">Not exist errors</h4>
+<h4 id="folder-or-file-not-exist-errors">Folder or file not exist errors</h4>
 <ul>
 <li><strong>Exist_StorageFolder</strong> The Storage Folder does not exist, please create it first.</li>
 <li><strong>Exist_TempFolder</strong> The Temp Folder does not exist, please create it first.</li>
@@ -379,8 +379,14 @@ There is an swagger definition. You could enable this by setting the following v
 Try to remove the <em>temp folder</em> and run the Application again.</li>
 <li><strong>Exist_ThumbnailTempFolder</strong> The Thumbnail cache Folder does not exist, please create it first.</li>
 </ul>
-<h4 id="dbcontext-mysql-or-sqlite">DbContext, Mysql or Sqlite</h4>
+<h4 id="date-issues">Date issues</h4>
+<ul>
+<li><strong>DateAssemblyHealthCheck</strong>  this setting checks if your current datetime is newer than when this application is build</li>
+</ul>
+<h4 id="applicationdbcontext-mysql-or-sqlite">ApplicationDbContext, Mysql or Sqlite</h4>
 <p>There is also a check to make sure the database runs good</p>
+<h4 id="application-insights">Application Insights</h4>
+<p>Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.</p>
 </div>
 </div>
 </div>

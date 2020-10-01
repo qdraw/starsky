@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
-using starsky.feature.import.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
@@ -15,7 +14,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Interfaces;
 using starskycore.Services;
 
 namespace starskycore.Helpers
