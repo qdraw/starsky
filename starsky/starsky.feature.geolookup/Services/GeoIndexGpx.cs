@@ -71,7 +71,7 @@ namespace starsky.feature.geolookup.Services
 	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
 	        {
 		        throw new ArgumentException($"valueDateTime DateTime-Kind '{valueDateTime.Kind}' " +
-		                                    $"'{subPath}' should be Unspecified", nameof(DateTime));
+		                                    $"'{subPath}' should be Unspecified", nameof(valueDateTime));
 	        }
 	        
 	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 

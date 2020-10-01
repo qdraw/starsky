@@ -176,7 +176,6 @@ namespace starsky.feature.rename.Services
 			}
 		}
 
-
 		private void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexItems)
 		{
