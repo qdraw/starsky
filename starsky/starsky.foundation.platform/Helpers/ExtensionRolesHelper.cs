@@ -332,12 +332,6 @@ namespace starsky.foundation.platform.Helpers
 
 			return GetImageFormat(buffer);
 		}
-		
-		public static byte[] StringToByteArray(string hex)
-		{
-			return Enumerable.Range(0, hex.Length / 2)
-				.Select(x => Convert.ToByte(hex.Substring(x * 2, 2), 16)).ToArray();
-		}
 
 		/// <summary>
 		/// Gets the image format.
@@ -419,6 +413,17 @@ namespace starsky.foundation.platform.Helpers
 				return ImageFormat.mp4;
 			
 			return ImageFormat.unknown;
+		}
+		
+		/// <summary>
+		/// Convert Hex Value to byte array
+		/// </summary>
+		/// <param name="hex">hex value as string</param>
+		/// <returns>byte value</returns>
+		public static byte[] StringToByteArray(string hex)
+		{
+			return Enumerable.Range(0, hex.Length / 2)
+				.Select(x => Convert.ToByte(hex.Substring(x * 2, 2), 16)).ToArray();
 		}
 	}
 }
