@@ -53,7 +53,7 @@ from the root folder of the repository</p></li>
 <p><em>Or using bash (on Linux and Mac OS)</em></p>
 <pre><code class="sh language-sh">    ./build.sh</code></pre>
 <ol start="4">
-<li>Check configuation <code>starsky/starsky/appsettings.json</code></li>
+<li>Check configuration <code>starsky/starsky/appsettings.json</code></li>
 </ol>
 <blockquote>
   <blockquote>
@@ -123,8 +123,7 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 </ol>
 <p>For SonarScanner you need to additionally install:</p>
 <ul>
-<li>.NET Core 2.0 runtime: <a href="https://dotnet.microsoft.com/download/dotnet-core/2.0">https://dotnet.microsoft.com/download/dotnet-core/2.0</a></li>
-<li>Java</li>
+<li>Java (<a href="https://docs.sonarqube.org/latest/requirements/requirements/">https://docs.sonarqube.org/latest/requirements/requirements/</a>)</li>
 </ul>
 <p>To enable SonarScanner you need to set the following environment variables:</p>
 <ul>
@@ -134,7 +133,7 @@ But in this guide we build it first on your laptop and copy to your Raspberry Pi
 <li><code>STARSKY_SONAR_URL</code> - defaults to sonarcloud.io</li>
 </ul>
 <h4 id="known-errors">Known errors</h4>
-<p>When using SQLite as databasetype without <code>SQLitePCLRaw.lib.e_sqlite3.linux</code> the following error appears:<br />
+<p>When using SQLite as database type without <code>SQLitePCLRaw.lib.e_sqlite3.linux</code> the following error appears:<br />
 <code>System.DllNotFoundException: Unable to load DLL 'e_sqlite3'</code></p>
 <p>To avoid the error: <code>System.IO.FileLoadException</code> <code>Microsoft.Extensions.Options, Version=2.0.2.0</code> the package `Microsoft.EntityFrameworkCore is installed</p>
 <blockquote>
@@ -148,8 +147,8 @@ The library libhostfxr.so was found, but loading it from &lt;yourpath&gt;/libhos
      https://go.microsoft.com/fwlink/?LinkID=798306&amp;clcid=0x409</code></pre>
 <p>Check your file rights in the folders, they should be 644 for files and 755 for folders.<br />
 except for the executable  files</p>
-<h3 id="bash-build-and-configuation-scripts">Bash build and configuation scripts</h3>
-<p>Those scripts are optional and used for configuation.</p>
+<h3 id="bash-build-and-configuration-scripts">Bash build and configuration scripts</h3>
+<p>Those scripts are optional and used for configuration.</p>
 <h4 id="pm2-pm2-new-instancesh">pm2 <code>pm2-new-instance.sh</code></h4>
 <p>The script <a href="starsky/pm2-new-instance.sh"><code>pm2-new-instance.sh</code></a> is a script to setup Starsky using <a href="http://pm2.keymetrics.io/">pm2</a>.</p>
 <pre><code class="sh language-sh"> export ASPNETCORE_URLS="http://localhost:4823/"

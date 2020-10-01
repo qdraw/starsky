@@ -43,7 +43,7 @@ _Or using bash (on Linux and Mac OS)_
     ./build.sh
 ```
 
-4.  Check configuation `starsky/starsky/appsettings.json`
+4.  Check configuration `starsky/starsky/appsettings.json`
 
 >>   Tip: You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
 
@@ -55,7 +55,7 @@ dotnet run --project starsky/starsky
 ```
 
 6.  Create a account in the Starsky application. Those credentials are only required by the web application
-> Security issue: After creating the first account this endpoint is closed, do not set the env variable `app__isAccountRegisterOpen` to `true`
+> Security issue: After creating the first account this endpoint is closed, keep the env variable `app__isAccountRegisterOpen` to `false`
 
 ```
 http://localhost:64556/account/register
@@ -114,8 +114,6 @@ sudo apt-get install libimage-exiftool-perl
 
 9.  Create a account in the Starsky Web application. Those credentials are only required by the web application
 
-> This endpoint is open to anyone when there are no accounts or for a logged in user or when you update appsettings.json
-
 ```
 http://localhost:5000/account/register
 ```
@@ -131,8 +129,7 @@ http://localhost:5000/account/register
 11. SonarQube scanner
 
 For SonarScanner you need to additionally install:
-- .NET Core 2.0 runtime: https://dotnet.microsoft.com/download/dotnet-core/2.0
-- Java
+- Java (https://docs.sonarqube.org/latest/requirements/requirements/)
 
 To enable SonarScanner you need to set the following environment variables:
 - `STARSKY_SONAR_KEY` - the public name of the project
@@ -141,7 +138,7 @@ To enable SonarScanner you need to set the following environment variables:
 - `STARSKY_SONAR_URL` - defaults to sonarcloud.io
 
 #### Known errors
-When using SQLite as databasetype without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
+When using SQLite as database type without `SQLitePCLRaw.lib.e_sqlite3.linux` the following error appears:
 `System.DllNotFoundException: Unable to load DLL 'e_sqlite3'`
 
 To avoid the error: `System.IO.FileLoadException` `Microsoft.Extensions.Options, Version=2.0.2.0` the package `Microsoft.EntityFrameworkCore is installed
@@ -161,9 +158,9 @@ The library libhostfxr.so was found, but loading it from <yourpath>/libhostfxr.s
 Check your file rights in the folders, they should be 644 for files and 755 for folders.
 except for the executable  files
 
-### Bash build and configuation scripts
+### Bash build and configuration scripts
 
-Those scripts are optional and used for configuation.
+Those scripts are optional and used for configuration.
 
 #### pm2 `pm2-new-instance.sh`
 The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
