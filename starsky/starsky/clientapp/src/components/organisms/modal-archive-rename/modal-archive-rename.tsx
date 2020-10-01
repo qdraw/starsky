@@ -20,7 +20,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageRenameFolder = language.text("Huidige mapnaam wijzigen", "Rename current folder");
-  const MessageNonValidDirectoryName: string = language.text("Deze mapnaam is niet valide", "Directory name is not valid");;
+  const MessageNonValidDirectoryName: string = language.text("Deze mapnaam is niet valide", "Directory name is not valid");
   const MessageGeneralError: string = language.text("Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
     "Something went wrong with the request, please try again later");
 

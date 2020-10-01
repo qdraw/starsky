@@ -2,6 +2,7 @@
 using System.Text.Json.Serialization;
 #else
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 #endif
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Converters;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Models
