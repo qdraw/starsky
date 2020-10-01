@@ -44,6 +44,7 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Full location specification
 	    /// </summary>
+	    // ReSharper disable once UnusedAutoPropertyAccessor.Global
 	    public List<string> Breadcrumb { get; set; }
         
 	    /// <summary>
@@ -54,7 +55,8 @@ namespace starskycore.ViewModels
 	    /// <summary>
 	    /// Current page number (index=0)
 	    /// </summary>
-        public int PageNumber { get; set; }
+	    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+	    public int PageNumber { get; set; }
 	    
 	    /// <summary>
 	    /// The last page (index=0)
@@ -190,9 +192,6 @@ namespace starskycore.ViewModels
 	    /// Private field: Search Options &gt;, &lt;,=. (greater than sign, less than sign, equal sign) to know which field use the same indexer in _searchIn or _searchFor
 	    /// </summary>
         private List<SearchForOptionType> _searchForOptions;
-
-		// todo: check output api (Json)
-
 
 	    /// <summary>
 	    /// Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)  to know which field use the same indexer in _searchIn or _searchFor
@@ -508,9 +507,9 @@ namespace starskycore.ViewModels
 	    /// <param name="model">to search in this model</param>
 	    /// <param name="property">the property name to search in</param>
 	    /// <param name="searchForQuery">the query to search for (always string) </param>
-	    /// <param name="searchType">greather then, equal</param>
+	    /// <param name="searchType">greater then, equal</param>
 	    /// <returns>search values</returns>
-	    public SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchViewModel.SearchForOptionType searchType)
+	    private SearchViewModel PropertySearch(SearchViewModel model, PropertyInfo property, string searchForQuery, SearchForOptionType searchType)
 	    {
 
 		    if ( property.PropertyType == typeof(string) )
@@ -519,13 +518,14 @@ namespace starskycore.ViewModels
 			    {
 				    case SearchForOptionType.Not:
 					    model.FileIndexItems = model.FileIndexItems.Where(
-						    p => p.GetType().GetProperty(property.Name).Name == property.Name 
+						    p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 						         && ! // not
-							         p.GetType().GetProperty(property.Name).GetValue(p, null).ToString().ToLowerInvariant().Contains(searchForQuery)  
+							         p.GetType().GetProperty(property.Name).GetValue(p, null)
+								         .ToString().ToLowerInvariant().Contains(searchForQuery)  
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
 					                                                           && p.GetType().GetProperty(property.Name).GetValue(p, null)
 						                                                           .ToString().ToLowerInvariant().Contains(searchForQuery)  
 					    ).ToList();
@@ -554,7 +554,8 @@ namespace starskycore.ViewModels
 			    {
 				    case SearchForOptionType.Not:
 					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name).GetValue(p, null)  
+					                                                           && (ExtensionRolesHelper.ImageFormat) p.GetType().GetProperty(property.Name)
+						                                                           .GetValue(p, null)  
 					                                                           != // not
 					                                                           castImageFormat
 					    ).ToList();
@@ -579,18 +580,21 @@ namespace starskycore.ViewModels
 			    switch (searchType)
 			    {
 				    case SearchViewModel.SearchForOptionType.LessThen:
-					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  <= parsedDateTime
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null) 
+					                                                           <= parsedDateTime
 					    ).ToList();
 					    break;
 				    case SearchViewModel.SearchForOptionType.GreaterThen:
-					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  >= parsedDateTime
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)
+					                                                           >= parsedDateTime
 					    ).ToList();
 					    break;
 				    default:
-					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name).Name == property.Name 
-					                                                           && (DateTime) p.GetType().GetProperty(property.Name).GetValue(p, null)  == parsedDateTime
+					    model.FileIndexItems = model.FileIndexItems.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name 
+					                                                           && (DateTime) p.GetType().GetProperty(property.Name)?.GetValue(p, null)
+					                                                           == parsedDateTime
 					    ).ToList();
 					    break;
 			    }
