@@ -64,11 +64,6 @@ namespace starsky.foundation.database.Helpers
         {
             switch (statusResults)
             {
-                // case FileIndexItem.ExifStatus.NotFoundIsDir:
-                //     statusModel.IsDirectory = true;
-                //     statusModel.Status = FileIndexItem.ExifStatus.NotFoundIsDir;
-                //     fileIndexResultsList.Add(statusModel);
-                //     return true;
                 case FileIndexItem.ExifStatus.DirReadOnly:
                     statusModel.IsDirectory = true;
                     statusModel.Status = FileIndexItem.ExifStatus.DirReadOnly;

@@ -54,15 +54,15 @@ You could use machine specific configuration files: appsettings.{machinename}.js
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
 5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
 6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
-7.  `AddSwaggerExport` - _Temporary disabled due known issue_ To Export Swagger defentions on startup _(default false)_
+7.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
 8.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
 9.  `Verbose` - show more console logging  _(default false)_
-10. `WebFtp` - used by starskyWebFtpCli
-11. `PublishProfiles` - used by starskyWebHtmlCli
+10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
+11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
-15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode _(default false)_
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. This toggle is always disabled in debug/develop mode _(default false)_
 
 ### Appsettings.json example
 ```json
@@ -176,12 +176,18 @@ When the UI starts there is an Health API check to make sure that some important
 - __Storage_ThumbnailTempFolder__ There is not enough disk space available on the thumbnails folder location 
 - __Storage_TempFolder__ There is not enough disk space available on the temp folder location 
 
-#### Not exist errors
+#### Folder or file not exist errors
 - __Exist_StorageFolder__ The Storage Folder does not exist, please create it first.
 - __Exist_TempFolder__ The Temp Folder does not exist, please create it first.
 - __Exist_ExifToolPath__ ExifTool is not linked, you need this to write meta data to files.ExifTool.
     Try to remove the _temp folder_ and run the Application again.
 - __Exist_ThumbnailTempFolder__ The Thumbnail cache Folder does not exist, please create it first.
 
-#### DbContext, Mysql or Sqlite
+#### Date issues
+- __DateAssemblyHealthCheck__  this setting checks if your current datetime is newer than when this application is build
+
+#### ApplicationDbContext, Mysql or Sqlite
 There is also a check to make sure the database runs good
+
+#### Application Insights
+Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.

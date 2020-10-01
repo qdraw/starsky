@@ -679,12 +679,6 @@ Task("DocsGenerate")
       // and build folder
       NpmRunScript("build", s => s.FromPath("../starsky-tools/docs"));
 
-      Information("remove node node_modules for ../starsky-tools/docs/node_modules");
-
-      DeleteDirectory("../starsky-tools/docs/node_modules", new DeleteDirectorySettings {
-          Recursive = true
-      });
-
       // copy to build directory
       foreach(var runtime in runtimes)
       {
@@ -692,26 +686,14 @@ Task("DocsGenerate")
             continue;
           }
 
-          Information("copy to: " + $"./{runtime}/docs");
+          var docsDistDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, runtime);
+          Information("copy to: " + docsDistDirectory);
 
-          CopyDirectory("../starsky-tools/docs/", $"./{runtime}/docs");
-
-          var toDeleteFiles = new string[]{
-            $"./{runtime}/docs/docs.js",
-            $"./{runtime}/docs/readme.md",
-            $"./{runtime}/docs/package.json",
-            $"./{runtime}/docs/package-lock.json",
-          };
-
-          foreach(var toDeleteFile in toDeleteFiles)
-          {
-              if (FileExists(toDeleteFile))
-              {
-                  DeleteFile(toDeleteFile);
-              }
-          }
+          NpmRunScript("copy", (s) => {
+              s.FromPath("../starsky-tools/docs");
+              s.WithArguments(docsDistDirectory);
+            });
       }
-
   });
 
 

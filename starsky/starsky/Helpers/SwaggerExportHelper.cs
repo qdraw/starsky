@@ -55,7 +55,7 @@ namespace starsky.Helpers
 			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return;
 			
 			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
-			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", "swaggerJsonText");
+			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", nameof(swaggerProvider));
 
 			var swaggerJsonFullPath =
 				Path.Join(appSettings.TempFolder, appSettings.Name.ToLowerInvariant() + ".json");

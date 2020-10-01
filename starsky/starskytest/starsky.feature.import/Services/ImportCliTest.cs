@@ -11,10 +11,6 @@ namespace starskytest.starsky.feature.import.Services
 	[TestClass]
 	public class ImportCliTest
 	{
-		private readonly FakeIStorage _iStorageFake;
-		private readonly string _exampleHash;
-		private readonly FakeIStorage _iStorageDirectoryRecursive;
-
 		[TestMethod]
 		public async Task ImporterCli_NoArgs_DefaultHelp()
 		{

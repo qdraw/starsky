@@ -6,12 +6,12 @@ namespace starsky.foundation.database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
+			// migration has been undo
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+	        // migration has been undo
         }
     }
 }

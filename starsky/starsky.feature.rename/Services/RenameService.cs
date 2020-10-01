@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using starsky.foundation.database.Helpers;
@@ -175,10 +176,11 @@ namespace starsky.feature.rename.Services
 			}
 		}
 
-
 		private void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexItems)
 		{
+			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems));
+			
 			// 1. Get Direct child files
 			// 2. Get Direct folder and child folders
 			// 3. move child files

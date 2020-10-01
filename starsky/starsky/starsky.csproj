@@ -17,9 +17,6 @@
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>
-    <ItemGroup>
-       <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="3.1.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Sqlite" Version="3.1.1" />

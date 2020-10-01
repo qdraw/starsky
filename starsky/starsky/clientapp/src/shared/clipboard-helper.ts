@@ -18,9 +18,9 @@ export class ClipboardHelper {
       return false;
     }
 
-    var tags = (tagsReference.current as HTMLDivElement).innerText;
-    var description = (descriptionReference.current as HTMLDivElement).innerText;
-    var title = (titleReference.current as HTMLDivElement).innerText;
+    var tags = tagsReference.current.innerText;
+    var description = descriptionReference.current.innerText;
+    var title = titleReference.current.innerText;
 
     sessionStorage.setItem(this.clipBoardName, JSON.stringify({
       tags,
@@ -31,7 +31,7 @@ export class ClipboardHelper {
   }
 
   public Read(): IClipboardData | null {
-    var result = {} as IClipboardData;
+    var result = {};
     try {
       var resultString = sessionStorage.getItem(this.clipBoardName);
       result = JSON.parse(resultString ? resultString : "");
@@ -52,18 +52,17 @@ export class ClipboardHelper {
     if (!readData) {
       return false;
     }
-    var tags = (tagsReference.current as HTMLDivElement);
+    var tags = tagsReference.current;
     tags.innerText = readData.tags;
     tags.dispatchEvent(new Event('blur'))
 
-    var description = (descriptionReference.current as HTMLDivElement);
+    var description = descriptionReference.current;
     description.innerText = readData.description;
     description.dispatchEvent(new Event('blur'))
 
-    var title = (titleReference.current as HTMLDivElement);
+    var title = titleReference.current;
     title.innerText = readData.title;
     title.dispatchEvent(new Event('blur'))
     return true;
   }
-
 }

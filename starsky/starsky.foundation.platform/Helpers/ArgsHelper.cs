@@ -215,6 +215,7 @@ namespace starsky.foundation.platform.Helpers
 			{
 				case AppSettings.StarskyAppType.Admin:
 					_console.WriteLine("--name or -n == string ; username / email");
+					_console.WriteLine("--password == string ; password");
 					break;
 				case AppSettings.StarskyAppType.Geo:
 					// When this change please update ./readme.md

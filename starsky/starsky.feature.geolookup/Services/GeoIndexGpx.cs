@@ -29,8 +29,7 @@ namespace starsky.feature.geolookup.Services
 	        _cache = memoryCache;
         }
         
-        private List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory,
-            bool overwriteLocations = false)
+        private List<FileIndexItem> GetNoLocationItems(IEnumerable<FileIndexItem> metaFilesInDirectory)
         {
             return metaFilesInDirectory.Where(
                     metaFileItem =>
@@ -72,7 +71,7 @@ namespace starsky.feature.geolookup.Services
 	        if ( valueDateTime.Kind != DateTimeKind.Unspecified ) 
 	        {
 		        throw new ArgumentException($"valueDateTime DateTime-Kind '{valueDateTime.Kind}' " +
-		                                    $"'{subPath}' should be Unspecified", nameof(DateTime));
+		                                    $"'{subPath}' should be Unspecified", nameof(valueDateTime));
 	        }
 	        
 	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 

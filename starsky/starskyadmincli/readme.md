@@ -18,11 +18,26 @@
 
 ## Starsky Admin Cli docs
 
-Currently you can only delete accounts by email address
+### Account creation
+This first question is 'What is the username/email?'
+When you enter an email address that is new you will able to register that account
+```
+We are going to create an account.
+What is the password?
+```
+
+### Update existing account
+Currently you can only delete accounts by email address or toggle a user role between normal user and admin user
 
 The Application ask the following question:
 ```
 What is the username/email?
 ```
- 
-And press __2__ to delete the account
+
+```
+Do you want to 
+2. remove account 
+3. Toggle User Role
+```
+
+> Please note. When you toggle a User Role, in the web interface you need to logout and login again
