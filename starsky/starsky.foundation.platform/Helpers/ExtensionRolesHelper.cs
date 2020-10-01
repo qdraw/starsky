@@ -345,16 +345,6 @@ namespace starsky.foundation.platform.Helpers
 			var bmp = Encoding.ASCII.GetBytes("BM"); // BMP
 			var gif = Encoding.ASCII.GetBytes("GIF"); // GIF
 			var png = new byte[] {137, 80, 78, 71}; // PNG
-			var tiff = new byte[] {73, 73, 42}; // TIFF
-			var tiff2 = new byte[] {77, 77, 42}; // TIFF
-			var dng = new byte[] {77, 77, 0}; // DNG? //0
-			var olympusRaw  = new byte[] {73, 73, 82};
-			var fujiFilmRaw = new byte[] {70, 85, 74};
-			var panasonicRaw = new byte[] {73, 73, 85, 0};
-
-			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
-			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
-			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
 
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
 			var gpx = new byte[] {60, 103, 112}; // <gpx
@@ -374,6 +364,33 @@ namespace starsky.foundation.platform.Helpers
 			if ( png.SequenceEqual(bytes.Take(png.Length)) )
 				return ImageFormat.png;
 
+			if ( GetImageFormatTiff(bytes) != null ) return ImageFormat.tiff;
+
+			if ( GetImageFormatJpeg(bytes) != null ) return ImageFormat.jpg;
+			
+			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
+				return ImageFormat.xmp;
+
+			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) || 
+			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) || 
+			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length))  )
+				return ImageFormat.gpx;
+			
+			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
+				return ImageFormat.mp4;
+			
+			return ImageFormat.unknown;
+		}
+
+		private static ImageFormat? GetImageFormatTiff(byte[] bytes)
+		{
+			var tiff = new byte[] {73, 73, 42}; // TIFF
+			var tiff2 = new byte[] {77, 77, 42}; // TIFF
+			var dng = new byte[] {77, 77, 0}; // DNG? //0
+			var olympusRaw  = new byte[] {73, 73, 82};
+			var fujiFilmRaw = new byte[] {70, 85, 74};
+			var panasonicRaw = new byte[] {73, 73, 85, 0};
+			
 			if ( tiff.SequenceEqual(bytes.Take(tiff.Length)) )
 				return ImageFormat.tiff;
 
@@ -392,6 +409,14 @@ namespace starsky.foundation.platform.Helpers
 			if ( panasonicRaw.SequenceEqual(bytes.Take(panasonicRaw.Length)) )
 				return ImageFormat.tiff;
 			
+			return null;
+		}
+
+		private static ImageFormat? GetImageFormatJpeg(byte[] bytes)
+		{
+			var jpeg = new byte[] {255, 216, 255, 224}; // jpeg
+			var jpeg2 = new byte[] {255, 216, 255, 225}; // jpeg canon
+			var jpeg3 = new byte[] {255, 216, 255, 219}; // other jpeg
 			if ( jpeg.SequenceEqual(bytes.Take(jpeg.Length)) )
 				return ImageFormat.jpg;
 
@@ -401,18 +426,7 @@ namespace starsky.foundation.platform.Helpers
 			if ( jpeg3.SequenceEqual(bytes.Take(jpeg3.Length)) )
 				return ImageFormat.jpg;
 			
-			if ( xmp.SequenceEqual(bytes.Take(xmp.Length)) )
-				return ImageFormat.xmp;
-
-			if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) || 
-			     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) || 
-			     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length))  )
-				return ImageFormat.gpx;
-			
-			if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
-				return ImageFormat.mp4;
-			
-			return ImageFormat.unknown;
+			return null;
 		}
 		
 		/// <summary>
