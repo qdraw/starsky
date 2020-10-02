@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import * as FetchPost from '../../../shared/fetch-post';
-import DropArea from './drop-area';
+import DropArea, { PostSingleFormData } from './drop-area';
 
 describe("DropArea", () => {
 
@@ -43,8 +43,13 @@ describe("DropArea", () => {
           fileName: "rootfilename.jpg",
           fileIndexItem: {
             "description": "",
-            "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
-            "isDirectory": false, "status": "Ok", "tags": "", "title": ""
+            "fileHash": undefined,
+            "fileName": "test.jpg",
+            "filePath": "/test.jpg",
+            "isDirectory": false,
+            "status": "Ok",
+            "tags": "",
+            "title": ""
           }
         }]
       });
@@ -62,7 +67,7 @@ describe("DropArea", () => {
       });
 
       var compareFormData = new FormData();
-      compareFormData.append("files", exampleFile);
+      compareFormData.append("file", exampleFile);
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledTimes(1);
@@ -73,9 +78,14 @@ describe("DropArea", () => {
 
       expect(callbackSpy).toBeCalledWith([{
         "description": "",
-        "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
-        "isDirectory": false, "lastEdited": expect.any(String),
-        "status": "Ok", "tags": "", "title": ""
+        "fileHash": undefined,
+        "fileName": "test.jpg",
+        "filePath": "/test.jpg",
+        "isDirectory": false,
+        "lastEdited": expect.any(String),
+        "status": "Ok",
+        "tags": "",
+        "title": ""
       }]);
 
     });
@@ -126,6 +136,185 @@ describe("DropArea", () => {
     });
 
   });
+
+  describe("PostSingleFormData", () => {
+    it("no input", () => {
+      var callBackWhenReady = jest.fn();
+
+      PostSingleFormData("/", undefined, [], 0, [], callBackWhenReady, jest.fn());
+      expect(callBackWhenReady).toBeCalled();
+      expect(callBackWhenReady).toBeCalledWith([]);
+    });
+
+    it("to big", () => {
+      var callBackWhenReady = jest.fn();
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 3000000000000,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], callBackWhenReady, jest.fn());
+      expect(callBackWhenReady).toBeCalled();
+
+      expect(callBackWhenReady).toBeCalledWith([
+        {
+          "fileName": "test.jpg",
+          "filePath": "test.jpg",
+          "status": "ServerError",
+        },
+      ]);
+    });
+
+    it("status Ok", (done) => {
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: [{
+          status: IExifStatus.Ok,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            "description": "",
+            "fileHash": undefined, "fileName": "", "filePath": "/test.jpg",
+            "isDirectory": false, "status": "Ok", "tags": "", "title": ""
+          }
+        }]
+      });
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 300,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], (data) => {
+        expect(data).toStrictEqual([
+          {
+            "description": "",
+            "fileHash": undefined,
+            "fileName": "",
+            "filePath": "/test.jpg",
+            "isDirectory": false,
+            "lastEdited": expect.any(String),
+            "status": "Ok",
+            "tags": "",
+            "title": "",
+          },
+        ]);
+        expect(fetchPostSpy).toBeCalled();
+
+        done();
+      }, jest.fn());
+    });
+
+
+    it("no data", (done) => {
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: null
+      });
+
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 300,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], (data) => {
+        expect(data).toStrictEqual([
+          {
+            "fileName": "test.jpg",
+            "filePath": "test.jpg",
+            "status": "ServerError",
+          }
+        ]);
+        expect(fetchPostSpy).toBeCalled();
+
+        done();
+      }, jest.fn());
+    });
+
+    it("malformed array", (done) => {
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: [null]
+      });
+
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 300,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], (data) => {
+        expect(data).toStrictEqual([
+          {
+            "fileName": "test.jpg",
+            "filePath": "test.jpg",
+            "status": "ServerError",
+          }
+        ]);
+        expect(fetchPostSpy).toBeCalled();
+
+        done();
+      }, jest.fn());
+    });
+
+    it("status Error in response", (done) => {
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: [{
+          status: IExifStatus.ServerError,
+          fileName: "rootfilename.jpg",
+          fileIndexItem: {
+            "description": "",
+            "fileHash": undefined,
+            "fileName": "test.jpg",
+            "filePath": "/test.jpg",
+            "isDirectory": false,
+            "status": "ServerError",
+            "tags": "",
+            "title": ""
+          }
+        }]
+      });
+
+      jest.spyOn(FetchPost, 'default').mockReset();
+
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 300,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], (data) => {
+        expect(data).toStrictEqual([
+          {
+            "description": "",
+            "fileHash": undefined,
+            "fileName": "test.jpg",
+            "filePath": "/test.jpg",
+            "isDirectory": false,
+            "lastEdited": expect.any(String),
+            "status": "ServerError",
+            "tags": "",
+            "title": "",
+          },
+        ]);
+        expect(fetchPostSpy).toBeCalled();
+
+        done();
+      }, jest.fn());
+    });
+  });
+
 });
 
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem, newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
 import FetchPost from '../../../shared/fetch-post';
-import { URLPath } from '../../../shared/url-path';
+import Notification from '../../atoms/notification/notification';
 import { MoreMenuEventCloseConst } from '../more-menu/more-menu';
 import Portal from '../portal/portal';
 import Preloader from '../preloader/preloader';
@@ -16,6 +16,79 @@ export interface IDropAreaProps {
   callback?(result: Array<IFileIndexItem>): void;
 }
 
+const CastFileIndexItem = (element: any): IFileIndexItem => {
+  var uploadFileObject = newIFileIndexItem();
+  uploadFileObject.fileHash = element.fileHash;
+  uploadFileObject.filePath = element.filePath;
+  uploadFileObject.isDirectory = false;
+  uploadFileObject.fileName = element.fileName;
+  uploadFileObject.lastEdited = new Date().toISOString();
+  uploadFileObject.status = element.status;
+  return uploadFileObject;
+};
+
+export function PostSingleFormData(endpoint: string, folderPath: string | undefined, inputFilesList: File[],
+  index: number, outputUploadFilesList: IFileIndexItem[], callBackWhenReady: (result: IFileIndexItem[]) => void,
+  setNotificationStatus: React.Dispatch<React.SetStateAction<string>>) {
+
+  var formData = new FormData();
+
+  if (inputFilesList.length === index) {
+    setNotificationStatus("");
+    callBackWhenReady(outputUploadFilesList);
+    return;
+  }
+
+  setNotificationStatus(`Uploading ${index + 1}/${inputFilesList.length} ${inputFilesList[index].name}`);
+
+  if (inputFilesList[index].size / 1024 / 1024 > 250) {
+    outputUploadFilesList.push({ filePath: inputFilesList[index].name, fileName: inputFilesList[index].name, status: IExifStatus.ServerError } as IFileIndexItem);
+    next(endpoint, folderPath, inputFilesList, index, outputUploadFilesList, callBackWhenReady, setNotificationStatus);
+    return;
+  }
+
+  formData.append("file", inputFilesList[index]);
+
+  FetchPost(endpoint, formData, 'post', { 'to': folderPath }).then((response) => {
+    if (!response.data) {
+      outputUploadFilesList.push({
+        filePath: inputFilesList[index].name,
+        fileName: inputFilesList[index].name,
+        status: IExifStatus.ServerError
+      } as IFileIndexItem);
+
+      next(endpoint, folderPath, inputFilesList, index, outputUploadFilesList, callBackWhenReady, setNotificationStatus);
+      return;
+    }
+
+    Array.from(response.data).forEach((dataItem: any) => {
+      if (!dataItem) {
+        outputUploadFilesList.push({
+          filePath: inputFilesList[index].name,
+          fileName: inputFilesList[index].name,
+          status: IExifStatus.ServerError
+        } as IFileIndexItem);
+      }
+      else if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
+        outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
+      }
+      else {
+        dataItem.fileIndexItem.lastEdited = new Date().toISOString();
+        outputUploadFilesList.push(dataItem.fileIndexItem);
+      }
+    });
+
+    next(endpoint, folderPath, inputFilesList, index, outputUploadFilesList, callBackWhenReady, setNotificationStatus);
+  });
+}
+
+function next(endpoint: string, folderPath: string | undefined, inputFilesList: File[],
+  index: number, outputUploadFilesList: IFileIndexItem[], callBackWhenReady: (result: IFileIndexItem[]) => void,
+  setNotificationStatus: React.Dispatch<React.SetStateAction<string>>): void {
+  index++;
+  PostSingleFormData(endpoint, folderPath, inputFilesList, index, outputUploadFilesList, callBackWhenReady, setNotificationStatus)
+}
+
 /**
  * Drop Area / Upload field, callback is list of uploaded files
  * @param props Endpoints, settings to enable drag 'n drop, add extra classes
@@ -25,9 +98,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   const [dragActive, setDrag] = useState(false);
   const [dragTarget, setDragTarget] = useState(document.createElement("span") as Element);
   const [isLoading, setIsLoading] = useState(false);
-
-  // used to force react to update the array
-  const [uploadFilesList] = useState(newIFileIndexItemArray());
+  const [notificationStatus, setNotificationStatus] = useState("");
 
   /**
    * On a mouse drop
@@ -77,55 +148,12 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
     setIsLoading(true);
 
-    var formData = new FormData();
-    filesList.forEach(file => {
-      const { size, name } = file;
-
-      if (size / 1024 / 1024 > 250) {
-        uploadFilesList.push({ filePath: name, status: IExifStatus.ServerError } as IFileIndexItem);
-        return;
-      }
-
-      formData.append("files", file);
-    });
-
-    FetchPost(props.endpoint, formData, 'post', { 'to': props.folderPath }).then((response) => {
-
-
-      if (!response.data) {
-        setIsLoading(false);
-        return;
-      }
-
-      Array.from(response.data).forEach((dataItem: any) => {
-        if (!dataItem) return;
-        if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
-          uploadFilesList.push(CastFileIndexItem(dataItem, dataItem.status as IExifStatus));
-          return;
-        }
-        // merge item status:Ok and fileIndexItem
-        var uploadFileObject: IFileIndexItem = dataItem.fileIndexItem;
-        uploadFileObject.status = dataItem.status as IExifStatus;
-        uploadFileObject.lastEdited = new Date().toISOString();
-        uploadFilesList.push(uploadFileObject);
-      });
-
+    PostSingleFormData(props.endpoint, props.folderPath, filesList, 0, newIFileIndexItemArray(), (result) => {
       setIsLoading(false);
-
-      if (!props.callback) return;
-      props.callback(uploadFilesList);
-    });
-  };
-
-  const CastFileIndexItem = (element: any, status: IExifStatus): IFileIndexItem => {
-    var uploadFileObject = newIFileIndexItem();
-    uploadFileObject.fileHash = element.fileHash;
-    uploadFileObject.filePath = element.filePath;
-    uploadFileObject.isDirectory = false;
-    uploadFileObject.fileName = new URLPath().getChild(uploadFileObject.filePath);
-    uploadFileObject.lastEdited = new Date().toISOString();
-    uploadFileObject.status = status;
-    return uploadFileObject;
+      if (props.callback) {
+        props.callback(result)
+      }
+    }, setNotificationStatus)
   };
 
   /**
@@ -218,6 +246,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
 
   return (<>
     {isLoading ? <Portal><Preloader isDetailMenu={false} isOverlay={true} /></Portal> : null}
+    {notificationStatus ? <Portal><Notification>{notificationStatus}</Notification></Portal> : null}
     {props.enableInputButton ? <>
       <input id={dropareaId} className="droparea-file-input" type="file" multiple={true} onChange={onChange} />
       <label className={props.className} htmlFor={dropareaId} >Upload</label>

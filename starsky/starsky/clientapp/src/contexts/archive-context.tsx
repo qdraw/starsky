@@ -140,6 +140,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       var concattedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
       concattedFileIndexItems = new ArrayHelper().UniqueResults(concattedFileIndexItems, 'filePath');
 
+      console.log(concattedFileIndexItems);
+
       // order by this to match c#
       var fileIndexItems = concattedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
 

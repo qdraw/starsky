@@ -87,6 +87,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     if (isReadOnly) return <li data-test="upload" className="menu-option disabled">Upload</li>
     return <li className="menu-option menu-option--input">
       <DropArea callback={(add) => {
+        console.log(add);
+
         setDropAreaUploadFilesList(add);
         dispatch({ 'type': 'add', add });
       }}
