@@ -284,8 +284,6 @@ describe("DropArea", () => {
         }]
       });
 
-      jest.spyOn(FetchPost, 'default').mockReset();
-
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
       const file = {
@@ -313,6 +311,39 @@ describe("DropArea", () => {
         done();
       }, jest.fn());
     });
+
+    it("status Error in response with no FileIndexItem", (done) => {
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
+        ...newIConnectionDefault(), data: [{
+          status: IExifStatus.ServerError,
+        }]
+      });
+
+      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+
+      const file = {
+        name: 'test.jpg',
+        type: 'image/jpg',
+        size: 300,
+      } as File;
+
+      PostSingleFormData("/", undefined, [file], 0, [], (data) => {
+        expect(data).toStrictEqual([
+          {
+            "fileName": "test.jpg",
+            "fileHash": undefined,
+            "filePath": undefined,
+            "isDirectory": false,
+            "status": "ServerError",
+          },
+        ]);
+        expect(fetchPostSpy).toBeCalled();
+
+        done();
+      }, jest.fn());
+    });
+
   });
 
 });

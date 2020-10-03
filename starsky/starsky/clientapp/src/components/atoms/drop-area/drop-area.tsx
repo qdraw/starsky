@@ -77,6 +77,7 @@ export function PostSingleFormData(endpoint: string, folderPath: string | undefi
         outputUploadFilesList.push({
           filePath: dataItem.filePath,
           fileName: inputFilesList[index].name,
+          isDirectory: false,
           fileHash: dataItem.fileHash,
           status: dataItem.status
         } as IFileIndexItem);
