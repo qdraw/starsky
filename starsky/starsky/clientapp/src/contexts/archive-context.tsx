@@ -137,11 +137,11 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
 
-      var concattedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
-      concattedFileIndexItems = new ArrayHelper().UniqueResults(concattedFileIndexItems, 'filePath');
+      var concatenatedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
+      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, 'filePath');
 
       // order by this to match c#
-      var fileIndexItems = concattedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
+      var fileIndexItems = concatenatedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       return updateCache({ ...state, fileIndexItems, lastUpdated: new Date() });

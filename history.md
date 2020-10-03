@@ -41,10 +41,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Add link to register page on login screen
 - [x]   (Added) _Front-end_ Add link to login page on register screen
 - [x]   (Added) _Front-end_ Add 'Move to Trash' to search pages
-- [x]   (Fixed) _Front-end_ Allow searching for query !delete!
-- [x]   (Fixed) _Front-end_ Allow case-insensitive search query for -inurl
+- [x]   (Fixed) _Front-end_ Allow searching for query `!delete!`
+- [x]   (Fixed) _Front-end_ Allow case-insensitive search query for `-inurl`
 - [x]   (Fixed) _Front-end_ Add loading delete and undo delete for trash page 
- 
+- [x]   (Changed) _Front-end_ Upload multiple files after each other instead of in once
+- [x]   (Fixed) _Front-end_ Show error status when upload fails instead of loading
+
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
 - [x]   (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`

@@ -103,6 +103,11 @@
   background-image: url('../images/baseline-error-24px.svg');
 }
 
+.modal-move .box.error .error-status {
+  margin-left: 5px;
+  word-break: normal;
+}
+
 .modal-move .warning-box {
   margin-top: 10px;
 }
