@@ -65,14 +65,14 @@ namespace starsky.Controllers
 			var to = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
 			
-			var parentDirectory = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
+			var parentDirectoryWithEndSlash = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
 
 			// only used for direct import
 			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) && 
 			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
 			{
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
-				parentDirectory = FilenamesHelper.GetParentPath(to);
+				parentDirectoryWithEndSlash = FilenamesHelper.GetParentPath(to);
 			}
 			else if (!_iStorage.ExistFolder(to))
 			{
@@ -92,18 +92,18 @@ namespace starsky.Controllers
 				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
-				await _iStorage.WriteStreamAsync(tempFileStream, parentDirectory + fileName);
+				await _iStorage.WriteStreamAsync(tempFileStream, parentDirectoryWithEndSlash + fileName);
 				await tempFileStream.DisposeAsync();
 				
-				_iSync.SyncFiles(parentDirectory + fileName,false);
+				_iSync.SyncFiles(parentDirectoryWithEndSlash + fileName,false);
 				
 				 // clear directory cache
-				 _query.RemoveCacheParentItem(parentDirectory);
+				 _query.RemoveCacheParentItem(parentDirectoryWithEndSlash);
 
 				 // to get the output in the result right
 				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
-				 fileIndexResultsList[i].FileIndexItem.ParentDirectory = parentDirectory;
-				 fileIndexResultsList[i].FilePath = parentDirectory + fileName;
+				 fileIndexResultsList[i].FileIndexItem.ParentDirectory =  PathHelper.RemoveLatestSlash(parentDirectoryWithEndSlash);
+				 fileIndexResultsList[i].FilePath = parentDirectoryWithEndSlash + fileName;
 				 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
