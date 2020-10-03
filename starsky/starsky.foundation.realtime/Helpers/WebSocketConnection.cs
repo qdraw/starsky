@@ -25,6 +25,8 @@ namespace starsky.foundation.realtime.Helpers
 		#region Events
 		public event EventHandler<string> ReceiveText;
 
+		public event EventHandler NewConnection;
+
 		#endregion
 
 		#region Constructor
@@ -87,6 +89,7 @@ namespace starsky.foundation.realtime.Helpers
 		{
 			try
 			{
+				NewConnection?.Invoke(this, EventArgs.Empty);
 				byte[] receivePayloadBuffer = new byte[_receivePayloadBufferSize];
 				WebSocketReceiveResult webSocketReceiveResult =
 					await _webSocket.ReceiveAsync(new ArraySegment<byte>(receivePayloadBuffer),
