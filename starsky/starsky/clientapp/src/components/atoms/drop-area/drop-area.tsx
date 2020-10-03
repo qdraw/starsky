@@ -69,8 +69,17 @@ export function PostSingleFormData(endpoint: string, folderPath: string | undefi
           status: IExifStatus.ServerError
         } as IFileIndexItem);
       }
-      else if (dataItem.status as IExifStatus !== IExifStatus.Ok) {
+      else if (dataItem.fileIndexItem && dataItem.status as IExifStatus !== IExifStatus.Ok) {
         outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
+      }
+      else if (!dataItem.fileIndexItem && dataItem.status as IExifStatus !== IExifStatus.Ok) {
+        // when `/import` already existing item
+        outputUploadFilesList.push({
+          filePath: dataItem.filePath,
+          fileName: inputFilesList[index].name,
+          fileHash: dataItem.fileHash,
+          status: dataItem.status
+        } as IFileIndexItem);
       }
       else {
         dataItem.fileIndexItem.lastEdited = new Date().toISOString();
