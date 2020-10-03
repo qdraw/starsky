@@ -24,9 +24,7 @@ namespace starsky.foundation.realtime.Middleware
 			_connectionsService = connectionsService ?? throw new ArgumentNullException(nameof(connectionsService));
 		}
 		#endregion
-
-		public const string WebSocketHeaderStatus = "x-web-socket";
-
+		
 		#region Methods
 		public async Task Invoke(HttpContext context)
 		{
@@ -44,9 +42,10 @@ namespace starsky.foundation.realtime.Middleware
 					}
                     
 					WebSocketConnection webSocketConnection = new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
-					webSocketConnection.ReceiveText += async (sender, message) =>
+					webSocketConnection.NewConnection += async (sender, message) =>
 					{
-						await webSocketConnection.SendAsync(message, CancellationToken.None);
+						await Task.Delay(150);
+						await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
 					};
 
 					_connectionsService.AddConnection(webSocketConnection);
