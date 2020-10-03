@@ -18,7 +18,9 @@ interface IMenuOptionMoveToTrashProps {
   dispatch: React.Dispatch<ArchiveAction>
 }
 
-const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
+const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(({
+  state, dispatch, select, setSelect, isReadOnly
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
 
@@ -32,6 +34,7 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     if (!select || isReadOnly) return;
 
     var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
+
     if (!toUndoTrashList) return;
     var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(toUndoTrashList, "");
     if (selectParams.length === 0) return;
@@ -42,14 +45,16 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     bodyParams.set("Tags", "!delete!");
     bodyParams.set("append", "true");
     bodyParams.set("Colorclass", "8");
-    bodyParams.set("collections", (new URLPath().StringToIUrl(history.location.search).collections !== false).toString());
+    bodyParams.set("collections", (new URLPath().StringToIUrl(
+      history.location.search).collections !== false).toString());
 
     var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
     if (resultDo.statusCode !== 404 && resultDo.statusCode !== 200) {
       return;
     }
+
     undoSelection();
-    // dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList });
+    dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList });
     ClearSearchCache(history.location.search);
   }
 

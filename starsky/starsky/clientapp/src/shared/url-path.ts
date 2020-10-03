@@ -326,7 +326,6 @@ export class URLPath {
         selectParams += ";";
       }
     }
-    console.log(selectParams);
     return selectParams;
   }
 

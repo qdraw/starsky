@@ -13,7 +13,15 @@ pr:
   branches:
     exclude:
     - master
-
+  paths:
+    include:
+    - starsky/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky.netframework/*
+    - /*.md
+    
 pool:
   vmImage: 'ubuntu-latest'
 

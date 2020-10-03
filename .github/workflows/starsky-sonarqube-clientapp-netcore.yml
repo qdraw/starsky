@@ -11,6 +11,7 @@ on:
     - '.github/workflows/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'    
+    - '!history.md'
 
 jobs:
   build:

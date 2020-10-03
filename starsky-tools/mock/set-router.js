@@ -193,6 +193,12 @@ function setRouter(app) {
     return res.json(apiPublishCreateIndex)
   });
 
+  app.post(prefix + '/api/import', (req, res) => {
+    setTimeout(() => {
+      return res.json("")
+    }, 3000);
+  });
+
   app.get(prefix + '/api/publish/exist', (req, res) => {
     return res.json(req.query.itemName === "test");
   });
