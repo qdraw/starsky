@@ -8,19 +8,30 @@ import ListImage from '../../atoms/list-image/list-image';
 import Preloader from '../../atoms/preloader/preloader';
 
 interface IListImageBox {
-  item: IFileIndexItem
+  item: IFileIndexItem,
+  /**
+   * When selecting and pressing shift
+   * @param filePath the entire path (subPath style)
+   */
+  onSelectionCallback?(filePath: string): void;
 }
+
+
 
 const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   var item = props.item;
+  if (item.isDirectory === undefined) item.isDirectory = false;
 
   var history = useLocation();
+
+  function updateSelect() {
+    setSelect(new URLPath().StringToIUrl(history.location.search).select);
+  }
 
   // Check if select exist or Length 0 or more
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
-    var inSelect = new URLPath().StringToIUrl(history.location.search).select;
-    setSelect(inSelect);
+    updateSelect()
   }, [history.location.search]);
 
   function toggleSelection(fileName: string): void {
@@ -43,7 +54,11 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   if (select) {
     return (
       <div className="list-image-box list-image-box--select">
-        <button onClick={() => toggleSelection(item.fileName)}
+        <button onClick={(event) => {
+          // multiple select using the shift key
+          if (!event.shiftKey) toggleSelection(item.fileName);
+          if (event.shiftKey && props.onSelectionCallback) props.onSelectionCallback(item.filePath);;
+        }}
           className={select.indexOf(item.fileName) === -1 ?
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
             "box-content box-content--selected colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory}>

@@ -5,7 +5,9 @@ import { PageType } from '../../../interfaces/IDetailView';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { INavigateState } from '../../../interfaces/INavigateState';
 import { Language } from '../../../shared/language';
+import { URLPath } from '../../../shared/url-path';
 import ListImageBox from '../list-image-box/list-image-box';
+import { ShiftSelectionHelper } from './shift-selection-helper';
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>,
@@ -65,8 +67,13 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           </div> : null : null
       }
       {
-        items.map((item, index) => (
-          <ListImageBox item={item} key={item.fileName + item.lastEdited + item.colorClass}></ListImageBox>
+        items.map((item) => (
+          <ListImageBox item={item}
+            key={item.fileName + item.lastEdited + item.colorClass}
+            onSelectionCallback={(f) =>
+              ShiftSelectionHelper(history, new URLPath().getSelect(history.location.search), f, items)
+            }
+          />
         ))
       }
     </div>)
