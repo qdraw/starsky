@@ -90,7 +90,7 @@ export function ShiftSelectionHelper(history: IUseLocation, select: string[], fi
 
   // remove duplicates
   var newSelect = [...select, items[filePathAppendIndex].fileName, ...toBeAddedToSelect].filter(function (item, pos) {
-    return [...select, items[filePathAppendIndex].fileName, ...toBeAddedToSelect].indexOf(item) == pos;
+    return [...select, items[filePathAppendIndex].fileName, ...toBeAddedToSelect].indexOf(item) === pos;
   });
   var urlObject = new URLPath().updateSelection(history.location.search, newSelect);
   history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });

@@ -16,22 +16,16 @@ interface IListImageBox {
   onSelectionCallback?(filePath: string): void;
 }
 
-
-
 const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   var item = props.item;
   if (item.isDirectory === undefined) item.isDirectory = false;
 
   var history = useLocation();
 
-  function updateSelect() {
-    setSelect(new URLPath().StringToIUrl(history.location.search).select);
-  }
-
   // Check if select exist or Length 0 or more
   const [select, setSelect] = React.useState(new URLPath().StringToIUrl(history.location.search).select);
   useEffect(() => {
-    updateSelect()
+    setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
   function toggleSelection(fileName: string): void {
