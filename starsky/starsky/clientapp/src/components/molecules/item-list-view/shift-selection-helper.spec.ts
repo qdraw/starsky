@@ -4,7 +4,8 @@ import { ShiftSelectionHelper } from './shift-selection-helper';
 
 describe("ShiftSelectionHelper", () => {
 
-  it("renders (without state component)", () => {
-    ShiftSelectionHelper(globalHistory, [], "test", newIFileIndexItemArray());
+  it("filePath not found", () => {
+    var result = ShiftSelectionHelper(globalHistory, [], "test", newIFileIndexItemArray());
+    expect(result).toBeFalsy();
   });
 });

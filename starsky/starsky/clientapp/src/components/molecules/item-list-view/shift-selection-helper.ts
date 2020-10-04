@@ -77,13 +77,14 @@ function toAddedLoopMinToMax(filePathAppendIndex: number,
  * @param items - list of items in current view
  */
 export function ShiftSelectionHelper(history: IUseLocation, select: string[], filePath: string, items:
-  IFileIndexItem[]) {
-  if (!items || select === undefined) return;
+  IFileIndexItem[]): boolean {
+  if (!items || select === undefined) return false;
 
   // when nothing is selected assume the first
-  if (select.length === 0) select = [items[0].fileName];
+  if (select.length === 0 && items.length >= 1) select = [items[0].fileName];
 
-  var filePathAppendIndex = getIndexOfCurrentAppendFilePath(filePath, items)
+  var filePathAppendIndex = getIndexOfCurrentAppendFilePath(filePath, items);
+  if (filePathAppendIndex === -1) return false;
   var nearbyStartIndex = getNearbyStartIndex(filePathAppendIndex, select, items);
   var toBeAddedToSelect = toAddedLoopMinToMax(filePathAppendIndex, nearbyStartIndex, items);
 
@@ -93,4 +94,5 @@ export function ShiftSelectionHelper(history: IUseLocation, select: string[], fi
   });
   var urlObject = new URLPath().updateSelection(history.location.search, newSelect);
   history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
+  return true;
 }
