@@ -47,7 +47,7 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
   // selected state
   if (select) {
     return (
-      <div className="list-image-box list-image-box--select">
+      <div className="list-image-box list-image-box--select" data-filepath={item.filePath}>
         <button onClick={(event) => {
           // multiple select using the shift key
           if (!event.shiftKey) toggleSelection(item.fileName);
