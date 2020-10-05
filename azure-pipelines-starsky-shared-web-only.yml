@@ -8,11 +8,6 @@ trigger:
     - release/*
     exclude:
     - feature/*
-
-pr:
-  branches:
-    exclude:
-    - master
   paths:
     include:
     - starsky/*
@@ -20,7 +15,12 @@ pr:
     - starskyapp/*
     - starsky-tools/*
     - starsky.netframework/*
-    - /*.md
+
+pr:
+  branches:
+    exclude:
+    - master
+
     
 pool:
   vmImage: 'ubuntu-latest'
