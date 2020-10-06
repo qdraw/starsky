@@ -1,5 +1,5 @@
 {
-    "Url": "ws://localhost:5000/realtime",
+    "Url": "ws://localhost:5000/starsky/realtime",
     "Username": "demo@qdraw.nl",
     "Password": "demo@qdraw.nl"
 }
