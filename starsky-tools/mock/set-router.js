@@ -139,6 +139,8 @@ function setRouter(app) {
   });
 
   app.get(prefix + '/api/suggest', (req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=0");
+    res.setHeader("Expires", 0);
     if (req.query.t === "test") {
       return res.json(["test", "testung"]);
     }
