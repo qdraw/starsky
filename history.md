@@ -48,6 +48,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Show error status when upload fails instead of loading
 - [x]   (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files 
                             to the selection by pressing the shift key and click
+- [x]   (Added) _Front-end_ In the search suggestion field arrow up and down keys select next / prev
+- [x]   (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore

@@ -5,6 +5,7 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
+import ArrowKeyDown from './arrow-key-down';
 
 interface IMenuSearchBarProps {
   defaultText?: string;
@@ -41,11 +42,15 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
   // can't set this inside effect or if ==> performance issue, runs to often
   const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), 'get');
   useEffect(() => {
-    if (!responseObject.data) return;
-    if (!responseObject.data.length) return;
-
+    if (!responseObject.data || !responseObject.data.length) {
+      if (suggest && suggest.length >= 1) setSuggest([])
+      return;
+    }
     var result: Array<string> = [...responseObject.data];
     setSuggest(result)
+
+    // to avoid endless loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseObject]);
 
   /** Submit the form */
@@ -54,9 +59,8 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
     navigate(query);
   }
 
-  /** Go to different searchpage */
+  /** Go to different search page */
   function navigate(defQuery: string) {
-
     // To do change to search page
     history.navigate(new UrlQuery().UrlSearchPage(defQuery));
     setFormFocus(false);
@@ -74,7 +78,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
   const [formFocus, setFormFocus] = React.useState(false);
 
   /**
-   * Add listener to checks if you dont point outside the form
+   * Add listener to checks if you don't point outside the form
    */
   useEffect(() => {
     // Bind the event listener
@@ -95,6 +99,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
       setFormFocus(false);
     }
   }
+  const [keyDownIndex, setKeyDownIndex] = React.useState(-1);
 
   return (
     <div className="menu-inline-search">
@@ -107,19 +112,24 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
                 id={"menu-inline-search"}
                 maxLength={80}
                 className={"form-control icon-addon--input"}
-                onBlur={() => { setInputFocus(!inputFocus) }}
-                onFocus={() => { setInputFocus(!inputFocus) }}
+                onBlur={() => { setInputFocus(!inputFocus); }}
+                onFocus={() => { setInputFocus(!inputFocus); }}
                 autoComplete="off"
                 defaultValue={query}
                 ref={inputFormControlReference}
-                onKeyDown={_ => { setInputFocus(false) }}
+                onKeyDown={e => {
+                  setInputFocus(false);
+                  ArrowKeyDown(e, keyDownIndex, setKeyDownIndex,
+                    inputFormControlReference.current, suggest)
+                }}
                 onChange={e => { setQuery(e.target.value); }}
               />
             </form>
           </li>
           {suggest && suggest.length === 0 ?
             defaultMenu.map((value, index) => {
-              return <li className="menu-item menu-item--default" key={index}><a href={value.url}>{value.name}</a> </li>;
+              return <li className="menu-item menu-item--default" key={index}>
+                <a href={value.url}>{value.name}</a> </li>;
             }) : null
           }
           {suggest && suggest.map((item, index) => (
