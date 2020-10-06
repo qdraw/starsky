@@ -67,8 +67,16 @@ var proxy = httpProxy.createProxy({
   secure: false
 });
 server.on('upgrade', function (req, res) {
+
+  var newUrl = netCoreAppRouteUrl.replace(/\/$/, "");
+  newUrl = newUrl.replace("https", "wss");
+  console.log(newUrl);
   proxy.ws(req, res, {
-    target: netCoreAppRouteUrl
+    target: newUrl,
+    changeOrigin: true,
+    secure: false,
+    autoRewrite: true,
+    xfwd: true
   }, function (e) {
     console.log(e, req);
   });
