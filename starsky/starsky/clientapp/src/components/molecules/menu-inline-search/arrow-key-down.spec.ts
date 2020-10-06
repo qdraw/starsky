@@ -1,6 +1,6 @@
 import ArrowKeyDown from './arrow-key-down';
 
-describe("ShiftSelectionHelper", () => {
+describe("ArrowKeyDown", () => {
 
   it("not arrow down or up", () => {
     var callback = jest.fn()
