@@ -47,7 +47,8 @@ namespace starsky.foundation.realtime.Helpers
 			}
 			catch ( WebSocketException e)
 			{
-				return Task.FromException(e);
+				Console.WriteLine(e);
+				return Task.CompletedTask;
 			}
 		}
 
