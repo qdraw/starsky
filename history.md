@@ -46,6 +46,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Add loading delete and undo delete for trash page 
 - [x]   (Changed) _Front-end_ Upload multiple files after each other instead of in once
 - [x]   (Fixed) _Front-end_ Show error status when upload fails instead of loading
+- [x]   (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files 
+                            to the selection by pressing the shift key and click
+- [x]   (Added) _Front-end_ In the search suggestion field arrow up and down keys select next / prev
+- [x]   (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
@@ -63,7 +67,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
 - [x]   (Added) _CLI_ Add account creation by StarskyAdminCli
-- [x]   (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. You should enable before going to production. Always disabled in debug/develop mode
+- [x]   (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. 
+                                            You should enable before going to production. Always disabled in debug/develop mode
 - [x]   (Added) _CLI_ Show DateTime when the Assemblies are build with the flags: `-h -v`
 
 # version 0.3.1 - 2020-09-08
@@ -97,7 +102,8 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Added) _Front-end_  Gpx view, go to current location (no marker, only change view)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.3 2020-08-12)_
 - [x]   (Fixed) _Front-end_ Add Preloader icon when pressing ColorClassSelect
-- [x]   (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to the select mode is still on but there are no items selected
+- [x]   (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to 
+                            the select mode is still on but there are no items selected
 
 # version 0.3.0-beta.1 - 2020-08-16
 - [x]   __(Breaking change)__ _Back-end_ Manifest (_settings.json) for exporting
@@ -189,7 +195,8 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
 - [x]   (Fixed)  _Front-end_ order when files are added does now match the backend (archive-context)
 - [x]   (Removed) _Back-end_ Import to filter on files older than 2 years
-- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug. For all versions older than 0.2.2__
+- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug.__ 
+                             __For all versions older than 0.2.2__
 - [x]   (feature) _Back-end_ Import to async function refactor
 - [x]   (Fixed)  _Back-end_ Fixes for bugs introduced after refactoring
 - [x]   (Fixed)  _Back-end_ Bugfixes for starskyImporter
@@ -240,7 +247,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x]	(feature) _Back-end_ Injection framework implemented
 - [x] 	(rename) _Back-end_ Feature renaming and docs updates
 - [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon `.NEF`
-- [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon, `orf`:olympus, `rw2`:panasonic, `pef`:pentax,
+- [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon, 
+                        `orf`:olympus, `rw2`:panasonic, `pef`:pentax,
 - [x]   (bugfix) _Back-end_ allow underscore import/upload (api name changed in later version)
 - [x]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
 - [x]   (version) _Back-end_ __breaking change__ rename of api `/api/import/history`
@@ -272,7 +280,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json` _using Newtonsoft for this version_
+- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json` 
+                            _using Newtonsoft for this version_
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
 - [x]  (upgrade) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.3.1, 2020-01-31)_
@@ -302,7 +311,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
-- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework). Run `./build.sh` before you start developing
+- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework). 
+                            Run `./build.sh` before you start developing
 - [x]   (bugfix) _Front-end_ preloader when uploading
 - [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view,
 - [x]   (bugfix)  _Front-end_ translations in containers/search, containers/trash, search, trash and trash-page
@@ -330,7 +340,8 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x]   (bugfix) _API_ fix various issues in `/api/rename`
 - [x]   (remove) _General_ starskyApp content
 - [x]   (docs) _General_ add html generation to build process
-- [x]   (remove) _API_ only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  (remove thumbnail if corrupt) due public facing
+- [x]   (remove) _API_ only the retryThumbnail is removed `api/thumbnail?retryThumbnail=true`  
+                        (remove thumbnail if corrupt) due public facing
 - [x]   (remove) _Front-end_ search replace is no longer a beta feature, so no feature toggle
 - [x]   (bugfix) _Front-end_ archive updating multiple values didn't provide the right results
 - [x]   (bugfix) _Front-end_ when pressing multiple colorclass items with the value 0 (colorless/no-color) these are updated
@@ -379,7 +390,8 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Indexes are working now for MySQL at the first time run
 - [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
 - [x] (bugfix) 23:00 o'clock/first of month date.spec unittest
-- []  (Add warning) (bug) for iOS Safari only when using .local domains login fails (work around use ip-addresses) __bug is not fixed__
+- []  (Add warning) (bug) for iOS Safari only when using .local domains login fails 
+                       (work around use ip-addresses) (update to iOS13)
 - [x] Update build pipeline to support multiple runtimes in 1 run
 - [x] Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
 
@@ -411,7 +423,8 @@ _Works with  .NET Core SDK 3.0.100_
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 - (V2 UI Archive/Trash) add Select all/Undo selection to menu
 - (bugfix) search queries shorter than 2 digits are working
-- __(behind feature flag)__ Front-end for Replace API `archive-sidebar-label-edit` in folder view (add localStorage item with name `beta_replace`)
+- __(behind feature flag)__ Front-end for Replace API `archive-sidebar-label-edit` in folder view 
+                            (add localStorage item with name `beta_replace`)
 - (front-end) `archive-sidebar-label-edit` split in separate components
 - (front-end) show collections in DetailView
 - (front-end) reject delete button when a file is read-only mode
