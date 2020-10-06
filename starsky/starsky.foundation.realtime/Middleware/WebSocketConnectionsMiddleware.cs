@@ -46,7 +46,15 @@ namespace starsky.foundation.realtime.Middleware
 					webSocketConnection.NewConnection += async (sender, message) =>
 					{
 						await Task.Delay(150);
-						await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
+						try
+						{
+							await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
+						}
+						catch ( WebSocketException e )
+						{
+							// WebSocketException (0x80004005): The WebSocket is in an invalid state ('Aborted')
+							Console.WriteLine(e);
+						}
 					};
 
 					_connectionsService.AddConnection(webSocketConnection);
