@@ -41,7 +41,14 @@ namespace starsky.foundation.realtime.Helpers
 		public Task SendAsync(string message, CancellationToken cancellationToken)
 		{
 			byte[] bytes = Encoding.ASCII.GetBytes(message);
-			return _webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancellationToken);
+			try
+			{
+				return _webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancellationToken);
+			}
+			catch ( WebSocketException e)
+			{
+				return Task.FromException(e);
+			}
 		}
 
 		private async Task<WebSocketCloseStatus?> GetMessage(WebSocketReceiveResult webSocketReceiveResult)
