@@ -38,60 +38,27 @@ if (process.env.STARSKYURL) {
 }
 
 
-
-
-
-// proxy http requests to proxy target
-httpServer.all("/**", (req, res) => {
-
-  var toProxyUrl = createReactAppRouteUrl;
-  if (req.originalUrl.startsWith("/starsky/api") ||
-    req.originalUrl.startsWith("/starsky/account") ||
-    req.originalUrl.startsWith("/starsky/sync/") ||
-    req.originalUrl.startsWith("/starsky/export/") ||
-    req.originalUrl.startsWith("/starsky/realtime")) {
-    toProxyUrl = netCoreAppRouteUrl
-  }
-
-  // Watch for Secure Cookies and remove the secure-label
-  proxy.on('proxyRes', function (proxyRes, req, res, options) {
-    const sc = proxyRes.headers['set-cookie'];
-    if (Array.isArray(sc)) {
-      proxyRes.headers['set-cookie'] = sc.map(sc => {
-        return sc.split(';')
-          .filter(v => v.trim().toLowerCase() !== 'secure')
-          .join('; ')
-      });
-    }
-  });
-
-  proxy.web(req, res, {
-    ...proxyTargetSettings,
-    cookieDomainRewrite: {
-      '*': req.headers.host
-    },
-    target: toProxyUrl
-  },
-    (error) => {
-      console.log('Could not contact proxy backend', error);
-      try {
-        res.send("The service is not available right now.");
-      } catch (e) {
-        console.log('Could not send error message to client', e);
-      }
-    });
-});
-
 // register websocket handler, proxy requests manually to backend
 wsServer.app.ws("/starsky/realtime", (ws, req) => {
+  console.log('--');
   let headers = {};
   // add custom headers, e.g. copy cookie if required
-  headers["cookie"] = req.headers["cookie"];
+  if (req.headers["cookie"]) {
+    headers["cookie"] = req.headers["cookie"];
+  }
+  if (req.headers.authorization) {
+    headers.authorization = req.headers.authorization
+  }
+
   const backendMessageQueue = [];
   let backendConnected = false;
   let backendClosed = false;
   let frontendClosed = false;
-  const backendSocket = new WebSocket(targetUrl, [], {
+
+  var socketUrl = netCoreAppRouteUrl.replace("https://", "wss://") + "starsky/realtime";
+  console.log(socketUrl);
+
+  const backendSocket = new WebSocket(socketUrl, [], {
     headers: headers
   });
   backendSocket.on('open', function () {
@@ -141,12 +108,55 @@ wsServer.app.ws("/starsky/realtime", (ws, req) => {
 });
 
 
+// proxy http requests to proxy target
+httpServer.all("/**", (req, res) => {
+  if (req.url === "/starsky/realtime") {
+    res.writeHead(400, { 'content-type': 'application/json' });
+    res.end("\"use websockets\"");
+    return;
+  }
+  var toProxyUrl = createReactAppRouteUrl;
+  if (req.originalUrl.startsWith("/starsky/api") ||
+    req.originalUrl.startsWith("/starsky/account") ||
+    req.originalUrl.startsWith("/starsky/sync/") ||
+    req.originalUrl.startsWith("/starsky/export/") ||
+    req.originalUrl.startsWith("/starsky/realtime")) {
+    toProxyUrl = netCoreAppRouteUrl
+  }
+
+  // Watch for Secure Cookies and remove the secure-label
+  proxy.on('proxyRes', function (proxyRes, req, res, options) {
+    const sc = proxyRes.headers['set-cookie'];
+    if (Array.isArray(sc)) {
+      proxyRes.headers['set-cookie'] = sc.map(sc => {
+        return sc.split(';')
+          .filter(v => v.trim().toLowerCase() !== 'secure')
+          .join('; ')
+      });
+    }
+  });
+
+  proxy.web(req, res, {
+    ...proxyTargetSettings,
+    cookieDomainRewrite: {
+      '*': req.headers.host
+    },
+    target: toProxyUrl
+  },
+    (error) => {
+      console.log('Could not contact proxy backend', error);
+      try {
+        res.send("The service is not available right now.");
+      } catch (e) {
+        console.log('Could not send error message to client', e);
+      }
+    });
+});
+
 // setup express
 var port = process.env.PORT || process.env.port || 6501;
 httpServer.listen(port);
 console.log("http://localhost:" + port);
-
-
 
 const http = require('http');
 const https = require('https');
