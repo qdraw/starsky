@@ -8,6 +8,14 @@ dotenv.config();
 const http = require('http');
 const https = require('https');
 
+
+// setup express
+var port = process.env.PORT || process.env.port || 6501;
+var server = require('http').createServer(app);
+server.listen(port);
+console.log("http://localhost:" + port);
+
+
 // all urls to proxy
 app.all("/*", function (req, res, next) {
 
@@ -19,7 +27,8 @@ app.all("/*", function (req, res, next) {
   if (req.originalUrl.startsWith("/starsky/api") ||
     req.originalUrl.startsWith("/starsky/account") ||
     req.originalUrl.startsWith("/starsky/sync/") ||
-    req.originalUrl.startsWith("/starsky/export/")) {
+    req.originalUrl.startsWith("/starsky/export/") ||
+    req.originalUrl.startsWith("/starsky/realtime")) {
     NetCoreAppRouteRoute(req, res, next);
   }
   else {
@@ -111,11 +120,6 @@ function NetCoreAppRouteRoute(req, res, next) {
     res.end(JSON.stringify(json));
   });
 }
-
-// setup express
-var port = process.env.PORT || process.env.port || 6501;
-app.listen(port);
-console.log("http://localhost:" + port);
 
 // LocalTunnel Setup
 const localtunnel = require('localtunnel');

@@ -63,10 +63,6 @@ const useSockets = (): IUseSockets => {
     }
   };
 
-  // // ALSO UPDATE DIFF time
-  // useInterval(intervalCheck, 60020);
-  // // 15000 milliseconds = 0.25 minutes
-
   function isKeepAliveMessage(item: any) {
     if (item.welcome || item.time) return true;
     return false;
@@ -88,10 +84,10 @@ const useSockets = (): IUseSockets => {
     });
 
     socket.onClose((e) => {
-      if (e.code === 1008 || e.code === 1004) {
+      if (e.code === 1008 || e.code === 1009) {
         // 1008 = please login first
-        // 1004 = feature toggle disabled
-        console.log('------ login or feature toggle' + e.code);
+        // 1009 = feature toggle disabled
+        console.log('[use-sockets] Disabled status: ' + e.code);
         setIsEnabled(false);
         return;
       }
