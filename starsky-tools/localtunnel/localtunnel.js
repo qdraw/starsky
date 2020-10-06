@@ -15,7 +15,6 @@ var server = require('http').createServer(app);
 server.listen(port);
 console.log("http://localhost:" + port);
 
-
 // all urls to proxy
 app.all("/*", function (req, res, next) {
 
@@ -63,6 +62,18 @@ if (process.env.STARSKYURL) {
   console.log('running on ' + netCoreAppRouteUrl);
 }
 
+var proxy = httpProxy.createProxy({
+  ws: true,
+  secure: false
+});
+server.on('upgrade', function (req, res) {
+  proxy.ws(req, res, {
+    target: netCoreAppRouteUrl
+  }, function (e) {
+    console.log(e, req);
+  });
+});
+
 // To check if the services are ready/started
 [netCoreAppRouteUrl, createReactAppRouteUrl].forEach(url => {
   if (url.startsWith("https")) {
@@ -103,7 +114,7 @@ function NetCoreAppRouteRoute(req, res, next) {
       cookieDomainRewrite: {
         '*': req.headers.host
       },
-      ws: false,
+      ws: true,
     }
   );
 
