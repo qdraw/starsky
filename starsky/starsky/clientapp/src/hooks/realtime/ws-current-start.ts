@@ -13,7 +13,7 @@ function handleKeepAliveMessage(setKeepAliveTime: Dispatch<SetStateAction<Date>>
   setKeepAliveTime(new Date());
 }
 
-const newWebSocketService = (): WebSocketService => {
+export const NewWebSocketService = (): WebSocketService => {
   return new WebSocketService(new UrlQuery().UrlRealtime());
 }
 
@@ -37,7 +37,7 @@ export default function WsCurrentStart(socketConnected: boolean, setSocketConnec
 
   setSocketConnected(true);
 
-  var socket = newWebSocketService();
+  var socket = NewWebSocketService();
   socket.onOpen(() => {
     console.log("[use-sockets] socket connection opened");
     if (!socketConnected) setSocketConnected(true);
@@ -52,7 +52,6 @@ export default function WsCurrentStart(socketConnected: boolean, setSocketConnec
       return;
     }
 
-    // console.log(e.code);
     if (socketConnected) setSocketConnected(false);
     console.log('[use-sockets] Web Socket Connection Closed ' + e.code);
   });
