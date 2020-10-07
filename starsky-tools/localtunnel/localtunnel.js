@@ -79,13 +79,15 @@ wsServer.app.ws("/starsky/realtime", (ws, req) => {
   });
   backendSocket.on('message', (message) => {
     // proxy messages from backend to frontend
-    ws.send(message);
+    try {
+      ws.send(message);
+    } catch (error) { }
   });
-  backendSocket.on('close', () => {
-    console.log('Backend is closing');
+  backendSocket.on('close', (statusCode) => {
+    console.log('Backend is closing, reason: ' + statusCode);
     backendClosed = true;
     if (!frontendClosed) {
-      ws.close();
+      ws.close(statusCode);
     }
     frontendClosed = true;
   });
@@ -146,7 +148,8 @@ httpServer.all("/**", (req, res) => {
     (error) => {
       console.log('Could not contact proxy backend', error);
       try {
-        res.send("The service is not available right now.");
+        res.writeHead(502, { 'content-type': 'application/json' });
+        res.end("\"The service is not available right now.\"");
       } catch (e) {
         console.log('Could not send error message to client', e);
       }
