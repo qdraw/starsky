@@ -39,25 +39,26 @@ const useSockets = (): IUseSockets => {
 
   const ws = useRef({} as WebSocketService);
   const [socketConnected, setSocketConnected] = useState(false);
-  // const [showSocketError, setShowSocketError] = useState(false);
+  const [showSocketError, setShowSocketError] = useState(false);
 
-  const [isEnabled, setIsEnabled] = useState(true);
+  // const [isEnabled, setIsEnabled] = useState(true);
+  const isEnabled = useRef(true);
 
   const [keepAliveTime, setKeepAliveTime] = useState(new Date());
 
   // useState does not update in a sync way
-  // const countRetry = useRef(0);
-  // const [countRetry, setCountRetry] = useState(0);
+  const countRetry = useRef(0);
 
   function doIntervalCheck() {
+    console.log(isEnabled.current);
     if (!ws.current) return;
-    if (!isEnabled) return;
-    // setShowSocketError(countRetry.current >= 1)
+    if (!isEnabled.current) return;
+    setShowSocketError(countRetry.current >= 1)
 
-    if (DifferenceInDate(keepAliveTime.getTime()) > 1.1) {
+    if (DifferenceInDate(keepAliveTime.getTime()) > 0.55) {
       console.log('[use-sockets] --retry sockets');
       setSocketConnected(false);
-      // countRetry.current++;
+      countRetry.current++;
       ws.current.close();
       ws.current = wsCurrentStart();
     }
@@ -79,7 +80,7 @@ const useSockets = (): IUseSockets => {
 
     var socket = newWebSocketService();
     socket.onOpen(() => {
-      console.log("[use-sockets] socket connection opened send ping");
+      console.log("[use-sockets] socket connection opened");
       if (!socketConnected) setSocketConnected(true);
     });
 
@@ -88,7 +89,7 @@ const useSockets = (): IUseSockets => {
         // 1008 = please login first
         // 1009 = feature toggle disabled
         console.log('[use-sockets] Disabled status: ' + e.code);
-        setIsEnabled(false);
+        isEnabled.current = false;
         return;
       }
 
@@ -97,9 +98,9 @@ const useSockets = (): IUseSockets => {
       console.log('[use-sockets] Web Socket Connection Closed ' + e.code);
     });
 
-    socket.onError((e) => {
+    socket.onError((_) => {
       if (socketConnected) setSocketConnected(false);
-      console.log('[use-sockets] onError triggerd');
+      console.log('[use-sockets] onError triggered');
     });
 
     socket.onMessage((e) => {
@@ -129,7 +130,7 @@ const useSockets = (): IUseSockets => {
   }, []);
 
   return {
-    showSocketError: false
+    showSocketError
   };
 };
 
