@@ -22,7 +22,7 @@ export default class WebSocketService {
 
   public onError(callback: (ev: Event) => void): void {
     if (!this.websocket) {
-      return callback(new Event('err'))
+      return callback(new Event('error'))
     }
     this.websocket.onerror = callback;
   }
