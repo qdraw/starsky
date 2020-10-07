@@ -1,5 +1,5 @@
 
-export class WebSocketService {
+export default class WebSocketService {
 
   private websocket?: WebSocket;
   constructor(url: string, protocols?: string | string[]) {

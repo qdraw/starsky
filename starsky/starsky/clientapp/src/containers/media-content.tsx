@@ -5,10 +5,10 @@ import HealthStatusError from '../components/molecules/health-status-error/healt
 import MenuDefault from '../components/organisms/menu-default/menu-default';
 import ArchiveContextWrapper from '../contexts-wrappers/archive-wrapper';
 import DetailViewContextWrapper from '../contexts-wrappers/detailview-wrapper';
+import useSockets from '../hooks/realtime/use-sockets';
 import useFileList from '../hooks/use-filelist';
 import useGlobalSettings from '../hooks/use-global-settings';
 import useLocation from '../hooks/use-location';
-import useSockets from '../hooks/use-sockets';
 import { IArchive } from '../interfaces/IArchive';
 import { IDetailView, PageType } from '../interfaces/IDetailView';
 import NotFoundPage from '../pages/not-found-page';

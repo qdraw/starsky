@@ -1,8 +1,8 @@
 import { mount, shallow } from "enzyme";
 import React from 'react';
 import * as HealthStatusError from '../components/molecules/health-status-error/health-status-error';
+import * as useSockets from '../hooks/realtime/use-sockets';
 import * as useFileList from '../hooks/use-filelist';
-import * as useSockets from '../hooks/use-sockets';
 import MediaContent from './media-content';
 
 describe("MediaContent", () => {

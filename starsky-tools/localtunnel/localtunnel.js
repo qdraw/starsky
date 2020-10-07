@@ -41,6 +41,7 @@ if (process.env.STARSKYURL) {
 // register websocket handler, proxy requests manually to backend
 wsServer.app.ws("/starsky/realtime", (ws, req) => {
   console.log('--');
+  console.log(req.headers['sec-websocket-key']);
   let headers = {};
   // add custom headers, e.g. copy cookie if required
   if (req.headers["cookie"]) {
