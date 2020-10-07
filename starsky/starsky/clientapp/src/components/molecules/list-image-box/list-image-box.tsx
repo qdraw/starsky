@@ -50,8 +50,12 @@ const ListImageBox: React.FunctionComponent<IListImageBox> = memo((props) => {
       <div className="list-image-box list-image-box--select" data-filepath={item.filePath}>
         <button onClick={(event) => {
           // multiple select using the shift key
-          if (!event.shiftKey) toggleSelection(item.fileName);
-          if (event.shiftKey && props.onSelectionCallback) props.onSelectionCallback(item.filePath);;
+          if (!event.shiftKey) {
+            toggleSelection(item.fileName);
+          }
+          else if (event.shiftKey && props.onSelectionCallback) {
+            props.onSelectionCallback(item.filePath);
+          }
         }}
           className={select.indexOf(item.fileName) === -1 ?
             "box-content colorclass--" + item.colorClass + " isDirectory-" + item.isDirectory :
