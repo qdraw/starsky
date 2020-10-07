@@ -43,7 +43,6 @@ namespace starskycore.Helpers
 		
 		/// <summary>
 		/// Get the App Insights front-end script with your app insights token visible
-		/// Need a csp-nonce in the context
 		/// </summary>
 		public string ScriptPlain
 		{
@@ -52,7 +51,7 @@ namespace starskycore.Helpers
 				if ( _aiJavaScriptSnippet == null ) return "/* ApplicationInsights JavaScriptSnippet disabled */";
 				var js = _aiJavaScriptSnippet.FullScript;
 				
-				// Replace the default script with a nonce version, to avoid XSS attacks
+				// Replace the default script with nothing to use as file
 				const string scriptTagStart = @"<script type=""text/javascript"">";
 				const string scriptEndStart = @"</script>";
 
