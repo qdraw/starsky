@@ -41,7 +41,6 @@ const useSockets = (): IUseSockets => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [showSocketError, setShowSocketError] = useState(false);
 
-  // const [isEnabled, setIsEnabled] = useState(true);
   const isEnabled = useRef(true);
 
   const [keepAliveTime, setKeepAliveTime] = useState(new Date());
@@ -56,13 +55,20 @@ const useSockets = (): IUseSockets => {
     setShowSocketError(countRetry.current >= 1)
 
     if (DifferenceInDate(keepAliveTime.getTime()) > 0.55) {
-      console.log('[use-sockets] --retry sockets');
+      Telemetry('[use-sockets] --retry sockets');
       setSocketConnected(false);
       countRetry.current++;
       ws.current.close();
       ws.current = wsCurrentStart();
     }
   };
+
+  function Telemetry(message: string) {
+    console.log(message);
+    if (!(window as any).appInsights) return;
+    var ai = (window as any).appInsights;
+    ai.trackTrace({ message });
+  }
 
   function isKeepAliveMessage(item: any) {
     if (item.welcome || item.time) return true;
@@ -115,8 +121,13 @@ const useSockets = (): IUseSockets => {
     return socket;
   }
 
+  function isFeatureEnabled(): boolean {
+    return localStorage.getItem("use-sockets") !== null
+  }
+
   useEffect(() => {
-    console.log('[use-sockets] run effect');
+    console.log(`[use-sockets] run effect - ${isFeatureEnabled()}`);
+    if (!isFeatureEnabled()) return;
 
     ws.current = wsCurrentStart();
     var intervalCheck = setInterval(doIntervalCheck, 30000)
