@@ -4,7 +4,7 @@ import { PageType } from '../interfaces/IDetailView';
 import { newIFileIndexItem, newIFileIndexItemArray } from '../interfaces/IFileIndexItem';
 import { FileListCache } from '../shared/filelist-cache';
 import useFileList, { IFileList } from './use-filelist';
-import { mountReactHook } from './___tests___/test-hook';
+import { shallowReactHook } from './___tests___/test-hook';
 
 
 describe("UseFileList", () => {
@@ -33,7 +33,7 @@ describe("UseFileList", () => {
     }
 
     beforeEach(() => {
-      setupComponent = mountReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
+      setupComponent = shallowReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
       hook = setupComponent.componentHook as IFileList;
     });
 

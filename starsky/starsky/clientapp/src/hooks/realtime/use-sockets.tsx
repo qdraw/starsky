@@ -60,6 +60,7 @@ const useSockets = (): IUseSockets => {
     console.log(`[use-sockets] run effect - ${isClientSideFeatureEnabled()}`);
     // check to be removed in future version
     if (!isClientSideFeatureEnabled()) return;
+    console.log('--');
 
     ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime);
     return () => {
