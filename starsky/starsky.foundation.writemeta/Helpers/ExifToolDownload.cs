@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -45,12 +46,10 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			
 			// When running deploy scripts rights will reset
-			if ( !isWindows )
-			{
-				return await RunChmodOnExifToolUnixExe();
-			}
-
-			return true;
+			if ( isWindows || await RunChmodOnExifToolUnixExe() ) return true;
+			
+			ResetUnix();
+			return await StartDownloadForUnix();
 		}
 
 		internal async Task<bool> StartDownloadForUnix()
@@ -70,9 +69,25 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private string ExeExifToolUnixFullFilePath()
 		{
-			var path = Path.Combine(Path.Combine(_appSettings.TempFolder, "exiftool-unix"),
-				"exiftool");
+			var path = Path.Combine(_appSettings.TempFolder, 
+					"exiftool-unix",
+					"exiftool");
 			return path;
+		}
+
+		private void ResetUnix()
+		{
+			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
+			if ( _hostFileSystemStorage.ExistFile(tarGzArchiveFullFilePath) )
+			{
+				_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
+			}
+			var exifToolUnixFolderFullFilePath =
+				Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+			if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
+			{
+				_hostFileSystemStorage.FolderDelete(tarGzArchiveFullFilePath);
+			}
 		}
 		
 		private async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
@@ -113,9 +128,17 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( _appSettings.Verbose ) Console.WriteLine("ExeExifToolUnixFullFilePath "+ ExeExifToolUnixFullFilePath());
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
-			var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
-			if ( result.Success ) return true;
-			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			try
+			{
+				var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
+				if ( result.Success ) return true;
+				await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			}
+			catch (Win32Exception e)
+			{
+				Console.WriteLine("Win32Exception" + e);
+				return false;
+			}
 			return false;
 		}
 
