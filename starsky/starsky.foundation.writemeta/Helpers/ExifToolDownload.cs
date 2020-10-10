@@ -113,7 +113,6 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( _appSettings.Verbose ) Console.WriteLine("ExeExifToolUnixFullFilePath "+ ExeExifToolUnixFullFilePath());
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
-			// should be wrapped in quotes to avoid issues with spaces
 			var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
 			if ( result.Success ) return true;
 			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
