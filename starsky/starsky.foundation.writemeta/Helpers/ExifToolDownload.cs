@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -44,13 +45,12 @@ namespace starsky.foundation.writemeta.Helpers
 				return await StartDownloadForUnix();
 			}
 			
-			// When running deploy scripts rights will reset
-			if ( !isWindows )
-			{
-				return await RunChmodOnExifToolUnixExe();
-			}
+			// When running deploy scripts rights might reset (only for unix)
+			if ( isWindows || await RunChmodOnExifToolUnixExe() ) return true;
 
-			return true;
+			// do a retry
+			await Task.Delay(100);
+			return await RunChmodOnExifToolUnixExe() ? true : throw new Win32Exception("Failed to create chmod 755 on exiftool");
 		}
 
 		internal async Task<bool> StartDownloadForUnix()
@@ -70,8 +70,9 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private string ExeExifToolUnixFullFilePath()
 		{
-			var path = Path.Combine(Path.Combine(_appSettings.TempFolder, "exiftool-unix"),
-				"exiftool");
+			var path = Path.Combine(_appSettings.TempFolder, 
+					"exiftool-unix",
+					"exiftool");
 			return path;
 		}
 		
@@ -113,9 +114,18 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( _appSettings.Verbose ) Console.WriteLine("ExeExifToolUnixFullFilePath "+ ExeExifToolUnixFullFilePath());
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
-			var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
-			if ( result.Success ) return true;
-			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			try
+			{
+				var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
+				if ( result.Success ) return true;
+				await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			}
+			catch (Win32Exception e)
+			{
+				// this fails sometimes when running in startup' No such file or directory' but the file does exist
+				Console.WriteLine(e);
+				return false;
+			}
 			return false;
 		}
 
