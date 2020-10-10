@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Medallion.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
@@ -89,7 +91,45 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				_hostFileSystem.FolderDelete(ExifToolUnixTempPath);
 			}
 		}
+		
+		[TestMethod]
+		public async Task RunChmodOnExifToolUnixExe_TempFolderWithSpace_UnixOnly()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Console.WriteLine("This test is for unix only");
+				return;
+			}
+			var appSettings = new AppSettings{TempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"test temp")};
+			
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
+				{"https://exiftool.org/exiftool-11.99.zip", new ByteArrayContent(CreateAnExifToolWindows.Bytes)},
+				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			Directory.CreateDirectory(appSettings.TempFolder);
+			Directory.CreateDirectory(Path.Combine(appSettings.TempFolder,"exiftool-unix"));
 
+			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
+			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
+				Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool"));
+			
+			Console.WriteLine(appSettings.TempFolder);
+			var exifToolDownload = new ExifToolDownload(httpClientHelper, appSettings);
+			var result = await exifToolDownload.RunChmodOnExifToolUnixExe();
+			Assert.IsTrue(result);
+
+			var lsLah = await Command.Run("ls", "-lah",
+				Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool")).Task;
+			
+			Console.WriteLine(lsLah.StandardOutput);
+			
+			Assert.IsTrue(lsLah.StandardOutput.StartsWith("-rwxr-xr-x"));
+			Directory.Delete(appSettings.TempFolder,true);
+		}
+		
 		[TestMethod]
 		public async Task DownloadExifTool_Windows()
 		{

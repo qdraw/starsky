@@ -70,7 +70,8 @@ namespace starsky.foundation.writemeta.Helpers
 
 		private string ExeExifToolUnixFullFilePath()
 		{
-			var path = Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-unix"), "exiftool");
+			var path = Path.Combine(Path.Combine(_appSettings.TempFolder, "exiftool-unix"),
+				"exiftool");
 			return path;
 		}
 		
@@ -106,12 +107,13 @@ namespace starsky.foundation.writemeta.Helpers
 			return await RunChmodOnExifToolUnixExe();
 		}
 
-		private async Task<bool> RunChmodOnExifToolUnixExe()
+		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
+			if ( _appSettings.Verbose ) Console.WriteLine("ExeExifToolUnixFullFilePath "+ ExeExifToolUnixFullFilePath());
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
-			var result = await Command.Run("chmod","0755", $"{ExeExifToolUnixFullFilePath()}").Task;
+			var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
 			if ( result.Success ) return true;
 			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
 			return false;
