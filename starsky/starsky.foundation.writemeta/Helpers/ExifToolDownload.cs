@@ -84,6 +84,7 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			var exifToolUnixFolderFullFilePath =
 				Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+			if ( _appSettings.Verbose ) Console.WriteLine(exifToolUnixFolderFullFilePath);
 			if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
 			{
 				_hostFileSystemStorage.FolderDelete(tarGzArchiveFullFilePath);
