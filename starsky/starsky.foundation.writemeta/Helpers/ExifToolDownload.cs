@@ -45,11 +45,12 @@ namespace starsky.foundation.writemeta.Helpers
 				return await StartDownloadForUnix();
 			}
 			
-			// When running deploy scripts rights will reset
+			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows || await RunChmodOnExifToolUnixExe() ) return true;
-			
-			ResetUnix();
-			return await StartDownloadForUnix();
+
+			// do a retry
+			await Task.Delay(100);
+			return await RunChmodOnExifToolUnixExe() ? true : throw new Win32Exception("Failed to create chmod 755 on exiftool");
 		}
 
 		internal async Task<bool> StartDownloadForUnix()
@@ -73,22 +74,6 @@ namespace starsky.foundation.writemeta.Helpers
 					"exiftool-unix",
 					"exiftool");
 			return path;
-		}
-
-		private void ResetUnix()
-		{
-			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
-			if ( _hostFileSystemStorage.ExistFile(tarGzArchiveFullFilePath) )
-			{
-				_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
-			}
-			var exifToolUnixFolderFullFilePath =
-				Path.Combine(_appSettings.TempFolder, "exiftool-unix");
-			if ( _appSettings.Verbose ) Console.WriteLine(exifToolUnixFolderFullFilePath);
-			if ( _hostFileSystemStorage.ExistFolder(exifToolUnixFolderFullFilePath) )
-			{
-				_hostFileSystemStorage.FolderDelete(tarGzArchiveFullFilePath);
-			}
 		}
 		
 		private async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
@@ -137,7 +122,8 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			catch (Win32Exception e)
 			{
-				Console.WriteLine("Win32Exception" + e);
+				// this fails sometimes when running in startup' No such file or directory' but the file does exist
+				Console.WriteLine(e);
 				return false;
 			}
 			return false;
