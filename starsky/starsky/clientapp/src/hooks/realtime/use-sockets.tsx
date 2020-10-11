@@ -47,6 +47,9 @@ const useSockets = (): IUseSockets => {
       ws.current.close();
       ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime);
     }
+    else {
+      countRetry.current = 0;
+    }
   };
 
   /**
