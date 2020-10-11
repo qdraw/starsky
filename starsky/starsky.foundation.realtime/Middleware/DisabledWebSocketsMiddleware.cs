@@ -16,6 +16,7 @@ namespace starsky.foundation.realtime.Middleware
 			if ( context.WebSockets.IsWebSocketRequest )
 			{
 				var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+				// StatusCode MessageTooBig = 1009
 				await webSocket.CloseOutputAsync(WebSocketCloseStatus.MessageTooBig, 
 					"Feature toggle disabled", CancellationToken.None);
 				return;

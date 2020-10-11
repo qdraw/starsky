@@ -1,58 +1,169 @@
 var express = require('express');
-var app = express();
+var expressWs = require('express-ws');
 var httpProxy = require('http-proxy');
-var apiProxy = httpProxy.createProxyServer();
+var WebSocket = require('ws');
+var cookieParser = require('cookie-parser');
 var dotenv = require('dotenv');
 dotenv.config();
 
-const http = require('http');
-const https = require('https');
+// https://github.com/http-party/node-http-proxy/issues/891#issuecomment-419412499
 
-// all urls to proxy
-app.all("/*", function (req, res, next) {
+var proxyTargetSettings = {
+  secure: false,
+  changeOrigin: true,
+  secure: false,
+  autoRewrite: true,
+  xfwd: true,
+}
+const proxy = httpProxy.createProxyServer(proxyTargetSettings);
 
-  if (req.originalUrl.startsWith("/sockjs-node")) {
-    res.status(503);
-    res.json("not allowed");
-  }
+const httpServer = express();
+const wsServer = expressWs(httpServer);
 
-  if (req.originalUrl.startsWith("/starsky/api") ||
-    req.originalUrl.startsWith("/starsky/account") ||
-    req.originalUrl.startsWith("/starsky/sync/") ||
-    req.originalUrl.startsWith("/starsky/export/")) {
-    NetCoreAppRouteRoute(req, res, next);
-  }
-  else {
-    CreateReactAppRoute(req, res, next);
-  }
-});
+// cookie parser middleware
+httpServer.use(cookieParser());
 
-// To proxy the dev server
+// // custom middleware
+// httpServer.use((req, res, next) => {
+//   // put your custom middleware here
+//   next()
+// });
+
 var createReactAppRouteUrl = 'http://localhost:3000/';
-function CreateReactAppRoute(req, res, next) {
-  apiProxy.web(req, res,
-    {
-      target: createReactAppRouteUrl,
-      changeOrigin: true,
-      secure: false,
-      autoRewrite: true,
-      xfwd: false
-    }
-  );
-  // res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' https://az416426.vo.msecnd.net 'nonce-53b3ebf63787426db506e8e49d4400c4'; connect-src 'self' https://dc.services.visualstudio.com; style-src 'unsafe-inline'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
-}
-
-// To proxy the backend server
-var netCoreAppRouteUrl = 'http://localhost:5000/';
-if (!process.env.STARSKYURL) {
-  console.log('running on default: use STARSKYURL to customize ');
-}
 
 // To change for example to a different domain
 if (process.env.STARSKYURL) {
   netCoreAppRouteUrl = process.env.STARSKYURL;
   console.log('running on ' + netCoreAppRouteUrl);
 }
+
+
+// register websocket handler, proxy requests manually to backend
+wsServer.app.ws("/starsky/realtime", (ws, req) => {
+  console.log('--');
+  console.log(req.headers['sec-websocket-key']);
+  let headers = {};
+  // add custom headers, e.g. copy cookie if required
+  if (req.headers["cookie"]) {
+    headers["cookie"] = req.headers["cookie"];
+  }
+  if (req.headers.authorization) {
+    headers.authorization = req.headers.authorization
+  }
+
+  const backendMessageQueue = [];
+  let backendConnected = false;
+  let backendClosed = false;
+  let frontendClosed = false;
+
+  var socketUrl = netCoreAppRouteUrl.replace("https://", "wss://") + "starsky/realtime";
+  console.log(socketUrl);
+
+  const backendSocket = new WebSocket(socketUrl, [], {
+    headers: headers
+  });
+  backendSocket.on('open', function () {
+    console.log('backend connection established');
+    backendConnected = true;
+    // send queued messages
+    backendMessageQueue.forEach(message => {
+      backendSocket.send(message);
+    });
+  });
+  backendSocket.on('error', (err) => {
+    console.log('error', err);
+    backendClosed = true;
+    if (!frontendClosed) {
+      ws.close();
+    }
+    frontendClosed = true;
+  });
+  backendSocket.on('message', (message) => {
+    // proxy messages from backend to frontend
+    try {
+      ws.send(message);
+    } catch (error) { }
+  });
+  backendSocket.on('close', (statusCode) => {
+    console.log('Backend is closing, reason: ' + statusCode);
+    backendClosed = true;
+    if (!frontendClosed) {
+      ws.close(statusCode);
+    }
+    frontendClosed = true;
+  });
+  ws.on('message', (message) => {
+    // proxy messages from frontend to backend
+    if (backendConnected) {
+      backendSocket.send(message);
+    } else {
+      backendMessageQueue.push(message);
+    }
+  });
+  ws.on('close', () => {
+    console.log('Frontend is closing');
+    frontendClosed = true;
+    if (!backendClosed) {
+      backendSocket.close();
+    }
+    backendClosed = true;
+  });
+});
+
+
+// proxy http requests to proxy target
+httpServer.all("/**", (req, res) => {
+  if (req.url === "/starsky/realtime") {
+    res.writeHead(400, { 'content-type': 'application/json' });
+    res.end("\"use websockets\"");
+    return;
+  }
+  var toProxyUrl = createReactAppRouteUrl;
+  if (req.originalUrl.startsWith("/starsky/api") ||
+    req.originalUrl.startsWith("/starsky/account") ||
+    req.originalUrl.startsWith("/starsky/sync/") ||
+    req.originalUrl.startsWith("/starsky/export/") ||
+    req.originalUrl.startsWith("/starsky/realtime")) {
+    toProxyUrl = netCoreAppRouteUrl
+  }
+
+  // Watch for Secure Cookies and remove the secure-label
+  proxy.on('proxyRes', function (proxyRes, req, res, options) {
+    const sc = proxyRes.headers['set-cookie'];
+    if (Array.isArray(sc)) {
+      proxyRes.headers['set-cookie'] = sc.map(sc => {
+        return sc.split(';')
+          .filter(v => v.trim().toLowerCase() !== 'secure')
+          .join('; ')
+      });
+    }
+  });
+
+  proxy.web(req, res, {
+    ...proxyTargetSettings,
+    cookieDomainRewrite: {
+      '*': req.headers.host
+    },
+    target: toProxyUrl
+  },
+    (error) => {
+      console.log('Could not contact proxy backend', error);
+      try {
+        res.writeHead(502, { 'content-type': 'application/json' });
+        res.end("\"The service is not available right now.\"");
+      } catch (e) {
+        console.log('Could not send error message to client', e);
+      }
+    });
+});
+
+// setup express
+var port = process.env.PORT || process.env.port || 6501;
+httpServer.listen(port);
+console.log("http://localhost:" + port);
+
+const http = require('http');
+const https = require('https');
 
 // To check if the services are ready/started
 [netCoreAppRouteUrl, createReactAppRouteUrl].forEach(url => {
@@ -71,77 +182,35 @@ if (process.env.STARSKYURL) {
 });
 
 
-function NetCoreAppRouteRoute(req, res, next) {
-  // Watch for Secure Cookies and remove the secure-label
-  apiProxy.on('proxyRes', function (proxyRes, req, res, options) {
-    const sc = proxyRes.headers['set-cookie'];
-    if (Array.isArray(sc)) {
-      proxyRes.headers['set-cookie'] = sc.map(sc => {
-        return sc.split(';')
-          .filter(v => v.trim().toLowerCase() !== 'secure')
-          .join('; ')
-      });
-    }
-  });
+function localTunnelR() {
+  // LocalTunnel Setup
+  const localtunnel = require('localtunnel');
 
-  apiProxy.web(req, res,
-    {
-      target: netCoreAppRouteUrl,
-      changeOrigin: true,
-      secure: false,
-      autoRewrite: true,
-      xfwd: false,
-      cookieDomainRewrite: {
-        '*': req.headers.host
-      },
-      ws: false,
-    }
-  );
+  (async () => {
 
-  // Error: socket hang up
-  apiProxy.on('error', function (error, req, res) {
-    if (error && error.code && error.code === 'ECONNRESET') {
-      return;
-    }
-    var json;
-    if (!res.headersSent) {
-      res.writeHead(500, { 'content-type': 'application/json' });
-    }
-    json = { error: 'proxy_error', reason: error.message };
-    res.end(JSON.stringify(json));
-  });
+    // lt -p 8080 -h http://localtunnel.me --local-https false
+    const tunnel = await localtunnel({
+      subdomain: process.env.SUBDOMAIN,
+      host: 'http://localtunnel.me',
+      port: port,
+      local_https: false,
+    }).catch(err => {
+      throw err;
+    });
+
+    // the assigned public url for your tunnel
+    // i.e. https://abcdefgjhij.localtunnel.me
+    console.log("Your localtunnel is ready on:");
+    console.log(tunnel.url);
+
+    tunnel.on('error', () => {
+      console.log('err');
+    });
+
+    tunnel.on('close', () => {
+      console.log('tunnels are closed');
+    });
+  })();
 }
 
-// setup express
-var port = process.env.PORT || process.env.port || 6501;
-app.listen(port);
-console.log("http://localhost:" + port);
-
-// LocalTunnel Setup
-const localtunnel = require('localtunnel');
-
-(async () => {
-
-  // lt -p 8080 -h http://localtunnel.me --local-https false
-  const tunnel = await localtunnel({
-    subdomain: process.env.SUBDOMAIN,
-    host: 'http://localtunnel.me',
-    port: port,
-    local_https: false
-  }).catch(err => {
-    throw err;
-  });
-
-  // the assigned public url for your tunnel
-  // i.e. https://abcdefgjhij.localtunnel.me
-  console.log("Your localtunnel is ready on:");
-  console.log(tunnel.url);
-
-  tunnel.on('error', () => {
-    console.log('err');
-  });
-
-  tunnel.on('close', () => {
-    console.log('tunnels are closed');
-  });
-})();
+localTunnelR();

@@ -36,6 +36,7 @@ namespace starsky.foundation.realtime.Middleware
                     
 					if ( !context.User.Identity.IsAuthenticated)
 					{
+						// Status Code 1008 PolicyViolation
 						await webSocket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, 
 							"Please login first", CancellationToken.None);
 						return;
