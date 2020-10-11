@@ -158,6 +158,9 @@ The library libhostfxr.so was found, but loading it from <yourpath>/libhostfxr.s
 Check your file rights in the folders, they should be 644 for files and 755 for folders.
 except for the executable  files
 
+#### Startup problems with StarskyApp
+You could try to clean the temp Folder This is located on Mac OS: `~/Library/Application\ Support/starsky/` and Windows: `C:\Users\<user>\AppData\Roaming\starsky\`
+
 ### Bash build and configuration scripts
 
 Those scripts are optional and used for configuration.

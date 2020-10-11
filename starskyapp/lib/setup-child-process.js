@@ -90,11 +90,16 @@ function setupChildProcess() {
           "app__appSettingsPath" : appSettingsPath,
           "app__databaseConnection": databaseConnection,
           "app__AccountRegisterDefaultRole": "Administrator",
+          "app__Verbose": "true",
         }
       }, (error, stdout, stderr) => { });
     
       starskyChild.stdout.on('data', function (data) {
         console.log(data.toString());
+      });
+
+      starskyChild.stderr.on('data', function (data) {
+        console.log('stderr: ' + data.toString());
       });
     });
 

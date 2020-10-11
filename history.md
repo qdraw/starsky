@@ -32,7 +32,11 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.3.3 _(Unreleased)_  2020-10-??
+# version 0.4.0-beta.0 or 0.3.4 _(Unreleased)_  2020-10-??
+- nothing yet
+
+# version 0.3.3 - 2020-10-10
+_In the next major release websockets are used, please note when using a reverse proxy_
 - [x]   (Fixed) _Back-end_ Allow web app to run outside current folder
 - [x]   (Fixed) _Back-end_ Allow linking existing env variables to make configuration easier
 - [x]   (Added) _Back-end_ Realtime foundation project to support WebSocket updates (start on issue #75)
@@ -50,6 +54,7 @@ node starsky-tools/build-tools/app-version-update.js
                             to the selection by pressing the shift key and click
 - [x]   (Added) _Front-end_ In the search suggestion field arrow up and down keys select next / prev
 - [x]   (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
+- [x]   (Security) _App_ update Electron to 9.3.1
 
 # version 0.3.2 - 2020-09-19
 - [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
