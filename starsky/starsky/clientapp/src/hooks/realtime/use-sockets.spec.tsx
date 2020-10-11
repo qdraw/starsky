@@ -5,6 +5,7 @@ import { mountReactHook } from '../___tests___/test-hook';
 import useSockets, { IUseSockets } from './use-sockets';
 import WebSocketService from './websocket-service';
 import * as WsCurrentStart from './ws-current-start';
+import { FakeWebSocketService } from './___tests___/fake-web-socket-service';
 
 describe("useSockets", () => {
 
@@ -38,25 +39,6 @@ describe("useSockets", () => {
     wsCurrent.mockReset();
     component.unmount();
   });
-
-  class FakeWebSocketService implements WebSocketService {
-    public onOpen(callback: (ev: Event) => void): void {
-      callback(new Event("t"))
-    }
-    public onClose(callback: (ev: CloseEvent) => void): void {
-      callback(new CloseEvent("t"))
-    }
-    public onError(callback: (ev: Event) => void): void {
-      callback(new CloseEvent("t"))
-    }
-    public close(): void {
-    }
-
-    public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
-    }
-    public onMessage(callback: (event: MessageEvent<any>) => void): void {
-    }
-  }
 
   it('test retry when no response ', () => {
     console.log('test retry when no response');
