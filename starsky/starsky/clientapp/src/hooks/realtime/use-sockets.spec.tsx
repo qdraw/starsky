@@ -34,7 +34,8 @@ describe("useSockets", () => {
 
     expect(wsCurrent).toBeCalled();
     expect(wsCurrent).toBeCalledTimes(1);
-    expect(wsCurrent).toBeCalledWith(false, expect.any(Function), { "current": true }, expect.any(Function));
+    expect(wsCurrent).toBeCalledWith(false, expect.any(Function), { "current": true },
+      expect.any(Function), expect.any(Function));
 
     wsCurrent.mockReset();
     component.unmount();
@@ -63,7 +64,8 @@ describe("useSockets", () => {
 
     expect(wsCurrent).toBeCalled();
     expect(wsCurrent).toBeCalledTimes(2);
-    expect(wsCurrent).toBeCalledWith(false, expect.any(Function), { "current": true }, expect.any(Function));
+    expect(wsCurrent).toBeCalledWith(false, expect.any(Function), { "current": true },
+      expect.any(Function), expect.any(Function));
 
     component.unmount();
     jest.useRealTimers();

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DifferenceInDate } from '../../shared/date';
 import useInterval from '../use-interval';
 import WebSocketService from './websocket-service';
-import WsCurrentStart from './ws-current-start';
+import WsCurrentStart, { NewWebSocketService } from './ws-current-start';
 
 export interface IUseSockets {
   showSocketError: boolean | null;
@@ -45,7 +45,7 @@ const useSockets = (): IUseSockets => {
       setSocketConnected(false);
       countRetry.current++;
       ws.current.close();
-      ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime);
+      ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime, NewWebSocketService);
     }
     else {
       countRetry.current = 0;
@@ -64,7 +64,7 @@ const useSockets = (): IUseSockets => {
     // check to be removed in future version
     if (!isClientSideFeatureEnabled()) return;
 
-    ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime);
+    ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime, NewWebSocketService);
     return () => {
       console.log('[use-sockets] --end');
       ws.current.close();
