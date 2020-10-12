@@ -57,8 +57,8 @@ export function FireOnOpen(socketConnected: boolean,
   if (!socketConnected) setSocketConnected(true);
 }
 
-export function FireOnMessage(e: MessageEvent<any>, setKeepAliveTime: Dispatch<SetStateAction<Date>>) {
-  var item = parseJson(e.data)
+export function FireOnMessage(e: Event, setKeepAliveTime: Dispatch<SetStateAction<Date>>) {
+  var item = parseJson((e as any).data)
 
   if (isKeepAliveMessage(item)) {
     HandleKeepAliveMessage(setKeepAliveTime, item);

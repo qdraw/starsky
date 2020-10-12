@@ -33,6 +33,7 @@ export class FakeWebSocketService implements WebSocketService {
 
   public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
   }
-  public onMessage(callback: (event: MessageEvent<any>) => void): void {
+
+  public onMessage(callback: (event: MessageEvent) => void): void {
   }
 }
