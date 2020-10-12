@@ -1,3 +1,4 @@
+import * as isDev from './is-dev';
 import { UrlQuery } from './url-query';
 
 describe("url-query", () => {
@@ -139,4 +140,80 @@ describe("url-query", () => {
 
   });
 
+  describe("UrlGeoSync", () => {
+    it("should contain geo sync", () => {
+      var test = urlQuery.UrlGeoSync();
+      expect(test).toContain("/geo/sync")
+    });
+  });
+
+  describe("UrlGeoStatus", () => {
+    it("should contain status and parm", () => {
+      var test = urlQuery.UrlGeoStatus("parm");
+      expect(test).toContain("/geo/status");
+      expect(test).toContain("parm")
+    });
+  });
+
+  describe("UrlRealtime", () => {
+    const { location } = window;
+    /**
+     * Mock the location feature
+     * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
+     */
+    beforeAll(() => {
+      // @ts-ignore
+      delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      window.location = {
+        href: '',
+      };
+    });
+
+    afterAll((): void => {
+      window.location = location;
+    });
+
+    it("default secure context", () => {
+
+      window.location.protocol = "https:";
+      window.location.host = "google.com";
+      var url = urlQuery.UrlRealtime();
+      expect(url).toBe("wss://google.com/starsky/realtime");
+      expect(url).toContain("realtime")
+
+    });
+
+    it("default non-secure context", () => {
+      window.location.protocol = "http:";
+      window.location.host = "localhost:7382";
+      var url = new UrlQuery().UrlRealtime();
+      expect(url).toBe("ws://localhost:7382/starsky/realtime");
+      expect(url).toContain("realtime")
+
+    });
+
+    it("when not in Dev ignore port 3000 replacement", () => {
+
+      jest.spyOn(isDev, 'default').mockImplementationOnce(() => false);
+
+      window.location.protocol = "http:";
+      window.location.host = "localhost:3000";
+      var url = new UrlQuery().UrlRealtime();
+      expect(url).toBe("ws://localhost:3000/starsky/realtime");
+      expect(url).toContain("realtime")
+
+    });
+    it("replace port 3000 with 5000 in dev context", () => {
+      jest.spyOn(isDev, 'default').mockImplementationOnce(() => true);
+
+      window.location.protocol = "http:";
+      window.location.host = "localhost:3000";
+      var url = new UrlQuery().UrlRealtime();
+      expect(url).toBe("ws://localhost:5000/starsky/realtime");
+      expect(url).toContain("realtime")
+    });
+
+  });
 });
