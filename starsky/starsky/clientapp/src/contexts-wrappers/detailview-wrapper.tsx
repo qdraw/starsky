@@ -33,6 +33,19 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
+  DetailViewEventListenerUseEffect(dispatch);
+
+  if (!state) return (<>(DetailViewWrapper) = no state</>)
+  if (!state.fileIndexItem) return (<></>);
+
+  return (<DetailView {...state} />)
+}
+
+/**
+ * Effect that run on startup of the component and updates the changes from other clients
+ * @param dispatch - function to update the state
+ */
+export function DetailViewEventListenerUseEffect(dispatch: React.Dispatch<DetailViewAction>) {
   // Catch events from updates
   const update = (event: Event) => updateDetailViewFromEvent(event, dispatch);
   useEffect(() => {
@@ -43,24 +56,19 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
     // only when start of view
     // eslint-disable-next-line
   }, []);
-
-  if (!state) return (<>(DetailViewWrapper) = no state</>)
-  if (!state.fileIndexItem) return (<></>);
-
-  return (<DetailView {...state} />)
 }
 
 function updateDetailViewFromEvent(event: Event, dispatch: React.Dispatch<DetailViewAction>) {
   const pushMessages = (event as CustomEvent<IFileIndexItem[]>).detail;
+  // useLocation, state or detailView is here always the default value
   var locationPath = new URLPath().StringToIUrl(window.location.search).f
 
   for (let index = 0; index < pushMessages.length; index++) {
     const pushMessage = pushMessages[index];
-    // useLocation, state or detailView is here always the default value
+    // only update the state of the current view
     if (locationPath !== pushMessage.filePath) {
       continue;
     }
     dispatch({ type: 'update', ...pushMessage, colorclass: pushMessage.colorClass });
   }
-
 }

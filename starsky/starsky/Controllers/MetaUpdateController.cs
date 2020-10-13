@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starskycore.Services;
 
@@ -22,7 +23,8 @@ namespace starsky.Controllers
 		private readonly IWebSocketConnectionsService _connectionsService;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
-			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, IWebSocketConnectionsService connectionsService)
+			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, 
+			IWebSocketConnectionsService connectionsService)
 		{
 			_metaPreflight = metaPreflight;
 			_metaUpdateService = metaUpdateService;
@@ -56,8 +58,8 @@ namespace starsky.Controllers
 	    {
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
-			var preflightResult =  _metaPreflight.Preflight(inputModel, inputFilePaths,
-				append, collections, rotateClock);
+			var preflightResult =  _metaPreflight.Preflight(inputModel, 
+				inputFilePaths, append, collections, rotateClock);
 			var fileIndexResultsList = preflightResult.fileIndexResultsList;
 
 			// Update >
@@ -66,11 +68,13 @@ namespace starsky.Controllers
 				var updated = _metaUpdateService
 					.Update(preflightResult.changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
+				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated, 
+					DefaultJsonSerializer.CamelCase), token);
 			});
 			
             // When all items are not found
-            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok && p.Status != FileIndexItem.ExifStatus.Deleted))
+            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok 
+                                              && p.Status != FileIndexItem.ExifStatus.Deleted))
                 return NotFound(fileIndexResultsList);
 
             // Clone an new item in the list to display
@@ -100,7 +104,8 @@ namespace starsky.Controllers
 	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 	    [Produces("application/json")]
-	    public IActionResult Replace(string f, string fieldName, string search, string replace, bool collections = true)
+	    public IActionResult Replace(string f, string fieldName, string search,
+		    string replace, bool collections = true)
 	    {
 		    var fileIndexResultsList = _metaReplaceService
 			    .Replace(f, fieldName, search, replace, collections);
@@ -109,7 +114,8 @@ namespace starsky.Controllers
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 				var resultsOkList =
-					fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok).ToList();
+					fileIndexResultsList.Where(p => p.Status
+					                                == FileIndexItem.ExifStatus.Ok).ToList();
 				
 				foreach ( var inputModel in resultsOkList )
 				{
@@ -127,8 +133,8 @@ namespace starsky.Controllers
 					var updated = _metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
-					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated), token);
-
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated,
+						DefaultJsonSerializer.CamelCase), token);
 				}
 			});
 					
