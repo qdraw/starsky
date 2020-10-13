@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react';
 import DetailView from '../containers/detailview';
-import { DetailViewContextProvider, useDetailViewContext } from '../contexts/detailview-context';
+import { DetailViewAction, DetailViewContextProvider, useDetailViewContext } from '../contexts/detailview-context';
+import { useSocketsEventName } from '../hooks/realtime/use-sockets.const';
 import { IDetailView } from '../interfaces/IDetailView';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import DocumentTitle from '../shared/document-title';
+import { URLPath } from '../shared/url-path';
 
 /**
  * Used for search and list of files
  * @param detailview Detailview content
  */
-function DetailViewContextWrapper(detailview: IDetailView) {
+export default function DetailViewContextWrapper(detailview: IDetailView) {
   return (<DetailViewContextProvider>
     <DetailViewWrapper {...detailview} />
   </DetailViewContextProvider>)
@@ -30,10 +33,47 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
 
+  DetailViewEventListenerUseEffect(dispatch);
+
   if (!state) return (<>(DetailViewWrapper) = no state</>)
   if (!state.fileIndexItem) return (<></>);
 
   return (<DetailView {...state} />)
 }
 
-export default DetailViewContextWrapper;
+/**
+ * Effect that run on startup of the component and updates the changes from other clients
+ * @param dispatch - function to update the state
+ */
+export function DetailViewEventListenerUseEffect(dispatch: React.Dispatch<DetailViewAction>) {
+  // Catch events from updates
+  const update = (event: Event) => updateDetailViewFromEvent(event, dispatch);
+  useEffect(() => {
+    document.body.addEventListener(useSocketsEventName, update);
+    return () => {
+      document.body.removeEventListener(useSocketsEventName, update);
+    };
+    // only when start of view
+    // eslint-disable-next-line
+  }, []);
+}
+
+/**
+ * Update DetailView from Event
+ * @param event - CustomEvent with IFileIndexItem array
+ * @param dispatch - function to update the state
+ */
+function updateDetailViewFromEvent(event: Event, dispatch: React.Dispatch<DetailViewAction>) {
+  const pushMessages = (event as CustomEvent<IFileIndexItem[]>).detail;
+  // useLocation, state or detailView is here always the default value
+  var locationPath = new URLPath().StringToIUrl(window.location.search).f
+
+  for (let index = 0; index < pushMessages.length; index++) {
+    const pushMessage = pushMessages[index];
+    // only update the state of the current view
+    if (locationPath !== pushMessage.filePath) {
+      continue;
+    }
+    dispatch({ type: 'update', ...pushMessage, colorclass: pushMessage.colorClass });
+  }
+}

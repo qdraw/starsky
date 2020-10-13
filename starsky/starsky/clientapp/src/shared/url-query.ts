@@ -1,4 +1,5 @@
 import { IUrl, newIUrl } from '../interfaces/IUrl';
+import isDev from './is-dev';
 import { URLPath } from './url-path';
 
 export class UrlQuery {
@@ -298,4 +299,16 @@ export class UrlQuery {
   public UrlPublishExist(itemName: string | null): string {
     return this.prefix + `/api/publish/exist?itemName=${itemName}`;
   }
+
+  public UrlRealtime(): string {
+    var url = window.location.protocol === "https:" ? "wss:" : "ws:";
+    url += "//" + window.location.host + this.prefix + "/realtime";
+
+    // Create React App is not supporting websockets. At least is isn't working
+    if (isDev()) {
+      url = url.replace(":3000", ":5000")
+    }
+    return url;
+  }
+
 } 

@@ -88,7 +88,11 @@ wsServer.app.ws("/starsky/realtime", (ws, req) => {
     console.log('Backend is closing, reason: ' + statusCode);
     backendClosed = true;
     if (!frontendClosed) {
-      ws.close(statusCode);
+      try {
+        ws.close(statusCode);
+      } catch (error) {
+        console.log(error);
+      }
     }
     frontendClosed = true;
   });

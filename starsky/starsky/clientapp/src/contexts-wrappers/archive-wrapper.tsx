@@ -4,16 +4,19 @@ import Archive from '../containers/archive';
 import Login from '../containers/login';
 import Search from '../containers/search';
 import Trash from '../containers/trash';
-import { ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
+import { ArchiveAction, ArchiveContext, ArchiveContextProvider } from '../contexts/archive-context';
+import { useSocketsEventName } from '../hooks/realtime/use-sockets.const';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';
+import { IFileIndexItem } from '../interfaces/IFileIndexItem';
 import DocumentTitle from '../shared/document-title';
+import { URLPath } from '../shared/url-path';
 
 /**
  * Used for search and list of files
  * @param archive the archive props 
  */
-function ArchiveContextWrapper(archive: IArchiveProps) {
+export default function ArchiveContextWrapper(archive: IArchiveProps) {
   return (<ArchiveContextProvider>
     <ArchiveWrapper {...archive} />
   </ArchiveContextProvider>)
@@ -26,7 +29,7 @@ function ArchiveWrapper(archive: IArchiveProps) {
    * Running on changing searchQuery or subpath
    */
   useEffect(() => {
-    // dont update the cache
+    // don't update the cache
     dispatch({ type: 'set', payload: archive })
     // disable to prevent duplicate api calls
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,6 +39,8 @@ function ArchiveWrapper(archive: IArchiveProps) {
     if (!state) return;
     new DocumentTitle().SetDocumentTitle(state);
   }, [state]);
+
+  ArchiveEventListenerUseEffect(dispatch);
 
   if (!state) return (<>(ArchiveWrapper) = no state</>)
   if (!state.fileIndexItems) return (<></>);
@@ -63,7 +68,44 @@ function ArchiveWrapper(archive: IArchiveProps) {
         <Preloader isOverlay={true} isTransition={false} />
       );
   }
-
 }
 
-export default ArchiveContextWrapper;
+/**
+ * Effect that run on startup of the component and updates the changes from other clients
+ * @param dispatch - function to update the state
+ */
+export function ArchiveEventListenerUseEffect(dispatch: React.Dispatch<ArchiveAction>) {
+  // Catch events from updates
+  const update = (event: Event) => updateArchiveFromEvent(event, dispatch);
+  useEffect(() => {
+    document.body.addEventListener(useSocketsEventName, update);
+    return () => {
+      document.body.removeEventListener(useSocketsEventName, update);
+    };
+    // only when start of view
+    // eslint-disable-next-line
+  }, []);
+}
+
+/**
+ * Update Archive from Event
+ * @param event - CustomEvent with IFileIndexItem array
+ * @param dispatch - function to update the state
+ */
+function updateArchiveFromEvent(event: Event, dispatch: React.Dispatch<ArchiveAction>) {
+  const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
+  // useLocation, state or archive is here always the default value
+  var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f
+
+  for (let index = 0; index < pushMessagesEvent.length; index++) {
+    const pushMessage = pushMessagesEvent[index];
+    // only update the state of the current view
+    if (parentLocationPath !== pushMessage.parentDirectory) {
+      continue;
+    }
+    dispatch({
+      type: 'update', select: [pushMessage.fileName],
+      ...pushMessage, colorclass: pushMessage.colorClass
+    });
+  }
+}

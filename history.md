@@ -32,8 +32,8 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.0-beta.0 or 0.3.4 _(Unreleased)_  2020-10-??
-- nothing yet
+# version 0.4.0-beta.0 _(Unreleased)_  2020-10-??
+- [x]   (Added) _Front-end_ Update view when other clients are updating content
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_
@@ -57,7 +57,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Security) _App_ update Electron to 9.3.1
 
 # version 0.3.2 - 2020-09-19
-- [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
+- [x]   (Fixed) _Front-end_ DetailView - DateTime push in DetailView has no influence on colorClass anymore
 - [x]   (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
 - [x]   (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (to avoid next/prev issues)
 - [x]   (Fixed) _Front-end_ Archive - When selecting a new colorClass this is added to the filter

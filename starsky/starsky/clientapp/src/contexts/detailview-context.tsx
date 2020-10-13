@@ -20,7 +20,7 @@ const initialState: IDetailView = {
   dateCache: Date.now()
 }
 
-type Action = {
+export type DetailViewAction = {
   type: 'append',
   tags?: string
 } |
@@ -47,9 +47,9 @@ type Action = {
 
 export type IDetailViewContext = {
   state: IDetailView,
-  dispatch: React.Dispatch<Action>,
+  dispatch: React.Dispatch<DetailViewAction>,
 }
-export function detailviewReducer(state: IDetailView, action: Action): IDetailView {
+export function detailviewReducer(state: IDetailView, action: DetailViewAction): IDetailView {
   switch (action.type) {
     case "remove":
       var { tags } = action;

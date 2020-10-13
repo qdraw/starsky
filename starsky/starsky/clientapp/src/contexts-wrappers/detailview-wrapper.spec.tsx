@@ -1,9 +1,11 @@
+import { act } from '@testing-library/react';
 import { mount, shallow } from 'enzyme';
 import React from 'react';
 import * as DetailView from '../containers/detailview';
+import { useSocketsEventName } from '../hooks/realtime/use-sockets.const';
 import { IDetailView, newDetailView } from '../interfaces/IDetailView';
 import { newIFileIndexItem } from '../interfaces/IFileIndexItem';
-import DetailViewWrapper from './detailview-wrapper';
+import DetailViewWrapper, { DetailViewEventListenerUseEffect } from './detailview-wrapper';
 
 
 describe("DetailViewWrapper", () => {
@@ -46,4 +48,60 @@ describe("DetailViewWrapper", () => {
     });
   });
 
+  describe("DetailViewEventListenerUseEffect", () => {
+
+    const { location } = window;
+    /**
+     * Mock the location feature
+     * @see: https://wildwolf.name/jest-how-to-mock-window-location-href/
+     */
+    beforeAll(() => {
+      // @ts-ignore
+      delete window.location;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      window.location = {
+        search: "/?f=/test.jpg",
+      };
+    });
+
+    afterAll((): void => {
+      window.location = location;
+    });
+
+    it("Check if event is received", (done) => {
+      var dispatch = (e: any) => {
+        // should ignore the first one
+        expect(e).toStrictEqual(detail[1]);
+        done();
+      };
+
+      function TestComponent() {
+        DetailViewEventListenerUseEffect(dispatch);
+        return (<></>)
+      }
+
+      var component = mount(<TestComponent />);
+
+      var detail = [{
+        ...newIFileIndexItem(),
+        // should ignore this one
+      },
+      {
+        "colorclass": undefined,
+        ...newIFileIndexItem(),
+        filePath: '/test.jpg',
+        "type": "update",
+      }];
+      var event = new CustomEvent(useSocketsEventName, {
+        detail
+      });
+
+      act(() => {
+        document.body.dispatchEvent(event);
+      });
+
+      component.unmount();
+    });
+  });
 });
