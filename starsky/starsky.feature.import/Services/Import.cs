@@ -251,10 +251,11 @@ namespace starsky.feature.import.Services
 			// Only accept files with correct meta data
 			// Check if there is a xmp file that contains data
 			var fileIndexItem = _readMetaHost.ReadExifAndXmpFromFile(inputFileFullPath.Key);
-
+			
 			// Parse the filename and create a new importIndexItem object
 			var importIndexItem = ObjectCreateIndexItem(inputFileFullPath.Key, imageFormat, 
-				hashList.Key, fileIndexItem, importSettings.ColorClass);
+				hashList.Key, fileIndexItem, importSettings.ColorClass,
+				_filesystemStorage.Info(inputFileFullPath.Key).Size);
 			
 			// Update the parent and filenames
 			importIndexItem = ApplyStructure(importIndexItem, importSettings.Structure);
@@ -275,13 +276,15 @@ namespace starsky.feature.import.Services
 		/// <param name="fileHashCode">file hash base32</param>
 		/// <param name="fileIndexItem">database item</param>
 		/// <param name="colorClassTransformation">Force to update colorclass</param>
+		/// <param name="size">Add filesize in bytes</param>
 		/// <returns></returns>
 		private ImportIndexItem ObjectCreateIndexItem(
 				string inputFileFullPath,
 				ExtensionRolesHelper.ImageFormat imageFormat,
 				string fileHashCode,
 				FileIndexItem fileIndexItem,
-				int colorClassTransformation)
+				int colorClassTransformation,
+				long size)
 		{
 			var importIndexItem = new ImportIndexItem(_appSettings)
 			{
@@ -304,7 +307,8 @@ namespace starsky.feature.import.Services
 			// AddToDatabase is Used by the importer History agent
 			importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
 			importIndexItem.AddToDatabase = DateTime.UtcNow;
-
+			
+			importIndexItem.FileIndexItem.Size = size;
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
 			importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;

@@ -66,6 +66,7 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
+			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.Size != 0);
 		}
 
 		[TestMethod]
