@@ -59,7 +59,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public List<DetailView> Update(Dictionary<string, List<string>> changedFileIndexItemName, 
+		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, 
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, 
 			bool collections, bool append, int rotateClock)
@@ -70,7 +70,7 @@ namespace starsky.feature.metaupdate.Services
 					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
 					rotateClock).changedFileIndexItemName;
 			}
-			var updatedItems = new List<DetailView>();
+			var updatedItems = new List<FileIndexItem>();
 			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
 			                                                                || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
 			foreach ( var item in collectionsDetailViewList )
@@ -84,7 +84,7 @@ namespace starsky.feature.metaupdate.Services
 					var comparedNamesList = changedFileIndexItemName[item.FilePath];
 
 					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
-					updatedItems.Add(detailView);
+					updatedItems.Add(detailView.FileIndexItem);
 					continue;
 				}
 
