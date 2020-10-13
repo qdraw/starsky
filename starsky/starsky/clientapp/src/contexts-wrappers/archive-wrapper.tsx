@@ -68,7 +68,6 @@ function ArchiveWrapper(archive: IArchiveProps) {
         <Preloader isOverlay={true} isTransition={false} />
       );
   }
-
 }
 
 /**
@@ -88,9 +87,14 @@ export function ArchiveEventListenerUseEffect(dispatch: React.Dispatch<ArchiveAc
   }, []);
 }
 
+/**
+ * Update Archive from Event
+ * @param event - CustomEvent with IFileIndexItem array
+ * @param dispatch - function to update the state
+ */
 function updateArchiveFromEvent(event: Event, dispatch: React.Dispatch<ArchiveAction>) {
   const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
-  // useLocation, state or detailView is here always the default value
+  // useLocation, state or archive is here always the default value
   var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f
 
   for (let index = 0; index < pushMessagesEvent.length; index++) {

@@ -58,6 +58,11 @@ export function DetailViewEventListenerUseEffect(dispatch: React.Dispatch<Detail
   }, []);
 }
 
+/**
+ * Update DetailView from Event
+ * @param event - CustomEvent with IFileIndexItem array
+ * @param dispatch - function to update the state
+ */
 function updateDetailViewFromEvent(event: Event, dispatch: React.Dispatch<DetailViewAction>) {
   const pushMessages = (event as CustomEvent<IFileIndexItem[]>).detail;
   // useLocation, state or detailView is here always the default value
