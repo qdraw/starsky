@@ -5,6 +5,9 @@ namespace starsky.foundation.sync.Services
 {
 	public class FileSystemWatcherImplementation
 	{
+		/// <summary>
+		/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netcore-3.1
+		/// </summary>
 		public void Test()
 		{
 			// Create a new FileSystemWatcher and set its properties.
