@@ -1,10 +1,17 @@
 using System;
 using System.IO;
+using starsky.foundation.sync.Interfaces;
 
 namespace starsky.foundation.sync.Services
 {
 	public class FileSystemWatcherImplementation
 	{
+		private readonly IFileProcessor _fileProcessor;
+		public FileSystemWatcherImplementation(IFileProcessor fileProcessor)
+		{
+			_fileProcessor = fileProcessor;
+		}
+
 		/// <summary>
 		/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netcore-3.1
 		/// </summary>
@@ -35,15 +42,18 @@ namespace starsky.foundation.sync.Services
 			// Begin watching.
 			watcher.EnableRaisingEvents = true;
 
-			// Wait for the user to quit the program.
-			Console.WriteLine("Press 'q' to quit the sample.");
-			while (Console.Read() != 'q') ;
+			// // Wait for the user to quit the program.
+			// Console.WriteLine("Press 'q' to quit the sample.");
+			// while (Console.Read() != 'q') ;
 		}
 		
 		// Define the event handlers.
-		private void OnChanged(object source, FileSystemEventArgs e) =>
+		private void OnChanged(object source, FileSystemEventArgs e)
+		{
+			_fileProcessor.QueueInput(e.FullPath);
 			// Specify what is done when a file is changed, created, or deleted.
 			Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
+		}
 
 		private void OnRenamed(object source, RenamedEventArgs e) =>
 			// Specify what is done when a file is renamed.
