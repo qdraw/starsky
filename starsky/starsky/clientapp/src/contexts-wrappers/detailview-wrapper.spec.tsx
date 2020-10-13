@@ -72,17 +72,14 @@ describe("DetailViewWrapper", () => {
     it("Check if event is received", (done) => {
       var dispatch = (e: any) => {
         // should ignore the first one
-        expect(e).toStrictEqual(detail[1])
+        expect(e).toStrictEqual(detail[1]);
+        done();
       };
 
       function TestComponent() {
         DetailViewEventListenerUseEffect(dispatch);
         return (<></>)
       }
-
-      document.body.addEventListener(useSocketsEventName, () => {
-        done();
-      });
 
       var component = mount(<TestComponent />);
 
