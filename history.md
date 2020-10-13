@@ -57,7 +57,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Security) _App_ update Electron to 9.3.1
 
 # version 0.3.2 - 2020-09-19
-- [x]   (Fixed) _Front-end_ DetailView - DateTime push in Detailview has no influence on colorclass anymore
+- [x]   (Fixed) _Front-end_ DetailView - DateTime push in DetailView has no influence on colorClass anymore
 - [x]   (Fixed) _Front-end_ DetailView - Links to collections are always with `details=true`
 - [x]   (Fixed) _Front-end_ DetailView - When pressing delete the entire clientSide cache is cleared (to avoid next/prev issues)
 - [x]   (Fixed) _Front-end_ Archive - When selecting a new colorClass this is added to the filter
