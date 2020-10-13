@@ -32,8 +32,8 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.0-beta.0 or 0.3.4 _(Unreleased)_  2020-10-??
-- nothing yet
+# version 0.4.0-beta.0 _(Unreleased)_  2020-10-??
+- [x]   (Added) _Front-end_ Update current view when other clients are updating content
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_
