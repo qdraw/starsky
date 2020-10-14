@@ -21,8 +21,8 @@ function makeDemoUser {
 
 function getSamplePhotos {
   mkdir -p $STORAGE_FOLDER/vsm
-  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output $STORAGE_FOLDER"/train/20190530_134303_DSC00279_e.jpg"
-  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output $STORAGE_FOLDER"/train/20190530_142906_DSC00373_e.jpg"
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output $STORAGE_FOLDER"/vsm/20190530_134303_DSC00279_e.jpg"
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output $STORAGE_FOLDER"/vsm/20190530_142906_DSC00373_e.jpg"
 
   mkdir -p $STORAGE_FOLDER/vernant
   curl https://media.qdraw.nl/log/vernant-in-de-franse-alpen-2020/1000/20200823_102002_dsc03419_e_kl1k.jpg --output $STORAGE_FOLDER"/vernant/20200823_102002_dsc03419_e_kl1k.jpg"
