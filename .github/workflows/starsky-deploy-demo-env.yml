@@ -10,6 +10,7 @@ on:
     paths:
     - '.github/workflows/starsky-deploy-demo-env.yml'
     - 'starsky/Dockerfile'
+    - 'starsky/docker_demo_setup.sh'
     
 jobs:
   deploy:
