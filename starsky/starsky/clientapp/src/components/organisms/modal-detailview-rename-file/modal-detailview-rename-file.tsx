@@ -23,9 +23,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageNonValidExtension: string = language.text("Dit bestand kan zo niet worden weggeschreven", "This file cannot be saved");
-  const MessageChangeToDifferentExtension = language.text("Let op! Je veranderd de extensie van het bestand, deze kan hierdoor onleesbaar worden",
-    "Pay attention! You change the file extension, which can make it unreadable");
+  const MessageNonValidExtension: string = language.text("Dit bestand kan zo niet worden weggeschreven",
+    "This file cannot be saved");
+  const MessageChangeToDifferentExtension = language.text("Let op! Je veranderd de extensie van het bestand, "
+    + "deze kan hierdoor onleesbaar worden", "Pay attention! You change the file extension, which can make it unreadable");
   const MessageGeneralError: string = language.text("Er is iets misgegaan met de aanvraag, probeer het later opnieuw",
     "Something went wrong with the request, please try again later");
   const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
@@ -118,10 +119,10 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
       return
     }
 
+    new FileListCache().CacheCleanEverything();
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(history.location.search, filePathAfterChange);
     await history.navigate(replacePath, { replace: true });
-    new FileListCache().CacheCleanEverything();
 
     // Close window
     props.handleExit();
