@@ -33,7 +33,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.4.0-beta.0 _(Unreleased)_  2020-10-??
+_New Feature: In this release websockets are used (note: when using reverse config)_
 - [x]   (Added) _Front-end_ Update view when other clients are updating content
+- [x]   (Changed) _Front-end_ In GPX view mode & when unlocked: touchZoom and doubleClickZoom are enabled
+- [x]   (Fixed) _Front-end_ When file is added to view, the colorClassActiveList is updated
+- [x]   (Fixed) _Front-end_ When folder or file is renamed the clientside cache is not correct
+- [x]   (Fixed) _Front-end_ When in Archive mode and 'Move file to trash' client cache is cleared
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_

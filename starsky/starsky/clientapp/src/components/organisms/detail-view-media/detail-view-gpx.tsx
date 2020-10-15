@@ -118,6 +118,8 @@ const DetailViewGpx: React.FC = () => {
   function disableLock() {
     if (!mapState) return;
     mapState.dragging.enable();
+    mapState.doubleClickZoom.enable();
+    mapState.touchZoom.enable();
     setIsMapLocked(false)
   }
 
@@ -142,7 +144,7 @@ const DetailViewGpx: React.FC = () => {
   return (
     <>
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
-      <div className={"main main--error main--gpx"} ref={mapReference} />
+      <div className="main main--error main--gpx" ref={mapReference} />
       <div className="gpx-controls">
         <button data-test="lock" className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
           onClick={unLockLockToggle}>{isMapLocked ? "Unlock" : "Lock"}</button>

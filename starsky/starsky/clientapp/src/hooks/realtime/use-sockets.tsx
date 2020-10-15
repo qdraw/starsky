@@ -49,7 +49,7 @@ const useSockets = (): IUseSockets => {
     else {
       countRetry.current = 0;
     }
-  };
+  }
 
   /**
    * To be removed in future release
