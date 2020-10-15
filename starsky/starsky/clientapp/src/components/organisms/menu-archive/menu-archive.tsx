@@ -4,6 +4,7 @@ import { ArchiveContext, defaultStateFallback } from '../../../contexts/archive-
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { Select } from '../../../shared/select';
 import { Sidebar } from '../../../shared/sidebar';
@@ -87,8 +88,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     if (isReadOnly) return <li data-test="upload" className="menu-option disabled">Upload</li>
     return <li className="menu-option menu-option--input">
       <DropArea callback={(add) => {
-        console.log(add);
-
+        new FileListCache().CacheCleanEverything();
         setDropAreaUploadFilesList(add);
         dispatch({ 'type': 'add', add });
       }}
