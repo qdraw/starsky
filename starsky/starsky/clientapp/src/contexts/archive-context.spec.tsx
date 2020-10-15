@@ -1,3 +1,4 @@
+import 'core-js/features/array/some'; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
 import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';

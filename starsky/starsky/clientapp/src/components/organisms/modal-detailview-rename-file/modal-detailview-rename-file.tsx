@@ -7,6 +7,7 @@ import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { newIFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
@@ -120,6 +121,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(history.location.search, filePathAfterChange);
     await history.navigate(replacePath, { replace: true });
+    new FileListCache().CacheCleanEverything();
 
     // Close window
     props.handleExit();

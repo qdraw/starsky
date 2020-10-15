@@ -6,7 +6,7 @@ describe("Modal", () => {
 
   it("renders", () => {
     shallow(<Modal
-      id="rename-file-modal"
+      id="test2-modal"
       isOpen={true}
       handleExit={() => { }}>
     </Modal>)

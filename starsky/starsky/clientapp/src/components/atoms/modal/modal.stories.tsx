@@ -5,7 +5,7 @@ import Modal from './modal';
 storiesOf("components/atoms/modal", module)
   .add("default", () => {
     return <Modal
-      id="rename-file-modal"
+      id="test-modal"
       isOpen={true}
       handleExit={() => { }}>
     </Modal>

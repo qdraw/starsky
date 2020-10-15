@@ -130,20 +130,30 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
-      UpdateColorClassUsageActiveListLoop(state, fileIndexItems);
-
+      UpdateColorClassUsageActiveListLoop(state);
       return updateCache(state);
   }
 }
 
-function UpdateColorClassUsageActiveListLoop(state: IArchiveProps, fileIndexItems: IFileIndexItem[]) {
-  for (let index = 0; index < fileIndexItems.length; index++) {
-    const colorClass = fileIndexItems[index].colorClass;
+/**
+ * Loop of ColorClass Usage is the list of Colorclasses a user can select.
+ * @see: UpdateColorClassUsageActiveList
+ * @param state - current state
+ */
+function UpdateColorClassUsageActiveListLoop(state: IArchiveProps) {
+  for (let index = 0; index < state.fileIndexItems.length; index++) {
+    const colorClass = state.fileIndexItems[index].colorClass;
     if (colorClass === undefined) continue;
     UpdateColorClassUsageActiveList(state, colorClass);
   }
 }
 
+/**
+ * ColorClass Usage is the list of Colorclasses a user can select. 
+ * This need to be updated based on the colorclasses that are in the list
+ * @param state - current state
+ * @param colorclass - colorclass that has be added
+ */
 function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: number): void {
   if (state.colorClassUsage === undefined) state.colorClassUsage = [];
 
@@ -161,8 +171,6 @@ function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: numbe
     const even = (element: IFileIndexItem) => element.colorClass === usage;
     // some is not working in context of jest
     if (!state.fileIndexItems.some(even).valueOf()) {
-      console.log(usage);
-
       var indexer = state.colorClassUsage.indexOf(usage);
       state.colorClassUsage.splice(indexer, 1);
     }
