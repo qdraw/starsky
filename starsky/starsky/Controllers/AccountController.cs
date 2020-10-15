@@ -53,11 +53,29 @@ namespace starsky.Controllers
 			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
 
 			// use model to avoid circular references
+			var currentUser = _userManager.GetCurrentUser(HttpContext);
+			if ( currentUser == null ) return BadRequest("Current User does not exist ");
+			
 			var model = new User
 			{
-				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
-				Id = _userManager.GetCurrentUser(HttpContext).Id,
-				Created = _userManager.GetCurrentUser(HttpContext).Created,
+				Name = currentUser.Name,
+				Id = currentUser.Id,
+				Created = currentUser.Created,
+			};
+			
+			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
+			if ( credentials == null ) return Json(model);
+
+			model.Credentials = new List<Credential>
+			{
+				new Credential
+				{
+					Id = credentials.Id,
+					UserId = credentials.UserId,
+					Identifier = credentials.Identifier,
+					// extra & user are hidden
+					CredentialType = credentials.CredentialType
+				}
 			};
 
 			return Json(model);

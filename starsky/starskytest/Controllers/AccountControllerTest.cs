@@ -243,7 +243,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_ChangeSecret_PasswordChange_Success_Injected()
         {
-	        var controller = new AccountController(new FakeUserManagerActiveUsers("test"), _appSettings, _antiForgery, _selectorStorage)
+	        var controller = new AccountController(new FakeUserManagerActiveUsers("test", 
+		        new User {Name = "t1", Id = 99}), _appSettings, _antiForgery, _selectorStorage)
 	        {
 		        ControllerContext = {HttpContext = new DefaultHttpContext
 		        {
@@ -262,7 +263,8 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_ChangeSecret_PasswordChange_Rejected_Injected()
         {
-	        var userManager = new FakeUserManagerActiveUsers("reject");
+	        var userManager = new FakeUserManagerActiveUsers("reject", 
+		        new User {Name = "t1", Id = 99});
 
 	        var controller = new AccountController(userManager, _appSettings, _antiForgery, _selectorStorage)
 	        {
@@ -272,7 +274,8 @@ namespace starskytest.Controllers
 		        }}
 	        };
 
-	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
+	        var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", 
+		        ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
 	        var actionResult = controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
 	        Assert.AreEqual(401,actionResult.StatusCode);
@@ -335,7 +338,6 @@ namespace starskytest.Controllers
 				    User = SetTestClaimsSet(user.Name, user.Id.ToString())
 			    }}
 		    };
-
 
 		    controller.Status();
 		    Assert.AreEqual(200,controller.Response.StatusCode);
@@ -512,6 +514,26 @@ namespace starskytest.Controllers
 	        Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
         }
         
+        [TestMethod]
+        public void AccountController_Login_CheckCredentials()
+        {
+
+	        var httpContext = new DefaultHttpContext();
+	        httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+
+	        var controller =
+		        new AccountController(new FakeUserManagerActiveUsers("test",new User {Name = "t1", Id = 99}), 
+			        _appSettings, _antiForgery, _selectorStorage)	
+		        {
+			        ControllerContext = {HttpContext = httpContext}
+		        };
+	        
+	        var actionResult = controller.Status() as JsonResult;
+	        var user = actionResult.Value as User;
+	        Assert.IsNull(user.Credentials.FirstOrDefault().Secret);
+	        Assert.AreEqual("test", user.Credentials.FirstOrDefault().Identifier);
+        }
+
         [TestMethod]
         public void Permissions()
         {
