@@ -7,6 +7,7 @@ import BrowserDetect from '../shared/browser-detect';
 import { DocumentTitle } from '../shared/document-title';
 import FetchPost from '../shared/fetch-post';
 import { Language } from '../shared/language';
+import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
 import { validateLoginForm } from '../shared/validate-login-form';
 
@@ -42,6 +43,8 @@ const Login: React.FC<ILoginProps> = () => {
   const MessageLogin = language.text("Inloggen", "Login");
   const MessageLogout = language.text("Uitloggen", "Logout");
   const MessageCreateAccount = language.text("Account maken", "Create account");
+  const MessageUserNamePasswordSharedThoughUrl = language.text("Pas op! De gebruikersnaam en het wachtwoord zijn gedeeld via de url",
+    "Beware! The username and password are shared via the url");
 
   // We don't want to login twich 
   const [isLogin, setLogin] = React.useState(true);
@@ -82,6 +85,14 @@ const Login: React.FC<ILoginProps> = () => {
       setError(err.message);
     }
   };
+
+  useEffect(() => {
+    var demoCredentials = new URLPath().getPublicPrefillUserNamePassword(history.location.search)
+    if (!demoCredentials || demoCredentials.length !== 2) return;
+    setUserEmail(demoCredentials[0]);
+    setUserPassword(demoCredentials[1]);
+    setError(MessageUserNamePasswordSharedThoughUrl)
+  }, [history.location.search])
 
   return (
     <>

@@ -248,6 +248,29 @@ export class URLPath {
     return selectList;
   }
 
+  /**
+   * Only usefull for demo to include username and password in url
+   * @param historyLocationSearch 
+   */
+  public getPublicPrefillUserNamePassword(historyLocationSearch: string): string[] {
+    let params = new URLSearchParams(historyLocationSearch).entries();
+    var user = '';
+    var pass = '';
+
+    for (let key of Array.from(params)) {
+      switch (key[0].toLowerCase()) {
+        case 'prefill-user'.toLowerCase():
+          user = key[1]
+          break;
+        case 'prefill-pass'.toLowerCase():
+          pass = key[1]
+          break;
+      }
+    }
+    return [user, pass];
+  }
+
+
   public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
     var subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
