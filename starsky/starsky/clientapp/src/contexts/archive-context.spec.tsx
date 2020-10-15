@@ -73,7 +73,7 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].title).toBe('title1title');
   });
 
-  it("update - colorclass", () => {
+  it("update - colorclass check usage", () => {
     var state = {
       ...newIArchive(),
       fileIndexItems: [{
@@ -93,8 +93,6 @@ describe("ArchiveContext", () => {
     } as IArchive;
 
     var action = { type: 'update', colorClass: 2, select: ['test.jpg'] } as any
-
-    console.log(state.colorClassUsage);
 
     var result = archiveReducer(state, action);
 
@@ -130,6 +128,46 @@ describe("ArchiveContext", () => {
     expect(result.colorClassUsage.length).toBe(1);
     expect(result.colorClassUsage[0]).toBe(2);
   });
+
+  it("add -- check when added the ColorClassUsage field is updated", () => {
+
+    // current state
+    var state = {
+      fileIndexItems: [{
+        fileName: 'test0.jpg',
+        filePath: '/test0.jpg',
+        status: IExifStatus.Ok,
+        colorClass: 2
+      },
+      {
+        fileName: 'test2.jpg',
+        filePath: '/test2.jpg',
+        status: IExifStatus.Ok,
+        colorClass: 2
+      },
+      ]
+    } as IArchiveProps;
+
+    var add = [{
+      fileName: 'test1.jpg',
+      filePath: '/test1.jpg',
+      status: IExifStatus.Ok,
+      colorClass: 0
+    },
+    {
+      fileName: 'test3.jpg',
+      filePath: '/test3.jpg',
+      status: IExifStatus.Ok,
+      colorClass: undefined // <--- should ignore this one
+    }];
+
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(result.colorClassUsage).toStrictEqual([2, 0])
+
+  });
+
 
   it("add -- and check if is orderd", () => {
     // current state
@@ -186,7 +224,7 @@ describe("ArchiveContext", () => {
       }]);
   });
 
-  it("add -- and check if is orderd", () => {
+  it("add -- and check if is ordered", () => {
     // current state
     var state = {
       fileIndexItems: [
