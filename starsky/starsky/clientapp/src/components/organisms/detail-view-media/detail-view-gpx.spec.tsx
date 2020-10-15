@@ -118,8 +118,8 @@ describe("DetailViewGpx", () => {
         return {
           ...new MapMock("", {}) as any,
           dragging: { disable: jest.fn(), enable },
-          touchZoom: { disable: jest.fn() },
-          doubleClickZoom: { disable: jest.fn() },
+          touchZoom: { disable: jest.fn(), enable: jest.fn() },
+          doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
@@ -170,8 +170,8 @@ describe("DetailViewGpx", () => {
         return {
           ...new MapMock("", {}) as any,
           dragging: { disable: jest.fn(), enable },
-          touchZoom: { disable: jest.fn() },
-          doubleClickZoom: { disable: jest.fn() },
+          touchZoom: { disable: jest.fn(), enable: jest.fn() },
+          doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },
@@ -275,8 +275,8 @@ describe("DetailViewGpx", () => {
         return {
           ...new MapMock("", {}) as any,
           dragging: { disable: jest.fn(), enable: jest.fn() },
-          touchZoom: { disable: jest.fn() },
-          doubleClickZoom: { disable: jest.fn() },
+          touchZoom: { disable: jest.fn(), enable: jest.fn() },
+          doubleClickZoom: { disable: jest.fn(), enable: jest.fn() },
           scrollWheelZoom: { disable: jest.fn() },
           boxZoom: { disable: jest.fn() },
           keyboard: { disable: jest.fn() },

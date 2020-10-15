@@ -38,7 +38,7 @@ export default class WebSocketService {
   public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
     if (!this.websocket) {
       return;
-    };
+    }
     this.websocket.send(data);
   }
 
