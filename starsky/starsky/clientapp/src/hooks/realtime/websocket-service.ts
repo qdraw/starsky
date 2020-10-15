@@ -31,7 +31,7 @@ export default class WebSocketService {
   public close(): void {
     if (!this.websocket) {
       return;
-    };
+    }
     this.websocket.close();
   }
 
