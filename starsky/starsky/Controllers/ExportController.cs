@@ -38,7 +38,7 @@ namespace starsky.Controllers
 		/// <returns>name of a to generate zip file</returns>
 		/// <response code="200">the name of the to generated zip file</response>
 		/// <response code="404">files not found</response>
-		[HttpPost("/export/createZip")]
+		[HttpPost("/api/export/create-zip")]
 		[ProducesResponseType(typeof(string),200)] // "zipHash"
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)] // "Not found"
 		[Produces("application/json")]
@@ -74,7 +74,7 @@ namespace starsky.Controllers
 		/// <returns>Not ready or the zip-file</returns>
 		/// <response code="200">if json is true return 'OK', else the zip file</response>
 		/// <response code="206">Not ready generating the zip, please wait</response>
-		[HttpGet("/export/zip/{f}.zip")]
+		[HttpGet("/api/export/zip/{f}.zip")]
 		[ProducesResponseType(200)] // "zip file"
 		[ProducesResponseType(206)] // "Not Ready"
 		public async Task<IActionResult> Status(string f, bool json = false)

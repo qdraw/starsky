@@ -38,7 +38,7 @@ namespace starsky.Controllers
 		/// <response code="406">There are no accounts, you must create an account first</response>
 		/// <response code="409">Current User does not exist in database</response>
 		/// <returns>account name, id, and create date</returns>
-		[HttpGet("/account/status")]
+		[HttpGet("/api/account/status")]
 		[ProducesResponseType(typeof(User), 200)]
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
@@ -109,7 +109,7 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
-        [HttpPost("/account/login")]
+        [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
@@ -195,7 +195,7 @@ namespace starsky.Controllers
         /// <response code="200">successful register</response>
         /// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
         /// <response code="403">Account Register page is closed</response>
-        [HttpPost("/account/register")]
+        [HttpPost("/api/account/register")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),403)]
@@ -238,7 +238,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         /// <response code="200">Account Register page is open</response>
         /// <response code="403">Account Register page is closed</response>
-        [HttpGet("/account/register/status")]
+        [HttpGet("/api/account/register/status")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
         [Produces("application/json")]

@@ -36,7 +36,7 @@ namespace starsky.Controllers
         /// <response code="404">source image missing</response>
         /// <response code="500">"Thumbnail generation failed"</response>
         /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/downloadPhoto")]
+        [HttpGet("/api/download-photo")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(500)] // "Thumbnail generation failed"

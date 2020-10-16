@@ -338,7 +338,7 @@ describe("DetailViewSidebar", () => {
       })
 
       expect(fetchPostSpy).toBeCalledTimes(2);
-      expect(fetchPostSpy).toHaveBeenNthCalledWith(2, `${new UrlQuery().prefix}/api/search/removeCache`, 't=test')
+      expect(fetchPostSpy).toHaveBeenNthCalledWith(2, new UrlQuery().UrlSearchRemoveCacheApi(), 't=test')
     });
 
     it("Press c to copy", () => {
