@@ -32,7 +32,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.0-beta.0 _(Unreleased)_  2020-10-??
+# version 0.4.0-beta.1 _(Unreleased)_  2020-10-??
+- nothing yet
+
+# version 0.4.0-beta.0 - 2020-10-16
 _New Feature: In this release websockets are used (note: when using reverse config)_
 - [x]   (Added) _Front-end_ Update view when other clients are updating content
 - [x]   (Changed) _Front-end_ In GPX view mode & when unlocked: touchZoom and doubleClickZoom are enabled

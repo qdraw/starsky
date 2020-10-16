@@ -529,9 +529,9 @@ namespace starskytest.Controllers
 		        };
 	        
 	        var actionResult = controller.Status() as JsonResult;
-	        var user = actionResult.Value as User;
-	        Assert.IsNull(user.Credentials.FirstOrDefault().Secret);
-	        Assert.AreEqual("test", user.Credentials.FirstOrDefault().Identifier);
+	        var user = actionResult.Value as UserIdentifierStatusModel;
+	        Assert.AreEqual("test", 
+		        user.CredentialsIdentifiers.FirstOrDefault());
         }
         
         [TestMethod]
