@@ -2,7 +2,7 @@ import { mount, shallow } from "enzyme";
 import React from 'react';
 import * as useFetch from '../../../hooks/use-fetch';
 import { newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import { PreferencesUsername } from './preferences-username';
+import PreferencesUsername from './preferences-username';
 
 describe("PreferencesPassword", () => {
 
