@@ -1,1 +1,17 @@
-{"id":1,"name":"Test","created":"2018-07-18T06:02:46.748167","credentials":null}
+{
+  "id": 1,
+  "name": "",
+  "created": "2019-12-15T14:46:17.830647",
+  "credentials": [
+    {
+      "id": 1,
+      "userId": 1,
+      "credentialTypeId": 0,
+      "identifier": "demo@qdraw.nl",
+      "secret": null,
+      "extra": null,
+      "user": null,
+      "credentialType": null
+    }
+  ]
+}
