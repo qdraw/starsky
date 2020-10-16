@@ -2,16 +2,10 @@
   "id": 1,
   "name": "",
   "created": "2019-12-15T14:46:17.830647",
-  "credentials": [
-    {
-      "id": 1,
-      "userId": 1,
-      "credentialTypeId": 0,
-      "identifier": "demo@qdraw.nl",
-      "secret": null,
-      "extra": null,
-      "user": null,
-      "credentialType": null
-    }
+  "credentialsIdentifiers": [
+    "demo@qdraw.nl"
+  ],
+  "credentialTypeIds": [
+    1
   ]
 }

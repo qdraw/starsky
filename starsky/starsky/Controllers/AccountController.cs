@@ -39,7 +39,7 @@ namespace starsky.Controllers
 		/// <response code="409">Current User does not exist in database</response>
 		/// <returns>account name, id, and create date</returns>
 		[HttpGet("/api/account/status")]
-		[ProducesResponseType(typeof(User), 200)]
+		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
 		[Produces("application/json")]
@@ -57,7 +57,7 @@ namespace starsky.Controllers
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
 			if ( currentUser == null ) return Conflict("Current User does not exist in database");
 			
-			var model = new User
+			var model = new UserIdentifierStatusModel
 			{
 				Name = currentUser.Name,
 				Id = currentUser.Id,
@@ -65,20 +65,15 @@ namespace starsky.Controllers
 			};
 			
 			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
-			if ( credentials == null ) return Json(model);
-
-			model.Credentials = new List<Credential>
+			if ( credentials == null )
 			{
-				new Credential
-				{
-					Id = credentials.Id,
-					UserId = credentials.UserId,
-					Identifier = credentials.Identifier,
-					// extra & user are hidden
-					CredentialType = credentials.CredentialType
-				}
-			};
-
+				model.CredentialsIdentifiers = null;
+				model.CredentialTypeIds = null;
+				return Json(model);
+			}
+			
+			model.CredentialsIdentifiers.Add(credentials.Identifier);
+			model.CredentialTypeIds.Add(credentials.CredentialTypeId);
 			return Json(model);
 		}
 

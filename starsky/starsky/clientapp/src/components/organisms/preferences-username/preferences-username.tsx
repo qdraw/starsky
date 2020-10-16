@@ -15,8 +15,8 @@ const PreferencesUsername: React.FunctionComponent<any> = (_) => {
 
   useEffect(() => {
     if (accountStatus.statusCode !== 200 || !accountStatus.data
-      || !accountStatus.data.credentials || accountStatus.data.credentials.length !== 1) return;
-    setUserName(accountStatus.data.credentials[0].identifier);
+      || !accountStatus.data.credentialsIdentifiers || accountStatus.data.credentialsIdentifiers.length !== 1) return;
+    setUserName(accountStatus.data.credentialsIdentifiers[0]);
   }, [accountStatus])
 
   return (<>

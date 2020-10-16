@@ -4,7 +4,7 @@ import * as useFetch from '../../../hooks/use-fetch';
 import { newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
 import PreferencesUsername from './preferences-username';
 
-describe("PreferencesPassword", () => {
+describe("PreferencesUsername", () => {
 
   it("renders", () => {
     shallow(<PreferencesUsername />)
@@ -39,10 +39,8 @@ describe("PreferencesPassword", () => {
     it("it should get the identifier", () => {
       var testReply = {
         ...newIConnectionDefault(), data: {
-          credentials: [
-            {
-              identifier: 'test'
-            }
+          credentialsIdentifiers: [
+            'test'
           ]
         }, statusCode: 200
       };
