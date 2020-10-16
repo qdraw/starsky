@@ -129,10 +129,24 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Logout the current HttpContext
+        /// Logout the current HttpContext and redirect to login 
         /// </summary>
         /// <returns></returns>
         /// <response code="200">successful logout</response>
+        [HttpPost("/api/account/logout")]
+        [ProducesResponseType(200)]
+        public IActionResult LogoutJson()
+        {
+	        _userManager.SignOut(HttpContext);
+	        return Json("your logged out");
+        }
+        
+        /// <summary>
+        /// Logout the current HttpContext and redirect to login 
+        /// </summary>
+        /// <param name="returnUrl">insert url to redirect</param>
+        /// <response code="302">redirect to return url</response>
+        /// <returns></returns>
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
         public IActionResult Logout(string returnUrl = null)

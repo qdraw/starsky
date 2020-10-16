@@ -11,7 +11,7 @@ export class UrlQuery {
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `${new URLPath().StartOnSlash(locationHash)}` 
+    return document.location.pathname.indexOf(this.prefix) === -1 ? `${new URLPath().StartOnSlash(locationHash)}`
       : `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`;
   }
 
@@ -69,6 +69,10 @@ export class UrlQuery {
 
   public UrlLogoutPage(returnUrl: string): string {
     return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout?ReturnUrl=${returnUrl}` : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
+  }
+
+  public UrlLogoutApi(): string {
+    return this.prefix + `/api/account/logout`;
   }
 
   private urlReplacePath(input: string): string {

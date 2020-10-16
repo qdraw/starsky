@@ -443,7 +443,7 @@ namespace starskytest.Controllers
             
             // The logout is mocked so this will not actual log it out;
             // controller.Logout() not crashing is good enough;
-            controller.Logout();
+            controller.LogoutJson();
             
 
             var newAccountDuplicate = new RegisterViewModel
@@ -464,7 +464,7 @@ namespace starskytest.Controllers
             
             // The logout is mocked so this will not actual log it out;
             // controller.Logout() not crashing is good enough;
-            controller.Logout();
+            controller.LogoutJson();
 
 			// Clean afterwards            
             var user = _dbContext.Users.FirstOrDefault(p => p.Name == userId);
