@@ -50,6 +50,9 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x]   (Breaking change) _Back-end_ rename api from "/redirect/SubpathRelative" to "/redirect/sub-path-relative"
 - [x]   (Breaking change) _Back-end_ rename api from "/api/search/relativeObjects" to "/api/search/relative-objects"
 - [x]   (Breaking change) _Back-end_ rename api from "/api/search/removeCache" to "/api/search/remove-cache"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync/mkdir" to "/api/sync/mkdir"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync" to "/api/sync"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync/rename" to "/api/sync/rename"
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_

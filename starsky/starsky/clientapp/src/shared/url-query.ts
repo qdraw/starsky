@@ -239,21 +239,21 @@ export class UrlQuery {
    * @param parentFolder no need to encode url
    */
   public UrlSync(parentFolder: string): string {
-    return this.prefix + "/sync?f=" + new URLPath().encodeURI(parentFolder);
+    return this.prefix + "/api/sync?f=" + new URLPath().encodeURI(parentFolder);
   }
 
   /**
    * Rename the file on disk and in the database
    */
   public UrlSyncRename(): string {
-    return this.prefix + "/sync/rename";
+    return this.prefix + "/api/sync/rename";
   }
 
   /**
    * Create an directory on disk and database
    */
   public UrlSyncMkdir(): string {
-    return this.prefix + "/sync/mkdir";
+    return this.prefix + "/api/sync/mkdir";
   }
 
   public UrlImportApi(): string {
