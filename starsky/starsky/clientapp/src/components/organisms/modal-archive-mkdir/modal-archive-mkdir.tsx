@@ -6,6 +6,7 @@ import { CastToInterface } from '../../../shared/cast-to-interface';
 import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
@@ -97,6 +98,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props
       dispatch({ type: 'force-reset', payload });
     }
 
+    new FileListCache().CacheCleanEverything();
     // Close window
     props.handleExit();
   }
