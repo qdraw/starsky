@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.accountmanagement.Models.Account
 {
