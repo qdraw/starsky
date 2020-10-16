@@ -27,15 +27,15 @@ namespace starsky.Controllers
 	    /// <summary>
         /// Delete Database Cache (only the cache)
         /// </summary>
-        /// <param name="f">subpath</param>
+        /// <param name="f">subPath</param>
         /// <returns>redirect or if json enabled a status</returns>
         /// <response code="200">when json is true, "cache successful cleared"</response>
         /// <response code="412">"cache disabled in config"</response>
         /// <response code="400">ignored, please check if the 'f' path exist or use a folder string to clear the cache</response>
         /// <response code="302">redirect back to the url</response>
         /// <response code="401">User unauthorized</response>
-        [HttpGet("/api/RemoveCache")]
-        [HttpPost("/api/RemoveCache")]
+        [HttpGet("/api/remove-cache")]
+        [HttpPost("/api/remove-cache")]
         [ProducesResponseType(200)] // "cache successful cleared"
         [ProducesResponseType(412)] // "cache disabled in config"
         [ProducesResponseType(400)] // "ignored, please check if the 'f' path exist or use a folder string to clear the cache"

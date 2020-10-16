@@ -32,13 +32,30 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.0-beta.0 _(Unreleased)_  2020-10-??
+# version 0.4.0-beta.1 _(Unreleased)_  2020-10-??
+- nothing yet
+
+# version 0.4.0-beta.0 - 2020-10-??
 _New Feature: In this release websockets are used (note: when using reverse config)_
 - [x]   (Added) _Front-end_ Update view when other clients are updating content
 - [x]   (Changed) _Front-end_ In GPX view mode & when unlocked: touchZoom and doubleClickZoom are enabled
 - [x]   (Fixed) _Front-end_ When file is added to view, the colorClassActiveList is updated
 - [x]   (Fixed) _Front-end_ When folder or file is renamed the clientside cache is not correct
 - [x]   (Fixed) _Front-end_ When in Archive mode and 'Move file to trash' client cache is cleared
+- [x]   (Added) _Back-end_ Add identifier to '/api/account/status'
+- [x]   (Breaking change) _Back-end_ rename api "/account/login" to "/api/account/login"
+- [x]   (Breaking change) _Back-end_ rename api "/account/register" to "/api/account/register"
+- [x]   (Breaking change) _Back-end_ rename api "/account/register/status" to "/api/account/register/status"
+- [x]   (Breaking change) _Back-end_ rename api from "/api/removeCache" to "/api/remove-cache"
+- [x]   (Breaking change) _Back-end_ rename api from "/api/downloadPhoto" to "/api/download-photo"
+- [x]   (Breaking change) _Back-end_ rename api from "/api/export/createZip" to "/api/export/create-zip"
+- [x]   (Breaking change) _Back-end_ rename api from "/export/zip/{f}.zip" to "/api/export/zip/{f}.zip"
+- [x]   (Breaking change) _Back-end_ rename api from "/redirect/SubpathRelative" to "/redirect/sub-path-relative"
+- [x]   (Breaking change) _Back-end_ rename api from "/api/search/relativeObjects" to "/api/search/relative-objects"
+- [x]   (Breaking change) _Back-end_ rename api from "/api/search/removeCache" to "/api/search/remove-cache"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync/mkdir" to "/api/sync/mkdir"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync" to "/api/sync"
+- [x]   (Breaking change) _Back-end_ rename api from "/sync/rename" to "/api/sync/rename"
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_

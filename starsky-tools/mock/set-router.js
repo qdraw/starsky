@@ -1,7 +1,7 @@
 var apiAccountChangeSecretIndex = require('./api/account/change-secret/index.json')
 var apiAccountPermissionsIndex = require('./api/account/permissions/index.json');
 
-var accountStatus = require('./account/status/index.json')
+var accountStatus = require('./api/account/status/index.json')
 var apiHealthDetails = require('./api/health/details/index.json')
 var apiIndexIndex = require('./api/index/index.json')
 var apiIndex__Starsky = require('./api/index/__starsky.json');
@@ -29,7 +29,7 @@ function setRouter(app) {
 
   app.get(prefix + '/', (req, res) => res.send('Hello World!'));
 
-  app.get(prefix + '/account/status', (req, res) => res.json(accountStatus));
+  app.get(prefix + '/api/account/status', (req, res) => res.json(accountStatus));
 
 
   var isChangePasswordSuccess = false;
@@ -48,7 +48,7 @@ function setRouter(app) {
     return res.json(!isChangePasswordSuccess ? "Model is not correct" : apiAccountChangeSecretIndex);
   });
 
-  app.post(prefix + '/account/register', (req, res) => {
+  app.post(prefix + '/api/account/register', (req, res) => {
     return res.json("Account Created");
   });
 
@@ -176,10 +176,10 @@ function setRouter(app) {
   });
 
 
-  app.get(prefix + '/api/downloadPhoto', (req, res) => {
+  app.get(prefix + '/api/download-photo', (req, res) => {
 
     if (req.query.f == "/test.gpx") {
-      const file = `${__dirname}/api/downloadPhoto/test.gpx`;
+      const file = `${__dirname}/api/download-photo/test.gpx`;
       return res.download(file); // Set disposition and send it.
     }
 

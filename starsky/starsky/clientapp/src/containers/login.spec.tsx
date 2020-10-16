@@ -159,7 +159,7 @@ describe("Login", () => {
     expect(useFetchSpy).toBeCalledWith(new UrlQuery().UrlAccountStatus(), 'get');
 
     expect(postSpy).toBeCalled();
-    expect(postSpy).toBeCalledWith(new UrlQuery().UrlLoginPage(), "Email=dont@mail.me&Password=password");
+    expect(postSpy).toBeCalledWith(new UrlQuery().UrlLoginApi(), "Email=dont@mail.me&Password=password");
 
     act(() => {
       globalHistory.navigate("/");

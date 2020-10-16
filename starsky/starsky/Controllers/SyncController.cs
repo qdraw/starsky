@@ -40,7 +40,7 @@ namespace starsky.Controllers
         /// <response code="200">create the item on disk and in db</response>
         /// <response code="409">A conflict, Directory already exist</response>
         /// <response code="401">User unauthorized</response>
-        [HttpPost("/sync/mkdir")]
+        [HttpPost("/api/sync/mkdir")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(List<SyncViewModel>),409)]
         [ProducesResponseType(typeof(string),401)]
@@ -89,7 +89,7 @@ namespace starsky.Controllers
         /// <returns>list of changed files</returns>
         /// <response code="200">started sync as background job</response>
         /// <response code="401">User unauthorized</response>
-        [ActionName("Index")]
+        [HttpPost("/api/sync")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]	    
@@ -168,7 +168,7 @@ namespace starsky.Controllers
 	    /// <response code="401">User unauthorized</response>
 	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-		[HttpPost("/sync/rename")]
+		[HttpPost("/api/sync/rename")]
 	    [Produces("application/json")]	    
 		public IActionResult Rename(string f, string to, bool collections = true)
 	    {

@@ -89,12 +89,13 @@ namespace starskytest.Middleware
         {
 	        
             // Arrange
-            var userId = "TestUserA";
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
-
             var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            
+            var userId = "TestUserA";
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            
             httpContext.RequestServices = _serviceProvider;
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();

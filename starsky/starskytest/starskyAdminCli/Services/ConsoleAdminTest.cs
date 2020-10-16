@@ -85,7 +85,7 @@ namespace starskytest.starskyAdminCli.Services
 				"test",
 				"2"
 			});
-			new ConsoleAdmin(new FakeUserManagerActiveUsers(), console )
+			new ConsoleAdmin(new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}), console )
 				.Tool(string.Empty,string.Empty);
 			
 			Assert.AreEqual("User test is removed", 
@@ -100,7 +100,8 @@ namespace starskytest.starskyAdminCli.Services
 				"test",
 				"3"
 			});
-			new ConsoleAdmin( new FakeUserManagerActiveUsers(),console ).Tool(string.Empty,string.Empty);
+			new ConsoleAdmin( new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99}),console 
+			).Tool(string.Empty,string.Empty);
 			Assert.AreEqual("User test has now the role Administrator", 
 				console.WrittenLines.LastOrDefault());
 		}
@@ -114,7 +115,7 @@ namespace starskytest.starskyAdminCli.Services
 				"3"
 			});
 			
-			var userMan = new FakeUserManagerActiveUsers
+			var userMan = new FakeUserManagerActiveUsers("test", new User {Name = "t1", Id = 99})
 			{
 				Role = new Role {Code = AccountRoles.AppAccountRoles.Administrator.ToString()}
 			};
