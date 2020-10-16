@@ -533,6 +533,25 @@ namespace starskytest.Controllers
 	        Assert.IsNull(user.Credentials.FirstOrDefault().Secret);
 	        Assert.AreEqual("test", user.Credentials.FirstOrDefault().Identifier);
         }
+        
+        [TestMethod]
+        public void AccountController_LoginUserDoesNotExistInDatabase()
+        {
+	        var httpContext = new DefaultHttpContext();
+	        httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
+
+	        var controller =
+		        new AccountController(new FakeUserManagerActiveUsers("test1",null), // <-- null
+			        _appSettings, _antiForgery, _selectorStorage)	
+		        {
+			        ControllerContext = {HttpContext = httpContext}
+		        };
+	        
+	        var actionResult = controller.Status() as ConflictObjectResult;
+
+	        Assert.IsNotNull(actionResult);
+	        Assert.AreEqual(409, actionResult.StatusCode);
+        }
 
         [TestMethod]
         public void Permissions()

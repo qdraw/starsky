@@ -36,6 +36,7 @@ namespace starsky.Controllers
 		/// <response code="200">logged in</response>
 		/// <response code="401">when not logged in</response>
 		/// <response code="406">There are no accounts, you must create an account first</response>
+		/// <response code="409">Current User does not exist in database</response>
 		/// <returns>account name, id, and create date</returns>
 		[HttpGet("/account/status")]
 		[ProducesResponseType(typeof(User), 200)]
@@ -54,7 +55,7 @@ namespace starsky.Controllers
 
 			// use model to avoid circular references
 			var currentUser = _userManager.GetCurrentUser(HttpContext);
-			if ( currentUser == null ) return BadRequest("Current User does not exist ");
+			if ( currentUser == null ) return Conflict("Current User does not exist in database");
 			
 			var model = new User
 			{
