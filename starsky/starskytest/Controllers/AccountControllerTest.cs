@@ -517,12 +517,12 @@ namespace starskytest.Controllers
         [TestMethod]
         public void AccountController_Login_CheckCredentials()
         {
-
 	        var httpContext = new DefaultHttpContext();
 	        httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
 
 	        var controller =
-		        new AccountController(new FakeUserManagerActiveUsers("test",new User {Name = "t1", Id = 99}), 
+		        new AccountController(new FakeUserManagerActiveUsers(
+				        "test",new User {Name = "t1", Id = 99}), 
 			        _appSettings, _antiForgery, _selectorStorage)	
 		        {
 			        ControllerContext = {HttpContext = httpContext}
@@ -532,6 +532,9 @@ namespace starskytest.Controllers
 	        var user = actionResult.Value as UserIdentifierStatusModel;
 	        Assert.AreEqual("test", 
 		        user.CredentialsIdentifiers.FirstOrDefault());
+	        Assert.AreEqual(99, user.Id);
+	        Assert.AreEqual("t1", user.Name);
+	        Assert.AreEqual(DateTime.MinValue, user.Created);
         }
         
         [TestMethod]
