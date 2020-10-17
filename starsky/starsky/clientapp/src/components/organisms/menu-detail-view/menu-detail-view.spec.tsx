@@ -510,8 +510,7 @@ describe("MenuDetailView", () => {
       })
     });
 
-    it("navigate to next item and reset some stat1111es", () => {
-
+    it("when source is missing file can't be downloaded", () => {
       jest.spyOn(React, 'useContext').mockReset();
 
       var state = {
@@ -522,12 +521,13 @@ describe("MenuDetailView", () => {
 
       jest.spyOn(React, 'useContext')
         .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
+        .mockImplementationOnce(() => { return contextValues })
 
       const component = mount(<MenuDetailView />);
+      var item = component.find('[data-test="export"]');
 
-      console.log(component.html());
-
-
+      expect(item.getDOMNode().className).toBe("menu-option disabled");
     });
   });
 });
