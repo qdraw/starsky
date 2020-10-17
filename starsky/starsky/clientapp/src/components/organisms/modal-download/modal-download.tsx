@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import useFetch from '../../../hooks/use-fetch';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useInterval from '../../../hooks/use-interval';
+import { PageType } from '../../../interfaces/IDetailView';
 import { ExportIntervalUpdate } from '../../../shared/export/export-interval-update';
+import FetchGet from '../../../shared/fetch-get';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
 import { Language } from '../../../shared/language';
@@ -34,6 +35,8 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   const language = new Language(settings.language);
   const MessageDownloadSelection = language.text("Download selectie", "Download selection");
   const MessageOrginalFile = language.text("Origineel bestand", "Original file");
+  const MessageOrginalFileAsZip = language.text("Origineel bestand als zip", "Original file as zip");
+
   const MessageThumbnailFile = "Thumbnail";
   const MessageGenericExportFail = language.text("Er is iets misgegaan met exporteren", "Something went wrong with exporting");
   const MessageExportReady = language.text("Het bestand {createZipKey} is klaar met exporteren.", "The file {createZipKey} has finished exporting.");
@@ -77,18 +80,58 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     await ExportIntervalUpdate(createZipKey, setProcessing);
   }, 3000);
 
-  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(true);
+  const [isDirectory, setIsDirectory] = React.useState(false);
+  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(false);
+  const [multipleCollectionPaths, setMultipleCollectionPaths] = React.useState(false);
 
-  function getFirstSelectResult(): string {
-    if (!props.select || props.select.length !== 1) return "";
-    return props.select[0];
+  function next(propsSelect: string[], index: number) {
+    if (index >= propsSelect.length) return;
+    var selectItem = propsSelect[index];
+    FetchGet(new UrlQuery().UrlIndexServerApiPath(selectItem)).then((result) => {
+      if (!isDirectory) {
+        setIsDirectory(result.data.pageType === PageType.Archive);
+      }
+      console.log(result.data.fileIndexItem.collectionPaths);
+
+      if (!multipleCollectionPaths && result.data.fileIndexItem && result.data.fileIndexItem.collectionPaths) {
+        setMultipleCollectionPaths(result.data.fileIndexItem.collectionPaths.length !== 1)
+      }
+      FetchGet(new UrlQuery().UrlAllowedTypesThumb(selectItem)).then((thumbResult) => {
+        if (!singleFileThumbnailStatus) {
+          setSingleFileThumbnailStatus(thumbResult.data)
+        }
+
+        index++;
+        next(propsSelect, index)
+      })
+    })
   }
 
-  var singleFileThumbResult = useFetch(new UrlQuery().UrlAllowedTypesThumb(getFirstSelectResult()), "get");
   useEffect(() => {
-    setSingleFileThumbnailStatus(singleFileThumbResult.data !== false);
-  }, [singleFileThumbResult.data])
+    if (!props.select) return;
+    next(props.select, 0);
+    // only run at startup
+    // eslint-disable-next-line
+  }, [])
 
+  function PostZipOrginalFilesComponent() {
+    return <button onClick={() => {
+      postZip(false)
+    }} className="btn btn--info" data-test="orginal">
+      {MessageOrginalFileAsZip}
+    </button>
+  }
+
+  function PostZipButtonsComponent() {
+    return <>
+      <PostZipOrginalFilesComponent />
+      <button onClick={() => {
+        postZip(true)
+      }} className="btn btn--default" data-test="thumbnail">
+        {MessageThumbnailFile}
+      </button>
+    </>
+  }
 
   return (<Modal
     id="detailview-export-modal"
@@ -101,24 +144,21 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     <div className="modal content--text">
 
       {/* when selecting one file */}
-      {isProcessing === ProcessingState.default && props.select && props.select.length === 1 ? <>
+      {isProcessing === ProcessingState.default && props.select && props.select.length === 1 && !isDirectory ? <>
         <a href={new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(props.select[0]), false, false)} data-test="orginal"
           download={new URLPath().FileNameBreadcrumb(props.select[0])}
           target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(props.select[0]), true, false)}
           download={new FileExtensions().GetFileNameWithoutExtension(props.select[0]) + ".jpg"} data-test="thumbnail"
           target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
+        {multipleCollectionPaths ? <PostZipOrginalFilesComponent /> : null}
       </> : null}
 
-      {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ? <>
-        <button onClick={() => {
-          postZip(false)
-        }} className="btn btn--info" data-test="orginal">{MessageOrginalFile}</button>
+      {isProcessing === ProcessingState.default && props.select && props.select.length === 1 && isDirectory ?
+        <PostZipButtonsComponent /> : null}
 
-        <button onClick={() => {
-          postZip(true)
-        }} className="btn btn--default" data-test="thumbnail">{MessageThumbnailFile}</button>
-      </> : null}
+      {isProcessing === ProcessingState.default && props.select && props.select.length >= 2 ?
+        <PostZipButtonsComponent /> : null}
 
       {isProcessing === ProcessingState.server ? <>
         <div className="preloader preloader--inside"></div>
@@ -127,14 +167,14 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       {isProcessing === ProcessingState.fail ? MessageGenericExportFail : null}
 
       {isProcessing === ProcessingState.ready ? <>
-        {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])}
+        {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br />
         <a className="btn btn--default" href={new UrlQuery().UrlExportZipApi(createZipKey, false)}
           download rel="noopener noreferrer" target="_blank">
           {MessageDownloadAsZipArchive}
         </a>
       </> : null}
     </div>
-  </Modal>)
+  </Modal >)
 };
 
 export default ModalDownload

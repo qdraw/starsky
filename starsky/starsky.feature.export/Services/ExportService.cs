@@ -47,7 +47,7 @@ namespace starsky.feature.export.Services
 			_console = console;
 		}
 
-		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
+		public Tuple<string, List<FileIndexItem>> Preflight(IEnumerable<string> inputFilePaths, 
 			bool collections = true, 
 			bool thumbnail = false )
 		{
