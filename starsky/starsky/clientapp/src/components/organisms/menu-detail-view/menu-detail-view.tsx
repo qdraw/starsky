@@ -95,7 +95,14 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   useEffect(() => {
     setMarkedAsDeleted(state.fileIndexItem.status === IExifStatus.Deleted);
-  }, [state.fileIndexItem.status]);
+  }, [state.fileIndexItem.status, history.location.search]);
+
+  const [isSourceMissing, setSourceMissing] = React.useState(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing);
+
+  useEffect(() => {
+    setSourceMissing(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing);
+    setReadOnly(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing);
+  }, [state.fileIndexItem.status, history.location.search]);
 
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
@@ -231,7 +238,7 @@ const MenuDetailView: React.FunctionComponent = () => {
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
     {/* allowed in readonly to download */}
-    {isModalExportOpen && state ? <ModalDownload collections={false} handleExit={() => setModalExportOpen(!isModalExportOpen)}
+    {isModalExportOpen && state && !isSourceMissing ? <ModalDownload collections={false} handleExit={() => setModalExportOpen(!isModalExportOpen)}
       select={[state.subPath]} isOpen={isModalExportOpen} /> : null}
     {isModalRenameFileOpen && state && !isReadOnly ? <ModalDetailviewRenameFile handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
       isOpen={isModalRenameFileOpen} /> : null}
@@ -257,9 +264,10 @@ const MenuDetailView: React.FunctionComponent = () => {
         <div className="item item--labels" onClick={() => { toggleLabels() }}>Labels</div>
         <MoreMenu>
           {goToParentFolderJSX}
-          <li className="menu-option" data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
+          <li className={!isSourceMissing ? "menu-option" : "menu-option disabled"} data-test="export" onClick={() => setModalExportOpen(!isModalExportOpen)}>Download</li>
           {!isDetails ? <li className="menu-option" data-test="labels" onClick={toggleLabels}>Labels</li> : null}
-          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
+          <li className={!isReadOnly ? "menu-option" : "menu-option disabled"}
+            data-test="move" onClick={() => setModalMoveFile(!isModalMoveFile)}>{MessageMove}</li>
           <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="rename" onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}>
             {MessageRenameFileName}</li>
           <li className={!isReadOnly ? "menu-option" : "menu-option disabled"} data-test="trash" onClick={TrashFile}>
