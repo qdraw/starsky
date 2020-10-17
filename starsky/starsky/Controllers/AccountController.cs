@@ -204,7 +204,7 @@ namespace starsky.Controllers
         /// <response code="200">successful register</response>
         /// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
         /// <response code="403">Account Register page is closed</response>
-        /// <response code="403">AF token is missing</response>
+        /// <response code="405">AF token is missing</response>
         [HttpPost("/api/account/register")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
