@@ -20,6 +20,7 @@ import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import MoreMenu from '../../atoms/more-menu/more-menu';
+import Notification, { NotificationType } from '../../atoms/notification/notification';
 import Preloader from '../../atoms/preloader/preloader';
 import ModalDetailviewRenameFile from '../modal-detailview-rename-file/modal-detailview-rename-file';
 import ModalDownload from '../modal-download/modal-download';
@@ -39,6 +40,8 @@ const MenuDetailView: React.FunctionComponent = () => {
   const MessageRenameFileName = language.text("Bestandsnaam wijzigen", "Rename file name");
   const MessageRotateToRight = language.text("Rotatie naar rechts", "Rotation to the right");
   const MessageGoToParentFolder = language.text("Ga naar bovenliggende map", "Go to parent folder");
+  const MessageErrorWhileMoveToTrash = language.text("Er is iets misgegaan tijdens het verplaatsen naar prullenmand",
+    "Something went wrong while moving to trash");
 
   var history = useLocation();
 
@@ -103,8 +106,14 @@ const MenuDetailView: React.FunctionComponent = () => {
     setReadOnly(state.isReadOnly);
   }, [state.isReadOnly]);
 
+  useEffect(() => {
+    setReadOnly(state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing)
+  }, [state.fileIndexItem.status]);
+
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isError, setIsError] = useState("");
 
   /**
    * Create body params to do url queries
@@ -127,9 +136,11 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
       var resultDo = await FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams.toString());
-      if (resultDo.statusCode !== 200 && resultDo.statusCode !== 404) {
+
+      if (resultDo.statusCode !== 200) {
         // 404: file can already been deleted
-        console.error(resultDo);
+        console.error(resultDo.data[0]);
+        setIsError(MessageErrorWhileMoveToTrash);
         setIsLoading(false);
         return;
       }
@@ -143,7 +154,9 @@ const MenuDetailView: React.FunctionComponent = () => {
       bodyParams.set("search", "!delete!");
       var resultUndo = await FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString());
       if (resultUndo.statusCode !== 200) {
+        console.log('--->');
         console.error(resultUndo);
+        setIsError(MessageErrorWhileMoveToTrash);
         setIsLoading(false);
         return;
       }
@@ -229,6 +242,7 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   return (<>
     {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
+    {isError !== "" ? <Notification callback={() => setIsError("")} type={NotificationType.default}>{isError}</Notification> : null}
 
     {/* allowed in readonly to download */}
     {isModalExportOpen && state ? <ModalDownload collections={false} handleExit={() => setModalExportOpen(!isModalExportOpen)}
