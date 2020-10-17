@@ -22,7 +22,7 @@ describe("ModalDownload", () => {
   beforeEach(() => {
   })
 
-  it("Single File", () => {
+  xit("Single File", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200, data: null
@@ -43,7 +43,7 @@ describe("ModalDownload", () => {
     });
   });
 
-  it("Multiple Files -> click download ", () => {
+  xit("Multiple Files -> click download ", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 200, data: null
@@ -81,7 +81,7 @@ describe("ModalDownload", () => {
     });
   });
 
-  it("file type not supported", () => {
+  xit("file type not supported", () => {
     // use ==> import * as useFetch from '../hooks/use-fetch';
     const mockGetIConnectionDefault = {
       statusCode: 415, data: null

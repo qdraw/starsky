@@ -34,10 +34,11 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageDownloadSelection = language.text("Download selectie", "Download selection");
-  const MessageOrginalFile = language.text("Origineel bestand", "Original file");
-  const MessageOrginalFileAsZip = language.text("Origineel bestand als zip", "Original file as zip");
+  const MessageOrginalFileToken = language.text("Origineel bestand ({ext})", "Original file ({ext})");
+  const MessageOrginalFilesAsZip = language.text("Originele bestanden als zip", "Original files as zip");
+  const MessageOrginalFileCollectionsToken = language.text("Collectie download {ext} ", "Collection download ({ext})");
 
-  const MessageThumbnailFile = "Thumbnail";
+  const MessageThumbnailFile = language.text("Klein formaat (1000px)", "Thumbnail (1000px)");
   const MessageGenericExportFail = language.text("Er is iets misgegaan met exporteren", "Something went wrong with exporting");
   const MessageExportReady = language.text("Het bestand {createZipKey} is klaar met exporteren.", "The file {createZipKey} has finished exporting.");
   const MessageDownloadAsZipArchive = language.text("Download als zip-archief", "Download as a zip archive");
@@ -82,7 +83,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
 
   const [isDirectory, setIsDirectory] = React.useState(false);
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(false);
-  const [multipleCollectionPaths, setMultipleCollectionPaths] = React.useState([]);
+  const [multipleCollectionExtensions, setMultipleCollectionExtensions] = React.useState([] as string[]);
 
   function next(propsSelect: string[], index: number) {
     if (index >= propsSelect.length) return;
@@ -91,10 +92,22 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       if (!isDirectory) {
         setIsDirectory(result.data.pageType === PageType.Archive);
       }
-      console.log(result.data.fileIndexItem.collectionPaths);
 
-      if (!multipleCollectionPaths && result.data.fileIndexItem && result.data.fileIndexItem.collectionPaths) {
-        setMultipleCollectionPaths(result.data.fileIndexItem.collectionPaths)
+      if (result.data.fileIndexItem && result.data.fileIndexItem.collectionPaths) console.log(result.data.fileIndexItem.collectionPaths);
+
+      console.log(result.data.fileIndexItem);
+
+      if (multipleCollectionExtensions.length === 0 && result.data.fileIndexItem && result.data.fileIndexItem.collectionPaths) {
+        console.log('--');
+
+        var collectionPathsExtensions: string[] = [];
+        for (let index = 0; index < result.data.fileIndexItem.collectionPaths.length; index++) {
+          const ext = new FileExtensions().GetFileExtensionWithoutDot(result.data.fileIndexItem.collectionPaths[index]);
+          collectionPathsExtensions.push(ext)
+        }
+        console.log(collectionPathsExtensions);
+
+        setMultipleCollectionExtensions(collectionPathsExtensions)
       }
       FetchGet(new UrlQuery().UrlAllowedTypesThumb(selectItem)).then((thumbResult) => {
         if (!singleFileThumbnailStatus) {
@@ -114,17 +127,20 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     // eslint-disable-next-line
   }, [])
 
-  function PostZipOrginalFilesComponent() {
+  type PostZipOrginalFilesComponentPropTypes = {
+    content: string;
+  }
+  const PostZipOrginalFilesComponent: React.FunctionComponent<PostZipOrginalFilesComponentPropTypes> = (props) => {
     return <button onClick={() => {
       postZip(false)
     }} className="btn btn--info" data-test="orginal">
-      {MessageOrginalFileAsZip}
+      {props.content}
     </button>
-  }
+  };
 
   function PostZipButtonsComponent() {
     return <>
-      <PostZipOrginalFilesComponent />
+      <PostZipOrginalFilesComponent content={MessageOrginalFilesAsZip} />
       <button onClick={() => {
         postZip(true)
       }} className="btn btn--default" data-test="thumbnail">
@@ -147,11 +163,14 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 && !isDirectory ? <>
         <a href={new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(props.select[0]), false, false)} data-test="orginal"
           download={new URLPath().FileNameBreadcrumb(props.select[0])}
-          target="_blank" rel="noopener noreferrer" className="btn btn--info">{MessageOrginalFile}</a>
+          target="_blank" rel="noopener noreferrer" className="btn btn--default">{
+            language.token(MessageOrginalFileToken, ["{ext}"], [new FileExtensions().GetFileExtensionWithoutDot(props.select[0])])
+          }</a>
         {singleFileThumbnailStatus ? <a href={new UrlQuery().UrlDownloadPhotoApi(new URLPath().encodeURI(props.select[0]), true, false)}
           download={new FileExtensions().GetFileNameWithoutExtension(props.select[0]) + ".jpg"} data-test="thumbnail"
-          target="_blank" rel="noopener noreferrer" className={"btn btn--default"}>{MessageThumbnailFile}</a> : null}
-        {multipleCollectionPaths ? <PostZipOrginalFilesComponent /> : null}
+          target="_blank" rel="noopener noreferrer" className={"btn btn--info"}>{MessageThumbnailFile}</a> : null}
+        {multipleCollectionExtensions.length >= 2 ? <PostZipOrginalFilesComponent
+          content={language.token(MessageOrginalFileCollectionsToken, ["{ext}"], [multipleCollectionExtensions.toString()])} /> : null}
       </> : null}
 
       {isProcessing === ProcessingState.default && props.select && props.select.length === 1 && isDirectory ?
