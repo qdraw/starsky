@@ -197,17 +197,19 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Create a new user
+        /// Create a new user (you need a AF-token first)
         /// </summary>
         /// <param name="model">with the userdata</param>
         /// <returns>redirect or json</returns>
         /// <response code="200">successful register</response>
         /// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
         /// <response code="403">Account Register page is closed</response>
+        /// <response code="405">AF token is missing</response>
         [HttpPost("/api/account/register")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),403)]
+        [ProducesResponseType(typeof(string),405)]
         [Produces("application/json")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]

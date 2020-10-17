@@ -52,7 +52,7 @@ describe("Login", () => {
 
     // no prefix
     expect(login.find('[data-test="logout"]').props().href).toBe("/account/logout?ReturnUrl=/test");
-    expect(login.find('[data-test="stayLoggedin"]').props().href).toBe("/test");
+    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe("/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -77,7 +77,7 @@ describe("Login", () => {
 
     // including starsky prefix
     expect(login.find('[data-test="logout"]').props().href).toBe("/starsky/account/logout?ReturnUrl=/starsky/test");
-    expect(login.find('[data-test="stayLoggedin"]').props().href).toBe("/starsky/test");
+    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe("/starsky/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -116,7 +116,7 @@ describe("Login", () => {
 
     var login = mount(<Login />);
 
-    expect(globalHistory.location.pathname.indexOf(new UrlQuery().UrlAccountRegister())).toBeTruthy();
+    expect(globalHistory.location.pathname.indexOf(new UrlQuery().UrlAccountRegisterApi())).toBeTruthy();
     expect(useFetchSpy).toBeCalled();
 
     act(() => {

@@ -108,7 +108,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     new FileListCache().CacheCleanEverything();
 
     var urlSync = new UrlQuery().UrlSync(parentFolder);
-    FetchGet(urlSync).then((_) => {
+    FetchPost(urlSync, '').then((_) => {
       setTimeout(() => {
         var url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(history.location.search));
         FetchGet(url).then((connectionResult) => {
@@ -119,7 +119,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
           }
           props.handleExit();
         });
-      }, 12000);
+      }, 15000);
     });
   }
 

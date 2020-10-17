@@ -80,7 +80,11 @@ export class UrlQuery {
     return output.replace(/\+/ig, "%2B");
   }
 
-  public UrlAccountRegister(): string {
+  public UrlAccountRegisterApi(): string {
+    return `${this.prefix}/api/account/register`;
+  }
+
+  public UrlAccountRegisterPage(): string {
     return `${this.prefix}/account/register`;
   }
 
