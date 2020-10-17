@@ -3,9 +3,51 @@ import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
-import { archiveReducer } from './archive-context';
+import { ArchiveAction, archiveReducer } from './archive-context';
 
 describe("ArchiveContext", () => {
+
+
+  it("force-reset - it should not add duplicate content", () => {
+    var state = {
+      fileIndexItems: [{
+        filePath: '/test.jpg'
+      },
+      {
+        filePath: '/test.jpg'
+      },
+      ]
+    } as IArchiveProps;
+
+    // fullpath input
+    var action = { type: 'force-reset', payload: state } as ArchiveAction
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0].filePath).toBe('/test.jpg');
+  });
+
+  it("set - it should not add duplicate content", () => {
+    var state = {
+      fileIndexItems: [{
+        filePath: '/test.jpg'
+      },
+      {
+        filePath: '/test.jpg'
+      },
+      ]
+    } as IArchiveProps;
+
+    // fullpath input
+    var action = { type: 'set', payload: state } as ArchiveAction
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0].filePath).toBe('/test.jpg');
+  });
+
 
   it("remove - check if item is removed", () => {
     var state = {
