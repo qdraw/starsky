@@ -118,8 +118,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       };
     case "force-reset":
       // also update the cache
-      action.payload.fileIndexItems = new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath');
-      return updateCache(action.payload);
+      return updateCache({
+        ...action.payload,
+        fileIndexItems: new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath')
+      });
     case "add":
       var filterOkCondition = (value: IFileIndexItem) => {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
