@@ -177,7 +177,7 @@ describe("AccountRegister", () => {
 
     expect(fetchPostSpy).toBeCalled();
 
-    expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlAccountRegister(),
+    expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlAccountRegisterApi(),
       `Email=dont@mail.me&Password=987654321&ConfirmPassword=987654321`);
 
   });

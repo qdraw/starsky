@@ -115,6 +115,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       return action.payload;
     case "force-reset":
       // also update the cache
+      action.payload.fileIndexItems = new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath');
       return updateCache(action.payload);
     case "add":
       var filterOkCondition = (value: IFileIndexItem) => {

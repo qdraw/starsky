@@ -70,15 +70,14 @@ describe("ModalArchiveSynchronizeManually", () => {
           statusCode: 200, data: null
         } as IConnectionDefault);
 
-        var fetchGetSpy = jest.spyOn(FetchGet, 'default')
+        var fetchPostSpy = jest.spyOn(FetchPost, 'default')
           .mockImplementationOnce(() => mockGetIConnectionDefault)
 
         modal.find('[data-test="force-sync"]').simulate('click');
 
-        expect(fetchGetSpy).toBeCalled();
-        expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlSync("/"));
+        expect(fetchPostSpy).toBeCalled();
+        expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
 
-        fetchGetSpy.mockReset();
       });
 
       it("remove-cache (only first get)", () => {

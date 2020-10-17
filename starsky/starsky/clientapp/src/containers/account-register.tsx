@@ -74,7 +74,7 @@ const AccountRegister: FunctionComponent = () => {
 
     setLoading(true);
 
-    const response = await FetchPost(new UrlQuery().UrlAccountRegister(),
+    const response = await FetchPost(new UrlQuery().UrlAccountRegisterApi(),
       `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`);
 
     if (response.statusCode === 400 || response.statusCode === 403) {

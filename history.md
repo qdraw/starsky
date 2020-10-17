@@ -56,6 +56,7 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x]   (Breaking change) _Back-end_ rename api from "/sync/mkdir" to "/api/sync/mkdir"
 - [x]   (Breaking change) _Back-end_ rename api from "/sync" to "/api/sync"
 - [x]   (Breaking change) _Back-end_ rename api from "/sync/rename" to "/api/sync/rename"
+- [x]   (Added) _Front-end_ When source is missing don't allow user to perform actions in DetailView
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_
