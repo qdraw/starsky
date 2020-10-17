@@ -510,24 +510,103 @@ describe("MenuDetailView", () => {
       })
     });
 
-    it("when source is missing file can't be downloaded", () => {
-      jest.spyOn(React, 'useContext').mockReset();
+    describe("NotFoundSourceMissing", () => {
 
-      var state = {
-        subPath: "/trashed/test1.jpg",
-        fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
-      } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
+      it("when source is missing file can't be downloaded", () => {
+        jest.spyOn(React, 'useContext').mockReset();
 
-      jest.spyOn(React, 'useContext')
-        .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextValues })
+        var state = {
+          subPath: "/trashed/test1.jpg",
+          fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        } as IDetailView;
+        var contextValues = { state, dispatch: jest.fn() };
 
-      const component = mount(<MenuDetailView />);
-      var item = component.find('[data-test="export"]');
+        jest.spyOn(React, 'useContext')
+          .mockImplementationOnce(() => { return contextValues })
+          .mockImplementationOnce(() => { return contextValues })
 
-      expect(item.getDOMNode().className).toBe("menu-option disabled");
+        const component = mount(<MenuDetailView />);
+        var item = component.find('[data-test="export"]');
+
+        expect(item.getDOMNode().className).toBe("menu-option disabled");
+      });
+
+      it("when source is missing file can't be moved", () => {
+        jest.spyOn(React, 'useContext').mockReset();
+
+        var state = {
+          subPath: "/trashed/test1.jpg",
+          fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        } as IDetailView;
+        var contextValues = { state, dispatch: jest.fn() };
+
+        jest.spyOn(React, 'useContext')
+          .mockImplementationOnce(() => { return contextValues })
+          .mockImplementationOnce(() => { return contextValues })
+
+        const component = mount(<MenuDetailView />);
+        var item = component.find('[data-test="move"]');
+
+        expect(item.getDOMNode().className).toBe("menu-option disabled");
+      });
+
+      it("when source is missing file can't be renamed", () => {
+        jest.spyOn(React, 'useContext').mockReset();
+
+        var state = {
+          subPath: "/trashed/test1.jpg",
+          fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        } as IDetailView;
+        var contextValues = { state, dispatch: jest.fn() };
+
+        jest.spyOn(React, 'useContext')
+          .mockImplementationOnce(() => { return contextValues })
+          .mockImplementationOnce(() => { return contextValues })
+
+        const component = mount(<MenuDetailView />);
+        var item = component.find('[data-test="rename"]');
+
+        expect(item.getDOMNode().className).toBe("menu-option disabled");
+      });
+
+      it("when source is missing file can't be moved to trash", () => {
+        jest.spyOn(React, 'useContext').mockReset();
+
+        var state = {
+          subPath: "/trashed/test1.jpg",
+          fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        } as IDetailView;
+        var contextValues = { state, dispatch: jest.fn() };
+
+        jest.spyOn(React, 'useContext')
+          .mockImplementationOnce(() => { return contextValues })
+          .mockImplementationOnce(() => { return contextValues })
+
+        const component = mount(<MenuDetailView />);
+        var item = component.find('[data-test="trash"]');
+
+        expect(item.getDOMNode().className).toBe("menu-option disabled");
+      });
+
+      it("when source is missing file can't be rotated", () => {
+        jest.spyOn(React, 'useContext').mockReset();
+
+        var state = {
+          subPath: "/trashed/test1.jpg",
+          fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        } as IDetailView;
+        var contextValues = { state, dispatch: jest.fn() };
+
+        jest.spyOn(React, 'useContext')
+          .mockImplementationOnce(() => { return contextValues })
+          .mockImplementationOnce(() => { return contextValues })
+
+        const component = mount(<MenuDetailView />);
+        var item = component.find('[data-test="rotate"]');
+
+        expect(item.getDOMNode().className).toBe("menu-option disabled");
+      });
     });
+
   });
 });

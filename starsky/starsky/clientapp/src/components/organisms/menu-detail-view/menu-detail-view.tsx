@@ -107,8 +107,9 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);
   useEffect(() => {
+    if (state.fileIndexItem.status === IExifStatus.NotFoundSourceMissing) return;
     setReadOnly(state.isReadOnly);
-  }, [state.isReadOnly]);
+  }, [state.isReadOnly, state.fileIndexItem.status]);
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
