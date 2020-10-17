@@ -82,7 +82,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
 
   const [isDirectory, setIsDirectory] = React.useState(false);
   const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] = React.useState(false);
-  const [multipleCollectionPaths, setMultipleCollectionPaths] = React.useState(false);
+  const [multipleCollectionPaths, setMultipleCollectionPaths] = React.useState([]);
 
   function next(propsSelect: string[], index: number) {
     if (index >= propsSelect.length) return;
@@ -94,7 +94,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       console.log(result.data.fileIndexItem.collectionPaths);
 
       if (!multipleCollectionPaths && result.data.fileIndexItem && result.data.fileIndexItem.collectionPaths) {
-        setMultipleCollectionPaths(result.data.fileIndexItem.collectionPaths.length !== 1)
+        setMultipleCollectionPaths(result.data.fileIndexItem.collectionPaths)
       }
       FetchGet(new UrlQuery().UrlAllowedTypesThumb(selectItem)).then((thumbResult) => {
         if (!singleFileThumbnailStatus) {
@@ -134,7 +134,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
   }
 
   return (<Modal
-    id="detailview-export-modal"
+    id="detailview-download-modal"
     isOpen={props.isOpen}
     handleExit={() => {
       props.handleExit()
