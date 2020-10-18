@@ -125,10 +125,8 @@ namespace starsky.Controllers
 				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
 				return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));
 			}
-			else if (!_iStorage.ExistFolder(to))
-			{
-				return null;
-			}
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if (!_iStorage.ExistFolder(to)) return null;
 			return PathHelper.RemoveLatestSlash(to);
 		}
 		

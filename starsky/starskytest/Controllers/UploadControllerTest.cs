@@ -66,7 +66,7 @@ namespace starskytest.Controllers
 				TempFolder = createAnImage.BasePath
 			};
 
-			_iStorage = new FakeIStorage(new List<string>{"/"}, 
+			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
@@ -180,27 +180,51 @@ namespace starskytest.Controllers
 			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
 		}
 
-		
-		
-//		[TestMethod]
-		public async Task UploadToFolder_StreamFileHasFailed_BadRequest()
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath()
 		{
-			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
-			httpContext.Request.Headers["to"] = "/"; //Set header
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
 			
+			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/", result);
+		}
+		
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
+			
+			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/test", result);
+		}
+		
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_NonExistFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/non-exist/test.jpg");
+
 			var controller =
-				new UploadController(_import, _appSettings,  _iSync, new FakeSelectorStorage(_iStorage), _query)
+				new UploadController(_import, _appSettings, _iSync,
+					new FakeSelectorStorage(_iStorage), _query)
 				{
-					ControllerContext =
-					{
-						HttpContext = httpContext
-					}
+					ControllerContext = controllerContext
 				};
 			
-			var actionResult = await controller.UploadToFolder() as BadRequestObjectResult;
-			
-			Assert.AreEqual(400,actionResult.StatusCode);
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.IsNull(result);
 		}
-
 	}
 }
