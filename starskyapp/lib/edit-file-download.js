@@ -14,25 +14,26 @@ exports.editFileDownload = (formSubPath, toSubPath) => {
     fs.promises.mkdir(parentFullFilePath, {
         recursive: true
     }).then(()=>{
-        doRequest(parentFullFilePath, formSubPath, toSubPath).then((fullFilePath)=>{
+        doDownloadRequest(parentFullFilePath, formSubPath, toSubPath).then((fullFilePath)=>{
             openPath(fullFilePath)
-            watchForChanges(fullFilePath)
+            // watchForChanges(fullFilePath,toSubPath)
         });
     })
 }
 
 function openPath(fullFilePath) {
-    childProcess.execFile("/Applications/Adobe Photoshop 2020/Adobe Photoshop 2020.app",[fullFilePath])
+    console.log('-> ', fullFilePath);
+
+    // TODO: ONLY 2020 EDITION
+    var openMac = `osascript -e 'tell application "Adobe Photoshop 2020"\n  activate\n  set thisFile to "${fullFilePath}" as string\n open alias thisFile\n end tell'`;
+    console.log(openMac);
+    childProcess.exec(openMac);
 }
 
-watchForChanges = (fullFilePath) => {
-    fs.watchFile(fullFilePath, (curr, prev) => {
-        console.log(curr);
-    });
-}
 
 
-doRequest = (parentFullFilePath, formSubPath, toSubPath) => {
+
+doDownloadRequest = (parentFullFilePath, formSubPath, toSubPath) => {
     return new Promise(function (resolve, _) {
 
         var fullFilePath  = path.join( parentFullFilePath,       new FileExtensions().GetFileName(toSubPath)    )

@@ -85,7 +85,7 @@ exports.ipcBridge = () => {
 
     ipcMain.on("edit", (_, args) => {
         if (!args || !args.f || !args.to) return;
-        editFileDownload(args.f, args.to)
+        editFileDownload(args.f, args.to);
     });
 
 }

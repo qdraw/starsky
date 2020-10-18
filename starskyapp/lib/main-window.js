@@ -3,6 +3,7 @@ const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
 const appConfig = require('electron-settings');
 const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
+const watchForChanges = require('./watch-for-changes').watchForChanges
 
 const mainWindows = new Set();
 exports.mainWindows = mainWindows;
@@ -20,6 +21,8 @@ exports.createMainWindow = () => {
     x = currentWindowX + 10;
     y = currentWindowY + 10;
   }
+
+  watchForChanges();
 
   let newWindow = new BrowserWindow({
     x,
