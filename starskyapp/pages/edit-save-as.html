@@ -1,0 +1,53 @@
+<html>
+<title> Save as</title>
+
+    <body>
+        <p>How do you want to save </p>
+        <form>
+            <input value="" style="width: 100%;" />
+            <button>Ok</button>
+        </form>
+    </body>
+    <script>
+
+        function GetParentPath(filePath) {
+            if (!filePath) return "/"
+            const parentRegex = /.+(?=\/[^/]+$)/;
+
+            // remove slash from end
+            if (filePath.length >= 2 && filePath[filePath.length - 1] === "/") {
+            filePath = filePath.substr(0, filePath.length - 1)
+            }
+
+            const parentMatchArray = filePath.match(parentRegex);
+            if (!parentMatchArray) return "/";
+            return parentMatchArray[0]
+        }
+
+        function GetFileName(filePath) {
+            // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
+            var filenameRegex = /[^/]+(?=\.[\w]+\.$)|[^/]+$/
+            var fileNameMatchArray = filePath.match(filenameRegex);
+            if (!fileNameMatchArray) return "/";
+            return fileNameMatchArray[0]
+        }
+
+
+        var filePath = new URLSearchParams(window.location.search).get("f");
+        var parentDirectory = GetParentPath(filePath);
+        document.querySelector("input").value = GetFileName(filePath);
+        document.querySelector("input").focus();
+        document.querySelector("form").onsubmit = (event) => {
+            event.preventDefault();
+            window.api.send("edit", {
+                "f": parentDirectory + "/" + document.querySelector("input").value
+            });
+            window.close()
+        }
+
+        window.api.receive("edit", (data) => {
+            console.log(data);
+        });
+
+    </script>
+</html>

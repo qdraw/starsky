@@ -4,6 +4,7 @@ const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
+const editWindows = require('./edit-keypress').editWindows
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
@@ -69,6 +70,9 @@ function AppMenu() {
               window.webContents.reload()
             });
             settingsWindows.forEach(window => {
+              window.webContents.reload()
+            });
+            editWindows.forEach(window => {
               window.webContents.reload()
             });
           },

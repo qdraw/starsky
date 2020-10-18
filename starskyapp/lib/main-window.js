@@ -2,7 +2,7 @@ const { BrowserWindow, Menu, MenuItem } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
 const appConfig = require('electron-settings');
-const handleExitKeyPress = require('./handle-edit-keypress').handleExitKeyPress
+const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
 
 const mainWindows = new Set();
 exports.mainWindows = mainWindows;
@@ -43,7 +43,7 @@ exports.createMainWindow = () => {
     rememberUrl = appConfig.get("remember-url");
   }
   console.log('rememberUrl', rememberUrl);
-  newWindow.loadFile('index.html', { query: {"remember-url" : rememberUrl}});
+  newWindow.loadFile('pages/reload-redirect.html', { query: {"remember-url" : rememberUrl}});
   newWindow.on('close',()=>{
     var url = new URL(newWindow.webContents.getURL()).search
     console.log(url);

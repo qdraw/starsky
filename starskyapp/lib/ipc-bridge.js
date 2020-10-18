@@ -1,6 +1,7 @@
 const { ipcMain , net, app } = require('electron')
 const appConfig = require('electron-settings');
 const mainWindows = require('./main-window').mainWindows
+const editFileDownload = require('./edit-file-download').editFileDownload;
 
 exports.ipcBridge = () => {
 
@@ -81,4 +82,10 @@ exports.ipcBridge = () => {
 
         event.reply('settings', currentSettings)
     });
+
+    ipcMain.on("edit", (_, args) => {
+        if (!args || !args.f) return;
+        editFileDownload(args.f)
+    });
+
 }

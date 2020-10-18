@@ -25,7 +25,7 @@ exports.createSettingsWindow = () => {
 
     mainWindowStateKeeper.track(newWindow);
 
-    newWindow.loadFile('settings.html');
+    newWindow.loadFile('pages/settings.html');
 
     newWindow.once('ready-to-show', () => {
         newWindow.show();
