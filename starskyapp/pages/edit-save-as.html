@@ -40,7 +40,8 @@
         document.querySelector("form").onsubmit = (event) => {
             event.preventDefault();
             window.api.send("edit", {
-                "f": parentDirectory + "/" + document.querySelector("input").value
+                "f": filePath,
+                "to": parentDirectory + "/" + document.querySelector("input").value
             });
             window.close()
         }

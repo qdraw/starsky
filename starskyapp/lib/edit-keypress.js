@@ -1,4 +1,4 @@
-const getBaseUrlFromSettings = require('./get-base-url-from-settings').getBaseUrlFromSettings
+const {getBaseUrlFromSettings } = require('./get-base-url-from-settings')
 const {  net, BrowserWindow } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
