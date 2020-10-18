@@ -24,7 +24,8 @@ exports.ipcBridge = () => {
 
         var currentSettings = appConfig.get("settings");
         
-        if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) && !args.location.startsWith('http://localhost:') && args.location != currentSettings.location) {
+        if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) 
+            && !args.location.startsWith('http://localhost:') && args.location != currentSettings.location) {
             // console.log('28', args.location);
             
             currentSettings.locationOk = false;
@@ -33,7 +34,8 @@ exports.ipcBridge = () => {
             return;
         }
 
-        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) || args.location.startsWith('http://localhost:') ) &&  args.location != currentSettings.location) {
+        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) || args.location.startsWith('http://localhost:') ) 
+            &&  args.location != currentSettings.location) {
 
             // to avoid errors
             var locationUrl = args.location.replace(/\/$/, "");
@@ -65,7 +67,8 @@ exports.ipcBridge = () => {
 
         if(args) {
             appConfig.set("settings", args);
-
+            // revoke url to clean session
+            appConfig.set("remember-url","");
             // to avoid that the session is opened
             mainWindows.forEach(window => {
                 window.close()

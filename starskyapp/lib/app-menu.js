@@ -119,7 +119,7 @@ function AppMenu() {
       role: 'help',
       submenu: [
         {
-          label: 'Learn More',
+          label: 'Documentation website',
           click: async () => {
             await shell.openExternal('https://qdraw.github.io/starsky/')
           }

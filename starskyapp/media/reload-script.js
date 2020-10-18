@@ -7,13 +7,20 @@
  * @param {*} maxCount 
  */
 function warmupScript(domainUrl, apiVersion, count, maxCount) {
+
+  var appendAfterDomainUrl = ""
+  var rememberUrl = new URLSearchParams(window.location.search).get("remember-url");
+  if (rememberUrl) {
+    appendAfterDomainUrl = rememberUrl;
+  }
+
   fetch(domainUrl + '/api/health')
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
         fetch(domainUrl + '/api/health/version', { method: 'POST',  headers: {"x-api-version": `${apiVersion}`}})
           .then((versionResponse) => {
             if (versionResponse.status === 200) {
-              window.location.href = domainUrl;
+              window.location.href = domainUrl + appendAfterDomainUrl;
               return;
             }
             if (versionResponse.status === 400 && document.querySelectorAll('.upgrade').length === 1) {
@@ -49,7 +56,7 @@ function warmupLocalOrRemote() {
 
     if (!data || !data.remote) {
       console.log('default');
-      warmupScript('http://localhost:9609',data.apiVersion, 0, 300)
+      warmupScript('http://localhost:9609', data.apiVersion, 0, 300)
       return;
     }
 

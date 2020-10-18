@@ -1,7 +1,8 @@
-const { BrowserWindow, session, Menu, MenuItem } = require('electron')
+const { BrowserWindow, Menu, MenuItem } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
 const appConfig = require('electron-settings');
+const handleExitKeyPress = require('./handle-edit-keypress').handleExitKeyPress
 
 const mainWindows = new Set();
 exports.mainWindows = mainWindows;
@@ -36,12 +37,24 @@ exports.createMainWindow = () => {
 
   mainWindowStateKeeper.track(newWindow);
 
-  newWindow.loadFile('index.html');
+  // set Remember url
+  var rememberUrl = "";
+  if (appConfig && appConfig.has("remember-url")) {
+    rememberUrl = appConfig.get("remember-url");
+  }
+  console.log('rememberUrl', rememberUrl);
+  newWindow.loadFile('index.html', { query: {"remember-url" : rememberUrl}});
+  newWindow.on('close',()=>{
+    var url = new URL(newWindow.webContents.getURL()).search
+    console.log(url);
+    appConfig.set("remember-url",encodeURI(url));
+  })
+  // end remember url
 
   newWindow.webContents.session.webRequest.onHeadersReceived((res, callback) => {
 
     var currentSettings = appConfig.get("settings");
-    var localhost = "http://localhost:9609 "; // with space
+    var localhost = "http://localhost:9609 "; // with space on end
 
     whitelistDomain = localhost;
     if (currentSettings && currentSettings.location) {
@@ -49,8 +62,9 @@ exports.createMainWindow = () => {
     }
 
     // When change also check if CSPMiddleware needs to be updated
-    var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org " + whitelistDomain + "; " +
-      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
+    var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org "
+     + whitelistDomain + "; " +      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain
+      + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
       "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
       "font-src " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 
@@ -59,6 +73,10 @@ exports.createMainWindow = () => {
     }
 
     callback({ cancel: false, responseHeaders: res.responseHeaders });
+  });
+
+  newWindow.webContents.on("before-input-event", (_, input) => { 
+    if (input.type === 'keyDown' && input.key === 'e') handleExitKeyPress(newWindow);
   });
 
   // Spellcheck
