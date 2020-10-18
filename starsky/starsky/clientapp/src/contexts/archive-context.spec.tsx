@@ -28,6 +28,13 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].filePath).toBe('/test.jpg');
   });
 
+  it("set - it should ignore when fileIndexItem is undefined", () => {
+    var action = { type: 'set', payload: {} } as ArchiveAction
+    var result = archiveReducer({} as any, action);
+
+    expect(result.fileIndexItems).toBeUndefined();
+  });
+
   it("set - it should not add duplicate content", () => {
     var state = {
       fileIndexItems: [{
