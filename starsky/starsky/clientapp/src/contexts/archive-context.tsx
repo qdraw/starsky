@@ -112,10 +112,12 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
       // ignore the cache
+      if (!action.payload.fileIndexItems) return action.payload;
       return {
         ...action.payload,
-        fileIndexItems: new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath')
-      };
+        fileIndexItems:
+          new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath')
+      }
     case "force-reset":
       // also update the cache
       return updateCache({
