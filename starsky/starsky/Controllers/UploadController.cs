@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -109,12 +108,15 @@ namespace starsky.Controllers
 				 fileIndexResultsList[i].FilePath = subPath;
 				 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
-				
-				// most requests are done by file
-				await _connectionsService.SendToAllAsync(
-					JsonSerializer.Serialize(fileIndexResultsList[i].FileIndexItem, 
-					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			}
+
+			// send all uploads as list
+			await _connectionsService.SendToAllAsync(
+				JsonSerializer.Serialize(
+					fileIndexResultsList
+						.Where(p => p.Status == ImportStatus.Ok)
+						.Select(item => item.FileIndexItem).ToList(), 
+					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
