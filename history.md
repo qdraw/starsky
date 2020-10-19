@@ -35,7 +35,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.4.0-beta.1 _(Unreleased)_  2020-10-??
 - nothing yet
 
-# version 0.4.0-beta.0 - 2020-10-??
+# version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
 - [x]   (Added) _Front-end_ Update view when other clients are updating content
 - [x]   (Changed) _Front-end_ In GPX view mode & when unlocked: touchZoom and doubleClickZoom are enabled
@@ -58,6 +58,7 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x]   (Breaking change) _Back-end_ rename api from "/sync/rename" to "/api/sync/rename"
 - [x]   (Added) _Front-end_ When source is missing don't allow user to perform actions in DetailView
 - [x]   (Added) _Front-end_ Add link in "/account/login" to account register when user is already logged-in 
+- [x]   (Fixed) _Back-end_ Upload with direct path is working again
 
 # version 0.3.3 - 2020-10-10
 _In the next major release websockets are used, please note when using a reverse proxy_
