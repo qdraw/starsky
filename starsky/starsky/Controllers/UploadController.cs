@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +12,9 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskycore.Interfaces;
@@ -28,9 +32,11 @@ namespace starsky.Controllers
 		private readonly ISync _iSync;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
 		public UploadController(IImport import, AppSettings appSettings, ISync sync, 
-			ISelectorStorage selectorStorage, IQuery query)
+			ISelectorStorage selectorStorage, IQuery query, 
+			IWebSocketConnectionsService connectionsService)
 		{
 			_appSettings = appSettings;
 			_iSync = sync;
@@ -39,18 +45,20 @@ namespace starsky.Controllers
 			_selectorStorage = selectorStorage;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_connectionsService = connectionsService;
 		}
 		
 		
 		/// <summary>
 		/// Upload to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
+		/// (ActionResult UploadToFolder)
 		/// </summary>
 		/// <response code="200">done</response>
 		/// <response code="404">folder not found</response>
 		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
 		/// <response code="400">missing 'to' header</response>
-		/// <returns>the ImportIndexItem of the imported files</returns>
+		/// <returns>the ImportIndexItem of the imported files </returns>
 		[HttpPost("/api/upload")]
         [DisableFormValueModelBinding]
 		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
@@ -64,23 +72,14 @@ namespace starsky.Controllers
 		{
 			var to = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
-			
-			var parentDirectoryWithEndSlash = _iStorage.ExistFolder(to) ? PathHelper.AddSlash(to) :  PathHelper.RemoveLatestSlash(to);
 
-			// only used for direct import
-			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) && 
-			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
-			{
-				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
-				parentDirectoryWithEndSlash = FilenamesHelper.GetParentPath(to);
-			}
-			else if (!_iStorage.ExistFolder(to))
+			var parentDirectory = GetParentDirectoryFromRequestHeader();
+			if ( parentDirectory == null )
 			{
 				return NotFound(new ImportIndexItem());
 			}
 			
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
-			
 			
 			var fileIndexResultsList = await _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
 
@@ -92,21 +91,32 @@ namespace starsky.Controllers
 				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
-				await _iStorage.WriteStreamAsync(tempFileStream, parentDirectoryWithEndSlash + fileName);
+				var subPath = parentDirectory + "/" + fileName;
+				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
+
+				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				
-				_iSync.SyncFiles(parentDirectoryWithEndSlash + fileName,false);
+				_iSync.SyncFiles(subPath,false);
 				
 				 // clear directory cache
-				 _query.RemoveCacheParentItem(parentDirectoryWithEndSlash);
+				 _query.RemoveCacheParentItem(subPath);
 
 				 // to get the output in the result right
 				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
-				 fileIndexResultsList[i].FileIndexItem.ParentDirectory =  PathHelper.RemoveLatestSlash(parentDirectoryWithEndSlash);
-				 fileIndexResultsList[i].FilePath = parentDirectoryWithEndSlash + fileName;
+				 fileIndexResultsList[i].FileIndexItem.ParentDirectory =  parentDirectory;
+				 fileIndexResultsList[i].FilePath = subPath;
 				 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
+
+			// send all uploads as list
+			await _connectionsService.SendToAllAsync(
+				JsonSerializer.Serialize(
+					fileIndexResultsList
+						.Where(p => p.Status == ImportStatus.Ok)
+						.Select(item => item.FileIndexItem).ToList(), 
+					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
@@ -116,6 +126,23 @@ namespace starsky.Controllers
             
 	        return Json(fileIndexResultsList);
         }
+
+		internal string GetParentDirectoryFromRequestHeader()
+		{
+			var to = Request.Headers["to"].ToString();
+			if ( to == "/" ) return "/";
+
+			// only used for direct import
+			if ( _iStorage.ExistFolder(FilenamesHelper.GetParentPath(to)) && 
+			     FilenamesHelper.IsValidFileName(FilenamesHelper.GetFileName(to)) )
+			{
+				Request.Headers["filename"] = FilenamesHelper.GetFileName(to);
+				return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));
+			}
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if (!_iStorage.ExistFolder(PathHelper.RemoveLatestSlash(to))) return null;
+			return PathHelper.RemoveLatestSlash(to);
+		}
 		
 	}
 }
