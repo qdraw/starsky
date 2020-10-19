@@ -115,7 +115,8 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NoToHeader_BadRequest()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _iSync, new FakeSelectorStorage(new FakeIStorage()), _query)
+				new UploadController(_import, _appSettings, _iSync, 
+					new FakeSelectorStorage(new FakeIStorage()), _query, new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
@@ -128,7 +129,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_DefaultFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -153,7 +155,8 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NotFound()
 		{
 			var controller =
-				new UploadController(_import, _appSettings,  _iSync, new FakeSelectorStorage(_iStorage), _query)
+				new UploadController(_import, _appSettings,  _iSync, 
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = RequestWithFile(),
 				};
@@ -167,7 +170,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_UnknownFailFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _iSync, new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -186,7 +190,8 @@ namespace starskytest.Controllers
 			var controllerContext = RequestWithFile();
 			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
 			
-			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = controllerContext
 			};
@@ -201,7 +206,8 @@ namespace starskytest.Controllers
 			var controllerContext = RequestWithFile();
 			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
 			
-			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = controllerContext
 			};
@@ -216,7 +222,8 @@ namespace starskytest.Controllers
 			var controllerContext = RequestWithFile();
 			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
 			
-			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = controllerContext
 			};
@@ -233,7 +240,7 @@ namespace starskytest.Controllers
 
 			var controller =
 				new UploadController(_import, _appSettings, _iSync,
-					new FakeSelectorStorage(_iStorage), _query)
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = controllerContext
 				};
