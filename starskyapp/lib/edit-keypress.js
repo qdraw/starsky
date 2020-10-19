@@ -20,6 +20,7 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     // });
 
     doRequest(filePath, fromMainWindow.webContents.session, (data) =>  createNewWindow(data,filePath))
+
     
 }
 
@@ -43,6 +44,11 @@ function doRequest(filePath, session, callback) {
             callback(JSON.parse(body))
         })
     });
+
+    request.on('error',(e)=>{
+        console.log(e);
+        callback({isError: true})
+    })
 
     request.end()
     return;
@@ -69,6 +75,10 @@ function createNewWindow(data, filePath) {
         });
     editWindows.add(editWindow);
 
+    if (data.isError) {
+        editWindow.loadFile('pages/edit-connection-error.html', { query: {"f" : filePath}});
+        return;
+    }
     if (data.pageType !== "DetailView" || data.isReadOnly) {
         console.log("Sorry, your not allowed or able to do this");
         editWindow.loadFile('pages/edit-not-allowed.html', { query: {"f" : filePath}});
