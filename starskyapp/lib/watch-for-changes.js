@@ -15,7 +15,7 @@ watchForChanges = () => {
 
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
-        console.log(eventType, fileName);
+        console.log('watch', eventType, fileName);
 
         var fullFilePath = path.join(editCacheParentFolder, fileName);
         var parentCurrentFullFilePathFolder = path.join(electronCacheLocation(), "edit", getBaseUrlFromSettingsSlug());
@@ -42,13 +42,14 @@ doUploadRequest = (ses, fullFilePath, toSubPath) => {
         method: 'POST',
         headers: {
             "to": toSubPath,
-            "content-type": "application/octet-stream"
+            "content-type": "application/octet-stream",
+            "Accept" :	"*/*"
         },
     });
 
     let body = '';
     request.on('response', (response) => {
-        if (response.statusCode !== 200) console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
+        if (response.statusCode !== 200) console.log(`HEADERS: ${JSON.stringify(response.headers)} ${response.statusCode}`)
         if (response.statusCode !== 200) return;
 
         response.on('data', (chunk) => {

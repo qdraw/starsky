@@ -25,7 +25,7 @@ exports.handleExitKeyPress = (fromMainWindow) => {
         if (data.pageType !== "DetailView" || data.isReadOnly) {
             return;
         }
-        
+
         // createNewWindow(data,filePath)
         console.log(data.fileIndexItem.collectionPaths);
 
@@ -42,7 +42,10 @@ function doRequest(filePath, session, callback) {
     const request = net.request({
         useSessionCookies: true,
         url: getBaseUrlFromSettings() + "/starsky/api/index?f=" + filePath, 
-        session: session
+        session: session,
+        headers: {
+            "Accept" :	"*/*"
+        }
     });
 
     let body = '';

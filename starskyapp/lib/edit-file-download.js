@@ -5,6 +5,8 @@ const { getBaseUrlFromSettingsSlug, getBaseUrlFromSettings } = require('./get-ba
 const path = require('path');
 const electronCacheLocation = require('./electron-cache-location').electronCacheLocation;
 var childProcess = require("child_process");
+const appConfig = require('electron-settings');
+const osType = require('./os-type');
 
 exports.editFileDownload = (fromMainWindow, formSubPath) => {
 
@@ -21,12 +23,15 @@ exports.editFileDownload = (fromMainWindow, formSubPath) => {
 function openPath(fullFilePath) {
     console.log('-> ', fullFilePath);
 
-    // TODO: ONLY 2020 EDITION
-    // var openMac = `osascript -e 'tell application "Adobe Photoshop 2020"\n  activate\n  set thisFile to "${fullFilePath}" as string\n open alias thisFile\n end tell'`;
-    // childProcess.exec(openMac);
-    
-    var openMac = `open -a "Adobe Photoshop 2020" "${fullFilePath}"`
-    childProcess.exec(openMac);
+    if (appConfig.has("settings_default_app") && osType.getOsKey() === "mac" ) {
+        var openMac = `open -a "${appConfig.get("settings_default_app")}" "${fullFilePath}"`
+        console.log(openMac);
+        childProcess.exec(openMac);
+    }
+    else{
+        shell.openPath(fullFilePath)
+    }
+
 
 }
 
@@ -65,7 +70,10 @@ doDownloadRequest = (fromMainWindow,parentFullFilePath, formSubPath, toSubPath) 
         const request = net.request({
             useSessionCookies: true,
             url: getBaseUrlFromSettings() + "/starsky/api/download-photo?isThumbnail=false&f=" + formSubPath, 
-            session: fromMainWindow.webContents.session
+            session: fromMainWindow.webContents.session,
+            headers: {
+                "Accept" :	"*/*"
+            }
         });
 
         request.on('response', (response) => {
