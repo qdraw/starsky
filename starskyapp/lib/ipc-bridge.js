@@ -41,9 +41,14 @@ exports.ipcBridge = () => {
             // to avoid errors
             var locationUrl = args.location.replace(/\/$/, "");
 
-            const request = net.request(locationUrl + "/api/health");
+            const request = net.request({
+                url: locationUrl + "/api/health",
+                headers: {
+                    "Accept" :	"*/*"
+                }
+            });
             request.on('response', (response) => {
-                console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
+                console.log(`HEADERS: ${JSON.stringify(response.headers)} - ${response.statusCode} - ${locationUrl + "/api/health"}`)
                 var locationOk = response.statusCode == 200 || response.statusCode == 503;
                 if (locationOk) {
                     currentSettings.location = locationUrl;

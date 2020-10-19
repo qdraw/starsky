@@ -2,7 +2,6 @@ const { BrowserWindow, Menu, MenuItem } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
 const appConfig = require('electron-settings');
-const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
 
 const mainWindows = new Set();
 exports.mainWindows = mainWindows;
@@ -69,15 +68,11 @@ exports.createMainWindow = () => {
       "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
       "font-src " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 
-    if (!res.url.startsWith('devtools://')) {
+    if (!res.url.startsWith('devtools://') && !res.url.startsWith('http://localhost:3000/')  ) {
       res.responseHeaders["Content-Security-Policy"] = csp;
     }
 
     callback({ cancel: false, responseHeaders: res.responseHeaders });
-  });
-
-  newWindow.webContents.on("before-input-event", (_, input) => { 
-    if (input.type === 'keyDown' && input.key === 'e') handleExitKeyPress(newWindow);
   });
 
   // Spellcheck
