@@ -126,7 +126,7 @@ namespace starsky.Controllers
 				return FilenamesHelper.GetParentPath(PathHelper.RemoveLatestSlash(to));
 			}
 			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if (!_iStorage.ExistFolder(to)) return null;
+			if (!_iStorage.ExistFolder(PathHelper.RemoveLatestSlash(to))) return null;
 			return PathHelper.RemoveLatestSlash(to);
 		}
 		

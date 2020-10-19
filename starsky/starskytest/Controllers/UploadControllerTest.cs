@@ -209,6 +209,21 @@ namespace starskytest.Controllers
 			var result = controller.GetParentDirectoryFromRequestHeader();
 			Assert.AreEqual("/test", result);
 		}
+	
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestDirectFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
+			
+			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/test", result);
+		}
 		
 		[TestMethod]
 		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_NonExistFolder()
