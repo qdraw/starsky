@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,9 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskycore.Interfaces;
@@ -29,9 +33,11 @@ namespace starsky.Controllers
 		private readonly ISync _iSync;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
+		private readonly IWebSocketConnectionsService _connectionsService;
 
 		public UploadController(IImport import, AppSettings appSettings, ISync sync, 
-			ISelectorStorage selectorStorage, IQuery query)
+			ISelectorStorage selectorStorage, IQuery query, 
+			IWebSocketConnectionsService connectionsService)
 		{
 			_appSettings = appSettings;
 			_iSync = sync;
@@ -40,6 +46,7 @@ namespace starsky.Controllers
 			_selectorStorage = selectorStorage;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
+			_connectionsService = connectionsService;
 		}
 		
 		
@@ -102,6 +109,11 @@ namespace starsky.Controllers
 				 fileIndexResultsList[i].FilePath = subPath;
 				 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
+				
+				// most requests are done by file
+				await _connectionsService.SendToAllAsync(
+					JsonSerializer.Serialize(fileIndexResultsList[i].FileIndexItem, 
+					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			}
 			
 			// Wrong input (extension is not allowed)
