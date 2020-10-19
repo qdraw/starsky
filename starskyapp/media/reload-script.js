@@ -11,7 +11,7 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
   var appendAfterDomainUrl = ""
   var rememberUrl = new URLSearchParams(window.location.search).get("remember-url");
   if (rememberUrl) {
-    appendAfterDomainUrl = rememberUrl;
+    appendAfterDomainUrl = decodeURI(rememberUrl);
   }
 
   fetch(domainUrl + '/api/health')

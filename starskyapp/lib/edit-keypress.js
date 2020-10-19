@@ -2,6 +2,7 @@ const {getBaseUrlFromSettings } = require('./get-base-url-from-settings')
 const {  net, BrowserWindow } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
+const editFileDownload = require('./edit-file-download').editFileDownload;
 
 const editWindows = new Set();
 exports.editWindows = editWindows;
@@ -19,7 +20,20 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     //     console.log(error, cookies)
     // });
 
-    doRequest(filePath, fromMainWindow.webContents.session, (data) =>  createNewWindow(data,filePath))
+    doRequest(filePath, fromMainWindow.webContents.session, (data) =>  {
+
+        if (data.pageType !== "DetailView" || data.isReadOnly) {
+            return;
+        }
+        
+        // createNewWindow(data,filePath)
+        console.log(data.fileIndexItem.collectionPaths);
+
+        var lastCollectionInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
+        console.log(lastCollectionInList);
+
+        editFileDownload(fromMainWindow,lastCollectionInList);
+    })
 
     
 }

@@ -1,10 +1,17 @@
 var path = require('path');
+const { session, net } = require('electron')
 const fs = require('fs');
+const { mainWindows } = require('./main-window');
 const electronCacheLocation = require('./electron-cache-location').electronCacheLocation;
-
 
 watchForChanges = () => {
     var editCacheParentFolder = path.join(electronCacheLocation(), "edit")
+  
+    console.log('-watch');
+    var ses = mainWindows.values().next().value.webContents.session;
+    ses.cookies.get({}, (error, cookies) => {
+        console.log(error, cookies)
+    });
 
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
@@ -19,19 +26,19 @@ watchForChanges = () => {
         var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
         console.log('fullFilePath', fullFilePath);
         console.log('subPath', subPath);
-        doUploadRequest(fullFilePath,subPath);
+        doUploadRequest(ses,fullFilePath,subPath);
     });
 }
 
 
-doUploadRequest = (fullFilePath, toSubPath) => {
-    var firstWindow = mainWindows.values().next().value;
-    if (!firstWindow) return;
+doUploadRequest = (ses, fullFilePath, toSubPath) => {
+    if (!ses) return;
+    console.log('> run upload');
 
     const request = net.request({
         useSessionCookies: true,
         url: getBaseUrlFromSettings() + "/starsky/api/upload", 
-        session: firstWindow.webContents.session,
+        session: ses,
         method: 'POST',
         headers: {
             "to": toSubPath,

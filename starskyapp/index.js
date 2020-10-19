@@ -6,6 +6,7 @@ const AppMenu = require('./lib/app-menu').AppMenu
 const createMainWindow = require('./lib/main-window').createMainWindow
 const ipcBridge = require('./lib/ipc-bridge').ipcBridge
 const appConfig = require('electron-settings');
+const watchForChanges = require('./lib/watch-for-changes').watchForChanges
 
 app.allowRendererProcessReuse = true;
 
@@ -16,7 +17,7 @@ ipcBridge();
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(createMainWindow)
+app.whenReady().then(createMainWindow).then(watchForChanges)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
