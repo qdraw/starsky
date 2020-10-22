@@ -32,7 +32,7 @@ jobs:
         working-directory: ./starsky
         run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
           
-      - name: Upload Release Asset
+      - name: Upload Release Asset osx.10.12-x64
         id: upload-osx.10.12-x64
         uses: actions/upload-release-asset@v1
         env:
@@ -43,7 +43,7 @@ jobs:
           asset_name: starsky-osx.10.12-x64.zip
           asset_content_type: application/zip          
           
-      - name: Upload Release Asset
+      - name: Upload Release Asset win7-x64
         id: upload-win7-x64
         uses: actions/upload-release-asset@v1
         env:
@@ -54,7 +54,7 @@ jobs:
           asset_name: starsky-win7-x64.zip
           asset_content_type: application/zip      
   
-      - name: Upload Release Asset
+      - name: Upload Release Asset linux-arm64
         id: upload-linux-arm64
         uses: actions/upload-release-asset@v1
         env:
@@ -65,7 +65,7 @@ jobs:
           asset_name: starsky-linux-arm64.zip
           asset_content_type: application/zip    
   
-      - name: Upload Release Asset
+      - name: Upload Release Asset linux-arm
         id: upload-linux-arm
         uses: actions/upload-release-asset@v1
         env:
@@ -76,7 +76,32 @@ jobs:
           asset_name: starsky-linux-arm.zip
           asset_content_type: application/zip    
     
-      - name: Build
-        shell: bash
-        working-directory: ./starsky
-        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
+      - name: NpmCi
+        working-directory: ./starskyapp
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskyapp
+        run: npm run dist
+  
+      - name: Upload Release Asset starsky-mac-desktop
+        id: upload-starsky-mac-desktop
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./starskyapp/dist/starsky-mac-desktop.zip
+          asset_name: starsky-mac-desktop.zip
+          asset_content_type: application/zip    
+   
+      - name: Upload Release Asset starsky-win-desktop
+        id: upload-starsky-win-desktop
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./starskyapp/dist/starsky-win-desktop.zip
+          asset_name: starsky-win-desktop.zip
+          asset_content_type: application/zip     
