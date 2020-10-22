@@ -33,12 +33,50 @@ jobs:
         run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
           
       - name: Upload Release Asset
-        id: upload-release-asset 
+        id: upload-osx.10.12-x64
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./my-artifact.zip
-          asset_name: my-artifact.zip
+          asset_path: ./starsky/starsky-osx.10.12-x64.zip
+          asset_name: starsky-osx.10.12-x64.zip
           asset_content_type: application/zip          
+          
+      - name: Upload Release Asset
+        id: upload-win7-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./starsky/starsky-win7-x64.zip
+          asset_name: starsky-win7-x64.zip
+          asset_content_type: application/zip      
+  
+      - name: Upload Release Asset
+        id: upload-linux-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./starsky/starsky-linux-arm64.zip
+          asset_name: starsky-linux-arm64.zip
+          asset_content_type: application/zip    
+  
+      - name: Upload Release Asset
+        id: upload-linux-arm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./starsky/starsky-linux-arm.zip
+          asset_name: starsky-linux-arm.zip
+          asset_content_type: application/zip    
+    
+      - name: Build
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
