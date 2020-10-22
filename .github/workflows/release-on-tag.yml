@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+           
+      - name: Install Mono (for starskyApp and windows)
+        shell: bash
+        run: sudo apt-get install -y --no-install-recommends mono-devel     
  
       - name: Create Release
         id: create_release
