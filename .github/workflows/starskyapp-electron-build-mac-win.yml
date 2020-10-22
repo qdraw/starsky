@@ -34,15 +34,10 @@ jobs:
         if: matrix.os == 'ubuntu-latest' 
         run: sudo dpkg --add-architecture i386 
         shell: bash
- 
-      - name: add wine key
-        if: matrix.os == 'ubuntu-latest' 
-        run: wget -nc https://dl.winehq.org/wine-builds/winehq.key && sudo apt-key add winehq.key && sudo apt update
-        shell: bash
   
       - name: install wine
         if: matrix.os == 'ubuntu-latest' 
-        run: sudo apt install --install-recommends winehq-stable
+        run: sudo apt-get install -y --no-install-recommends mono-devel ca-certificates-mono tzdata
         shell: bash
 
       - name: NpmCi
