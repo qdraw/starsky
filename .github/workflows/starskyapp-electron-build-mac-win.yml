@@ -30,9 +30,19 @@ jobs:
         working-directory: ./starsky
         run: cp starsky-win7-x64.zip starsky-osx.10.12-x64.zip
  
-      - name: wine --version
+      - name: enable x32
         if: matrix.os == 'ubuntu-latest' 
-        run: wine --version
+        run: sudo dpkg --add-architecture i386 
+        shell: bash
+ 
+      - name: add wine key
+        if: matrix.os == 'ubuntu-latest' 
+        run: wget -nc https://dl.winehq.org/wine-builds/winehq.key && sudo apt-key add winehq.key
+        shell: bash
+  
+      - name: install wine
+        if: matrix.os == 'ubuntu-latest' 
+        run: sudo apt install --install-recommends winehq-stable
         shell: bash
 
       - name: NpmCi
