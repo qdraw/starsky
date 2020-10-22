@@ -37,7 +37,7 @@ jobs:
  
       - name: add wine key
         if: matrix.os == 'ubuntu-latest' 
-        run: wget -nc https://dl.winehq.org/wine-builds/winehq.key && sudo apt-key add winehq.key
+        run: wget -nc https://dl.winehq.org/wine-builds/winehq.key && sudo apt-key add winehq.key && sudo apt update
         shell: bash
   
       - name: install wine
