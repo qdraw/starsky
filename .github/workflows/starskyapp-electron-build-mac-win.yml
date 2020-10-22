@@ -42,7 +42,7 @@ jobs:
 
       - name: ubuntu / install wine
         if: matrix.os == 'ubuntu-latest' 
-        run: sudo apt-get install -y winehq-stable
+        run: sudo apt-get install -y --install-recommends winehq-stable
         shell: bash
 
       - name: NpmCi
