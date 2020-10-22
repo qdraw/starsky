@@ -33,7 +33,7 @@ jobs:
         run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
           
       - name: Upload Release Asset osx.10.12-x64
-        id: upload-osx_10.12-x64
+        id: upload-osx
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
