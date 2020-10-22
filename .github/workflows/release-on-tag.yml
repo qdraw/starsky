@@ -1,0 +1,107 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+ 
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Update this field
+          draft: true
+          prerelease: false
+          
+      - name: Build
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
+          
+      - name: Upload Release Asset osx.10.12-x64
+        id: upload-osx.10.12-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./starsky/starsky-osx.10.12-x64.zip
+          asset_name: starsky-osx.10.12-x64.zip
+          asset_content_type: application/zip          
+          
+      - name: Upload Release Asset win7-x64
+        id: upload-win7-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./starsky/starsky-win7-x64.zip
+          asset_name: starsky-win7-x64.zip
+          asset_content_type: application/zip      
+  
+      - name: Upload Release Asset linux-arm64
+        id: upload-linux-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          asset_path: ./starsky/starsky-linux-arm64.zip
+          asset_name: starsky-linux-arm64.zip
+          asset_content_type: application/zip    
+  
+      - name: Upload Release Asset linux-arm
+        id: upload-linux-arm
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./starsky/starsky-linux-arm.zip
+          asset_name: starsky-linux-arm.zip
+          asset_content_type: application/zip    
+    
+      - name: NpmCi
+        working-directory: ./starskyapp
+        run: npm ci
+
+      - name: NpmDist
+        working-directory: ./starskyapp
+        run: npm run dist
+  
+      - name: Upload Release Asset starsky-mac-desktop
+        id: upload-starsky-mac-desktop
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          asset_path: ./starskyapp/dist/starsky-mac-desktop.zip
+          asset_name: starsky-mac-desktop.zip
+          asset_content_type: application/zip    
+   
+      - name: Upload Release Asset starsky-win-desktop
+        id: upload-starsky-win-desktop
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}  
+          asset_path: ./starskyapp/dist/starsky-win-desktop.zip
+          asset_name: starsky-win-desktop.zip
+          asset_content_type: application/zip     
