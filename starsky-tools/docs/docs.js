@@ -119,7 +119,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 }
 
 function breadcrumb(htmlPath) {
-	var path = htmlPath.replace(__dirname, "").replace(/\/\\/ig,"/").replace(/^\//ig,"").replace(".html","");
+	var path = htmlPath.replace(__dirname, "").replace(/\/|\\/ig,"/").replace(/^\//ig,"").replace(".html","");
 	var result = "";
 	var splitedPaths = path.split("/");
 
