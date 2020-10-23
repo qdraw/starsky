@@ -33,7 +33,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.4.0-beta.1 _(Unreleased)_  2020-10-??
-- [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS Only)
+- [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
