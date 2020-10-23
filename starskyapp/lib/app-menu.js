@@ -4,6 +4,8 @@ const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
+const editWindows = require('./edit-keypress').editWindows
+const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
@@ -32,6 +34,15 @@ function AppMenu() {
           },
           accelerator: 'CmdOrCtrl+N'
         },
+        {
+          label: "Edit file in Editor",
+          click: () => {
+            var focusWindow = BrowserWindow.getFocusedWindow();
+            if (focusWindow) handleExitKeyPress(focusWindow);
+          },
+          accelerator: 'CmdOrCtrl+E'
+        },
+
         isMac ? { role: 'close' } : { role: 'quit' },
       ]
     },
@@ -69,6 +80,9 @@ function AppMenu() {
               window.webContents.reload()
             });
             settingsWindows.forEach(window => {
+              window.webContents.reload()
+            });
+            editWindows.forEach(window => {
               window.webContents.reload()
             });
           },
@@ -119,7 +133,7 @@ function AppMenu() {
       role: 'help',
       submenu: [
         {
-          label: 'Learn More',
+          label: 'Documentation website',
           click: async () => {
             await shell.openExternal('https://qdraw.github.io/starsky/')
           }

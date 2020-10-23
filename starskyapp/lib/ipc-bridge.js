@@ -1,6 +1,7 @@
-const { ipcMain , net, app } = require('electron')
+const { dialog, ipcMain , net, app, BrowserWindow } = require('electron')
 const appConfig = require('electron-settings');
 const mainWindows = require('./main-window').mainWindows
+const editFileDownload = require('./edit-file-download').editFileDownload;
 
 exports.ipcBridge = () => {
 
@@ -24,7 +25,8 @@ exports.ipcBridge = () => {
 
         var currentSettings = appConfig.get("settings");
         
-        if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) && !args.location.startsWith('http://localhost:') && args.location != currentSettings.location) {
+        if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) 
+            && !args.location.startsWith('http://localhost:') && args.location != currentSettings.location) {
             // console.log('28', args.location);
             
             currentSettings.locationOk = false;
@@ -33,14 +35,20 @@ exports.ipcBridge = () => {
             return;
         }
 
-        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) || args.location.startsWith('http://localhost:') ) &&  args.location != currentSettings.location) {
+        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) || args.location.startsWith('http://localhost:') ) 
+            &&  args.location != currentSettings.location) {
 
             // to avoid errors
             var locationUrl = args.location.replace(/\/$/, "");
 
-            const request = net.request(locationUrl + "/api/health");
+            const request = net.request({
+                url: locationUrl + "/api/health",
+                headers: {
+                    "Accept" :	"*/*"
+                }
+            });
             request.on('response', (response) => {
-                console.log(`HEADERS: ${JSON.stringify(response.headers)}`)
+                console.log(`HEADERS: ${JSON.stringify(response.headers)} - ${response.statusCode} - ${locationUrl + "/api/health"}`)
                 var locationOk = response.statusCode == 200 || response.statusCode == 503;
                 if (locationOk) {
                     currentSettings.location = locationUrl;
@@ -65,7 +73,8 @@ exports.ipcBridge = () => {
 
         if(args) {
             appConfig.set("settings", args);
-
+            // revoke url to clean session
+            appConfig.set("remember-url","");
             // to avoid that the session is opened
             mainWindows.forEach(window => {
                 window.close()
@@ -78,4 +87,43 @@ exports.ipcBridge = () => {
 
         event.reply('settings', currentSettings)
     });
+
+    ipcMain.on("settings_default_app", (event, args) => {
+        console.log('-->');
+
+        if (args && args.reset) {
+            appConfig.delete("settings_default_app");
+        }
+
+        if (args && args.showOpenDialog) {
+            var newOpenedWindow = new BrowserWindow();
+            var selected = dialog.showOpenDialog (
+                newOpenedWindow,
+                { properties: ["openFile"] }
+            );
+            
+            selected.then((data)=> {
+                if (data.canceled) {
+                    newOpenedWindow.close();
+                    return;
+                }
+                appConfig.set("settings_default_app", data.filePaths[0]);
+                event.reply('settings_default_app', data.filePaths[0])
+                newOpenedWindow.close();
+            }).catch((e)=>{
+                newOpenedWindow.close();
+            })
+        }
+
+        if (appConfig.has("settings_default_app")) {
+            var currentSettings = appConfig.get("settings_default_app");
+            event.reply('settings_default_app', currentSettings)
+        }
+    });
+
+    ipcMain.on("edit", (_, args) => {
+        if (!args || !args.f || !args.to) return;
+        editFileDownload(args.f, args.to);
+    });
+
 }

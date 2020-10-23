@@ -11,8 +11,8 @@ exports.createSettingsWindow = () => {
     let newWindow = new BrowserWindow({ 
         x: mainWindowStateKeeper.x,
         y: mainWindowStateKeeper.y,
-        width: 400,
-        height: 200,
+        width: 350,
+        height: 300,
         show: true,
         resizable: true,
         webPreferences: {
@@ -25,7 +25,7 @@ exports.createSettingsWindow = () => {
 
     mainWindowStateKeeper.track(newWindow);
 
-    newWindow.loadFile('settings.html');
+    newWindow.loadFile('pages/settings.html');
 
     newWindow.once('ready-to-show', () => {
         newWindow.show();

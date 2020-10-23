@@ -18,12 +18,16 @@
     <form>
         <label for="remote_location">Url:</label><br />
         <input type="text" id="remote_location" disabled name="lname">
-        <div id="locationOk"></div>
+        <div id="locationOk">&nbsp;</div>
         <span>Do enter the main domain starsky is running on</span>
+        <hr />
+        <b>Select default application (Mac OS Only)</b><br/>
+        <button id="file_selector">Select app</button><button id="file_selector_reset">reset to system default</button>
+        <div id="file_selector_result"></div>
     </form>
 
     <script type="text/javascript"
-        src="media/settings-client.js"></script>
+        src="../media/settings-client.js"></script>
 
 </body>
 </html>

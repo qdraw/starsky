@@ -14,10 +14,25 @@ document.querySelector('#remote_location').addEventListener('change', function()
 });
 
 // console.log(document.querySelector('#switch_local'));
-
 // document.querySelector('#switch_remote').addEventListener('click', changeRemoteToggle(false));
 // document.querySelector('#switch_remote').addEventListener('click', console.log(true));
 
+
+document.querySelector("#file_selector").addEventListener('click', function() {
+    window.api.send("settings_default_app", {
+        showOpenDialog: true
+    });
+});
+
+document.querySelector("#file_selector_reset").addEventListener('click', function() {
+    window.api.send("settings_default_app", {
+        reset: true
+    });
+});
+window.api.receive("settings_default_app", (data) => {
+    document.querySelector("#file_selector_result").innerHTML = data;
+});
+window.api.send("settings_default_app",null);
 
 
 function changeRemoteToggle(isRemote) {
@@ -60,5 +75,7 @@ window.api.receive("settings", (data) => {
         document.querySelector("#locationOk").innerHTML = data.locationOk ? "OK" : "FAIL";
     }
 });
+
+
 
 window.api.send("settings",null);

@@ -7,7 +7,7 @@ const isPackaged = require('./os-type').isPackaged
 const readline = require('readline');
 const { app } = require('electron')
 const isLegacyMacOS = require('./os-type').isLegacyMacOS
-const os = require('os');
+const electronCacheLocation = require('./electron-cache-location').electronCacheLocation;
 
 function getStarskyPath() {
 
@@ -45,18 +45,6 @@ function getStarskyPath() {
     });
 }
 
-function electronCacheLocation() {
-    switch (process.platform) {
-        case "darwin":
-            // ~/Library/Application\ Support/starsky/Cache
-            return path.join(os.homedir(), "Library", "Application Support", "starsky");
-        case "win32":
-            // C:\Users\<user>\AppData\Roaming\starsky\Cache
-            return path.join(os.homedir(),  "AppData", "Roaming", "starsky");
-        default:
-            return path.join(os.homedir(), '.config','starsky');
-        }
-}
 
 function setupChildProcess() {
 
