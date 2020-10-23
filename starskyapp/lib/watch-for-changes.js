@@ -7,20 +7,22 @@ const electronCacheLocation = require('./electron-cache-location').electronCache
 watchForChanges = () => {
     var editCacheParentFolder = path.join(electronCacheLocation(), "edit")
   
-    fs.promises.mkdir(editCacheParentFolder , {
+	console.log("! " + editCacheParentFolder);
+    var currentSession = mainWindows.values().next().value.webContents.session;
+
+    fs.mkdir(editCacheParentFolder , {
         recursive: true,
-    }).then(()=>{
-        watchFs(editCacheParentFolder);
-    });
+    }, ( ) => {
+		watchFs(currentSession, editCacheParentFolder);
+	});
 
     console.log('-watch');
-    var ses = mainWindows.values().next().value.webContents.session;
-    ses.cookies.get({}, (error, cookies) => {
+    currentSession.cookies.get({}, (error, cookies) => {
         console.log(error, cookies)
     });
 }
 
-watchFs = (editCacheParentFolder) => {
+watchFs = (currentSession, editCacheParentFolder) => {
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
         console.log('watch', eventType, fileName);
@@ -28,25 +30,30 @@ watchFs = (editCacheParentFolder) => {
         var fullFilePath = path.join(editCacheParentFolder, fileName);
         var parentCurrentFullFilePathFolder = path.join(electronCacheLocation(), "edit", getBaseUrlFromSettingsSlug());
 
+		if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
 
+		console.log("parentCurrentFullFilePathFolder " + parentCurrentFullFilePathFolder)
         if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
 
         var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
+		subPath = subPath.replace(/\\/ig,"/");
+		
+		
         console.log('fullFilePath', fullFilePath);
         console.log('subPath', subPath);
-        doUploadRequest(ses,fullFilePath,subPath);
+        doUploadRequest(currentSession,fullFilePath,subPath);
     });
 }
 
 
-doUploadRequest = (ses, fullFilePath, toSubPath) => {
-    if (!ses) return;
+doUploadRequest = (currentSession, fullFilePath, toSubPath) => {
+    if (!currentSession) return;
     console.log('> run upload');
 
     const request = net.request({
         useSessionCookies: true,
         url: getBaseUrlFromSettings() + "/starsky/api/upload", 
-        session: ses,
+        session: currentSession,
         method: 'POST',
         headers: {
             "to": toSubPath,
@@ -57,7 +64,7 @@ doUploadRequest = (ses, fullFilePath, toSubPath) => {
 
     let body = '';
     request.on('response', (response) => {
-        if (response.statusCode !== 200) console.log(`HEADERS: ${JSON.stringify(response.headers)} ${response.statusCode}`)
+        if (response.statusCode !== 200) console.log(`HEADERS: ${JSON.stringify(response.headers)} - ${toSubPath} -  ${response.statusCode}`)
         if (response.statusCode !== 200) return;
 
         response.on('data', (chunk) => {
@@ -67,12 +74,17 @@ doUploadRequest = (ses, fullFilePath, toSubPath) => {
             console.log(`BODY: ${body}`)
         })
     });
+	
 
-    fs.readFile(fullFilePath, function (err, data) {
-        if (err) throw err;
-        request.write(data);
-        request.end();
-    });
+	fs.readFile(fullFilePath, function (err, data) {
+		if(err) console.log(fullFilePath, err);
+		// skip error for now
+		if (err) return;
+		request.write(data);
+		request.end();
+	});
+
+
 }
 
 module.exports = {
