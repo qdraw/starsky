@@ -33,6 +33,7 @@ if(branchName.StartsWith("refs/heads/")) {
   branchName  = branchName.Replace("refs/heads/","");
 }
 var noSonar = HasArgument("no-sonar") || HasArgument("nosonar");
+var noUnitTest = HasArgument("no-unit-test") || HasArgument("nounittest") || HasArgument("nounittests") || HasArgument("no-unit-tests");
 
 /* to get a list with the generic item */
 var runtimes = runtimeInput.Split(",").ToList();
@@ -160,6 +161,11 @@ Task("ClientBuild")
 Task("ClientTest")
     .Does(() =>
     {
+        if(noUnitTest)
+        {
+          Information($">> ClientTest is disable due the --no-unit-test flag");
+          return;
+        }
         NpmRunScript("test:ci", s => s.FromPath("./starsky/clientapp/"));
   });
 
@@ -257,6 +263,12 @@ Task("BuildNetCoreGeneric")
 Task("TestNetCore")
     .Does(() =>
     {
+        if(noUnitTest)
+        {
+          Information($">> TestNetCore is disable due the --no-unit-test flag");
+          return;
+        }
+
         var projects = GetFiles("./*test/*.csproj");
         foreach(var project in projects)
         {
@@ -308,6 +320,12 @@ Task("TestNetCore")
 // Merge front-end and backend coverage files
 Task("MergeCoverageFiles")
   .Does(() => {
+
+    if(noUnitTest)
+    {
+      Information($">> MergeCoverageFiles is disable due the --no-unit-test flag");
+      return;
+    }
 
     if (! FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
         throw new Exception($"Missing jest coverage file ./starsky/clientapp/coverage/cobertura-coverage.xml");
@@ -371,6 +389,13 @@ Task("MergeCoverageFiles")
 
 Task("MergeOnlyNetCoreCoverageFiles")
   .Does(() => {
+
+    if(noUnitTest)
+    {
+      Information($">> MergeOnlyNetCoreCoverageFiles is disable due the --no-unit-test flag");
+      return;
+    }
+
     var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
 
     if (FileExists(outputCoverageFile)) {
@@ -427,6 +452,12 @@ Task("MergeOnlyNetCoreCoverageFiles")
 Task("CoverageReport")
     .Does(() =>
     {
+        if(noUnitTest)
+        {
+          Information($">> CoverageReport is disable due the --no-unit-test flag");
+          return;
+        }
+
         var projects = GetFiles("./*test/coverage-merge-cobertura.xml");
         foreach(var project in projects)
         {
@@ -539,8 +570,14 @@ Task("SonarBegin")
             return;
         }
 
+        if(noUnitTest)
+        {
+          Information($">> SonarBegin is disable due the --no-unit-test flag");
+          return;
+        }
+
         if( noSonar ) {
-          Information($">> SonarQube is disable due the --no-sonar flag");
+          Information($">> SonarBegin is disable due the --no-sonar flag");
           return;
         }
 
@@ -624,8 +661,13 @@ Task("SonarEnd")
         return;
     }
 
+    if(noUnitTest)
+    {
+      Information($">> SonarEnd is disable due the --no-unit-test flag");
+      return;
+    }
     if( noSonar ) {
-      Information($">> SonarQube is disable due the --no-sonar flag");
+      Information($">> SonarEnd is disable due the --no-sonar flag");
       return;
     }
 
@@ -747,7 +789,6 @@ Task("BuildTestOnlyNetCore")
     .IsDependentOn("BuildNetCoreGeneric")
     .IsDependentOn("MergeOnlyNetCoreCoverageFiles")
     .IsDependentOn("CoverageReport");
-
 
 
 // To get fast all (net core) assemblies
