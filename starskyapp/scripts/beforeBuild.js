@@ -20,8 +20,15 @@ exports.default = context => {
 };
 
 function copyFile(src, dest) {
+  console.log('src/dest');
   console.log(src, dest);
-  console.log(fs.existsSync(src))
-  
-  fs.copyFileSync(src, dest);
+  console.log('src exist ' + fs.existsSync(src))
+  console.log('dest exist ' + fs.existsSync(dest))
+
+  try {
+    fs.copyFileSync(src, dest);
+  } catch (e) {
+    console.log('Copy Failed: ');
+    console.error(e);
+  }
 }
