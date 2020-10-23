@@ -106,7 +106,7 @@ jobs:
       - name: Upload starsky-win-desktop as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: starsky-mac-desktop
+          name: starsky-win-desktop
           path: ./starskyapp/dist/starsky-win-desktop.zip   
  
   
