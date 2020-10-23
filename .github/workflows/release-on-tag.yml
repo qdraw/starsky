@@ -59,8 +59,8 @@ jobs:
 
       - name: List
         shell: bash
-        working-directory: ./starskyapp
-        run: ls -lah include-starsky-mac.zip      
+        working-directory: ./starsky
+        run: ls -lah       
 
       - name: NpmCi
         working-directory: ./starskyapp
@@ -87,13 +87,13 @@ jobs:
       - name: Download starsky-win7-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: starsky-win7-x64
+          name: win7-x64
           path: ./starsky
 
       - name: List
         shell: bash
-        working-directory: ./starskyapp
-        run: ls -lah include-starsky-win.zip          
+        working-directory: ./starsky
+        run: ls -lah           
                 
       - name: NpmCi
         working-directory: ./starskyapp
