@@ -62,10 +62,10 @@ jobs:
         working-directory: ./
         run: cp starsky-osx.10.12-x64.zip ./starskyapp/include-starsky-mac.zip    
 
-      - name: List starsky dir
+      - name: List
         shell: bash
         working-directory: ./starskyapp
-        run: ls -lah      
+        run: ls -lah include-starsky-mac.zip      
 
       - name: NpmCi
         working-directory: ./starskyapp
@@ -100,10 +100,10 @@ jobs:
         working-directory: ./
         run: cp starsky-starsky-win7-x64.zip ./starskyapp/include-starsky-win.zip    
 
-      - name: List starsky dir
+      - name: List
         shell: bash
         working-directory: ./starskyapp
-        run: ls -lah           
+        run: ls -lah include-starsky-win.zip          
                 
       - name: NpmCi
         working-directory: ./starskyapp
@@ -125,7 +125,12 @@ jobs:
     needs: [build_core, build_mac, build_win]
     runs-on: ubuntu-latest
     steps:
-          
+       
+      - name: Create parent directories
+        shell: bash
+        working-directory: ./
+        run: mkdir -p starsky && mkdir -p starskyapp     
+           
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
