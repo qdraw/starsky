@@ -25,10 +25,10 @@ function copyFile(src, dest) {
   console.log('src exist ' + fs.existsSync(src))
   console.log('dest exist ' + fs.existsSync(dest))
 
-  try {
-    fs.copyFileSync(src, dest);
-  } catch (e) {
-    console.log('Copy Failed: ');
-    console.error(e);
+  if (!fs.existsSync(src)) {
+    console.log('skipped because src is missing');
+    return;
   }
+
+  fs.copyFileSync(src, dest);
 }
