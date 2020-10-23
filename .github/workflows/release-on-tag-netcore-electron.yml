@@ -130,7 +130,15 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            Update this field
+            # Versions
+            - starsky-linux-arm.zip - Starsky as Web Application start from command line) only for Raspberry Pi
+            - starsky-linux-arm64.zip - Starsky as Web Application start from command line) only for Raspberry Pi as 64 bits
+            - starsky-mac-desktop.zip - Starsky Desktop App for Mac OS 10.12 or newer
+            - starsky-osx.10.12-x64.zip - Starsky as Web Application (start from command line) only for Mac OS 10.12 or newer
+            - starsky-win-desktop.zip - Starsky Desktop App for Windows 7 (64 bits) or newer
+            - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 7 (64 bits) or newer
+
+            [There is an changelog to see the recent changes](history.md)
           draft: true
           prerelease: false
           
@@ -235,3 +243,11 @@ jobs:
           asset_path: ./starskyapp/dist/starsky-mac-desktop.zip
           asset_name: starsky-mac-desktop.zip
           asset_content_type: application/zip    
+
+      - uses: actions/checkout@master
+      - name: Slack Notification Demo
+        uses: bryannice/gitactions-slack-notification@master
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: 'Release is ready'
+          SLACK_MESSAGE: 'The release is ready'
