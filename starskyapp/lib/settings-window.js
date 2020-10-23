@@ -22,6 +22,9 @@ exports.createSettingsWindow = () => {
             preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
         }
     });
+	
+	// hides the menu for windows
+	newWindow.setMenu(null);
 
     mainWindowStateKeeper.track(newWindow);
 

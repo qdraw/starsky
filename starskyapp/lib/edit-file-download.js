@@ -26,8 +26,15 @@ function openPath(fullFilePath) {
     if (appConfig.has("settings_default_app") && osType.getOsKey() === "mac" ) {
         var openMac = `open -a "${appConfig.get("settings_default_app")}" "${fullFilePath}"`
         console.log(openMac);
+		// need to check if fullFilePath is directory
         childProcess.exec(openMac);
     }
+	else if (appConfig.has("settings_default_app") && osType.getOsKey() === "win" ) {
+		// need to check if fullFilePath is file
+		var openWin = `"${appConfig.get("settings_default_app")}" "${fullFilePath}"`
+		console.log(openWin);
+        childProcess.exec(openWin);
+	}
     else{
         shell.openPath(fullFilePath)
     }

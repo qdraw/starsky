@@ -62,7 +62,7 @@ function AppMenu() {
       label: 'Settings',
       submenu: [
         {
-          label: "Remote settings",
+          label: "Settings",
           click: () => {
             createSettingsWindow()
           },
