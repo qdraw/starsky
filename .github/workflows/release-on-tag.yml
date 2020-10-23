@@ -56,7 +56,12 @@ jobs:
         with:
           name: osx.10.12-x64
           path: ./starsky/starsky-osx.10.12-x64.zip
-        
+
+      - name: List starsky dir
+        shell: bash
+        working-directory: ./starsky
+        run: ls -lah     
+   
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
@@ -83,6 +88,11 @@ jobs:
         with:
           name: win7-x64
           path: ./starsky/starsky-win7-x64.zip
+
+      - name: List starsky dir
+        shell: bash
+        working-directory: ./starsky
+        run: ls -lah               
         
       - name: NpmCi
         working-directory: ./starskyapp
