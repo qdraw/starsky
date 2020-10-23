@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
           
-      - name: Build
+      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx.10.12-x64
         shell: bash
         working-directory: ./starsky
         run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64" --no-unit-test    
@@ -55,13 +55,18 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: osx.10.12-x64
-          path: ./starsky/starsky-osx.10.12-x64.zip
+          path: ./starsky-osx.10.12-x64.zip
 
       - name: List starsky dir
         shell: bash
-        working-directory: ./starsky
-        run: ls -lah     
-   
+        working-directory: ./
+        run: cp starsky-osx.10.12-x64.zip ./starskyapp/include-starsky-mac.zip    
+
+      - name: List
+        shell: bash
+        working-directory: ./starskyapp
+        run: ls -lah include-starsky-mac.zip      
+
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
@@ -83,17 +88,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-            
-      - uses: actions/download-artifact@v2
+
+      - name: Download starsky-win7-x64 as build artifact
+        uses: actions/download-artifact@v2
         with:
-          name: win7-x64
-          path: ./starsky/starsky-win7-x64.zip
+          name: starsky-win7-x64
+          path: ./starsky-starsky-win7-x64.zip
 
       - name: List starsky dir
         shell: bash
-        working-directory: ./starsky
-        run: ls -lah               
-        
+        working-directory: ./
+        run: cp starsky-starsky-win7-x64.zip ./starskyapp/include-starsky-win.zip    
+
+      - name: List
+        shell: bash
+        working-directory: ./starskyapp
+        run: ls -lah include-starsky-win.zip          
+                
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
@@ -114,7 +125,12 @@ jobs:
     needs: [build_core, build_mac, build_win]
     runs-on: ubuntu-latest
     steps:
-          
+       
+      - name: Create parent directories
+        shell: bash
+        working-directory: ./
+        run: mkdir -p starsky && mkdir -p starskyapp     
+           
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
