@@ -17,7 +17,7 @@ jobs:
       - name: Build
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64"     
+        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
