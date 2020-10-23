@@ -30,5 +30,9 @@ function copyFile(src, dest) {
     return;
   }
 
+  if (fs.lstatSync(src).isDirectory() ) {
+    throw new Error('source is directory');
+  }
+
   fs.copyFileSync(src, dest);
 }
