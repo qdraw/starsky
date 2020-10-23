@@ -4,7 +4,7 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Create Release on Tag Net Core Electron
+name: Create Release on tag for .Net Core and Electron
 
 jobs:
   build_core:
@@ -138,7 +138,7 @@ jobs:
             - starsky-win-desktop.zip - Starsky Desktop App for Windows 7 (64 bits) or newer
             - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 7 (64 bits) or newer
 
-            [There is an changelog to see the recent changes](history.md)
+            [There is an changelog to see the recent changes](https://qdraw.github.io/starsky/history.html)
           draft: true
           prerelease: false
           
