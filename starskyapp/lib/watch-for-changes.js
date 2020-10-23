@@ -7,12 +7,20 @@ const electronCacheLocation = require('./electron-cache-location').electronCache
 watchForChanges = () => {
     var editCacheParentFolder = path.join(electronCacheLocation(), "edit")
   
+    fs.promises.mkdir(editCacheParentFolder , {
+        recursive: true,
+    }).then(()=>{
+        watchFs(editCacheParentFolder);
+    });
+
     console.log('-watch');
     var ses = mainWindows.values().next().value.webContents.session;
     ses.cookies.get({}, (error, cookies) => {
         console.log(error, cookies)
     });
+}
 
+watchFs = (editCacheParentFolder) => {
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
         console.log('watch', eventType, fileName);
