@@ -7,20 +7,23 @@ var childProcess = require("child_process");
 const appConfig = require('electron-settings');
 const osType = require('./os-type');
 
-exports.editFileDownload = (fromMainWindow, formSubPath) => {
-
+exports.parentFullFilePathHelper = (formSubPath) => {
     var documentsFolder = app.getPath("documents");
-    var parentFullFilePath = path.join(documentsFolder,
+    return path.join(documentsFolder,
         "Starsky",
         getBaseUrlFromSettingsSlug(),
         new FileExtensions().GetParentPath(formSubPath)
         );
+}
 
+exports.editFileDownload = (fromMainWindow, formSubPath) => {
+    var parentFullFilePath = parentFullFilePathHelper();
     return new Promise(function (resolve, reject) {
         fs.promises.mkdir(parentFullFilePath, {
             recursive: true
         }).then(()=>{
-            cleanAndDownloadRequest(fromMainWindow, parentFullFilePath, formSubPath, undefined).then((fullFilePath)=>{
+            cleanAndDownloadRequest(fromMainWindow, parentFullFilePath, formSubPath, undefined)
+            .then((fullFilePath)=>{
                 openPath(fullFilePath).then(resolve).catch(reject);
             });
         });
@@ -128,7 +131,7 @@ cleanAndDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, toSu
     });
 }
 
-doDownloadRequest = (fromMainWindow,parentFullFilePath, formSubPath, toSubPath) => {
+exports.doDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, toSubPath) => {
     if (!toSubPath) toSubPath = formSubPath;
     return new Promise(function (resolve, reject) {
 
@@ -146,7 +149,7 @@ doDownloadRequest = (fromMainWindow,parentFullFilePath, formSubPath, toSubPath) 
         });
 
         request.on('response', (response) => {
-            console.log(`statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(response.headers)}`)
+            console.log(`download-photo statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(response.headers)}`)
             
             if (response.statusCode !== 200) {
                 console.log(response.statusCode);

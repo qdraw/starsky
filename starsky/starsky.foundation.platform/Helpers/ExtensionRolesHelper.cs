@@ -12,6 +12,11 @@ namespace starsky.foundation.platform.Helpers
 	public static class ExtensionRolesHelper
 	{
 		/// <summary>
+		/// List of Sidecar files
+		/// </summary>
+		private static readonly List<string> ExtensionSidecar = new List<string> {"xmp",".meta.json"};
+		
+		/// <summary>
 		/// List of .jpg,.jpeg extensions
 		/// </summary>
 		private static readonly List<string> ExtensionJpg = new List<string> {"jpg", "jpeg"};
@@ -231,6 +236,16 @@ namespace starsky.foundation.platform.Helpers
 		public static bool IsExtensionForceGpx(string filename)
 		{
 			return IsExtensionForce(filename, ExtensionGpx);
+		}
+		
+		/// <summary>
+		/// Is the current file a sidecar file or not 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionSidecar(string filename)
+		{
+			return IsExtensionForce(filename, ExtensionSidecar);
 		}
 		
 		/// <summary>
