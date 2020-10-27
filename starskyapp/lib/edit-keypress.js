@@ -26,24 +26,25 @@ exports.handleExitKeyPress = (fromMainWindow) => {
         // the last one is always picked
         var lastCollectionInList = data[0].collectionPaths[data[0].collectionPaths.length-1];
 
+        console.log(data[data[0].collectionPaths.length-1].sidecarPathsList.length );
+
         // get info of raw file and get xmp
-        if (data[data[0].collectionPaths.length-1] 
-            && data[data[0].collectionPaths.length-1].status === "Ok") {
-                var sidecarFile = data[data[0].collectionPaths.length-1].sidecarPathList[0];
+        if (   data[data[0].collectionPaths.length-1] 
+            && data[data[0].collectionPaths.length-1].status === "Ok" 
+            && data[data[0].collectionPaths.length-1].sidecarPathsList 
+            && data[data[0].collectionPaths.length-1].sidecarPathsList.length >= 1) {
+
+                var sidecarFile = data[data[0].collectionPaths.length-1].sidecarPathsList[0];
                 if (sidecarFile) {
-                    console.log(sidecarFile);
-                    // fromMainWindow, parentFullFilePath, formSubPath,
-                    doDownloadRequest(fromMainWindow, parentFullFilePathHelper(sidecarFile), sidecarFile)
+                    doDownloadRequest(fromMainWindow, 'download-sidecar', parentFullFilePathHelper(sidecarFile), sidecarFile)
                 }
         }
 
-        return;
-        // todo change back
-
-        console.log(data[0]);
         editFileDownload(fromMainWindow,lastCollectionInList).catch((e)=>{
             createNewEditWindow({isError: true, error: e});
         });
+
+
     })
 
     

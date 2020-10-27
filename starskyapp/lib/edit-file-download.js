@@ -17,12 +17,12 @@ exports.parentFullFilePathHelper = (formSubPath) => {
 }
 
 exports.editFileDownload = (fromMainWindow, formSubPath) => {
-    var parentFullFilePath = parentFullFilePathHelper();
+    var parentFullFilePath = exports.parentFullFilePathHelper(formSubPath);
     return new Promise(function (resolve, reject) {
         fs.promises.mkdir(parentFullFilePath, {
             recursive: true
         }).then(()=>{
-            cleanAndDownloadRequest(fromMainWindow, parentFullFilePath, formSubPath, undefined)
+            cleanAndDownloadRequest(fromMainWindow, 'download-photo', parentFullFilePath, formSubPath, undefined)
             .then((fullFilePath)=>{
                 openPath(fullFilePath).then(resolve).catch(reject);
             });
@@ -113,7 +113,7 @@ function openPath(fullFilePath) {
 
 }
 
-cleanAndDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, toSubPath) => {
+cleanAndDownloadRequest = (fromMainWindow, apiName,  parentFullFilePath, formSubPath, toSubPath) => {
     if (!toSubPath) toSubPath = formSubPath;
     var fullFilePath  = path.join( parentFullFilePath, new FileExtensions().GetFileName(toSubPath)    );
 
@@ -121,17 +121,17 @@ cleanAndDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, toSu
         fs.promises.access(fullFilePath, fs.constants.R_OK | fs.constants.W_OK)
             .then(() => {
                 fs.promises.unlink(fullFilePath).then(()=>{
-                    doDownloadRequest(fromMainWindow, parentFullFilePath, formSubPath, toSubPath).then(resolve);
+                    exports.doDownloadRequest(fromMainWindow, apiName , parentFullFilePath, formSubPath, toSubPath).then(resolve);
                 })
             })
             .catch(() => {
-                doDownloadRequest(fromMainWindow, parentFullFilePath, formSubPath, toSubPath).then(resolve);
+                exports.doDownloadRequest(fromMainWindow, apiName, parentFullFilePath, formSubPath, toSubPath).then(resolve);
             });
 
     });
 }
 
-exports.doDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, toSubPath) => {
+exports.doDownloadRequest = (fromMainWindow, apiName , parentFullFilePath, formSubPath, toSubPath) => {
     if (!toSubPath) toSubPath = formSubPath;
     return new Promise(function (resolve, reject) {
 
@@ -141,7 +141,7 @@ exports.doDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, to
 
         const request = net.request({
             useSessionCookies: true,
-            url: getBaseUrlFromSettings() + "/starsky/api/download-photo?isThumbnail=false&f=" + formSubPath,
+            url: getBaseUrlFromSettings() + `/starsky/api/${apiName}?isThumbnail=false&f=${formSubPath}`,
             session: fromMainWindow.webContents.session,
             headers: {
                 "Accept" :	"*/*",
@@ -149,7 +149,7 @@ exports.doDownloadRequest = (fromMainWindow, parentFullFilePath, formSubPath, to
         });
 
         request.on('response', (response) => {
-            console.log(`download-photo statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(response.headers)}`)
+            console.log(`api ${apiName} statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(response.headers)}`)
             
             if (response.statusCode !== 200) {
                 console.log(response.statusCode);

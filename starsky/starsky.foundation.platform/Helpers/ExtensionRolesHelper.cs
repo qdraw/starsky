@@ -173,7 +173,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
-		/// is this filename with extension a filetype that needs a .xmp file 
+		/// Should we include this file in the database?
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
@@ -183,7 +183,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
-		/// is this filename with extension a filetype that imagesharp can read/write 
+		/// is this filename with extension a filetype that imageSharp can read/write 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if imageSharp can write to this</returns>

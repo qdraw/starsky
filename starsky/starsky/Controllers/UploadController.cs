@@ -47,8 +47,7 @@ namespace starsky.Controllers
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_connectionsService = connectionsService;
 		}
-		
-		
+
 		/// <summary>
 		/// Upload to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
@@ -126,6 +125,43 @@ namespace starsky.Controllers
             
 	        return Json(fileIndexResultsList);
         }
+		
+		
+		/// <summary>
+		/// CHANGE!!!!!
+		/// Upload to specific folder (does not check if already has been imported)
+		/// Use the header 'to' to determine the location to where to upload
+		/// (ActionResult UploadToFolder)
+		/// </summary>
+		/// <response code="200">done</response>
+		/// <response code="404">folder not found</response>
+		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
+		/// <response code="400">missing 'to' header</response>
+		/// <returns>the ImportIndexItem of the imported files </returns>
+		[HttpPost("/api/upload-sidecar")]
+		[DisableFormValueModelBinding]
+		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
+		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
+		[ProducesResponseType(typeof(string), 400)]
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 404)]
+		[ProducesResponseType(typeof(List<ImportIndexItem>),
+			415)] // Wrong input (e.g. wrong extenstion type)
+		[Produces("application/json")]
+		public async Task<IActionResult> UploadToFolderSidecarFile()
+		{
+			var to = Request.Headers["to"].ToString();
+			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
+
+			var parentDirectory = GetParentDirectoryFromRequestHeader();
+			if ( parentDirectory == null )
+			{
+				return NotFound(new ImportIndexItem());
+			}
+
+			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+			return Json(new List<string>());
+		}
 
 		internal string GetParentDirectoryFromRequestHeader()
 		{

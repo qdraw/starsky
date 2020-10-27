@@ -35,7 +35,8 @@ exports.ipcBridge = () => {
             return;
         }
 
-        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) || args.location.startsWith('http://localhost:') ) 
+        if (args && args.location && ( args.location.match(urlRegex) || args.location.match(ipRegex) 
+            || args.location.startsWith('http://localhost:') ) 
             &&  args.location != currentSettings.location) {
 
             // to avoid errors
