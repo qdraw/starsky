@@ -4,7 +4,7 @@ const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
-const editWindows = require('./edit-keypress').editWindows
+const editWindows = require('./edit-windows').editWindows
 const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
 
 function AppMenu() {

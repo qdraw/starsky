@@ -52,17 +52,14 @@ function warmupLocalOrRemote() {
   window.api.send("settings",null);
 
   window.api.receive("settings", (data) => {
-    console.log(data);
-
     if (!data || !data.remote) {
-      console.log('default');
-      warmupScript('http://localhost:9609', data.apiVersion, 0, 300)
+      document.title += ` going to default`
+      warmupScript('http://localhost:9609', data.apiVersion, 0, 300);
       return;
     }
 
     if(data.remote && data.location) {
-      console.log("d",data.location);
-      
+      document.title += ` going to ${data.location}`
       warmupScript(data.location, data.apiVersion ,0, 300)
     }
   });

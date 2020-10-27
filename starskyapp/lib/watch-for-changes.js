@@ -1,12 +1,11 @@
 var path = require('path');
-const { session, net } = require('electron')
+const { app, net } = require('electron')
 const fs = require('fs');
 const { mainWindows } = require('./main-window');
-const electronCacheLocation = require('./electron-cache-location').electronCacheLocation;
 
 watchForChanges = () => {
-    var editCacheParentFolder = path.join(electronCacheLocation(), "edit")
-  
+    var editCacheParentFolder = path.join(app.getPath("documents"), "Starsky");
+
 	console.log("! " + editCacheParentFolder);
     var currentSession = mainWindows.values().next().value.webContents.session;
 
@@ -22,27 +21,46 @@ watchForChanges = () => {
     });
 }
 
+var toDoQueue = [];
+
+replaceToSubPath = (fullFilePath,parentCurrentFullFilePathFolder) => {
+    var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
+    subPath = subPath.replace(/\\/ig,"/");
+    return subPath;
+}
+
 watchFs = (currentSession, editCacheParentFolder) => {
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
         console.log('watch', eventType, fileName);
 
         var fullFilePath = path.join(editCacheParentFolder, fileName);
-        var parentCurrentFullFilePathFolder = path.join(electronCacheLocation(), "edit", getBaseUrlFromSettingsSlug());
+        var parentCurrentFullFilePathFolder = path.join(app.getPath("documents"), "Starsky", getBaseUrlFromSettingsSlug());
 
 		if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
 
 		console.log("parentCurrentFullFilePathFolder " + parentCurrentFullFilePathFolder)
         if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
 
-        var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
-		subPath = subPath.replace(/\\/ig,"/");
-		
+
 		
         console.log('fullFilePath', fullFilePath);
-        console.log('subPath', subPath);
-        doUploadRequest(currentSession,fullFilePath,subPath);
+        console.log('subPath', replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+
+
+        toDoQueue.push(fullFilePath);
     });
+
+    setInterval(()=> {
+        let uniqueToQueue = [...new Set(toDoQueue)];
+
+
+        // console.log('uniqueToQueue' , uniqueToQueue);
+        // todo remove from list
+        
+        // doUploadRequest(currentSession,fullFilePath,subPath);
+
+    },10000)
 }
 
 

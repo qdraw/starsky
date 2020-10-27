@@ -140,6 +140,11 @@ namespace starsky.Controllers
 				HeaderFailLogging(headerName);
 				return BadRequest("Missing version data");
 			}
+
+			if ( Request.Headers[headerName].ToString().StartsWith("0.3") )
+			{
+				return Challenge("please upgrade to 0.4.x");
+			}
 			return Ok(Request.Headers[headerName]);
 		}
 

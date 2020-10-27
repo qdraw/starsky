@@ -36,6 +36,7 @@ namespace starsky.foundation.readmeta.Services
                     var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
                     // Get the data from the xmp
                     databaseItem = GetDataFromString(xmp,databaseItem);
+                    databaseItem.AddSidecarPath(xmpSubPath);
                 }
             }
             return databaseItem;
@@ -43,7 +44,7 @@ namespace starsky.foundation.readmeta.Services
         
         public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
-            // Does not require appsettings
+            // Does not require appSettings
             
             if(databaseItem == null) databaseItem = new FileIndexItem();
 	        

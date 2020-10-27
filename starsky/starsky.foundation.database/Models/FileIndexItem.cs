@@ -668,6 +668,31 @@ namespace starsky.foundation.database.Models
 		[NotMapped]
         public List<string> CollectionPaths { get; set; } = new List<string>();
 
+		public string SidecarPaths { get; set; } = "";
+
+		/// <summary>
+		/// List of Sidecar files
+		/// </summary>
+		[NotMapped]
+		public HashSet<string> SidecarPathList
+		{
+			get
+			{
+				return 
+					new HashSet<string>(
+						SidecarPaths.Split('|')
+							.Where(p => !string.IsNullOrWhiteSpace(p)));
+			}
+		}
+		
+		public void AddSidecarPath(string path)
+		{
+			var current = SidecarPathList;
+			current.Add(path);
+			SidecarPaths = string.Join("|", current);
+		}
+
+		
 		/// <summary>
 		/// Duplicate this item in memory.
 		/// </summary>
@@ -844,7 +869,8 @@ namespace starsky.foundation.database.Models
 			makeModelList[fieldIndex] = titleValue;
 
 			// Store Make: APPLE as Apple in the database
-			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = 
+				CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 
 			_makeModel = FixedListToString(makeModelList);
 	    }
