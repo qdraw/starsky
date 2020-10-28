@@ -18,7 +18,6 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starskycore.Attributes;
-using starskycore.Middleware;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using SyncService = starskycore.Services.SyncService;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.platform.Extensions;
-using starskycore.Middleware;
+using starsky.foundation.platform.Middleware;
 
 namespace starskytest.starsky.foundation.platform.Middleware
 {
@@ -33,6 +33,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		{
 			// Arrange
 			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Scheme = "http";
 			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
 
 			// Act
@@ -40,6 +41,25 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			//test
 			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
 			Assert.AreEqual(true,csp.Contains("default-src"));
+			Assert.AreEqual(true,csp.Contains("ws://"));
+		}
+		
+		[TestMethod]
+		public async Task invoke_httpsTest_websockets()
+		{
+			// Arrange
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Scheme = "https";
+			
+			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+
+			// Act
+			await authMiddleware.Invoke(httpContext);
+			//test
+			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
+			
+			Assert.AreEqual(true,csp.Contains("default-src"));
+			Assert.AreEqual(true,csp.Contains("wss://"));
 		}
 	}
 }
