@@ -31,11 +31,6 @@ const DetailView: React.FC<IDetailView> = () => {
   // next + prev state
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
-  // // when in some cases the relative urls are not updated by a state change
-  // useEffect(() => {
-  //   setRelativeObjects(state.relativeObjects);
-  // }, [state.relativeObjects]);
-
   // boolean to get the details-side menu on or off
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
