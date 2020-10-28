@@ -19,7 +19,9 @@ describe('Login', () => {
     cy.checkStatusCode(config.url)
   })
 
-  it('does login into app', () => {
+  it('does login into app', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     if (!config.isEnabled) return false
 
     /* Start flow (connection header prevents script from
