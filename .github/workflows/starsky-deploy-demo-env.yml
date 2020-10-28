@@ -38,7 +38,7 @@ jobs:
         run: |
           echo $GITHUB_TOKEN
           curl \
-          -u qdraw:$GITHUB_TOKEN \
+          -H"authorization: Bearer $GITHUB_TOKEN" \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/qdraw/starsky/actions/workflows/end2end-on-heroku-demo.yml/dispatches \
