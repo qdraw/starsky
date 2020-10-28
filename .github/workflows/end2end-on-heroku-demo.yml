@@ -1,7 +1,7 @@
+name: end2end on heroku-demo
+
 on:
   workflow_dispatch:
-    inputs:
-      default: 'warning'
 
 jobs:
   build:
