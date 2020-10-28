@@ -31,10 +31,10 @@ const DetailView: React.FC<IDetailView> = () => {
   // next + prev state
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
-  // when in some cases the relative urls are not updated by a state change
-  useEffect(() => {
-    setRelativeObjects(state.relativeObjects);
-  }, [state.relativeObjects]);
+  // // when in some cases the relative urls are not updated by a state change
+  // useEffect(() => {
+  //   setRelativeObjects(state.relativeObjects);
+  // }, [state.relativeObjects]);
 
   // boolean to get the details-side menu on or off
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
@@ -141,7 +141,10 @@ const DetailView: React.FC<IDetailView> = () => {
     if (relative.nextHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(nextPath, { replace: true });
+
+    history.navigate(nextPath, { replace: true }).then((e) => {
+      setIsLoading(false)
+    });
   }
 
   /**
@@ -170,7 +173,13 @@ const DetailView: React.FC<IDetailView> = () => {
     if (relative.prevHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(prevPath, { replace: true });
+
+    history.navigate(prevPath, { replace: true }).then(() => {
+      setIsLoading(false)
+      // if (window.location.search === history.location.search) {
+      //   setIsLoading(false)
+      // }
+    });
   }
 
   if (!state.fileIndexItem || !relativeObjects) {
