@@ -18,8 +18,5 @@ module.exports = (_, config) => {
   // on('file:preprocessor', cypressEslint());
 
   var updatedConfig = getConfigurationByFile(file, folder)
-  process.env.E2E_AUTH_USER = updatedConfig.env.AUTH_USER
-  process.env.E2E_AUTH_PASS = updatedConfig.env.AUTH_PASS
-  // this should update the envs but it isn't working
   return updatedConfig
 }
