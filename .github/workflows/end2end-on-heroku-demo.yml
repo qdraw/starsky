@@ -10,3 +10,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      
+    - name: Run Cypress in Electron 
+      uses: cypress-io/github-action@v1
+      with:
+        command: npm run e2e:heroku-demo
