@@ -49,6 +49,11 @@ All these projects are separately compiled using the build script and using the 
 
 _See `./azure-pipelines-starsky.yml` for details_
 
+### End2End tests on public demo environment
+![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
+
+_See `./starsky-tools/end2end` for details_
+
 ## Changelog and history of this project
 
 There is a version log and backlog available on the [history and changelog page](history.md)
