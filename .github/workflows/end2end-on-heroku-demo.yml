@@ -17,8 +17,9 @@ jobs:
         command: npm run e2e:heroku-demo
         working-directory: starsky-tools/end2end  
 
-    - name: Upload videos
+    - name: Upload videos (when fails)
       uses: actions/upload-artifact@v2
+      if: ${{ failure() }}
       with:
         name: cypress-videos
         path: starsky-tools/end2end/cypress/videos
