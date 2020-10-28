@@ -29,13 +29,14 @@ jobs:
         
   trigger_pipe:
     runs-on: ubuntu-latest
-    needs: [deploy]
+    needs: []
     steps:
       - name: trigger end2end-on-heroku-demo
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo $GITHUB_TOKEN
           curl \
           -u qdraw:$GITHUB_TOKEN \
           -X POST \
