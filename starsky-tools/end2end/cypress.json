@@ -1,0 +1,11 @@
+{
+    "supportFile": "cypress/support/index.ts",
+    "ignoreTestFiles": "*.json",
+    "reporter": "junit",
+    "reporterOptions": {
+      "mochaFile": "results/test-output-[hash].xml"
+    },
+    "viewportHeight": 900,
+    "viewportWidth": 1280,
+    "experimentalFetchPolyfill": true
+}
