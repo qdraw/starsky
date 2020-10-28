@@ -34,7 +34,7 @@ jobs:
       - name: trigger end2end-on-heroku-demo
         shell: bash
         env:
-          GITHUB_TOKEN_TEMP: ${{ secrets.GITHUB_TOKEN }}
+          NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
         run: |
           curl \
           -H"authorization: Bearer ${{ secrets.WORKFLOW_GITHUB }}" \
