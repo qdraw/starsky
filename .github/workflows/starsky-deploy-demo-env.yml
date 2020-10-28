@@ -34,11 +34,10 @@ jobs:
       - name: trigger end2end-on-heroku-demo
         shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN_TEMP: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo $GITHUB_TOKEN
           curl \
-          -H"authorization: Bearer $GITHUB_TOKEN" \
+          -H"authorization: Bearer $GITHUB_TOKEN_TEMP" \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/qdraw/starsky/actions/workflows/end2end-on-heroku-demo.yml/dispatches \
