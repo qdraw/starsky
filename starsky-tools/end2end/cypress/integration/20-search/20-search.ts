@@ -3,7 +3,7 @@ import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Archive', () => {
+describe('Search', () => {
   beforeEach('Check some config settings and do them before each test', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
