@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace starskycore.Middleware
+namespace starsky.foundation.platform.Middleware
 {
 	public class ContentSecurityPolicyMiddleware
 	{
