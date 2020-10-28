@@ -33,6 +33,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		{
 			// Arrange
 			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Scheme = "http";
 			var authMiddleware = new ContentSecurityPolicyMiddleware(next: (innerHttpContext) => Task.FromResult(0));
 
 			// Act
@@ -40,6 +41,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			//test
 			var csp = httpContext.Response.Headers["Content-Security-Policy"].ToString();
 			Assert.AreEqual(true,csp.Contains("default-src"));
+			Assert.AreEqual(true,csp.Contains("ws://"));
 		}
 		
 		[TestMethod]
