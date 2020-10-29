@@ -3,7 +3,8 @@ name: Starsky SonarQube ClientApp NetCore Analyze PR
 on:
   pull_request:
     types: 
-      - push
+      - synchronize
+      - opened
     branches:
       - master
     paths:
