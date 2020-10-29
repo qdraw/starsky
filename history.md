@@ -36,6 +36,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
 - [x]   (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
 - [x]   (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox
+- [x]   (Breaking change) _Back-end_ Change "/api/health/version" now its needed to upgrade StarskyApp to 0.4 or newer
+- [x]   (Added) _Back-end_ Add Sidecar API (xmp files) for getting by filepath
+- [x]   (Added) _Back-end_ Uploading Sidecar API (xmp files)
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
