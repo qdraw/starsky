@@ -126,7 +126,6 @@ namespace starsky.Controllers
 	        return Json(fileIndexResultsList);
         }
 		
-		
 		/// <summary>
 		/// CHANGE!!!!!
 		/// Upload to specific folder (does not check if already has been imported)
