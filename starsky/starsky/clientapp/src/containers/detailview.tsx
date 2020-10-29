@@ -31,7 +31,7 @@ const DetailView: React.FC<IDetailView> = () => {
   // next + prev state
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
-  // when in some cases the relative urls are not updated by a state change
+  // in normal detailview the state isn't updated (so without search query)
   useEffect(() => {
     setRelativeObjects(state.relativeObjects);
   }, [state.relativeObjects]);
@@ -142,8 +142,11 @@ const DetailView: React.FC<IDetailView> = () => {
       setIsLoading(true)
     }
 
-    history.navigate(nextPath, { replace: true }).then((e) => {
-      setIsLoading(false)
+    history.navigate(nextPath, { replace: true }).then(() => {
+      // when the re-render happens un-expected
+      if (window.location.search === history.location.search) {
+        setIsLoading(false)
+      }
     });
   }
 
@@ -175,10 +178,10 @@ const DetailView: React.FC<IDetailView> = () => {
     }
 
     history.navigate(prevPath, { replace: true }).then(() => {
-      setIsLoading(false)
-      // if (window.location.search === history.location.search) {
-      //   setIsLoading(false)
-      // }
+      // when the re-render happens un-expected
+      if (window.location.search === history.location.search) {
+        setIsLoading(false)
+      }
     });
   }
 
