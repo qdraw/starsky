@@ -7,15 +7,13 @@ on:
     - 'starsky/**'
 
   pull_request:
-    paths-ignore: 
-      - starsky/Dockerfile
-      - starsky/docker_demo_setup.sh
     branches:
       - master
     paths:
     - 'starsky/**'
     - '.github/workflows/**'
-
+    - '!starsky/Dockerfile'
+    - '!starsky/docker_demo_setup.sh'
 
 jobs:
   build:
