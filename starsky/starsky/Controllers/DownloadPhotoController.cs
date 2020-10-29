@@ -52,7 +52,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-        /// Select manualy the orginal or thumbnail
+        /// Select manually the original or thumbnail
         /// </summary>
         /// <param name="f">string, 'sub path' to find the file</param>
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
