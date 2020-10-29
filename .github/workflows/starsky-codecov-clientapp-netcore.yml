@@ -5,14 +5,13 @@ on:
     branches: [ master ]
     paths:
     - 'starsky/**'
+
   pull_request:
     paths-ignore: 
       - starsky/Dockerfile
       - starsky/docker_demo_setup.sh
     branches:
       - master
-    types: 
-      - push
     paths:
     - 'starsky/**'
     - '.github/workflows/**'
