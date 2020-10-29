@@ -377,8 +377,31 @@ namespace starskytest.Models
 		    Assert.AreEqual("/test",item.ParentDirectory);
 	    }
 
-
-
+	    [TestMethod]
+	    public void SidecarExtensions_read()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp|test"};
+		    Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
+	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_read_null()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = null};
+		    Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_Add()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp"};
+		    item.AddSidecarExtension("xmp");
+		    
+		    Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
+			// no duplicates please
+		    Assert.AreEqual(1, item.SidecarExtensionsList.Count);
+	    }
+	    
 	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
 		//        {
