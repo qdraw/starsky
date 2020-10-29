@@ -9,8 +9,8 @@ using starsky.foundation.database.Data;
 namespace starsky.foundation.database.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201027151043_SideCarPathsAdded")]
-    partial class SideCarPathsAdded
+    [Migration("20201027151043_SidecarExtensionsAdded")]
+    partial class SidecarExtensionsAdded
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -266,7 +266,7 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(20);
 
-                    b.Property<string>("SidecarPaths")
+                    b.Property<string>("SidecarExtensions")
                         .HasColumnType("TEXT");
 
                     b.Property<long>("Size")

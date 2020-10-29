@@ -668,30 +668,37 @@ namespace starsky.foundation.database.Models
 		[NotMapped]
         public List<string> CollectionPaths { get; set; } = new List<string>();
 
-		// [JsonIgnore]
-		public string SidecarPaths { get; set; } = "";
+		/// <summary>
+		/// Database string to store sidecar paths
+		/// </summary>
+		[JsonIgnore]
+		public string SidecarExtensions { get; set; } = "";
 
 		/// <summary>
 		/// List of Sidecar files
 		/// </summary>
 		[NotMapped]
-		public HashSet<string> SidecarPathsList
+		public HashSet<string> SidecarExtensionsList
 		{
 			get
 			{
-				if ( string.IsNullOrWhiteSpace(SidecarPaths) ) return new HashSet<string>();
+				if ( string.IsNullOrWhiteSpace(SidecarExtensions) ) return new HashSet<string>();
 				return 
 					new HashSet<string>(
-						SidecarPaths.Split('|')
+						SidecarExtensions.Split('|')
 							.Where(p => !string.IsNullOrWhiteSpace(p)));
 			}
 		}
 		
-		public void AddSidecarPath(string path)
+		/// <summary>
+		/// Add extensions without dot
+		/// </summary>
+		/// <param name="ext">ext without dot</param>
+		public void AddSidecarExtension(string ext)
 		{
-			var current = SidecarPathsList;
-			current.Add(path);
-			SidecarPaths = string.Join("|", current);
+			var current = SidecarExtensionsList;
+			current.Add(ext);
+			SidecarExtensions = string.Join("|", current);
 		}
 
 		

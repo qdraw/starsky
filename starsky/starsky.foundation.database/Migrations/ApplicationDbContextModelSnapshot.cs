@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Data;
 
 namespace starsky.foundation.database.Migrations
@@ -264,7 +263,7 @@ namespace starsky.foundation.database.Migrations
                         .HasColumnType("TEXT")
                         .HasMaxLength(20);
 
-                    b.Property<string>("SidecarPaths")
+                    b.Property<string>("SidecarExtensions")
                         .HasColumnType("TEXT");
 
                     b.Property<long>("Size")

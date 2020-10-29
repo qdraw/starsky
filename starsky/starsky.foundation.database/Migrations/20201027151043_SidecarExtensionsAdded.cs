@@ -2,12 +2,12 @@
 
 namespace starsky.foundation.database.Migrations
 {
-    public partial class SideCarPathsAdded : Migration
+    public partial class SidecarExtensionsAdded : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "SidecarPaths",
+                name: "SidecarExtensions",
                 table: "FileIndex",
                 nullable: true);
         }
@@ -15,7 +15,7 @@ namespace starsky.foundation.database.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "SidecarPaths",
+                name: "SidecarExtensions",
                 table: "FileIndex");
         }
     }

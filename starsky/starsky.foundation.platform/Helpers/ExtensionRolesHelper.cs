@@ -285,12 +285,11 @@ namespace starsky.foundation.platform.Helpers
 			foreach ( Match match in matchCollection )
 			{
 				if ( match.Value.Length < 2 ) continue;
-				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
 				// Extension must be three letters
-				if ( ExtensionForceXmpUseList.Contains(ext) && filename.Length >= match.Index + 4 )
+				// removed: ExtensionForceXmpUseList.Contains(match.Value.Remove(0, 1).ToLowerInvariant()) && 
+				if (  filename.Length >= match.Index + 4 )
 				{
 					var matchValue = filename.Substring(0, match.Index + 4).ToCharArray();
-					
 					matchValue[match.Index+1] = 'x';
 					matchValue[match.Index+2] = 'm';
 					matchValue[match.Index+3] = 'p';
