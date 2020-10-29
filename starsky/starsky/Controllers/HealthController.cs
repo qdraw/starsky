@@ -152,19 +152,33 @@ namespace starsky.Controllers
 				return BadRequest("Missing version data");
 			}
 
-			// not escaped = \d+(?:\.\d+)+
-			var match = Regex.Match(Request.Headers[ApiVersionHeaderName].ToString(), 
-				"\\d+(?:\\.\\d+)+", RegexOptions.IgnoreCase);
-			if (match.Success &&  new Version(match.Value)
-				.CompareTo(new Version(MinimumVersion)) >= 0 )
+			var fullVersionFromClient = Request.Headers[ApiVersionHeaderName].ToString();
+			try
 			{
-				return Ok(Request.Headers[ApiVersionHeaderName]);
-			}
+				Version firstTwoDigitsWithDot;
+				if ( fullVersionFromClient.Length >= 3 )
+				{
+					firstTwoDigitsWithDot = new Version(fullVersionFromClient.Substring(0, 3));
+				}
+				else
+				{
+					firstTwoDigitsWithDot = new Version(fullVersionFromClient);
+				}
 
-			if (!match.Success)
+				if ( firstTwoDigitsWithDot.CompareTo(new Version(MinimumVersion)) >= 0 )
+				{
+					return Ok(Request.Headers[ApiVersionHeaderName]);
+				}
+			}
+			catch ( FormatException )
 			{
 				return StatusCode(StatusCodes.Status400BadRequest,
-					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");	
+					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
+			}
+			catch ( ArgumentException )
+			{
+				return StatusCode(StatusCodes.Status400BadRequest,
+					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
 			}
 
 			return StatusCode(StatusCodes.Status202Accepted,
