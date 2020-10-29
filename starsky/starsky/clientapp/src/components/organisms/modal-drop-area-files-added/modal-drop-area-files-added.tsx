@@ -24,7 +24,7 @@ const ModalDropAreaFilesAdded: React.FunctionComponent<IModalDropAreaFilesAddedP
         props.handleExit()
       }}>
       <div className="modal content--subheader">{MessageFilesAdded}</div>
-      <div className="modal modal-move content content--text">
+      <div className="modal modal-move content content--text" data-test="upload-files">
         <ItemTextListView fileIndexItems={props.uploadFilesList} />
       </div>
     </Modal>);
