@@ -248,5 +248,44 @@ namespace starskytest.Controllers
 			var result = controller.GetParentDirectoryFromRequestHeader();
 			Assert.IsNull(result);
 		}
+		
+		/// <summary>
+		///  Add the file in the underlying request object.
+		/// </summary>
+		/// <returns>Controller Context with file</returns>
+		private ControllerContext RequestWithSidecar()
+		{
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes);
+	        
+			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
+			return new ControllerContext(actionContext);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_DefaultFlow()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithSidecar(),
+			};
+
+			var toPlaceSubPath = "/yes01.xmp";
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
+			var list = actionResult.Value as List<ImportIndexItem>;
+
+			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+
+			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
+			Assert.IsTrue(fileSystemResult);
+
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+		}
 	}
 }

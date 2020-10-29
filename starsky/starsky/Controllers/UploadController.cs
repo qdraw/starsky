@@ -80,7 +80,8 @@ namespace starsky.Controllers
 			
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);
 			
-			var fileIndexResultsList = await _import.Preflight(tempImportPaths, new ImportSettingsModel{IndexMode = false});
+			var fileIndexResultsList = await _import.Preflight(tempImportPaths, 
+				new ImportSettingsModel{IndexMode = false});
 
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
@@ -159,6 +160,7 @@ namespace starsky.Controllers
 			}
 
 			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+
 			return Json(new List<string>());
 		}
 
