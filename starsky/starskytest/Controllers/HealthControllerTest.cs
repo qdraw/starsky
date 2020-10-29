@@ -111,7 +111,20 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void Version_Version()
+		public void Version_Version_newer()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "1.0";
+			var noVersion = controller.Version() as OkObjectResult;
+			Assert.AreEqual(200, noVersion.StatusCode);
+		}
+
+		[TestMethod]
+		public void Version_Version_older()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null,null))
@@ -119,8 +132,36 @@ namespace starskytest.Controllers
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0.1";
+			var noVersion = controller.Version() as ObjectResult;
+			Assert.AreEqual(202, noVersion.StatusCode);
+		}
+
+		[TestMethod]
+		public void Version_Version_eq()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var beta =  HealthController.MinimumVersion + "-beta.1";
+			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = beta;
 			var noVersion = controller.Version() as OkObjectResult;
 			Assert.AreEqual(200, noVersion.StatusCode);
+		}
+
+		[TestMethod]
+		public void Version_Version_NonValidInput()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0.bad-input";
+			var noVersion = controller.Version() as ObjectResult;
+			Assert.AreEqual(400, noVersion.StatusCode);
 		}
 	}
 }
