@@ -1,0 +1,15 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/search",
+        "urlSearchJpg": "/search?t=-imageformat:jpg"
+
+      },
+      "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/search",
+        "urlSearchJpg": "/search?t=-imageformat:jpg"
+      }
+    }
+  }

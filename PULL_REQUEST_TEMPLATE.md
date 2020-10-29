@@ -1,7 +1,4 @@
 # PR Details 
-
-<!--- Provide a general summary of your changes in the Title above -->
-
 ## Description / Motivation and Context
 
 <!--- Why is this change required? What problem does it solve? -->
@@ -23,7 +20,7 @@
 - [ ] Typescript Unit tests 
 - [ ] Other Unit tests
 - [ ] Manual tests
-- [ ] Automatic End2end tests (framework not included) 
+- [ ] Automatic End2end tests (starsky-tools/end2end)
 
 
 ## Types of changes

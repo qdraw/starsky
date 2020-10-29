@@ -1,0 +1,12 @@
+{
+    "fields": {
+        "search": ".search-header #menu-inline-search",
+        "searchData": "-imageformat:jpg{enter}",
+        "submit": "submit"
+    },
+    "searchBar-new": "data-test=[menu-inline-search]",
+    "more": ".item.item--more",
+    "successUrl": "-imageformat:jpg",
+    "boxContent": ".box-content",
+    "successUrlDetailView": "?t=-imageformat%3Ajpg&f="
+}

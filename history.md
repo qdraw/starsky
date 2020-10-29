@@ -34,6 +34,8 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.0-beta.1 _(Unreleased)_  2020-10-??
 - [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
+- [x]   (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
+- [x]   (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_

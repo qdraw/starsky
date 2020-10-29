@@ -14,7 +14,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.Helpers;
 using starskycore.Helpers;
-using starskycore.Middleware;
 using starskycore.Models;
 using starskytest.Controllers;
 using starskytest.FakeMocks;

@@ -115,6 +115,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
                 onBlur={() => { setInputFocus(!inputFocus); }}
                 onFocus={() => { setInputFocus(!inputFocus); }}
                 autoComplete="off"
+                data-test="menu-inline-search"
                 defaultValue={query}
                 ref={inputFormControlReference}
                 onKeyDown={e => {
