@@ -10,7 +10,7 @@
         "successUrl" : "/?f=/"
       },
       "heroku-demo" : {
-        "isEnabled": true,
+        "isEnabled": false,
         "url": "/?f=/end2end-test",
         "mkdirApi": "/api/sync/mkdir",
         "mkdirName": "end2end-test",
