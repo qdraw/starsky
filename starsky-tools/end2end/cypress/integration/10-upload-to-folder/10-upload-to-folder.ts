@@ -63,6 +63,7 @@ describe('Upload to folder', () => {
     const fileInput = '.menu-option--input input[type=file]'
 
     cy.uploadFile(fileName1, fileType, fileInput)
+    cy.wait(1000)
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
@@ -84,6 +85,7 @@ describe('Upload to folder', () => {
     const fileInput = '.menu-option--input input[type=file]'
 
     cy.uploadFile(fileName2, fileType, fileInput)
+    cy.wait(1000)
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
@@ -91,6 +93,8 @@ describe('Upload to folder', () => {
     })
 
     cy.uploadFile(fileName3, fileType, fileInput)
+    cy.wait(1000)
+
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
       expect($lis.eq(0)).to.contain(fileName3)
