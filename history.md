@@ -36,12 +36,13 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
 - [x]   (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
 - [x]   (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox
-- [x]   (Breaking change) _Back-end_ Change "/api/health/version" now its needed to upgrade StarskyApp to 0.4 or newer
+- [x]   (Breaking change) _Back-end_ Change "/api/health/version" now its needed to upgrade StarskyApp to 0.3 or newer
 - [x]   (Added) _Back-end_ Add Sidecar API (xmp files) for getting by filepath
 - [x]   (Added) _Back-end_ Uploading Sidecar API (xmp files)
 - [x]   (Fixed) _Back-end_ Fix issue where rename did serve a 500 page after successful renaming
 - [x]   (Fixed) _Back-end_ Uploading image with colorClass keeps it own colorClass instead of number 0/ grey
 - [x]   (Fixed) _Back-end_ Remove file from temp folder after thumbnail upload (and copy it to thumbnailTemp)
+- [x]   (Deprecated) _inotify-settings_ Plans to integrate inotify-wait in to the core product
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_

@@ -128,7 +128,7 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Check if min version is matching
 		/// </summary>
-		internal const string MinimumVersion = "0.4"; // only insert 0.4 or 0.5
+		internal const string MinimumVersion = "0.3"; // only insert 0.4 or 0.5
 		
 		/// <summary>
 		/// Name of the header for api version
