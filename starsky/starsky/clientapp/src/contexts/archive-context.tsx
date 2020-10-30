@@ -132,9 +132,13 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       var concatenatedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
       concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, 'filePath');
 
-      // order by this to match c#
-      var fileIndexItems = concatenatedFileIndexItems.sort((a, b) => a.fileName.localeCompare(
-        b.fileName, 'en', { sensitivity: 'base' }));
+      // order by this to match c# AND not supported in jest
+      try {
+        var fileIndexItems = concatenatedFileIndexItems.sort((a, b) => a.fileName.localeCompare(
+          b.fileName, 'en', { sensitivity: 'base' }));
+      } catch (error) {
+        fileIndexItems = concatenatedFileIndexItems;
+      }
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };

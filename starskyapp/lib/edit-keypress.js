@@ -1,7 +1,7 @@
 const {getBaseUrlFromSettings } = require('./get-base-url-from-settings')
 const {  net } = require('electron')
 const createNewEditWindow = require('./edit-windows').createNewEditWindow
-
+var path = require('path');
 const editFileDownload = require('./edit-file-download').editFileDownload;
 const doDownloadRequest = require('./edit-file-download').doDownloadRequest;
 const parentFullFilePathHelper = require('./edit-file-download').parentFullFilePathHelper;
@@ -16,44 +16,42 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     if (!filePath) return;
 
     doRequest(filePath, fromMainWindow.webContents.session, (data) =>  {
-
-        if (!data || !data[0] || data[0].status !== "Ok") {
+        if (!data || !data.fileIndexItem || data.fileIndexItem.status !== "Default") {
             createNewEditWindow(data);
             return;
         }
 
         // when selecting a tiff image, the jpg will be picked 
         // the last one is always picked
-        var lastCollectionInList = data[0].collectionPaths[data[0].collectionPaths.length-1];
+        var subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
 
-        console.log(data[data[0].collectionPaths.length-1].sidecarPathsList.length );
 
         // get info of raw file and get xmp
-        if (   data[data[0].collectionPaths.length-1] 
-            && data[data[0].collectionPaths.length-1].status === "Ok" 
-            && data[data[0].collectionPaths.length-1].sidecarPathsList 
-            && data[data[0].collectionPaths.length-1].sidecarPathsList.length >= 1) {
+        // needed app version 0.4 or newer
+        if (   data 
+            && data.fileIndexItem.fileCollectionName
+            && data.fileIndexItem.sidecarExtensionsList
+            && data.fileIndexItem.sidecarExtensionsList[0]) {
 
-                var sidecarFile = data[data[0].collectionPaths.length-1].sidecarPathsList[0];
-                if (sidecarFile) {
-                    doDownloadRequest(fromMainWindow, 'download-sidecar', parentFullFilePathHelper(sidecarFile), sidecarFile)
-                }
+                var ext = data.fileIndexItem.sidecarExtensionsList[0];
+                var sidecarFile = path.join(data.fileIndexItem.parentDirectory,    
+                                  data.fileIndexItem.fileCollectionName + "." + ext);
+                // download xmp file
+                doDownloadRequest(fromMainWindow, 'download-sidecar', 
+                     parentFullFilePathHelper(sidecarFile), sidecarFile)
         }
 
-        editFileDownload(fromMainWindow,lastCollectionInList).catch((e)=>{
+        // download is included
+        editFileDownload(fromMainWindow,subPathLastColInList).catch((e)=>{
             createNewEditWindow({isError: true, error: e});
         });
-
-
     })
-
-    
 }
 
 function doRequest(filePath, session, callback) {
     const request = net.request({
         useSessionCookies: true,
-        url: getBaseUrlFromSettings() + "/starsky/api/info?f=" + filePath, 
+        url: getBaseUrlFromSettings() + "/starsky/api/index?f=" + filePath, 
         session: session,
         headers: {
             "Accept" :	"*/*"

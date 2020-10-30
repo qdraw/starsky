@@ -38,7 +38,6 @@ function createNewEditWindow(data, filePath) {
         return;
     }
 
-    editWindow.loadFile('pages/edit-save-as.html', { query: {"f" : filePath}});
 }
 
 exports.createNewEditWindow = createNewEditWindow;

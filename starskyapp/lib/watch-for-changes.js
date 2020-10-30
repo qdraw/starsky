@@ -60,18 +60,23 @@ watchFs = (currentSession, editCacheParentFolder) => {
         console.log('currentSession', currentSession);
         
         uniqueToQueue.forEach(fullFilePath => {
-            doUploadRequest(currentSession,fullFilePath,replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+            if (fs.existsSync(fullFilePath)) {
+                doUploadRequest(currentSession,fullFilePath,replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+            }
         });
     },10000)
 }
 
 doUploadRequest = (currentSession, fullFilePath, toSubPath, callback) => {
     if (!currentSession) return;
-    console.log('> run upload');
+
+    var url = toSubPath.endsWith(".xmp") ? getBaseUrlFromSettings() + "/starsky/api/upload-sidecar" : 
+        getBaseUrlFromSettings() + "/starsky/api/upload";
+    console.log('> run upload ' + url);
 
     const request = net.request({
         useSessionCookies: true,
-        url: getBaseUrlFromSettings() + "/starsky/api/upload", 
+        url, 
         session: currentSession,
         method: 'POST',
         headers: {

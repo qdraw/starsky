@@ -110,11 +110,24 @@ describe("ArchiveContextWrapper", () => {
     });
 
     it("Check if event is received", (done) => {
+
+      var fileNameJestFn = {
+        localeCompare: jest.fn()
+      }
       var dispatch = (e: any) => {
         // should ignore the first one
-        expect(e).toStrictEqual(detail[1]);
+        expect(e).toStrictEqual({
+          "add": [{
+            "colorclass": undefined,
+            "description": "",
+            "fileName": fileNameJestFn,
+            "filePath": "/test.jpg",
+            "parentDirectory": "/",
+            "tags": "", "title": ""
+          }], "type": "add"
+        });
         done();
-      };
+      }
 
       function TestComponent() {
         ArchiveEventListenerUseEffect(dispatch);
@@ -123,22 +136,14 @@ describe("ArchiveContextWrapper", () => {
 
       var component = mount(<TestComponent />);
 
-      var detail = [{
-        ...newIFileIndexItem(),
-        select: ["fake"]
-        // should ignore this one
-      },
-      {
-        "colorclass": undefined,
-        ...newIFileIndexItem(),
-        filePath: '/test.jpg',
-        fileName: 'test.jpg',
-        "type": "update",
-        "select": [
-          "test.jpg",
-        ],
-        parentDirectory: "/"
-      }];
+      var detail = [
+        {
+          "colorclass": undefined,
+          ...newIFileIndexItem(),
+          filePath: '/test.jpg',
+          fileName: fileNameJestFn,
+          parentDirectory: "/"
+        }];
       var event = new CustomEvent(useSocketsEventName, {
         detail
       });

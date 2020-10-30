@@ -97,15 +97,15 @@ function updateArchiveFromEvent(event: Event, dispatch: React.Dispatch<ArchiveAc
   // useLocation, state or archive is here always the default value
   var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f
 
+  var toAddedFiles = []
   for (let index = 0; index < pushMessagesEvent.length; index++) {
     const pushMessage = pushMessagesEvent[index];
     // only update the state of the current view
     if (parentLocationPath !== pushMessage.parentDirectory) {
       continue;
     }
-    dispatch({
-      type: 'update', select: [pushMessage.fileName],
-      ...pushMessage, colorclass: pushMessage.colorClass
-    });
+    toAddedFiles.push(pushMessage);
   }
+  console.log(toAddedFiles);
+  dispatch({ 'type': 'add', add: toAddedFiles });
 }

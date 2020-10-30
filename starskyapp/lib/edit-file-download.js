@@ -82,6 +82,7 @@ function openPath(fullFilePath) {
             }
 
             // There are issues oping photoshop
+            // see: https://community.adobe.com/t5/photoshop/problems-opening-photoshop-open-a/m-p/11541937?page=1
             if (appConfig.get("settings_default_app").indexOf("Adobe Photoshop.app")) {
                 isRunning(".app/Contents/MacOS/Adobe\\ Photoshop",(isRunning)=>{
                     if (!isRunning) {
