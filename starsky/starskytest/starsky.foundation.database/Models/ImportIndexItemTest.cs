@@ -14,7 +14,7 @@ using starsky.foundation.storage.Storage;
 using starskycore.Models;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.Models
+namespace starskytest.starsky.foundation.database.Models
 {
     [TestClass]
     public class ImportIndexItemTest
@@ -83,9 +83,9 @@ namespace starskytest.Models
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
-                out var anserDateTime);
+                out var answerDateTime);
             
-            Assert.AreEqual(anserDateTime,input.DateTime);
+            Assert.AreEqual(answerDateTime,input.DateTime);
         }
 
         [TestMethod]
@@ -103,9 +103,9 @@ namespace starskytest.Models
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
-                out var anserDateTime);
+                out var answerDateTime);
             
-            Assert.AreEqual(anserDateTime,input.DateTime);
+            Assert.AreEqual(answerDateTime,input.DateTime);
         }
 
         [TestMethod]
@@ -126,9 +126,9 @@ namespace starskytest.Models
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
-                out var anserDateTime);
+                out var answerDateTime);
             
-            Assert.AreEqual(anserDateTime,input.DateTime);
+            Assert.AreEqual(answerDateTime,input.DateTime);
         }
 
         
@@ -150,9 +150,9 @@ namespace starskytest.Models
 		        "yyyyMMdd_HHmmss",
 		        CultureInfo.InvariantCulture, 
 		        DateTimeStyles.None, 
-		        out var anserDateTime);
+		        out var answerDateTime);
             
-	        Assert.AreEqual(anserDateTime,input.DateTime);
+	        Assert.AreEqual(answerDateTime,input.DateTime);
         }
         
         [TestMethod]
@@ -176,9 +176,9 @@ namespace starskytest.Models
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
-                out var anserDateTime);
+                out var answerDateTime);
             
-            Assert.AreEqual(anserDateTime,input.DateTime);
+            Assert.AreEqual(answerDateTime,input.DateTime);
         }
 
 
@@ -223,19 +223,19 @@ namespace starskytest.Models
                 "yyyyMMdd_HHmmss",
                 CultureInfo.InvariantCulture, 
                 DateTimeStyles.None, 
-                out var anserDateTime);
+                out var answerDateTime);
             
-            // Check if those overwite is accepted
-            Assert.AreEqual(anserDateTime,input.DateTime);
+            // Check if those overwrite is accepted
+            Assert.AreEqual(answerDateTime,input.DateTime);
                    
             new StorageHostFullPathFilesystem().FileDelete(createAnImageNoExif.FullFilePathWithDate);
         }
 
         [TestMethod]
-        public void ImportFileSettingsModel_DefaultsToZero_Test()
+        public void ImportFileSettingsModel_DefaultsToIgnore_Test()
         {
             var importSettings = new ImportSettingsModel {ColorClass = 999};
-            Assert.AreEqual(0,importSettings.ColorClass);
+            Assert.AreEqual(-1,importSettings.ColorClass);
         }
     }
 }

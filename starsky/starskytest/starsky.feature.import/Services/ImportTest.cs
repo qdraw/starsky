@@ -27,14 +27,17 @@ namespace starskytest.starsky.feature.import.Services
 		private readonly FakeIStorage _iStorageFake;
 		private readonly string _exampleHash;
 		private readonly FakeIStorage _iStorageDirectoryRecursive;
-		private IConsole _console;
+		private readonly IConsole _console;
 
+		/// <summary>
+		/// Also known as ImportServiceTest
+		/// </summary>
 		public ImportTest()
 		{
 			_iStorageFake = new FakeIStorage(
 				new List<string>{"/"},
-				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<string>{"/test.jpg","/color_class_winner.jpg"},
+				new List<byte[]>{CreateAnImage.Bytes, CreateAnImageColorClass.Bytes}
 				);
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			
@@ -67,6 +70,49 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
 			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
 			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.Size != 0);
+		}
+		
+		[TestMethod]
+		public async Task Preflight_SingleImage_Ignore_ColorClassOverwrite()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+
+			var result = await importService.Preflight(
+				new List<string> {"/color_class_winner.jpg"},
+				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
+			
+			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
+			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
+			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.Size != 0);
+			Assert.AreEqual(ColorClassParser.Color.Winner, result.FirstOrDefault().FileIndexItem.ColorClass);
+		}
+		
+		[TestMethod]
+		public async Task Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+
+			var result = await importService.Preflight(
+				new List<string> {"/color_class_winner.jpg"}, // <- in this test we change it
+				new ImportSettingsModel
+				{
+					ColorClass = 5 // <- - - - - - -- -- - - -
+				});
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
+			
+			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem);
+			Assert.IsNotNull(result.FirstOrDefault().FileIndexItem.FilePath);
+			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.Size != 0);
+			Assert.AreEqual(ColorClassParser.Color.Typical, result.FirstOrDefault().FileIndexItem.ColorClass);
 		}
 
 		[TestMethod]
