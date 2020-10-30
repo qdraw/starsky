@@ -311,6 +311,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var getDisplay = _query.DisplayFileFolders("/12345678987654").ToList();
             Assert.AreEqual(0, getDisplay.Count);
         }
+        
+        
+        [TestMethod]
+        public void QueryFolder_DisplayFileFolders_OneItemInFolder_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        var item = new FileIndexItem("/test_0191919/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.DisplayFileFolders("/test_0191919");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+	        query.RemoveItem(getItem.FirstOrDefault());
+        }
 
         [ExcludeFromCoverage]
         [TestMethod]
