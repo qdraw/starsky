@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
@@ -15,6 +16,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskycore.Interfaces;
@@ -88,7 +90,6 @@ namespace starsky.Controllers
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
 
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
-				
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
 				var subPath = parentDirectory + "/" + fileName;
@@ -127,6 +128,20 @@ namespace starsky.Controllers
 	        return Json(fileIndexResultsList);
         }
 		
+		private bool IsValidXml(string xml)
+		{
+			try
+			{
+				// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+				XDocument.Parse(xml);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+		
 		/// <summary>
 		/// CHANGE!!!!!
 		/// Upload to specific folder (does not check if already has been imported)
@@ -134,17 +149,17 @@ namespace starsky.Controllers
 		/// (ActionResult UploadToFolder)
 		/// </summary>
 		/// <response code="200">done</response>
-		/// <response code="404">folder not found</response>
+		/// <response code="404">parent folder not found</response>
 		/// <response code="415">Wrong input (e.g. wrong extenstion type)</response>
 		/// <response code="400">missing 'to' header</response>
 		/// <returns>the ImportIndexItem of the imported files </returns>
 		[HttpPost("/api/upload-sidecar")]
 		[DisableFormValueModelBinding]
-		[RequestFormLimits(MultipartBodyLengthLimit = 320_000_000)]
-		[RequestSizeLimit(320_000_000)] // in bytes, 305MB
+		[RequestFormLimits(MultipartBodyLengthLimit = 3_000_000)]
+		[RequestSizeLimit(3_000_000)] // in bytes, 3 MB
 		[ProducesResponseType(typeof(List<ImportIndexItem>), 200)] // yes
 		[ProducesResponseType(typeof(string), 400)]
-		[ProducesResponseType(typeof(List<ImportIndexItem>), 404)]
+		[ProducesResponseType(typeof(List<ImportIndexItem>), 404)] // parent dir not found
 		[ProducesResponseType(typeof(List<ImportIndexItem>),
 			415)] // Wrong input (e.g. wrong extenstion type)
 		[Produces("application/json")]
@@ -161,7 +176,29 @@ namespace starsky.Controllers
 
 			var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
-			return Json(new List<string>());
+			var importedList = new List<string>();
+			foreach ( var tempImportSinglePath in tempImportPaths )
+			{
+				var data = await new PlainTextFileHelper().StreamToStringAsync(
+					_iHostStorage.ReadStream(tempImportSinglePath));
+				if ( !IsValidXml(data) ) continue;
+				
+				var tempFileStream = _iHostStorage.ReadStream(tempImportSinglePath);
+				var fileName = Path.GetFileName(tempImportSinglePath);
+
+				var subPath = parentDirectory + "/" + fileName;
+				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
+
+				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
+				await tempFileStream.DisposeAsync();
+				importedList.Add(subPath);
+			}
+			
+			if ( !importedList.Any() )
+			{
+				Response.StatusCode = 415;
+			}
+			return Json(importedList);
 		}
 
 		internal string GetParentDirectoryFromRequestHeader()
