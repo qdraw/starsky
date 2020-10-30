@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Storage;
 
 namespace starsky.foundation.database.Helpers
 {
@@ -22,7 +24,14 @@ namespace starsky.foundation.database.Helpers
 			switch (_appSettings.DatabaseType)
 			{
 				case (AppSettings.DatabaseTypeList.Mysql):
-					_services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection));
+					_services.AddDbContext<ApplicationDbContext>(
+						options => options.UseMySql(_appSettings.DatabaseConnection, mySqlOptions =>
+						{
+							mySqlOptions.CharSet(CharSet.Utf8Mb4);
+							mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
+							mySqlOptions.EnableRetryOnFailure(2);
+						})
+					);
 					break;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					_services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));

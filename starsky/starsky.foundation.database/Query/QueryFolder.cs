@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -106,11 +107,29 @@ namespace starsky.foundation.database.Query
 
         private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
         {
-            var queryItems = _context.FileIndex.
-	            Where(p => p.ParentDirectory == subPath).
-	            OrderBy(p => p.FileName).ToList();
+	        List<FileIndexItem> QueryItems(ApplicationDbContext context)
+	        {
+		        var queryItems = context.FileIndex.
+			        Where(p => p.ParentDirectory == subPath).
+			        OrderBy(p => p.FileName).ToList();
+		        return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
+	        }
 
-            return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
+	        try
+	        {
+		        return QueryItems(_context);
+	        }
+	        catch ( NotSupportedException )
+	        {
+		        // System.NotSupportedException:  The ReadAsync method cannot be called when another read operation is pending.
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return QueryItems(context);
+	        }
+	        catch ( InvalidOperationException ) // or ObjectDisposedException
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return QueryItems(context);
+	        }
         }
         
         // Hide Deleted items in folder
