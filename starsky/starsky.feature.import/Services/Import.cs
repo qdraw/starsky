@@ -311,9 +311,12 @@ namespace starsky.feature.import.Services
 			importIndexItem.FileIndexItem.Size = size;
 			importIndexItem.FileIndexItem.FileHash = fileHashCode;
 			importIndexItem.FileIndexItem.ImageFormat = imageFormat;
-			importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
 			importIndexItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-			
+			// only when set in ImportSettingsModel
+			if ( colorClassTransformation >= 0 )
+			{
+				importIndexItem.FileIndexItem.ColorClass = ( ColorClassParser.Color ) colorClassTransformation;
+			}
 			return importIndexItem;
 		}
 

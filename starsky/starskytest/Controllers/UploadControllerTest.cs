@@ -18,6 +18,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
@@ -101,11 +102,13 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithFile()
+		private ControllerContext RequestWithFile(byte[] bytes = null)
 		{
+			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
+			if ( bytes == null ) bytes = CreateAnImage.Bytes;
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes);
+			httpContext.Request.Body = new MemoryStream(bytes);
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
 			return new ControllerContext(actionContext);
@@ -149,6 +152,37 @@ namespace starskytest.Controllers
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+
+			_query.RemoveItem(queryResult.FileIndexItem);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolder_DefaultFlow_ColorClass()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes),
+			};
+
+			var toPlaceSubPath = "/color-class01.jpg";
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolder()  as JsonResult;
+			var list = actionResult.Value as List<ImportIndexItem>;
+
+			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+
+			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
+			Assert.IsTrue(fileSystemResult);
+
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+			
+			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual(ColorClassParser.Color.Winner,queryResult.FileIndexItem.ColorClass);
+
+			_query.RemoveItem(queryResult.FileIndexItem);
 		}
 		
 		[TestMethod]

@@ -3,7 +3,8 @@ name: Starsky SonarQube ClientApp NetCore Analyze PR
 on:
   pull_request:
     types: 
-      - push
+      - synchronize
+      - opened
     branches:
       - master
     paths:
@@ -32,6 +33,13 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.402
+        
+      - name: Use Java 11   
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.9' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
         
       - name: Build
         shell: bash

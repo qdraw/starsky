@@ -48,6 +48,14 @@ steps:
     version: 3.1.402
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
+- task: PowerShell@2
+  displayName: "Use JDK11 by default (needed for sonarqube)"
+  inputs:
+    targetType: 'inline'
+    script: |
+      $jdkPath = $env:JAVA_HOME_11_X64
+      Write-Host "##vso[task.setvariable variable=JAVA_HOME]$jdkPath"
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet tool restore'
   inputs:

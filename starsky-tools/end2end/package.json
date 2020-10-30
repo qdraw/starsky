@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
+    "open:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
     "e2e:heroku-demo": "cypress run --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2"
   },
   "dependencies": {},
