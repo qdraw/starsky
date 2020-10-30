@@ -49,7 +49,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( isWindows || await RunChmodOnExifToolUnixExe() ) return true;
 
 			// do a retry
-			await Task.Delay(100);
+			await Task.Delay(100); // instead of Thread.Sleep
 			return await RunChmodOnExifToolUnixExe() ? true : throw new Win32Exception("Failed to create chmod 755 on exiftool");
 		}
 
