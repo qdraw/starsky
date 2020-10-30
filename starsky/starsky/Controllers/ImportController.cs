@@ -143,9 +143,10 @@ namespace starsky.Controllers
 		    var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
 
 		    var thumbnailNames = new List<string>();
-		    foreach ( var t in tempImportPaths )
+		    // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		    foreach ( var tempImportSinglePath in tempImportPaths )
 		    {
-			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(t);
+			    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportSinglePath);
 			    
 			    var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
 
@@ -154,6 +155,7 @@ namespace starsky.Controllers
 				    continue;
 			    }
 			    
+			    // remove existing thumbnail if exist
 			    if (_thumbnailStorage.ExistFile(thumbToUpperCase))
 			    {
 				    _thumbnailStorage.FileDelete(thumbToUpperCase);
@@ -173,6 +175,8 @@ namespace starsky.Controllers
 		    {
 			    await _thumbnailStorage.WriteStreamAsync(
 				    _hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
+			    // Remove from temp folder to avoid long list of files
+			    _hostFileSystemStorage.FileDelete(tempImportPaths[i]);
 		    }
 
 		    return Json(thumbnailNames);

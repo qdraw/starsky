@@ -168,7 +168,6 @@ namespace starskytest.Controllers
 	        services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 	        var serviceProvider = services.BuildServiceProvider();
 	        var storageProvider = serviceProvider.GetRequiredService<IStorage>();
-	        
 	        var importController = new ImportController(new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings, 
 		        _bgTaskQueue, null, new FakeSelectorStorage(storageProvider),_scopeFactory)
 	        {
@@ -178,8 +177,10 @@ namespace starskytest.Controllers
 	        
 	        var actionResult = await importController.Thumbnail() as JsonResult;
 	        var list = actionResult.Value as List<string>;
+	        var existFileInTempFolder = storageProvider.ExistFile(_appSettings.TempFolder + "01234567890123456789123456.jpg");
 
 	        Assert.AreEqual( "01234567890123456789123456", list.FirstOrDefault());
+	        Assert.IsFalse(existFileInTempFolder);
         }
         
         [TestMethod]
