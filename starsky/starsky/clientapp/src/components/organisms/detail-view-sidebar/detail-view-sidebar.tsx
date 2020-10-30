@@ -12,6 +12,7 @@ import { CastToInterface } from '../../../shared/cast-to-interface';
 import { ClipboardHelper } from '../../../shared/clipboard-helper';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../../../shared/date';
 import FetchPost from '../../../shared/fetch-post';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Keyboard } from '../../../shared/keyboard';
 import { Language } from '../../../shared/language';
 import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
@@ -247,6 +248,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           setFileIndexItem({ ...fileIndexItem, lastEdited: new Date().toString(), colorClass: result });
           dispatch({ 'type': 'update', lastEdited: new Date().toString(), colorclass: result });
           ClearSearchCache(history.location.search);
+          new FileListCache().CacheCleanEverything();
         }}
         filePath={fileIndexItem.filePath}
         currentColorClass={fileIndexItem.colorClass}
