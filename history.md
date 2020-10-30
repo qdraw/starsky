@@ -41,6 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Uploading Sidecar API (xmp files)
 - [x]   (Fixed) _Back-end_ Fix issue where rename did serve a 500 page after successful renaming
 - [x]   (Fixed) _Back-end_ Uploading image with colorClass keeps it own colorClass instead of number 0/ grey
+- [x]   (Fixed) _Back-end_ Remove file from temp folder after thumbnail upload (and copy it to thumbnailTemp)
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
