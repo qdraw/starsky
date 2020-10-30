@@ -49,7 +49,7 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: PowerShell@2
-  displayName: "Use JDK11 by default"
+  displayName: "Use JDK11 by default (needed for sonarqube)"
   inputs:
     targetType: 'inline'
     script: |
