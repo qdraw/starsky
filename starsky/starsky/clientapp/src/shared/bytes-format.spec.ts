@@ -36,4 +36,9 @@ describe("BytesFormat", () => {
     var result = BytesFormat(81328);
     expect(result).toBe(`${(79.42).toLocaleString()} KB`)
   });
+
+  it("81328 bytes and 0 decimals", () => {
+    var result = BytesFormat(81328,0);
+    expect(result).toBe(`79 KB`)
+  });
 });
