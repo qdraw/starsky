@@ -18,13 +18,18 @@
 
 ## Usage instructions
 
-There are currently no binary releases but if you have followed the build instructions.
+There are binaries available through  [Github Releases](https://github.com/qdraw/starsky/releases/latest/)
 
-The following versions are available:
+### Windows 7 and newer
+- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-desktop.zip`
 
-![Starsky App versions](docs-assets/starskyapp-versions.jpg)
+### Mac OS 10.12 or newer
+- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-desktop.zip`
 
 > Mac OS 10.10 and 10.11 Are only supported in remote mode
+
+The following versions are available:
+![Starsky App versions](docs-assets/starskyapp-versions.jpg)
 
 The application bundle can run portable
 
@@ -32,7 +37,7 @@ The application bundle can run portable
 
 Use the settings menu to update the server settings
 
-![Starsky App versions](docs-assets/starskyapp-remote-options-v025.jpg)
+![Starsky App versions](docs-assets/starskyapp-remote-options-v040beta1.jpg)
 _In a future release this ugly layout will change_
 
 ## Cache
