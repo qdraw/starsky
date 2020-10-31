@@ -36,6 +36,8 @@ watchFs = (currentSession, editCacheParentFolder) => {
 
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
+        if (fileName.endsWith(".DS_Store")) return;
+        
         console.log('watch', eventType, fileName);
 
         var fullFilePath = path.join(editCacheParentFolder, fileName);
