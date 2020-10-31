@@ -88,7 +88,7 @@ describe("ArchiveContextWrapper", () => {
 
   });
 
-  describe("ArchiveEventListenerUseEffect", () => {
+  describe("ArchiveEventListenerUseEffect / updateArchiveFromEvent", () => {
 
     const { location } = window;
     /**
@@ -143,6 +143,42 @@ describe("ArchiveContextWrapper", () => {
           filePath: '/test.jpg',
           fileName: fileNameJestFn,
           parentDirectory: "/"
+        }];
+      var event = new CustomEvent(useSocketsEventName, {
+        detail
+      });
+
+      act(() => {
+        document.body.dispatchEvent(event);
+      });
+
+      component.unmount();
+    });
+
+    it("When outside current directory it should be ignored", (done) => {
+
+      var dispatch = (e: any) => {
+        // should ignore the first one
+        expect(e).toStrictEqual({
+          "add": [], "type": "add"
+        });
+        done();
+      }
+
+      function TestComponent() {
+        ArchiveEventListenerUseEffect(dispatch);
+        return (<></>)
+      }
+
+      var component = mount(<TestComponent />);
+
+      var detail = [
+        {
+          "colorclass": undefined,
+          ...newIFileIndexItem(),
+          filePath: '/test.jpg',
+          fileName: "test.jpg",
+          parentDirectory: "/__something__different"
         }];
       var event = new CustomEvent(useSocketsEventName, {
         detail

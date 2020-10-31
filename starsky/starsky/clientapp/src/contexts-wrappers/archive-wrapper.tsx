@@ -106,6 +106,5 @@ function updateArchiveFromEvent(event: Event, dispatch: React.Dispatch<ArchiveAc
     }
     toAddedFiles.push(pushMessage);
   }
-  console.log(toAddedFiles);
   dispatch({ 'type': 'add', add: toAddedFiles });
 }
