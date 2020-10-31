@@ -83,16 +83,24 @@ describe("AspectRatio", () => {
     expect(ratio).toBe("1:0");
   });
 
-  it("", () => {
-    var width = 4240 * 1.5;
-    var height = 2832 * 1.5;
+  it("4240 × 2832 (filter)", () => {
+    var width = 4240;
+    var height = 2832;
     var gcd = aspectRatio.gcd(width, height);
-    var ratio = aspectRatio.ratio(width, height);
+    var ratio = aspectRatio.ratio(width, height, true);
 
-    // expect(gcd).toBe(10);
-    // expect(ratio).toBe("1:0");
-    expect(gcd).toBe(24);
-    expect(ratio).toBe("3:2");
+    expect(gcd).toBe(16);
+    expect(ratio).toBe(null);
+  })
+
+  it("4240 × 2832 (no-filter)", () => {
+    var width = 4240;
+    var height = 2832;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height, false);
+
+    expect(gcd).toBe(16);
+    expect(ratio).toBe("265:177");
   })
 
   it("3758 × 2505", () => {
