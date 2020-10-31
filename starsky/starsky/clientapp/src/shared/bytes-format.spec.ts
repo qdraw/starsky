@@ -38,7 +38,12 @@ describe("BytesFormat", () => {
   });
 
   it("81328 bytes and 0 decimals", () => {
-    var result = BytesFormat(81328,0);
+    var result = BytesFormat(81328, 0);
+    expect(result).toBe(`79 KB`)
+  });
+
+  it("81328 bytes and minus 5 decimals as 0 decimals", () => {
+    var result = BytesFormat(81328, -5);
     expect(result).toBe(`79 KB`)
   });
 });
