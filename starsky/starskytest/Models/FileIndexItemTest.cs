@@ -272,9 +272,10 @@ namespace starskytest.Models
 	    [TestMethod]
 	    public void FileIndexItemTest_MakeModel_UsingField()
 	    {
-		    var item = new FileIndexItem{MakeModel = "Apple|iPad|??"};
+		    var item = new FileIndexItem{MakeModel = "Apple|iPhone SE|iPhone SE back camera 4.15mm f/2.2"};
 		    Assert.AreEqual("Apple", item.Make);
-		    Assert.AreEqual("iPad",item.Model);
+		    Assert.AreEqual("iPhone SE",item.Model);
+		    Assert.AreEqual("back camera 4.15mm f/2.2",item.LensModel);
 	    }
 
 	    [TestMethod]
@@ -282,6 +283,13 @@ namespace starskytest.Models
 	    {
 		    var item = new FileIndexItem{MakeModel = null};
 		    Assert.AreEqual(string.Empty, item.Make);
+	    }
+	    
+	    [TestMethod]
+	    public void FileIndexItemTest_MakeModel_UsingFieldNullLensModel()
+	    {
+		    var item = new FileIndexItem{MakeModel = null};
+		    Assert.AreEqual(string.Empty, item.LensModel);
 	    }
 
 	    [TestMethod]
