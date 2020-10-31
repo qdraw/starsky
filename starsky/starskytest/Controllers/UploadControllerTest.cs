@@ -308,13 +308,46 @@ namespace starskytest.Controllers
 			};
 
 			var toPlaceSubPath = "/yes01.xmp";
-			
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
 			var list = actionResult.Value as List<string>;
 
 			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
+		}
+				
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NoXml_SoIgnore()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile() // < - - - - - - this is not an xml
+			};
+
+			var toPlaceSubPath = "/yes01.xmp";
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
+			var list = actionResult.Value as List<string>;
+
+			Assert.AreEqual(0, list.Count);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NotFound()
+		{
+			var controller =
+				new UploadController(_import, _appSettings,  _iSync, 
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+				{
+					ControllerContext = RequestWithFile(),
+				};
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/not-found"; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()as NotFoundObjectResult;
+			
+			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 	}
 }
