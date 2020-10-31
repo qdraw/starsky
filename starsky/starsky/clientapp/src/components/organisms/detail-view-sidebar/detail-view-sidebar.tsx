@@ -313,7 +313,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span> mm&nbsp;&nbsp;&nbsp;
             {fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}
           </p>
-        </div> : ""}
+        </div> : null}
+
+      {fileIndexItem.lensModel ?
+        <div className="box">
+          <div className="icon icon--lens" />
+          <b>
+            <span data-test="lens-model" title={fileIndexItem.lensModel}>Lens model</span>
+          </b>
+          <p>{fileIndexItem.lensModel}</p>
+        </div> : null}
 
       {fileIndexItem.latitude && fileIndexItem.longitude ?
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +

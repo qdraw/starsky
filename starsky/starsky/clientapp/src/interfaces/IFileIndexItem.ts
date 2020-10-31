@@ -33,6 +33,7 @@ export interface IFileIndexItem {
     imageFormat?: ImageFormat;
     make?: string;
     model?: string;
+    lensModel?: string;
     aperture?: number;
     isoSpeed?: number;
     shutterSpeed?: string;

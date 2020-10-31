@@ -155,8 +155,11 @@ namespace starsky.foundation.readmeta.Services
 	            var width = GetContentNameSpace(property, "exif:PixelYDimension");
 	            if (width != null) item.SetImageWidth(width);
 	            
-//				Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
-
+	            var lensModel = GetContentNameSpace(property, "exifEX:LensModel");
+	            if (lensModel != null) item.SetMakeModel(lensModel,2);
+	            
+	            // dont show in production 
+				// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
             }
 

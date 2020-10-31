@@ -817,7 +817,9 @@ namespace starsky.foundation.database.Models
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    var makeModelList = MakeModel.Split("|".ToCharArray());
-			    return makeModelList.Length != MakeModelFixedLength ? string.Empty : makeModelList[2];
+			    // ReSharper disable once ConvertIfStatementToReturnStatement
+			    if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+			    return makeModelList[2].Replace(Model,string.Empty).Trim();
 		    }
 	    }
 	    
