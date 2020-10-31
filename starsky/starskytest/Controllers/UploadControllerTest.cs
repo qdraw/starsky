@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -311,15 +312,9 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
 
 			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
-			var list = actionResult.Value as List<ImportIndexItem>;
+			var list = actionResult.Value as List<string>;
 
-			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
-
-			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
-			Assert.IsTrue(fileSystemResult);
-
-			var queryResult = _query.SingleItem(toPlaceSubPath);
-			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
 		}
 	}
 }
