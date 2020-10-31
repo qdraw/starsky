@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Update Exif Height/ Width when writing XMP files
 - [x]   (Added) _Front-end_ Hide large aspect ratios, so show 4:3 but hide 120:450
 - [x]   (Added) _App_ Use separate config vars when in non-package mode and production 
+- [x]   (Added) _Back-end_ Logout page is working again
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
