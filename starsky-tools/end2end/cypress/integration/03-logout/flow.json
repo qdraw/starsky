@@ -1,0 +1,4 @@
+{
+    "logout": "[data-test=logout]",
+    "form": "form"
+}

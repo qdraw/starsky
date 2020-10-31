@@ -87,7 +87,7 @@ namespace starsky.Controllers
 		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
-		public IActionResult Login(string returnUrl = null)
+		public IActionResult LoginGet(string returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
@@ -108,7 +108,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
 
@@ -152,7 +152,7 @@ namespace starsky.Controllers
         public IActionResult Logout(string returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
-            return RedirectToAction(nameof(Login), new {ReturnUrl = returnUrl});
+            return RedirectToAction(nameof(LoginGet), new {ReturnUrl = returnUrl});
         }
         
         /// <summary>
