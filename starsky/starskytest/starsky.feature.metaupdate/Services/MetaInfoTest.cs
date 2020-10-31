@@ -15,7 +15,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void FileNotInIndex()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(), new AppSettings(),
-				new FakeSelectorStorage());
+				new FakeSelectorStorage(),null);
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
 			Assert.AreEqual(test.FirstOrDefault().Status, FileIndexItem.ExifStatus.NotFoundNotInIndex);
 		}
@@ -24,7 +24,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void NotFoundSourceMissing()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
-				new FakeSelectorStorage());
+				new FakeSelectorStorage(),null);
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
 			Assert.AreEqual(test.FirstOrDefault().Status, FileIndexItem.ExifStatus.NotFoundSourceMissing);
 		}
@@ -33,7 +33,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void ExtensionNotSupported_ExifWriteNotSupported()
 		{
 			var metaInfo = new MetaInfo(new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}), new AppSettings(),
-				new FakeSelectorStorage(new FakeIStorage(new List<string>(), new List<string> {"/test"})));
+				new FakeSelectorStorage(new FakeIStorage(new List<string>(), new List<string> {"/test"})),null);
 			var test = metaInfo.GetInfo(new List<string>{"/test"}, false);
 			Assert.AreEqual(test.FirstOrDefault().Status, FileIndexItem.ExifStatus.ExifWriteNotSupported);
 		}

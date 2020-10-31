@@ -54,7 +54,7 @@ namespace starsky.foundation.readmeta.Services
 
 	        if ( xmpFileIndexItem.IsoSpeed == 0 
 	             || string.IsNullOrEmpty(xmpFileIndexItem.Make) 
-	             || xmpFileIndexItem.DateTime.Year == 0)
+	             || xmpFileIndexItem.DateTime.Year == 0 || xmpFileIndexItem.ImageHeight == 0)
 	        {
 		        // so the sidecar file is not used
 		        var fileExifItemFile = _readExif.ReadExifFromFile(subPath,fileIndexItemWithPath);
@@ -122,7 +122,7 @@ namespace starsky.foundation.readmeta.Services
             
             // Try to catch a new object
             objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
-            _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,15,0));
+            _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,1,0));
             return (FileIndexItem) objectExifToolModel;
         }
 

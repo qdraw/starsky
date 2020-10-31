@@ -31,12 +31,14 @@ class AspectRatio {
    * Get the aspect ratio of an image
    * @param width in pixels
    * @param height and the height
+   * @param filter - ignore non values in output
    */
-  public ratio(width: number, height: number): string | null {
+  public ratio(width: number, height: number, filter: boolean = true): string | null {
     var r = this.gcd(width, height);
     var widthRatio = width / r;
     var heightRatio = height / r;
     if (width === widthRatio && height === heightRatio) return null;
+    if (filter && widthRatio > 25) return null;
     return widthRatio + ":" + heightRatio;
   }
 
