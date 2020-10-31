@@ -21,8 +21,12 @@ namespace starskycore.Models
 	    /// <param name="request"></param>
         public ImportSettingsModel(HttpRequest request)
         {
-            int.TryParse(request.Headers["ColorClass"], out var colorClass);
-            ColorClass = colorClass;
+	        // the header defaults to zero, and that's not the correct default value
+	        if ( !string.IsNullOrWhiteSpace(request.Headers["ColorClass"]) )
+	        {
+		        int.TryParse(request.Headers["ColorClass"], out var colorClass);
+		        ColorClass = colorClass;
+	        }
 
             Structure = request.Headers["Structure"].ToString();
 

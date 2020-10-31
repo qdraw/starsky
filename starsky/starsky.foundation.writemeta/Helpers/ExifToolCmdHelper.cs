@@ -109,7 +109,7 @@ namespace starsky.foundation.writemeta.Helpers
         /// </summary>
         /// <param name="updateModel">data</param>
         /// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
-        /// <param name="includeSoftware">to include software name</param>
+        /// <param name="includeSoftware">to include the original software name</param>
         /// <returns>command line args</returns>
 	    private string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 	    {
@@ -132,6 +132,9 @@ namespace starsky.foundation.writemeta.Helpers
 		    
 	        command = UpdateSoftwareCommand(command, comparedNames, updateModel, includeSoftware);
 
+	        command = UpdateImageHeightCommand(command, comparedNames, updateModel);
+		    command = UpdateImageWidthCommand(command, comparedNames, updateModel);
+		        
 			command = UpdateTitleCommand(command, comparedNames, updateModel);
 		    command = UpdateColorClassCommand(command, comparedNames, updateModel);
 		    command = UpdateOrientationCommand(command, comparedNames, updateModel);
@@ -140,11 +143,11 @@ namespace starsky.foundation.writemeta.Helpers
 		    command = UpdateIsoSpeedCommand(command, comparedNames, updateModel);
 		    command = UpdateApertureCommand(command, comparedNames, updateModel);
 		    command = UpdateShutterSpeedCommand(command, comparedNames, updateModel);
-			
+
 		    command = UpdateFocalLengthCommand(command, comparedNames, updateModel);
 
 		    command = UpdateMakeModelCommand(command, comparedNames, updateModel);
-		    
+
 		    if ( command == initCommand ) return string.Empty;
 		    
 		    return command;
@@ -185,7 +188,7 @@ namespace starsky.foundation.writemeta.Helpers
 
 	        // Rename .dng files .xmp to update in exifTool
 	        var subPathsList = PathsListTagsFromFile(inputSubPaths);
-
+ 
 	        var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
         
 	        foreach (var path in subPathsList)
@@ -306,7 +309,15 @@ namespace starsky.foundation.writemeta.Helpers
             }
             return command;
         }
-	    
+        
+	    /// <summary>
+	    /// Update Software field
+	    /// </summary>
+	    /// <param name="command">exiftool command to add it to</param>
+	    /// <param name="comparedNames">list of all fields that are edited</param>
+	    /// <param name="updateModel">the model that has the data</param>
+	    /// <param name="includeSoftware">to include the original software name</param>
+	    /// <returns></returns>
 	    private static string UpdateSoftwareCommand(string command, List<string> comparedNames, FileIndexItem updateModel, bool includeSoftware)
 	    {
 		    if ( !comparedNames.Contains(nameof(FileIndexItem.Software).ToLowerInvariant()) )
@@ -325,6 +336,44 @@ namespace starsky.foundation.writemeta.Helpers
 				    " -Software=\"Starsky\" -CreatorTool=\"Starsky\" -HistorySoftwareAgent=\"Starsky\" " +
 				    "-HistoryParameters=\"\" -PMVersion=\"\" ";
 		    }
+		    
+		    return command;
+	    }
+	    
+	    /// <summary>
+	    /// Update Meta Field that contains Image Height (DOES NOT change the actual size)
+	    /// </summary>
+	    /// <param name="command">exiftool command to add it to</param>
+	    /// <param name="comparedNames">list of all fields that are edited</param>
+	    /// <param name="updateModel">the model that has the data</param>
+	    /// <returns></returns>
+	    private static string UpdateImageHeightCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.ImageHeight).ToLowerInvariant()) )
+			    return command;
+
+		    // add space before
+		    command +=
+			    $" -exifimageheight={updateModel.ImageHeight} ";
+		    
+		    return command;
+	    }
+	    
+	    /// <summary>
+	    /// Update Meta Field that contains Image Width (DOES NOT change the actual size)
+	    /// </summary>
+	    /// <param name="command">exiftool command to add it to</param>
+	    /// <param name="comparedNames">list of all fields that are edited</param>
+	    /// <param name="updateModel">the model that has the data</param>
+	    /// <returns></returns>
+	    private static string UpdateImageWidthCommand(string command, ICollection<string> comparedNames, FileIndexItem updateModel)
+	    {
+		    if ( !comparedNames.Contains(nameof(FileIndexItem.ImageWidth).ToLowerInvariant()) )
+			    return command;
+
+		    // add space before
+		    command +=
+			    $" -exifimagewidth={updateModel.ImageWidth} ";
 		    
 		    return command;
 	    }

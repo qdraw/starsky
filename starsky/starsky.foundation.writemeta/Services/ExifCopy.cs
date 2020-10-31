@@ -68,6 +68,7 @@ namespace starsky.foundation.writemeta.Services
 	    
 		/// <summary>
 		/// Keep within the same storage provider
+		/// Used for example by Import
 		/// </summary>
 		/// <param name="fromSubPath"></param>
 		/// <param name="toSubPath"></param>
@@ -78,7 +79,7 @@ namespace starsky.foundation.writemeta.Services
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);
-			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames, false);
+			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames);
 		}
 
 
