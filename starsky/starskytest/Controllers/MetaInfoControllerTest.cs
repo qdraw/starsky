@@ -29,7 +29,7 @@ namespace starskytest.Controllers
 				new FakeSelectorStorage(new FakeIStorage(new List<string>(), 
 					new List<string>{"/test.jpg","/readonly/image.jpg"}, new List<byte[]>{ 
 						CreateAnImage.Bytes, 
-						CreateAnImage.Bytes})));
+						CreateAnImage.Bytes})),null);
 			
 		}
 		

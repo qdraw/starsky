@@ -85,6 +85,10 @@
   background-image: url('../images/baseline-photo-24px.svg');
 }
 
+.detailview-sidebar .box .icon.icon--lens {
+  background-image: url('../images/baseline-lens-24px.svg');
+}
+
 @media (prefers-color-scheme: dark) {
   .detailview-sidebar .box .icon {
     filter: invert(100%);

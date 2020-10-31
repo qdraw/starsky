@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -22,12 +23,12 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
 
-		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
+		public MetaInfo(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IMemoryCache memoryCache)
 		{
 			_query = query;
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_readMeta = new ReadMeta(_iStorage);
+			_readMeta = new ReadMeta(_iStorage,_appSettings, memoryCache);
 			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 		}
 		
@@ -82,7 +83,7 @@ namespace starsky.feature.metaupdate.Services
 					collectionItem.CollectionPaths = collectionSubPathList;
 					collectionItem.ImageFormat =
 						ExtensionRolesHelper.MapFileTypesToExtension(collectionSubPath);
-        
+					collectionItem.Size = _iStorage.Info(collectionSubPath).Size;
 					fileIndexResultsList.Add(collectionItem);
 				}
 			}

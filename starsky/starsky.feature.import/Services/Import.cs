@@ -411,6 +411,7 @@ namespace starsky.feature.import.Services
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
 				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+			    // todo: add sidecar
 		    }
 
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 

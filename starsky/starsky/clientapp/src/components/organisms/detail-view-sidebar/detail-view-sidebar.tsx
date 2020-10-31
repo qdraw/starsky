@@ -8,6 +8,7 @@ import useLocation from '../../../hooks/use-location';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import AspectRatio from '../../../shared/aspect-ratio';
+import BytesFormat from '../../../shared/bytes-format';
 import { CastToInterface } from '../../../shared/cast-to-interface';
 import { ClipboardHelper } from '../../../shared/clipboard-helper';
 import { isValidDate, parseDate, parseRelativeDate, parseTime } from '../../../shared/date';
@@ -312,7 +313,16 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             <span data-test="focalLength">{fileIndexItem.focalLength.toFixed(1)}</span> mm&nbsp;&nbsp;&nbsp;
             {fileIndexItem.isoSpeed !== 0 ? <>ISO {fileIndexItem.isoSpeed}</> : null}
           </p>
-        </div> : ""}
+        </div> : null}
+
+      {fileIndexItem.lensModel ?
+        <div className="box">
+          <div className="icon icon--lens" />
+          <b>
+            <span data-test="lens-model" title={fileIndexItem.lensModel}>Lens model</span>
+          </b>
+          <p>{fileIndexItem.lensModel}</p>
+        </div> : null}
 
       {fileIndexItem.latitude && fileIndexItem.longitude ?
         <a className="box" target="_blank" rel="noopener noreferrer" href={"https://www.openstreetmap.org/?mlat=" +
@@ -338,11 +348,11 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           <p>
             {index === 1 ? <>In een collectie:</> : null} {index + 1} van {collections.length}.
             {item === fileIndexItem.filePath && fileIndexItem.imageWidth !== 0 && fileIndexItem.imageHeight !== 0 ?
-              <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels&nbsp;&nbsp;{
+              <span>&nbsp;&nbsp;{fileIndexItem.imageWidth}&times;{fileIndexItem.imageHeight} pixels{
                 new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight) ? <>
-                  ratio: {new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight)}
+                  &nbsp;&nbsp;ratio: {new AspectRatio().ratio(fileIndexItem.imageWidth, fileIndexItem.imageHeight)}
                 </> : null
-              }
+              }{fileIndexItem.size ? <>&nbsp;&nbsp;{BytesFormat(fileIndexItem.size, 1)}</> : null}
               </span>
               : null}
           </p>
