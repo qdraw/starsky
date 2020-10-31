@@ -41,6 +41,7 @@ export interface IFileIndexItem {
     locationCity?: string;
     imageWidth: number;
     imageHeight: number;
+    size?: number;
 }
 
 export enum ImageFormat {
