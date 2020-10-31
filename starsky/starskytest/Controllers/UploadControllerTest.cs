@@ -349,5 +349,20 @@ namespace starskytest.Controllers
 			
 			Assert.AreEqual(404,actionResult.StatusCode);
 		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NoToHeader_BadRequest()
+		{
+			var controller =
+				new UploadController(_import, _appSettings, _iSync, 
+					new FakeSelectorStorage(new FakeIStorage()), _query, new FakeIWebSocketConnectionsService())
+				{
+					ControllerContext = {HttpContext = new DefaultHttpContext()}
+				};
+			
+			var actionResult = await controller.UploadToFolderSidecarFile()as BadRequestObjectResult;
+			
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
 	}
 }
