@@ -53,6 +53,7 @@ namespace starsky.Controllers
 		/// <summary>
 		/// Upload to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
+		/// Add header 'filename' when uploading direct without form
 		/// (ActionResult UploadToFolder)
 		/// </summary>
 		/// <response code="200">done</response>
@@ -128,6 +129,12 @@ namespace starsky.Controllers
 	        return Json(fileIndexResultsList);
         }
 		
+		/// <summary>
+		/// Check if xml can be parsed
+		/// Used by sidecar upload
+		/// </summary>
+		/// <param name="xml">string with xml</param>
+		/// <returns>true when parsed</returns>
 		private bool IsValidXml(string xml)
 		{
 			try
@@ -143,9 +150,9 @@ namespace starsky.Controllers
 		}
 		
 		/// <summary>
-		/// CHANGE!!!!!
-		/// Upload to specific folder (does not check if already has been imported)
+		/// Upload sidecar file to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
+		/// Add header 'filename' when uploading direct without form
 		/// (ActionResult UploadToFolder)
 		/// </summary>
 		/// <response code="200">done</response>
