@@ -477,7 +477,13 @@ namespace starsky.foundation.writemeta.Helpers
 		    var make = updateModel.Make;
 		    var model = updateModel.Model;
 		    command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
-
+		    
+		    if ( !string.IsNullOrWhiteSpace(updateModel.LensModel) )
+		    {
+			    // add space before
+			    command += $" -lensmodel=\"{updateModel.LensModel}\" ";
+		    }
+		    
 		    return command;
 	    }
 

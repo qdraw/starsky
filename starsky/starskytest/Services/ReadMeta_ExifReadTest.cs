@@ -88,8 +88,6 @@ namespace starskytest.Services
 		 [ExcludeFromCoverage]
 		 public void ExifRead_GetExifDateTimeTest()
 		 {
-		     // Incomplete unit test 
-		     // todo: fix this test
 		     var dir2 = new ExifIfd0Directory();
 		     dir2.Set(IptcDirectory.TagDigitalDateCreated, "20101212");
 		     dir2.Set(IptcDirectory.TagDigitalTimeCreated, "124135+0000");
@@ -97,25 +95,21 @@ namespace starskytest.Services
 		     dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
 		     dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
 
-		     var iStorage = new FakeIStorage();
 		     var t = new ReadMetaExif(null).GetExifDateTime(dir2);
-
 		     var date2 = new DateTime(2010, 12, 12, 12, 41, 35);
 		     var date = new DateTime();
 		     Assert.AreEqual(
 		         date, t);
 		     Assert.AreNotEqual(t,null);
 		     Assert.AreNotEqual(t,date2);
-
 		 }
-
-
 
 		 [TestMethod]
 		 public void ExifRead_ReadExifFromFileTest()
 		 {
 		     var newImage = CreateAnImage.Bytes;
-		     var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+		     var fakeStorage = new FakeIStorage(new List<string>{"/"},
+			     new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 		     
 		     var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
 		     
@@ -134,13 +128,19 @@ namespace starskytest.Services
 		     Assert.AreEqual( 6,item.LocationAltitude);
 		     Assert.AreEqual(100, item.FocalLength);
 		     Assert.AreEqual(new DateTime(2018,04,22,16,14,54), item.DateTime);
+		     
+		     Assert.AreEqual( "Sony|SLT-A58|24-105mm F3.5-4.5", item.MakeModel);
+		     Assert.AreEqual( "Sony", item.Make);
+		     Assert.AreEqual( "SLT-A58", item.Model);
+		     Assert.AreEqual( "24-105mm F3.5-4.5", item.LensModel);
 		 }
 		 
 		 [TestMethod]
 		 public void ExifRead_ReadExif_FromPngInFileXMP_FileTest()
 		 {
 		     var newImage = CreateAnPng.Bytes;
-		     var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.png"},new List<byte[]>{newImage});
+		     var fakeStorage = new FakeIStorage(new List<string>{"/"},
+			     new List<string>{"/test.png"},new List<byte[]>{newImage});
 		     
 		     var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
 
