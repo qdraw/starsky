@@ -43,6 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Uploading image with colorClass keeps it own colorClass instead of number 0/ grey
 - [x]   (Fixed) _Back-end_ Remove file from temp folder after thumbnail upload (and copy it to thumbnailTemp)
 - [x]   (Deprecated) _inotify-settings_ Plans to integrate inotify-wait in to the core product
+- [x]   (Added) _Back-end_ Add Caching back for /api/info to 1 minute
+- [x]   (Added) _Back-end_ Add Lens Info as field within MakeModel (exif read / xmp read / exiftool write)
+- [x]   (Added) _Back-end_ Update Exif Height/ Width when writing XMP files
+- [x]   (Added) _Front-end_ Hide large aspect ratios,so show 4:3 but hide 120:450
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
