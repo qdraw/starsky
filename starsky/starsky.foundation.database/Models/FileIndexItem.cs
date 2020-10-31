@@ -669,6 +669,40 @@ namespace starsky.foundation.database.Models
         public List<string> CollectionPaths { get; set; } = new List<string>();
 
 		/// <summary>
+		/// Database string to store sidecar paths
+		/// </summary>
+		[JsonIgnore]
+		public string SidecarExtensions { get; set; } = "";
+
+		/// <summary>
+		/// List of Sidecar files
+		/// </summary>
+		[NotMapped]
+		public HashSet<string> SidecarExtensionsList
+		{
+			get
+			{
+				if ( string.IsNullOrWhiteSpace(SidecarExtensions) ) return new HashSet<string>();
+				return 
+					new HashSet<string>(
+						SidecarExtensions.Split('|')
+							.Where(p => !string.IsNullOrWhiteSpace(p)));
+			}
+		}
+		
+		/// <summary>
+		/// Add extensions without dot
+		/// </summary>
+		/// <param name="ext">ext without dot</param>
+		public void AddSidecarExtension(string ext)
+		{
+			var current = SidecarExtensionsList;
+			current.Add(ext);
+			SidecarExtensions = string.Join("|", current);
+		}
+
+		
+		/// <summary>
 		/// Duplicate this item in memory.
 		/// </summary>
 		/// <returns>FileIndexItem duplicated</returns>
@@ -867,7 +901,8 @@ namespace starsky.foundation.database.Models
 			makeModelList[fieldIndex] = titleValue;
 
 			// Store Make: APPLE as Apple in the database
-			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = 
+				CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 
 			_makeModel = FixedListToString(makeModelList);
 	    }

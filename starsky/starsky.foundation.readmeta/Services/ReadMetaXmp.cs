@@ -24,26 +24,26 @@ namespace starsky.foundation.readmeta.Services
         {
 	        if(databaseItem == null) databaseItem = new FileIndexItem();
 
-            // Read content from sidecar xmp file
-            if (ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath))
-            {
-                // Parse an xmp file for this location
-	            var xmpSubPath =
-		            ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
-                if ( _iStorage.ExistFile(xmpSubPath) )
-                {
-                    // Read the text-content of the xmp file.
-                    var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
-                    // Get the data from the xmp
-                    databaseItem = GetDataFromString(xmp,databaseItem);
-                }
-            }
+	        // Parse an xmp file for this location
+	        var xmpSubPath =
+		        ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
+	        // also add when the file is a jpeg, we are not writing to it then
+	        if ( _iStorage.ExistFile(xmpSubPath) ) databaseItem.AddSidecarExtension("xmp");
+
+	        // Read content from sidecar xmp file
+	        if ( !ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath) ||
+	             !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
+	        
+	        // Read the text-content of the xmp file.
+            var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
+            // Get the data from the xmp
+            databaseItem = GetDataFromString(xmp,databaseItem);
             return databaseItem;
         }
         
         public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
-            // Does not require appsettings
+            // Does not require appSettings
             
             if(databaseItem == null) databaseItem = new FileIndexItem();
 	        

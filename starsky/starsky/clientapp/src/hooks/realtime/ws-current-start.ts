@@ -28,7 +28,7 @@ function parseJson(data: string): any {
 
 function parseMessage(item: string) {
   if (!item) return;
-  console.log('update', item);
+  console.log('[use-sockets] update', item);
   document.body.dispatchEvent(new CustomEvent(useSocketsEventName, { detail: item, bubbles: false }))
 }
 

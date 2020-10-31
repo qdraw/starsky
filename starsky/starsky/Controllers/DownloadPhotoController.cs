@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
@@ -24,15 +25,40 @@ namespace starsky.Controllers
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		}
-		
+
 		/// <summary>
-        /// Select manualy the orginal or thumbnail
+		/// Download sidecar file for example image.xmp
+		/// </summary>
+		/// <param name="f">string, 'sub path' to find the file</param>
+		/// <returns>FileStream with image</returns>
+		/// <response code="200">returns content of the file</response>
+		/// <response code="404">source image missing</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpGet("/api/download-sidecar")]
+		[ProducesResponseType(200)] // file
+		[ProducesResponseType(404)] // not found
+		public async Task<IActionResult> DownloadSidecar(string f)
+		{
+			if ( !ExtensionRolesHelper.IsExtensionSidecar(f))
+			{
+				return NotFound("FileName is not a sidecar");
+			}
+			
+			if (!_iStorage.ExistFile(f))
+				return NotFound($"source image missing {f}" );
+
+			var fs = _iStorage.ReadStream(f);
+			return File(fs, MimeHelper.GetMimeTypeByFileName(f));
+		}
+
+		/// <summary>
+        /// Select manually the original or thumbnail
         /// </summary>
         /// <param name="f">string, 'sub path' to find the file</param>
         /// <param name="isThumbnail">true = 1000px thumb (if supported)</param>
         /// <param name="cache">true = send client headers to cache</param>
         /// <returns>FileStream with image</returns>
-        /// <response code="200">returns content of the file or when json is true, "OK"</response>
+        /// <response code="200">returns content of the file</response>
         /// <response code="404">source image missing</response>
         /// <response code="500">"Thumbnail generation failed"</response>
         /// <response code="401">User unauthorized</response>
@@ -47,7 +73,10 @@ namespace starsky.Controllers
                                                             "instead of ?isthumbnail= ");
 
             var singleItem = _query.SingleItem(f);
-            if (singleItem == null) return NotFound("not in index " + f);
+            if ( singleItem == null)
+            {
+	            return NotFound("not in index " + f);
+            }
 
             if (!_iStorage.ExistFile(singleItem.FileIndexItem.FilePath))
                 return NotFound($"source image missing {singleItem.FileIndexItem.FilePath}" );

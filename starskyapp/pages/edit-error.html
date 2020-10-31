@@ -1,0 +1,21 @@
+
+<html>
+<title> There are errors</title>
+
+    <body>
+        <p>There are errors</p>
+        <button onclick="window.close()">Close Window</button>
+    </body>
+    <script>
+        setTimeout(()=>{
+            window.close();
+        }, 8000);
+
+        var error = new URLSearchParams(window.location.search).get("error");
+        if (error) {
+            document.querySelector("p").innerText = error;
+        }
+
+        document.querySelector("button").focus();
+    </script>
+</html>

@@ -1,11 +1,10 @@
 const {getBaseUrlFromSettings } = require('./get-base-url-from-settings')
-const {  net, BrowserWindow } = require('electron')
-const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
+const {  net } = require('electron')
+const createNewEditWindow = require('./edit-windows').createNewEditWindow
 var path = require('path');
 const editFileDownload = require('./edit-file-download').editFileDownload;
-
-const editWindows = new Set();
-exports.editWindows = editWindows;
+const doDownloadRequest = require('./edit-file-download').doDownloadRequest;
+const parentFullFilePathHelper = require('./edit-file-download').parentFullFilePathHelper;
 
 exports.handleExitKeyPress = (fromMainWindow) => {
 
@@ -16,26 +15,37 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     var filePath = new URLSearchParams(new URL(latestPage).search).get("f");
     if (!filePath) return;
 
-    // fromMainWindow.webContents.session.cookies.get({}, (error, cookies) => {
-    //     console.log(error, cookies)
-    // });
-
     doRequest(filePath, fromMainWindow.webContents.session, (data) =>  {
-
-        if (data.pageType !== "DetailView" || data.isReadOnly) {
+        if (!data || !data.fileIndexItem || data.fileIndexItem.status !== "Default") {
+            createNewEditWindow(data);
             return;
         }
 
-        // createNewWindow(data,filePath)
-        console.log(data.fileIndexItem.collectionPaths);
+        // when selecting a tiff image, the jpg will be picked 
+        // the last one is always picked
+        var subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
 
-        var lastCollectionInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
-        console.log(lastCollectionInList);
 
-        editFileDownload(fromMainWindow,lastCollectionInList);
+        // get info of raw file and get xmp
+        // needed app version 0.4 or newer
+        if (   data 
+            && data.fileIndexItem.fileCollectionName
+            && data.fileIndexItem.sidecarExtensionsList
+            && data.fileIndexItem.sidecarExtensionsList[0]) {
+
+                var ext = data.fileIndexItem.sidecarExtensionsList[0];
+                var sidecarFile = path.join(data.fileIndexItem.parentDirectory,    
+                                  data.fileIndexItem.fileCollectionName + "." + ext);
+                // download xmp file
+                doDownloadRequest(fromMainWindow, 'download-sidecar', 
+                     parentFullFilePathHelper(sidecarFile), sidecarFile)
+        }
+
+        // download is included
+        editFileDownload(fromMainWindow,subPathLastColInList).catch((e)=>{
+            createNewEditWindow({isError: true, error: e});
+        });
     })
-
-    
 }
 
 function doRequest(filePath, session, callback) {
@@ -71,37 +81,3 @@ function doRequest(filePath, session, callback) {
     return;
 }
 
-function createNewWindow(data, filePath) {
-
-    const mainWindowStateKeeper = windowStateKeeper('main')
-    let editWindow = new BrowserWindow({
-        x: mainWindowStateKeeper.x,
-        y: mainWindowStateKeeper.y,
-        width: 400,
-        height: 200,
-        webPreferences: {
-            enableRemoteModule: false,
-            contextIsolation: true,
-            preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
-        }
-    });
-
-    editWindow.on('closed', () => {
-        editWindows.delete(editWindow);
-        editWindow = null;
-        });
-    editWindows.add(editWindow);
-
-    if (data.isError) {
-        editWindow.loadFile('pages/edit-connection-error.html', { query: {"f" : filePath}});
-        return;
-    }
-    if (data.pageType !== "DetailView" || data.isReadOnly) {
-        console.log("Sorry, your not allowed or able to do this");
-        editWindow.loadFile('pages/edit-not-allowed.html', { query: {"f" : filePath}});
-        return;
-    }
-
-    editWindow.loadFile('pages/edit-save-as.html', { query: {"f" : filePath}});
-
-}

@@ -1,12 +1,12 @@
 var path = require('path');
-const { session, net } = require('electron')
+const { app, net } = require('electron')
 const fs = require('fs');
 const { mainWindows } = require('./main-window');
-const electronCacheLocation = require('./electron-cache-location').electronCacheLocation;
+const { getBaseUrlFromSettingsSlug } = require('./get-base-url-from-settings');
 
 watchForChanges = () => {
-    var editCacheParentFolder = path.join(electronCacheLocation(), "edit")
-  
+    var editCacheParentFolder = path.join(app.getPath("documents"), "Starsky");
+
 	console.log("! " + editCacheParentFolder);
     var currentSession = mainWindows.values().next().value.webContents.session;
 
@@ -22,37 +22,63 @@ watchForChanges = () => {
     });
 }
 
+var toDoQueue = [];
+
+replaceToSubPath = (fullFilePath, parentCurrentFullFilePathFolder) => {
+    var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
+    subPath = subPath.replace(/\\/ig,"/");
+    return subPath;
+}
+
 watchFs = (currentSession, editCacheParentFolder) => {
+    var parentCurrentFullFilePathFolder = path.join(app.getPath("documents"), "Starsky", getBaseUrlFromSettingsSlug());
+    console.log("parentCurrentFullFilePathFolder " + parentCurrentFullFilePathFolder)
+
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
+        if (fileName.endsWith(".DS_Store")) return;
+        
         console.log('watch', eventType, fileName);
 
         var fullFilePath = path.join(editCacheParentFolder, fileName);
-        var parentCurrentFullFilePathFolder = path.join(electronCacheLocation(), "edit", getBaseUrlFromSettingsSlug());
 
 		if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
 
-		console.log("parentCurrentFullFilePathFolder " + parentCurrentFullFilePathFolder)
         if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
 
-        var subPath = fullFilePath.replace(parentCurrentFullFilePathFolder, "");
-		subPath = subPath.replace(/\\/ig,"/");
-		
-		
         console.log('fullFilePath', fullFilePath);
-        console.log('subPath', subPath);
-        doUploadRequest(currentSession,fullFilePath,subPath);
+        console.log('subPath', replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+
+        toDoQueue.push(fullFilePath);
     });
+
+    setInterval(()=> {
+        let uniqueToQueue = [...new Set(toDoQueue)];
+        toDoQueue = [];
+
+        if (!uniqueToQueue || uniqueToQueue.length === 0) return;
+
+        console.log('uniqueToQueue' , uniqueToQueue);
+        console.log('currentSession', currentSession);
+        
+        uniqueToQueue.forEach(fullFilePath => {
+            if (fs.existsSync(fullFilePath)) {
+                doUploadRequest(currentSession,fullFilePath,replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+            }
+        });
+    },10000)
 }
 
-
-doUploadRequest = (currentSession, fullFilePath, toSubPath) => {
+doUploadRequest = (currentSession, fullFilePath, toSubPath, callback) => {
     if (!currentSession) return;
-    console.log('> run upload');
+
+    var url = toSubPath.endsWith(".xmp") ? getBaseUrlFromSettings() + "/starsky/api/upload-sidecar" : 
+        getBaseUrlFromSettings() + "/starsky/api/upload";
+    console.log('> run upload ' + url);
 
     const request = net.request({
         useSessionCookies: true,
-        url: getBaseUrlFromSettings() + "/starsky/api/upload", 
+        url, 
         session: currentSession,
         method: 'POST',
         headers: {
@@ -62,6 +88,7 @@ doUploadRequest = (currentSession, fullFilePath, toSubPath) => {
         },
     });
 
+    // Reading response from API
     let body = '';
     request.on('response', (response) => {
         if (response.statusCode !== 200) console.log(`HEADERS: ${JSON.stringify(response.headers)} - ${toSubPath} -  ${response.statusCode}`)
@@ -74,17 +101,19 @@ doUploadRequest = (currentSession, fullFilePath, toSubPath) => {
             console.log(`BODY: ${body}`)
         })
     });
-	
-
+    
+    // And now Upload
 	fs.readFile(fullFilePath, function (err, data) {
 		if(err) console.log(fullFilePath, err);
 		// skip error for now
 		if (err) return;
 		request.write(data);
-		request.end();
+        request.end();
+        request.on('finish', () => {
+            console.log('--finish doUploadRequest');
+            if (callback) callback();
+        });
 	});
-
-
 }
 
 module.exports = {

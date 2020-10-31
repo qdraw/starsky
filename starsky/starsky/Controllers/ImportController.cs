@@ -127,6 +127,7 @@ namespace starsky.Controllers
 	    /// Upload thumbnail to ThumbnailTempFolder
 	    /// Make sure that the filename is correct, a base32 hash of length 26;
 	    /// Overwrite if the Id is the same
+	    /// Also known as Thumbnail Upload or Thumbnail Import
 	    /// </summary>
 	    /// <returns>json of thumbnail urls</returns>
 	    /// <response code="200">done</response>

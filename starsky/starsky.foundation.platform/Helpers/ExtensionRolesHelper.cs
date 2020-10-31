@@ -12,6 +12,11 @@ namespace starsky.foundation.platform.Helpers
 	public static class ExtensionRolesHelper
 	{
 		/// <summary>
+		/// List of Sidecar files
+		/// </summary>
+		private static readonly List<string> ExtensionSidecar = new List<string> {"xmp",".meta.json"};
+		
+		/// <summary>
 		/// List of .jpg,.jpeg extensions
 		/// </summary>
 		private static readonly List<string> ExtensionJpg = new List<string> {"jpg", "jpeg"};
@@ -168,7 +173,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 
 		/// <summary>
-		/// is this filename with extension a filetype that needs a .xmp file 
+		/// Should we include this file in the database?
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, </returns>
@@ -178,7 +183,7 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
-		/// is this filename with extension a filetype that imagesharp can read/write 
+		/// is this filename with extension a filetype that imageSharp can read/write 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
 		/// <returns>true, if imageSharp can write to this</returns>
@@ -234,6 +239,16 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
+		/// Is the current file a sidecar file or not 
+		/// </summary>
+		/// <param name="filename">the name of the file with extenstion</param>
+		/// <returns>true, </returns>
+		public static bool IsExtensionSidecar(string filename)
+		{
+			return IsExtensionForce(filename, ExtensionSidecar);
+		}
+		
+		/// <summary>
 		/// is this filename with extension a fileType that needs a item that is in the list 
 		/// </summary>
 		/// <param name="filename">the name of the file with extenstion</param>
@@ -270,12 +285,11 @@ namespace starsky.foundation.platform.Helpers
 			foreach ( Match match in matchCollection )
 			{
 				if ( match.Value.Length < 2 ) continue;
-				var ext = match.Value.Remove(0, 1).ToLowerInvariant();
 				// Extension must be three letters
-				if ( ExtensionForceXmpUseList.Contains(ext) && filename.Length >= match.Index + 4 )
+				// removed: ExtensionForceXmpUseList.Contains(match.Value.Remove(0, 1).ToLowerInvariant()) && 
+				if (  filename.Length >= match.Index + 4 )
 				{
 					var matchValue = filename.Substring(0, match.Index + 4).ToCharArray();
-					
 					matchValue[match.Index+1] = 'x';
 					matchValue[match.Index+2] = 'm';
 					matchValue[match.Index+3] = 'p';
