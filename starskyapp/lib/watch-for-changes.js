@@ -36,20 +36,20 @@ watchFs = (currentSession, editCacheParentFolder) => {
 
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
-        if (fileName.endsWith(".DS_Store")) return;
-        
-        console.log('watch', eventType, fileName);
+        if (!fileName.endsWith(".DS_Store")) {
+            console.log('watch ~', eventType, fileName);
 
-        var fullFilePath = path.join(editCacheParentFolder, fileName);
-
-		if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
-
-        if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
-
-        console.log('fullFilePath', fullFilePath);
-        console.log('subPath', replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
-
-        toDoQueue.push(fullFilePath);
+            var fullFilePath = path.join(editCacheParentFolder, fileName);
+    
+            if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
+    
+            if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
+    
+            console.log('fullFilePath', fullFilePath);
+            console.log('subPath', replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+    
+            toDoQueue.push(fullFilePath);
+        }
     });
 
     setInterval(()=> {
@@ -63,7 +63,8 @@ watchFs = (currentSession, editCacheParentFolder) => {
         
         uniqueToQueue.forEach(fullFilePath => {
             if (fs.existsSync(fullFilePath)) {
-                doUploadRequest(currentSession,fullFilePath,replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
+                doUploadRequest(currentSession,fullFilePath,
+                    replaceToSubPath(fullFilePath,parentCurrentFullFilePathFolder));
             }
         });
     },10000)

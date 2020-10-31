@@ -17,7 +17,8 @@ function getOsKey() {
 }
 
 function isLegacyMacOS() {
-  return process.platform === "darwin" && (process.getSystemVersion().startsWith("10.10") || process.getSystemVersion().startsWith("10.11") ) 
+  return process.platform === "darwin" && (process.getSystemVersion().startsWith("10.10") || 
+    process.getSystemVersion().startsWith("10.11") ) 
 }
 
 module.exports = {

@@ -142,7 +142,7 @@ namespace starskytest.Controllers
             };
             
             // Try login > result login false
-            await controller.Login(login);
+            await controller.LoginPost(login);
             // Test login
             Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
             
@@ -165,7 +165,7 @@ namespace starskytest.Controllers
             controller.Register(newAccount);
             
             // Try login again > now it must be succesfull
-            await controller.Login(login);
+            await controller.LoginPost(login);
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             
@@ -377,14 +377,14 @@ namespace starskytest.Controllers
 	    public void AccountController_LogInGet()
 	    {
 		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage);
-		    controller.Login();
+		    controller.LoginGet();
 	    }
 
 	    [TestMethod]
 	    public void AccountController_LogInGet_NotFound()
 	    {
 		    var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, new FakeSelectorStorage());
-		    var result = controller.Login() as ContentResult;
+		    var result = controller.LoginGet() as ContentResult;
 		    Assert.AreEqual("Please check if the client code exist",result.Content);
 	    }
 	    
@@ -437,7 +437,7 @@ namespace starskytest.Controllers
             controller.Register(newAccount);
             
             // login > it must be succesfull
-            await controller.Login(login);
+            await controller.LoginPost(login);
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             
@@ -458,7 +458,7 @@ namespace starskytest.Controllers
             controller.Register(newAccountDuplicate);
 
             // Try login again > now it must be succesfull
-            await controller.Login(login);
+            await controller.LoginPost(login);
             // Test login
             Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
             

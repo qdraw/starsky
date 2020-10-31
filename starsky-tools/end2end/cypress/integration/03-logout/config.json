@@ -1,0 +1,16 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/account/login?ReturnUrl=/",
+        "successUrl" : "/account/login",
+        "statusApi": "/starsky/api/account/status"
+      },
+      "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/account/login?ReturnUrl=/",
+        "successUrl" : "/account/login",
+        "statusApi": "/starsky/api/account/status"
+      }
+    }
+  }
