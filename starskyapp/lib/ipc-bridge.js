@@ -2,6 +2,7 @@ const { dialog, ipcMain , net, app, BrowserWindow } = require('electron')
 const appConfig = require('electron-settings');
 const mainWindows = require('./main-window').mainWindows
 const editFileDownload = require('./edit-file-download').editFileDownload;
+const isPackaged = require('./os-type').isPackaged
 
 exports.ipcBridge = () => {
 
@@ -23,7 +24,7 @@ exports.ipcBridge = () => {
     // }
     ipcMain.on("settings", (event, args) => {
 
-        var currentSettings = appConfig.get("settings");
+        var currentSettings = appConfig.get("remote_settings_" + isPackaged());
         
         if (args && args.location && !args.location.match(urlRegex) &&  !args.location.match(ipRegex) 
             && !args.location.startsWith('http://localhost:') && args.location != currentSettings.location) {
@@ -55,7 +56,7 @@ exports.ipcBridge = () => {
                     currentSettings.location = locationUrl;
                     // console.log('46', currentSettings);
                     
-                    appConfig.set("settings", currentSettings);
+                    appConfig.set("remote_settings_" + isPackaged(), currentSettings);
                 }
                 currentSettings.locationOk = locationOk
 
@@ -73,7 +74,7 @@ exports.ipcBridge = () => {
         }
 
         if(args) {
-            appConfig.set("settings", args);
+            appConfig.set("remote_settings_" + isPackaged(), args);
             // revoke url to clean session
             appConfig.set("remember-url","");
             // to avoid that the session is opened
@@ -82,7 +83,7 @@ exports.ipcBridge = () => {
             });
         }
 
-        var currentSettings = appConfig.get("settings");
+        var currentSettings = appConfig.get("remote_settings_" + isPackaged());
         if (!currentSettings) currentSettings = {};
         currentSettings.apiVersion = app.getVersion().match(new RegExp("^[0-9]+\\.[0-9]+","ig"));
 

@@ -2,6 +2,7 @@ const { BrowserWindow, Menu, MenuItem } = require('electron')
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 var path = require('path');
 const appConfig = require('electron-settings');
+const isPackaged = require('./os-type').isPackaged
 
 const mainWindows = new Set();
 exports.mainWindows = mainWindows;
@@ -53,7 +54,7 @@ exports.createMainWindow = () => {
 
   newWindow.webContents.session.webRequest.onHeadersReceived((res, callback) => {
 
-    var currentSettings = appConfig.get("settings");
+    var currentSettings = appConfig.get("remote_settings_" + isPackaged());
     var localhost = "http://localhost:9609 "; // with space on end
 
     whitelistDomain = localhost;

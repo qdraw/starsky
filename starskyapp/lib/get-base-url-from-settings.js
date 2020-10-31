@@ -1,8 +1,9 @@
 const appConfig = require('electron-settings');
+const isPackaged = require('./os-type').isPackaged
 
 getBaseUrlFromSettings = () => {
     var defaultUrl = "http://localhost:9609";
-    var currentSettings = appConfig.get("settings");
+    var currentSettings = appConfig.get("remote_settings_" + isPackaged());
     if (!currentSettings || !currentSettings.remote) return defaultUrl;
     return currentSettings.location;
 }

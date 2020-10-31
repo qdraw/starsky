@@ -49,7 +49,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Add Caching back for /api/info to 1 minute
 - [x]   (Added) _Back-end_ Add Lens Info as field within MakeModel (exif read / xmp read / exiftool write)
 - [x]   (Added) _Back-end_ Update Exif Height/ Width when writing XMP files
-- [x]   (Added) _Front-end_ Hide large aspect ratios,so show 4:3 but hide 120:450
+- [x]   (Added) _Front-end_ Hide large aspect ratios, so show 4:3 but hide 120:450
+- [x]   (Added) _App_ Use separate config vars when in non-package mode and production 
 
 # version 0.4.0-beta.0 - 2020-10-19
 _New Feature: In this release websockets are used (note: when using reverse config)_
@@ -73,7 +74,7 @@ _New Feature: In this release websockets are used (note: when using reverse conf
 - [x]   (Breaking change) _Back-end_ rename api from "/sync" to "/api/sync"
 - [x]   (Breaking change) _Back-end_ rename api from "/sync/rename" to "/api/sync/rename"
 - [x]   (Added) _Front-end_ When source is missing don't allow user to perform actions in DetailView
-- [x]   (Added) _Front-end_ Add link in "/account/login" to account register when user is already logged-in 
+- [x]   (Added) _Front-end_ Add link in "/account/login" to account register when user is already logged-in
 - [x]   (Fixed) _Back-end_ Upload with direct path is working again
 
 # version 0.3.3 - 2020-10-10
@@ -88,10 +89,10 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Added) _Front-end_ Add 'Move to Trash' to search pages
 - [x]   (Fixed) _Front-end_ Allow searching for query `!delete!`
 - [x]   (Fixed) _Front-end_ Allow case-insensitive search query for `-inurl`
-- [x]   (Fixed) _Front-end_ Add loading delete and undo delete for trash page 
+- [x]   (Fixed) _Front-end_ Add loading delete and undo delete for trash page
 - [x]   (Changed) _Front-end_ Upload multiple files after each other instead of in once
 - [x]   (Fixed) _Front-end_ Show error status when upload fails instead of loading
-- [x]   (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files 
+- [x]   (Added) _Front-end_ Archive/Search/Trash - When in select mode you can add multiple files
                             to the selection by pressing the shift key and click
 - [x]   (Added) _Front-end_ In the search suggestion field arrow up and down keys select next / prev
 - [x]   (Fixed) _Front-end_ When typing a suggestion remove the field gives you the main menu back
@@ -105,7 +106,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Fixed) _Front-end_ DetailView - Safari 12 and lower does autorotate the image correct
 - [x]   (Added) _CLI_ Stop with warning when running WebHtmlPublish over the same folder (checks for `_settings.json`)
 - [x]   (Fixed) _Front-end_ Archive - When click on a Link in Archive, with command key it should ignore preloader
-- [x]   (Fixed) _Front-end_ Modal Sync Manually - Folders with plus `+` in the url are synced 
+- [x]   (Fixed) _Front-end_ Modal Sync Manually - Folders with plus `+` in the url are synced
 - [x]   (Fixed) _Front-end_ Modal Sync Manually - When ColorClass is selected, its now updating the state to keep the selection
 - [x]   (Fixed) _Front-end_ Modal Sync Manually - Sync Manual and Clears Cache cleans now also the client cache.
 - [x]   (Fixed) _Front-end_ DetailView - When pressing ColorClass it also updated when going to the next and back to the same image.
@@ -113,7 +114,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Fixed) _Front-end_ Form Control allow command a or ctrl a when a field is full to select the entire text
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.8 (using SDK 3.1.402)
 - [x]   (Added) _CLI_ Add account creation by StarskyAdminCli
-- [x]   (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page. 
+- [x]   (Added) _AppSettings.UseHttpsRedirection_ - Redirect users to https page.
                                             You should enable before going to production. Always disabled in debug/develop mode
 - [x]   (Added) _CLI_ Show DateTime when the Assemblies are build with the flags: `-h -v`
 
@@ -131,7 +132,7 @@ _In the next major release websockets are used, please note when using a reverse
 - [x]   (Added) _Front-end_ DetailView - Add fast copy for DetailView (press c to save tags, title and description)
 - [x]   (Added) _Front-end_ DetailView - Add fast paste for DetailView (press v to overwrite tags, title and description)
 - [x]   (Added) _Front-end_ DetailView - Show Notification dialog when Copy or Paste action happens
-- [x]   (Fixed) _Front-end_ Search/DetailView - When going fast to the next/prev items this is requesting 
+- [x]   (Fixed) _Front-end_ Search/DetailView - When going fast to the next/prev items this is requesting
                             relativeObjects again to avoid displaying the next icon but not able to click on it
 - [x]   (Added) _Back-end_ Add Response compression in ASP.NET Core
 - [x]   (Fixed) _Back-end_ Change Cache time to 365 days for clientapp and wwwroot
@@ -148,7 +149,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Added) _Front-end_  Gpx view, go to current location (no marker, only change view)
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 3.4.3 2020-08-12)_
 - [x]   (Fixed) _Front-end_ Add Preloader icon when pressing ColorClassSelect
-- [x]   (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to 
+- [x]   (Fixed) _Front-end_ For Archive and Search: When in select mode and navigate next to
                             the select mode is still on but there are no items selected
 
 # version 0.3.0-beta.1 - 2020-08-16
@@ -241,7 +242,7 @@ _Note: When you upgrade from 0.2.7 please make sure you have applied the configu
 - [x]   (Fixed)  _Front-end_ use appendChild instead of append in portal for older browsers
 - [x]   (Fixed)  _Front-end_ order when files are added does now match the backend (archive-context)
 - [x]   (Removed) _Back-end_ Import to filter on files older than 2 years
-- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug.__ 
+- [x]   (Fixed)  _Back-end_  Import UnitTests __Can't build after 2020-04-22, Import UnitTests have a date bug.__
                              __For all versions older than 0.2.2__
 - [x]   (feature) _Back-end_ Import to async function refactor
 - [x]   (Fixed)  _Back-end_ Fixes for bugs introduced after refactoring
@@ -293,7 +294,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 - [x]	(feature) _Back-end_ Injection framework implemented
 - [x] 	(rename) _Back-end_ Feature renaming and docs updates
 - [x] 	(feature) _Back-end support for RAW that is not Sony for example Nikon `.NEF`
-- [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon, 
+- [x]   (feature) tiff, `arw`:sony, `dng`:adobe, `nef`:nikon, `raf`:fuji, `cr2`:canon,
                         `orf`:olympus, `rw2`:panasonic, `pef`:pentax,
 - [x]   (bugfix) _Back-end_ allow underscore import/upload (api name changed in later version)
 - [x]   (bugfix) _Front-end_ Download selection thumbnail right extension suggestion
@@ -326,7 +327,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 # version 0.1.16 - 2020-02-23
 - [x]  (bugfix) _Back-end_ `/api/import/fromUrl` Path Traversal Injection fix
-- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json` 
+- [x]  (feature) _Back-end_ Feature toggle to change from `Newtonsoft.Json` to `System.Text.Json`
                             _using Newtonsoft for this version_
 - [x]  (bugfix) _Frond-end_ Trash display content after deleted (changes in wrapper)
 - [x]  (rename) _Back-end_ `/api/import/allowed` to `/api/allowed-types/mimetype/sync`
@@ -357,7 +358,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 # version 0.1.14 - 2020-02-04
 - [x]   (bugfix) _back-end_ Security fixes in controllers
 - [x]   (bugfix) _back-end + front-end_ name: colorClassActiveList replace everywhere
-- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework). 
+- [x]   (version) _Back-end_ update to .NET .Core SDK 3.1.101 and version 3.0.2 (TargetFramework).
                             Run `./build.sh` before you start developing
 - [x]   (bugfix) _Front-end_ preloader when uploading
 - [x]   (bugfix) _Front-end_ translations in item-list-view, item-text-list-view,
@@ -436,7 +437,7 @@ _Upgrade to .NET Core 3.0 (TargetFramework) & EF Core 3.1-preview3_
 - [x] Indexes are working now for MySQL at the first time run
 - [x] Upgrade to .NET Core & EF Core 3.1-preview3 (EF Core 3.0 is missing PredicateBuilder support)
 - [x] (bugfix) 23:00 o'clock/first of month date.spec unittest
-- []  (Add warning) (bug) for iOS Safari only when using .local domains login fails 
+- []  (Add warning) (bug) for iOS Safari only when using .local domains login fails
                        (work around use ip-addresses) (update to iOS13)
 - [x] Update build pipeline to support multiple runtimes in 1 run
 - [x] Upgrade from Swagger 4.0.1 to Swagger 5 (has breaking changes)
@@ -469,7 +470,7 @@ _Works with  .NET Core SDK 3.0.100_
 - starsky-tools/thumbnail, added auto cleanup, allow ranges e.g. 1-20 ago
 - (V2 UI Archive/Trash) add Select all/Undo selection to menu
 - (bugfix) search queries shorter than 2 digits are working
-- __(behind feature flag)__ Front-end for Replace API `archive-sidebar-label-edit` in folder view 
+- __(behind feature flag)__ Front-end for Replace API `archive-sidebar-label-edit` in folder view
                             (add localStorage item with name `beta_replace`)
 - (front-end) `archive-sidebar-label-edit` split in separate components
 - (front-end) show collections in DetailView

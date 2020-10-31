@@ -17,10 +17,14 @@ function warmupScript(domainUrl, apiVersion, count, maxCount) {
   fetch(domainUrl + '/api/health')
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
-        fetch(domainUrl + '/api/health/version', { method: 'POST',  headers: {"x-api-version": `${apiVersion}`}})
-          .then((versionResponse) => {
+        fetch(domainUrl + '/api/health/version', { method: 'POST',  
+        headers: {
+          "x-api-version": `${apiVersion}`
+        }
+      }).then((versionResponse) => {
             if (versionResponse.status === 200) {
               window.location.href = domainUrl + appendAfterDomainUrl;
+              // when not navigating check: .on('will-navigate'
               return;
             }
             if (versionResponse.status === 400 && document.querySelectorAll('.upgrade').length === 1) {
