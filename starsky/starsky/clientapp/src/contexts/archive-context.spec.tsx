@@ -3,6 +3,7 @@ import { IArchive, newIArchive } from '../interfaces/IArchive';
 import { IArchiveProps } from '../interfaces/IArchiveProps';
 import { PageType } from '../interfaces/IDetailView';
 import { IExifStatus } from '../interfaces/IExifStatus';
+import ArrayHelper from '../shared/array-helper';
 import { ArchiveAction, archiveReducer } from './archive-context';
 
 describe("ArchiveContext", () => {
@@ -370,4 +371,78 @@ describe("ArchiveContext", () => {
 
   });
 
+  it("add -- duplicate (in collections mode true)", () => {
+
+    // current state
+    var state = {
+      fileIndexItems: [{
+        fileName: 'test0.jpg',
+        filePath: '/test0.jpg',
+        fileCollectionName: 'test0',
+        status: IExifStatus.Ok
+      }],
+      collections: true
+    } as IArchiveProps;
+
+    var add = {
+      fileName: 'test0.dng',
+      filePath: '/test0.dng',
+      fileCollectionName: 'test0',
+      status: IExifStatus.Ok
+    }
+
+    var uniqueResultsSpy = jest.spyOn(ArrayHelper.prototype, 'UniqueResults')
+      .mockImplementationOnce(() => [add])
+
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(uniqueResultsSpy).toBeCalledWith([{
+      "fileCollectionName": "test0",
+      "fileName": "test0.jpg",
+      "filePath": "/test0.jpg",
+      "status": "Ok"
+    }], 'fileCollectionName')
+
+    // the filter does not filter in jest, but it works in the browser
+    expect(result.fileIndexItems.length).toBe(1);
+  });
+
+  it("add -- duplicate (in collections mode false)", () => {
+
+    // current state
+    var state = {
+      fileIndexItems: [{
+        fileName: 'test0.jpg',
+        filePath: '/test0.jpg',
+        fileCollectionName: 'test0',
+        status: IExifStatus.Ok
+      }],
+      collections: false
+    } as IArchiveProps;
+
+    var add = {
+      fileName: 'test0.dng',
+      filePath: '/test0.dng',
+      fileCollectionName: 'test0',
+      status: IExifStatus.Ok
+    }
+
+    jest.spyOn(ArrayHelper.prototype, 'UniqueResults').mockReset()
+    var uniqueResultsSpy = jest.spyOn(ArrayHelper.prototype, 'UniqueResults')
+      .mockImplementationOnce(() => [add])
+
+    var action = { type: 'add', add } as any
+    var result = archiveReducer(state, action);
+
+    expect(uniqueResultsSpy).toBeCalledWith([{
+      fileName: 'test0.jpg',
+      filePath: '/test0.jpg',
+      fileCollectionName: 'test0',
+      status: IExifStatus.Ok
+    }], 'filePath')
+
+    // the filter does not filter in jest, but it works in the browser
+    expect(result.fileIndexItems.length).toBe(1);
+  });
 });
