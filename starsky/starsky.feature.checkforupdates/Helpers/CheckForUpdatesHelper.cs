@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using starsky.feature.checkForUpdates.Models;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.VersionHelpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.checkForUpdates.Helpers
@@ -37,7 +38,7 @@ namespace starsky.feature.checkForUpdates.Helpers
 
 			var version = tagName.Remove(0, 1);
 			
-			return true;
+			return SemVersion.Parse(version) >= SemVersion.Parse(_appSettings.AppVersion);
 		}
 
 	}
