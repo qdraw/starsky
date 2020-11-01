@@ -22,6 +22,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   const MessageSwitchButtonCollectionsOff = language.text("Per bestand (uit)", "Per file (off)");
   const MessageSwitchButtonIsSingleItemOn = language.text("Alles inladen", "Load everything");
   const MessageSwitchButtonIsSingleItemOff = language.text("Klein inladen", "Small loading");
+  const MessageSwitchButtonIsSocketOn = language.text("Realtime updates", "Realtime updates");
+  const MessageSwitchButtonIsSocketOff = language.text("Ververs zelf", "Refresh yourself");
 
   var history = useLocation();
 
@@ -42,8 +44,8 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
   }
 
-  var singleItem = localStorage.getItem("issingleitem");
-  const [isSingleItem, setIsSingleItem] = React.useState(singleItem === "false");
+  const [isSingleItem, setIsSingleItem] = React.useState(localStorage
+    .getItem("issingleitem") === "false");
 
   function toggleSlowFiles() {
     setIsSingleItem(!isSingleItem);
@@ -51,14 +53,14 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   }
 
   // to be removed in future release
-  const [isUseSockets, setUseSockets] = React.useState(localStorage.getItem("use-sockets") === null);
+  const [isUseSockets, setUseSockets] = React.useState(localStorage.getItem("use-sockets") === "false");
   function toggleSockets() {
     setUseSockets(!isUseSockets);
-    if (!isUseSockets) {
+    if (isUseSockets) {
       localStorage.removeItem("use-sockets");
       return;
     }
-    localStorage.setItem("use-sockets", "true");
+    localStorage.setItem("use-sockets", "false");
   }
   // end of removal
 
@@ -81,13 +83,13 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
         rightLabel={MessageSwitchButtonIsSingleItemOff}
         onToggle={() => toggleSlowFiles()} />
     </div>
-    {/* to be removed in future release  */}
+    {/* todo add tests  */}
     <div className="content--text">
-      Experimental feature to have realtime updates
       <SwitchButton isOn={isUseSockets} data-test="toggle-sockets" isEnabled={true}
-        leftLabel="Enable socket"
+        leftLabel={MessageSwitchButtonIsSocketOn}
         onToggle={() => toggleSockets()}
-        rightLabel="Disable socket" />
+        rightLabel={MessageSwitchButtonIsSocketOff}
+      />
     </div>
     {/* end of removal */}
     <div className="modal content--text">

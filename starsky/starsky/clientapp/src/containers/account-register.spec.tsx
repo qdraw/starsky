@@ -12,6 +12,16 @@ describe("AccountRegister", () => {
     shallow(<AccountRegister />)
   });
 
+  it("link to TOC exist", () => {
+    var compontent = shallow(<AccountRegister />)
+    expect(compontent.find('[data-test="toc"]')).toBeTruthy();
+  });
+
+  it("link to privacy exist", () => {
+    var compontent = shallow(<AccountRegister />)
+    expect(compontent.find('[data-test="privacy"]')).toBeTruthy();
+  });
+
   it("not allowed get 403 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
     const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({

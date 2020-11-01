@@ -21,6 +21,15 @@
   transition: all 0.1s ease-in-out;
 }
 
+/* switches opposite colors */
+@media (prefers-color-scheme: dark) {
+  .switch-field label {
+    background-color: #263238;
+    color: #fff;
+  }
+}
+
+
 .switch-field label:hover {
 	cursor: pointer;
 }
@@ -30,6 +39,16 @@
 	color: #fff;
   box-shadow: none;
 }
+
+/* white is selected instead of black */
+/* switches opposite colors */
+@media (prefers-color-scheme: dark) {
+  .switch-field input:checked + label {
+    background-color: #fff;
+    color: #263238;
+  }
+}
+
 
 .switch-field.disabled input:checked + label{
   background-color: #ECEFF1;
