@@ -485,6 +485,11 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool UseRealtime { get; set; } = true;
 
+	    /// <summary>
+	    /// Check if there are updates
+	    /// </summary>
+	    public bool CheckForUpdates { get; set; } = true;
+
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------
