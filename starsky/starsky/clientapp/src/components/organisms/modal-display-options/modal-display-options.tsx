@@ -52,7 +52,6 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     localStorage.setItem("issingleitem", isSingleItem.toString())
   }
 
-  // to be removed in future release
   const [isUseSockets, setUseSockets] = React.useState(localStorage.getItem("use-sockets") === "false");
   function toggleSockets() {
     setUseSockets(!isUseSockets);
@@ -62,7 +61,6 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     }
     localStorage.setItem("use-sockets", "false");
   }
-  // end of removal
 
   return (<Modal
     id="modal-display-options"
@@ -83,7 +81,6 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
         rightLabel={MessageSwitchButtonIsSingleItemOff}
         onToggle={() => toggleSlowFiles()} />
     </div>
-    {/* todo add tests  */}
     <div className="content--text">
       <SwitchButton isOn={isUseSockets} data-test="toggle-sockets" isEnabled={true}
         leftLabel={MessageSwitchButtonIsSocketOn}
@@ -91,7 +88,6 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
         rightLabel={MessageSwitchButtonIsSocketOff}
       />
     </div>
-    {/* end of removal */}
     <div className="modal content--text">
     </div>
   </Modal>)
