@@ -77,6 +77,7 @@ describe('Upload to folder', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
+    cy.wait(500)
 
     cy.get('.item.item--more').click()
     cy.get('.menu-option--input label').click()
