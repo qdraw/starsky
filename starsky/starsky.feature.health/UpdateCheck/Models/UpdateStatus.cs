@@ -1,5 +1,3 @@
-using System;
-
 namespace starsky.feature.health.UpdateCheck.Models
 {
 	public enum UpdateStatus
