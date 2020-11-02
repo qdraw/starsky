@@ -32,11 +32,9 @@ namespace starsky.feature.health.UpdateCheck.Services
 
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded()
 		{
-        	if ( !_appSettings.CheckForUpdates ) return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
-        			
-			if ( _appSettings == null ) 
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty);
-			
+			if (_appSettings == null || !_appSettings.CheckForUpdates ) 
+				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
+
 			// The CLI programs uses no cache
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return await QueryIsUpdateNeeded(_appSettings.AppVersion);

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +40,8 @@ namespace starsky.Controllers
 				UpdateStatus.HttpError => BadRequest("something went wrong (http)"),
 				UpdateStatus.NoReleasesFound => StatusCode(StatusCodes.Status206PartialContent, $"There are no releases found"),
 				UpdateStatus.NeedToUpdate => StatusCode(StatusCodes.Status202Accepted, value),
-				UpdateStatus.CurrentVersionIsLatest => StatusCode(StatusCodes.Status200OK, value)
+				UpdateStatus.CurrentVersionIsLatest => StatusCode(StatusCodes.Status200OK, value),
+				_ => throw new NotSupportedException("IsUpdateNeeded didn't pass any valid selection")
 			};
 		}
 	}

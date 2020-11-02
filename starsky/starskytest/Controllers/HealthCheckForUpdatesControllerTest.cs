@@ -11,6 +11,8 @@ namespace starskytest.Controllers
 	[TestClass]
 	public class HealthCheckForUpdatesControllerTest
 	{
+		// or CheckForUpdatesTest
+		
 		// Disabled,
 		// HttpError,
 		// NoReleasesFound,
@@ -18,7 +20,7 @@ namespace starskytest.Controllers
 		// CurrentVersionIsLatest
 
 		[TestMethod]
-		public async Task Disabled()
+		public async Task CheckForUpdates_Disabled()
 		{
 			var fakeService = new FakeICheckForUpdates(
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty));
@@ -28,7 +30,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task HttpError()
+		public async Task CheckForUpdates_HttpError()
 		{
 			var fakeService = new FakeICheckForUpdates(
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError, string.Empty));
@@ -38,7 +40,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task NoReleasesFound()
+		public async Task CheckForUpdates_NoReleasesFound()
 		{
 			var fakeService = new FakeICheckForUpdates(
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound, string.Empty));
@@ -49,7 +51,7 @@ namespace starskytest.Controllers
 		
 		// NeedToUpdate
 		[TestMethod]
-		public async Task NeedToUpdate()
+		public async Task CheckForUpdates_NeedToUpdate()
 		{
 			var fakeService = new FakeICheckForUpdates(
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.NeedToUpdate, string.Empty));
@@ -59,7 +61,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task CurrentVersionIsLatest()
+		public async Task CheckForUpdates_CurrentVersionIsLatest()
 		{
 			var fakeService = new FakeICheckForUpdates(
 				new KeyValuePair<UpdateStatus, string>(UpdateStatus.CurrentVersionIsLatest, string.Empty));
