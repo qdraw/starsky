@@ -78,7 +78,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.accountm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.realtime", "starsky.foundation.realtime\starsky.foundation.realtime.csproj", "{5E14616E-CFCD-4E98-A4CE-491ADB0F01F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.checkforupdates", "starsky.feature.checkforupdates\starsky.feature.checkforupdates.csproj", "{B159081F-4CD0-4C72-A180-9E95423211EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.health", "starsky.feature.health\starsky.feature.health.csproj", "{B159081F-4CD0-4C72-A180-9E95423211EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

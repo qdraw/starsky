@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class PathExistHealthCheck : IHealthCheck
 	{

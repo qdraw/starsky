@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Health;
+using starsky.feature.health.HealthCheck;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.Health
+namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
 	public class PathExistHealthCheckTest

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class DiskOptionsPercentageSetup
 	{

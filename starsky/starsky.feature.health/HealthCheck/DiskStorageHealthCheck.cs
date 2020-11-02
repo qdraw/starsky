@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class DiskStorageHealthCheck : IHealthCheck
 	{

@@ -2,10 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.health.HealthCheck;
 using starsky.foundation.platform.Models;
-using starsky.Health;
 
-namespace starskytest.Health
+namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
 	public class DiskStorageHealthCheckTest

@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using starsky.feature.health.HealthCheck;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -30,7 +31,6 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
-using starsky.Health;
 using starsky.Helpers;
 
 namespace starsky

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public static class DiskStorageHealthCheckExtensions
 	{

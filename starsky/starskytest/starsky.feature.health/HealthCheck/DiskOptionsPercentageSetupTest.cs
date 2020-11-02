@@ -1,11 +1,10 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.feature.health.HealthCheck;
 using starsky.foundation.platform.Models;
-using starsky.Health;
-using starskycore.Models;
 
-namespace starskytest.Health
+namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
 	public class DiskOptionsPercentageSetupTest

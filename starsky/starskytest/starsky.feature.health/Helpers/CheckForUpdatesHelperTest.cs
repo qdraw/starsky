@@ -10,7 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.checkForUpdates
+namespace starskytest.starsky.feature.health.Helpers
 {
 	[TestClass]
 	public class CheckForUpdatesHelperTest
