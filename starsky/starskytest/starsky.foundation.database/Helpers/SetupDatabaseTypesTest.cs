@@ -24,6 +24,20 @@ namespace starskytest.starsky.foundation.database.Helpers
 		}
 		
 		[TestMethod]
+		public void CheckIfMysqlScopeIsThere_withParam()
+		{
+			var services = new ServiceCollection();
+			new SetupDatabaseTypes(new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Mysql
+			}, services).BuilderDb("database");
+			
+			var serviceProvider = services.BuildServiceProvider();
+			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+			Assert.IsNotNull(dbContext);
+		}
+		
+		[TestMethod]
 		public void CheckIfSqliteScopeIsThere()
 		{
 			var services = new ServiceCollection();
@@ -31,6 +45,20 @@ namespace starskytest.starsky.foundation.database.Helpers
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.Sqlite
 			}, services).BuilderDb();
+			
+			var serviceProvider = services.BuildServiceProvider();
+			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+			Assert.IsNotNull(dbContext);
+		}
+		
+		[TestMethod]
+		public void CheckIfSqliteScopeIsThere_WithParam()
+		{
+			var services = new ServiceCollection();
+			new SetupDatabaseTypes(new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.Sqlite
+			}, services).BuilderDb("database");
 			
 			var serviceProvider = services.BuildServiceProvider();
 			var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
