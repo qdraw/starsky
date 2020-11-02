@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.health.UpdateCheck.Models;
@@ -125,5 +126,56 @@ namespace starskytest.starsky.feature.health.Helpers
 			
 			Assert.AreEqual(UpdateStatus.Disabled,results.Key);
 		}
+
+		[TestMethod]
+		public async Task IsUpdateNeeded_CacheIsFilled()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{CheckForUpdates.GithubApi, new StringContent(replace)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+			await new CheckForUpdates(httpClientHelper, 
+				new AppSettings(),memoryCache).IsUpdateNeeded();
+
+			memoryCache.TryGetValue(CheckForUpdates.QueryCacheName, out var cacheResult);
+			var status = (( KeyValuePair<UpdateStatus, string> ) cacheResult).Value;
+
+			Assert.IsNotNull(status);
+			Assert.AreEqual("0.9",status);
+		}
+		
+		[TestMethod]
+		public async Task IsUpdateNeeded_GetFromCache()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+
+			memoryCache.Set(CheckForUpdates.QueryCacheName, new KeyValuePair<UpdateStatus, string>(UpdateStatus.NeedToUpdate,"0.9"));
+			
+			var status = await new CheckForUpdates(null, 
+				new AppSettings(),memoryCache).IsUpdateNeeded();
+
+			Assert.IsNotNull(status);
+			Assert.AreEqual("0.9",status.Value);
+		}
+		
+		[TestMethod]
+        public async Task IsUpdateNeeded_Disabled2()
+        {
+	        var results = await new CheckForUpdates(null, 
+		        null,null).IsUpdateNeeded();
+	  
+	        Assert.IsNotNull(results);
+	        Assert.AreEqual(UpdateStatus.Disabled,results.Key);
+        }
 	}
 }

@@ -29,6 +29,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 			_appSettings = appSettings;
 			_cache = cache;
 		}
+		
+		internal const string QueryCacheName = "CheckForUpdates";
 
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded()
 		{
@@ -39,10 +41,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return await QueryIsUpdateNeeded(_appSettings.AppVersion);
             
-			// Return values from IMemoryCache
-			const string queryCacheName = "CheckForUpdates";
 
-			if (_cache.TryGetValue(queryCacheName, out var cacheResult))
+			if (_cache.TryGetValue(QueryCacheName, out var cacheResult))
 				return (KeyValuePair<UpdateStatus, string>) cacheResult;
 
 			cacheResult = await QueryIsUpdateNeeded(_appSettings.AppVersion);
@@ -51,7 +51,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			var status = (( KeyValuePair<UpdateStatus, string> ) cacheResult).Key;
 			if ( status != UpdateStatus.HttpError  ) {
 				
-				_cache.Set(queryCacheName, cacheResult, 
+				_cache.Set(QueryCacheName, cacheResult, 
 				new TimeSpan(48,0,0));
 			}
 			
