@@ -51,7 +51,7 @@ namespace starsky.foundation.database.Helpers
 						}));
 					break;
 				default:
-					throw new ArgumentOutOfRangeException(nameof(_appSettings.DatabaseType));
+					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
 	}

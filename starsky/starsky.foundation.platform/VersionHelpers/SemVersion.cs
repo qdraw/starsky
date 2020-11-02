@@ -194,23 +194,34 @@ namespace starsky.foundation.platform.VersionHelpers
 				var bc = bComps[i];
 				var aIsNum = int.TryParse(ac, out var aNum);
 				var bIsNum = int.TryParse(bc, out var bNum);
-				int r;
 				if ( aIsNum && bIsNum )
 				{
-					r = aNum.CompareTo(bNum);
+					var r = aNum.CompareTo(bNum);
 					if ( r != 0 ) return r;
 				}
 				else
 				{
-					if ( aIsNum )
-						return -1;
-					if ( bIsNum )
-						return 1;
-					r = string.CompareOrdinal(ac, bc);
-					if ( r != 0 )
-						return r;
+					var value = CompareComponentCompareOther(aIsNum, bIsNum, ac, bc);
+					if ( value != int.MaxValue )
+					{
+						return value;
+					}	
 				}
 			}
+			return int.MaxValue;
+		}
+
+		private static int CompareComponentCompareOther(bool aIsNum, bool bIsNum, string ac, string bc)
+		{
+			if ( aIsNum )
+				return -1;
+			if ( bIsNum )
+				return 1;
+			var r = string.CompareOrdinal(ac, bc);
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if ( r != 0 )
+				return r;
+
 			return int.MaxValue;
 		}
 
