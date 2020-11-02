@@ -35,6 +35,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.4.0-beta.2 _(Unreleased)_  2020-11-??
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
 - [x]   (Changed) _Back-end_ UseRealtime (sockets) backend option changed to enable by default
+- [x]   (Fixed) _Front-end_ When updating files with realtime mode on, collection mode raws are shown after update
 
 # version 0.4.0-beta.1 - 2020-10-31
 - [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)

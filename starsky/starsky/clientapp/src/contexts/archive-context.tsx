@@ -128,9 +128,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       var filterOkCondition = (value: IFileIndexItem) => {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
-
       var concatenatedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
-      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, 'filePath');
+
+      var toSortOnParm = state.collections ? 'fileCollectionName' : 'filePath';
+      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, toSortOnParm);
 
       // order by this to match c# AND not supported in jest
       try {
