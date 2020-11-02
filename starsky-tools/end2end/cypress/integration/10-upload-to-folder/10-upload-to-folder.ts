@@ -51,7 +51,9 @@ describe('Upload to folder', () => {
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
 
-  it('Upload content and check if the name exist', () => {
+  it('Upload content and check if the name exist', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
