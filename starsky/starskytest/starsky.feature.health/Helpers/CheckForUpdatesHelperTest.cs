@@ -63,7 +63,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			// current is 1.0  - new is 0.9
 			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("1.0");
 			
-			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results);
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
 		}
 		
 		[TestMethod]
@@ -81,7 +81,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var results = await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results);
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
 		}
 		
 		[TestMethod]
@@ -98,7 +98,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			// current is 0.8 - new is 0.9
 			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("0.8");
 			
-			Assert.AreEqual(UpdateStatus.NeedToUpdate,results);
+			Assert.AreEqual(UpdateStatus.NeedToUpdate,results.Key);
 		}
 		
 		[TestMethod]
@@ -114,7 +114,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			// current is 0.9 - new is 0.9
 			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.AreEqual(UpdateStatus.NoReleasesFound,results);
+			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
 		}
 
 		[TestMethod]
@@ -123,7 +123,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			var appSettings = new AppSettings {CheckForUpdates = false};
 			var results = await new CheckForUpdates(null, appSettings,null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.AreEqual(UpdateStatus.Disabled,results);
+			Assert.AreEqual(UpdateStatus.Disabled,results.Key);
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The major version.
 		/// </value>
-		public int Major { get; }
+		public int Major { get; set; }
 
 		/// <summary>
 		/// Gets the minor version.
@@ -84,7 +84,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The minor version.
 		/// </value>
-		public int Minor { get; }
+		public int Minor { get; set;}
 
 		/// <summary>
 		/// Gets the patch version.
@@ -92,7 +92,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The patch version.
 		/// </value>
-		public int Patch { get; }
+		public int Patch { get; set;}
 
 		/// <summary>
 		/// Gets the prerelease version.
@@ -100,7 +100,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The prerelease version. Empty string if this is a release version.
 		/// </value>
-		public string Prerelease { get; }
+		public string Prerelease { get; set;}
 
 		/// <summary>
 		/// Gets the build metadata.
@@ -108,7 +108,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <value>
 		/// The build metadata. Empty string if there is no build metadata.
 		/// </value>
-		public string Build { get; }
+		public string Build { get; set;}
 
 		/// <summary>
 		/// Compares the current instance with another object of the same type and returns an integer that indicates
