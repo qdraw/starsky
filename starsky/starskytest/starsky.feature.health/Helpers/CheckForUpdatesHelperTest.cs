@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.checkForUpdates.Helpers;
+using starsky.feature.health.UpdateCheck;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -51,20 +51,80 @@ namespace starskytest.starsky.feature.health.Helpers
 		    "  \"zipball_url\": \"https://api.github.com/repos/qdraw/starsky/zipball/v0.4.0-beta.1\"\n  }\n]\n";
 		
 		[TestMethod]
-		public async Task Void()
+		public async Task IsUpdateNeeded_newer()
 		{
-			// {"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
-
-			
+			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdatesHelper.GithubApi, new StringContent(ExamplePublicReleases)},
+				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
 
-			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).Check();
-			Console.WriteLine(results);
+			// current is 1.0  - new is 0.9
+			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("1.0");
+			
+			Assert.AreEqual(true,results);
+
+		}
+		
+		[TestMethod]
+		public async Task IsUpdateNeeded_eq()
+		{
+			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+
+			// current is 0.9 - new is 0.9
+			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			
+			Assert.AreEqual(false,results);
+		}
+		
+		[TestMethod]
+		public async Task IsUpdateNeeded_lower()
+		{
+			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+
+			// current is 0.9 - new is 0.9
+			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			
+			Assert.AreEqual(false,results);
+		}
+		
+		[TestMethod]
+		public async Task IsUpdateNeeded_wrongTagName()
+		{
+			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+			// current is 0.9 - new is 0.9
+			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			
+			Assert.IsNull(results);
+		}
+
+		[TestMethod]
+		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
+		{
+			var appSettings = new AppSettings {CheckForUpdates = false};
+			var results = await new CheckForUpdatesHelper(null, appSettings).IsUpdateNeeded("0.9");
+			
+			Assert.IsNull(results);
 		}
 	}
 }

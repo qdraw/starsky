@@ -190,7 +190,7 @@ namespace starskytest.Controllers
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0";
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(400, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion.StatusCode);
 		}
 	}
 }

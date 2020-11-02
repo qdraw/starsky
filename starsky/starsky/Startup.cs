@@ -56,65 +56,11 @@ namespace starsky
 	        
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-                 
-            // Enable .NET CORE health checks
-            services.AddHealthChecks()
-	            .AddDbContextCheck<ApplicationDbContext>()
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.StorageFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_StorageFolder")
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.ThumbnailTempFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_ThumbnailTempFolder")
-	            .AddDiskStorageHealthCheck(
-		            setup: diskOptions =>
-		            {
-			            new DiskOptionsPercentageSetup().Setup(_appSettings.TempFolder,
-				            diskOptions);
-		            },
-		            name: "Storage_TempFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.StorageFolder),
-		            name: "Exist_StorageFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.TempFolder),
-		            name: "Exist_TempFolder")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.ExifToolPath),
-		            name: "Exist_ExifToolPath")
-	            .AddPathExistHealthCheck(
-		            setup: pathOptions => pathOptions.AddPath(_appSettings.ThumbnailTempFolder),
-		            name: "Exist_ThumbnailTempFolder")
-	            .AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
-            
-            var healthSqlQuery = "SELECT * FROM `__EFMigrationsHistory` WHERE ProductVersion > 9";
-            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
 
-            switch (_appSettings.DatabaseType)
-            {
-                case (AppSettings.DatabaseTypeList.Mysql):
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
-                    services.AddHealthChecks().AddMySql(_appSettings.DatabaseConnection);
-                    break;
-                case AppSettings.DatabaseTypeList.InMemoryDatabase:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
-                    break;
-                case AppSettings.DatabaseTypeList.Sqlite:
-                    services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
-	                    b => b.MigrationsAssembly(foundationDatabaseName)));
-                    services.AddHealthChecks().AddSqlite(_appSettings.DatabaseConnection, healthSqlQuery, "sqlite");
-                    break;
-            }
-            
+            var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
+            new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
+			new SetupHealthCheck(_appSettings,services).BuilderDb();
+	            
             // Enable Dual Authentication 
             services
                 .AddAuthentication(sharedOptions =>

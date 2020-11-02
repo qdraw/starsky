@@ -270,5 +270,28 @@ namespace starsky.foundation.platform.VersionHelpers
 		{
 			return Compare(left, right) >= 0;
 		}
+		
+		/// <summary>
+		/// Compares two semantic versions.
+		/// </summary>
+		/// <param name="left">The left value.</param>
+		/// <param name="right">The right value.</param>
+		/// <returns>If left is greater than right <see langword="true"/>, otherwise <see langword="false"/>.</returns>
+		public static bool operator >(SemVersion left, SemVersion right)
+		{
+			return Compare(left, right) > 0;
+		}
+
+		/// <summary>
+		/// Compares two semantic versions.
+		/// </summary>
+		/// <param name="left">The left value.</param>
+		/// <param name="right">The right value.</param>
+		/// <returns>If left is less than right <see langword="true"/>, otherwise <see langword="false"/>.</returns>
+		public static bool operator <(SemVersion left, SemVersion right)
+		{
+			return Compare(left, right) < 0;
+		}
+
 	}
 }

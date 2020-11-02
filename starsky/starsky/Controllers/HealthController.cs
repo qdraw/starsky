@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.VersionHelpers;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 
@@ -152,37 +153,20 @@ namespace starsky.Controllers
 				return BadRequest("Missing version data");
 			}
 
-			var fullVersionFromClient = Request.Headers[ApiVersionHeaderName].ToString();
 			try
 			{
-				Version firstTwoDigitsWithDot;
-				if ( fullVersionFromClient.Length >= 3 )
-				{
-					firstTwoDigitsWithDot = new Version(fullVersionFromClient.Substring(0, 3));
-				}
-				else
-				{
-					firstTwoDigitsWithDot = new Version(fullVersionFromClient);
-				}
-
-				if ( firstTwoDigitsWithDot.CompareTo(new Version(MinimumVersion)) >= 0 )
+				if ( SemVersion.Parse(Request.Headers[ApiVersionHeaderName]) >= SemVersion.Parse(MinimumVersion) )
 				{
 					return Ok(Request.Headers[ApiVersionHeaderName]);
 				}
-			}
-			catch ( FormatException )
-			{
-				return StatusCode(StatusCodes.Status400BadRequest,
-					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
+				return StatusCode(StatusCodes.Status202Accepted,
+					$"please upgrade to {MinimumVersion} or newer");
 			}
 			catch ( ArgumentException )
 			{
 				return StatusCode(StatusCodes.Status400BadRequest,
 					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
 			}
-
-			return StatusCode(StatusCodes.Status202Accepted,
-				$"please upgrade to {MinimumVersion} or newer");
 		}
 	}
 }
