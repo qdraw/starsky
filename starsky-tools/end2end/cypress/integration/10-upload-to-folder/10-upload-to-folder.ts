@@ -73,11 +73,12 @@ describe('Upload to folder', () => {
     cy.get('.modal-exit-button').click()
   })
 
-  it('Upload more content and check if the name exist', () => {
+  it('Upload more content and check if the name exist', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
-    cy.wait(500)
 
     cy.get('.item.item--more').click()
     cy.get('.menu-option--input label').click()
