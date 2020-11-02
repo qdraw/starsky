@@ -140,10 +140,10 @@ namespace starsky.Controllers
 		/// Check if Client/App version has a match with the API-version
 		/// uses x-api-version header
 		/// </summary>
-		/// <returns>AI script</returns>
+		/// <returns>status</returns>
 		/// <response code="200">Ok</response>
-		/// <response code="405">Version mismatch</response>
-		/// <response code="400">Missing x-api-version header or bad formatted version in header</response>
+		/// <response code="202">Version mismatch</response>
+		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
 		public IActionResult Version()
 		{

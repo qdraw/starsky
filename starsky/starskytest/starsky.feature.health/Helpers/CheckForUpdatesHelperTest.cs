@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.feature.health.UpdateCheck;
+using starsky.feature.health.UpdateCheck.Models;
+using starsky.feature.health.UpdateCheck.Services;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -56,16 +56,14 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
-
 			// current is 1.0  - new is 0.9
-			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("1.0");
+			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("1.0");
 			
-			Assert.AreEqual(true,results);
-
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results);
 		}
 		
 		[TestMethod]
@@ -74,15 +72,16 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
 
 			// current is 0.9 - new is 0.9
-			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			var results = await new CheckForUpdates(httpClientHelper, 
+				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.AreEqual(false,results);
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results);
 		}
 		
 		[TestMethod]
@@ -91,15 +90,15 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
 
-			// current is 0.9 - new is 0.9
-			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			// current is 0.8 - new is 0.9
+			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("0.8");
 			
-			Assert.AreEqual(false,results);
+			Assert.AreEqual(UpdateStatus.NeedToUpdate,results);
 		}
 		
 		[TestMethod]
@@ -108,23 +107,23 @@ namespace starskytest.starsky.feature.health.Helpers
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
-				{CheckForUpdatesHelper.GithubApi, new StringContent(replace)},
+				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
 
 			// current is 0.9 - new is 0.9
-			var results = await new CheckForUpdatesHelper(httpClientHelper, new AppSettings()).IsUpdateNeeded("0.9");
+			var results = await new CheckForUpdates(httpClientHelper, new AppSettings(),null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.IsNull(results);
+			Assert.AreEqual(UpdateStatus.NoReleasesFound,results);
 		}
 
 		[TestMethod]
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
 		{
 			var appSettings = new AppSettings {CheckForUpdates = false};
-			var results = await new CheckForUpdatesHelper(null, appSettings).IsUpdateNeeded("0.9");
+			var results = await new CheckForUpdates(null, appSettings,null).QueryIsUpdateNeeded("0.9");
 			
-			Assert.IsNull(results);
+			Assert.AreEqual(UpdateStatus.Disabled,results);
 		}
 	}
 }

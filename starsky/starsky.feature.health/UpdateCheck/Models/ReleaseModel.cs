@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace starsky.feature.checkForUpdates.Models
+namespace starsky.feature.health.UpdateCheck.Models
 {
 	public class ReleaseModel
 	{
