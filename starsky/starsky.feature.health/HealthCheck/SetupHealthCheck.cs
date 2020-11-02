@@ -73,7 +73,7 @@ namespace starsky.feature.health.HealthCheck
                 case AppSettings.DatabaseTypeList.InMemoryDatabase:
 	                break;
                 default:
-	                throw new ArgumentOutOfRangeException();
+	                throw new AggregateException("database type does not exist");
             }
             
 		}

@@ -121,7 +121,7 @@ namespace starskytest.starsky.feature.health.Helpers
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
 		{
 			var appSettings = new AppSettings {CheckForUpdates = false};
-			var results = await new CheckForUpdates(null, appSettings,null).QueryIsUpdateNeeded("0.9");
+			var results = await new CheckForUpdates(null, appSettings,null).IsUpdateNeeded();
 			
 			Assert.AreEqual(UpdateStatus.Disabled,results.Key);
 		}

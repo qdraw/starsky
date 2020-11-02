@@ -178,6 +178,15 @@ namespace starsky.foundation.platform.VersionHelpers
 			var aComps = a.Split('.');
 			var bComps = b.Split('.');
 
+			var compareLoop = CompareComponentCompareLoop(aComps, bComps);
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if ( compareLoop != int.MaxValue ) return compareLoop;
+
+			return aComps.Length.CompareTo(bComps.Length);
+		}
+
+		private static int CompareComponentCompareLoop(string[] aComps, string[] bComps)
+		{
 			var minLen = Math.Min(aComps.Length, bComps.Length);
 			for ( int i = 0; i < minLen; i++ )
 			{
@@ -202,8 +211,7 @@ namespace starsky.foundation.platform.VersionHelpers
 						return r;
 				}
 			}
-
-			return aComps.Length.CompareTo(bComps.Length);
+			return int.MaxValue;
 		}
 
 		/// <summary>

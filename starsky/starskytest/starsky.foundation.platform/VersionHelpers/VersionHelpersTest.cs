@@ -209,6 +209,7 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			Assert.IsTrue(v2);
 		}
 		
+#pragma warning disable 1718
 		[TestMethod]
 		public void ComparisonTwoEqVersion3()
         {
@@ -216,7 +217,12 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
             // ReSharper disable once EqualExpressionComparison
         	var v2 = directQ >= directQ;
         	Assert.IsTrue(v2);
+            
+            // ReSharper disable once EqualExpressionComparison
+            var v3 = directQ > directQ;
+            Assert.IsFalse(v3);
         }
+#pragma warning restore 1718
 		
 		[TestMethod]
 		public void ComparisonNull()
@@ -225,6 +231,9 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			// ReSharper disable once EqualExpressionComparison
 			var v2 = null >= directQ;
 			Assert.IsFalse(v2);
+			
+			var v3 = null > directQ;
+			Assert.IsFalse(v3);
 		}
 		
 		[TestMethod]
@@ -234,6 +243,8 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			// ReSharper disable once EqualExpressionComparison
 			var v2 = directQ >= null;
 			Assert.IsTrue(v2);
+			var v3 = directQ > null;
+			Assert.IsTrue(v3);
 		}
 
 		[TestMethod]
@@ -244,6 +255,9 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 
 			Assert.IsTrue(v1 <= v2, $"{v1} <= {v2}");
 			Assert.IsFalse(v1 >= v2, $"{v1} >= {v2}");
+			
+			Assert.IsTrue(v1 < v2, $"{v1} < {v2}");
+			Assert.IsFalse(v1 > v2, $"{v1} > {v2}");
 		}
 		
 		[TestMethod]
@@ -254,6 +268,9 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 
 			Assert.IsFalse(v1 <= v2, $"{v1} <= {v2}");
 			Assert.IsTrue(v1 >= v2, $"{v1} >= {v2}");
+			
+			Assert.IsFalse(v1 < v2, $"{v1} < {v2}");
+			Assert.IsTrue(v1 > v2, $"{v1} < {v2}");
 		}
 
 		[TestMethod]
@@ -264,6 +281,9 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 
 			Assert.IsTrue(v1 <= v2, $"{v1} <= {v2}");
 			Assert.IsTrue(v1 >= v2, $"{v1} >= {v2}");
+			
+			Assert.IsFalse(v1 < v2, $"{v1} < {v2}");
+			Assert.IsFalse(v1 > v2, $"{v1} > {v2}");
 		}
 		
 		private static IEnumerable<(SemVersion, SemVersion)> AllPairs(IReadOnlyList<SemVersion> versions)

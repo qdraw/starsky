@@ -32,6 +32,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded()
 		{
+        	if ( !_appSettings.CheckForUpdates ) return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
+        			
 			if ( _appSettings == null ) 
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled, string.Empty);
 			
@@ -58,16 +60,21 @@ namespace starsky.feature.health.UpdateCheck.Services
 			return ( KeyValuePair<UpdateStatus, string> ) cacheResult;
 		}
 
-		public async Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeeded(string currentVersion)
+		public Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeeded(string currentVersion)
 		{
 			if ( string.IsNullOrWhiteSpace(currentVersion) ) throw new ArgumentNullException(nameof(currentVersion));
-			if ( !_appSettings.CheckForUpdates ) return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
+		    return QueryIsUpdateNeededAsync(currentVersion);
+		}
+
+		private async Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeededAsync(string currentVersion)
+		{
+			// argument check is done in QueryIsUpdateNeeded
 			var (key, value) = await _httpClientHelper.ReadString(GithubApi);
 			if ( !key ) return new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError,value);
 			
 			var releaseModelList = JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
 			
-			var tagName = releaseModelList.LastOrDefault(p => !p.Draft && p.PreRelease == false)?.TagName;
+			var tagName = releaseModelList.LastOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
 			if ( string.IsNullOrWhiteSpace(tagName) || !tagName.StartsWith("v") )
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,value);
 
