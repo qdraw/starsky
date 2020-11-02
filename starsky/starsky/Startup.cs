@@ -58,7 +58,7 @@ namespace starsky
 
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
-			new SetupHealthCheck(_appSettings,services).BuilderDb();
+			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 	            
             // Enable Dual Authentication 
             services

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
@@ -21,7 +20,7 @@ namespace starsky.feature.health.HealthCheck
 		/// Enable .NET CORE health checks
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">when your type is not _appSettings.DatabaseType</exception>
-		public void BuilderDb()
+		public void BuilderHealth()
 		{
 			_services.AddHealthChecks()
 	            .AddDbContextCheck<ApplicationDbContext>()
