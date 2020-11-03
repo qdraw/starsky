@@ -1,13 +1,19 @@
 import { storiesOf } from "@storybook/react";
 import React from "react";
-import HealthStatusError from '../health-status-error/health-status-error';
-import HealthCheckForUpdates from './health-check-for-updates';
+import HealthCheckForUpdates, { CheckForUpdatesLocalStorageName } from './health-check-for-updates';
 
 storiesOf("components/molecules/health-check-for-updates", module)
   .add("default", () => {
-    return <><b>There nothing shown yet, only if the api returns a error code</b><HealthStatusError /><HealthCheckForUpdates /></>
+    (window as any).isElectron = undefined
+    return <><button onClick={() => {
+      localStorage.removeItem(CheckForUpdatesLocalStorageName)
+      window.location.reload()
+    }}>Clean sessie</button>T<b>There nothing shown yet, only if the api returns a error code</b><HealthCheckForUpdates /></>
   })
   .add("Electron", () => {
     (window as any).isElectron = true
-    return <><b>There nothing shown yet, only if the api returns a error code</b><HealthStatusError /><HealthCheckForUpdates /></>
+    return <><b><button className={"b"} onClick={() => {
+      localStorage.removeItem(CheckForUpdatesLocalStorageName)
+      window.location.reload()
+    }}>Clean sessie</button>There nothing shown yet, only if the api returns a error code</b><HealthCheckForUpdates /></>
   })
