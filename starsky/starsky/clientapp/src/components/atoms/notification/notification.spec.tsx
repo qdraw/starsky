@@ -35,5 +35,27 @@ describe("ItemListView", () => {
       expect(callback).toBeCalled();
     });
 
+    it("Multiple notification dont remove the other one, test Callback test Ok close and remove element from DOM", () => {
+      var component = mount(<>
+        <Notification type={NotificationType.default} />
+        <Notification type={NotificationType.danger} />
+      </>);
+
+      var portalElement = document.getElementById(PortalId)
+      if (!portalElement) throw new Error("portal should not be undefined");
+
+      var closeElement = portalElement.querySelector(".icon--close") as HTMLDivElement;
+      closeElement.click();
+
+      var length = portalElement.querySelectorAll(".notification").length;
+      expect(length).toBe(1)
+
+      var closeElement2 = portalElement.querySelector(".icon--close") as HTMLDivElement;
+      closeElement2.click();
+
+      var length2 = portalElement.querySelectorAll(".notification").length;
+      expect(length2).toBe(0)
+    });
+
   });
 });
