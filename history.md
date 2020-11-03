@@ -36,8 +36,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
 - [x]   (Changed) _Back-end_ UseRealtime (sockets) backend option changed to enable by default
 - [x]   (Fixed) _Front-end_ When updating files with realtime mode on, collection mode raws are shown after update
+- [x]   (Added) _Back-end_ API to check if current version is the latest on github releases
 
 # version 0.4.0-beta.1 - 2020-10-31
+_First release on Github Releases_
 - [x]   (Added) _App_ Press 'Command/Ctrl + E' to Edit a file with local tools (Mac OS & Windows)
 - [x]   (Fixed) _Front-end_ Going next en prev in search detail view context is going more smooth
 - [x]   (Fixed) _Back-end_ Allow websockets in CSP for Safari and old Firefox

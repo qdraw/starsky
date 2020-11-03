@@ -19,7 +19,7 @@ namespace starsky.feature.health.HealthCheck
 		/// <summary>
 		/// Enable .NET CORE health checks
 		/// </summary>
-		/// <exception cref="ArgumentOutOfRangeException">when your type is not _appSettings.DatabaseType</exception>
+		/// <exception cref="AggregateException">when your type is not _appSettings.DatabaseType</exception>
 		public void BuilderHealth()
 		{
 			_services.AddHealthChecks()
