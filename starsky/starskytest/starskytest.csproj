@@ -35,6 +35,7 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
     <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
     <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
     <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
@@ -76,5 +77,8 @@
     </ItemGroup>
     <ItemGroup>
       <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="starsky.feature.health\Helpers" />
     </ItemGroup>
 </Project>

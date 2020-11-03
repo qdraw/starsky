@@ -137,7 +137,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void Version_Version_beta1_eq()
+		public void Version_Version_beta1_isBefore()
 		{
 			var controller = new HealthController(null, new FakeTelemetryService(), 
 				new ApplicationInsightsJsHelper(null,null))
@@ -145,10 +145,11 @@ namespace starskytest.Controllers
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
-			var beta =  HealthController.MinimumVersion + "-beta.1";
+			const string beta = HealthController.MinimumVersion + "-beta.1";
+			// the beta is before the 0.3 release
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = beta;
-			var noVersion = controller.Version() as OkObjectResult;
-			Assert.AreEqual(200, noVersion.StatusCode);
+			var noVersion = controller.Version() as ObjectResult;
+			Assert.AreEqual(202, noVersion.StatusCode);
 		}
 		
 		[TestMethod]
@@ -190,7 +191,7 @@ namespace starskytest.Controllers
 			};
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0";
 			var noVersion = controller.Version() as ObjectResult;
-			Assert.AreEqual(400, noVersion.StatusCode);
+			Assert.AreEqual(202, noVersion.StatusCode);
 		}
 	}
 }

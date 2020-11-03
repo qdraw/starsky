@@ -1,10 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Health;
+using starsky.feature.health.HealthCheck;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.Health
+namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
 	public class PathExistHealthCheckTest
@@ -38,6 +39,15 @@ namespace starskytest.Health
 			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(pathExistOptions), null,null )};
 			var result = await new PathExistHealthCheck(pathExistOptions).CheckHealthAsync(healthCheck);
 			Assert.AreEqual(HealthStatus.Unhealthy,result.Status);
+		}
+				
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task RunFail_Null_Input()
+		{
+			var healthCheck = new HealthCheckContext {Registration = new HealthCheckRegistration("te",new PathExistHealthCheck(null), null,null )};
+			await new PathExistHealthCheck(null).CheckHealthAsync(healthCheck);
+			// expect ArgumentNullException:
 		}
 	}
 }

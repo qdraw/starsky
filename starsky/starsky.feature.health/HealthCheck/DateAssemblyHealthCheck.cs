@@ -7,7 +7,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Helpers;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class DateAssemblyHealthCheck : IHealthCheck
 	{

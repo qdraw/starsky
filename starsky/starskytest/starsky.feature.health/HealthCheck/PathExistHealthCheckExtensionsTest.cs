@@ -3,9 +3,9 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.Health;
+using starsky.feature.health.HealthCheck;
 
-namespace starskytest.Health
+namespace starskytest.starsky.feature.health.HealthCheck
 {
 	[TestClass]
 	public class PathExistHealthCheckExtensionsTest

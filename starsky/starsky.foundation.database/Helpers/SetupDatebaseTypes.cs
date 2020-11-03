@@ -11,14 +11,14 @@ namespace starsky.foundation.database.Helpers
 	public class SetupDatabaseTypes
 	{
 		private readonly AppSettings _appSettings;
-		private readonly ServiceCollection _services;
+		private readonly IServiceCollection _services;
 
-		public SetupDatabaseTypes(AppSettings appSettings, ServiceCollection services)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services)
 		{
 			_appSettings = appSettings;
 			_services = services;
 		}
-		public void BuilderDb()
+		public void BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
 			switch (_appSettings.DatabaseType)
@@ -30,6 +30,10 @@ namespace starsky.foundation.database.Helpers
 							mySqlOptions.CharSet(CharSet.Utf8Mb4);
 							mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
 							mySqlOptions.EnableRetryOnFailure(2);
+							if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+							{
+								mySqlOptions.MigrationsAssembly(foundationDatabaseName);
+							}
 						})
 					);
 					break;
@@ -37,10 +41,17 @@ namespace starsky.foundation.database.Helpers
 					_services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
 					break;
 				case AppSettings.DatabaseTypeList.Sqlite:
-					_services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection));
+					_services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+						b =>
+						{
+							if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+							{
+								b.MigrationsAssembly(foundationDatabaseName);
+							}
+						}));
 					break;
 				default:
-					throw new ArgumentOutOfRangeException(nameof(_appSettings.DatabaseType));
+					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
 	}

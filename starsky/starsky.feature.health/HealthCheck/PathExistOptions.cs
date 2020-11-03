@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class PathExistOptions
 	{

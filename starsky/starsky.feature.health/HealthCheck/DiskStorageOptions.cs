@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace starsky.Health
+namespace starsky.feature.health.HealthCheck
 {
 	public class DiskStorageOptions
 	{

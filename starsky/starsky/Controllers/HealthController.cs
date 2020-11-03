@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.VersionHelpers;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 
@@ -139,10 +139,10 @@ namespace starsky.Controllers
 		/// Check if Client/App version has a match with the API-version
 		/// uses x-api-version header
 		/// </summary>
-		/// <returns>AI script</returns>
+		/// <returns>status</returns>
 		/// <response code="200">Ok</response>
-		/// <response code="405">Version mismatch</response>
-		/// <response code="400">Missing x-api-version header or bad formatted version in header</response>
+		/// <response code="202">Version mismatch</response>
+		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
 		public IActionResult Version()
 		{
@@ -152,37 +152,20 @@ namespace starsky.Controllers
 				return BadRequest("Missing version data");
 			}
 
-			var fullVersionFromClient = Request.Headers[ApiVersionHeaderName].ToString();
 			try
 			{
-				Version firstTwoDigitsWithDot;
-				if ( fullVersionFromClient.Length >= 3 )
-				{
-					firstTwoDigitsWithDot = new Version(fullVersionFromClient.Substring(0, 3));
-				}
-				else
-				{
-					firstTwoDigitsWithDot = new Version(fullVersionFromClient);
-				}
-
-				if ( firstTwoDigitsWithDot.CompareTo(new Version(MinimumVersion)) >= 0 )
+				if ( SemVersion.Parse(Request.Headers[ApiVersionHeaderName]) >= SemVersion.Parse(MinimumVersion) )
 				{
 					return Ok(Request.Headers[ApiVersionHeaderName]);
 				}
-			}
-			catch ( FormatException )
-			{
-				return StatusCode(StatusCodes.Status400BadRequest,
-					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
+				return StatusCode(StatusCodes.Status202Accepted,
+					$"please upgrade to {MinimumVersion} or newer");
 			}
 			catch ( ArgumentException )
 			{
 				return StatusCode(StatusCodes.Status400BadRequest,
 					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
 			}
-
-			return StatusCode(StatusCodes.Status202Accepted,
-				$"please upgrade to {MinimumVersion} or newer");
 		}
 	}
 }
