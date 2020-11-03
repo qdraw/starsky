@@ -145,6 +145,21 @@ namespace starskytest.starsky.feature.health.Helpers
 			
 			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
 		}
+		
+		[TestMethod]
+		public async Task QueryIsUpdateNeeded_EmptyList()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{CheckForUpdates.GithubApi, new StringContent("[]")},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+			var results = await new CheckForUpdates(httpClientHelper, 
+				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
+			
+			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
+		}
 
 		[TestMethod]
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()
