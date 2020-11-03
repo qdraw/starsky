@@ -10,7 +10,8 @@ export interface ISearchList {
   fetchContent: (location: string, abortController: AbortController) => Promise<void>;
 }
 
-const useSearchList = (query: string | undefined, pageNumber = 0, resetPageTypeBeforeLoading: boolean): ISearchList | null => {
+const useSearchList = (query: string | undefined, pageNumber: number | undefined, resetPageTypeBeforeLoading: boolean): ISearchList | null => {
+  if (!pageNumber) pageNumber = 0;
 
   const [archive, setArchive] = useState(newIArchive());
   const [pageType, setPageType] = useState(PageType.Loading);

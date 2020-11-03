@@ -135,7 +135,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
 
       // order by this to match c# AND not supported in jest
       try {
-        var fileIndexItems = concatenatedFileIndexItems.sort((a, b) => a.fileName.localeCompare(
+        var fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) => a.fileName.localeCompare(
           b.fileName, 'en', { sensitivity: 'base' }));
       } catch (error) {
         fileIndexItems = concatenatedFileIndexItems;
