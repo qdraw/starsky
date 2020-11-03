@@ -1,6 +1,6 @@
 {
   "name": "end2end",
-  "version": "1.0.0",
+  "version": "0.4.0-beta.2",
   "scripts": {
     "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
     "open:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",

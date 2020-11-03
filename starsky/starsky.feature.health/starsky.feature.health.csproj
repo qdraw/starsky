@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <ProjectGuid>{d9c8e6e0-2526-4978-ad8c-b4e74993cfd8}</ProjectGuid>
         <RootNamespace>starsky.feature.health</RootNamespace>
-        <Version>0.4.0-beta.1</Version>
+        <Version>0.4.0-beta.2</Version>
     </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
