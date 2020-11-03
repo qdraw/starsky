@@ -64,7 +64,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task DownloadSidecar_Ok()
+		public void DownloadSidecar_Ok()
 		{
 			// Arrange
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
@@ -72,37 +72,41 @@ namespace starskytest.Controllers
 			// Act
 			var controller = new DownloadPhotoController(_query,selectorStorage);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = await controller.DownloadSidecar("/test.xmp") as FileStreamResult;
+			var actionResult = controller.DownloadSidecar("/test.xmp") as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
 
-			await actionResult.FileStream.DisposeAsync();
+			actionResult.FileStream.Dispose();
 		}
 		
 		[TestMethod]
-		public async Task DownloadSidecar_TryToGetJpeg()
+		public void DownloadSidecar_TryToGetJpeg()
 		{
 			// Arrange
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = await controller.DownloadSidecar("/test.jpg") as NotFoundObjectResult;
+			var controller = new DownloadPhotoController(_query, selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = controller.DownloadSidecar("/test.jpg") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 		
 		[TestMethod]
-		public async Task DownloadSidecar_NotFound()
+		public void DownloadSidecar_NotFound()
 		{
 			// Arrange
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
-			controller.ControllerContext.HttpContext = new DefaultHttpContext();
-			var actionResult = await controller.DownloadSidecar("/not-found.xmp") as NotFoundObjectResult;
+			var controller = new DownloadPhotoController(_query, selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = controller.DownloadSidecar("/not-found.xmp") as NotFoundObjectResult;
 			
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult.StatusCode);

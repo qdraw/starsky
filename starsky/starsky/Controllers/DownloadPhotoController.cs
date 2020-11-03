@@ -37,7 +37,7 @@ namespace starsky.Controllers
 		[HttpGet("/api/download-sidecar")]
 		[ProducesResponseType(200)] // file
 		[ProducesResponseType(404)] // not found
-		public async Task<IActionResult> DownloadSidecar(string f)
+		public IActionResult DownloadSidecar(string f)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(f))
 			{
