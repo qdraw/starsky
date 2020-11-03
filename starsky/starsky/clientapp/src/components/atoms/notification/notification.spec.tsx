@@ -36,7 +36,7 @@ describe("ItemListView", () => {
     });
 
     it("Multiple notification dont remove the other one, test Callback test Ok close and remove element from DOM", () => {
-      var component = mount(<>
+      mount(<>
         <Notification type={NotificationType.default} />
         <Notification type={NotificationType.danger} />
       </>);
@@ -60,7 +60,6 @@ describe("ItemListView", () => {
       var length2 = portalElement.querySelectorAll(".notification").length;
       expect(length2).toBe(0)
 
-      component.unmount()
     });
 
   });
