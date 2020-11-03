@@ -58,7 +58,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			return ( KeyValuePair<UpdateStatus, string> ) cacheResult;
 		}
 
-		public Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeeded(string currentVersion)
+		internal Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeeded(string currentVersion)
 		{
 			if ( string.IsNullOrWhiteSpace(currentVersion) ) throw new ArgumentNullException(nameof(currentVersion));
 		    return QueryIsUpdateNeededAsync(currentVersion);
