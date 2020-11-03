@@ -204,7 +204,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">subPath in directory</param>
 		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
