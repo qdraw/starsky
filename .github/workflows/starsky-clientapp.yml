@@ -27,7 +27,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Cache node modules
+    - name: Cache node modules clientapp
       uses: actions/cache@v2
       env:
         cache-name: cache-node-modules
