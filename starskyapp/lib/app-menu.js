@@ -137,6 +137,13 @@ function AppMenu() {
           click: async () => {
             await shell.openExternal('https://qdraw.github.io/starsky/')
           }
+        },
+        {
+          label: 'Release overview',
+          // Referenced from HealthCheckForUpdates
+          click: async () => {
+            await shell.openExternal('https://github.com/qdraw/starsky/releases/latest')
+          }
         }
       ]
     }

@@ -3,6 +3,8 @@ var apiAccountPermissionsIndex = require('./api/account/permissions/index.json')
 
 var accountStatus = require('./api/account/status/index.json')
 var apiHealthDetails = require('./api/health/details/index.json')
+var apiHealthCheckForUpdates = require('./api/health/check-for-updates/index.json')
+
 var apiIndexIndex = require('./api/index/index.json')
 var apiIndex__Starsky = require('./api/index/__starsky.json');
 var apiIndex__Starsky01dif = require('./api/index/__starsky_01-dif.json')
@@ -59,6 +61,11 @@ function setRouter(app) {
   app.get(prefix + '/api/health/details', (req, res) => {
     res.status(503);
     res.json(apiHealthDetails)
+  });
+
+  app.get(prefix + '/api/health/check-for-updates', (req, res) => {
+    res.status(202);
+    res.json(apiHealthCheckForUpdates)
   });
 
   app.get(prefix + '/api/info', (req, res) => {
