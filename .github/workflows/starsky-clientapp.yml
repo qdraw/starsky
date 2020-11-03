@@ -42,7 +42,7 @@ jobs:
 
     - name: Install Dependencies
       working-directory: ./starsky/starsky/clientapp
-      run: npm install
+      run: npm ci --no-progress --prefer-offline
       
     - name: NpmBuild
       working-directory: ./starsky/starsky/clientapp
