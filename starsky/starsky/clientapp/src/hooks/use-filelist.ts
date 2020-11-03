@@ -28,13 +28,13 @@ const useFileList = (locationSearch: string, resetPageTypeBeforeLoading: boolean
   const [parent, setParent] = useState('/');
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
-  const fetchContent = async (location: string, abortController: AbortController): Promise<void> => {
+  const fetchContent = async (locationLocal: string, abortController: AbortController): Promise<void> => {
     try {
 
       // force start with a loading icon 
       if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
 
-      const res: Response = await fetch(location, {
+      const res: Response = await fetch(locationLocal, {
         signal: abortController.signal,
         credentials: "include",
         method: 'get'

@@ -93,7 +93,8 @@ namespace starsky.Controllers
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
-				var subPath = parentDirectory + "/" + fileName;
+				// subPath is always unix style
+				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
@@ -193,7 +194,7 @@ namespace starsky.Controllers
 				var tempFileStream = _iHostStorage.ReadStream(tempImportSinglePath);
 				var fileName = Path.GetFileName(tempImportSinglePath);
 
-				var subPath = parentDirectory + "/" + fileName;
+				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);

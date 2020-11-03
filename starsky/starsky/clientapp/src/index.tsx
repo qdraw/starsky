@@ -8,7 +8,7 @@ import 'core-js/features/string/match'; // event.key.match
 import 'core-js/features/url-search-params'; // new UrlSearchParams
 import React from 'react';
 import * as ReactDOM from "react-dom";
-import RouterApp from './routes/router';
+import RouterApp from './router-app/router-app';
 import * as serviceWorker from "./service-worker";
 import './style/css/00-index.css';
 

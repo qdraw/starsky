@@ -15,7 +15,7 @@ interface IModalDatetimeProps {
   dateTime?: string;
 }
 
-const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
+const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
 
   // content
   const settings = useGlobalSettings();
@@ -151,4 +151,4 @@ const ModalDatetime: React.FunctionComponent<IModalDatetimeProps> = (props) => {
   </Modal>
 };
 
-export default ModalDatetime
+export default ModalEditDatetime

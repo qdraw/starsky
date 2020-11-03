@@ -13,7 +13,7 @@ interface IBreadcrumbProps {
   breadcrumb: Array<string>;
 }
 
-const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
+const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
   if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb" />);
 
@@ -44,4 +44,4 @@ const Breadcrumb: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
   );
 });
 
-export default Breadcrumb;
+export default Breadcrumbs;

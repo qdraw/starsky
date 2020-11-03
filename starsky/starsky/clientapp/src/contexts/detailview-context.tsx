@@ -52,19 +52,16 @@ export type IDetailViewContext = {
 export function detailviewReducer(state: IDetailView, action: DetailViewAction): IDetailView {
   switch (action.type) {
     case "remove":
-      var { tags } = action;
-      if (tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(tags, "");
+      if (action.tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(action.tags, "");
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
-      /* eslint-disable-next-line no-redeclare */
-      var { tags } = action;
-      if (tags) state.fileIndexItem.tags += "," + tags;
+      if (action.tags) state.fileIndexItem.tags += "," + action.tags;
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
       /* eslint-disable-next-line no-redeclare */
-      var { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
+      let { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
       if (tags !== undefined) state.fileIndexItem.tags = tags;
       if (description !== undefined) state.fileIndexItem.description = description;
       if (title !== undefined) state.fileIndexItem.title = title;

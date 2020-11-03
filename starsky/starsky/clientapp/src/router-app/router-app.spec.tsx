@@ -7,7 +7,7 @@ import * as LoginPage from '../pages/login-page';
 import * as NotFoundPage from '../pages/not-found-page';
 import * as SearchPage from '../pages/search-page';
 import * as TrashPage from '../pages/trash-page';
-import RouterApp from './router';
+import RouterApp from './router-app';
 
 describe("Router", () => {
   it("default", () => {
