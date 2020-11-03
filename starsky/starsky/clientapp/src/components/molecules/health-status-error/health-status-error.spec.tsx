@@ -6,7 +6,7 @@ import { IHealthEntry } from '../../../interfaces/IHealthEntry';
 import * as Notification from '../../atoms/notification/notification';
 import HealthStatusError from './health-status-error';
 
-describe("ItemListView", () => {
+describe("HealthStatusError", () => {
 
   it("renders (without state component)", () => {
     shallow(<HealthStatusError />)
