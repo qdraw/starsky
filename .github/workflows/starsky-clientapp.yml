@@ -30,7 +30,7 @@ jobs:
     - name: Cache node modules clientapp
       uses: actions/cache@v2
       env:
-        cache-name: cache-node-modules
+        cache-name: cache-clientapp-node-modules
       with:
         # npm cache files are stored in `~/.npm` on Linux/macOS
         path: ~/.npm
