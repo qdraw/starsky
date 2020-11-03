@@ -44,17 +44,23 @@ describe("ItemListView", () => {
       var portalElement = document.getElementById(PortalId)
       if (!portalElement) throw new Error("portal should not be undefined");
 
+      // first close default
       var closeElement = portalElement.querySelector(".icon--close") as HTMLDivElement;
       closeElement.click();
 
+      // only danger should still exist
       var length = portalElement.querySelectorAll(".notification").length;
       expect(length).toBe(1)
 
+      // and then close danger
       var closeElement2 = portalElement.querySelector(".icon--close") as HTMLDivElement;
       closeElement2.click();
 
+      // everything is close
       var length2 = portalElement.querySelectorAll(".notification").length;
       expect(length2).toBe(0)
+
+      component.unmount()
     });
 
   });
