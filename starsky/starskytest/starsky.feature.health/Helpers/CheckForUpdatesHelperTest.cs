@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -52,8 +53,9 @@ namespace starskytest.starsky.feature.health.Helpers
 		    " \"https://api.github.com/repos/qdraw/starsky/tarball/v0.4.0-beta.1\",\n  " +
 		    "  \"zipball_url\": \"https://api.github.com/repos/qdraw/starsky/zipball/v0.4.0-beta.1\"\n  }\n]\n";
 		
+		
 		[TestMethod]
-		public async Task QueryIsUpdateNeeded_newer()
+		public async Task QueryIsUpdateNeeded()
 		{
 			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
@@ -61,105 +63,140 @@ namespace starskytest.starsky.feature.health.Helpers
 				{CheckForUpdates.GithubApi, new StringContent(replace)},
 			});
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-			// current is 1.0  - new is 0.9
+			
 			var results = await new CheckForUpdates(httpClientHelper, 
-				new AppSettings(),null).QueryIsUpdateNeeded("1.0");
+				new AppSettings(),null).QueryIsUpdateNeededAsync();
+			
+			Assert.AreEqual("v0.9",results.FirstOrDefault().TagName);
+			Assert.AreEqual("v0.4.0-beta.1",results[1].TagName);
+			Assert.AreEqual(false,results[0].PreRelease);
+			Assert.AreEqual(true,results[1].PreRelease);
+
+			Assert.AreEqual(2,results.Count);
+		}
+		
+		[TestMethod]
+		public async Task QueryIsUpdateNeeded_NotFound()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>());
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+			
+			var results = await new CheckForUpdates(httpClientHelper, 
+				new AppSettings(),null).QueryIsUpdateNeededAsync();
+			
+			Assert.AreEqual(0,results.Count);
+		}
+
+		[TestMethod]
+		public void Parse_CurrentVersionIsNewer()
+		{
+			var results = new CheckForUpdates(null, 
+				new AppSettings(),null).Parse(new List<ReleaseModel>
+			{
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v0.1"
+				}
+			}, "0.2");
 			
 			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
 		}
 		
-		[TestMethod]
-		public async Task QueryIsUpdateNeeded_eq()
-		{
-			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-
-			// current is 0.9 - new is 0.9
-			var results = await new CheckForUpdates(httpClientHelper, 
-				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
-			
-			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
-		}
 		
 		[TestMethod]
-		public async Task QueryIsUpdateNeeded_lower()
+		public void Parse_CurrentVersionIsOlder()
 		{
-			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "v0.9");
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			var results = new CheckForUpdates(null, 
+				new AppSettings(),null).Parse(new List<ReleaseModel>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-
-			// current is 0.8 - new is 0.9
-			var results = await new CheckForUpdates(httpClientHelper, 
-				new AppSettings(),null).QueryIsUpdateNeeded("0.8");
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v0.9"
+				}
+			}, "0.8");
 			
 			Assert.AreEqual(UpdateStatus.NeedToUpdate,results.Key);
 		}
 		
 		[TestMethod]
-		public async Task QueryIsUpdateNeeded_wrongTagName()
+		public void Parse_wrongTagName()
 		{
-			var replace = ExamplePublicReleases.Replace("vtest__remove_this_version", "test");
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			var results = new CheckForUpdates(null, 
+				new AppSettings(),null).Parse(new List<ReleaseModel>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-			// current is 0.9 - new is 0.9
-			var results = await new CheckForUpdates(httpClientHelper,
-				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v_test"
+				}
+			}, "0.8");
 			
-			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public async Task QueryIsUpdateNeeded_CurrentVersionIsNull()
-		{
-			await new CheckForUpdates(null,null,null).QueryIsUpdateNeeded(null);
-			// expect ArgumentNullException
+			Assert.AreEqual(UpdateStatus.InputNotValid,results.Key);
 		}
 		
 		[TestMethod]
-		public async Task QueryIsUpdateNeeded_OnlyPreReleases()
+		public void Parse_wrongTagName_ButDidntStartWithV()
 		{
-			var replace = ExamplePublicReleases.Replace("\"prerelease\": false", "\"prerelease\": true");
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			var results = new CheckForUpdates(null, 
+				new AppSettings(),null).Parse(new List<ReleaseModel>
 			{
-				{CheckForUpdates.GithubApi, new StringContent(replace)},
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-			var results = await new CheckForUpdates(httpClientHelper, 
-				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "nothing_here"
+				}
+			}, "0.8");
 			
 			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
 		}
+
+
 		
-		[TestMethod]
-		public async Task QueryIsUpdateNeeded_EmptyList()
-		{
-			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
-			{
-				{CheckForUpdates.GithubApi, new StringContent("[]")},
-			});
-			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
-
-			var results = await new CheckForUpdates(httpClientHelper, 
-				new AppSettings(),null).QueryIsUpdateNeeded("0.9");
-			
-			Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
-		}
+		//
+		// [TestMethod]
+		// [ExpectedException(typeof(ArgumentNullException))]
+		// public async Task QueryIsUpdateNeeded_CurrentVersionIsNull()
+		// {
+		// 	await new CheckForUpdates(null,null,null).QueryIsUpdateNeeded(null);
+		// 	// expect ArgumentNullException
+		// }
+		//
+		// [TestMethod]
+		// public async Task QueryIsUpdateNeeded_OnlyPreReleases()
+		// {
+		// 	var replace = ExamplePublicReleases.Replace("\"prerelease\": false", "\"prerelease\": true");
+		// 	var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		// 	{
+		// 		{CheckForUpdates.GithubApi, new StringContent(replace)},
+		// 	});
+		// 	var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+		//
+		// 	var results = await new CheckForUpdates(httpClientHelper, 
+		// 		new AppSettings(),null).QueryIsUpdateNeeded("0.9");
+		// 	
+		// 	Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
+		// }
+		
+		// [TestMethod]
+		// public async Task QueryIsUpdateNeeded_EmptyList()
+		// {
+		// 	var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+		// 	{
+		// 		{CheckForUpdates.GithubApi, new StringContent("[]")},
+		// 	});
+		// 	var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+		//
+		// 	var results = await new CheckForUpdates(httpClientHelper, 
+		// 		new AppSettings(),null).QueryIsUpdateNeeded("0.9");
+		// 	
+		// 	Assert.AreEqual(UpdateStatus.NoReleasesFound,results.Key);
+		// }
 
 		[TestMethod]
 		public async Task IsUpdateNeeded_CheckForUpdates_disabled()

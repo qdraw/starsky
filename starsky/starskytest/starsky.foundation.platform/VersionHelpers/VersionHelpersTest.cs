@@ -261,6 +261,32 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		}
 		
 		[TestMethod]
+		public void ComparisonBetaWith_Major_Beta()
+		{
+			var newerRelease = new SemVersion(0,4);
+			var beta = new SemVersion(0,4,0,"-beta.1");
+
+			Assert.IsTrue(beta <= newerRelease, $"{beta} <= {newerRelease}");
+			Assert.IsFalse(beta >= newerRelease, $"{beta} >= {newerRelease}");
+
+			Assert.IsTrue(beta < newerRelease, $"{beta} < {newerRelease}");
+			Assert.IsFalse(beta > newerRelease, $"{beta} > {newerRelease}");
+		}
+		
+		[TestMethod]
+		public void ComparisonBetaSameVersion()
+		{
+			var sameBeta = new SemVersion(0,4,0,"-beta.1");
+			var beta = new SemVersion(0,4,0,"-beta.1");
+
+			Assert.IsTrue(beta <= sameBeta, $"{beta} <= {sameBeta}");
+			Assert.IsTrue(beta >= sameBeta, $"{beta} >= {sameBeta}");
+
+			Assert.IsFalse(beta < sameBeta, $"{beta} < {sameBeta}");
+			Assert.IsFalse(beta > sameBeta, $"{beta} > {sameBeta}");
+		}
+		
+		[TestMethod]
 		public void ComparisonOperatorsValueToNullTest()
 		{
 			var v1 = new SemVersion(1);
@@ -285,6 +311,30 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 			Assert.IsFalse(v1 < v2, $"{v1} < {v2}");
 			Assert.IsFalse(v1 > v2, $"{v1} > {v2}");
 		}
+
+		[TestMethod]
+		public void Equals_same_version()
+		{
+			var sameBeta = new SemVersion(0,4,0,"-beta.1");
+			var beta = new SemVersion(0,4,0,"-beta.1");
+			Assert.IsTrue(SemVersion.Equals(sameBeta, beta));
+		}
+		
+		
+		[TestMethod]
+		public void UpdateAfterAssign()
+		{
+			var version = new SemVersion(1)
+			{
+				Build = string.Empty,
+				Major = 1,
+				Minor = 1,
+				Patch = 1,
+				Prerelease = "-beta.1"
+			};
+			Assert.AreEqual("1.1.1--beta.1",version.ToString());
+		}
+		
 		
 		private static IEnumerable<(SemVersion, SemVersion)> AllPairs(IReadOnlyList<SemVersion> versions)
 		{

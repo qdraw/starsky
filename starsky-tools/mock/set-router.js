@@ -25,6 +25,7 @@ var apiEnvIndex = require('./api/env/index.json');
 var apiPublishIndex = require('./api/publish/index.json');
 var apiPublishCreateIndex = require('./api/publish/create/index.json');
 
+var githubComReposQdrawStarskyReleaseIndex = require('./github.com/repos/qdraw/starsky/releases/index.json');
 
 function setRouter(app) {
   var prefix = "/starsky";
@@ -229,6 +230,13 @@ function setRouter(app) {
 
     res.statusCode = 206;
     return res.send("\"Not ready\"");
+  });
+
+  /**
+   * Mock a github api
+   */
+  app.get('/github.com/repos/qdraw/starsky/releases', (req, res) => {
+    return res.send(githubComReposQdrawStarskyReleaseIndex)
   });
 
 }

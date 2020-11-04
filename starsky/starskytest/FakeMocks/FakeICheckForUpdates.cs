@@ -15,10 +15,11 @@ namespace starskytest.FakeMocks
 		}
 		
 #pragma warning disable 1998
-		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded()
+		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
 #pragma warning restore 1998
 		{
 			return Status;
 		}
+
 	}
 }

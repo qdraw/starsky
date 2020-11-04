@@ -29,7 +29,7 @@ export function SkipDisplayOfUpdate(): boolean {
  */
 const HealthCheckForUpdates: React.FunctionComponent = () => {
 
-  let checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), 'get');
+  const checkForUpdates = useFetch(new UrlQuery().UrlHealthCheckForUpdates(), 'get');
 
   const settings = useGlobalSettings();
 
