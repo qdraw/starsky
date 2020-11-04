@@ -6,6 +6,7 @@ const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
 const editWindows = require('./edit-windows').editWindows
 const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
+const checkForUpdatesWindows = require('./check-for-updates').checkForUpdatesWindows
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
@@ -83,6 +84,9 @@ function AppMenu() {
               window.webContents.reload()
             });
             editWindows.forEach(window => {
+              window.webContents.reload()
+            });
+            checkForUpdatesWindows.forEach(window => {
               window.webContents.reload()
             });
           },

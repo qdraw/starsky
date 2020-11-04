@@ -29,11 +29,12 @@ document.querySelector("#file_selector_reset").addEventListener('click', functio
         reset: true
     });
 });
+
 window.api.receive("settings_default_app", (data) => {
     document.querySelector("#file_selector_result").innerHTML = data;
 });
-window.api.send("settings_default_app",null);
 
+window.api.send("settings_default_app",null);
 
 function changeRemoteToggle(isRemote) {
     console.log(isRemote);
@@ -53,6 +54,17 @@ function changeRemoteLocation(location) {
         "location": location
     });
 }
+
+document.querySelector("#settings_update_policy input").addEventListener("click",function(){
+    window.api.send("settings_update_policy",this.checked);
+})
+
+window.api.receive("settings_update_policy", (data) => {
+    document.querySelector("#settings_update_policy input").checked = data;
+});
+
+window.api.send("settings_update_policy",null);
+
 
 window.api.receive("settings", (data) => {
     console.log(data);
