@@ -226,10 +226,13 @@ namespace starskytest.starsky.feature.health.Helpers
 				new AppSettings(),memoryCache).IsUpdateNeeded();
 
 			memoryCache.TryGetValue(CheckForUpdates.QueryCacheName, out var cacheResult);
-			var status = (( KeyValuePair<UpdateStatus, string> ) cacheResult).Value;
+			var results = (( List<ReleaseModel> ) cacheResult);
 
-			Assert.IsNotNull(status);
-			Assert.AreEqual("0.9",status);
+			Assert.IsNotNull(results);
+			Assert.AreEqual("v0.9",results.FirstOrDefault().TagName);
+			Assert.AreEqual("v0.4.0-beta.1",results[1].TagName);
+			Assert.AreEqual(false,results[0].PreRelease);
+			Assert.AreEqual(true,results[1].PreRelease);
 		}
 		
 		[TestMethod]
@@ -240,14 +243,21 @@ namespace starskytest.starsky.feature.health.Helpers
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
 
-			memoryCache.Set(CheckForUpdates.QueryCacheName, new KeyValuePair<UpdateStatus, 
-				string>(UpdateStatus.NeedToUpdate,"0.9"));
+			memoryCache.Set(CheckForUpdates.QueryCacheName, new List<ReleaseModel>
+			{
+				new ReleaseModel
+				{
+					TagName = "v0.4.0", // should start with 'v'
+					PreRelease = false,
+					Draft = false
+				}
+			});
 			
-			var status = await new CheckForUpdates(null, 
-				new AppSettings(),memoryCache).IsUpdateNeeded();
+			var results = await new CheckForUpdates(null, 
+				new AppSettings(),memoryCache).IsUpdateNeeded("0.4.0");
 
-			Assert.IsNotNull(status);
-			Assert.AreEqual("0.9",status.Value);
+			Assert.IsNotNull(results);
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key );
 		}
 		
 		[TestMethod]

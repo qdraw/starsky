@@ -11,7 +11,7 @@ namespace starsky.feature.health.UpdateCheck.Models
 		///
 		[JsonPropertyName("prerelease")]
 		public bool PreRelease { get; set; }
-		
+
 		/// <summary>
 		/// draft
 		/// </summary>
