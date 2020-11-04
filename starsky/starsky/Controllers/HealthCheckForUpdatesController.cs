@@ -29,7 +29,7 @@ namespace starsky.Controllers
 		/// <response code="200">Current Version Is Latest</response>
 		[HttpGet("/api/health/check-for-updates")]
 		[AllowAnonymous]
-		[ResponseCache(Duration = 7257600)] // 1 week
+		[ResponseCache(Duration = 7257600, Location = ResponseCacheLocation.Client)]
 		[Produces("application/json")]
 		public async Task<IActionResult> CheckForUpdates(string currentVersion = "")
 		{
