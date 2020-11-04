@@ -32,12 +32,16 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.0-beta.2 _(Unreleased)_  2020-11-??
+# version 0.4.0 _(Unreleased)_ -  2020-11-??
+- tbd
+
+# version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
 - [x]   (Changed) _Back-end_ UseRealtime (sockets) backend option changed to enable by default
 - [x]   (Fixed) _Front-end_ When updating files with realtime mode on, collection mode raws are shown after update
 - [x]   (Added) _Back-end_ API to check if current version is the latest on github releases
-- [x]   (Fixed) _Front-end_ Clientside check for latest version (click away for 4 days)
+- [x]   (Added) _Front-end_ Clientside check for latest version (click away for 4 days)
+- [x]   (Added) _App_ Check for latest version and click away for 4 days
 
 # version 0.4.0-beta.1 - 2020-10-31
 _First release on Github Releases_
