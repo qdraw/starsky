@@ -15,15 +15,21 @@ export enum NotificationType {
 const Notification: React.FunctionComponent<NotificationPropTypes> = ({ children, type, callback }) => {
 
   const close = () => {
+    if (!notificationRef.current) return;
+    notificationRef.current.remove();
+    // clean only when the last one is closed
     const portal = document.getElementById(PortalId);
-    if (!portal) return;
-    portal.remove();
+    if (portal && portal.querySelectorAll('.notification').length === 0) {
+      portal.remove();
+    }
     if (callback) callback();
   };
 
+  const notificationRef = React.useRef<HTMLDivElement>(null);
+
   return (
     <Portal>
-      <div className={"notification notification--" + type}>
+      <div className={`notification notification--${type}`} ref={notificationRef}>
         <div className="icon icon--error" />
         <div className="content">
           {children}

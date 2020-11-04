@@ -6,6 +6,6 @@ namespace starsky.feature.health.UpdateCheck.Interfaces
 {
 	public interface ICheckForUpdates
 	{
-		Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded();
+		Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "");
 	}
 }

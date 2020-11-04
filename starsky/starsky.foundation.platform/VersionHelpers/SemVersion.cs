@@ -44,7 +44,6 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns>The <see cref="SemVersion"/> object.</returns>
 		/// <exception cref="ArgumentNullException">The <paramref name="version"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">The <paramref name="version"/> has an invalid format.</exception>
-		/// <exception cref="InvalidOperationException">The <paramref name="version"/> is missing Minor or Patch versions and <paramref name="strict"/> is <see langword="true"/>.</exception>
 		/// <exception cref="OverflowException">The Major, Minor, or Patch versions are larger than <code>int.MaxValue</code>.</exception>
 		public static SemVersion Parse(string version)
 		{
@@ -178,11 +177,7 @@ namespace starsky.foundation.platform.VersionHelpers
 			var aComps = a.Split('.');
 			var bComps = b.Split('.');
 
-			var compareLoop = CompareComponentCompareLoop(aComps, bComps);
-			// ReSharper disable once ConvertIfStatementToReturnStatement
-			if ( compareLoop != int.MaxValue ) return compareLoop;
-
-			return aComps.Length.CompareTo(bComps.Length);
+			return CompareComponentCompareLoop(aComps, bComps);
 		}
 
 		private static int CompareComponentCompareLoop(string[] aComps, string[] bComps)
@@ -208,8 +203,67 @@ namespace starsky.foundation.platform.VersionHelpers
 					}	
 				}
 			}
-			return int.MaxValue;
+			return  aComps.Length.CompareTo(bComps.Length);
 		}
+		
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+		/// </returns>
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				// verify this. Some versions start result = 17. Some use 37 instead of 31
+				int result = Major.GetHashCode();
+				result = result * 31 + Minor.GetHashCode();
+				result = result * 31 + Patch.GetHashCode();
+				result = result * 31 + Prerelease.GetHashCode();
+				result = result * 31 + Build.GetHashCode();
+				return result;
+			}
+		}
+		
+		/// <summary>
+		/// Determines whether the specified <see cref="object" /> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
+		/// <returns>
+		///   <see langword="true"/> if the specified <see cref="object" /> is equal to this instance, otherwise <see langword="false"/>.
+		/// </returns>
+		/// <exception cref="InvalidCastException">The <paramref name="obj"/> is not a <see cref="SemVersion"/>.</exception>
+		public override bool Equals(object obj)
+		{
+			if (obj is null)
+				return false;
+
+			if (ReferenceEquals(this, obj))
+				return true;
+
+			var other = (SemVersion)obj;
+
+			return Major == other.Major
+			       && Minor == other.Minor
+			       && Patch == other.Patch
+			       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
+			       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+		}
+		
+		/// <summary>
+		/// Checks whether two semantic versions are equal.
+		/// </summary>
+		/// <param name="versionA">The first version to compare.</param>
+		/// <param name="versionB">The second version to compare.</param>
+		/// <returns><see langword="true"/> if the two values are equal, otherwise <see langword="false"/>.</returns>
+		public static bool Equals(SemVersion versionA, SemVersion versionB)
+		{
+			if (ReferenceEquals(versionA, versionB)) return true;
+			if (versionA is null || versionB is null) return false;
+			return versionA.Equals(versionB);
+		}
+
 
 		private static int CompareComponentCompareOther(bool aIsNum, bool bIsNum, string ac, string bc)
 		{
@@ -231,7 +285,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <param name="versionA">The first version to compare.</param>
 		/// <param name="versionB">The second version to compare.</param>
 		/// <returns>A signed number indicating the relative values of <paramref name="versionA"/> and <paramref name="versionB"/>.</returns>
-		public static int Compare(SemVersion versionA, SemVersion versionB)
+		private static int Compare(SemVersion versionA, SemVersion versionB)
 		{
 			if ( ReferenceEquals(versionA, versionB) ) return 0;
 			if ( versionA is null ) return -1;
@@ -276,7 +330,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns>If left is less than or equal to right <see langword="true"/>, otherwise <see langword="false"/>.</returns>
 		public static bool operator <=(SemVersion left, SemVersion right)
 		{
-			return Compare(left, right) <= 0;
+			return Equals(left, right) || Compare(left, right) < 0;
 		}
 
 		/// <summary>
@@ -287,7 +341,7 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns>If left is greater than or equal to right <see langword="true"/>, otherwise <see langword="false"/>.</returns>
 		public static bool operator >=(SemVersion left, SemVersion right)
 		{
-			return Compare(left, right) >= 0;
+			return Equals(left, right) || Compare(left, right) > 0;
 		}
 		
 		/// <summary>

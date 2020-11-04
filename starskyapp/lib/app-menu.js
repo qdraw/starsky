@@ -6,6 +6,7 @@ const mainWindows = require('./main-window').mainWindows
 const settingsWindows = require('./settings-window').settingsWindows
 const editWindows = require('./edit-windows').editWindows
 const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
+const checkForUpdatesWindows = require('./check-for-updates').checkForUpdatesWindows
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
@@ -85,6 +86,9 @@ function AppMenu() {
             editWindows.forEach(window => {
               window.webContents.reload()
             });
+            checkForUpdatesWindows.forEach(window => {
+              window.webContents.reload()
+            });
           },
           accelerator: 'CmdOrCtrl+R'
         },
@@ -136,6 +140,13 @@ function AppMenu() {
           label: 'Documentation website',
           click: async () => {
             await shell.openExternal('https://qdraw.github.io/starsky/')
+          }
+        },
+        {
+          label: 'Release overview',
+          // Referenced from HealthCheckForUpdates
+          click: async () => {
+            await shell.openExternal('https://github.com/qdraw/starsky/releases/latest')
           }
         }
       ]

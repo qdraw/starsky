@@ -280,6 +280,10 @@ export class UrlQuery {
     return `${this.prefix}/api/health/details`
   }
 
+  public UrlHealthCheckForUpdates(): string {
+    return `${this.prefix}/api/health/check-for-updates`
+  }
+
   public UrlRemoveCache(parentFolder: string): string {
     return this.prefix + "/api/remove-cache?json=true&f=" + parentFolder
   }

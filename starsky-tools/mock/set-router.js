@@ -3,6 +3,8 @@ var apiAccountPermissionsIndex = require('./api/account/permissions/index.json')
 
 var accountStatus = require('./api/account/status/index.json')
 var apiHealthDetails = require('./api/health/details/index.json')
+var apiHealthCheckForUpdates = require('./api/health/check-for-updates/index.json')
+
 var apiIndexIndex = require('./api/index/index.json')
 var apiIndex__Starsky = require('./api/index/__starsky.json');
 var apiIndex__Starsky01dif = require('./api/index/__starsky_01-dif.json')
@@ -23,6 +25,7 @@ var apiEnvIndex = require('./api/env/index.json');
 var apiPublishIndex = require('./api/publish/index.json');
 var apiPublishCreateIndex = require('./api/publish/create/index.json');
 
+var githubComReposQdrawStarskyReleaseIndex = require('./github.com/repos/qdraw/starsky/releases/index.json');
 
 function setRouter(app) {
   var prefix = "/starsky";
@@ -59,6 +62,11 @@ function setRouter(app) {
   app.get(prefix + '/api/health/details', (req, res) => {
     res.status(503);
     res.json(apiHealthDetails)
+  });
+
+  app.get(prefix + '/api/health/check-for-updates', (req, res) => {
+    res.status(202);
+    res.json(apiHealthCheckForUpdates)
   });
 
   app.get(prefix + '/api/info', (req, res) => {
@@ -222,6 +230,13 @@ function setRouter(app) {
 
     res.statusCode = 206;
     return res.send("\"Not ready\"");
+  });
+
+  /**
+   * Mock a github api
+   */
+  app.get('/github.com/repos/qdraw/starsky/releases', (req, res) => {
+    return res.send(githubComReposQdrawStarskyReleaseIndex)
   });
 
 }

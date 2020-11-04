@@ -19,6 +19,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 	public class CheckForUpdates : ICheckForUpdates
 	{
 		internal const string GithubApi = "https://api.github.com/repos/qdraw/starsky/releases";
+		
 		private readonly AppSettings _appSettings;
 		private readonly IMemoryCache _cache;
 		private readonly IHttpClientHelper _httpClientHelper;
@@ -32,55 +33,61 @@ namespace starsky.feature.health.UpdateCheck.Services
 		
 		internal const string QueryCacheName = "CheckForUpdates";
 
-		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded()
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="currentVersion">defaults to _appSettings</param>
+		/// <returns></returns>
+		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
 		{
 			if (_appSettings == null || !_appSettings.CheckForUpdates ) 
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
 
+			currentVersion = string.IsNullOrWhiteSpace(currentVersion)
+				?  _appSettings.AppVersion : currentVersion;
+			
 			// The CLI programs uses no cache
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
-				return await QueryIsUpdateNeeded(_appSettings.AppVersion);
-            
+				return Parse(await QueryIsUpdateNeededAsync(),currentVersion);
 
-			if (_cache.TryGetValue(QueryCacheName, out var cacheResult))
-				return (KeyValuePair<UpdateStatus, string>) cacheResult;
+			if ( _cache.TryGetValue(QueryCacheName, out var cacheResult) )
+				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 
-			cacheResult = await QueryIsUpdateNeeded(_appSettings.AppVersion);
+			cacheResult = await QueryIsUpdateNeededAsync();
 
-			// Set only when query has been an success
-			var status = (( KeyValuePair<UpdateStatus, string> ) cacheResult).Key;
-			if ( status != UpdateStatus.HttpError  ) {
-				
-				_cache.Set(QueryCacheName, cacheResult, 
-				new TimeSpan(48,0,0));
-			}
-			
-			return ( KeyValuePair<UpdateStatus, string> ) cacheResult;
+			_cache.Set(QueryCacheName, cacheResult, 
+			new TimeSpan(48,0,0));
+
+			return Parse(( List<ReleaseModel> ) cacheResult,currentVersion);
 		}
 
-		internal Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeeded(string currentVersion)
-		{
-			if ( string.IsNullOrWhiteSpace(currentVersion) ) throw new ArgumentNullException(nameof(currentVersion));
-		    return QueryIsUpdateNeededAsync(currentVersion);
-		}
-
-		private async Task<KeyValuePair<UpdateStatus, string>> QueryIsUpdateNeededAsync(string currentVersion)
+		internal async Task<List<ReleaseModel>> QueryIsUpdateNeededAsync()
 		{
 			// argument check is done in QueryIsUpdateNeeded
 			var (key, value) = await _httpClientHelper.ReadString(GithubApi);
-			if ( !key ) return new KeyValuePair<UpdateStatus, string>(UpdateStatus.HttpError,value);
-			
-			var releaseModelList = JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
-			
+			return !key ? new List<ReleaseModel>() : JsonSerializer.Deserialize<List<ReleaseModel>>(value, new JsonSerializerOptions());
+		}
+
+		// ReSharper disable once MemberCanBeMadeStatic.Global
+		internal KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel> releaseModelList, string currentVersion )
+		{
 			var tagName = releaseModelList.LastOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
 			if ( string.IsNullOrWhiteSpace(tagName) || !tagName.StartsWith("v") )
-				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,value);
+				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,string.Empty);
 
-			var latestVersion = tagName.Remove(0, 1);
-			
-			var status =  SemVersion.Parse(currentVersion) >= 
-			             SemVersion.Parse(latestVersion) ? UpdateStatus.CurrentVersionIsLatest : UpdateStatus.NeedToUpdate;
-			return new KeyValuePair<UpdateStatus, string>(status, latestVersion);
+			try
+			{
+				var latestVersion = SemVersion.Parse(tagName.Remove(0, 1));
+				var currentVersionObject = SemVersion.Parse(currentVersion);
+				var isNewer = latestVersion > currentVersionObject;
+				var status = isNewer ? UpdateStatus.NeedToUpdate : UpdateStatus.CurrentVersionIsLatest;
+				return new KeyValuePair<UpdateStatus, string>(status, latestVersion.ToString());
+			}
+			catch ( ArgumentException)
+			{
+				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty);
+			}
+
 		}
 	}
 }

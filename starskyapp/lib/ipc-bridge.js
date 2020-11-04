@@ -90,9 +90,26 @@ exports.ipcBridge = () => {
         event.reply('settings', currentSettings)
     });
 
-    ipcMain.on("settings_default_app", (event, args) => {
-        console.log('-->');
+    // default by true
+    ipcMain.on("settings_update_policy", (event, args) => {
+        let currentSettings = true;
 
+        if (appConfig.has("settings_update_policy")) {
+            currentSettings = appConfig.get("settings_update_policy");
+        }
+
+        if (args === false || args === true ) {
+            console.log('set arg --> ', args);
+            appConfig.set("settings_update_policy", args);
+
+            event.reply('settings_update_policy', args)
+            return
+        }
+
+        event.reply('settings_update_policy', currentSettings)
+    });
+
+    ipcMain.on("settings_default_app", (event, args) => {
         if (args && args.reset) {
             appConfig.delete("settings_default_app");
         }

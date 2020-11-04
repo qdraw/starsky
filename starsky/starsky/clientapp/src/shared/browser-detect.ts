@@ -6,14 +6,15 @@ export class BrowserDetect {
     const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
     return isWebKit && (isIOS || isIPadOS);
   }
-  public IsLegacy = () => {
+  public IsLegacy = (): boolean => {
     if (!('fetch' in window)) return true;
     return '-ms-scroll-limit' in document.documentElement.style
       && '-ms-ime-align' in document.documentElement.style
       && navigator.userAgent.indexOf("Trident") > -1;
   }
 
-  public IsElectronApp = () => {
+  public IsElectronApp = (): boolean => {
+    if ((window as any).isElectron === true) return true;
     return navigator.userAgent.indexOf("Electron") > -1 && navigator.userAgent.indexOf("starsky/") > -1;
   }
 }
