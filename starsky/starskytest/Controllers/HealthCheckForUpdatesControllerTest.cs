@@ -40,6 +40,16 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task CheckForUpdates_InputNotValid()
+		{
+			var fakeService = new FakeICheckForUpdates(
+				new KeyValuePair<UpdateStatus, string>(UpdateStatus.InputNotValid, string.Empty));
+
+			var actionResult = await new HealthCheckForUpdatesController(fakeService).CheckForUpdates() as ObjectResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
 		public async Task CheckForUpdates_NoReleasesFound()
 		{
 			var fakeService = new FakeICheckForUpdates(
