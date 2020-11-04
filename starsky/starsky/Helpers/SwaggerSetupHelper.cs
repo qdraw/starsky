@@ -34,7 +34,8 @@ namespace starsky.Helpers
 						new string[] {}
 					}
 				});
-
+				// enums are not working
+				c.DescribeAllEnumsAsStrings();
 				c.IncludeXmlComments(GetXmlCommentsPath());
 			});
 		}
