@@ -1,5 +1,4 @@
 
-// document.querySelector('#switch_local').addEventListener('click', changeRemoteToggle(true));
 
 document.querySelector('#switch_local').addEventListener('change', function() {
     changeRemoteToggle(false)
@@ -13,9 +12,6 @@ document.querySelector('#remote_location').addEventListener('change', function()
     changeRemoteLocation(this.value)
 });
 
-// console.log(document.querySelector('#switch_local'));
-// document.querySelector('#switch_remote').addEventListener('click', changeRemoteToggle(false));
-// document.querySelector('#switch_remote').addEventListener('click', console.log(true));
 
 
 document.querySelector("#file_selector").addEventListener('click', function() {
@@ -55,12 +51,20 @@ function changeRemoteLocation(location) {
     });
 }
 
-document.querySelector("#settings_update_policy input").addEventListener("click",function(){
-    window.api.send("settings_update_policy",this.checked);
-})
+document.querySelector('#switch_update_policy_off').addEventListener('change', function() {
+    window.api.send("settings_update_policy",false);
+
+});
+
+document.querySelector('#switch_update_policy_on').addEventListener('change', function() {
+    window.api.send("settings_update_policy",true);
+});
 
 window.api.receive("settings_update_policy", (data) => {
-    document.querySelector("#settings_update_policy input").checked = data;
+    if (!data) {
+        document.querySelector("#switch_update_policy_off").checked = true;
+        document.querySelector("#switch_update_policy_on").checked = null;
+    }
 });
 
 window.api.send("settings_update_policy",null);

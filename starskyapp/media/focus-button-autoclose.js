@@ -1,9 +1,14 @@
-setTimeout(()=>{
-    window.close();
-}, 8000);
 
-document.querySelector("button").focus();
+if (document.querySelectorAll("#autoclose").length === 1) {
 
-document.querySelector('button').addEventListener('click', function() {
-    window.close();
-});
+    document.querySelector("#autoclose").focus();
+
+    document.querySelector('#autoclose').addEventListener('click', function() {
+        window.close();
+    });
+
+    setTimeout(()=>{
+        window.close();
+    }, 8000);
+}
+

@@ -67,7 +67,7 @@ exports.createMainWindow = () => {
      + whitelistDomain + "; " +      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain
       + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
       "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
-      "font-src " + whitelistDomain + "; media-src " + whitelistDomain + ";";
+      "font-src file://* " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 
     if (!res.url.startsWith('devtools://') && !res.url.startsWith('http://localhost:3000/')  ) {
       res.responseHeaders["Content-Security-Policy"] = csp;
