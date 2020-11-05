@@ -4,29 +4,32 @@ using starsky.foundation.sync.Interfaces;
 
 namespace starsky.foundation.sync.Services
 {
-	public class FileSystemWatcherImplementation
+	public class DiskWatcher : IDiskWatcher
 	{
 		private readonly IFileProcessor _fileProcessor;
-		public FileSystemWatcherImplementation(IFileProcessor fileProcessor)
+		private readonly IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
+
+		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper, IFileProcessor fileProcessor)
 		{
 			_fileProcessor = fileProcessor;
+			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 		}
 
 		/// <summary>
 		/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netcore-3.1
 		/// </summary>
-		public void Test()
+		public void Watcher(string fullFilePath)
 		{
 			// Create a new FileSystemWatcher and set its properties.
-			using FileSystemWatcher watcher = new FileSystemWatcher
-			{
-				Path = "args[1]",
-				NotifyFilter = NotifyFilters.LastAccess
-				               | NotifyFilters.LastWrite
-				               | NotifyFilters.FileName
-				               | NotifyFilters.DirectoryName,
-				Filter = "*.txt"
-			};
+
+			_fileSystemWatcherWrapper.Path = fullFilePath;
+			_fileSystemWatcherWrapper.Filter = "*.txt";
+			_fileSystemWatcherWrapper.IncludeSubdirectories = true;
+			_fileSystemWatcherWrapper.NotifyFilter = NotifyFilters.LastAccess
+			                                         | NotifyFilters.LastWrite
+			                                         | NotifyFilters.FileName
+			                                         | NotifyFilters.DirectoryName;
+
 
 			// Watch for changes in LastAccess and LastWrite times, and
 			// the renaming of files or directories.
@@ -34,13 +37,13 @@ namespace starsky.foundation.sync.Services
 			// Only watch text files.
 
 			// Add event handlers.
-			watcher.Changed += OnChanged;
-			watcher.Created += OnChanged;
-			watcher.Deleted += OnChanged;
-			watcher.Renamed += OnRenamed;
+			_fileSystemWatcherWrapper.Changed += OnChanged;
+			_fileSystemWatcherWrapper.Created += OnChanged;
+			_fileSystemWatcherWrapper.Deleted += OnChanged;
+			_fileSystemWatcherWrapper.Renamed += OnRenamed;
 
 			// Begin watching.
-			watcher.EnableRaisingEvents = true;
+			_fileSystemWatcherWrapper.EnableRaisingEvents = true;
 
 			// // Wait for the user to quit the program.
 			// Console.WriteLine("Press 'q' to quit the sample.");

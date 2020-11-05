@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using starsky.foundation.sync.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.Services
 {
 	/// <summary>
@@ -12,12 +14,15 @@ namespace starsky.foundation.sync.Services
 	{
 		private readonly Queue<string> _workQueue;
 		private Thread _workerThread;
-		private readonly EventWaitHandle _waitHandle;
-
-		public FileProcessor()
+		private readonly IAutoResetEventAsync _waitHandle;
+		private readonly FileProcessorDelegate _processFile;
+		public delegate void FileProcessorDelegate(string filepath);
+		
+		public FileProcessor(IAutoResetEventAsync autoResetEventAsync, FileProcessorDelegate processFile)
 		{
 			_workQueue = new Queue<string>();
-			_waitHandle = new AutoResetEvent(true);
+			_waitHandle = autoResetEventAsync;
+			_processFile = processFile;
 		}
 
 		public void QueueInput(string filepath)
@@ -30,27 +35,28 @@ namespace starsky.foundation.sync.Services
 				_workerThread = new Thread(Work);
 				_workerThread.Start();
 			}
-
-			// If thread is waiting then start it
 			else if (_workerThread.ThreadState == ThreadState.WaitSleepJoin)
 			{
+				// If thread is waiting then start it
 				_waitHandle.Set();
 			}
 		}
 
-		private void Work()
+		internal async void Work()
 		{
-			while (true)
+			var running = true;
+			while (running)
 			{
 				var filepath = RetrieveFile();
-				if (filepath != null)
-					ProcessFile(filepath);
-				else
-					// If no files left to process then wait
-					_waitHandle.WaitOne();
+				if ( filepath != null )
+				{
+					_processFile.DynamicInvoke(filepath);
+					continue;
+				}
+				
+				// If no files left to process then wait
+				running = await _waitHandle.WaitAsync(TimeSpan.FromMinutes(1));
 			}
-
-			// ReSharper disable once FunctionNeverReturns
 		}
 
 		private string RetrieveFile()
@@ -58,11 +64,5 @@ namespace starsky.foundation.sync.Services
 			return _workQueue.Count > 0 ? _workQueue.Dequeue() : null;
 		}
 
-		private void ProcessFile(string filepath)
-		{
-			Console.WriteLine(filepath);
-			// Some processing done on the file
-			// File.Encrypt(filepath);
-		}
 	}
 }
