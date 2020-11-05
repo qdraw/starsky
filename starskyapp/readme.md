@@ -26,19 +26,19 @@ There are binaries available through  [Github Releases](https://github.com/qdraw
 ### Mac OS 10.12 or newer
 - Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-desktop.zip`
 
-> Mac OS 10.10 and 10.11 Are only supported in remote mode
+> Mac OS 10.10 and 10.11 are only supported in remote mode
 
 The following versions are available:
 ![Starsky App versions](docs-assets/starskyapp-versions.jpg)
 
-The application bundle can run portable
+The application bundle can run without installer
 
 ## Remote mode
 
 Use the settings menu to update the server settings
+Click on 'Settings' > 'Settings' to get the following menu
 
-![Starsky App versions](docs-assets/starskyapp-remote-options-v040beta1.jpg)
-_In a future release this ugly layout will change_
+![Starsky App versions](docs-assets/starskyapp-remote-options-v040.jpg)
 
 ## Cache
 
