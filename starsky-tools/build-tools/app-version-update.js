@@ -5,7 +5,8 @@
 
 const { resolve, join } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
-
+const {getFiles} = require('./lib/get-files-directory');
+const { prefixPath } = require('./lib/prefix-path.const.js');
 var newVersion = "0.4.0";
 
 function checkNewVersion() {
@@ -21,21 +22,6 @@ checkNewVersion();
 
 console.log(`\nUpgrade version in csproj-files and package.json to ${newVersion}\n`);
 
-var prefixPath = "../../";
-
-async function getFiles(dir) {
-  const dirents = await readdir(dir, { withFileTypes: true });
-  const files = await Promise.all(dirents.map((dirent) => {
-    const res = resolve(dir, dirent.name);
-    return dirent.isDirectory() && dirent.name != "generic-netcore" && dirent.name != "build" &&
-      dirent.name != "node_modules" && dirent.name != "obj" && dirent.name != "bin" &&
-      dirent.name != "osx.10.12-x64" && dirent.name != "linux-arm64" && dirent.name != "win7-x86" &&
-      dirent.name != "coverage" && dirent.name != "coverage-report" && dirent.name != "Cake" &&
-      dirent.name != "linux-arm" && dirent.name != "dist" &&
-      !dirent.name.startsWith(".") ? getFiles(res) : res;
-  }));
-  return Array.prototype.concat(...files);
-}
 
 getFiles(join(__dirname, prefixPath, "starsky")).then(async (filePathList) => {
   await updateVersions(filePathList);

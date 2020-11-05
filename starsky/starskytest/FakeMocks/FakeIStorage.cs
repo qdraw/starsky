@@ -215,6 +215,7 @@ namespace starskytest.FakeMocks
 			if ( !ExistFile(path) ) throw new FileNotFoundException($"{path} is not found in FakeStorage");
 
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
+			if ( result == null ) return Stream.Null;
 			MemoryStream stream1 = new MemoryStream(result);
 			return stream1;
 		}
