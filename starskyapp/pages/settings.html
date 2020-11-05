@@ -13,8 +13,11 @@
 </head>
 <body>
     <div class="content">
+        <div class="content--header">
+            Local Application Settings
+        </div>
         <div class="content--subheader">
-            Remote or local
+            Connect App to Remote or keep local
         </div>
         <div class="content--text">
             <form class="switch-field">
@@ -27,8 +30,8 @@
             <form>
                 <label for="remote_location">Url:</label><br />
                 <input class="form-control" type="text" id="remote_location" disabled name="lname">
-                <div id="locationOk">&nbsp;</div>
-                <span>Do enter the main domain starsky is running on</span>
+                <p>&nbsp;</p>
+                <div class="warning-box" id="locationOk">Do enter the main domain starsky is running on</div>
             </form>
         </div>
         <div class="content--subheader">
