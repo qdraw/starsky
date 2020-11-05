@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
@@ -10,6 +11,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.storage.Interfaces;
+using Directory = MetadataExtractor.Directory;
 
 namespace starsky.foundation.readmeta.Services
 {
@@ -32,23 +34,29 @@ namespace starsky.foundation.readmeta.Services
 	        {
 		        existingFileIndexItem = new FileIndexItem(subPath);
 	        }
+
+	        var defaultErrorResult = new FileIndexItem(subPath)
+	        {
+		        ColorClass = ColorClassParser.Color.None,
+		        ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
+		        Status = FileIndexItem.ExifStatus.OperationNotSupported,
+		        Tags = nameof(ImageProcessingException).ToLowerInvariant(),
+		        Orientation = FileIndexItem.Rotation.Horizontal
+	        };
 	        
 	        using ( var stream = _iStorage.ReadStream(subPath) )
 	        {
+		        if ( stream == Stream.Null ) return defaultErrorResult;
 				try
 				{
 					allExifItems = ImageMetadataReader.ReadMetadata(stream).ToList();
 					DisplayAllExif(allExifItems);
 				}
-				catch (ImageProcessingException)
+				catch (Exception)
 				{
+					// ImageProcessing or System.Exception: Handler moved stream beyond end of atom
 					stream.Dispose();
-					return new FileIndexItem (subPath) {
-						ColorClass = ColorClassParser.Color.None, 
-						ImageFormat = ExtensionRolesHelper.ImageFormat.unknown,
-						Tags = nameof(ImageProcessingException).ToLowerInvariant(),
-						Orientation = FileIndexItem.Rotation.Horizontal
-					};
+					return defaultErrorResult;
 				}
 	        }
 	        
