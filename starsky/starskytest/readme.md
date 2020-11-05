@@ -32,7 +32,7 @@ When using powershell running only the 'Starsky Mvc application' and tests
 powershell -File build.ps1 -ScriptArgs '-Target="BuildTestNetCore"'
 ```
 
-or using bash. You need to have `mono` installed
+or using bash.
 
 ```sh
 ./build.sh -Target="BuildTestNetCore"
@@ -57,33 +57,5 @@ C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\16.2.0
 ```
 
 ### Coverlet.MSBuild
-To measure how much code is tested by this automatically script we have included this library.   The goal is improve test coverage
+To measure how much code is tested by this automatically script we have included this library. 
 
-### Coverage Chart
-```
-+-------------------+--------+--------+--------+
-| Module            | Line   | Branch | Method |
-+-------------------+--------+--------+--------+
-| starskygeocore    | 90,6%  | 80,23% | 100%   |
-+-------------------+--------+--------+--------+
-| starskysynccli    | 59,45% | 50%    | 100%   |
-+-------------------+--------+--------+--------+
-| starsky           | 65,43% | 65,33% | 88,88% |
-+-------------------+--------+--------+--------+
-| starskywebftpcli  | 27,27% | 28,88% | 37,5%  |
-+-------------------+--------+--------+--------+
-| starskygeocli     | 0%     | 0%     | 0%     |
-+-------------------+--------+--------+--------+
-| starskywebhtmlcli | 70%    | 70,96% | 79,16% |
-+-------------------+--------+--------+--------+
-| starskycore       | 90,72% | 87,27% | 90,75% |
-+-------------------+--------+--------+--------+
-
-+---------+--------+--------+--------+
-|         | Line   | Branch | Method |
-+---------+--------+--------+--------+
-| Total   | 83,58% | 82,02% | 89,8%  |
-+---------+--------+--------+--------+
-| Average | 57,63% | 54,66% | 70,89% |
-+---------+--------+--------+--------+
-```

@@ -21,8 +21,12 @@ namespace starskycore.Models
 	    /// <param name="request"></param>
         public ImportSettingsModel(HttpRequest request)
         {
-            int.TryParse(request.Headers["ColorClass"], out var colorClass);
-            ColorClass = colorClass;
+	        // the header defaults to zero, and that's not the correct default value
+	        if ( !string.IsNullOrWhiteSpace(request.Headers["ColorClass"]) )
+	        {
+		        int.TryParse(request.Headers["ColorClass"], out var colorClass);
+		        ColorClass = colorClass;
+	        }
 
             Structure = request.Headers["Structure"].ToString();
 
@@ -56,7 +60,15 @@ namespace starskycore.Models
 
         public bool RecursiveDirectory { get; set; }
 
-        private int _colorClass;
+        /// <summary>
+        /// -1 is ignore
+        /// </summary>
+        private int _colorClass = -1;
+        
+        /// <summary>
+        /// Overwrite ColorClass settings
+        /// Int value between 0 and 8
+        /// </summary>
         public int ColorClass {
             get => _colorClass;
             set {
@@ -65,7 +77,7 @@ namespace starskycore.Models
                      _colorClass = value;
                     return;
                 }
-                _colorClass = 0;
+                _colorClass = -1;
             }
         }
 

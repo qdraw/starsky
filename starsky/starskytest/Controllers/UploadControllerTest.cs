@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Interfaces;
@@ -66,7 +68,7 @@ namespace starskytest.Controllers
 				TempFolder = createAnImage.BasePath
 			};
 
-			_iStorage = new FakeIStorage(new List<string>{"/"}, 
+			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
@@ -101,11 +103,13 @@ namespace starskytest.Controllers
 		///  Add the file in the underlying request object.
 		/// </summary>
 		/// <returns>Controller Context with file</returns>
-		private ControllerContext RequestWithFile()
+		private ControllerContext RequestWithFile(byte[] bytes = null)
 		{
+			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
+			if ( bytes == null ) bytes = CreateAnImage.Bytes;
 			var httpContext = new DefaultHttpContext();
 			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
-			httpContext.Request.Body = new MemoryStream(CreateAnImage.Bytes);
+			httpContext.Request.Body = new MemoryStream(bytes);
 	        
 			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
 			return new ControllerContext(actionContext);
@@ -115,7 +119,8 @@ namespace starskytest.Controllers
 		public async Task UploadToFolder_NoToHeader_BadRequest()
 		{
 			var controller =
-				new UploadController(_import, _appSettings, _iSync, new FakeSelectorStorage(new FakeIStorage()), _query)
+				new UploadController(_import, _appSettings, _iSync, 
+					new FakeSelectorStorage(new FakeIStorage()), _query, new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
@@ -128,7 +133,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_DefaultFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _iSync,  new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -147,13 +153,45 @@ namespace starskytest.Controllers
 
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+
+			_query.RemoveItem(queryResult.FileIndexItem);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolder_DefaultFlow_ColorClass()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes),
+			};
+
+			var toPlaceSubPath = "/color-class01.jpg";
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolder()  as JsonResult;
+			var list = actionResult.Value as List<ImportIndexItem>;
+
+			Assert.AreEqual( ImportStatus.Ok, list.FirstOrDefault().Status);
+
+			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
+			Assert.IsTrue(fileSystemResult);
+
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+			
+			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
+			Assert.AreEqual(ColorClassParser.Color.Winner,queryResult.FileIndexItem.ColorClass);
+
+			_query.RemoveItem(queryResult.FileIndexItem);
 		}
 		
 		[TestMethod]
 		public async Task UploadToFolder_NotFound()
 		{
 			var controller =
-				new UploadController(_import, _appSettings,  _iSync, new FakeSelectorStorage(_iStorage), _query)
+				new UploadController(_import, _appSettings,  _iSync, 
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = RequestWithFile(),
 				};
@@ -167,7 +205,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UploadToFolder_UnknownFailFlow()
 		{
-			var controller = new UploadController(_import, _appSettings, _iSync, new FakeSelectorStorage(_iStorage), _query)
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -180,27 +219,150 @@ namespace starskytest.Controllers
 			Assert.AreEqual( ImportStatus.FileError, list.FirstOrDefault().Status);
 		}
 
-		
-		
-//		[TestMethod]
-		public async Task UploadToFolder_StreamFileHasFailed_BadRequest()
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath()
 		{
-			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
-			httpContext.Request.Headers["to"] = "/"; //Set header
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test.jpg");
 			
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/", result);
+		}
+		
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test/test.jpg");
+			
+			var controller = new UploadController(_import, _appSettings, _iSync, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/test", result);
+		}
+	
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_TestDirectFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/test/");
+			
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = controllerContext
+			};
+
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.AreEqual("/test", result);
+		}
+		
+		[TestMethod]
+		public void GetParentDirectoryFromRequestHeader_InputToAsSubPath_NonExistFolder()
+		{
+			var controllerContext = RequestWithFile();
+			controllerContext.HttpContext.Request.Headers.Add("to", "/non-exist/test.jpg");
+
 			var controller =
-				new UploadController(_import, _appSettings,  _iSync, new FakeSelectorStorage(_iStorage), _query)
+				new UploadController(_import, _appSettings, _iSync,
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
 				{
-					ControllerContext =
-					{
-						HttpContext = httpContext
-					}
+					ControllerContext = controllerContext
 				};
 			
-			var actionResult = await controller.UploadToFolder() as BadRequestObjectResult;
+			var result = controller.GetParentDirectoryFromRequestHeader();
+			Assert.IsNull(result);
+		}
+		
+		/// <summary>
+		///  Add the file in the underlying request object.
+		/// </summary>
+		/// <returns>Controller Context with file</returns>
+		private ControllerContext RequestWithSidecar()
+		{
+			var httpContext = new DefaultHttpContext();
+			httpContext.Request.Headers.Add("Content-Type", "application/octet-stream");
+			httpContext.Request.Body = new MemoryStream(CreateAnXmp.Bytes);
+	        
+			var actionContext = new ActionContext(httpContext, new RouteData(), new ControllerActionDescriptor());
+			return new ControllerContext(actionContext);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_DefaultFlow()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithSidecar(),
+			};
+
+			var toPlaceSubPath = "/yes01.xmp";
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
+			var list = actionResult.Value as List<string>;
+
+			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
+		}
+				
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NoXml_SoIgnore()
+		{
+			var controller = new UploadController(_import, _appSettings, _iSync,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile() // < - - - - - - this is not an xml
+			};
+
+			var toPlaceSubPath = "/yes01.xmp";
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()  as JsonResult;
+			var list = actionResult.Value as List<string>;
+
+			Assert.AreEqual(0, list.Count);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NotFound()
+		{
+			var controller =
+				new UploadController(_import, _appSettings,  _iSync, 
+					new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+				{
+					ControllerContext = RequestWithFile(),
+				};
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = "/not-found"; //Set header
+
+			var actionResult = await controller.UploadToFolderSidecarFile()as NotFoundObjectResult;
+			
+			Assert.AreEqual(404,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_NoToHeader_BadRequest()
+		{
+			var controller =
+				new UploadController(_import, _appSettings, _iSync, 
+					new FakeSelectorStorage(new FakeIStorage()), _query, new FakeIWebSocketConnectionsService())
+				{
+					ControllerContext = {HttpContext = new DefaultHttpContext()}
+				};
+			
+			var actionResult = await controller.UploadToFolderSidecarFile()as BadRequestObjectResult;
 			
 			Assert.AreEqual(400,actionResult.StatusCode);
 		}
-
 	}
 }

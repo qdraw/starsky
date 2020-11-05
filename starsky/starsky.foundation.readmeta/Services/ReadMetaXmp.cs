@@ -24,26 +24,26 @@ namespace starsky.foundation.readmeta.Services
         {
 	        if(databaseItem == null) databaseItem = new FileIndexItem();
 
-            // Read content from sidecar xmp file
-            if (ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath))
-            {
-                // Parse an xmp file for this location
-	            var xmpSubPath =
-		            ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
-                if ( _iStorage.ExistFile(xmpSubPath) )
-                {
-                    // Read the text-content of the xmp file.
-                    var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
-                    // Get the data from the xmp
-                    databaseItem = GetDataFromString(xmp,databaseItem);
-                }
-            }
+	        // Parse an xmp file for this location
+	        var xmpSubPath =
+		        ExtensionRolesHelper.ReplaceExtensionWithXmp(databaseItem.FilePath);
+	        // also add when the file is a jpeg, we are not writing to it then
+	        if ( _iStorage.ExistFile(xmpSubPath) ) databaseItem.AddSidecarExtension("xmp");
+
+	        // Read content from sidecar xmp file
+	        if ( !ExtensionRolesHelper.IsExtensionForceXmp(databaseItem.FilePath) ||
+	             !_iStorage.ExistFile(xmpSubPath) ) return databaseItem;
+	        
+	        // Read the text-content of the xmp file.
+            var xmp = new PlainTextFileHelper().StreamToString(_iStorage.ReadStream(xmpSubPath));
+            // Get the data from the xmp
+            databaseItem = GetDataFromString(xmp,databaseItem);
             return databaseItem;
         }
         
         public FileIndexItem GetDataFromString(string xmpDataAsString, FileIndexItem databaseItem = null)
         {
-            // Does not require appsettings
+            // Does not require appSettings
             
             if(databaseItem == null) databaseItem = new FileIndexItem();
 	        
@@ -149,8 +149,17 @@ namespace starsky.foundation.readmeta.Services
 	            var isoSpeed = GetNullNameSpace(property, "exif:ISOSpeedRatings[1]");
 	            if ( isoSpeed != null ) item.SetIsoSpeed(isoSpeed);
 	            
-//				Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
+	            var height = GetContentNameSpace(property, "exif:PixelXDimension");
+	            if (height != null) item.SetImageHeight(height);
 
+	            var width = GetContentNameSpace(property, "exif:PixelYDimension");
+	            if (width != null) item.SetImageWidth(width);
+	            
+	            var lensModel = GetContentNameSpace(property, "exifEX:LensModel");
+	            if (lensModel != null) item.SetMakeModel(lensModel,2);
+	            
+	            // dont show in production 
+				// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
             }
 
@@ -273,17 +282,11 @@ namespace starsky.foundation.readmeta.Services
                 
                 //  Path=tiff:ImageLength Namespace=http://ns.adobe.com/tiff/1.0/ Value=13656
                 var height = GetContentNameSpace(property, "tiff:ImageLength");
-                if (height != null)
-                {
-                    item.SetImageHeight(height);
-                }
+                if (height != null) item.SetImageHeight(height);
 
                 //  Path=tiff:ImageWidth Namespace=http://ns.adobe.com/tiff/1.0/ Value=15504
                 var width = GetContentNameSpace(property, "tiff:ImageWidth");
-                if (width != null)
-                {
-                    item.SetImageWidth(width);
-                }
+                if (width != null) item.SetImageWidth(width);
                 
                 // Path=photoshop:City Namespace=http://ns.adobe.com/photoshop/1.0/ Value=Epe
                 var locationCity = GetContentNameSpace(property, "photoshop:City");

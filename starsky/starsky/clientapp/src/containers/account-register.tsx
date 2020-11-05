@@ -36,11 +36,11 @@ const AccountRegister: FunctionComponent = () => {
   const MessageSignInInstead = language.text("In plaats daarvan inloggen", "Sign in instead");
 
   const MessageLegalCreateAccountHtml = language.text(`Door het creëren van een account gaat u akkoord met de
-   <a href="/legal/toc.nl.html">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
-   <a href="/legal/privacy-policy.nl.html">Privacykennisgeving</a> en onze 
+   <a href="/legal/toc.nl.html" data-test="toc">Algemene Voorwaarden</a> van Starsky. Raadpleeg en bekijk hier onze 
+   <a href="/legal/privacy-policy.nl.html" data-test="privacy">Privacykennisgeving</a> en onze 
    <a href="/legal/privacy-policy.nl.html#cookie">Cookieverklaring</a>.`,
-    `By creating an account you agree to <a href="/legal/toc.en.html">Starsky's Conditions of Use</a>. 
-   Please see our  <a href="/legal/privacy-policy.en.html">Privacy</a> Notice and our 
+    `By creating an account you agree to <a href="/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>. 
+   Please see our  <a href="/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our 
    <a href="/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   `)
 
   var history = useLocation();
@@ -74,7 +74,7 @@ const AccountRegister: FunctionComponent = () => {
 
     setLoading(true);
 
-    const response = await FetchPost(new UrlQuery().UrlAccountRegister(),
+    const response = await FetchPost(new UrlQuery().UrlAccountRegisterApi(),
       `Email=${userEmail}&Password=${userPassword}&ConfirmPassword=${userConfirmPassword}`);
 
     if (response.statusCode === 400 || response.statusCode === 403) {

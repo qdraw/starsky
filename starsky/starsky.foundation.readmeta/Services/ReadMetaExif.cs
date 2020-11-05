@@ -177,6 +177,12 @@ namespace starsky.foundation.readmeta.Services
 		            item.SetMakeModel(model,1);
 	            }
 
+	            var lensModel = GetMakeLensModel(exifItem);
+	            if (lensModel != string.Empty)
+	            {
+		            item.SetMakeModel(lensModel,2);
+	            }
+	            
 	            // [Exif SubIFD] Focal Length = 200 mm
 	            var focalLength = GetFocalLength(exifItem);
 	            if (Math.Abs(focalLength) > 0.00001) 
@@ -268,6 +274,18 @@ namespace starsky.foundation.readmeta.Services
 			         && p.Name == makeModel)?.Description;
 		    
 		    return caption;
+	    }
+
+	    /// <summary>
+	    /// [Exif SubIFD] Lens Model = E 18-200mm F3.5-6.3 OSS LE
+	    /// </summary>
+	    /// <param name="exifItem"></param>
+	    /// <returns></returns>
+	    private string GetMakeLensModel(Directory exifItem)
+	    {
+		    return exifItem.Tags.FirstOrDefault(
+			    p => p.DirectoryName == "Exif SubIFD"
+			         && p.Name == "Lens Model")?.Description;
 	    }
 
 

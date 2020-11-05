@@ -14,8 +14,6 @@ describe("useSockets", () => {
   let component: ReactWrapper;
 
   function mountComponent() {
-    // next line to be removed in future release
-    localStorage.setItem("use-sockets", "true");
     setupComponent = mountReactHook(useSockets, []); // Mount a Component with our hook
     hook = setupComponent.componentHook as IUseSockets;
     component = setupComponent.componentMount
@@ -24,6 +22,21 @@ describe("useSockets", () => {
   it('default no error', () => {
     mountComponent();
     expect(hook.showSocketError).toBeFalsy();
+    component.unmount();
+  });
+
+  it('feature toggle disabled', () => {
+    var socketService = new WebSocketService("");
+    localStorage.setItem("use-sockets", "false");
+
+    var wsCurrent = jest.spyOn(WsCurrentStart, 'default').mockImplementationOnce(() => socketService);
+
+    mountComponent();
+    expect(hook.showSocketError).toBeFalsy();
+
+    expect(wsCurrent).toBeCalledTimes(0);
+
+    localStorage.setItem("use-sockets", "true");
     component.unmount();
   });
 

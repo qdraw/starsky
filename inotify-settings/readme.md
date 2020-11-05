@@ -19,6 +19,8 @@
 
 ## inotifywait
 
+__Deprecated: Plans to integrate in to the core product__
+
 For linux systems there is `inotifywait`. To auto update the database in real time, you could use a helper to do this:
 
 This example configuration handles currently only `.jpg` and `.JPG` files

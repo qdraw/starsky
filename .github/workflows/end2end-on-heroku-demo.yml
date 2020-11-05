@@ -1,0 +1,35 @@
+name: end2end on heroku-demo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Run Cypress in Electron 
+      uses: cypress-io/github-action@v1
+      with:
+        command: npm run e2e:heroku-demo
+        working-directory: starsky-tools/end2end  
+
+
+    - name: Upload screenshots (always)
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: cypress-screenshots
+        path: starsky-tools/end2end/cypress/screenshots
+        
+
+    - name: Upload videos (always)
+      uses: actions/upload-artifact@v2
+      if: ${{ always() }}
+      with:
+        name: cypress-videos
+        path: starsky-tools/end2end/cypress/videos 
+  

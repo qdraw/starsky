@@ -669,6 +669,40 @@ namespace starsky.foundation.database.Models
         public List<string> CollectionPaths { get; set; } = new List<string>();
 
 		/// <summary>
+		/// Database string to store sidecar paths
+		/// </summary>
+		[JsonIgnore]
+		public string SidecarExtensions { get; set; } = "";
+
+		/// <summary>
+		/// List of Sidecar files
+		/// </summary>
+		[NotMapped]
+		public HashSet<string> SidecarExtensionsList
+		{
+			get
+			{
+				if ( string.IsNullOrWhiteSpace(SidecarExtensions) ) return new HashSet<string>();
+				return 
+					new HashSet<string>(
+						SidecarExtensions.Split('|')
+							.Where(p => !string.IsNullOrWhiteSpace(p)));
+			}
+		}
+		
+		/// <summary>
+		/// Add extensions without dot
+		/// </summary>
+		/// <param name="ext">ext without dot</param>
+		public void AddSidecarExtension(string ext)
+		{
+			var current = SidecarExtensionsList;
+			current.Add(ext);
+			SidecarExtensions = string.Join("|", current);
+		}
+
+		
+		/// <summary>
 		/// Duplicate this item in memory.
 		/// </summary>
 		/// <returns>FileIndexItem duplicated</returns>
@@ -758,10 +792,10 @@ namespace starsky.foundation.database.Models
 	    private string _makeModel = string.Empty;
 
 	    /// <summary>
-	    /// Camera make and Model (saved comma separated String)
+	    /// Camera Make, Model and Lens (saved pipe separated string)
 	    /// </summary>
 	    /// <value>
-	    /// Camera brand and type
+	    /// Camera brand and type (incl. lens)
 	    /// </value>
 	    public string MakeModel {
 		    get
@@ -803,14 +837,29 @@ namespace starsky.foundation.database.Models
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    var makeModelList = MakeModel.Split("|".ToCharArray());
-				if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
-				return makeModelList[1];
+				return makeModelList.Length != MakeModelFixedLength ? string.Empty : makeModelList[1];
+		    }
+	    }
+	    
+	    /// <summary>
+	    /// Get the Lens info (from MakeModel)
+	    /// </summary>
+	    [NotMapped]
+	    public string LensModel
+	    {
+		    get
+		    {
+			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
+			    var makeModelList = MakeModel.Split("|".ToCharArray());
+			    // ReSharper disable once ConvertIfStatementToReturnStatement
+			    if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+			    return makeModelList[2].Replace(Model,string.Empty).Trim();
 		    }
 	    }
 	    
 	    
 	    /// <summary>
-	    /// The Zoom of the camera
+	    /// The Zoom of the camera (that is currently used)
 	    /// </summary>
 	    public double FocalLength { get; set; }
 
@@ -822,11 +871,19 @@ namespace starsky.foundation.database.Models
 	    
 	    /// <summary>
 	    /// To add Make (without comma and TitleCase) and second follow by Model (same as input)
+	    /// Followed by index 2: Lens info
+	    /// (
+	    ///		Example Data: Sony|ILCE-6600|E 18-200mm F3.5-6.3 OSS LE
+	    ///		Index 1: Sony
+	    ///		Index 2: ILCE-6600
+	    ///		Index 3: E 18-200mm F3.5-6.3 OSS LE
+	    /// )
 	    /// </summary>
 	    /// <param name="addedValue">the text to add</param>
 	    /// <param name="fieldIndex">the indexer of the array (the place in the array)</param>
 	    public void SetMakeModel(string addedValue, int fieldIndex)
 	    {
+		    if ( string.IsNullOrWhiteSpace(addedValue) )return;
 		    if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
 
 			var titleValue = addedValue.Replace("|", string.Empty);
@@ -835,7 +892,7 @@ namespace starsky.foundation.database.Models
 		    if ( makeModelList.Count != MakeModelFixedLength )
 		    {
 			    makeModelList = new List<string>();
-				for ( int i = 0; i < MakeModelFixedLength; i++ )
+				for ( var i = 0; i < MakeModelFixedLength; i++ )
 			    {
 					makeModelList.Add(string.Empty);
 				}
@@ -844,7 +901,8 @@ namespace starsky.foundation.database.Models
 			makeModelList[fieldIndex] = titleValue;
 
 			// Store Make: APPLE as Apple in the database
-			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
+			if ( fieldIndex == 0 ) makeModelList[fieldIndex] = 
+				CultureInfo.InvariantCulture.TextInfo.ToTitleCase(titleValue.ToLowerInvariant());
 
 			_makeModel = FixedListToString(makeModelList);
 	    }

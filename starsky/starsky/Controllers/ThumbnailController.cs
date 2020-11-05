@@ -28,7 +28,7 @@ namespace starsky.Controllers
         /// Http Endpoint to get full size image or thumbnail
         /// </summary>
         /// <param name="f">one single file</param>
-        /// <param name="isSingleitem">true = load orginal</param>
+        /// <param name="isSingleItem">true = load original</param>
         /// <param name="json">text as output</param>
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
@@ -46,7 +46,7 @@ namespace starsky.Controllers
         [ResponseCache(Duration = 29030400)] // 4 weeks
         public async Task<IActionResult> Thumbnail(
             string f, 
-            bool isSingleitem = false, 
+            bool isSingleItem = false, 
             bool json = false)
         {
             // f is Hash
@@ -103,7 +103,7 @@ namespace starsky.Controllers
 		        return NotFound("There is no thumbnail image " + f + " and no source image " +
 		                        sourcePath);
 	        
-	        if (!isSingleitem)
+	        if (!isSingleItem)
 	        {
 		        // "Photo exist in database but " + "isSingleItem flag is Missing"
 		        SetExpiresResponseHeadersToZero();

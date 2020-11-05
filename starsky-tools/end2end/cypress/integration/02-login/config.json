@@ -1,0 +1,14 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/account/login?ReturnUrl=/",
+        "successUrl" : "/?f=/"
+      },
+      "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/account/login?ReturnUrl=/",
+        "successUrl" : "/?f=/"
+      }
+    }
+  }

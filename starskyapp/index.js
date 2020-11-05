@@ -6,6 +6,9 @@ const AppMenu = require('./lib/app-menu').AppMenu
 const createMainWindow = require('./lib/main-window').createMainWindow
 const ipcBridge = require('./lib/ipc-bridge').ipcBridge
 const appConfig = require('electron-settings');
+const watchForChanges = require('./lib/watch-for-changes').watchForChanges
+const isPackaged = require('./lib/os-type').isPackaged
+const createCheckForUpdatesWindow = require('./lib/check-for-updates').createCheckForUpdatesWindow
 
 app.allowRendererProcessReuse = true;
 
@@ -17,6 +20,8 @@ ipcBridge();
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(createMainWindow)
+  .then(watchForChanges)
+  .then(createCheckForUpdatesWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -36,8 +41,9 @@ app.on('web-contents-created', (event, contents) => {
     }
 
     // to allow remote connections
-    var currentSettings = appConfig.get("settings");
-    if (currentSettings && currentSettings.remote && currentSettings.location && parsedUrl.origin.startsWith(new URL(currentSettings.location).origin)) {
+    var currentSettings = appConfig.get("remote_settings_" + isPackaged());
+    if (currentSettings && currentSettings.remote && currentSettings.location 
+      && parsedUrl.origin.startsWith(new URL(currentSettings.location).origin)) {
       return;
     }
     

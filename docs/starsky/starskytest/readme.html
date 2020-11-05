@@ -44,7 +44,7 @@ The main application has Exiftool as external dependency that is installed autom
 <p>When running the build script, inside <code>starskytest\coverage.report</code></p>
 <p>When using powershell running only the 'Starsky Mvc application' and tests</p>
 <pre><code class="powershell language-powershell">powershell -File build.ps1 -ScriptArgs '-Target="BuildTestNetCore"'</code></pre>
-<p>or using bash. You need to have <code>mono</code> installed</p>
+<p>or using bash.</p>
 <pre><code class="sh language-sh">./build.sh -Target="BuildTestNetCore"</code></pre>
 <blockquote>
   <p>NOTE: The unit tests are creating a few files inside the MSTest build directory. Those files will be removed afterwards.</p>
@@ -61,33 +61,7 @@ The main application has Exiftool as external dependency that is installed autom
 <h4 id="os-x">OS X</h4>
 <pre><code>~/.nuget/packages/microsoft.testplatform.testhost/16.2.0/lib/netstandard1.5/</code></pre>
 <h3 id="coverletmsbuild">Coverlet.MSBuild</h3>
-<p>To measure how much code is tested by this automatically script we have included this library.   The goal is improve test coverage</p>
-<h3 id="coverage-chart">Coverage Chart</h3>
-<pre><code>+-------------------+--------+--------+--------+
-| Module            | Line   | Branch | Method |
-+-------------------+--------+--------+--------+
-| starskygeocore    | 90,6%  | 80,23% | 100%   |
-+-------------------+--------+--------+--------+
-| starskysynccli    | 59,45% | 50%    | 100%   |
-+-------------------+--------+--------+--------+
-| starsky           | 65,43% | 65,33% | 88,88% |
-+-------------------+--------+--------+--------+
-| starskywebftpcli  | 27,27% | 28,88% | 37,5%  |
-+-------------------+--------+--------+--------+
-| starskygeocli     | 0%     | 0%     | 0%     |
-+-------------------+--------+--------+--------+
-| starskywebhtmlcli | 70%    | 70,96% | 79,16% |
-+-------------------+--------+--------+--------+
-| starskycore       | 90,72% | 87,27% | 90,75% |
-+-------------------+--------+--------+--------+
-
-+---------+--------+--------+--------+
-|         | Line   | Branch | Method |
-+---------+--------+--------+--------+
-| Total   | 83,58% | 82,02% | 89,8%  |
-+---------+--------+--------+--------+
-| Average | 57,63% | 54,66% | 70,89% |
-+---------+--------+--------+--------+</code></pre>
+<p>To measure how much code is tested by this automatically script we have included this library. </p>
 </div>
 </div>
 </div>

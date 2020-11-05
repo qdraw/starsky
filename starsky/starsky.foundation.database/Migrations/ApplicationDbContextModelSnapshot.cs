@@ -13,7 +13,7 @@ namespace starsky.foundation.database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5");
+                .HasAnnotation("ProductVersion", "3.1.8");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -262,6 +262,9 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("ShutterSpeed")
                         .HasColumnType("TEXT")
                         .HasMaxLength(20);
+
+                    b.Property<string>("SidecarExtensions")
+                        .HasColumnType("TEXT");
 
                     b.Property<long>("Size")
                         .HasColumnType("INTEGER");

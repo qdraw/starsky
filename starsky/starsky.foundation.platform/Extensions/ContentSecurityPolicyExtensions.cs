@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using starskycore.Middleware;
+using starsky.foundation.platform.Middleware;
 
 namespace starsky.foundation.platform.Extensions
 {

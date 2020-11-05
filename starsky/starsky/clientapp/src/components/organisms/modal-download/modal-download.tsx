@@ -127,7 +127,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
       {isProcessing === ProcessingState.fail ? MessageGenericExportFail : null}
 
       {isProcessing === ProcessingState.ready ? <>
-        {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])}
+        {language.token(MessageExportReady, ["{createZipKey}"], [createZipKey])} <br />
         <a className="btn btn--default" href={new UrlQuery().UrlExportZipApi(createZipKey, false)}
           download rel="noopener noreferrer" target="_blank">
           {MessageDownloadAsZipArchive}

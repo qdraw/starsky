@@ -11,8 +11,8 @@ exports.createSettingsWindow = () => {
     let newWindow = new BrowserWindow({ 
         x: mainWindowStateKeeper.x,
         y: mainWindowStateKeeper.y,
-        width: 400,
-        height: 200,
+        width: 350,
+        height: 500,
         show: true,
         resizable: true,
         webPreferences: {
@@ -22,10 +22,13 @@ exports.createSettingsWindow = () => {
             preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
         }
     });
+	
+	// hides the menu for windows
+	newWindow.setMenu(null);
 
     mainWindowStateKeeper.track(newWindow);
 
-    newWindow.loadFile('settings.html');
+    newWindow.loadFile('pages/settings.html');
 
     newWindow.once('ready-to-show', () => {
         newWindow.show();

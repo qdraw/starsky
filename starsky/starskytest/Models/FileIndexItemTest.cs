@@ -272,9 +272,10 @@ namespace starskytest.Models
 	    [TestMethod]
 	    public void FileIndexItemTest_MakeModel_UsingField()
 	    {
-		    var item = new FileIndexItem{MakeModel = "Apple|iPad|??"};
+		    var item = new FileIndexItem{MakeModel = "Apple|iPhone SE|iPhone SE back camera 4.15mm f/2.2"};
 		    Assert.AreEqual("Apple", item.Make);
-		    Assert.AreEqual("iPad",item.Model);
+		    Assert.AreEqual("iPhone SE",item.Model);
+		    Assert.AreEqual("back camera 4.15mm f/2.2",item.LensModel);
 	    }
 
 	    [TestMethod]
@@ -282,6 +283,13 @@ namespace starskytest.Models
 	    {
 		    var item = new FileIndexItem{MakeModel = null};
 		    Assert.AreEqual(string.Empty, item.Make);
+	    }
+	    
+	    [TestMethod]
+	    public void FileIndexItemTest_MakeModel_UsingFieldNullLensModel()
+	    {
+		    var item = new FileIndexItem{MakeModel = null};
+		    Assert.AreEqual(string.Empty, item.LensModel);
 	    }
 
 	    [TestMethod]
@@ -377,8 +385,31 @@ namespace starskytest.Models
 		    Assert.AreEqual("/test",item.ParentDirectory);
 	    }
 
-
-
+	    [TestMethod]
+	    public void SidecarExtensions_read()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp|test"};
+		    Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
+	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_read_null()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = null};
+		    Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_Add()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp"};
+		    item.AddSidecarExtension("xmp");
+		    
+		    Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
+			// no duplicates please
+		    Assert.AreEqual(1, item.SidecarExtensionsList.Count);
+	    }
+	    
 	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
 		//        {

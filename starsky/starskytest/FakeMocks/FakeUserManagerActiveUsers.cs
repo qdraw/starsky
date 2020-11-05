@@ -12,11 +12,12 @@ namespace starskytest.FakeMocks
 	public class FakeUserManagerActiveUsers : IUserManager
 	{
 
-		public FakeUserManagerActiveUsers(string identifier = "test" )
+		public FakeUserManagerActiveUsers(string identifier = "test", User currentUser = null )
 		{
+			CurrentUser = currentUser;
 			Credentials = new Credential
 			{
-				UserId = CurrentUser.Id,
+				UserId = 1,
 				Identifier = identifier,
 				Secret = "NNzKymrSy9IkybnFxwVvTRiAYuiOUoPHvXwBJybORrQ=", // test123456789
 				Extra = "TgBCDRHGklOMqJ/mAJYqHg==",
@@ -24,8 +25,7 @@ namespace starskytest.FakeMocks
 			};
 			Role = new Role {Code = AccountRoles.AppAccountRoles.User.ToString()};
 		}
-		
-		public User CurrentUser => new User {Name = "t1", Id = 99};
+		public User CurrentUser { get; set; }
 		public Credential Credentials { get; set; }
 		public Role Role { get; set; }
 

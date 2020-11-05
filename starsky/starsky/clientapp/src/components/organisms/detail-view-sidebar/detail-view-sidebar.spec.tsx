@@ -12,6 +12,7 @@ import { IFileIndexItem, newIFileIndexItem } from '../../../interfaces/IFileInde
 import { ClipboardHelper } from '../../../shared/clipboard-helper';
 import { parseDate, parseTime } from '../../../shared/date';
 import * as FetchPost from '../../../shared/fetch-post';
+import { Keyboard } from '../../../shared/keyboard';
 import { SupportedLanguages } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import * as ModalDatetime from '../modal-edit-date-time/modal-edit-datetime';
@@ -71,6 +72,11 @@ describe("DetailViewSidebar", () => {
       );
       Component = mount(<TestComponent />);
     });
+
+    afterAll(() => {
+      Component.unmount()
+      TestComponent = () => (<></>);
+    })
 
     it("test if tags from the context is displayed", () => {
       var tags = Component.find('[data-name="tags"]');
@@ -252,6 +258,7 @@ describe("DetailViewSidebar", () => {
       expect(component.find('[data-name="description"]').hasClass('disabled')).toBeTruthy();
       expect(component.find('[data-name="title"]').hasClass('disabled')).toBeTruthy();
 
+      component.unmount()
     });
 
     it("ReadOnly status (from FileIndexItem)", () => {
@@ -271,7 +278,7 @@ describe("DetailViewSidebar", () => {
       expect(component.find('[data-name="tags"]').hasClass('disabled')).toBeTruthy();
       expect(component.find('[data-name="description"]').hasClass('disabled')).toBeTruthy();
       expect(component.find('[data-name="title"]').hasClass('disabled')).toBeTruthy();
-
+      component.unmount()
     });
 
     xit("SKIPPED test /info content ---- d", () => {
@@ -306,7 +313,7 @@ describe("DetailViewSidebar", () => {
 
       console.log(component.html());
 
-
+      component.unmount()
     });
 
     it("search cache clear AND when a tag is updated ", async () => {
@@ -338,7 +345,7 @@ describe("DetailViewSidebar", () => {
       })
 
       expect(fetchPostSpy).toBeCalledTimes(2);
-      expect(fetchPostSpy).toHaveBeenNthCalledWith(2, `${new UrlQuery().prefix}/api/search/removeCache`, 't=test')
+      expect(fetchPostSpy).toHaveBeenNthCalledWith(2, new UrlQuery().UrlSearchRemoveCacheApi(), 't=test')
     });
 
     it("Press c to copy", () => {
@@ -374,4 +381,68 @@ describe("DetailViewSidebar", () => {
     })
 
   });
+
+  describe("own context", () => {
+    it('keydown t/i should be fired', () => {
+
+      var contextProvider = {
+        dispatch: () => jest.fn(),
+        state: {
+          breadcrumb: [],
+          fileIndexItem: {
+            filePath: '/test.jpg',
+            status: IExifStatus.Ok,
+          } as IFileIndexItem,
+          status: IExifStatus.Default,
+          pageType: PageType.DetailView,
+          colorClassActiveList: [],
+        } as any
+      };
+
+      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField')
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+        .mockImplementationOnce(() => { })
+
+      var DeletedTestComponent = () => (
+        <DetailViewContext.Provider value={contextProvider}>
+          <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>
+        </DetailViewContext.Provider>
+      );
+      var component = mount(<DeletedTestComponent />);
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "t",
+        shiftKey: true,
+      });
+
+      act(() => {
+        window.dispatchEvent(event);
+      })
+
+      expect(keyboardSpy).toBeCalled();
+
+      component.unmount();
+    });
+  });
+
 });

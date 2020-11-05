@@ -32,7 +32,6 @@ namespace starskytest.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readmeta;
 
 		public PublishControllerTest()
 		{

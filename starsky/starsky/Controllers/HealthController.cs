@@ -1,15 +1,19 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.VersionHelpers;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.Controllers
 {
 	public class HealthController: Controller
@@ -122,32 +126,46 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
+		/// Check if min version is matching
+		/// </summary>
+		internal const string MinimumVersion = "0.3"; // only insert 0.4 or 0.5
+		
+		/// <summary>
+		/// Name of the header for api version
+		/// </summary>
+		private const string ApiVersionHeaderName = "x-api-version";
+
+		/// <summary>
 		/// Check if Client/App version has a match with the API-version
 		/// uses x-api-version header
 		/// </summary>
-		/// <returns>AI script</returns>
+		/// <returns>status</returns>
 		/// <response code="200">Ok</response>
-		/// <response code="405">Version mismatch</response>
-		/// <response code="400">Missing x-api-version header or bad formated version in header</response>
+		/// <response code="202">Version mismatch</response>
+		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
 		public IActionResult Version()
 		{
-			var headerName = "x-api-version";
-			
-			if ( Request.Headers.All(p => p.Key != headerName) 
-			     || string.IsNullOrWhiteSpace(Request.Headers[headerName])  )
+			if ( Request.Headers.All(p => p.Key != ApiVersionHeaderName) 
+			     || string.IsNullOrWhiteSpace(Request.Headers[ApiVersionHeaderName])  )
 			{
-				HeaderFailLogging(headerName);
 				return BadRequest("Missing version data");
 			}
-			return Ok(Request.Headers[headerName]);
-		}
 
-		private void HeaderFailLogging(string headerName)
-		{
-			Console.WriteLine($"/api/health/version {headerName} Header Check Fail");
-			if ( string.IsNullOrWhiteSpace(Request.Headers[headerName]) )
-				Console.WriteLine($"IsNullOrWhiteSpace: {Request.Headers[headerName]}");
+			try
+			{
+				if ( SemVersion.Parse(Request.Headers[ApiVersionHeaderName]) >= SemVersion.Parse(MinimumVersion) )
+				{
+					return Ok(Request.Headers[ApiVersionHeaderName]);
+				}
+				return StatusCode(StatusCodes.Status202Accepted,
+					$"please upgrade to {MinimumVersion} or newer");
+			}
+			catch ( ArgumentException )
+			{
+				return StatusCode(StatusCodes.Status400BadRequest,
+					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
+			}
 		}
 	}
 }

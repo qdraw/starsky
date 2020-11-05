@@ -4,6 +4,7 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import { IArchiveProps } from '../../../interfaces/IArchiveProps';
 import FetchPost from '../../../shared/fetch-post';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { Select } from '../../../shared/select';
@@ -56,6 +57,8 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
     undoSelection();
     dispatch({ 'type': 'remove', toRemoveFileList: toUndoTrashList });
     ClearSearchCache(history.location.search);
+    // Client side Caching: the order of files in a normal folder has changed
+    new FileListCache().CacheCleanEverything();
   }
 
   return (<>

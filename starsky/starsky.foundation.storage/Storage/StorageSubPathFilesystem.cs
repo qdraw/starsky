@@ -204,7 +204,6 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">subPath in directory</param>
 		/// <returns></returns>
-		[Obsolete("do not include direct, only using ISelectorStorage")]
 		public IEnumerable<string> GetDirectoryRecursive(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
@@ -222,14 +221,12 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">subPath</param>
 		/// <param name="maxRead">number of bytes to read (default -1 = all)</param>
-		/// <returns>FileStream</returns>
-		/// <exception cref="FileNotFoundException">is file not exist, please check that first</exception>
+		/// <returns>FileStream or Stream.Null when file dont exist</returns>
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
-			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
+			if ( ! ExistFile(path) ) return Stream.Null;
 			
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
-
+			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 			if ( _appSettings.Verbose ) Console.WriteLine(path);
 				
 			FileStream fileStream;

@@ -1,0 +1,12 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/?f=/"
+      },
+      "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/?f=/"
+      }
+    }
+  }

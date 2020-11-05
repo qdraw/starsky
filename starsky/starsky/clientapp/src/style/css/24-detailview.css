@@ -104,10 +104,12 @@
   width: 20%; 
   height:100%;
   transition: background-image 1s;
+  pointer-events: none;
 }
 
 .detailview .main .nextprev.nextprev--next,
 .detailview .main .nextprev.nextprev--prev {
+  pointer-events: auto;
   cursor: pointer;
 }
 
@@ -149,6 +151,21 @@
   left: calc(100% - 78px);
   background-image: url('../images/m-next-arrow.svg');
   background-position: 60% center;
+}
+
+.detailview .main.main--gpx {
+  cursor: not-allowed;
+}
+
+/* when hovering over map (default) */
+.detailview .main.main--gpx.leaflet-grab {
+	cursor: grab;
+}
+
+/* default value when dragging in leaflet */
+.detailview .main.main--gpx.leaflet-drag-target {
+	cursor: move;
+	cursor: grabbing;
 }
 
 /* GPX */

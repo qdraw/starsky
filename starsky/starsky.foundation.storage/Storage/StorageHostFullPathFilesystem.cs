@@ -146,14 +146,23 @@ namespace starsky.foundation.storage.Storage
 			if ( ! ExistFile(path) ) throw new FileNotFoundException(path);
 
 			FileStream fileStream;
-			if ( maxRead <= 1 )
+			try
 			{
-				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096,true );
+				if ( maxRead <= 1 )
+				{
+					fileStream = new FileStream(path, FileMode.Open, 
+						FileAccess.Read, FileShare.Read, 4096,true );
+				}
+				else
+				{
+					fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
+						FileShare.Read, maxRead, true);
+				}
 			}
-			else
+			catch ( FileNotFoundException e)
 			{
-				fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
-					FileShare.Read, maxRead, true);
+				Console.WriteLine(e);
+				return Stream.Null;
 			}
 			return fileStream;
 		}

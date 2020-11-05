@@ -15,6 +15,14 @@ function Telemetry(message: string) {
   ai.trackTrace({ message });
 }
 
+
+/**
+ * Set an localStorage cookie when no websocket client is used
+ */
+function IsClientSideFeatureDisabled(): boolean {
+  return localStorage.getItem("use-sockets") === "false"
+}
+
 /**
  * Use Socket as react hook
  */
@@ -49,19 +57,12 @@ const useSockets = (): IUseSockets => {
     else {
       countRetry.current = 0;
     }
-  };
-
-  /**
-   * To be removed in future release
-   */
-  function isClientSideFeatureEnabled(): boolean {
-    return localStorage.getItem("use-sockets") !== null
   }
 
   useEffect(() => {
-    console.log(`[use-sockets] run effect - ${isClientSideFeatureEnabled()}`);
+    console.log(`[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`);
     // check to be removed in future version
-    if (!isClientSideFeatureEnabled()) return;
+    if (IsClientSideFeatureDisabled()) return;
 
     ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime, NewWebSocketService);
     return () => {

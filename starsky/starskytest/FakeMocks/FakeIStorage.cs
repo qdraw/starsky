@@ -181,10 +181,6 @@ namespace starskytest.FakeMocks
 				return true;
 			}
 			return false;
-			
-			var regex = $"^{Regex.Escape(parentFolder)}[^/]+$";
-			var match = Regex.Match(childFolder, regex).Success;
-			return match;
 		}
 
 		private bool CheckAndFixParentFiles(string parentFolder, string filePath)

@@ -51,7 +51,8 @@ namespace starsky.foundation.http.Services
             "qdraw.nl", // < used by test
             "locker.ifttt.com",
 			"download.geonames.org",
-			"exiftool.org"
+			"exiftool.org",
+			"api.github.com"
 		};
 
 		public async Task<KeyValuePair<bool,string>> ReadString(string sourceHttpUrl)

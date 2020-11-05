@@ -28,7 +28,7 @@ function parseJson(data: string): any {
 
 function parseMessage(item: string) {
   if (!item) return;
-  console.log('update', item);
+  console.log('[use-sockets] update', item);
   document.body.dispatchEvent(new CustomEvent(useSocketsEventName, { detail: item, bubbles: false }))
 }
 
@@ -69,11 +69,11 @@ export function FireOnMessage(e: Event, setKeepAliveTime: Dispatch<SetStateActio
 
 export default function WsCurrentStart(socketConnected: boolean, setSocketConnected: Dispatch<SetStateAction<boolean>>,
   isEnabled: MutableRefObject<boolean>, setKeepAliveTime: Dispatch<SetStateAction<Date>>,
-  NewWebSocketService: () => WebSocketService): WebSocketService {
+  InsertNewWebSocketService: () => WebSocketService): WebSocketService {
 
   setSocketConnected(true);
 
-  var socket = NewWebSocketService();
+  var socket = InsertNewWebSocketService();
   socket.onOpen(() => FireOnOpen(socketConnected, setSocketConnected));
   socket.onClose((e) => FireOnClose(e, socketConnected, setSocketConnected, isEnabled));
   socket.onError(() => FireOnError(socketConnected, setSocketConnected));

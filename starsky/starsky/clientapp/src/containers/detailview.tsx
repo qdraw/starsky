@@ -31,7 +31,7 @@ const DetailView: React.FC<IDetailView> = () => {
   // next + prev state
   const [relativeObjects, setRelativeObjects] = React.useState(state.relativeObjects);
 
-  // when in some cases the relative urls are not updated by a state change
+  // in normal detailview the state isn't updated (so without search query)
   useEffect(() => {
     setRelativeObjects(state.relativeObjects);
   }, [state.relativeObjects]);
@@ -141,7 +141,13 @@ const DetailView: React.FC<IDetailView> = () => {
     if (relative.nextHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(nextPath, { replace: true });
+
+    history.navigate(nextPath, { replace: true }).then(() => {
+      // when the re-render happens un-expected
+      if (window.location.search === history.location.search) {
+        setIsLoading(false)
+      }
+    });
   }
 
   /**
@@ -170,7 +176,13 @@ const DetailView: React.FC<IDetailView> = () => {
     if (relative.prevHash !== state.fileIndexItem.fileHash) {
       setIsLoading(true)
     }
-    history.navigate(prevPath, { replace: true });
+
+    history.navigate(prevPath, { replace: true }).then(() => {
+      // when the re-render happens un-expected
+      if (window.location.search === history.location.search) {
+        setIsLoading(false)
+      }
+    });
   }
 
   if (!state.fileIndexItem || !relativeObjects) {

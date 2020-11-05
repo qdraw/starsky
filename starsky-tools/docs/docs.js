@@ -37,6 +37,7 @@ var filePathList = [
 	"starsky-tools/localtunnel/readme.md",
 	"starsky-tools/sync/readme.md",
 	"starsky-tools/dropbox-import/readme.md",
+	"starsky-tools/end2end/readme.md",
 	"starsky-tools/build-tools/readme.md"
 ];
 
@@ -45,7 +46,7 @@ var blobPathList = [
 	"azure-pipelines-starsky.yml",
 	"starsky/docs/starsky-mac-v025-home-nl.jpg",
 	"starskyapp/docs-assets/starskyapp-versions.jpg",
-	"starskyapp/docs-assets/starskyapp-remote-options-v025.jpg"
+	"starskyapp/docs-assets/starskyapp-remote-options-v040.jpg"
 ];
 
 // create dirs
@@ -119,7 +120,7 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 }
 
 function breadcrumb(htmlPath) {
-	var path = htmlPath.replace(__dirname, "").replace(/\/\\/ig,"/").replace(/^\//ig,"").replace(".html","");
+	var path = htmlPath.replace(__dirname, "").replace(/\/|\\/ig,"/").replace(/^\//ig,"").replace(".html","");
 	var result = "";
 	var splitedPaths = path.split("/");
 

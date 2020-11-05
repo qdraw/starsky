@@ -20,8 +20,19 @@ exports.default = context => {
 };
 
 function copyFile(src, dest) {
+  console.log('src/dest');
   console.log(src, dest);
-  console.log(fs.existsSync(src))
-  
+  console.log('src exist ' + fs.existsSync(src))
+  console.log('dest exist ' + fs.existsSync(dest))
+
+  if (!fs.existsSync(src)) {
+    console.log('skipped because src is missing');
+    return;
+  }
+
+  if (fs.lstatSync(src).isDirectory() ) {
+    throw new Error('source is directory');
+  }
+
   fs.copyFileSync(src, dest);
 }

@@ -36,9 +36,10 @@ namespace starsky.Controllers
 		/// <response code="200">logged in</response>
 		/// <response code="401">when not logged in</response>
 		/// <response code="406">There are no accounts, you must create an account first</response>
+		/// <response code="409">Current User does not exist in database</response>
 		/// <returns>account name, id, and create date</returns>
-		[HttpGet("/account/status")]
-		[ProducesResponseType(typeof(User), 200)]
+		[HttpGet("/api/account/status")]
+		[ProducesResponseType(typeof(UserIdentifierStatusModel), 200)]
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
 		[Produces("application/json")]
@@ -53,13 +54,26 @@ namespace starsky.Controllers
 			if ( !User.Identity.IsAuthenticated ) return Unauthorized("false");
 
 			// use model to avoid circular references
-			var model = new User
+			var currentUser = _userManager.GetCurrentUser(HttpContext);
+			if ( currentUser == null ) return Conflict("Current User does not exist in database");
+			
+			var model = new UserIdentifierStatusModel
 			{
-				Name = _userManager.GetCurrentUser(HttpContext)?.Name,
-				Id = _userManager.GetCurrentUser(HttpContext).Id,
-				Created = _userManager.GetCurrentUser(HttpContext).Created,
+				Name = currentUser.Name,
+				Id = currentUser.Id,
+				Created = currentUser.Created,
 			};
-
+			
+			var credentials = _userManager.GetCredentialsByUserId(currentUser.Id);
+			if ( credentials == null )
+			{
+				model.CredentialsIdentifiers = null;
+				model.CredentialTypeIds = null;
+				return Json(model);
+			}
+			
+			model.CredentialsIdentifiers.Add(credentials.Identifier);
+			model.CredentialTypeIds.Add(credentials.CredentialTypeId);
 			return Json(model);
 		}
 
@@ -73,7 +87,7 @@ namespace starsky.Controllers
 		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
-		public IActionResult Login(string returnUrl = null)
+		public IActionResult LoginGet(string returnUrl = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
@@ -90,11 +104,11 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
-        [HttpPost("/account/login")]
+        [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
             ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
 
@@ -115,16 +129,30 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Logout the current HttpContext
+        /// Logout the current HttpContext and redirect to login 
         /// </summary>
         /// <returns></returns>
         /// <response code="200">successful logout</response>
+        [HttpPost("/api/account/logout")]
+        [ProducesResponseType(200)]
+        public IActionResult LogoutJson()
+        {
+	        _userManager.SignOut(HttpContext);
+	        return Json("your logged out");
+        }
+        
+        /// <summary>
+        /// Logout the current HttpContext and redirect to login 
+        /// </summary>
+        /// <param name="returnUrl">insert url to redirect</param>
+        /// <response code="302">redirect to return url</response>
+        /// <returns></returns>
         [HttpGet("/account/logout")]
         [ProducesResponseType(200)]
         public IActionResult Logout(string returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
-            return RedirectToAction(nameof(Login), new {ReturnUrl = returnUrl});
+            return RedirectToAction(nameof(LoginGet), new {ReturnUrl = returnUrl});
         }
         
         /// <summary>
@@ -169,17 +197,19 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Create a new user
+        /// Create a new user (you need a AF-token first)
         /// </summary>
         /// <param name="model">with the userdata</param>
         /// <returns>redirect or json</returns>
         /// <response code="200">successful register</response>
         /// <response code="400">Wrong model or Wrong AntiForgeryToken</response>
         /// <response code="403">Account Register page is closed</response>
-        [HttpPost("/account/register")]
+        /// <response code="405">AF token is missing</response>
+        [HttpPost("/api/account/register")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),400)]
         [ProducesResponseType(typeof(string),403)]
+        [ProducesResponseType(typeof(string),405)]
         [Produces("application/json")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -219,7 +249,7 @@ namespace starsky.Controllers
         /// <returns></returns>
         /// <response code="200">Account Register page is open</response>
         /// <response code="403">Account Register page is closed</response>
-        [HttpGet("/account/register/status")]
+        [HttpGet("/api/account/register/status")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
         [Produces("application/json")]

@@ -1,0 +1,15 @@
+{
+    "form": "form",
+    "fields": {
+        "name": "[name=email]",
+        "password" : "[name=password]",
+        "confirmPassword":  "[name=confirm-password]",
+        "submit": "button[type=submit]"
+    },
+    "toc": {
+        "tocAhref": "[data-test=toc]",
+        "tocUrl": "legal/toc.",
+        "privacyAhref": "[data-test=privacy]",
+        "privacyUrl": "legal/privacy"
+    }
+}

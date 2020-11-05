@@ -38,12 +38,12 @@ namespace starsky.Controllers
         /// Get relative paths in a search query
         /// Does not cover multiple pages (so it ends within the page)
         /// </summary>
-        /// <param name="f">subpath</param>
+        /// <param name="f">subPath</param>
         /// <param name="t">search query</param>
-        /// <param name="p">pagenumer (search query)</param>
+        /// <param name="p">pageNumber (search query)</param>
         /// <returns>Relative object (only this)</returns>
         /// <response code="200">the search results</response>
-        [HttpGet("/api/search/relativeObjects")]
+        [HttpGet("/api/search/relative-objects")]
         [ProducesResponseType(typeof(SearchViewModel),200)] // ok
         [Produces("application/json")]
         public IActionResult SearchRelative(string f, string t, int p = 0)
@@ -81,7 +81,7 @@ namespace starsky.Controllers
         /// Get the index number (fallback == -1)
         /// </summary>
         /// <param name="searchViewModel">search results model</param>
-        /// <param name="f">subpath to search for</param>
+        /// <param name="f">subPath to search for</param>
         /// <returns>int as index, fallback == -1</returns>
         private int GetIndexFilePathFromSearch(SearchViewModel searchViewModel, string f)
         {
@@ -115,7 +115,7 @@ namespace starsky.Controllers
 		/// <response code="200">cache is clear for this search query</response>
 		/// <response code="412">Cache is disabled in config</response>
 		/// <response code="401">User unauthorized</response>
-		[HttpPost("/api/search/removeCache")]
+		[HttpPost("/api/search/remove-cache")]
 		[Produces("application/json")]	    
 		[ProducesResponseType(typeof(string),200)]
 		[ProducesResponseType(typeof(string),412)]

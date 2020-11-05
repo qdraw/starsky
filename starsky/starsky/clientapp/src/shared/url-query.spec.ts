@@ -101,6 +101,16 @@ describe("url-query", () => {
     expect(result).toContain("test")
   });
 
+  it("UrlLoginApi", () => {
+    var result = urlQuery.UrlLoginApi();
+    expect(result).toContain("login")
+  });
+
+  it("UrlLogoutApi", () => {
+    var result = urlQuery.UrlLogoutApi();
+    expect(result).toContain("logout")
+  });
+
   describe("GetReturnUrl", () => {
     it("default", () => {
       var test = urlQuery.GetReturnUrl("?");

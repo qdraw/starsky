@@ -3,6 +3,11 @@ import ArrayHelper from './array-helper';
 describe("ArrayHelper", () => {
   var arrayHelper = new ArrayHelper();
 
+  it("undefined return same output", () => {
+    var result = arrayHelper.UniqueResults(undefined as any, 'test');
+    expect(result).toBeUndefined();
+  });
+
   it("Check duplicate values check first", () => {
     var family = [
       { name: "Nancy", age: 15 },

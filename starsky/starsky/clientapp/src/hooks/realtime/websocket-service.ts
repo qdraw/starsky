@@ -31,14 +31,14 @@ export default class WebSocketService {
   public close(): void {
     if (!this.websocket) {
       return;
-    };
+    }
     this.websocket.close();
   }
 
   public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
     if (!this.websocket) {
       return;
-    };
+    }
     this.websocket.send(data);
   }
 

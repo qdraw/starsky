@@ -83,14 +83,38 @@ namespace starsky.foundation.platform.Models
 #endif
 	    public StarskyAppType ApplicationType { get; set; }
 
+	    /// <summary>
+	    /// What is the type of the application that is running different CLI types or Web
+	    /// </summary>
 		public enum StarskyAppType
         {
+	        /// <summary>
+	        /// Mvc controller / Web interface
+	        /// </summary>
             WebController = 0,
+	        /// <summary>
+	        /// Importer CLI
+	        /// </summary>
             Importer = 1,
+	        /// <summary>
+	        /// Sync CLI
+	        /// </summary>
             Sync = 2,
+	        /// <summary>
+	        /// WebHTML CLI
+	        /// </summary>
             WebHtml = 3,
+	        /// <summary>
+	        /// Geo CLI
+	        /// </summary>
             Geo = 4,
+	        /// <summary>
+	        /// WebFTP CLI
+	        /// </summary>
 	        WebFtp = 5,
+	        /// <summary>
+	        /// Admin CLI
+	        /// </summary>
 	        Admin = 6,
         }
 		
@@ -482,10 +506,13 @@ namespace starsky.foundation.platform.Models
 
 	    /// <summary>
 	    /// Use WebSockets to update the UI realtime
-	    ///                     Its now disabled by default,
-	    ///                            but this will change in a future version
 	    /// </summary>
-	    public bool UseRealtime { get; set; } = false;
+	    public bool UseRealtime { get; set; } = true;
+
+	    /// <summary>
+	    /// Check if there are updates
+	    /// </summary>
+	    public bool CheckForUpdates { get; set; } = true;
 
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------

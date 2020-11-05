@@ -102,23 +102,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
           // colorclass = 0 ==> colorless/no-color
           if (colorclass !== undefined && colorclass !== -1) {
             state.fileIndexItems[index].colorClass = colorclass;
-            // add to list of colorclasses that can be selected
-            if (state.colorClassUsage && state.colorClassUsage.indexOf(colorclass) === -1) state.colorClassUsage.push(colorclass);
-
-            // checks the list of colorclasses that can be selected and removes the ones without 
-            // only usefull when there are no colorclasses selected
-
-            if (state.colorClassActiveList === undefined) state.colorClassActiveList = [];
-            if (state.colorClassActiveList.length === 0) {
-              state.colorClassUsage.forEach(usage => {
-                const even = (element: IFileIndexItem) => element.colorClass === usage;
-                // some is not working in context of jest
-                if (!state.fileIndexItems.some(even).valueOf()) {
-                  var indexer = state.colorClassUsage.indexOf(usage);
-                  state.colorClassUsage.splice(indexer, 1);
-                }
-              });
-            }
+            UpdateColorClassUsageActiveList(state, colorclass);
           }
           state.fileIndexItems[index].lastEdited = new Date().toISOString();
         }
@@ -128,24 +112,83 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
       // ignore the cache
-      return action.payload;
+      if (!action.payload.fileIndexItems) return action.payload;
+      return {
+        ...action.payload,
+        fileIndexItems:
+          new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath')
+      }
     case "force-reset":
       // also update the cache
-      return updateCache(action.payload);
+      return updateCache({
+        ...action.payload,
+        fileIndexItems: new ArrayHelper().UniqueResults(action.payload.fileIndexItems, 'filePath')
+      });
     case "add":
       var filterOkCondition = (value: IFileIndexItem) => {
         return (value.status === IExifStatus.Ok || value.status === IExifStatus.Default);
       };
-
       var concatenatedFileIndexItems = [...Array.from(action.add), ...state.fileIndexItems];
-      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, 'filePath');
 
-      // order by this to match c#
-      var fileIndexItems = concatenatedFileIndexItems.sort((a, b) => a.fileName.localeCompare(b.fileName, 'en', { sensitivity: 'base' }));
+      var toSortOnParm = state.collections ? 'fileCollectionName' : 'filePath';
+      concatenatedFileIndexItems = new ArrayHelper().UniqueResults(concatenatedFileIndexItems, toSortOnParm);
+
+      // order by this to match c# AND not supported in jest
+      try {
+        var fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) => a.fileName.localeCompare(
+          b.fileName, 'en', { sensitivity: 'base' }));
+      } catch (error) {
+        fileIndexItems = concatenatedFileIndexItems;
+      }
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
-      return updateCache({ ...state, fileIndexItems, lastUpdated: new Date() });
+      state = { ...state, fileIndexItems, lastUpdated: new Date() };
+      UpdateColorClassUsageActiveListLoop(state);
+      return updateCache(state);
   }
+}
+
+/**
+ * Loop of ColorClass Usage is the list of Colorclasses a user can select.
+ * @see: UpdateColorClassUsageActiveList
+ * @param state - current state
+ */
+function UpdateColorClassUsageActiveListLoop(state: IArchiveProps) {
+  for (let index = 0; index < state.fileIndexItems.length; index++) {
+    const colorClass = state.fileIndexItems[index].colorClass;
+    if (colorClass === undefined) continue;
+    UpdateColorClassUsageActiveList(state, colorClass);
+  }
+}
+
+/**
+ * ColorClass Usage is the list of Colorclasses a user can select. 
+ * This need to be updated based on the colorclasses that are in the list
+ * @param state - current state
+ * @param colorclass - colorclass that has be added
+ */
+function UpdateColorClassUsageActiveList(state: IArchiveProps, colorclass: number): void {
+  if (state.colorClassUsage === undefined) state.colorClassUsage = [];
+
+  // add to list of colorclasses that can be selected
+  if (state.colorClassUsage.indexOf(colorclass) === -1) state.colorClassUsage.push(colorclass);
+
+  if (state.colorClassActiveList === undefined) state.colorClassActiveList = [];
+  // when the user selects by colorclass
+  if (state.colorClassActiveList.length >= 1) return;
+
+  // checks the list of colorclasses that can be selected and removes the ones without 
+  // only usefull when there are no colorclasses selected
+
+  state.colorClassUsage.forEach(usage => {
+    const even = (element: IFileIndexItem) => element.colorClass === usage;
+    // some is not working in context of jest
+    if (!state.fileIndexItems.some(even).valueOf()) {
+      var indexer = state.colorClassUsage.indexOf(usage);
+      state.colorClassUsage.splice(indexer, 1);
+    }
+  });
+  return;
 }
 
 /**
@@ -153,7 +196,11 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
  */
 function updateCache(stateLocal: IArchiveProps): IArchiveProps {
   if (stateLocal.pageType !== PageType.Archive) return stateLocal;
-  var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
+  var urlObject = {
+    f: stateLocal.subPath,
+    colorClass: stateLocal.colorClassActiveList,
+    collections: stateLocal.collections
+  } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;
 }

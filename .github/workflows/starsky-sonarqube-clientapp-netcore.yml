@@ -2,7 +2,9 @@ name: Starsky SonarQube ClientApp NetCore Analyze PR
 
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    types: 
+      - synchronize
+      - opened
     branches:
       - master
     paths:
@@ -32,6 +34,24 @@ jobs:
         with:
           dotnet-version: 3.1.402
         
+      - name: Use Java 11   
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.9' # The JDK version to make available on the path.
+          java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+          architecture: x64 # (x64 or x86) - defaults to x64
+
+      - name: Cache node modules clientapp (*nix)
+        uses: actions/cache@v2
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-clientapp-${{ hashFiles('./starsky/starsky/clientapp/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-clientapp-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Build
         shell: bash
         env:

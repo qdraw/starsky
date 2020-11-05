@@ -20,7 +20,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
-using starskycore.Middleware;
 using starskycore.Models;
 using starskycore.Services;
 using starskytest.FakeMocks;
@@ -89,12 +88,13 @@ namespace starskytest.Middleware
         {
 	        
             // Arrange
-            var userId = "TestUserA";
-            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
-
             var iUserManager = _serviceProvider.GetRequiredService<IUserManager>();
             var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+            
+            var userId = "TestUserA";
+            var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
             httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            
             httpContext.RequestServices = _serviceProvider;
  
             var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();

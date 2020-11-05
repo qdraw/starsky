@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title>Settings</title>
+    <link rel="stylesheet" href="../media/css/01-base.css">
+    <link rel="stylesheet" href="../media/css/02-form.css">
+    <link rel="stylesheet" href="../media/css/03-button.css">
+
+    <link rel="stylesheet" href="../media/css/20-content.css">
+    <link rel="stylesheet" href="../media/css/29-switch-button.css">
+
+</head>
+<body>
+    <div class="content">
+        <div class="content--header">
+            Local Application Settings
+        </div>
+        <div class="content--subheader">
+            Connect App to Remote or keep local
+        </div>
+        <div class="content--text">
+            <form class="switch-field">
+                <input type="radio" id="switch_local" 
+                name="switchToggle" value="Local" checked=""><label for="switch_local">
+                    Local</label><input type="radio" id="switch_remote" 
+                name="switchToggle" value="Remote"><label 
+                for="switch_remote">Remote</label>
+            </form>
+            <form>
+                <label for="remote_location">Url:</label><br />
+                <input class="form-control" type="text" id="remote_location" disabled name="lname">
+                <p>&nbsp;</p>
+                <div class="warning-box" id="locationOk">Do enter the main domain starsky is running on</div>
+            </form>
+        </div>
+        <div class="content--subheader">
+            Select default application
+        </div>
+        <div class="content--text">
+                <button class="btn btn--default" id="file_selector">Select app</button>&nbsp; <button class="btn btn--info" id="file_selector_reset">Reset to 'system default'</button>
+                <p>&nbsp;</p>
+                <div class="form-control disabled" id="file_selector_result">Nothing selected</div>
+                </div>
+        <div class="content--subheader">
+            Check for updates
+        </div>
+        <div class="content--text">
+
+            <form class="switch-field">
+                <input type="radio" id="switch_update_policy_on" 
+                name="switchToggle" value="On" checked=""><label for="switch_update_policy_on">
+                    Enabled</label><input type="radio" id="switch_update_policy_off" 
+                name="switchToggle" value="Off"><label 
+                for="switch_update_policy_off">Disabled</label>
+            </form>
+    </div>
+
+
+
+    <script type="text/javascript"
+        src="../media/settings-client.js"></script>
+
+</body>
+</html>

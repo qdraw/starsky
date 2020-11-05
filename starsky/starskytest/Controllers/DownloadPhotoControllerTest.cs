@@ -56,11 +56,60 @@ namespace starskytest.Controllers
 		private IStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
-			var inputSubPaths = new List<string>{"/test.jpg"};
+			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,FakeCreateAn.CreateAnXmp.Bytes});
 			return storage;
+		}
+
+		[TestMethod]
+		public void DownloadSidecar_Ok()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			// Act
+			var controller = new DownloadPhotoController(_query,selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = controller.DownloadSidecar("/test.xmp") as FileStreamResult;
+			Assert.AreNotEqual(null,actionResult);
+
+			actionResult.FileStream.Dispose();
+		}
+		
+		[TestMethod]
+		public void DownloadSidecar_TryToGetJpeg()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			// Act
+			var controller = new DownloadPhotoController(_query, selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = controller.DownloadSidecar("/test.jpg") as NotFoundObjectResult;
+			
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public void DownloadSidecar_NotFound()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			// Act
+			var controller = new DownloadPhotoController(_query, selectorStorage)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = controller.DownloadSidecar("/not-found.xmp") as NotFoundObjectResult;
+			
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 		
 		[TestMethod]
@@ -76,7 +125,7 @@ namespace starskytest.Controllers
 			var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
 
-			actionResult.FileStream.Dispose();
+			await actionResult.FileStream.DisposeAsync();
 		}
 		
 		[TestMethod]

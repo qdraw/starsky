@@ -76,6 +76,16 @@ describe("ModalDisplayOptions", () => {
         expect(localStorage.getItem("issingleitem")).toBe('true');
       });
 
+      it("toggle-sockets", () => {
+        modal.find('[data-test="toggle-sockets"] input').first().simulate('change');
+
+        expect(localStorage.getItem("use-sockets")).toBe('false');
+
+        modal.find('[data-test="toggle-sockets"] input').last().simulate('change');
+
+        expect(localStorage.getItem("use-sockets")).toBe(null);
+      });
+
     });
 
     it("test if handleExit is called", () => {

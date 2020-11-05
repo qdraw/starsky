@@ -52,8 +52,8 @@ const Login: React.FC<ILoginProps> = () => {
     setLogin(accountStatus.statusCode === 401);
     new DocumentTitle().SetDocumentTitlePrefix(accountStatus.statusCode === 401 ? MessageLogin : MessageLogout);
     // to help new users find the register screen
-    if (accountStatus.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegister()) === -1) {
-      history.navigate(new UrlQuery().UrlAccountRegister(), { replace: true });
+    if (accountStatus.statusCode === 406 && history.location.search.indexOf(new UrlQuery().UrlAccountRegisterPage()) === -1) {
+      history.navigate(new UrlQuery().UrlAccountRegisterPage(), { replace: true });
     }
   }, [accountStatus.statusCode, history, MessageLogin, MessageLogout]);
 
@@ -144,7 +144,7 @@ const Login: React.FC<ILoginProps> = () => {
               <ButtonStyled className="btn btn--default" type="submit" disabled={loading} onClick={e => { }}>
                 {loading ? "Loading..." : MessageLogin}
               </ButtonStyled>
-              <a className="alternative" href={new UrlQuery().UrlAccountRegister()}>
+              <a className="alternative" href={new UrlQuery().UrlAccountRegisterPage()}>
                 {MessageCreateAccount}
               </a>
             </form>
@@ -154,7 +154,7 @@ const Login: React.FC<ILoginProps> = () => {
       {!isLogin && accountStatus.data ?
         <>
           <div className="content">
-            <div className="content--header">{MessageLogin}</div>
+            <div className="content--header">{MessageLogout}</div>
           </div>
           <div className="content">
             <form className="content--login-form">
@@ -163,6 +163,8 @@ const Login: React.FC<ILoginProps> = () => {
                 href={new UrlQuery().UrlLogoutPage(new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search)))}>{MessageLogout}</a>
               <a className="btn btn--info" data-test="stayLoggedin"
                 href={new UrlQuery().UrlHomeIndexPage(new UrlQuery().GetReturnUrl(history.location.search))}>{MessageStayLoggedIn}</a>
+              <a className="btn btn--info" data-test="stayLoggedin"
+                href={new UrlQuery().UrlAccountRegisterPage()}>{MessageCreateAccount}</a>
             </form>
           </div>
         </>
