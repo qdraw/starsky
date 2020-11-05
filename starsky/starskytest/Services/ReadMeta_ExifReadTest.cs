@@ -224,6 +224,18 @@ namespace starskytest.Services
 			 Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, item.ImageFormat);
 		 }
 
+		 [TestMethod]
+		 public void ExifRead_DataParsingCorruptStreamNull()
+		 {
+			 var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				 new List<string>{"/test.png"},new List<byte[]>{null});
+			 var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+			 // streamNull
+			 
+			 Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
+			 Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
+		 }
+
 		 // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
 		 private static Directory BuildDirectory(IEnumerable<object> values)
 		 {
