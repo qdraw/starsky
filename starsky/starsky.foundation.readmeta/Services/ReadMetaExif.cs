@@ -27,7 +27,7 @@ namespace starsky.foundation.readmeta.Services
 		}
 		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
-            List<MetadataExtractor.Directory> allExifItems;
+            List<Directory> allExifItems;
 
 	        // Used to overwrite feature
 	        if (existingFileIndexItem == null)

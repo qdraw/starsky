@@ -5,6 +5,7 @@ using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Services;
 using starskycore.Attributes;
@@ -209,7 +210,20 @@ namespace starskytest.Services
 
 			 Assert.AreEqual(false,item.IsDirectory );
 		 }
-		 
+
+		 [TestMethod]
+		 public void ExifRead_DataParsingCorruptFailsData()
+		 {
+			 var newImage = CreateAnPng.Bytes.Take(200).ToArray(); // corrupt
+			 var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				 new List<string>{"/test.png"},new List<byte[]>{newImage});
+		     
+			 var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.png");
+			 
+			 Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, item.Status);
+			 Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, item.ImageFormat);
+		 }
+
 		 // https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
 		 private static Directory BuildDirectory(IEnumerable<object> values)
 		 {
