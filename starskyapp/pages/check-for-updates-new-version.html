@@ -1,11 +1,27 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title>The Current Version is outdated</title>
+    <link rel="stylesheet" href="../media/css/01-base.css">
+    <link rel="stylesheet" href="../media/css/03-button.css">
+    <link rel="stylesheet" href="../media/css/20-content.css">
 
-<html>
-    <title> The Current Version is outdated</title>
-    
-        <body>
+</head>
+<body>
+
+    <div class="content">
+        <div class="content--header">
+            The Current Version is outdated
+        </div>
+        <div class="content--text">
             <p>The current version of Starsky is outdated</p>
+            <br />
             <p>To update please go to 'Help -> Release overview' and download a new release</p>
-            <button>Close Window</button>
-        </body>
-        <script src="../media/focus-button-autoclose.js"></script>
-    </html>
+            <button class="btn btn--default" id="autoclose" onclick="window.close()">Close Window</button>
+        </div>
+    </div>
+
+    <script src="../media/focus-button-autoclose.js"></script>
+</body>
+</html>

@@ -16,8 +16,9 @@
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _React-Native app (Pre-alpha code)_
 
-## starsky/starskyGeoCore docs
+## Feature GeoLookup
 
+The goal of this feature is:
 1. Apply GPX data to images
 2. Reverse geo code images
 

@@ -12,7 +12,7 @@ exports.createSettingsWindow = () => {
         x: mainWindowStateKeeper.x,
         y: mainWindowStateKeeper.y,
         width: 350,
-        height: 300,
+        height: 500,
         show: true,
         resizable: true,
         webPreferences: {

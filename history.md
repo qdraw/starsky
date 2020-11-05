@@ -33,7 +33,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.4.0 _(Unreleased)_ -  2020-11-??
-- tbd
+_Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
+- [x]   (Changed) _App_ Add styling to settings UI in App
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default

@@ -13,6 +13,8 @@ namespace starsky.feature.health.HealthCheck
 	{
 		/// <summary>
 		/// Check the date assembly health status
+		/// The system dateTime should be later then the app is created
+		/// On some Raspberry PI systems the date is reset after boot and this has impact on relative searches
 		/// </summary>
 		/// <param name="context">HealthCheckContext</param>
 		/// <param name="cancellationToken">to cancel item</param>
