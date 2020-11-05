@@ -8,6 +8,9 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.health.HealthCheck
 {
+	/// <summary>
+	/// Checks if the path exist
+	/// </summary>
 	public class PathExistHealthCheck : IHealthCheck
 	{
 		private readonly PathExistOptions _options;

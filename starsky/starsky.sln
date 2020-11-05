@@ -80,6 +80,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.realtime
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.health", "starsky.feature.health\starsky.feature.health.csproj", "{B159081F-4CD0-4C72-A180-9E95423211EA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starskybusinesslogic", "starskybusinesslogic", "{497FEDB5-3119-4ED3-BE43-13ADC70F47D6}"
+ProjectSection(SolutionItems) = preProject
+	starskybusinesslogic\readme.md = starskybusinesslogic\readme.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,5 +238,6 @@ Global
 		{243E9418-9819-44EE-A7E4-58A7D33C81C3} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{5E14616E-CFCD-4E98-A4CE-491ADB0F01F7} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{B159081F-4CD0-4C72-A180-9E95423211EA} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
+		{497FEDB5-3119-4ED3-BE43-13ADC70F47D6} = {C757587F-8490-4815-97CE-9BE39A6C82C6}
 	EndGlobalSection
 EndGlobal

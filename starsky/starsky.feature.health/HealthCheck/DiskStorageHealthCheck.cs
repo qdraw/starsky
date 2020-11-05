@@ -7,6 +7,11 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace starsky.feature.health.HealthCheck
 {
+	/// <summary>
+	/// To Check if the disk exist on the system
+	/// So when you enter F:\ on a windows system, it checks if the actual F:\ drive is mounted
+	/// This also works on a *nix system
+	/// </summary>
 	public class DiskStorageHealthCheck : IHealthCheck
 	{
 		private readonly DiskStorageOptions _options;

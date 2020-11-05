@@ -203,6 +203,7 @@ body {
   color: #888;
   padding-bottom: 4px;
   border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
 }
 
 .breadcrumb a {
@@ -212,7 +213,7 @@ body {
 
 .container {
     width: 960px;
-    margin: 0px auto 0px auto;
+    margin: 0px auto 50px auto;
     margin-left: auto;
     margin-right: auto;
 }
@@ -261,7 +262,7 @@ h1,
 h2,
 h3,
 h4 {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 h1 {

@@ -24,6 +24,7 @@
 - [build-tools](build-tools/readme.md) validation scripts
 - [docs](docs/readme.md) convert markdown to html
 - [dropbox import](dropbox-import/readme.md) import from dropbox to the starskyImporterCli
+- [end2end](end2end/readme.md) Cypress end2end testing
 - [localtunnel](localtunnel/readme.md) debug clientapp (port 3000 + 5000) on mobile
 - [mail](mail/readme.md) imap mail client to import files in Starsky
 - [sync](sync/readme.md) sync, not working

@@ -6,7 +6,7 @@ namespace starsky.feature.health.HealthCheck
 	public class DiskOptionsPercentageSetup
 	{
 		/// <summary>
-		/// Setup percentage based on a full filePath
+		/// On the disk must be at least 10% free. 10% is the default value
 		/// </summary>
 		/// <param name="fullFilePath">full file path</param>
 		/// <param name="diskOptions">to add to this object</param>

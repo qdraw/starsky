@@ -37,6 +37,7 @@ var filePathList = [
 	"starsky-tools/localtunnel/readme.md",
 	"starsky-tools/sync/readme.md",
 	"starsky-tools/dropbox-import/readme.md",
+	"starsky-tools/end2end/readme.md",
 	"starsky-tools/build-tools/readme.md"
 ];
 

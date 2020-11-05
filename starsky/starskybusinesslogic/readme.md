@@ -32,24 +32,38 @@
 |   └── starskywebhtmlcli
 └── Feature
 |   |       The Feature layer contains concrete features of the solution as understood by the business owners and editors of the solution, for example news, articles.
+|   └── starsky.feature.export
+|   |     Exporting list of files to zip archive
 |   └── starsky.feature.geolookup
 |   |     Looking up Geo Location from folders
+|   └── starsky.feature.health
+|   |     Health API to check database and dependencies
 |   └── starsky.feature.import
 |   |     Import and move to the right folder
+|   └── starsky.feature.metaupdate
+|   |     Update metadata photos/items on disk and in the database
+|   └── starsky.feature.rename
+|   |     Rename photos/items on disk and in the database
+|   └── starsky.feature.webhtmlpublish
+|   |     Copy webhtmlpublish-ed items to an ftp server
 |   └── starsky.feature.webhtmlpublish
 |         Generate html content with photos.
 └── Foundation
 |   |       Modules in the Foundation layer are conceptually abstract and do not contain presentation in the form of renderings or views 
+|   └── starsky.foundation.accountmanagement
+|   |     Abstraction layer of User Mangement
 |   └── starsky.foundation.database
-|   |     EF Core abstractions
+|   |     EF Core abstractions and database mapping
 |   └── starsky.foundation.http
-|   |     To Get from other API's
+|   |     To Get/Post to other API's
 |   └── starsky.foundation.injection
 |   |     Do dependency injection with a [Service]-tag
 |   └── starsky.foundation.platform
 |   |     Platform configuration, file name helpers, console abstractions, argument helpers and enum extensions
 |   └── starsky.foundation.readmeta
 |   |     Reading XMP, Exif, GPX and Video meta-data from files
+|   └── starsky.foundation.realtime
+|   |     WebSockets Middleware
 |   └── starsky.foundation.storage
 |   |     Filesystem abstractions
 |   └── starsky.foundation.thumbnailgeneration
@@ -61,5 +75,5 @@
     └── starskycore
     |    To be depricated and replaced with feature and foundation services  
     └── starsky
-          WebAPI presentation application
+          WebAPI presentation application (see ClientApp for more details about the UI)
 ```
