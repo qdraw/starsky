@@ -86,7 +86,7 @@ fi
 /usr/bin/find . -type d -exec chmod 755 {} \;
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
-# to keep the content UserViews
+# to restore the content UserViews
 if [ -d "UserViews" ]; then
   cp -fr "UserViews" "WebHtmlPublish"
   rm -rf "UserViews"
