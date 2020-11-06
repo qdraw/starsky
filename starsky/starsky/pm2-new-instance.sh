@@ -56,7 +56,7 @@ fi
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
 
-# excute right for specific files
+# execute rights for specific files
 if [ -f starskygeocli ]; then
     chmod +rwx ./starskygeocli
 fi

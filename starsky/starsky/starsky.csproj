@@ -36,6 +36,9 @@
     <Content Include="pm2-warmup.sh">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="pm2-restore-x-rights.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Remove="clientapp\coverage\**" />
   </ItemGroup>
   <ItemGroup>
