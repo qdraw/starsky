@@ -5,12 +5,12 @@ using System.Threading;
 using starsky.foundation.sync.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.sync.Services
+namespace starsky.foundation.sync.Helpers
 {
 	/// <summary>
 	/// @see: http://web.archive.org/web/20120814142626/http://csharp-codesamples.com/2009/02/file-system-watcher-and-large-file-volumes/
 	/// </summary>
-	public class FileProcessor : IFileProcessor
+	public class FileProcessor
 	{
 		private readonly Queue<string> _workQueue;
 		private Thread _workerThread;

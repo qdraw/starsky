@@ -1,17 +1,25 @@
 using System;
 using System.IO;
+using Microsoft.Extensions.Hosting;
+using starsky.foundation.injection;
+using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.Interfaces;
 
 namespace starsky.foundation.sync.Services
 {
+	[Service(typeof(IDiskWatcher), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcher : IDiskWatcher
 	{
-		private readonly IFileProcessor _fileProcessor;
+		private readonly FileProcessor _fileProcessor;
 		private readonly IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 
-		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper, IFileProcessor fileProcessor)
+		private void TestExecuted(string filePath)
 		{
-			_fileProcessor = fileProcessor;
+		}
+
+		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper, IAutoResetEventAsync autoResetEventAsync)
+		{
+			_fileProcessor = new FileProcessor(autoResetEventAsync, TestExecuted);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 		}
 
@@ -23,7 +31,7 @@ namespace starsky.foundation.sync.Services
 			// Create a new FileSystemWatcher and set its properties.
 
 			_fileSystemWatcherWrapper.Path = fullFilePath;
-			_fileSystemWatcherWrapper.Filter = "*.txt";
+			_fileSystemWatcherWrapper.Filter = "*";
 			_fileSystemWatcherWrapper.IncludeSubdirectories = true;
 			_fileSystemWatcherWrapper.NotifyFilter = NotifyFilters.LastAccess
 			                                         | NotifyFilters.LastWrite
@@ -45,9 +53,6 @@ namespace starsky.foundation.sync.Services
 			// Begin watching.
 			_fileSystemWatcherWrapper.EnableRaisingEvents = true;
 
-			// // Wait for the user to quit the program.
-			// Console.WriteLine("Press 'q' to quit the sample.");
-			// while (Console.Read() != 'q') ;
 		}
 		
 		// Define the event handlers.
@@ -55,11 +60,16 @@ namespace starsky.foundation.sync.Services
 		{
 			_fileProcessor.QueueInput(e.FullPath);
 			// Specify what is done when a file is changed, created, or deleted.
-			Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
+			// Console.WriteLine($"File: {e.FullPath} {e.ChangeType}");
 		}
 
-		private void OnRenamed(object source, RenamedEventArgs e) =>
+		private void OnRenamed(object source, RenamedEventArgs e)
+		{
+			_fileProcessor.QueueInput(e.OldFullPath);
+			_fileProcessor.QueueInput(e.FullPath);
 			// Specify what is done when a file is renamed.
-			Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
+			// Console.WriteLine($"File: {e.OldFullPath} renamed to {e.FullPath}");
+		}
+
 	}
 }

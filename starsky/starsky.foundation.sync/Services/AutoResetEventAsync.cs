@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using starsky.foundation.injection;
 using starsky.foundation.sync.Interfaces;
 
 namespace starsky.foundation.sync.Services
@@ -10,6 +11,7 @@ namespace starsky.foundation.sync.Services
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/43012490/8613589
 	/// </summary>
+	[Service(typeof(IAutoResetEventAsync), InjectionLifetime = InjectionLifetime.Transient)]
 	public class AutoResetEventAsync : IAutoResetEventAsync
 	{
 		
