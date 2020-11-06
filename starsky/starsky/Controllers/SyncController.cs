@@ -7,11 +7,10 @@ using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.sync.Services;
+using starsky.foundation.sync.SyncServices;
 using starskycore.Interfaces;
 using starskycore.Services;
 using starskycore.ViewModels;
@@ -36,7 +35,7 @@ namespace starsky.Controllers
 
         private void Test()
         {
-	        new Synchronize(new AppSettings(), null, null);
+	        new SyncSingleFile(null, null, null);
         }
 
         /// <summary>

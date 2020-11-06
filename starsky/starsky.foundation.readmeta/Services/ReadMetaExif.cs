@@ -748,7 +748,7 @@ namespace starsky.foundation.readmeta.Services
 	        var focalLengthXmp = GetXmpData(exifItem, "exif:FocalLength");
 	        if (string.IsNullOrEmpty(focalLengthString) && !string.IsNullOrEmpty(focalLengthXmp))
 	        {
-		        return new MathFraction().Fraction(focalLengthXmp);
+		        return Math.Round(new MathFraction().Fraction(focalLengthXmp), 5);
 	        }
 	        
 	        if ( string.IsNullOrWhiteSpace(focalLengthString) ) return 0d;
@@ -758,7 +758,7 @@ namespace starsky.foundation.readmeta.Services
 	        // Note: focalLengthString: (Dutch) 2,2 or (English) 2.2 based CultureInfo.CurrentCulture
 	        float.TryParse(focalLengthString, NumberStyles.Number, CultureInfo.CurrentCulture, out var focalLength);
 	        
-	        return focalLength;
+	        return Math.Round(focalLength, 5);
         }
 
         

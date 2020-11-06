@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
@@ -15,14 +16,15 @@ namespace starsky.foundation.sync.SyncServices
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly AppSettings _appSettings;
-		private readonly Queue<string> _query;
+		private readonly IQuery _query;
+		private readonly NewItem _newItem;
 
 		public SyncSingleFile(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
 		{
 			_appSettings = appSettings;
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_query = new Queue<string>();
-			// _newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, _appSettings));
+			_query = query;
+			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, _appSettings));
 		}
 		
 		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
@@ -38,18 +40,19 @@ namespace starsky.foundation.sync.SyncServices
 
 			// File check if jpg #not corrupt
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains($"{imageFormat}") )
+			// ReSharper disable once InvertIf
+			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
 			{
 				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 				return new List<FileIndexItem>{statusItem};
 			}
 
-			// var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
-			// when item does not exist in Database
-			// if ( dbItem == null )
-			// {
-			// 	dbItem = await _newItem.Item(statusItem);
-			// }
+			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
+			// // // when item does not exist in Database
+			if ( dbItem == null )
+			{
+				dbItem = await _newItem.FileItem(statusItem);
+			}
 			
 			
 			

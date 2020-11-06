@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.storage.Interfaces;
 
 namespace starsky.foundation.storage.Services
@@ -36,52 +37,53 @@ namespace starsky.foundation.storage.Services
         }
 
         /// <summary>
-        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 20 seconds
+        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 5 seconds
         /// </summary>
         /// <param name="subPath">subPath</param>
-        /// <param name="timeoutSeconds">Timeout in seconds, before a random string will be returned</param>
+        /// <param name="timeoutInMilliseconds">Timeout in ms seconds, before a random string will be returned</param>
         /// <returns>base32 hash</returns>
-        public KeyValuePair<string,bool> GetHashCode(string subPath, int timeoutSeconds = 20)
+        public KeyValuePair<string,bool> GetHashCode(string subPath, int timeoutInMilliseconds = 5000)
         {
-            return _calcHashCode(subPath,timeoutSeconds);
+            return _calcHashCode(subPath,timeoutInMilliseconds);
         }
 
         // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
         // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        private KeyValuePair<string,bool> _calcHashCode(string subPath, int timeoutSeconds = 20)
+        private KeyValuePair<string,bool> _calcHashCode(string subPath, int timeoutInMilliseconds = 5000)
         {
-            var q = Md5TimeoutAsyncWrapper(subPath,timeoutSeconds).Result;
+            var q = Md5TimeoutAsyncWrapper(subPath,timeoutInMilliseconds).Result;
             return q;
         }
 
         // Wrapper to do Async tasks -- add variable to test make it in a unit test shorter
-        private async Task<KeyValuePair<string,bool>> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutSeconds)
+        private async Task<KeyValuePair<string,bool>> Md5TimeoutAsyncWrapper(string fullFileName, int timeoutInMilliseconds)
         {
             // adding .ConfigureAwait(false) may NOT be what you want, but google it.
-            return await Task.Run(() => GetHashCodeAsync(fullFileName,timeoutSeconds)).ConfigureAwait(false);
+            return await Task.Run(() => GetHashCodeAsync(fullFileName,timeoutInMilliseconds)).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get FileHash Async in the timeoutSeconds time
         /// </summary>
         /// <param name="fullFileName">full filePath on disk to have the file</param>
-        /// <param name="timeoutSeconds">number of seconds to be hashed</param>
+        /// <param name="timeoutInMilliseconds">number of milli seconds to be hashed</param>
         /// <returns></returns>
-#pragma warning disable 1998
-        public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutSeconds = 20)
-#pragma warning restore 1998
+        public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutInMilliseconds = 5000)
         {
-	        var task = Task.Run(() => CalculateMd5Async(fullFileName));
-			if (timeoutSeconds >= 1 && task.Wait(TimeSpan.FromSeconds(timeoutSeconds))){
-				return new KeyValuePair<string,bool>(task.Result,true);
-			}
-
-			// Sometimes a Calc keeps waiting for days
-            Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
-                              + fullFileName 
-                              + "            <<<<<<<<<<<<");
-            return new KeyValuePair<string,bool>(Base32.Encode(GenerateRandomBytes(27)) + "_T", false);
+	        try
+	        {
+		        var code = await CalculateMd5Async(fullFileName).TimeoutAfter(timeoutInMilliseconds);
+		        return new KeyValuePair<string,bool>(code,true);
+	        }
+	        catch ( TimeoutException)
+	        {
+		        // Sometimes a Calc keeps waiting for days
+		        Console.WriteLine(">>>>>>>>>>>            Timeout Md5 Hashing::: "
+		                          + fullFileName 
+		                          + "            <<<<<<<<<<<<");
+		        return new KeyValuePair<string,bool>(Base32.Encode(GenerateRandomBytes(27)) + "_T", false);
+	        }
         }
 
         /// <summary>
@@ -104,8 +106,7 @@ namespace starsky.foundation.storage.Services
             }
  
             // Create a new RNGCryptoServiceProvider.
-            System.Security.Cryptography.RNGCryptoServiceProvider rand = 
-                new System.Security.Cryptography.RNGCryptoServiceProvider();
+            var rand = new RNGCryptoServiceProvider();
  
             // Fill the buffer with random bytes.
             rand.GetBytes(randBytes);
