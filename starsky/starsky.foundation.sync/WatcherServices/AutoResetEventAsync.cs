@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.sync.Interfaces;
 
-namespace starsky.foundation.sync.Services
+namespace starsky.foundation.sync.WatcherServices
 {
 	/// <summary>
 	/// @see: https://stackoverflow.com/a/43012490/8613589

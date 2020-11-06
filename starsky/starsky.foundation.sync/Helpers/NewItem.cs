@@ -28,6 +28,7 @@ namespace starsky.foundation.sync.Helpers
 			{
 				(localHash, success) = await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath);
 			}
+			
 			updatedDatabaseItem.FileHash = localHash;
 			updatedDatabaseItem.SetAddToDatabase();
 			updatedDatabaseItem.SetLastEdited();

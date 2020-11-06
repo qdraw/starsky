@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.Services;
+using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starsky.foundation.sync.Services
