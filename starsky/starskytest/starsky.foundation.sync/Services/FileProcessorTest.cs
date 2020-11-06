@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.Helpers;
-using starsky.foundation.sync.Services;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeCreateAn;
 
@@ -30,9 +27,9 @@ namespace starskytest.starsky.foundation.sync.Services
 			fileProcessor.Work();
 
 			Assert.AreEqual(2, IsExecuted.Count);
-			Assert.AreEqual(new CreateAnImage().BasePath, IsExecuted[0]);
-			Assert.AreEqual("/test2", IsExecuted[1]);
-			
+			Assert.IsTrue(IsExecuted.Contains(new CreateAnImage().BasePath));
+			Assert.IsTrue(IsExecuted.Contains("/test2"));
+
 			IsExecuted = new List<string>();
 		}
 	}
