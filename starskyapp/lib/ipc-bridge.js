@@ -70,6 +70,11 @@ exports.ipcBridge = () => {
                 
             });
 
+            request.on('error',(e)=>{
+                console.log(e);
+                event.reply('settings', {...currentSettings,locationOk: false });
+            })
+
             request.end()
             return;
         }
