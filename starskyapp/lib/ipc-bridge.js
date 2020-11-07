@@ -3,6 +3,7 @@ const appConfig = require('electron-settings');
 const mainWindows = require('./main-window').mainWindows
 const editFileDownload = require('./edit-file-download').editFileDownload;
 const isPackaged = require('./os-type').isPackaged
+const CheckForUpdatesLocalStorageName = require('./check-for-updates').CheckForUpdatesLocalStorageName
 
 exports.ipcBridge = () => {
 
@@ -101,6 +102,8 @@ exports.ipcBridge = () => {
         if (args === false || args === true ) {
             console.log('set arg --> ', args);
             appConfig.set("settings_update_policy", args);
+            // reset check date for latest version
+            appConfig.delete(CheckForUpdatesLocalStorageName);
 
             event.reply('settings_update_policy', args)
             return
