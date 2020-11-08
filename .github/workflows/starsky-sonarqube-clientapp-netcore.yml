@@ -59,6 +59,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-netcore-
 
+      - name: Cache sonarqube packages (*nix)
+        uses: actions/cache@v2
+        with:
+          # nuget cache files are stored in `~/.sonar` on Linux/macOS
+          path: ~/.sonar
+          key: ${{ runner.os }}-build-sonarqube
+          restore-keys: |
+            ${{ runner.os }}-build-sonarqube-
+
       - name: Build
         shell: bash
         env:
