@@ -49,9 +49,13 @@ All these projects are separately compiled using the build script and using the 
 
 _See `./azure-pipelines-starsky.yml` for details_
 
+### Github Actions
+
 ![Starsky .NET Core (Windows)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Windows)/badge.svg)
 ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
 ![Starsky ClientApp (React)](https://github.com/qdraw/starsky/workflows/Starsky%20ClientApp%20(React)/badge.svg)
+
+_See `./.github/workflows` for details_
 
 ### End2End tests on public demo environment
 ![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
