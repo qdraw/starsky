@@ -1,2 +1,2 @@
 results
-cypress/screenshots/**/*.png
+cypress/screenshots/build

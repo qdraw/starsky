@@ -1,6 +1,6 @@
-import { RequestOptions } from 'http'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
+import { checkIfExistAndCreate } from '../helpers/create-directory-helper'
 const config = configFile[envFolder][envName]
 
 describe('Upload to folder', () => {
@@ -18,38 +18,23 @@ describe('Upload to folder', () => {
 
   it('Check if folder is there & create', () => {
     if (!config.isEnabled) return
-
-    function request2 () {
-      cy.request({
-        method: 'POST',
-        url: config.mkdirApi,
-        form: false,
-        followRedirect: false,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `f=${config.mkdirPath}`,
-        failOnStatusCode: false
-      }).then((res) => {
-        console.log(res)
-      })
-    }
-
-    cy.request(config.checkIfDirExistApi, {
-      failOnStatusCode: false,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    } as RequestOptions).then((data) => {
-      if (data.body.searchCount === 0) {
-        request2()
-      }
-    })
+    checkIfExistAndCreate(config)
   })
+
   const fileName2 = '20200822_111408.jpg'
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
+
+  it('Check if more menu exist', {
+    retries: { runMode: 1, openMode: 1 }
+  }, () => {
+    if (!config.isEnabled) return
+
+    cy.visit(config.url)
+
+    cy.get('.item.item--more').click()
+    cy.get('.menu-option--input label')
+  })
 
   it('Upload content and check if the name exist', {
     retries: { runMode: 2, openMode: 2 }
@@ -59,7 +44,7 @@ describe('Upload to folder', () => {
     cy.visit(config.url)
 
     cy.get('.item.item--more').click()
-    cy.get('.menu-option--input label').click()
+    cy.get('.menu-option--input label')
 
     const fileType = 'image/jpeg'
     const fileInput = '.menu-option--input input[type=file]'
