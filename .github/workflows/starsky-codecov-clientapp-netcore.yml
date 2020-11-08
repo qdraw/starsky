@@ -29,7 +29,7 @@ jobs:
       - name: Setup .NET Core 3.1
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.402
+          dotnet-version: 3.1.403
  
       - name: Cache node modules clientapp (*nix)
         uses: actions/cache@v2
@@ -39,9 +39,15 @@ jobs:
           key: ${{ runner.os }}-build-clientapp-${{ hashFiles('./starsky/starsky/clientapp/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-clientapp-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
+      - name: Cache nuget packages (*nix)
+        uses: actions/cache@v2
+        with:
+          # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-netcore-
  
       - name: Build
         shell: bash
