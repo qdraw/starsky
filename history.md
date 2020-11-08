@@ -36,7 +36,9 @@ node starsky-tools/build-tools/app-version-update.js
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Changed) _App_ Add styling to settings UI in App
 - [x]   (Fixed) _Back-end_  Add extra catch to prevent sync issues when exif reading fails
-- todo: bugfix check for updates in app
+- [x]   (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be incompatable
+- [x]   (Added) _App_ Add extra delay to check for updates to avoid issues when local
+- [x]   (Added) _App_ Add fix for selecting wrong domains to avoid an exception
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default

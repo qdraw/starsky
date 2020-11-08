@@ -9,6 +9,6 @@ if (document.querySelectorAll("#autoclose").length === 1) {
 
     setTimeout(()=>{
         window.close();
-    }, 8000);
+    }, 20000);
 }
 
