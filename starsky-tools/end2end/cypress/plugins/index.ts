@@ -10,9 +10,14 @@ function getConfigurationByFile (file: string, folder: string) {
 }
 
 module.exports = (_, config) => {
+  if (process.env.CYPRESS_BASE_URL && process.env.cypress_name && process.env.cypress_AUTH_USER && process.env.cypress_AUTH_PASS) {
+    console.log('ignored due existing env names =>', process.env.CYPRESS_BASE_URL, process.env.cypress_name, process.env.cypress_AUTH_USER, 'cypress_AUTH_PASS')
+    return
+  }
+
   // accept a configEnv value or use development by default
   const file = config.env.configEnv || 'local'
-  const folder = config.env.configFolder || 'starsy'
+  const folder = config.env.configFolder || 'starsky'
 
   // Add Cypress linting to build process
   // on('file:preprocessor', cypressEslint());
