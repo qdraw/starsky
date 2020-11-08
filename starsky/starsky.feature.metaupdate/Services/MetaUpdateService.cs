@@ -102,7 +102,12 @@ namespace starsky.feature.metaupdate.Services
 
 			return updatedItems;
 		}
-		
+
+		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList)
+		{
+			_readMeta.UpdateReadMetaCache(returnNewResultList);
+		}
+
 		/// <summary>
 		/// Update ExifTool, Thumbnail, Database and if needed rotateClock
 		/// </summary>

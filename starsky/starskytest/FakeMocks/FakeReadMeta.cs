@@ -48,5 +48,9 @@ namespace starskytest.FakeMocks
         {
             // dont do anything
         }
+
+        public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+        {
+        }
     }
 }
