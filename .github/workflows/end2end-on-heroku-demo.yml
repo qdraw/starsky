@@ -12,11 +12,15 @@ jobs:
     - uses: actions/checkout@v2
       
     - name: Run Cypress in Electron 
-      uses: cypress-io/github-action@v1
+      uses: cypress-io/github-action@v2
+      env:
+        CYPRESS_BASE_URL: https://starskydemo.herokuapp.com  
+        cypress_name: heroku-demo
+        cypress_AUTH_USER: demo@qdraw.nl
+        cypress_AUTH_PASS:  demo@qdraw.nl
       with:
-        command: npm run e2e:heroku-demo
+        command: npm run e2e:env
         working-directory: starsky-tools/end2end  
-
 
     - name: Upload screenshots (always)
       uses: actions/upload-artifact@v2

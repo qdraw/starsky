@@ -1,6 +1,6 @@
 
 // Get current environment folder
-export const envFolder = Cypress.env().configFolder
+export const envFolder = Cypress.env().configFolder ? Cypress.env().configFolder : 'starsky'
 
 // Get current environment name
 export const envName = Cypress.env().name
