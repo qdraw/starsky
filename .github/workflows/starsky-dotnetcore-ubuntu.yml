@@ -26,10 +26,21 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.402
+
+    - name: Cache nuget packages (*nix)
+      uses: actions/cache@v2
+      with:
+        # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-netcore-
+ 
     - name: BuildNetCore
       shell: bash
       working-directory: ./starsky
       run: bash build.sh --Target=BuildNetCore --no-sonar
+
     - name: TestNetCore
       shell: bash
       working-directory: ./starsky
