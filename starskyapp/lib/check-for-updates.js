@@ -8,6 +8,7 @@ const checkForUpdatesWindows = new Set();
 exports.checkForUpdatesWindows = checkForUpdatesWindows;
 
 const CheckForUpdatesLocalStorageName = "HealthCheckForUpdates";
+exports.CheckForUpdatesLocalStorageName = CheckForUpdatesLocalStorageName;
 
 /**
  * Return difference in Minutes
@@ -44,41 +45,43 @@ exports.createCheckForUpdatesWindow = () => {
         return;
     }
 
-    doRequest(()=>{
-        let newWindow = new BrowserWindow({ 
-            x: mainWindowStateKeeper.x,
-            y: mainWindowStateKeeper.y,
-            width: 350,
-            height: 300,
-            show: true,
-            resizable: true,
-            webPreferences: {
-                enableRemoteModule: false,
-                partition: 'persist:main',
-                contextIsolation: true
-            }
-        });
+    setTimeout(()=>{
+        doRequest(()=>{
+            let newWindow = new BrowserWindow({ 
+                x: mainWindowStateKeeper.x,
+                y: mainWindowStateKeeper.y,
+                width: 350,
+                height: 300,
+                show: true,
+                resizable: true,
+                webPreferences: {
+                    enableRemoteModule: false,
+                    partition: 'persist:main',
+                    contextIsolation: true
+                }
+            });
+            
+            // hides the menu for windows
+            newWindow.setMenu(null);
         
-        // hides the menu for windows
-        newWindow.setMenu(null);
-    
-        mainWindowStateKeeper.track(newWindow);
-    
-        newWindow.loadFile('pages/check-for-updates-new-version.html');
-    
-        setTimeout(()=>{
-            newWindow.show();
-        },500)
+            mainWindowStateKeeper.track(newWindow);
         
-        newWindow.on('closed', () => {
-            checkForUpdatesWindows.delete(newWindow);
-            appConfig.set(CheckForUpdatesLocalStorageName, Date.now().toString())
-            newWindow = null;
-        });
-    
-        checkForUpdatesWindows.add(newWindow);
-    })
+            newWindow.loadFile('pages/check-for-updates-new-version.html');
+        
+            newWindow.once('ready-to-show', () => {
+                newWindow.show();
+            });
 
+            newWindow.on('closed', () => {
+                checkForUpdatesWindows.delete(newWindow);
+                appConfig.set(CheckForUpdatesLocalStorageName, Date.now().toString())
+                newWindow = null;
+            });
+        
+            checkForUpdatesWindows.add(newWindow);
+        })
+        
+    },5000)
 };
 
 
@@ -102,13 +105,16 @@ function doRequest(callback) {
         });
         response.on('end', () => {
             // console.log(`BODY: ${body}`)
-            callback(JSON.parse(body))
+            try {
+                callback(JSON.parse(body))
+            } catch (error) {
+                callback()
+            }
         })
     });
 
     request.on('error',(e)=>{
         console.log(e);
-        callback({isError: true})
     })
 
     request.end()
