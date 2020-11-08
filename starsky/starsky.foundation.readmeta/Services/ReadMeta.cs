@@ -142,7 +142,20 @@ namespace starsky.foundation.readmeta.Services
             RemoveReadMetaCache(fullFilePath);
             _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,15,0));
         }
-        
+
+        /// <summary>
+        /// Update list of items in the cache
+        /// assumes that subPath style is used
+        /// </summary>
+        /// <param name="objectExifToolModel">list of items to update</param>
+        public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+        {
+	        foreach ( var item in objectExifToolModel )
+	        {
+		        UpdateReadMetaCache(item.FilePath, item);
+	        }
+        }
+
         /// <summary>
         /// only for ReadMeta!
         /// Why removing, The Update command does not update the entire object.

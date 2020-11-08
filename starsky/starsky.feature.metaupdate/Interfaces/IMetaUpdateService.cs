@@ -9,5 +9,7 @@ namespace starsky.feature.metaupdate.Interfaces
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel,
 			bool collections, bool append, int rotateClock);
+
+		void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList);
 	}
 }
