@@ -46,14 +46,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 		}
 
 
-		private void EndlessWorkQueue()
+		internal void EndlessWorkQueue()
 		{
-			EndlessWorkQueue(true).Start();
+			EndlessWorkQueueAsync().ConfigureAwait(false);
 		}
 
 		[SuppressMessage("ReSharper", "FunctionNeverReturns")]
 		[SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
-		internal async Task EndlessWorkQueue(bool enableWaitOne = true)
+		private async Task EndlessWorkQueueAsync()
 		{
 			while ( true )
 			{
@@ -67,7 +67,6 @@ namespace starsky.foundation.sync.WatcherHelpers
 				}
 
 				// If no files left to process then wait
-				if ( !enableWaitOne ) return;
 				_waitHandle.WaitOne();
 			}
 		}
