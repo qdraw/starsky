@@ -23,6 +23,16 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		}
 		
 		[TestMethod]
+        [Timeout(500)]
+        [ExpectedException(typeof(TimeoutException))]
+        public async Task CheckIfTimeouts_WhenIsZero()
+        {
+	        // zero is not allowed as time
+        	await EndlessTest().TimeoutAfter(0);
+        }
+        
+		
+		[TestMethod]
 		public async Task CheckIfSuccess()
 		{
 			await EndlessTest(1).TimeoutAfter(10);
