@@ -152,6 +152,7 @@ namespace starskytest.Controllers
 
 			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
 
+			if ( service == null ) throw new Exception("service should not be null");
 			await service.StartAsync(CancellationToken.None);
 
 			// the test

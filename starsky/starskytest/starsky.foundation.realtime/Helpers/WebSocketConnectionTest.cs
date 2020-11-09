@@ -47,7 +47,7 @@ namespace starskytest.starsky.foundation.realtime.Helpers
 
 
 		[TestMethod]
-		[Timeout(600)]
+		[Timeout(2000)]
 		public async Task ReceiveMessagesUntilCloseAsync_And_Exit()
 		{
 		
@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.realtime.Helpers
 		}
 		
 		[TestMethod]
-		[Timeout(600)]
+		[Timeout(2000)]
 		public async Task ReceiveMessagesUntil_ConnectionClosedPrematurely_And_Exit()
 		{
 
