@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
-using starsky.foundation.sync.Services;
+using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherServices
