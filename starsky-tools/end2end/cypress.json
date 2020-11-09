@@ -7,5 +7,6 @@
     },
     "viewportHeight": 900,
     "viewportWidth": 1280,
-    "experimentalFetchPolyfill": true
+    "experimentalFetchPolyfill": true,
+    "screenshotsFolder": "cypress/screenshots/build"
 }

@@ -14,5 +14,7 @@ namespace starsky.foundation.readmeta.Interfaces
         List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null);
         void RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel);
+        void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);
+
     }
 }

@@ -58,15 +58,14 @@ namespace starsky.Controllers
 	    {
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
-			var preflightResult =  _metaPreflight.Preflight(inputModel, 
+			var (fileIndexResultsList, changedFileIndexItemName) =  _metaPreflight.Preflight(inputModel, 
 				inputFilePaths, append, collections, rotateClock);
-			var fileIndexResultsList = preflightResult.fileIndexResultsList;
 
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 				var updated = _metaUpdateService
-					.Update(preflightResult.changedFileIndexItemName, 
+					.Update(changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated, 
 					DefaultJsonSerializer.CamelCase), token);
@@ -78,13 +77,11 @@ namespace starsky.Controllers
                 return NotFound(fileIndexResultsList);
 
             // Clone an new item in the list to display
-            var returnNewResultList = new List<FileIndexItem>();
-            foreach ( var cloneItem in fileIndexResultsList.Select(item => item.Clone()) )
-            {
-	            cloneItem.FileHash = null;
-	            returnNewResultList.Add(cloneItem);
-            }
-                        
+            var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
+            
+            // when switching very fast between images the background task has not run yet
+            _metaUpdateService.UpdateReadMetaCache(returnNewResultList);
+	            
             return Json(returnNewResultList);
 	    }
 	    

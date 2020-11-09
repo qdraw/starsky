@@ -99,6 +99,7 @@ namespace starsky.foundation.readmeta.Services
             return fileIndexList;
         }
 
+        private const string CachePrefix = "info_";
 
 	    /// <summary>
 	    /// Different types including GPX
@@ -114,7 +115,7 @@ namespace starsky.foundation.readmeta.Services
                 return ReadExifAndXmpFromFileDirect(subPath);
             
             // Return values from IMemoryCache
-            var queryCacheName = "info_" + subPath;
+            var queryCacheName = CachePrefix + subPath;
             
             // Return Cached object if it exist
             if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
@@ -127,25 +128,44 @@ namespace starsky.foundation.readmeta.Services
         }
 
         
-        //     Update only for ReadMeta!
+        /// <summary>
+        /// Update only for ReadMeta!
+        /// </summary>
+        /// <param name="fullFilePath">can also be a subPath</param>
+        /// <param name="objectExifToolModel">the item</param>
         public void UpdateReadMetaCache(string fullFilePath, FileIndexItem objectExifToolModel)
         {
             if (_cache == null || _appSettings?.AddMemoryCache == false) return;
 
             var toUpdateObject = objectExifToolModel.Clone();
-            var queryCacheName = "info_" + fullFilePath;
+            var queryCacheName = CachePrefix + fullFilePath;
             RemoveReadMetaCache(fullFilePath);
             _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,15,0));
         }
-        
 
-        //     only for ReadMeta!
-        //     Why removing, The Update command does not update the entire object.
-        //     When you update tags, other tags will be null 
+        /// <summary>
+        /// Update list of items in the cache
+        /// assumes that subPath style is used
+        /// </summary>
+        /// <param name="objectExifToolModel">list of items to update</param>
+        public void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel)
+        {
+	        foreach ( var item in objectExifToolModel )
+	        {
+		        UpdateReadMetaCache(item.FilePath, item);
+	        }
+        }
+
+        /// <summary>
+        /// only for ReadMeta!
+        /// Why removing, The Update command does not update the entire object.
+        /// When you update tags, other tags will be null 
+        /// </summary>
+        /// <param name="fullFilePath">can also be a subPath</param>
         public void RemoveReadMetaCache(string fullFilePath)
         {
             if (_cache == null || _appSettings?.AddMemoryCache == false) return;
-            var queryCacheName = "info_" + fullFilePath;
+            var queryCacheName = CachePrefix + fullFilePath;
 
             if (!_cache.TryGetValue(queryCacheName, out var _)) return; 
             // continue = go to the next item in the list

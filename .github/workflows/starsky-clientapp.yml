@@ -35,8 +35,6 @@ jobs:
         key: ${{ runner.os }}-build-clientapp-${{ hashFiles('./starsky/starsky/clientapp/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-clientapp-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
 
     - name: Install Dependencies
       working-directory: ./starsky/starsky/clientapp

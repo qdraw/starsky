@@ -27,7 +27,7 @@ See the [Docker instructions](readme-docker-instructions.md) for more details ab
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 3.1.402 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.1.403 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3. Make a build of all the projects and run the tests
 from the root folder of the repository
@@ -67,7 +67,7 @@ http://localhost:64556/account/register
 
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 
+From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
 1.  Clone the repo on your x86/x64 machine
