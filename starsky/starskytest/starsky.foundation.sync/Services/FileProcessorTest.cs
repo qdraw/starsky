@@ -40,24 +40,6 @@ namespace starskytest.starsky.foundation.sync.Services
 
 			IsExecuted = new List<string>();
 		}
-
-		[TestMethod]
-		[Timeout(100)]
-		[UnitTestOutcome()]
-		public void CheckInput2()
-		{
-			var fileProcessor = new FileProcessor(TestExecuted);
-			
-			fileProcessor.QueueInput(new CreateAnImage().BasePath);
-			fileProcessor.QueueInput("/test2");
-			
-			fileProcessor.EndlessWorkQueue(true);
-
-			Assert.AreEqual(2, IsExecuted.Count);
-			Assert.IsTrue(IsExecuted.Contains(new CreateAnImage().BasePath));
-			Assert.IsTrue(IsExecuted.Contains("/test2"));
-
-			IsExecuted = new List<string>();
-		}
+		
 	}
 }
