@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		[TestMethod]
 		[Timeout(500)]
 		[ExpectedException(typeof(TimeoutException))]
-		public async Task CheckIfTimeouts()
+		public async Task CheckIfTimeouts_ExpectException()
 		{
 			await EndlessTest().TimeoutAfter(3);
 		}
