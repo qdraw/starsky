@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		[TestMethod]
 		[Timeout(500)]
 		[ExpectedException(typeof(TimeoutException))]
-		public async Task CheckIfTimeouts_ExpectException()
+		public async Task TimeoutAfter_CheckIfTimeouts_ExpectException()
 		{
 			await EndlessTest().TimeoutAfter(3);
 		}
@@ -25,18 +25,16 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		[TestMethod]
         [Timeout(500)]
         [ExpectedException(typeof(TimeoutException))]
-        public async Task CheckIfTimeouts_WhenIsZero()
+        public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
         {
 	        // zero is not allowed as time
         	await EndlessTest().TimeoutAfter(0);
         }
-        
 		
 		[TestMethod]
-		public async Task CheckIfSuccess()
+		public async Task TimeoutAfter_CheckIfSuccess()
 		{
-			await EndlessTest(1).TimeoutAfter(10);
+			await EndlessTest(1).TimeoutAfter(100);
 		}
-		
 	}
 }
