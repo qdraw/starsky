@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using starsky.foundation.sync.Interfaces;
+using System.Threading.Tasks;
+using starsky.foundation.database.Models;
+using starsky.foundation.sync.Extensions;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.sync.Helpers
+namespace starsky.foundation.sync.WatcherHelpers
 {
 	/// <summary>
 	/// @see: http://web.archive.org/web/20120814142626/http://csharp-codesamples.com/2009/02/file-system-watcher-and-large-file-volumes/
@@ -14,14 +17,14 @@ namespace starsky.foundation.sync.Helpers
 	{
 		private readonly Queue<string> _workQueue;
 		private Thread _workerThread;
-		private readonly IAutoResetEventAsync _waitHandle;
-		private readonly FileProcessorDelegate _processFile;
-		public delegate void FileProcessorDelegate(string filepath);
+		private readonly SynchronizeDelegate _processFile;
+		private readonly AutoResetEvent _waitHandle;
+		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(string filepath, bool recursive = true);
 		
-		public FileProcessor(IAutoResetEventAsync autoResetEventAsync, FileProcessorDelegate processFile)
+		public FileProcessor(SynchronizeDelegate processFile)
 		{
 			_workQueue = new Queue<string>();
-			_waitHandle = autoResetEventAsync;
+			_waitHandle =  new AutoResetEvent(true);
 			_processFile = processFile;
 		}
 
@@ -42,20 +45,26 @@ namespace starsky.foundation.sync.Helpers
 			}
 		}
 
-		internal async void Work()
+		private async void Work()
 		{
-			var running = true;
-			while (running)
+			await Work(CancellationToken.None);
+		}
+
+		[SuppressMessage("ReSharper", "FunctionNeverReturns")]
+		internal async Task Work(CancellationToken cancelToken)
+		{
+			while (true)
 			{
 				var filepath = RetrieveFile();
+				
 				if ( filepath != null )
 				{
-					_processFile.DynamicInvoke(filepath);
+					await _processFile.Invoke(filepath);
 					continue;
 				}
 				
 				// If no files left to process then wait
-				running = await _waitHandle.WaitAsync(TimeSpan.FromMinutes(1));
+				await _waitHandle.WaitOneAsync(cancelToken);
 			}
 		}
 

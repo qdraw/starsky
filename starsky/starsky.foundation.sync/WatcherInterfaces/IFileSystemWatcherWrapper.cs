@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace starsky.foundation.sync.Interfaces
@@ -7,7 +8,7 @@ namespace starsky.foundation.sync.Interfaces
 	/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher.notifyfilter?view=netcore-3.1
 	/// @see: https://stackoverflow.com/a/50948255/8613589
 	/// </summary>
-	public interface IFileSystemWatcherWrapper
+	public interface IFileSystemWatcherWrapper:  IDisposable
 	{
 		event FileSystemEventHandler Created;
 		event FileSystemEventHandler Deleted;
@@ -22,6 +23,6 @@ namespace starsky.foundation.sync.Interfaces
 		string Filter { get; set; }
 		public NotifyFilters NotifyFilter { get; set; }
 
-		void Dispose();
+		new void Dispose();
 	}
 }

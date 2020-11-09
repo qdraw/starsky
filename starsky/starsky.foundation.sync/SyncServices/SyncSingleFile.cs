@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -29,6 +30,7 @@ namespace starsky.foundation.sync.SyncServices
 		
 		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
 		{
+			Console.WriteLine($"sync file {subPath}" );
 			var statusItem = new FileIndexItem(subPath);
 
 			// File extension is not supported
