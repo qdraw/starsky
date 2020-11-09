@@ -62,7 +62,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 				if ( filepath != null )
 				{
 					await _processFile.Invoke(filepath);
-					Console.WriteLine("inv " + filepath);
+					Console.WriteLine("invoked: " + filepath);
 					continue;
 				}
 

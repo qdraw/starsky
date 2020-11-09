@@ -6,8 +6,19 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIFileSystemWatcherWrapper : IFileSystemWatcherWrapper
 	{
+		public void TriggerOnChanged(FileSystemEventArgs args)
+		{
+			Created?.Invoke(this, args);
+		}
+		
 		public event FileSystemEventHandler Created;
 		public event FileSystemEventHandler Deleted;
+		
+		public void TriggerOnRename(RenamedEventArgs args)
+		{
+			Renamed?.Invoke(this, args);
+		}
+		
 		public event RenamedEventHandler Renamed;
 		public event FileSystemEventHandler Changed;
 		public bool EnableRaisingEvents { get; set; }
