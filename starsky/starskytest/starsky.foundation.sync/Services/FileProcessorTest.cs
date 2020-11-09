@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.sync.Services
 		
 		[TestMethod]
 		[Timeout(1000)]
-		public async Task FileProcessor_CheckInput()
+		public async Task FileProcessor_CheckInput_newThread()
 		{
 			var fileProcessor = new FileProcessor(TestExecuted);
 
@@ -40,10 +40,39 @@ namespace starskytest.starsky.foundation.sync.Services
 
 			await Task.Delay(10);
 			
+			Assert.AreEqual(1,IsExecuted.Count);
 			Assert.IsTrue(IsExecuted.Contains(path));
 			
 			workerThread.Interrupt();
 				
+			IsExecuted = new List<string>();
+		}
+		
+		[TestMethod]
+		[Timeout(1000)]
+		public async Task FileProcessor_CheckInput_existingThread()
+		{
+			var fileProcessor = new FileProcessor(TestExecuted);
+
+			const string path = "/test";
+			fileProcessor.QueueInput(path);
+
+			var workerThread =
+				new Thread(fileProcessor.EndlessWorkQueue) {Priority = ThreadPriority.BelowNormal};
+			workerThread.Start();
+
+			await Task.Delay(5);
+			
+			fileProcessor.QueueInput(path + "/2");
+			
+			await Task.Delay(10);
+
+			Assert.AreEqual(2,IsExecuted.Count);
+			Assert.IsTrue(IsExecuted.Contains(path));
+			Assert.IsTrue(IsExecuted.Contains(path+ "/2"));
+
+			workerThread.Interrupt();
+			
 			IsExecuted = new List<string>();
 		}
 		
