@@ -112,7 +112,7 @@ namespace starskytest.Helpers
 			var toCheckNonce = Guid.NewGuid() + "__";
 			httpContext.HttpContext.Items["csp-nonce"] = toCheckNonce;
 			
-			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			var someOptions = Options.Create(new ApplicationInsightsServiceOptions());
 			
 			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContext,
 				new JavaScriptTestEncoder());
@@ -120,7 +120,7 @@ namespace starskytest.Helpers
 			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).ScriptTag;
 			
 			Assert.AreEqual(true, script.Contains(toCheckNonce));
-			Assert.AreEqual(true, script.Contains("window[sdkInstance]"));
+			Assert.AreEqual(true, script.Contains("Microsoft.ApplicationInsights"));
 		}
 		
 		[TestMethod]
@@ -135,7 +135,7 @@ namespace starskytest.Helpers
 			
 			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).ScriptPlain;
 			
-			Assert.AreEqual(true, script.Contains("window[sdkInstance]"));
+			Assert.AreEqual(true, script.Contains("Microsoft.ApplicationInsights"));
 		}
 	}
 }
