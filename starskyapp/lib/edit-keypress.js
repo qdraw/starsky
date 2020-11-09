@@ -16,7 +16,9 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     if (!filePath) return;
 
     doRequest(filePath, fromMainWindow.webContents.session, (data) =>  {
-        if (!data || !data.fileIndexItem || data.fileIndexItem.status !== "Default") {
+        if (!data && !data.fileIndexItem && data.fileIndexItem.status !== "Ok" 
+              && data.fileIndexItem.status !== "Default") {
+            console.log('-!Default/o',data);
             createNewEditWindow(data);
             return;
         }
@@ -43,6 +45,7 @@ exports.handleExitKeyPress = (fromMainWindow) => {
 
         // download is included
         editFileDownload(fromMainWindow,subPathLastColInList).catch((e)=>{
+            console.log(e);
             createNewEditWindow({isError: true, error: e});
         });
     })
