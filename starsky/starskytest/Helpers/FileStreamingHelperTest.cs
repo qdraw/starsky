@@ -85,16 +85,17 @@ namespace starskytest.Helpers
         [TestMethod]
         public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg()
         {
-            var targetStream = new MemoryStream();
             var createAnImage = new CreateAnImage();
 
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             _appSettings.TempFolder = createAnImage.BasePath;
 
             var streamSelector = new FakeSelectorStorage(new StorageHostFullPathFilesystem());
-            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, _appSettings,streamSelector);
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", 
+	            requestBody, _appSettings,streamSelector);
+            
             Assert.AreNotEqual(null, formValueProvider.ToString());
-            requestBody.Dispose();
+            await requestBody.DisposeAsync();
             
             // Clean
             streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
