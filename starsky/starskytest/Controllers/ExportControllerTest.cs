@@ -170,8 +170,10 @@ namespace starskytest.Controllers
 				FileHash = "file-hash",
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
+
+			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath};
 			
-			var export = new ExportService(fakeQuery,_appSettings,storageSelector, new FakeConsoleWrapper());
+			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeConsoleWrapper());
 			var controller = new ExportController(
 				backgroundQueue, storageSelector, export)
 			{
@@ -190,7 +192,7 @@ namespace starskytest.Controllers
 			await Task.Delay(150);
 
 			// Get from real fs in to fake memory
-			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
+			var sourceFullPath = Path.Join(appSettings.TempFolder,zipHash) + ".zip";
 			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
 			var actionResult2zip = await controller.Status(zipHash,true) as JsonResult;
