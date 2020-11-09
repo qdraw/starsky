@@ -1,16 +1,11 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.Extensions;
-using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.WatcherHelpers;
-using starsky.foundation.sync.WatcherServices;
-using starskytest.FakeCreateAn;
 
-namespace starskytest.starsky.foundation.sync.Services
+namespace starskytest.starsky.foundation.sync.WatcherHelpers
 {
 	[TestClass]
 	public class FileProcessorTest

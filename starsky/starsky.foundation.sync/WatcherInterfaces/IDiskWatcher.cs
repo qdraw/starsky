@@ -1,4 +1,4 @@
-namespace starsky.foundation.sync.Interfaces
+namespace starsky.foundation.sync.WatcherInterfaces
 {
 	public interface IDiskWatcher
 	{

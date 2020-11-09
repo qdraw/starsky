@@ -3,7 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
-using starsky.foundation.sync.Interfaces;
+using starsky.foundation.platform.Models;
+using starsky.foundation.sync.WatcherInterfaces;
 
 namespace starsky.foundation.sync.Services
 {
@@ -11,16 +12,17 @@ namespace starsky.foundation.sync.Services
 	public class DiskWatcherBackgroundService : BackgroundService
 	{
 		private readonly IDiskWatcher _diskWatcher;
+		private readonly AppSettings _appSettings;
 
-		public DiskWatcherBackgroundService(IDiskWatcher diskWatcher)
+		public DiskWatcherBackgroundService(IDiskWatcher diskWatcher, AppSettings appSettings)
 		{
 			_diskWatcher = diskWatcher;
+			_appSettings = appSettings;
 		}
 		
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			Console.WriteLine("--> DiskWatcherBackgroundService");
-			_diskWatcher.Watcher("/data/scripts");
+			_diskWatcher.Watcher(_appSettings.StorageFolder);
 			return Task.CompletedTask;
 		}
 	}
