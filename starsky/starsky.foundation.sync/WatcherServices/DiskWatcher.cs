@@ -4,9 +4,13 @@ using starsky.foundation.injection;
 using starsky.foundation.sync.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherHelpers;
+using starsky.foundation.sync.WatcherInterfaces;
 
 namespace starsky.foundation.sync.WatcherServices
 {
+	/// <summary>
+	/// Service is created only once, and used everywhere
+	/// </summary>
 	[Service(typeof(IDiskWatcher), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcher : IDiskWatcher
 	{
@@ -19,7 +23,7 @@ namespace starsky.foundation.sync.WatcherServices
 			using var scope = scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
 			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
-			
+			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(synchronize.Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 		}
@@ -34,10 +38,12 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileSystemWatcherWrapper.Path = fullFilePath;
 			_fileSystemWatcherWrapper.Filter = "*";
 			_fileSystemWatcherWrapper.IncludeSubdirectories = true;
-			_fileSystemWatcherWrapper.NotifyFilter =   NotifyFilters.Size
+			_fileSystemWatcherWrapper.NotifyFilter =   NotifyFilters.LastAccess
+			                                         | NotifyFilters.Size
 			                                         | NotifyFilters.LastWrite
 			                                         | NotifyFilters.FileName
-			                                         | NotifyFilters.DirectoryName;
+			                                         | NotifyFilters.DirectoryName
+			                                         | NotifyFilters.CreationTime;
 
 
 			// Watch for changes in LastAccess and LastWrite times, and

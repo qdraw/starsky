@@ -5,12 +5,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.sync.Extensions;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
 {
 	/// <summary>
+	/// Service is created only once, and used everywhere
 	/// @see: http://web.archive.org/web/20120814142626/http://csharp-codesamples.com/2009/02/file-system-watcher-and-large-file-volumes/
 	/// </summary>
 	public class FileProcessor
@@ -35,7 +35,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			// Initialize and start thread when first file is added
 			if (_workerThread == null)
 			{
-				_workerThread = new Thread(Work);
+				_workerThread = new Thread(EndlessWorkQueue);
 				_workerThread.Start();
 			}
 			else if (_workerThread.ThreadState == ThreadState.WaitSleepJoin)
@@ -45,26 +45,30 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 		}
 
-		private async void Work()
+
+		private void EndlessWorkQueue()
 		{
-			await Work(CancellationToken.None);
+			EndlessWorkQueue(true);
 		}
 
 		[SuppressMessage("ReSharper", "FunctionNeverReturns")]
-		internal async Task Work(CancellationToken cancelToken)
+		[SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
+		internal async void EndlessWorkQueue(bool enableWaitOne = true)
 		{
-			while (true)
+			while ( true )
 			{
 				var filepath = RetrieveFile();
-				
+
 				if ( filepath != null )
 				{
 					await _processFile.Invoke(filepath);
+					Console.WriteLine("inv " + filepath);
 					continue;
 				}
-				
+
 				// If no files left to process then wait
-				await _waitHandle.WaitOneAsync(cancelToken);
+				if ( !enableWaitOne ) return;
+				_waitHandle.WaitOne();
 			}
 		}
 

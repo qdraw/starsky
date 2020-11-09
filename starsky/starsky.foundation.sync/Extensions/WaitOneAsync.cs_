@@ -16,27 +16,33 @@ namespace starsky.foundation.sync.Extensions
 		public static async Task<bool> WaitOneAsync(this WaitHandle handle, int millisecondsTimeout, CancellationToken cancellationToken)
 		{
 			RegisteredWaitHandle registeredHandle = null;
-			CancellationTokenRegistration tokenRegistration = default(CancellationTokenRegistration);
+			CancellationTokenRegistration tokenRegistration = default;
 			try
 			{
 				var tcs = new TaskCompletionSource<bool>();
 				registeredHandle = ThreadPool.RegisterWaitForSingleObject(
 					handle,
-					(state, timedOut) => ((TaskCompletionSource<bool>)state)?.TrySetResult(!timedOut),
+					(state, timedOut) =>
+						( ( TaskCompletionSource<bool> ) state )?.TrySetResult(!timedOut),
 					tcs,
 					millisecondsTimeout,
 					true);
 				tokenRegistration = cancellationToken.Register(
-					state => ((TaskCompletionSource<bool>)state).TrySetCanceled(),
+					state => ( ( TaskCompletionSource<bool> ) state ).TrySetCanceled(),
 					tcs);
 				return await tcs.Task;
 			}
+			catch ( Exception e )
+			{
+				Console.WriteLine(e);
+				return await Task.FromResult(true);
+			}
 			finally
 			{
-				if (registeredHandle != null)
-					registeredHandle.Unregister(null);
-				tokenRegistration.Dispose();
+				registeredHandle?.Unregister(null);
+				await tokenRegistration.DisposeAsync();
 			}
+			
 		}
 
 		public static Task<bool> WaitOneAsync(this WaitHandle handle, TimeSpan timeout, CancellationToken cancellationToken)

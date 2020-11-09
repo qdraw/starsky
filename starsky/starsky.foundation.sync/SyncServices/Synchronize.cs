@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -38,6 +39,8 @@ namespace starsky.foundation.sync.SyncServices
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			subPath = PathHelper.RemoveLatestSlash(subPath);
 
+			Console.WriteLine(subPath);
+			
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:

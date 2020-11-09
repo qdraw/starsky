@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace starsky.foundation.sync.Interfaces
+namespace starsky.foundation.sync.WatcherInterfaces
 {
 	/// <summary>
 	/// A wrapper around FileSystemWatcher

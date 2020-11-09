@@ -1,8 +1,8 @@
 using System.IO;
 using starsky.foundation.injection;
-using starsky.foundation.sync.Interfaces;
+using starsky.foundation.sync.WatcherInterfaces;
 
-namespace starsky.foundation.sync.Services
+namespace starsky.foundation.sync.WatcherServices
 {
 	[Service(typeof(IFileSystemWatcherWrapper), InjectionLifetime = InjectionLifetime.Transient)]
 	public class FileSystemWatcherWrapper: FileSystemWatcher, IFileSystemWatcherWrapper
