@@ -25,18 +25,16 @@ namespace starskytest.starsky.foundation.sync.Services
 		
 		[TestMethod]
 		[Timeout(400)]
-		public void CheckInput()
+		public async Task FileProcessor_CheckInput()
 		{
 			var fileProcessor = new FileProcessor(TestExecuted);
-			
-			fileProcessor.QueueInput(new CreateAnImage().BasePath);
-			fileProcessor.QueueInput("/test2");
-			
-			fileProcessor.EndlessWorkQueue(false);
 
-			Assert.AreEqual(2, IsExecuted.Count);
-			Assert.IsTrue(IsExecuted.Contains(new CreateAnImage().BasePath));
-			Assert.IsTrue(IsExecuted.Contains("/test2"));
+			const string path = "/test";
+			fileProcessor.QueueInput(path);
+			
+			await fileProcessor.EndlessWorkQueue(false);
+
+			Assert.IsTrue(IsExecuted.Contains(path));
 
 			IsExecuted = new List<string>();
 		}

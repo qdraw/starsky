@@ -48,12 +48,12 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		private void EndlessWorkQueue()
 		{
-			EndlessWorkQueue(true);
+			EndlessWorkQueue(true).Start();
 		}
 
 		[SuppressMessage("ReSharper", "FunctionNeverReturns")]
 		[SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
-		internal async void EndlessWorkQueue(bool enableWaitOne = true)
+		internal async Task EndlessWorkQueue(bool enableWaitOne = true)
 		{
 			while ( true )
 			{
