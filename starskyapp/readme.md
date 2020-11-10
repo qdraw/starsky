@@ -1,109 +1,53 @@
-# Starsky App
-## List of [Starsky](../readme.md) Projects
- * [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux_
- * [starsky (sln)](../starsky/readme.md) _database photo index & import index project)_
-    * [starsky](../starsky/starsky/readme.md) _web api application / interface_
-      *  [clientapp](../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](../starsky/starskysynccli/readme.md)  _database command line interface_
-    * [starskyImporterCli](../starsky/starskyimportercli/readme.md)  _import command line interface_
-    * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
-    * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
-    * [starskyWebFtpCli](../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskyAdminCli](../starsky/starskyadmincli/readme.md)  _manage user accounts_
-    * [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-    * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
- * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * __[starskyapp](../starskyapp/readme.md) Desktop Application (Pre-alpha code)__
+# electron-quick-start-typescript
 
-## Usage instructions
+**Clone and run for a quick way to see Electron in action.**
 
-There are binaries available through  [Github Releases](https://github.com/qdraw/starsky/releases/latest/)
+This is a [TypeScript](https://www.typescriptlang.org) port of the [Electron Quick Start repo](https://github.com/electron/electron-quick-start) -- a minimal Electron application based on the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start) within the Electron documentation.
 
-### Windows 7 and newer
-- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-desktop.zip`
+**Use this app along with the [Electron API Demos](http://electron.atom.io/#get-started) app for API code examples to help you get started.**
 
-### Mac OS 10.12 or newer
-- Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-desktop.zip`
+A basic Electron application needs just these files:
 
-> Mac OS 10.10 and 10.11 are only supported in remote mode
+- `package.json` - Points to the app's main file and lists its details and dependencies.
+- `main.ts` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
+- `index.html` - A web page to render. This is the app's **renderer process**.
 
-The following versions are available:
-![Starsky App versions](docs-assets/starskyapp-versions.jpg)
+You can learn more about each of these components within the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start).
 
-The application bundle can run without installer
+## To Use
 
-## Remote mode
+To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 
-Use the settings menu to update the server settings
-Click on 'Settings' > 'Settings' to get the following menu
-
-![Starsky App versions](docs-assets/starskyapp-remote-options-v040.jpg)
-
-## Cache
-
-The Electron stores it's cache in these folders:
-
-Windows:
-```
-C:\Users\<user>\AppData\Roaming\starsky\Cache
-```
-
-Linux:
-```
-~/.config/starsky/Cache
-```
-
-OS X:
-```
-~/Library/Application\ Support/starsky/Cache
-```
-
-## Build instructions
-
-The following steps are needed to compile the desktop application
-
-## Install Node packages
-```
-npm ci
-```
-
-## Building Starsky as dependency first
-
-### For Windows
-
-We assume that you run on a 64 bits windows version
-
-_When running bash_
 ```bash
-../starsky/build.sh --Runtime=win7-x64
+# Clone this repository
+git clone https://github.com/electron/electron-quick-start-typescript
+# Go into the repository
+cd electron-quick-start-typescript
+# Install dependencies
+npm install
+# Run the app
+npm start
 ```
 
-For Windows there is a bundle created: `starsky/starsky-win7-x64.zip` and this is coppied to the desktop application
+Note: If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
 
-### For Mac OS
+## Re-compile automatically
 
-_When running bash_
+To recompile automatically and to allow using [electron-reload](https://github.com/yan-foto/electron-reload), run this in a separate terminal:
+
 ```bash
-../starsky/build.sh --Runtime=osx.10.12-x64
+npm run watch
 ```
 
-For Mac OS there is a bundle created: `starsky/starsky-osx.10.12-x64.zip` and this is coppied to the desktop application
+## Resources for Learning Electron
 
-## Build Electron
+- [electron.atom.io/docs](http://electron.atom.io/docs) - all of Electron's documentation
+- [electron.atom.io/community/#boilerplates](http://electron.atom.io/community/#boilerplates) - sample starter apps created by the community
+- [electron/electron-quick-start](https://github.com/electron/electron-quick-start) - a very basic starter Electron app
+- [electron/simple-samples](https://github.com/electron/simple-samples) - small applications with ideas for taking them further
+- [electron/electron-api-demos](https://github.com/electron/electron-api-demos) - an Electron app that teaches you how to use Electron
+- [hokein/electron-sample-apps](https://github.com/hokein/electron-sample-apps) - small demo apps for the various Electron APIs
 
-### For Windows
+## License
 
-We assume that you run on a 64 bits windows version
-
-_When running bash_
-```bash
-npm run windows
-```
-
-### For Mac OS
-
-_When running bash_
-```bash
-npm run mac
-```
+[CC0 1.0 (Public Domain)](LICENSE.md)

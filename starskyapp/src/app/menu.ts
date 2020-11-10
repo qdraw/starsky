@@ -1,12 +1,14 @@
-const {app, Menu, shell , BrowserWindow } = require('electron')
-const createMainWindow = require('./main-window').createMainWindow
-const createSettingsWindow = require('./settings-window').createSettingsWindow
+// const {app, Menu, shell , BrowserWindow } = require('electron')
+// const createMainWindow = require('./main-window').createMainWindow
+// const createSettingsWindow = require('./settings-window').createSettingsWindow
 
-const mainWindows = require('./main-window').mainWindows
-const settingsWindows = require('./settings-window').settingsWindows
-const editWindows = require('./edit-windows').editWindows
-const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
-const checkForUpdatesWindows = require('./check-for-updates').checkForUpdatesWindows
+import { Menu } from "electron";
+
+// const mainWindows = require('./main-window').mainWindows
+// const settingsWindows = require('./settings-window').settingsWindows
+// const editWindows = require('./edit-windows').editWindows
+// const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
+// const checkForUpdatesWindows = require('./check-for-updates').checkForUpdatesWindows
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
@@ -155,6 +157,4 @@ function AppMenu() {
   Menu.setApplicationMenu(menu); 
 }
 
-module.exports = {
-  AppMenu
-}
+export default AppMenu

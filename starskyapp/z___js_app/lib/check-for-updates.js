@@ -2,7 +2,8 @@ const { app, net, BrowserWindow } = require('electron')
 var path = require('path');
 const windowStateKeeper = require('./window-state-keeper').windowStateKeeper
 const appConfig = require('electron-settings');
-const {getBaseUrlFromSettings } = require('./get-base-url-from-settings')
+const {getBaseUrlFromSettings } = require('./get-base-url-from-settings');
+const { default: console } = require('./console');
 
 const checkForUpdatesWindows = new Set();
 exports.checkForUpdatesWindows = checkForUpdatesWindows;
@@ -114,7 +115,7 @@ function doRequest(callback) {
     });
 
     request.on('error',(e)=>{
-        console.log(e);
+        console(e)
     })
 
     request.end()
