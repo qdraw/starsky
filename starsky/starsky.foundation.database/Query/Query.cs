@@ -508,5 +508,34 @@ namespace starsky.foundation.database.Query
 			ResetItemByHash(updateStatusContent.FileHash);
 			return updateStatusContent;
 	    }
+	    
+	    /// <summary>
+	    /// Remove a new item from the database (NOT from the file system)
+	    /// </summary>
+	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
+	    /// <returns></returns>
+	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+	    {
+		    try
+		    {
+			    _context.FileIndex.Remove(updateStatusContent);
+			    await _context.SaveChangesAsync();
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    var context = new InjectServiceScope(_scopeFactory).Context();
+			    context.FileIndex.Remove(updateStatusContent);
+			    await context.SaveChangesAsync();
+		    }
+
+		    // remove parent directory cache
+		    RemoveCacheItem(updateStatusContent);
+
+		    // remove getFileHash Cache
+		    ResetItemByHash(updateStatusContent.FileHash);
+		    return updateStatusContent;
+	    }
     }
+	
+	
 }
