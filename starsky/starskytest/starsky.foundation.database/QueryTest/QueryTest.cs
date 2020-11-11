@@ -475,7 +475,40 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        query.RemoveItem(getItem);
         }
+
+        [TestMethod]
+        public void Query_GetObjectByFilePath_home()
+        {
+	        
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        query.AddItem(new FileIndexItem("/"));
+	        
+	        var item = query.GetObjectByFilePath("/");
+	        Assert.IsNotNull(item);
+	        Assert.AreEqual("/", item.FilePath);
+	        Assert.AreEqual("/", item.FileName);
+        }
         
+        
+        [TestMethod]
+        public async Task Query_GetObjectByFilePathAsync_home()
+        {
+	        
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        await query.AddItemAsync(new FileIndexItem("/"));
+	        
+	        var item = await query.GetObjectByFilePathAsync("/");
+	        Assert.IsNotNull(item);
+	        Assert.AreEqual("/", item.FilePath);
+	        Assert.AreEqual("/", item.FileName);
+        }
+
         [TestMethod]
         public void Query_UpdateItem_Multiple_DisposedItem()
         {
