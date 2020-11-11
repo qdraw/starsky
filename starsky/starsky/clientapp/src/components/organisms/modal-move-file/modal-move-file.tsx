@@ -6,6 +6,7 @@ import { PageType } from '../../../interfaces/IDetailView';
 import { IFileIndexItem, newIFileIndexItemArray } from '../../../interfaces/IFileIndexItem';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { StringOptions } from '../../../shared/string-options';
 import { UrlQuery } from '../../../shared/url-query';
 import Modal from '../../atoms/modal/modal';
@@ -54,6 +55,9 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       setError(fileIndexItems[0].status.toString())
       return;
     }
+
+    // clean user cache
+    new FileListCache().CacheCleanEverything()
 
     // now go to the new location
     var toNavigateUrl = new UrlQuery().updateFilePathHash(history.location.search, fileIndexItems[0].filePath)
