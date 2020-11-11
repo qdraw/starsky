@@ -75,5 +75,6 @@ namespace starsky.foundation.database.Interfaces
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
         Task AddParentItemsAsync(string subPath);
+        Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
     }
 }

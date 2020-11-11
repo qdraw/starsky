@@ -7,6 +7,9 @@ using starsky.foundation.storage.Services;
 
 namespace starsky.foundation.sync.Helpers
 {
+	/// <summary>
+	/// Scope is only a object 
+	/// </summary>
 	public class NewItem
 	{
 		private readonly IStorage _subPathStorage;
@@ -17,15 +20,19 @@ namespace starsky.foundation.sync.Helpers
 			_subPathStorage = subPathStorage;
 			_readMeta = readMeta;
 		}
-
-
 		
+		/// <summary>
+		/// Returns only an object
+		/// </summary>
+		/// <param name="fileIndexItem"></param>
+		/// <returns></returns>
 		public async Task<FileIndexItem> FileItem(FileIndexItem fileIndexItem)
 		{
 			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(fileIndexItem.FilePath);
 			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
 				.GetImageFormat(_subPathStorage.ReadStream(fileIndexItem.FilePath,50));
 
+			// future: read json sidecar
 			await SetFileHashStatus(fileIndexItem, updatedDatabaseItem);
 			updatedDatabaseItem.SetAddToDatabase();
 			updatedDatabaseItem.SetLastEdited();

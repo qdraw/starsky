@@ -7,6 +7,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.Helpers;
 
@@ -26,7 +27,7 @@ namespace starsky.foundation.sync.SyncServices
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, _appSettings));
 		}
-		
+
 		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
 		{
 			Console.WriteLine($"sync file {subPath}" );
@@ -52,13 +53,40 @@ namespace starsky.foundation.sync.SyncServices
 			// // // when item does not exist in Database
 			if ( dbItem == null )
 			{
+				// Add a new Item
 				dbItem = await _newItem.FileItem(statusItem);
+				await _query.AddItemAsync(dbItem);
+			}
+
+			// when size or fileHash is different
+			if ( !CompareByteSize(dbItem) || !await CompareFileHash(dbItem))
+			{
+				dbItem = await _newItem.FileItem(statusItem);
+				await _query.UpdateItemAsync(dbItem);
 			}
 			
-			
-			
-			// await _query.AddParentItemsAsync(subPath);
+			await _query.AddParentItemsAsync(subPath);
 			return new List<FileIndexItem>();
 		}
+		
+		
+		private async Task<bool> CompareFileHash(FileIndexItem dbItem)
+		{
+			var (localHash, success) = await new 
+				FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath);
+			if ( !success ) return false;
+			return dbItem.FileHash == localHash;
+		}
+
+		/// <summary>
+		/// True when result is the same
+		/// </summary>
+		/// <param name="dbItem"></param>
+		/// <returns></returns>
+		private bool CompareByteSize(FileIndexItem dbItem)
+		{
+			return dbItem.Size == _subPathStorage.Info(dbItem.FilePath).Size;
+		}
+
 	}
 }

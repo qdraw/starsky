@@ -273,9 +273,52 @@ namespace starsky.foundation.database.Query
 
             return updateStatusContent;
         }
+
+        /// <summary>
+        /// Update one single item in the database
+        /// For the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContent">content to updated</param>
+        /// <returns>this item</returns>
+        public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
+        {
+	        //  Update te last edited time manual
+	        updateStatusContent.SetLastEdited();
+	        try
+	        {
+		        _context.Attach(updateStatusContent).State = EntityState.Modified;
+		        await _context.SaveChangesAsync();
+		        _context.Attach(updateStatusContent).State = EntityState.Detached;
+	        }
+	        catch ( ObjectDisposedException e)
+	        {
+		        await RetrySaveChangesAsync(updateStatusContent, e);
+	        }
+            
+	        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+
+	        return updateStatusContent;
+        }
         
         /// <summary>
         /// Retry when an Exception has occured
+        /// </summary>
+        /// <param name="updateStatusContent"></param>
+        /// <param name="e">Exception</param>
+        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
+        {
+	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
+	        // https://go.microsoft.com/fwlink/?linkid=2097913
+	        await Task.Delay(10);
+	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
+	        var context = new InjectServiceScope(_scopeFactory).Context();
+	        context.Attach(updateStatusContent).State = EntityState.Modified;
+	        await context.SaveChangesAsync();
+	        context.Attach(updateStatusContent).State = EntityState.Detached; 
+        }
+        
+        /// <summary>
+        /// Sync version to Retry when an Exception has occured
         /// </summary>
         /// <param name="updateStatusContent"></param>
         /// <param name="e">Exception</param>
@@ -290,6 +333,7 @@ namespace starsky.foundation.database.Query
 	        context.SaveChanges();
 	        context.Attach(updateStatusContent).State = EntityState.Detached; 
         }
+
 
 	    internal bool IsCacheEnabled()
 	    {
@@ -464,8 +508,10 @@ namespace starsky.foundation.database.Query
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
 		    var toAddList = new List<FileIndexItem>();
-		    var indexItems = await _context.FileIndex.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    var indexItems = await _context.FileIndex
+			    .Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
 
+		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
 		    {
 			    if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
