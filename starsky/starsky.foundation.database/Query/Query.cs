@@ -38,27 +38,29 @@ namespace starsky.foundation.database.Query
         }
 
 	    /// <summary>
-		/// Get a list of all files inside an folder
+		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
 		/// </summary>
 		/// <param name="subPath">relative database path</param>
 		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath)
         {
-            subPath = SubPathSlashRemove(subPath);
+            if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
 
-            try
+            List<FileIndexItem> LocalQuery(ApplicationDbContext context)
             {
-	            return _context.FileIndex.Where
-			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
-		            .OrderBy(r => r.FileName).ToList();
-            }
-            catch ( ObjectDisposedException )
-            {
-	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            return context.FileIndex.Where
 			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
+            }
+            
+            try
+            {
+	            return LocalQuery(_context);
+            }
+            catch ( ObjectDisposedException )
+            {
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
 	    

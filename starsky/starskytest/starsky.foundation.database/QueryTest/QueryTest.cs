@@ -156,6 +156,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
             CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), 
                 getAllResult.Select(p => p.FilePath).ToList());
         }
+        
+        [TestMethod]
+        public void GetAllFiles_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        // item sub folder
+	        var item = new FileIndexItem("/test_821827/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.GetAllFiles("/test_821827");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+	        query.RemoveItem(getItem.FirstOrDefault());
+        }
 
         [TestMethod]
         public void QueryAddSingleItemSubFolderTest()
