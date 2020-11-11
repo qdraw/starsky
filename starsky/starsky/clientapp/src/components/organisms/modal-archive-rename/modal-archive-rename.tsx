@@ -3,6 +3,7 @@ import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import FetchPost from '../../../shared/fetch-post';
 import { FileExtensions } from '../../../shared/file-extensions';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { UrlQuery } from '../../../shared/url-query';
 import FormControl from '../../atoms/form-control/form-control';
@@ -89,6 +90,9 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(history.location.search, filePathAfterChange);
     await history.navigate(replacePath, { replace: true });
+
+    // clean user cache
+    new FileListCache().CacheCleanEverything()
 
     // Close window
     props.handleExit();
