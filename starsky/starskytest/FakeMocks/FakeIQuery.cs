@@ -78,6 +78,11 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
+		public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+		{
+			throw new NotImplementedException();
+		}
+
 		public bool RemoveCacheParentItem(string directoryName)
 		{
 			throw new System.NotImplementedException();

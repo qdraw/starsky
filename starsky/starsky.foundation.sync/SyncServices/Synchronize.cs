@@ -41,6 +41,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			Console.WriteLine(subPath);
 			
+			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
@@ -48,9 +49,10 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					return await _syncSingleFile.SingleFile(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					return await new SyncDeleteSingleItem().Delete(subPath);
+					return await new SyncRemove(_query).Remove(new []{subPath});
+				default:
+					throw new AggregateException("enum is not valid");
 			}
-			return new List<FileIndexItem>();
 		}
 
 		
