@@ -96,20 +96,22 @@ namespace starsky.foundation.database.Query
 		/// <param name="filePath">relative database path</param>
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
-        {
-            filePath = SubPathSlashRemove(filePath);
-            FileIndexItem query;
+		{
+			filePath = PathHelper.RemoveLatestSlash(filePath);
+            FileIndexItem LocalQuery(ApplicationDbContext context)
+            {
+	            return context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
+            
             try
             {
-	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            return LocalQuery(_context);
             }
             catch (ObjectDisposedException)
             {
 	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
-	            _context = new InjectServiceScope(_scopeFactory).Context();
-	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
-            return query;
         }
 		
 		/// <summary>
@@ -120,21 +122,23 @@ namespace starsky.foundation.database.Query
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
 			filePath = PathHelper.RemoveLatestSlash(filePath);
-			FileIndexItem query;
+			Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
+			{
+				return context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
 			try
 			{
-				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				return await LocalQuery(_context);
 			}
 			catch (ObjectDisposedException)
 			{
-				_context = new InjectServiceScope(_scopeFactory).Context();
-				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
-			return query;
 		}
 	    
 		/// <summary>
-		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
+		/// Get subPath based on hash (cached hashList view to clear use ResetItemByHash)
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
 		/// <returns>subPath (relative to database)</returns>
