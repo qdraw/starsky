@@ -26,7 +26,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var serviceScope = CreateNewScope();
             var scope = serviceScope.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+	            new AppSettings{Verbose = true}, serviceScope);
         }
 
         private IServiceScopeFactory CreateNewScope()
@@ -156,6 +157,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
             CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), 
                 getAllResult.Select(p => p.FilePath).ToList());
         }
+        
+        [TestMethod]
+        public void GetAllFiles_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        // item sub folder
+	        var item = new FileIndexItem("/test_821827/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.GetAllFiles("/test_821827");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+	        query.RemoveItem(getItem.FirstOrDefault());
+        }
 
         [TestMethod]
         public void QueryAddSingleItemSubFolderTest()
@@ -196,6 +223,37 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
             CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), 
                 getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
+        }
+        
+        [TestMethod]
+        public void QueryAddSingleItemGetAllRecursiveTest_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        // item sub folder
+	        var item = new FileIndexItem("/test_1231331/sub/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // normal item
+	        var item2 = new FileIndexItem("/test_1231331/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item2);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.GetAllRecursive("/test_1231331");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+	        query.RemoveItem(getItem.FirstOrDefault());
         }
 
         [TestMethod]
@@ -426,7 +484,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
 	        
 	        var item = new FileIndexItem("/test/010101.jpg");
 	        dbContext.FileIndex.Add(item);
@@ -444,7 +503,64 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        query.RemoveItem(getItem);
         }
+
+        [TestMethod]
+        public void Query_GetObjectByFilePath_home()
+        {
+	        
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
+	        query.AddItem(new FileIndexItem("/"));
+	        
+	        var item = query.GetObjectByFilePath("/");
+	        Assert.IsNotNull(item);
+	        Assert.AreEqual("/", item.FilePath);
+	        Assert.AreEqual("/", item.FileName);
+        }
         
+        
+        [TestMethod]
+        public async Task Query_GetObjectByFilePathAsync_home()
+        {
+	        var dbItem = await _query.AddItemAsync(new FileIndexItem("/"));
+	        
+	        var item = await _query.GetObjectByFilePathAsync("/");
+	        Assert.IsNotNull(item);
+	        Assert.AreEqual("/", item.FilePath);
+	        Assert.AreEqual("/", item.FileName);
+	        
+	        _query.RemoveItem(dbItem);
+        }
+        
+        [TestMethod]
+        public async Task Query_GetObjectByFilePathAsync_Disposed()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
+	        var item = await query.AddItemAsync(new FileIndexItem("/test.jpg")
+	        {
+		        Tags = "hi"
+	        });
+
+	        // important to Dispose
+	        await dbContext.DisposeAsync();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+	        
+	        var getItem = await query.GetObjectByFilePathAsync("/test.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("/test.jpg", getItem.FilePath);
+	        Assert.AreEqual("test.jpg", getItem.FileName);
+	        Assert.AreEqual("test", getItem.Tags);
+        }
+
         [TestMethod]
         public void Query_UpdateItem_Multiple_DisposedItem()
         {
