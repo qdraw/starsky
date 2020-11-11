@@ -97,7 +97,8 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
 		{
-			filePath = PathHelper.RemoveLatestSlash(filePath);
+			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			
             FileIndexItem LocalQuery(ApplicationDbContext context)
             {
 	            return context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
@@ -121,7 +122,7 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
-			filePath = PathHelper.RemoveLatestSlash(filePath);
+			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
 			Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 			{
 				return context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
