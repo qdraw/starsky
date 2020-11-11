@@ -16,7 +16,7 @@ describe('Archive (from upload)', () => {
 
     cy.sendAuthenticationHeader()
 
-    // check if folder /end2end-test is here
+    // check if folder /starsky-end2end-test is here
     cy.request({
       url: config.urlMkdir,
       failOnStatusCode: true,

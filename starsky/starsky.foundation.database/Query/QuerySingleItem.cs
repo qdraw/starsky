@@ -56,7 +56,7 @@ namespace starsky.foundation.database.Query
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            // reject emphy requests
+            // reject empty requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = FilenamesHelper.GetParentPath(singleItemDbPath);
 

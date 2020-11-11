@@ -38,27 +38,29 @@ namespace starsky.foundation.database.Query
         }
 
 	    /// <summary>
-		/// Get a list of all files inside an folder
+		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
 		/// </summary>
 		/// <param name="subPath">relative database path</param>
 		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath)
         {
-            subPath = SubPathSlashRemove(subPath);
+            if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
 
-            try
+            List<FileIndexItem> LocalQuery(ApplicationDbContext context)
             {
-	            return _context.FileIndex.Where
-			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
-		            .OrderBy(r => r.FileName).ToList();
-            }
-            catch ( ObjectDisposedException )
-            {
-	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            return context.FileIndex.Where
 			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
 		            .OrderBy(r => r.FileName).ToList();
+            }
+            
+            try
+            {
+	            return LocalQuery(_context);
+            }
+            catch ( ObjectDisposedException )
+            {
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
 	    
@@ -69,14 +71,25 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="subPath"></param>
 	    /// <returns></returns>
-        public List<FileIndexItem> GetAllRecursive(
-            string subPath = "/")
+        public List<FileIndexItem> GetAllRecursive(string subPath = "/")
         {
-            subPath = SubPathSlashRemove(subPath);
+            subPath = PathHelper.RemoveLatestSlash(subPath);
             
-            return _context.FileIndex.Where
-                    (p => p.ParentDirectory.Contains(subPath) )
-                .OrderBy(r => r.FileName).ToList();
+            List<FileIndexItem> Query(ApplicationDbContext context)
+            {
+	            return context.FileIndex.Where
+			            (p => p.ParentDirectory.Contains(subPath) )
+		            .OrderBy(r => r.FileName).ToList();
+            }
+            
+            try
+            {
+	            return Query(_context);
+            }
+            catch ( ObjectDisposedException )
+            {
+	            return Query(new InjectServiceScope(_scopeFactory).Context());
+            }
         }
 
 		/// <summary>
@@ -85,20 +98,23 @@ namespace starsky.foundation.database.Query
 		/// <param name="filePath">relative database path</param>
 		/// <returns>FileIndex-objects with database data</returns>
         public FileIndexItem GetObjectByFilePath(string filePath)
-        {
-            filePath = SubPathSlashRemove(filePath);
-            FileIndexItem query;
+		{
+			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			
+            FileIndexItem LocalQuery(ApplicationDbContext context)
+            {
+	            return context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+            }
+            
             try
             {
-	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            return LocalQuery(_context);
             }
             catch (ObjectDisposedException)
             {
 	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
-	            _context = new InjectServiceScope(_scopeFactory).Context();
-	            query = _context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
-            return query;
         }
 		
 		/// <summary>
@@ -108,22 +124,24 @@ namespace starsky.foundation.database.Query
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
-			filePath = PathHelper.RemoveLatestSlash(filePath);
-			FileIndexItem query;
+			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
+			{
+				return context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+			}
 			try
 			{
-				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				return await LocalQuery(_context);
 			}
 			catch (ObjectDisposedException)
 			{
-				_context = new InjectServiceScope(_scopeFactory).Context();
-				query = await _context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
-			return query;
 		}
 	    
 		/// <summary>
-		/// Get subpath based on hash (cached hashlist view to clear use ResetItemByHash)
+		/// Get subPath based on hash (cached hashList view to clear use ResetItemByHash)
 		/// </summary>
 		/// <param name="fileHash">base32 hash</param>
 		/// <returns>subPath (relative to database)</returns>
