@@ -69,14 +69,25 @@ namespace starsky.foundation.database.Query
 	    /// </summary>
 	    /// <param name="subPath"></param>
 	    /// <returns></returns>
-        public List<FileIndexItem> GetAllRecursive(
-            string subPath = "/")
+        public List<FileIndexItem> GetAllRecursive(string subPath = "/")
         {
-            subPath = SubPathSlashRemove(subPath);
+            subPath = PathHelper.RemoveLatestSlash(subPath);
             
-            return _context.FileIndex.Where
-                    (p => p.ParentDirectory.Contains(subPath) )
-                .OrderBy(r => r.FileName).ToList();
+            List<FileIndexItem> Query(ApplicationDbContext context)
+            {
+	            return context.FileIndex.Where
+			            (p => p.ParentDirectory.Contains(subPath) )
+		            .OrderBy(r => r.FileName).ToList();
+            }
+            
+            try
+            {
+	            return Query(_context);
+            }
+            catch ( ObjectDisposedException )
+            {
+	            return Query(new InjectServiceScope(_scopeFactory).Context());
+            }
         }
 
 		/// <summary>

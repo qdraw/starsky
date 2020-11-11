@@ -197,6 +197,37 @@ namespace starskytest.starsky.foundation.database.QueryTest
             CollectionAssert.AreEqual(getAllRecursive123.Select(p => p.FileHash).ToList(), 
                 getAllRecursiveExpectedResult123.Select(p => p.FileHash).ToList());
         }
+        
+        [TestMethod]
+        public void QueryAddSingleItemGetAllRecursiveTest_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        // item sub folder
+	        var item = new FileIndexItem("/test_1231331/sub/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // normal item
+	        var item2 = new FileIndexItem("/test_1231331/test_0191919.jpg");
+	        dbContext.FileIndex.Add(item2);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+
+	        var getItem = query.GetAllRecursive("/test_1231331");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+	        query.RemoveItem(getItem.FirstOrDefault());
+        }
 
         [TestMethod]
         public void QueryAddSingleItemGetItemByHashTest()
