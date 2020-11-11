@@ -483,7 +483,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
 	        query.AddItem(new FileIndexItem("/"));
 	        
 	        var item = query.GetObjectByFilePath("/");
@@ -500,13 +501,40 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
 	        await query.AddItemAsync(new FileIndexItem("/"));
 	        
 	        var item = await query.GetObjectByFilePathAsync("/");
 	        Assert.IsNotNull(item);
 	        Assert.AreEqual("/", item.FilePath);
 	        Assert.AreEqual("/", item.FileName);
+        }
+        
+        [TestMethod]
+        public async Task Query_GetObjectByFilePathAsync_Disposed()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
+	        var item = await query.AddItemAsync(new FileIndexItem("/test.jpg")
+	        {
+		        Tags = "hi"
+	        });
+
+	        // important to Dispose
+	        await dbContext.DisposeAsync();
+
+	        item.Tags = "test";
+	        query.UpdateItem(item);
+	        
+	        var getItem = await query.GetObjectByFilePathAsync("/test.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("/test.jpg", getItem.FilePath);
+	        Assert.AreEqual("test.jpg", getItem.FileName);
+	        Assert.AreEqual("test", getItem.Tags);
         }
 
         [TestMethod]
