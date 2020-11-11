@@ -87,12 +87,12 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
       return
     }
 
+    // clean user cache
+    new FileListCache().CacheCleanEverything()
+
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(history.location.search, filePathAfterChange);
     await history.navigate(replacePath, { replace: true });
-
-    // clean user cache
-    new FileListCache().CacheCleanEverything()
 
     // Close window
     props.handleExit();
