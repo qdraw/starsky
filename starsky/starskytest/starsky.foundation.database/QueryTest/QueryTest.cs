@@ -26,7 +26,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var serviceScope = CreateNewScope();
             var scope = serviceScope.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+	            new AppSettings{Verbose = true}, serviceScope);
         }
 
         private IServiceScopeFactory CreateNewScope()
@@ -483,7 +484,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
 	        
 	        var item = new FileIndexItem("/test/010101.jpg");
 	        dbContext.FileIndex.Add(item);
@@ -523,18 +525,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
         [TestMethod]
         public async Task Query_GetObjectByFilePathAsync_home()
         {
+	        var dbItem = await _query.AddItemAsync(new FileIndexItem("/"));
 	        
-	        var serviceScope = CreateNewScope();
-	        var scope = serviceScope.CreateScope();
-	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
-		        new AppSettings{Verbose = true}, serviceScope);
-	        await query.AddItemAsync(new FileIndexItem("/"));
-	        
-	        var item = await query.GetObjectByFilePathAsync("/");
+	        var item = await _query.GetObjectByFilePathAsync("/");
 	        Assert.IsNotNull(item);
 	        Assert.AreEqual("/", item.FilePath);
 	        Assert.AreEqual("/", item.FileName);
+	        
+	        _query.RemoveItem(dbItem);
         }
         
         [TestMethod]
