@@ -35,7 +35,7 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=mkdir]').click()
 
-    // dont include in end2end-test
+    // dont include in starsky-end2end-test
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
     cy.get('.btn.btn--default').click()
 

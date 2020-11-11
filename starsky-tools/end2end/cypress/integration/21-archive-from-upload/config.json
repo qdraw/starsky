@@ -2,17 +2,17 @@
     "starsky": {
       "local": {
         "isEnabled": true,
-        "url": "/?f=/end2end-test",
-        "mkdirName": "end2end-test",
-        "mkdirPath": "/end2end-test",
-        "urlMkdir": "/api/index/?f=/end2end-test"
+        "url": "/?f=/starsky-end2end-test",
+        "mkdirName": "starsky-end2end-test",
+        "mkdirPath": "/starsky-end2end-test",
+        "urlMkdir": "/api/index/?f=/starsky-end2end-test"
       },
       "heroku-demo" : {
         "isEnabled": true,
-        "url": "/?f=/end2end-test",
-        "mkdirName": "end2end-test",
-        "mkdirPath": "/end2end-test",
-        "urlMkdir": "/api/index/?f=/end2end-test"
+        "url": "/?f=/starsky-end2end-test",
+        "mkdirName": "starsky-end2end-test",
+        "mkdirPath": "/starsky-end2end-test",
+        "urlMkdir": "/api/index/?f=/starsky-end2end-test"
       }
     }
   }
