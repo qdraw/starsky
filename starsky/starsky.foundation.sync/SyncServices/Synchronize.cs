@@ -59,6 +59,7 @@ namespace starsky.foundation.sync.SyncServices
 
 		private async Task<List<FileIndexItem>> Folder(string subPath)
 		{
+			// todo: not supported yet
 			return new List<FileIndexItem>();
 		}
 		

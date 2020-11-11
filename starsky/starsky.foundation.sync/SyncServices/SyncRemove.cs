@@ -20,8 +20,14 @@ namespace starsky.foundation.sync.SyncServices
 			foreach ( var subPath in subPaths )
 			{
 				var item = await _query.GetObjectByFilePathAsync(subPath);
-				item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
-				items.Add(item);
+				if ( item != null )
+				{
+					await _query.RemoveItemAsync(item);
+					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+					items.Add(item);
+					continue;
+				}
+				items.Add(new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
 			}
 			return items;
 		}
