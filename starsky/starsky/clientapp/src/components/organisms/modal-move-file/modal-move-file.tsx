@@ -56,12 +56,12 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       return;
     }
 
+    // clean user cache
+    new FileListCache().CacheCleanEverything()
+
     // now go to the new location
     var toNavigateUrl = new UrlQuery().updateFilePathHash(history.location.search, fileIndexItems[0].filePath)
     history.navigate(toNavigateUrl, { replace: true });
-
-    // clean user cache
-    new FileListCache().CacheCleanEverything()
 
     // and close window
     props.handleExit();
