@@ -137,11 +137,8 @@ describe("ModalMoveFile", () => {
   it("click to folder -> move", () => {
 
     // use this import => import * as useFileList from '../hooks/use-filelist';
-    jest.spyOn(useFileList, 'default').mockImplementationOnce(() => {
-      return startArchive;
-    }).mockImplementationOnce(() => {
-      return inTestFolderArchive;
-    });
+    jest.spyOn(useFileList, 'default')
+      .mockImplementationOnce(() => startArchive).mockImplementationOnce(() => inTestFolderArchive);
 
     // spy on fetch
     // use this import => import * as FetchPost from '../shared/fetch-post';
@@ -164,15 +161,12 @@ describe("ModalMoveFile", () => {
 
     // use as ==> import * as useLocation from '../hooks/use-location';
     jest.spyOn(useLocation, 'default')
-      .mockImplementationOnce(() => {
-        return locationMockData
-      }).mockImplementationOnce(() => {
-        return locationMockData
-      }).mockImplementationOnce(() => {
-        return locationMockData
-      });
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData)
+      .mockImplementationOnce(() => locationMockData)
 
-    var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
+    var modal = mount(<ModalMoveFile parentDirectory="/"
+      selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
     act(() => {
       modal.find('[data-test="btn-test"]').simulate('click');
@@ -228,13 +222,9 @@ describe("ModalMoveFile", () => {
       jest.spyOn(FetchPost, 'default').mockReset();
 
       // use this import => import * as useFileList from '../hooks/use-filelist';
-      jest.spyOn(useFileList, 'default').mockImplementationOnce(() => {
-        return startArchive;
-      }).mockImplementationOnce(() => {
-        return inTestFolderArchive;
-      }).mockImplementationOnce(() => {
-        return inTestFolderArchive;
-      });
+      jest.spyOn(useFileList, 'default').mockImplementationOnce(() => startArchive)
+        .mockImplementationOnce(() => inTestFolderArchive)
+        .mockImplementationOnce(() => inTestFolderArchive);
 
       var locationMockData = {
         location: jest.fn(),
@@ -262,7 +252,6 @@ describe("ModalMoveFile", () => {
         }]
       } as IConnectionDefault);
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
-
 
       var modal = mount(<ModalMoveFile parentDirectory="/" selectedSubPath="/test.jpg" isOpen={true} handleExit={() => { }}></ModalMoveFile>)
 
@@ -295,7 +284,9 @@ describe("ModalMoveFile", () => {
 
       // and cleanup
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-      modal.unmount();
+      act(() => {
+        modal.unmount();
+      })
     });
 
   });

@@ -16,19 +16,25 @@ exports.handleExitKeyPress = (fromMainWindow) => {
     if (!filePath) return;
 
     doRequest(filePath, fromMainWindow.webContents.session, (data) =>  {
-        if (!data || !data.fileIndexItem || data.fileIndexItem.status !== "Default") {
+        if (!data && !data.fileIndexItem && data.fileIndexItem.status !== "Ok" 
+              && data.fileIndexItem.status !== "Default") {
+            console.log('-!Default/o',data);
             createNewEditWindow(data);
             return;
         }
 
         // when selecting a tiff image, the jpg will be picked 
         // the last one is always picked
-        var subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
 
+        var subPathLastColInList = ""
+        if (data.fileIndexItem && data.fileIndexItem.collectionPaths) {
+            subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
+        }
 
         // get info of raw file and get xmp
         // needed app version 0.4 or newer
         if (   data 
+            && data.fileIndexItem
             && data.fileIndexItem.fileCollectionName
             && data.fileIndexItem.sidecarExtensionsList
             && data.fileIndexItem.sidecarExtensionsList[0]) {
@@ -43,6 +49,7 @@ exports.handleExitKeyPress = (fromMainWindow) => {
 
         // download is included
         editFileDownload(fromMainWindow,subPathLastColInList).catch((e)=>{
+            console.log(e);
             createNewEditWindow({isError: true, error: e});
         });
     })

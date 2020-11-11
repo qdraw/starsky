@@ -12,3 +12,9 @@ if (document.querySelectorAll("#autoclose").length === 1) {
     }, 20000);
 }
 
+if (document.querySelectorAll(".error").length === 1) {
+    var error = new URLSearchParams(window.location.search).get("error");
+    if (error) {
+        document.querySelector(".error").innerText = error;
+    }
+}
