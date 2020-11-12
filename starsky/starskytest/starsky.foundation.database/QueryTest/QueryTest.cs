@@ -893,12 +893,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	    }
 
 	    [TestMethod]
+	    public async Task AddItemAsync_Disposed()
+	    {
+		    var serviceScope = CreateNewScope();
+		    var scope = serviceScope.CreateScope();
+		    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		    var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+
+		    await dbContext.DisposeAsync();
+		    await query.AddItemAsync(new FileIndexItem("/test982.jpg")
+		    {
+			    Tags = "test"
+		    });
+		    
+		    var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		    var itemItShouldContain = await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test982.jpg");
+		    Assert.IsNotNull(itemItShouldContain);
+		    Assert.AreEqual("test", itemItShouldContain.Tags);
+	    }
+
+	    [TestMethod]
 	    public async Task RemoveItemAsync()
 	    {
 		    var serviceScope = CreateNewScope();
 		    var scope = serviceScope.CreateScope();
 		    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		    var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+		    var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
 
 		    await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
 		    await dbContext.SaveChangesAsync();
@@ -916,7 +936,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		    var serviceScope = CreateNewScope();
 		    var scope = serviceScope.CreateScope();
 		    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		    var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+		    var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
 
 		    await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
 		    await dbContext.SaveChangesAsync();

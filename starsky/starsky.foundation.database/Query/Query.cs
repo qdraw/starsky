@@ -487,25 +487,26 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
-		    try
+		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
-			    await _context.FileIndex.AddAsync(fileIndexItem);
-			    await _context.SaveChangesAsync();
+			    await context.FileIndex.AddAsync(fileIndexItem);
+			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
-			    _context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    AddCacheItem(fileIndexItem);
+			    return fileIndexItem;
+		    }
+		    
+		    try
+		    {
+			    return await LocalQuery(_context);
 		    }
 		    catch (ObjectDisposedException)
 		    {
 			    var context = new InjectServiceScope( _scopeFactory).Context();
-			    await context.FileIndex.AddAsync(fileIndexItem);
-			    await context.SaveChangesAsync();
-			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    return await LocalQuery(context);
 		    }
-            
-		    AddCacheItem(fileIndexItem);
-
-		    return fileIndexItem;
 	    }
 	    
 	    /// <summary>
