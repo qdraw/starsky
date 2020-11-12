@@ -552,7 +552,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        await dbContext.DisposeAsync();
 
 	        item.Tags = "test";
-	        query.UpdateItem(item);
+	        await query.UpdateItemAsync(item);
 	        
 	        var getItem = await query.GetObjectByFilePathAsync("/test.jpg");
 	        Assert.IsNotNull(getItem);
@@ -578,6 +578,47 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        item.Tags = "test";
 	        query.UpdateItem(new List<FileIndexItem>{item});
+
+	        var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        query.RemoveItem(getItem);
+        }
+
+        [TestMethod]
+        public async Task UpdateItemAsync_Single()
+        {
+	        var item2 = new FileIndexItem("/test2.jpg");
+	        await _query.AddItemAsync(item2);
+	        
+	        item2.Tags = "test";
+			await _query.UpdateItemAsync(item2);
+
+	        var getItem = await _query.GetObjectByFilePathAsync("/test2.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        await _query.RemoveItemAsync(getItem);
+        }
+
+        [TestMethod]
+        public void UpdateItemAsync_Single_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        var item = new FileIndexItem("/test/010101.jpg");
+	        dbContext.FileIndex.Add(item);
+	        dbContext.SaveChanges();
+	        
+	        // Important to dispose!
+	        dbContext.Dispose();
+
+	        item.Tags = "test";
+	        query.UpdateItemAsync(item);
 
 	        var getItem = query.GetObjectByFilePath("/test/010101.jpg");
 	        Assert.IsNotNull(getItem);
