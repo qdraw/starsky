@@ -36,12 +36,12 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
    * Move {props.selectedSubPath} to {currentFolderPath}
    */
   async function move() {
-    var bodyParams = new URLSearchParams();
+    const bodyParams = new URLSearchParams();
     bodyParams.append("f", props.selectedSubPath);
     bodyParams.append("to", currentFolderPath);
     bodyParams.append("collections", true.toString());
 
-    var resultDo = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
+    const resultDo = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString())
 
     if (!resultDo.data || resultDo.data.length === 0 || !resultDo.data[0].status) {
       console.error('server error');
