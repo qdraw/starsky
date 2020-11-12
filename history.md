@@ -42,6 +42,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Fixed) _Back-end_ When switching very fast after update, info isn't updated until process is done
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.9 (using SDK 3.1.403)
 - [x]   (Fixed) _Front-end_ Clean Front-end cache when moving file/renaming file
+- [x]   (Fixed) _Front-end_ Change text when selecting an non existing filter combination
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
