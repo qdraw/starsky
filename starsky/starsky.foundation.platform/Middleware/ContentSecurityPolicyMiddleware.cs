@@ -34,7 +34,7 @@ namespace starsky.foundation.platform.Middleware
 						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
 						$"https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
 						$"connect-src 'self' {socketUrl} " +
-						$"https://*.in.applicationinsights.azure.com//v2/track https://dc.services.visualstudio.com/v2/track; " +
+						$"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
 						$"style-src 'self'; " +
 						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none' ");
 			}

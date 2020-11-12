@@ -217,8 +217,9 @@ namespace starsky.foundation.database.Query
 
         private string CachingDbName(string functionName, string singleItemDbPath)
         {
+	        // when is nothing assume its the home item
+            if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
             // For creating an unique name: DetailView_/2018/01/1.jpg
-            
             var uniqueSingleDbCacheNameBuilder = new StringBuilder();
             uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
             return uniqueSingleDbCacheNameBuilder.ToString();
@@ -345,7 +346,7 @@ namespace starsky.foundation.database.Query
 			{
 				// ToList() > Collection was modified; enumeration operation may not execute.
 				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-				item.ParentDirectory);
+					item.ParentDirectory);
 				
 				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
 				
@@ -401,8 +402,8 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                PathHelper.RemoveLatestSlash(directoryName));
-            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return false;
+                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+            if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
             _cache.Remove(queryCacheName);
             return true;
@@ -482,8 +483,10 @@ namespace starsky.foundation.database.Query
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
 		    var toAddList = new List<FileIndexItem>();
-		    var indexItems = await _context.FileIndex.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    var indexItems = await _context.FileIndex.Where(p => 
+			    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
 
+		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
 		    {
 			    if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )

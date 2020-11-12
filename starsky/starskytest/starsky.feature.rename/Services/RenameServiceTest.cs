@@ -68,7 +68,6 @@ namespace starskytest.starsky.feature.rename.Services
 			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
 			
 			var services = new ServiceCollection();
-			var serviceProvider = services.BuildServiceProvider();
 			var selectorStorage = new FakeSelectorStorage(iStorage);
 
 			_sync = new SyncService(_query,_appSettings,selectorStorage);
@@ -461,15 +460,33 @@ namespace starskytest.starsky.feature.rename.Services
 		public void RenameFsTest_MoveAFolderIntoAFile()
 		{
 			CreateFoldersAndFilesInDatabase();
-			var istorage = new FakeIStorage();
-			var renameFs = new RenameService(_query, istorage).Rename(_folderExist.FilePath, _fileInExist.FilePath);
+			var iStorage = new FakeIStorage();
+			var renameFs = new RenameService(_query, iStorage).Rename(_folderExist.FilePath, _fileInExist.FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs[0].Status);
 		}
 
 		[TestMethod]
-		public void RenameFsTest_MergeToLowerPath()
+		public void Rename_MoveFileToRootFolder()
 		{
-			// todo: add this
+			var itemInChildFolderPath = "/child_folder/test_01.jpg";
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
+			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder"}, 
+				new List<string>{"/child_folder/test_01.jpg"});
+
+			var renameFs = new RenameService(_query, iStorage).Rename(itemInChildFolderPath, "/");
+			
+			Assert.AreEqual("/",renameFs.FirstOrDefault().ParentDirectory);
+			Assert.AreEqual("/test_01.jpg",renameFs.FirstOrDefault().FilePath);
+
+			Assert.AreEqual("/test_01.jpg", _query.SingleItem("/test_01.jpg").FileIndexItem.FilePath);
+			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
 		}
+
+		// [TestMethod]
+		// public void RenameFsTest_MergeToLowerPath()
+		// {
+		// 	// todo: add this
+		// }
 	}
 }
