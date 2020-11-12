@@ -182,7 +182,7 @@ namespace starsky.foundation.platform.Models
             var matchNotRegexString = @"[^a-zA-Z0-9\s-]";
             if(allowUnderScore) matchNotRegexString = @"[^a-zA-Z0-9\s-_]";     // allow underscores
             
-            text = Regex.Replace(text,matchNotRegexString, "");                   // remove invalid characters
+            text = Regex.Replace(text,matchNotRegexString, string.Empty);                   // remove invalid characters
             text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
             text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
             text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
@@ -679,7 +679,6 @@ namespace starsky.foundation.platform.Models
 
             var dataSource = "Data Source=" + baseDirectoryProject + 
                              Path.DirectorySeparatorChar+  databaseFileName;
-            if(Verbose) Console.WriteLine(dataSource);
             return dataSource;
         }
 

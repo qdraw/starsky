@@ -18,8 +18,13 @@ namespace starsky.foundation.http.Streaming
     {
         private static readonly FormOptions DefaultFormOptions = new FormOptions();
         
-        // Support for plain text input and base64 strings
-        // Use for single files only
+        /// <summary>
+        /// Support for plain text input and base64 strings
+        /// Use for single files only
+        /// </summary>
+        /// <param name="request">HttpRequest </param>
+        /// <param name="appSettings">application settings</param>
+        /// <returns></returns>
         public static string HeaderFileName(HttpRequest request, AppSettings appSettings)
         {
 	        // > when you do nothing
@@ -28,12 +33,13 @@ namespace starsky.foundation.http.Streaming
             
 	        // file without base64 encoding; return slug based url
 	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
-		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),true)
-		               + Path.GetExtension(request.Headers["filename"]);
+		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),
+			               true, false) + Path.GetExtension(request.Headers["filename"]);
             
 	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
 	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
-	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),true) + Path.GetExtension(requestHeaders);
+	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
+		               true, false) + Path.GetExtension(requestHeaders);
         }
         
         public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings, ISelectorStorage selectorStorage)
