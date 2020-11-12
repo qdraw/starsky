@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
@@ -532,7 +533,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        Assert.AreEqual("/", item.FilePath);
 	        Assert.AreEqual("/", item.FileName);
 	        
-	        _query.RemoveItem(dbItem);
+	        await _query.RemoveItemAsync(dbItem);
         }
         
         [TestMethod]
@@ -603,7 +604,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
         }
 
         [TestMethod]
-        public void UpdateItemAsync_Single_DisposedItem()
+        public async Task UpdateItemAsync_Single_DisposedItem()
         {
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
@@ -611,20 +612,20 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
 	        
 	        var item = new FileIndexItem("/test/010101.jpg");
-	        dbContext.FileIndex.Add(item);
-	        dbContext.SaveChanges();
+	        await dbContext.FileIndex.AddAsync(item);
+	        await dbContext.SaveChangesAsync();
 	        
 	        // Important to dispose!
-	        dbContext.Dispose();
+	        await dbContext.DisposeAsync();
 
 	        item.Tags = "test";
-	        query.UpdateItemAsync(item);
+	        await query.UpdateItemAsync(item);
 
-	        var getItem = query.GetObjectByFilePath("/test/010101.jpg");
+	        var getItem = await query.GetObjectByFilePathAsync("/test/010101.jpg");
 	        Assert.IsNotNull(getItem);
 	        Assert.AreEqual("test", getItem.Tags);
 
-	        query.RemoveItem(getItem);
+	        await query.RemoveItemAsync(getItem);
         }
 
         [TestMethod]
@@ -888,8 +889,47 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		    Assert.IsNotNull(result.FileIndexItem);
 		    Assert.AreEqual("/test/test.jpg", result.FileIndexItem.FilePath);
 		    
-		    _query.RemoveItem(item);
+		    await _query.RemoveItemAsync(item);
 	    }
 
+	    [TestMethod]
+	    public async Task RemoveItemAsync()
+	    {
+		    var serviceScope = CreateNewScope();
+		    var scope = serviceScope.CreateScope();
+		    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		    var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+
+		    await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
+		    await dbContext.SaveChangesAsync();
+
+		    var item = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg");
+		    await query.RemoveItemAsync(item);
+		    
+		    var itemItShouldBeNull = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg");
+		    Assert.IsNull(itemItShouldBeNull);
+	    }
+	    
+	    [TestMethod]
+	    public async Task RemoveItemAsync_Disposed()
+	    {
+		    var serviceScope = CreateNewScope();
+		    var scope = serviceScope.CreateScope();
+		    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		    var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+
+		    await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
+		    await dbContext.SaveChangesAsync();
+
+		    var item = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg");
+
+		    await dbContext.DisposeAsync();
+
+		    await query.RemoveItemAsync(item);
+
+		    var dbContext2 = new InjectServiceScope(serviceScope).Context();
+		    var itemItShouldBeNull = await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg");
+		    Assert.IsNull(itemItShouldBeNull);
+	    }
     }
 }
