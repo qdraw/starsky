@@ -44,6 +44,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Fixed) _Front-end_ Clean Front-end cache when moving file/renaming file
 - [x]   (Fixed) _Front-end_ Change text when selecting an non existing filter combination
 - [x]   (Fixed) _Back-end_ Fix for dispose Errors in Query
+- [x]   (Fixed) _Back-end_ Allow upload to folder with files that are uppercase
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
