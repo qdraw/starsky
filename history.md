@@ -36,13 +36,14 @@ node starsky-tools/build-tools/app-version-update.js
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Changed) _App_ Add styling to settings UI in App
 - [x]   (Fixed) _Back-end_  Add extra catch to prevent sync issues when exif reading fails
-- [x]   (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be incompatable
+- [x]   (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be incompatible
 - [x]   (Added) _App_ Add extra delay to check for updates to avoid issues when local
 - [x]   (Added) _App_ Add fix for selecting wrong domains to avoid an exception
 - [x]   (Fixed) _Back-end_ When switching very fast after update, info isn't updated until process is done
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.9 (using SDK 3.1.403)
 - [x]   (Fixed) _Front-end_ Clean Front-end cache when moving file/renaming file
 - [x]   (Fixed) _Front-end_ Change text when selecting an non existing filter combination
+- [x]   (Fixed) _Back-end_ Fix for dispose Errors in Query
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
