@@ -735,8 +735,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
         [TestMethod]
         public void QueryFolder_Add_And_UpdateFolderCache_UpdateCacheItemTest()
         {
-            // Add folder to cache normaly done by: CacheQueryDisplayFileFolders
-            _memoryCache.Set("List`1_", new List<FileIndexItem>(), new TimeSpan(1,0,0));
+            // Add folder to cache normally done by: CacheQueryDisplayFileFolders
+            _memoryCache.Set("List`1_/", new List<FileIndexItem>(), 
+	            new TimeSpan(1,0,0));
             // "List`1_" is from CachingDbName
             
             var item = new FileIndexItem {Id = 400, FileName = "cache"};
@@ -745,13 +746,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
             _query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-            _memoryCache.TryGetValue("List`1_", out var objectFileFolders);
+            _memoryCache.TryGetValue("List`1_/", out var objectFileFolders);
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
             Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
 	        
 	        Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
-
         }
 
         [TestMethod]

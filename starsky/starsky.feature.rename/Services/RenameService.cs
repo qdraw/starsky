@@ -114,8 +114,9 @@ namespace starsky.feature.rename.Services
 					// Rename child items
 					fileIndexItems.ForEach(p =>
 						{
-							p.ParentDirectory =
-								p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+							var parentDirectory = p.ParentDirectory
+								.Replace(inputFileSubPath, toFileSubPath);
+							p.ParentDirectory = parentDirectory;
 							p.Status = FileIndexItem.ExifStatus.Ok;
 						}
 					);
@@ -146,7 +147,10 @@ namespace starsky.feature.rename.Services
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
 				{
 					// Needed to create SetFilePath() for item that is copied, not the folder
-					toFileSubPath = toFileSubPath + "/" + FilenamesHelper.GetFileName(inputFileSubPath);
+					// no double slash when moving to root folder
+					toFileSubPath = toFileSubPath == "/" ? $"/{FilenamesHelper.GetFileName(inputFileSubPath)}" 
+						: $"{toFileSubPath}/{FilenamesHelper.GetFileName(inputFileSubPath)}";
+					
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 					FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
@@ -156,7 +160,7 @@ namespace starsky.feature.rename.Services
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				fileIndexItems.Add(detailView.FileIndexItem);
 	
-				// To update the results
+				// To update the file that is changed
 				_query.UpdateItem(fileIndexItems);
 
 				fileIndexResultsList.AddRange(fileIndexItems);
@@ -266,7 +270,6 @@ namespace starsky.feature.rename.Services
 
 		private void FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
 		{
-				
 			// you can't move the file to the same location
 			if ( inputFileSubPath == toFileSubPath )
 			{

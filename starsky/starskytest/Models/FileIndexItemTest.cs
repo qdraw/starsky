@@ -409,6 +409,36 @@ namespace starskytest.Models
 			// no duplicates please
 		    Assert.AreEqual(1, item.SidecarExtensionsList.Count);
 	    }
+
+	    [TestMethod]
+	    public void SetFilePath_Home()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/");
+		    
+		    Assert.AreEqual("/", item.FileName);
+		    Assert.AreEqual(string.Empty, item.ParentDirectory);
+		}
+	    
+	    [TestMethod]
+	    public void SetFilePath_testFile()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/test.jpg");
+		    
+		    Assert.AreEqual("test.jpg", item.FileName);
+		    Assert.AreEqual("/", item.ParentDirectory);
+	    }
+	    
+	    [TestMethod]
+	    public void SetFilePath_subFolderTestFile()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/test/test.jpg");
+		    
+		    Assert.AreEqual("test.jpg", item.FileName);
+		    Assert.AreEqual("/test", item.ParentDirectory);
+	    }
 	    
 	    //        [TestMethod]
 		//        public void FileIndexItemParseFileNameTest()
