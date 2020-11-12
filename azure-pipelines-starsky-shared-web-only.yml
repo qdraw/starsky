@@ -15,6 +15,7 @@ trigger:
     - starskyapp/*
     - starsky-tools/*
     - starsky.netframework/*
+    - /*.md
 
 pr:
   branches:
