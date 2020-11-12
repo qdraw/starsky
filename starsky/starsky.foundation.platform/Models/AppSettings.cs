@@ -167,25 +167,26 @@ namespace starsky.foundation.platform.Models
             // Included slash dd the end of this file
             return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(name,true)));
         }
-        
+
         /// <summary>
         /// Generates a permalink slug for passed string
         /// </summary>
         /// <param name="phrase"></param>
         /// <param name="allowUnderScore">to allow underscores in slug</param>
+        /// <param name="toLowerCase">change output to lowerCase</param>
         /// <returns>clean slug string (ex. "some-cool-topic")</returns>
-        public string GenerateSlug(string phrase, bool allowUnderScore = false)
+        public string GenerateSlug(string phrase, bool allowUnderScore = false, bool toLowerCase = true)
         {
-            var s = phrase.ToLowerInvariant();
+	        var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
             
-            var matchNotRegexString = @"[^a-z0-9\s-]";
-            if(allowUnderScore) matchNotRegexString = @"[^a-z0-9\s-_]";     // allow underscores
+            var matchNotRegexString = @"[^a-zA-Z0-9\s-]";
+            if(allowUnderScore) matchNotRegexString = @"[^a-zA-Z0-9\s-_]";     // allow underscores
             
-            s = Regex.Replace(s,matchNotRegexString, "");                   // remove invalid characters
-            s = Regex.Replace(s, @"\s+", " ").Trim();                       // single space
-            s = s.Substring(0, s.Length <= 45 ? s.Length : 45).Trim();      // cut and trim
-            s = Regex.Replace(s, @"\s", "-");                               // insert hyphens
-            return s.ToLower();
+            text = Regex.Replace(text,matchNotRegexString, "");                   // remove invalid characters
+            text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
+            text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
+            text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
+            return text;
         }
         
 
