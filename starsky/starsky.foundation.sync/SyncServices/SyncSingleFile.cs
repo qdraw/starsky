@@ -54,19 +54,23 @@ namespace starsky.foundation.sync.SyncServices
 			if ( dbItem == null )
 			{
 				// Add a new Item
-				dbItem = await _newItem.FileItem(statusItem);
+				dbItem = await _newItem.NewFileItem(statusItem);
+
 				await _query.AddItemAsync(dbItem);
+				await _query.AddParentItemsAsync(subPath);
+				return new List<FileIndexItem>{dbItem};
 			}
 
 			// when size or fileHash is different
 			if ( !CompareByteSize(dbItem) || !await CompareFileHash(dbItem))
 			{
-				dbItem = await _newItem.FileItem(statusItem);
-				await _query.UpdateItemAsync(dbItem);
+				var updateItem = await _newItem.PrepareUpdateFileItem(dbItem);
+				await _query.UpdateItemAsync(updateItem);
+				await _query.AddParentItemsAsync(subPath);
+				return new List<FileIndexItem>{updateItem};
 			}
-			
-			await _query.AddParentItemsAsync(subPath);
-			return new List<FileIndexItem>();
+
+			return new List<FileIndexItem>{dbItem};
 		}
 		
 		

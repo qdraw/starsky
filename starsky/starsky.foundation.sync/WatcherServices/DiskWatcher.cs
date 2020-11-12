@@ -19,11 +19,9 @@ namespace starsky.foundation.sync.WatcherServices
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
 		{
-			using var scope = scopeFactory.CreateScope();
-			// ISynchronize is a scoped service
-			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
+
 			// File Processor has an endless loop
-			_fileProcessor = new FileProcessor(synchronize.Sync);
+			_fileProcessor = new FileProcessor(new SyncWatcherPreflight(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 		}
 
@@ -61,15 +59,15 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_fileProcessor.QueueInput(e.FullPath);
+			_fileProcessor.QueueInput(e.FullPath, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 			// e.FullPath e.ChangeType
 		}
 
 		private void OnRenamed(object source, RenamedEventArgs e)
 		{
-			_fileProcessor.QueueInput(e.OldFullPath);
-			_fileProcessor.QueueInput(e.FullPath);
+			_fileProcessor.QueueInput(e.OldFullPath, WatcherChangeTypes.Deleted);
+			_fileProcessor.QueueInput(e.FullPath, WatcherChangeTypes.Created);
 			// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath
 		}
 

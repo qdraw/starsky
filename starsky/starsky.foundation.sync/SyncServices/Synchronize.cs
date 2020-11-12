@@ -5,12 +5,12 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Services;
+using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
@@ -18,19 +18,17 @@ namespace starsky.foundation.sync.SyncServices
 	[Service(typeof(ISynchronize), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Synchronize : ISynchronize
 	{
-		private readonly IQuery _query;
 		private readonly IStorage _subPathStorage;
-		private readonly AppSettings _appSettings;
-		private readonly NewItem _newItem;
 		private readonly SyncSingleFile _syncSingleFile;
+		private readonly SyncRemove _syncRemove;
+		private readonly IConsole _console;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
 		{
-			_appSettings = appSettings;
-			_query = query;
+			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, _appSettings));
-			_syncSingleFile = new SyncSingleFile(_appSettings, query, selectorStorage);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, selectorStorage);
+			_syncRemove = new SyncRemove(query, _console);
 		}
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
@@ -39,7 +37,7 @@ namespace starsky.foundation.sync.SyncServices
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			subPath = PathHelper.RemoveLatestSlash(subPath);
 
-			Console.WriteLine(subPath);
+			_console.WriteLine(subPath);
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
@@ -47,12 +45,19 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 					return await Folder(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
+					_console.WriteLine("file");
 					return await _syncSingleFile.SingleFile(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					return await new SyncRemove(_query).Remove(new []{subPath});
+					_console.WriteLine("Remove");
+					return await _syncRemove.Remove(new []{subPath});
 				default:
 					throw new AggregateException("enum is not valid");
 			}
+		}
+
+		public Task<List<FileIndexItem>> SingleFile(string subPath)
+		{
+			return _syncSingleFile.SingleFile(subPath);
 		}
 
 		

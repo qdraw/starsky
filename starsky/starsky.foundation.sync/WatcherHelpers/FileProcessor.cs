@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
+using starsky.foundation.storage.Storage;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
@@ -15,22 +19,24 @@ namespace starsky.foundation.sync.WatcherHelpers
 	/// </summary>
 	public class FileProcessor
 	{
-		private readonly Queue<string> _workQueue;
+		private readonly Queue<Tuple<string, WatcherChangeTypes>> _workQueue;
 		private Thread _workerThread;
 		private readonly SynchronizeDelegate _processFile;
 		private readonly AutoResetEvent _waitHandle;
-		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(string filepath, bool recursive = true);
+
+		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, WatcherChangeTypes> value);
 		
 		public FileProcessor(SynchronizeDelegate processFile)
 		{
-			_workQueue = new Queue<string>();
+			_workQueue = new Queue<Tuple<string, WatcherChangeTypes>>();
 			_waitHandle =  new AutoResetEvent(true);
 			_processFile = processFile;
 		}
 
-		public void QueueInput(string filepath)
+		public void QueueInput(string filepath, WatcherChangeTypes changeTypes)
 		{
-			_workQueue.Enqueue(filepath);
+			var item = new Tuple<string, WatcherChangeTypes>(filepath, changeTypes);
+			_workQueue.Enqueue(item);
 
 			// Initialize and start thread when first file is added
 			if (_workerThread == null)
@@ -57,12 +63,11 @@ namespace starsky.foundation.sync.WatcherHelpers
 		{
 			while ( true )
 			{
-				var filepath = RetrieveFile();
+				var retrieveFileObject = RetrieveFile();
 
-				if ( filepath != null )
+				if ( retrieveFileObject != null)
 				{
-					await _processFile.Invoke(filepath);
-					Console.WriteLine("invoked: " + filepath);
+					await _processFile.Invoke(retrieveFileObject);
 					continue;
 				}
 
@@ -71,7 +76,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 		}
 
-		private string RetrieveFile()
+		private Tuple<string, WatcherChangeTypes> RetrieveFile()
 		{
 			return _workQueue.Count > 0 ? _workQueue.Dequeue() : null;
 		}

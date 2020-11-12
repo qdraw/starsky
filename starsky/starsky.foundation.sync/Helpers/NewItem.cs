@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Interfaces;
@@ -24,25 +25,40 @@ namespace starsky.foundation.sync.Helpers
 		/// <summary>
 		/// Returns only an object
 		/// </summary>
-		/// <param name="fileIndexItem"></param>
+		/// <param name="inputItem"></param>
 		/// <returns></returns>
-		public async Task<FileIndexItem> FileItem(FileIndexItem fileIndexItem)
+		public async Task<FileIndexItem> NewFileItem(FileIndexItem inputItem)
 		{
-			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(fileIndexItem.FilePath);
+			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(inputItem.FilePath);
 			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
-				.GetImageFormat(_subPathStorage.ReadStream(fileIndexItem.FilePath,50));
+				.GetImageFormat(_subPathStorage.ReadStream(inputItem.FilePath,50));
 
 			// future: read json sidecar
-			await SetFileHashStatus(fileIndexItem, updatedDatabaseItem);
+			await SetFileHashStatus(inputItem, updatedDatabaseItem);
 			updatedDatabaseItem.SetAddToDatabase();
 			updatedDatabaseItem.SetLastEdited();
 			updatedDatabaseItem.IsDirectory = false;
-			updatedDatabaseItem.Size = _subPathStorage.Info(fileIndexItem.FilePath).Size;
+			updatedDatabaseItem.Size = _subPathStorage.Info(inputItem.FilePath).Size;
 
-			updatedDatabaseItem.ParentDirectory = fileIndexItem.ParentDirectory;
+			updatedDatabaseItem.ParentDirectory = inputItem.ParentDirectory;
 			return updatedDatabaseItem;
 		}
-		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="dbItem"></param>
+		/// <returns></returns>
+		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem)
+		{
+			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
+			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
+			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
+			await SetFileHashStatus(dbItem, dbItem);
+
+			return dbItem;
+		}
+
 		/// <summary>
 		/// Set file hash when not exist
 		/// </summary>
