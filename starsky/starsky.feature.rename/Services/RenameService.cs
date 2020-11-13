@@ -29,60 +29,15 @@ namespace starsky.feature.rename.Services
 		{
 			// -- param name="addDirectoryIfNotExist">true = create an directory if an parent directory is missing</param>
 
-			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
-			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = 
+				InputOutputSubPathsPreflight(f, to, collections);
 			
-			// check for the same input
-			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
+			if (fileIndexResultsList.Count >= 1 && fileIndexResultsList.All(p =>
+				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || p.Status == FileIndexItem.ExifStatus.OperationNotSupported) )
 			{
-				return new List<FileIndexItem>{new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.OperationNotSupported
-				}};
-			}
-			
-			// the result list
-			var fileIndexResultsList = new List<FileIndexItem>();
-			
-			for (var i = 0; i < inputFileSubPaths.Length; i++)
-			{
-				var inputFileSubPath = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
-				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPath);
-
-				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
-				if (detailView == null) inputFileSubPaths[i] = null;
-			}
-			
-			// To check if the file/or folder has a unique name (in database)
-			for (var i = 0; i < toFileSubPaths.Length; i++)
-			{
-				var toFileSubPath = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
-				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPath);
-
-				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
-				
-				// skip for files
-				if ( detailView == null) continue;
-				// dirs are mergable (isdir=false)
-				if (detailView.FileIndexItem.IsDirectory == false) toFileSubPaths[i] = null;
-			}
-			
-			// Remove null from list
-			toFileSubPaths = toFileSubPaths.Where(p => p != null).ToArray();
-			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
-			
-			// Check if two list are the same lenght - Change this in the future BadRequest("f != to")
-			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
-				toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) 
-			{ 
-				// files that not exist
-				fileIndexResultsList.Add(new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-				});
 				return fileIndexResultsList;
-	        }
-			
+			}
+
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				// options
@@ -168,6 +123,85 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+		
+		/// <summary>
+		/// Checks for inputs that denied the request
+		/// </summary>
+		/// <param name="f">list of filePaths in string format (dot comma separated)</param>
+		/// <param name="to">list of filePaths in string format  (dot comma separated)</param>
+		/// <param name="collections">is Collections enabled</param>
+		/// <returns>1) Tuple of the input output string
+		/// 2) the list of fileIndex Items.
+		/// This contains only values when something is wrong and the request is denied</returns>
+		private Tuple<Tuple<string[],string[]>,List<FileIndexItem>> InputOutputSubPathsPreflight
+			(string f, string to, bool collections)
+		{
+			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
+			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
+
+
+			// check for the same input
+			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
+			{
+				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
+					new Tuple<string[], string[]>(inputFileSubPaths, toFileSubPaths),
+					new List<FileIndexItem>
+					{
+						new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						}
+					}
+				);
+			}
+			
+			// the result list
+			var fileIndexResultsList = new List<FileIndexItem>();
+			
+			for (var i = 0; i < inputFileSubPaths.Length; i++)
+			{
+				var inputFileSubPath = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
+				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPath);
+
+				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
+				if (detailView == null) inputFileSubPaths[i] = null;
+			}
+			
+			// To check if the file/or folder has a unique name (in database)
+			for (var i = 0; i < toFileSubPaths.Length; i++)
+			{
+				var toFileSubPath = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
+				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPath);
+
+				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
+				
+				// skip for files
+				if ( detailView == null) continue;
+				// dirs are mergable (isdir=false)
+				if (detailView.FileIndexItem.IsDirectory == false) toFileSubPaths[i] = null;
+			}
+			
+			// Remove null from list
+			toFileSubPaths = toFileSubPaths.Where(p => p != null).ToArray();
+			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
+			
+			// Check if two list are the same Length - Change this in the future BadRequest("f != to")
+			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
+			    toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) 
+			{ 
+				// files that not exist
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+				});
+			}
+
+			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
+				new Tuple<string[], string[]>(inputFileSubPaths, toFileSubPaths), 
+				fileIndexResultsList
+				);
+		}
+
 
 		private void MoveSidecarFile(string inputFileSubPath, string toFileSubPath)
 		{

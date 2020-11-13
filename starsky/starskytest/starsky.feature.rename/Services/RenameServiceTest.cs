@@ -482,6 +482,25 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/test_01.jpg", _query.SingleItem("/test_01.jpg").FileIndexItem.FilePath);
 			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
 		}
+		
+		/// [TestMethod]
+		public void Rename_Move_Collections_ID()
+		{
+			var itemInChildFolderPath = "/child_folder/test_01.jpg";
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
+			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{"/child_folder/test_01.jpg", "/child_folder/test_01.png"});
+
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename(itemInChildFolderPath, "/child_folder2");
+			
+			Assert.AreEqual("/",renameFs.FirstOrDefault().ParentDirectory);
+			Assert.AreEqual("/test_01.jpg",renameFs.FirstOrDefault().FilePath);
+
+			Assert.AreEqual("/test_01.jpg", _query.SingleItem("/test_01.jpg").FileIndexItem.FilePath);
+			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
+		}
 
 		// [TestMethod]
 		// public void RenameFsTest_MergeToLowerPath()
