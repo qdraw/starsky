@@ -145,6 +145,7 @@ namespace starsky.foundation.storage.Storage
 		public IEnumerable<string> GetAllFilesInDirectory(string path)
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+			// null is not found
 			if (fullFilePath == null) return Enumerable.Empty<string>();
 
 			var imageFilesList = new StorageHostFullPathFilesystem().GetAllFilesInDirectory(fullFilePath);
