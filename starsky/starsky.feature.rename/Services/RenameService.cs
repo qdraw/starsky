@@ -130,8 +130,9 @@ namespace starsky.feature.rename.Services
 		/// <param name="f">list of filePaths in string format (dot comma separated)</param>
 		/// <param name="to">list of filePaths in string format  (dot comma separated)</param>
 		/// <param name="collections">is Collections enabled</param>
-		/// <returns>1) Tuple of the input output string - when fails this two array's has no items
-		/// 2) the list of fileIndex Items.
+		/// <returns>Tuple that contains two items:
+		/// item1) Tuple of the input output string - when fails this two array's has no items
+		/// item2) the list of fileIndex Items.
 		/// This contains only values when something is wrong and the request is denied</returns>
 		internal Tuple<Tuple<string[],string[]>,List<FileIndexItem>> InputOutputSubPathsPreflight
 			(string f, string to, bool collections)
@@ -220,7 +221,24 @@ namespace starsky.feature.rename.Services
 					fileIndexResultsList
 				);
 			}
+			return CollectionAddPreflight(inputFileSubPaths, toFileSubPaths, fileIndexResultsList, collections);
+		}
 
+		/// <summary>
+		/// Get the collections items when preflighting
+		/// Returns as Tuple
+		/// item1: inputFileSubPaths, toFileSubPaths
+		/// item2: list of fileIndex Results (which contains only error cases)
+		/// </summary>
+		/// <param name="inputFileSubPaths">from where to copy (file or folder)</param>
+		/// <param name="toFileSubPaths">copy to (file or folder)</param>
+		/// <param name="fileIndexResultsList">results list</param>
+		/// <param name="collections">enable file collections</param>
+		/// <returns>inputFileSubPaths list, toFileSubPaths list and fileIndexResultsList</returns>
+		private Tuple<Tuple<string[], string[]>, List<FileIndexItem>> CollectionAddPreflight(
+			IReadOnlyList<string> inputFileSubPaths, IReadOnlyList<string> toFileSubPaths,
+			List<FileIndexItem> fileIndexResultsList, bool collections)
+		{
 			if ( !collections )
 			{
 				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
@@ -228,20 +246,7 @@ namespace starsky.feature.rename.Services
 					fileIndexResultsList
 				);
 			}
-			return CollectionAddPreflight(inputFileSubPaths, toFileSubPaths, fileIndexResultsList);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="inputFileSubPaths"></param>
-		/// <param name="toFileSubPaths"></param>
-		/// <param name="fileIndexResultsList"></param>
-		/// <returns></returns>
-		private Tuple<Tuple<string[], string[]>, List<FileIndexItem>> CollectionAddPreflight(
-			IReadOnlyList<string> inputFileSubPaths, IReadOnlyList<string> toFileSubPaths,
-			List<FileIndexItem> fileIndexResultsList)
-		{
+			
 			var inputCollectionFileSubPaths = new List<string>();
 			var toCollectionFileSubPaths = new List<string>();
 
@@ -262,7 +267,6 @@ namespace starsky.feature.rename.Services
 				fileIndexResultsList
 			);
 		}
-
 
 		private void MoveSidecarFile(string inputFileSubPath, string toFileSubPath)
 		{

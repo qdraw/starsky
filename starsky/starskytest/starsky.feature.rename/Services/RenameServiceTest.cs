@@ -503,23 +503,29 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_()
+		public void InputOutputSubPathsPreflight_SingleItemWithCollectionsEnabled()
 		{
-			
-			var itemInChildFolderPath = "/child_folder/test_01.jpg";
-			var collectionItemPath = "/child_folder/test_01.png";
+			var itemInChildFolderPath1 = "/child_folder/test_01.jpg";
+			var collectionItemPath1 = "/child_folder/test_01.png";
 
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
-			_query.AddItem(new FileIndexItem(collectionItemPath));
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
+			_query.AddItem(new FileIndexItem(collectionItemPath1));
 
-			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
-				new List<string>{itemInChildFolderPath, collectionItemPath});
+				new List<string>{itemInChildFolderPath1, collectionItemPath1});
 
-			var preflight = new RenameService(_query, iStorage)
-				.InputOutputSubPathsPreflight(itemInChildFolderPath, "/child_folder2", true);
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}", 
+					"/child_folder2", true);
+			
+			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
+			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
 
-			Console.WriteLine();
+			Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
+			Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
+			
+			Assert.AreEqual(0, fileIndexResultsList.Count );
 		}
 		
 		[TestMethod]
@@ -545,7 +551,8 @@ namespace starskytest.starsky.feature.rename.Services
 					itemInChildFolderPath2, collectionItemPath2});
 
 			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
-				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", "/child_folder2;/other", true);
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", 
+					"/child_folder2;/other", true);
 
 			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
 			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
@@ -589,6 +596,7 @@ namespace starskytest.starsky.feature.rename.Services
 				new List<string>{itemInChildFolderPath1, collectionItemPath1, 
 					itemInChildFolderPath2, collectionItemPath2});
 
+			// Collections disabled!
 			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
 				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", 
 					"/child_folder2;/other", false);
@@ -625,7 +633,8 @@ namespace starskytest.starsky.feature.rename.Services
 
 			// nr 2 is does not exist in the database
 			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
-				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", "/child_folder2;/other", true);
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", 
+					"/child_folder2;/other", true);
 
 			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
 			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
