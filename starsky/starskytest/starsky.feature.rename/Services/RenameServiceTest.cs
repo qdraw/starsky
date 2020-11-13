@@ -489,7 +489,7 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void Rename_Move_Collections()
+		public void Rename_Move_FileToFolder_Collections()
 		{
 			var itemInChildFolderPath = "/child_folder/test_10.jpg";
 			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
@@ -515,7 +515,75 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void Rename_Move_SidecarFile_ShouldMove()
+		public void Rename_Move_FileToDeleted_Collections()
+		{
+			var fromItemJpg = "/child_folder/test_21.jpg";
+			var fromItemDng = "/child_folder/test_21.dng";
+			var toItemJpg = "/child_folder/test_21_edit.jpg";
+			var toItemDng = "/child_folder/test_21_edit.dng";
+
+			_query.AddItem(new FileIndexItem(fromItemJpg));
+			_query.AddItem(new FileIndexItem(fromItemDng));
+			_query.AddParentItemsAsync(fromItemDng).ConfigureAwait(false);
+			
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{fromItemJpg, fromItemDng});
+
+			// only say: fromItemJpg > toItemJpg
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename(fromItemJpg, toItemJpg);
+
+			// it has moved the files
+			Assert.IsFalse(iStorage.ExistFile(fromItemJpg));
+			Assert.IsFalse(iStorage.ExistFile(fromItemDng));
+			
+			Assert.IsTrue(iStorage.ExistFile(toItemJpg));
+			Assert.IsTrue(iStorage.ExistFile(toItemDng));
+			
+			// and the result is ok
+			Assert.AreEqual(toItemJpg, renameFs[0].FilePath);
+			Assert.AreEqual(toItemDng, renameFs[1].FilePath);
+
+			// and the database is ok
+			Assert.AreEqual(toItemJpg, 
+				_query.SingleItem(toItemJpg).FileIndexItem.FilePath);
+			Assert.AreEqual(toItemDng, 
+				_query.SingleItem(toItemDng).FileIndexItem.FilePath);	
+		}
+		
+		[TestMethod]
+		public void InputOutputSubPathsPreflight_FileToDeleted_SingleItemWithCollectionsEnabled()
+		{
+			var itemInChildFolderPath1 = "/child_folder/test_22.jpg";
+			var collectionItemPath1 = "/child_folder/test_22.dng";
+
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
+			_query.AddItem(new FileIndexItem(collectionItemPath1));
+
+			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{itemInChildFolderPath1, collectionItemPath1});
+
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1}", 
+					"/child_folder2/test_22_edit.jpg", true);
+			
+			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
+			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
+
+			Assert.AreEqual("/child_folder2/test_22_edit.jpg", toFileSubPaths[0]);
+			Assert.AreEqual("/child_folder2/test_22_edit.dng", toFileSubPaths[1]);
+			
+			Assert.AreEqual(0, fileIndexResultsList.Count );
+
+			// this does only preflight
+			
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+		}
+		
+		[TestMethod]
+		public void Rename_Move_SidecarFile_ShouldMove_FileToFolder()
 		{
 			// var item1 = "/child_folder/test_20.jpg";
 			var item1dng = "/child_folder/test_20.dng";
@@ -541,7 +609,7 @@ namespace starskytest.starsky.feature.rename.Services
 		
 				
 		[TestMethod]
-		public void Rename_Move_SidecarFile_ShouldNotMove_ItsAJpeg()
+		public void Rename_Move_SidecarFile_ShouldNotMove_FileToFolder_ItsAJpeg()
 		{
 			var item1 = "/child_folder/test_20.jpg";
 			var item1SideCar = "/child_folder/test_20.xmp";
@@ -564,7 +632,7 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_SingleItemWithCollectionsEnabled()
+		public void InputOutputSubPathsPreflight_FileToFolder_SingleItemWithCollectionsEnabled()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_07.jpg";
 			var collectionItemPath1 = "/child_folder/test_07.png";
@@ -593,7 +661,7 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_MultipleFiles_CollectionsTrue()
+		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsTrue()
 		{
 			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
 			// the other should be ok
@@ -636,9 +704,10 @@ namespace starskytest.starsky.feature.rename.Services
 			_query.RemoveItem(_query.SingleItem(collectionItemPath2).FileIndexItem);
 		}
 
+		
 			
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_MultipleFiles_CollectionsFalse_Aka_Disabled()
+		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_CollectionsFalse_Aka_Disabled()
 		{
 			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
 			// But this one's are not used
@@ -680,7 +749,7 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 		
 		[TestMethod]
-		public void InputOutputSubPathsPreflight_MultipleFiles_PartlyNotFound()
+		public void InputOutputSubPathsPreflight_FileToFolder_MultipleFiles_PartlyNotFound()
 		{
 			var itemInChildFolderPath1 = "/child_folder/test_03.jpg";
 			var collectionItemPath1 = "/child_folder/test_03.png";
