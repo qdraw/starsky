@@ -268,14 +268,35 @@ namespace starsky.feature.rename.Services
 			);
 		}
 
+		/// <summary>
+		/// Move sidecar files when those exist
+		/// </summary>
+		/// <param name="inputFileSubPath">from path</param>
+		/// <param name="toFileSubPath">to path</param>
 		private void MoveSidecarFile(string inputFileSubPath, string toFileSubPath)
 		{
-			var inputFileSubPathJsonSidecarFile =
-				JsonSidecarLocation.JsonLocation(inputFileSubPath);
-			var toSidecarFile = JsonSidecarLocation.JsonLocation(toFileSubPath);
-			if ( _iStorage.ExistFile(inputFileSubPathJsonSidecarFile) )
+			// json sidecar move
+			var jsonInputFileSubPathSidecarFile = JsonSidecarLocation
+				.JsonLocation(inputFileSubPath);
+			var jsonSidecarFile = JsonSidecarLocation.JsonLocation(toFileSubPath);
+			
+			if ( _iStorage.ExistFile(jsonInputFileSubPathSidecarFile) )
 			{
-				_iStorage.FileMove(inputFileSubPathJsonSidecarFile,toSidecarFile);
+				_iStorage.FileMove(jsonInputFileSubPathSidecarFile,jsonSidecarFile);
+			}
+
+			// xmp sidecar file move
+			if ( !ExtensionRolesHelper.IsExtensionForceXmp(inputFileSubPath) )
+			{
+				return;
+			}
+			var xmpInputFileSubPathSidecarFile =  ExtensionRolesHelper
+				.ReplaceExtensionWithXmp(inputFileSubPath);
+			var xmpSidecarFile = ExtensionRolesHelper
+				.ReplaceExtensionWithXmp(toFileSubPath);
+			if ( _iStorage.ExistFile(xmpInputFileSubPathSidecarFile) )
+			{
+				_iStorage.FileMove(xmpInputFileSubPathSidecarFile, xmpSidecarFile);
 			}
 		}
 

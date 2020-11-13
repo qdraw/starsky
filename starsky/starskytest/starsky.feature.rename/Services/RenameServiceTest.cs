@@ -488,23 +488,79 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
 		}
 		
-		/// [TestMethod]
-		public void Rename_Move_Collections_ID()
+		[TestMethod]
+		public void Rename_Move_Collections()
 		{
-			var itemInChildFolderPath = "/child_folder/test_01.jpg";
+			var itemInChildFolderPath = "/child_folder/test_10.jpg";
 			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
+			_query.AddItem(new FileIndexItem("/child_folder/test_10.png"));
 			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
-				new List<string>{"/child_folder/test_01.jpg", "/child_folder/test_01.png"});
+				new List<string>{"/child_folder/test_10.jpg", "/child_folder/test_10.png"});
 
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename(itemInChildFolderPath, "/child_folder2");
 			
-			Assert.AreEqual("/",renameFs.FirstOrDefault().ParentDirectory);
-			Assert.AreEqual("/test_01.jpg",renameFs.FirstOrDefault().FilePath);
+			Assert.AreEqual("/child_folder2",renameFs.FirstOrDefault().ParentDirectory);
+			Assert.AreEqual("/child_folder2/test_10.jpg",renameFs.FirstOrDefault().FilePath);
 
-			Assert.AreEqual("/test_01.jpg", _query.SingleItem("/test_01.jpg").FileIndexItem.FilePath);
+			Assert.AreEqual("/child_folder2/test_10.jpg", 
+				_query.SingleItem("/child_folder2/test_10.jpg").FileIndexItem.FilePath);
+			Assert.AreEqual("/child_folder2/test_10.png", 
+				_query.SingleItem("/child_folder2/test_10.png").FileIndexItem.FilePath);	
+			
 			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
+			Assert.AreEqual(null, _query.SingleItem("/child_folder/test_10.png"));
+		}
+		
+		[TestMethod]
+		public void Rename_Move_SidecarFile_ShouldMove()
+		{
+			// var item1 = "/child_folder/test_20.jpg";
+			var item1dng = "/child_folder/test_20.dng";
+			var item1SideCar = "/child_folder/test_20.xmp";
+
+			// _query.AddItem(new FileIndexItem(item1));
+			_query.AddItem(new FileIndexItem(item1dng));
+			_query.AddParentItemsAsync(item1dng).ConfigureAwait(false);
+			
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{ item1dng, item1SideCar}); // item1
+
+			// Move DNG to different folder
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename(item1dng, "/child_folder2");
+			
+			Assert.AreEqual(item1dng.Replace("child_folder","child_folder2"),
+				renameFs.FirstOrDefault().FilePath);
+
+			// did move the side car file
+			Assert.IsTrue(iStorage.ExistFile(item1SideCar.Replace("child_folder","child_folder2")));
+		}
+		
+				
+		[TestMethod]
+		public void Rename_Move_SidecarFile_ShouldNotMove_ItsAJpeg()
+		{
+			var item1 = "/child_folder/test_20.jpg";
+			var item1SideCar = "/child_folder/test_20.xmp";
+
+			_query.AddItem(new FileIndexItem(item1));
+			_query.AddParentItemsAsync(item1).ConfigureAwait(false);
+			
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{ item1, item1SideCar});
+
+			// Move Jpg to different folder but the xmp should be ignored
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename(item1, "/child_folder2");
+			
+			Assert.AreEqual(item1.Replace("child_folder","child_folder2"),
+				renameFs.FirstOrDefault().FilePath);
+
+			// it should not move the sidecar file
+			Assert.IsFalse(iStorage.ExistFile(item1SideCar.Replace("child_folder","child_folder2")));
 		}
 
 		[TestMethod]
