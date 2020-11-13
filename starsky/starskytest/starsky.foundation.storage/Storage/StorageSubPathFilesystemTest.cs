@@ -82,7 +82,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		public void FileCopy()
 		{
 			const string from = "/test_file_copy.tmp";
-			const string to = "/test_file_copy.tmp";
+			const string to = "/test_file_copy_2.tmp";
 
 			_storage.WriteStream(new PlainTextFileHelper().StringToStream("test"),
 				from);
