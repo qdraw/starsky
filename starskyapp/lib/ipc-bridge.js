@@ -120,6 +120,8 @@ exports.ipcBridge = () => {
     ipcMain.on("settings_default_app", (event, args) => {
         if (args && args.reset) {
             appConfig.delete("settings_default_app");
+            event.reply('settings_default_app', '')
+            return;
         }
 
         if (args && args.showOpenDialog) {

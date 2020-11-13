@@ -30,6 +30,7 @@ replaceToSubPath = (fullFilePath, parentCurrentFullFilePathFolder) => {
     return subPath;
 }
 
+// need be re-enabled when changing location
 watchFs = (currentSession, editCacheParentFolder) => {
     var parentCurrentFullFilePathFolder = path.join(app.getPath("documents"), "Starsky", getBaseUrlFromSettingsSlug());
     console.log("parentCurrentFullFilePathFolder " + parentCurrentFullFilePathFolder)
@@ -37,10 +38,10 @@ watchFs = (currentSession, editCacheParentFolder) => {
     // Does not work on some linux systems
     fs.watch(editCacheParentFolder, {recursive: true}, (eventType, fileName) => {
         if (!fileName.endsWith(".DS_Store")) {
-            console.log('watch ~', eventType, fileName);
 
             var fullFilePath = path.join(editCacheParentFolder, fileName);
-    
+            console.log('watch ~', eventType, fileName);
+
             if(	fs.existsSync(fullFilePath) && fs.lstatSync(fullFilePath).isDirectory() ) return;
     
             if (fullFilePath.indexOf(parentCurrentFullFilePathFolder) === -1 ) return;
@@ -59,7 +60,6 @@ watchFs = (currentSession, editCacheParentFolder) => {
         if (!uniqueToQueue || uniqueToQueue.length === 0) return;
 
         console.log('uniqueToQueue' , uniqueToQueue);
-        console.log('currentSession', currentSession);
         
         uniqueToQueue.forEach(fullFilePath => {
             if (fs.existsSync(fullFilePath)) {
