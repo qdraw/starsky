@@ -78,7 +78,12 @@ namespace starskytest.starsky.feature.rename.Services
 		{
 			// Default is skip 
 			var fileAlreadyExist = Path.Join(_newImage.BasePath, "already.txt");
-			if(!File.Exists(fileAlreadyExist)) new PlainTextFileHelper().WriteFile(fileAlreadyExist,"test");
+			if ( !File.Exists(fileAlreadyExist) )
+			{
+				new StorageHostFullPathFilesystem().WriteStream(new PlainTextFileHelper().StringToStream("test"),
+					fileAlreadyExist);
+			}
+			
 			var renameFs = new RenameService( _query,_iStorageSubPath).Rename(_newImage.DbPath, "/already.txt");
 			
 			var result = new PlainTextFileHelper().StreamToString(
