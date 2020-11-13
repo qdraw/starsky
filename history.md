@@ -46,6 +46,7 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Fixed) _Back-end_ Fix for dispose Errors in Query
 - [x]   (Fixed) _Back-end_ Allow upload to folder with files that are uppercase
 - [x]   (Fixed) _Back-end_ Database-item is now correct updated when you move an item to the root folder (/)
+- [x]   (Security) _App_ Update Electron to 10.1.5 (Node 12.16.x and Chromium 85.0.x)
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default

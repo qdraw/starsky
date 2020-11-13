@@ -507,15 +507,137 @@ namespace starskytest.starsky.feature.rename.Services
 		{
 			
 			var itemInChildFolderPath = "/child_folder/test_01.jpg";
+			var collectionItemPath = "/child_folder/test_01.png";
+
 			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
+			_query.AddItem(new FileIndexItem(collectionItemPath));
+
 			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
-				new List<string>{"/child_folder/test_01.jpg", "/child_folder/test_01.png"});
+				new List<string>{itemInChildFolderPath, collectionItemPath});
 
 			var preflight = new RenameService(_query, iStorage)
 				.InputOutputSubPathsPreflight(itemInChildFolderPath, "/child_folder2", true);
 
 			Console.WriteLine();
+		}
+		
+		[TestMethod]
+		public void InputOutputSubPathsPreflight_MultipleFiles_CollectionsTrue()
+		{
+			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
+			// the other should be ok
+			
+			var itemInChildFolderPath1 = "/child_folder/test_01.jpg";
+			var collectionItemPath1 = "/child_folder/test_01.png";
+			
+			var itemInChildFolderPath2 = "/child_folder/test_02.jpg";
+			var collectionItemPath2 = "/child_folder/test_02.png";
+			
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
+			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath2));
+			_query.AddItem(new FileIndexItem(collectionItemPath2));
+			
+			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
+				new List<string>{itemInChildFolderPath1, collectionItemPath1, 
+					itemInChildFolderPath2, collectionItemPath2});
+
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", "/child_folder2;/other", true);
+
+			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
+			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
+			Assert.AreEqual(itemInChildFolderPath2, inputFileSubPaths[2]);
+			Assert.AreEqual(collectionItemPath2, inputFileSubPaths[3]);
+
+			Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
+			Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
+			Assert.AreEqual("/other", toFileSubPaths[2]);
+			Assert.AreEqual("/other", toFileSubPaths[3]);
+			
+			Assert.AreEqual(0, fileIndexResultsList.Count );
+
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath2).FileIndexItem);
+		}
+
+			
+		[TestMethod]
+		public void InputOutputSubPathsPreflight_MultipleFiles_CollectionsFalse_Aka_Disabled()
+		{
+			// write test that has input /test.jpg;/test2.jpg > /test;/test2 and both has 2 or 3 collection files
+			// But this one's are not used
+			// the other should be ok
+			
+			var itemInChildFolderPath1 = "/child_folder/test_05.jpg";
+			var collectionItemPath1 = "/child_folder/test_05.png";
+			
+			var itemInChildFolderPath2 = "/child_folder/test_06.jpg";
+			var collectionItemPath2 = "/child_folder/test_06.png";
+			
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
+			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath2));
+			_query.AddItem(new FileIndexItem(collectionItemPath2));
+			
+			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
+				new List<string>{itemInChildFolderPath1, collectionItemPath1, 
+					itemInChildFolderPath2, collectionItemPath2});
+
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", 
+					"/child_folder2;/other", false);
+
+			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
+			Assert.AreEqual(itemInChildFolderPath2, inputFileSubPaths[1]);
+
+			Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
+			Assert.AreEqual("/other", toFileSubPaths[1]);
+			
+			Assert.AreEqual(0, fileIndexResultsList.Count );
+
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath2).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath2).FileIndexItem);
+		}
+		
+		[TestMethod]
+		public void InputOutputSubPathsPreflight_MultipleFiles_PartlyNotFound()
+		{
+			var itemInChildFolderPath1 = "/child_folder/test_03.jpg";
+			var collectionItemPath1 = "/child_folder/test_03.png";
+			
+			var itemInChildFolderPath2 = "/child_folder/test_04.jpg";
+			
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
+			_query.AddItem(new FileIndexItem(collectionItemPath1));
+			
+			_query.AddParentItemsAsync(itemInChildFolderPath1).ConfigureAwait(false);
+			
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2","/other"}, 
+				new List<string>{itemInChildFolderPath1, collectionItemPath1});
+
+			// nr 2 is does not exist in the database
+			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight($"{itemInChildFolderPath1};{itemInChildFolderPath2}", "/child_folder2;/other", true);
+
+			Assert.AreEqual(itemInChildFolderPath1, inputFileSubPaths[0]);
+			Assert.AreEqual(collectionItemPath1, inputFileSubPaths[1]);
+
+			Assert.AreEqual("/child_folder2", toFileSubPaths[0]);
+			Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
+			
+			Assert.AreEqual(1, fileIndexResultsList.Count );
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, fileIndexResultsList[0].Status );
+
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 
 		// [TestMethod]

@@ -97,11 +97,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
 				{
-					// Needed to create SetFilePath() for item that is copied, not the folder
-					// no double slash when moving to root folder
-					toFileSubPath = toFileSubPath == "/" ? $"/{FilenamesHelper.GetFileName(inputFileSubPath)}" 
-						: $"{toFileSubPath}/{FilenamesHelper.GetFileName(inputFileSubPath)}";
-					
+					toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 					FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
@@ -119,6 +115,14 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+
+		private string GetFileName(string toFileSubPath, string inputFileSubPath)
+		{
+			// Needed to create SetFilePath() for item that is copied, not the folder
+			// no double slash when moving to root folder
+			return toFileSubPath == "/" ? $"/{FilenamesHelper.GetFileName(inputFileSubPath)}" 
+				: $"{toFileSubPath}/{FilenamesHelper.GetFileName(inputFileSubPath)}";
+		}
 		
 		/// <summary>
 		/// Checks for inputs that denied the request
@@ -175,15 +179,23 @@ namespace starsky.feature.rename.Services
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				
 				// skip for files
-				if ( detailView == null) continue;
-				// dirs are mergable (isdir=false)
-				if (detailView.FileIndexItem.IsDirectory == false) toFileSubPaths[i] = null;
+				if ( detailView == null )
+				{
+					// do NOT set null because you move to location that currently doesn't exist
+					// and avoid mixing up the order of files
+					continue;
+				}
+				// dirs are mergeable, when it isn't a directory
+				if ( detailView.FileIndexItem.IsDirectory == false )
+				{
+					toFileSubPaths[i] = null;
+				}
 			}
 			
-			// Remove null from list
-			toFileSubPaths = toFileSubPaths.Where(p => p != null).ToList();
-			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToList();
-			
+			// // Remove null from list
+			// toFileSubPaths = toFileSubPaths.Where(p => p != null).ToList();
+			// inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToList();
+
 			// Check if two list are the same Length - Change this in the future BadRequest("f != to")
 			if (toFileSubPaths.Count != inputFileSubPaths.Count || 
 			    toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0) 
@@ -195,11 +207,25 @@ namespace starsky.feature.rename.Services
 				});
 			}
 
+			// remove both values when ONE OF those two values are null
+			for ( var i = 0; i < toFileSubPaths.Count; i++ )
+			{
+				if ( toFileSubPaths[i] != null && inputFileSubPaths[i] != null ) continue;
+				toFileSubPaths.RemoveAt(i);
+				inputFileSubPaths.RemoveAt(i);
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+				});
+			}
+
 			// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
 			if ( inputFileSubPaths.Count != toFileSubPaths.Count )
 			{
-				inputFileSubPaths = new List<string>();
-				toFileSubPaths = new List<string>();
+				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
+					new Tuple<string[], string[]>(new string[0], new string[0]), 
+					fileIndexResultsList
+				);
 			}
 
 			if ( !collections )
@@ -209,23 +235,39 @@ namespace starsky.feature.rename.Services
 					fileIndexResultsList
 				);
 			}
-			
+			return CollectionAddPreflight(inputFileSubPaths, toFileSubPaths, fileIndexResultsList);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="inputFileSubPaths"></param>
+		/// <param name="toFileSubPaths"></param>
+		/// <param name="fileIndexResultsList"></param>
+		/// <returns></returns>
+		private Tuple<Tuple<string[], string[]>, List<FileIndexItem>> CollectionAddPreflight(
+			IReadOnlyList<string> inputFileSubPaths, IReadOnlyList<string> toFileSubPaths,
+			List<FileIndexItem> fileIndexResultsList)
+		{
+			var inputCollectionFileSubPaths = new List<string>();
+			var toCollectionFileSubPaths = new List<string>();
+
 			for (var i = 0; i < inputFileSubPaths.Count; i++)
 			{
 				var collectionPaths = _query.SingleItem(inputFileSubPaths[i], 
 					null, true, false).FileIndexItem.CollectionPaths;
-				inputFileSubPaths.AddRange(collectionPaths);
+				inputCollectionFileSubPaths.AddRange(collectionPaths);
 				// one file could have move than 1 collections files
 				for ( var j = 0; j < collectionPaths.Count; j++ )
 				{
-					toFileSubPaths.Add(toFileSubPaths[i]);
+					toCollectionFileSubPaths.Add(toFileSubPaths[i]);
 				}
 			}
 
 			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-				new Tuple<string[], string[]>(inputFileSubPaths.ToArray(), toFileSubPaths.ToArray()), 
+				new Tuple<string[], string[]>(inputCollectionFileSubPaths.ToArray(), toCollectionFileSubPaths.ToArray()), 
 				fileIndexResultsList
-				);
+			);
 		}
 
 
