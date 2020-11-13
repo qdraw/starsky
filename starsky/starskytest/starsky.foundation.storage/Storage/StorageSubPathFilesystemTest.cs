@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -11,11 +12,12 @@ namespace starskytest.starsky.foundation.storage.Storage
 	public class StorageFilesystemTest
 	{
 		private  readonly StorageSubPathFilesystem _storage;
+		private  readonly CreateAnImage _newImage;
 
 		public StorageFilesystemTest()
 		{
-			var newImage = new CreateAnImage();
-			var appSettings = new AppSettings {StorageFolder = newImage.BasePath};
+			_newImage = new CreateAnImage();
+			var appSettings = new AppSettings {StorageFolder = _newImage.BasePath};
 			_storage = new StorageSubPathFilesystem(appSettings);
 		}
 		
@@ -75,6 +77,34 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			_storage.FolderDelete("/test_GetAllFilesInDirectoryRecursive");
 		}
-		
+
+		[TestMethod]
+		public void FileCopy()
+		{
+			const string from = "/test_file_copy.tmp";
+			const string to = "/test_file_copy.tmp";
+
+			_storage.WriteStream(new PlainTextFileHelper().StringToStream("test"),
+				from);
+			_storage.FileCopy(from,to);
+
+			Assert.IsTrue(_storage.ExistFile(from));
+			Assert.IsTrue(_storage.ExistFile(to));
+			
+			_storage.FileDelete(from);
+			_storage.FileDelete(to);
+		}
+
+		[TestMethod]
+		public void FolderDelete()
+		{
+			var folderDeleteName = "temp_folder_delete";
+			_storage.CreateDirectory($"/{folderDeleteName}");
+			
+			_storage.FolderDelete($"/{folderDeleteName}");
+
+			Assert.IsFalse(Directory.Exists(Path.Combine(_newImage.BasePath, folderDeleteName)));
+		}
+
 	}
 }
