@@ -81,7 +81,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
 				{
-					// overwrite a file
+					// overwrite a file is not supported
 					fileIndexResultsList.Add(new FileIndexItem
 					{
 						Status = FileIndexItem.ExifStatus.OperationNotSupported
@@ -252,13 +252,38 @@ namespace starsky.feature.rename.Services
 
 			for (var i = 0; i < inputFileSubPaths.Count; i++)
 			{
+				// When the input is a folder, just copy the array
+				if ( _iStorage.ExistFolder(inputFileSubPaths[i]) )
+				{
+					inputCollectionFileSubPaths.Add(inputFileSubPaths[i]);
+					toCollectionFileSubPaths.Add(toFileSubPaths[i]);
+					continue;
+				}
+				
+				// when it is a file update the 'to paths'
 				var collectionPaths = _query.SingleItem(inputFileSubPaths[i], 
 					null, true, false).FileIndexItem.CollectionPaths;
 				inputCollectionFileSubPaths.AddRange(collectionPaths);
-				// one file could have move than 1 collections files
+
 				for ( var j = 0; j < collectionPaths.Count; j++ )
 				{
-					toCollectionFileSubPaths.Add(toFileSubPaths[i]);
+					var collectionItem = collectionPaths[j];
+					// When moving to a folder
+					if ( _iStorage.ExistFolder(toFileSubPaths[i]) )
+					{
+						toCollectionFileSubPaths.Add(toFileSubPaths[i]);
+						continue;
+					}
+					
+					var extensionWithoutDot = FilenamesHelper.GetFileExtensionWithoutDot(collectionItem);
+					// when rename-ing the current file, but the other ones are implicit copied
+					if ( j == 0 ) extensionWithoutDot = FilenamesHelper.GetFileExtensionWithoutDot(toFileSubPaths[i]);
+					
+					// Rename other sidecar files
+					// From file to Deleted
+					var parentFolder = FilenamesHelper.GetParentPath(toFileSubPaths[i]);
+					var baseName = FilenamesHelper.GetFileNameWithoutExtension(toFileSubPaths[i]);
+					toCollectionFileSubPaths.Add($"{parentFolder}/{baseName}.{extensionWithoutDot}");
 				}
 			}
 
