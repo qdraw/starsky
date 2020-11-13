@@ -657,6 +657,14 @@ namespace starskytest.starsky.feature.rename.Services
 			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void FromFolderToFolder_Null_exception()
+		{
+			new RenameService(null, null).FromFolderToFolder(null, null, null);
+			// expect exception
+		}
+
 		// [TestMethod]
 		// public void RenameFsTest_MergeToLowerPath()
 		// {

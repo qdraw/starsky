@@ -279,7 +279,14 @@ namespace starsky.feature.rename.Services
 			}
 		}
 
-		private void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
+		/// <summary>
+		/// Copy from a folder to a folder
+		/// </summary>
+		/// <param name="inputFileSubPath">from path</param>
+		/// <param name="toFileSubPath">to path</param>
+		/// <param name="fileIndexItems">list of results</param>
+		/// <exception cref="ArgumentNullException">fileIndexItems is null</exception>
+		internal void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexItems)
 		{
 			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems));
