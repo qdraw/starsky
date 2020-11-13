@@ -31,12 +31,6 @@ namespace starsky.feature.rename.Services
 
 			var ((inputFileSubPaths, toFileSubPaths), fileIndexResultsList) = 
 				InputOutputSubPathsPreflight(f, to, collections);
-			
-			if (fileIndexResultsList.Count >= 1 && fileIndexResultsList.All(p =>
-				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || p.Status == FileIndexItem.ExifStatus.OperationNotSupported) )
-			{
-				return fileIndexResultsList;
-			}
 
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
@@ -130,7 +124,7 @@ namespace starsky.feature.rename.Services
 		/// <param name="f">list of filePaths in string format (dot comma separated)</param>
 		/// <param name="to">list of filePaths in string format  (dot comma separated)</param>
 		/// <param name="collections">is Collections enabled</param>
-		/// <returns>1) Tuple of the input output string
+		/// <returns>1) Tuple of the input output string - when fails this two array's has no items
 		/// 2) the list of fileIndex Items.
 		/// This contains only values when something is wrong and the request is denied</returns>
 		private Tuple<Tuple<string[],string[]>,List<FileIndexItem>> InputOutputSubPathsPreflight
@@ -144,7 +138,7 @@ namespace starsky.feature.rename.Services
 			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
 			{
 				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-					new Tuple<string[], string[]>(inputFileSubPaths, toFileSubPaths),
+					new Tuple<string[], string[]>(new string[0], new string[0]),
 					new List<FileIndexItem>
 					{
 						new FileIndexItem
@@ -194,6 +188,12 @@ namespace starsky.feature.rename.Services
 				{
 					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				});
+			}
+
+			// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
+			if ( inputFileSubPaths.Length != toFileSubPaths.Length )
+			{
+				toFileSubPaths = new string[0];
 			}
 
 			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
