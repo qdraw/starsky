@@ -505,8 +505,8 @@ namespace starskytest.starsky.feature.rename.Services
 		[TestMethod]
 		public void InputOutputSubPathsPreflight_SingleItemWithCollectionsEnabled()
 		{
-			var itemInChildFolderPath1 = "/child_folder/test_01.jpg";
-			var collectionItemPath1 = "/child_folder/test_01.png";
+			var itemInChildFolderPath1 = "/child_folder/test_07.jpg";
+			var collectionItemPath1 = "/child_folder/test_07.png";
 
 			_query.AddItem(new FileIndexItem(itemInChildFolderPath1));
 			_query.AddItem(new FileIndexItem(collectionItemPath1));
@@ -526,6 +526,9 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/child_folder2", toFileSubPaths[1]);
 			
 			Assert.AreEqual(0, fileIndexResultsList.Count );
+			
+			_query.RemoveItem(_query.SingleItem(itemInChildFolderPath1).FileIndexItem);
+			_query.RemoveItem(_query.SingleItem(collectionItemPath1).FileIndexItem);
 		}
 		
 		[TestMethod]
