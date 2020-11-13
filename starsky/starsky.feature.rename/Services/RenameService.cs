@@ -265,8 +265,9 @@ namespace starsky.feature.rename.Services
 					null, true, false).FileIndexItem.CollectionPaths;
 				inputCollectionFileSubPaths.AddRange(collectionPaths);
 
-				foreach ( var collectionItem in collectionPaths )
+				for ( var j = 0; j < collectionPaths.Count; j++ )
 				{
+					var collectionItem = collectionPaths[j];
 					// When moving to a folder
 					if ( _iStorage.ExistFolder(toFileSubPaths[i]) )
 					{
@@ -274,10 +275,13 @@ namespace starsky.feature.rename.Services
 						continue;
 					}
 					
+					var extensionWithoutDot = FilenamesHelper.GetFileExtensionWithoutDot(collectionItem);
+					// when rename-ing the current file, but the other ones are implicit copied
+					if ( j == 0 ) extensionWithoutDot = FilenamesHelper.GetFileExtensionWithoutDot(toFileSubPaths[i]);
+					
 					// Rename other sidecar files
 					// From file to Deleted
 					var parentFolder = FilenamesHelper.GetParentPath(toFileSubPaths[i]);
-					var extensionWithoutDot = FilenamesHelper.GetFileExtensionWithoutDot(collectionItem);
 					var baseName = FilenamesHelper.GetFileNameWithoutExtension(toFileSubPaths[i]);
 					toCollectionFileSubPaths.Add($"{parentFolder}/{baseName}.{extensionWithoutDot}");
 				}
