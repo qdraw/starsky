@@ -193,20 +193,6 @@ namespace starsky.feature.rename.Services
 			}
 			
 			// // Remove null from list
-			// toFileSubPaths = toFileSubPaths.Where(p => p != null).ToList();
-			// inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToList();
-
-			// Check if two list are the same Length - Change this in the future BadRequest("f != to")
-			if (toFileSubPaths.Count != inputFileSubPaths.Count || 
-			    toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0) 
-			{ 
-				// files that not exist
-				fileIndexResultsList.Add(new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-				});
-			}
-
 			// remove both values when ONE OF those two values are null
 			for ( var i = 0; i < toFileSubPaths.Count; i++ )
 			{
@@ -218,10 +204,17 @@ namespace starsky.feature.rename.Services
 					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				});
 			}
-
+			
+			// Check if two list are the same Length - Change this in the future BadRequest("f != to")
 			// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
-			if ( inputFileSubPaths.Count != toFileSubPaths.Count )
-			{
+			if (toFileSubPaths.Count != inputFileSubPaths.Count || 
+			    toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0) 
+			{ 
+				// files that not exist
+				fileIndexResultsList.Add(new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+				});
 				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
 					new Tuple<string[], string[]>(new string[0], new string[0]), 
 					fileIndexResultsList
