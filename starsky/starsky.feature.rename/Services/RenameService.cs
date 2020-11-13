@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -8,6 +9,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.rename.Services
 {
     public class RenameService
@@ -127,12 +129,11 @@ namespace starsky.feature.rename.Services
 		/// <returns>1) Tuple of the input output string - when fails this two array's has no items
 		/// 2) the list of fileIndex Items.
 		/// This contains only values when something is wrong and the request is denied</returns>
-		private Tuple<Tuple<string[],string[]>,List<FileIndexItem>> InputOutputSubPathsPreflight
+		internal Tuple<Tuple<string[],string[]>,List<FileIndexItem>> InputOutputSubPathsPreflight
 			(string f, string to, bool collections)
 		{
-			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f);
-			var toFileSubPaths = PathHelper.SplitInputFilePaths(to);
-
+			var inputFileSubPaths = PathHelper.SplitInputFilePaths(f).ToList();
+			var toFileSubPaths = PathHelper.SplitInputFilePaths(to).ToList();
 
 			// check for the same input
 			if ( inputFileSubPaths.SequenceEqual(toFileSubPaths) )
@@ -152,21 +153,25 @@ namespace starsky.feature.rename.Services
 			// the result list
 			var fileIndexResultsList = new List<FileIndexItem>();
 			
-			for (var i = 0; i < inputFileSubPaths.Length; i++)
+			for (var i = 0; i < inputFileSubPaths.Count; i++)
 			{
 				var inputFileSubPath = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
 				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPath);
 
 				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
-				if (detailView == null) inputFileSubPaths[i] = null;
+				if ( detailView == null )
+				{
+					inputFileSubPaths[i] = null;
+				}
 			}
 			
 			// To check if the file/or folder has a unique name (in database)
-			for (var i = 0; i < toFileSubPaths.Length; i++)
+			for (var i = 0; i < toFileSubPaths.Count; i++)
 			{
 				var toFileSubPath = PathHelper.RemoveLatestSlash(toFileSubPaths[i]);
 				toFileSubPaths[i] = PathHelper.PrefixDbSlash(toFileSubPath);
 
+				// to move
 				var detailView = _query.SingleItem(toFileSubPaths[i], null, collections, false);
 				
 				// skip for files
@@ -176,12 +181,12 @@ namespace starsky.feature.rename.Services
 			}
 			
 			// Remove null from list
-			toFileSubPaths = toFileSubPaths.Where(p => p != null).ToArray();
-			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToArray();
+			toFileSubPaths = toFileSubPaths.Where(p => p != null).ToList();
+			inputFileSubPaths = inputFileSubPaths.Where(p => p != null).ToList();
 			
 			// Check if two list are the same Length - Change this in the future BadRequest("f != to")
-			if (toFileSubPaths.Length != inputFileSubPaths.Length || 
-			    toFileSubPaths.Length == 0 || inputFileSubPaths.Length == 0) 
+			if (toFileSubPaths.Count != inputFileSubPaths.Count || 
+			    toFileSubPaths.Count == 0 || inputFileSubPaths.Count == 0) 
 			{ 
 				// files that not exist
 				fileIndexResultsList.Add(new FileIndexItem
@@ -191,13 +196,34 @@ namespace starsky.feature.rename.Services
 			}
 
 			// when moving a file that does not exist (/non-exist.jpg to /non-exist2.jpg)
-			if ( inputFileSubPaths.Length != toFileSubPaths.Length )
+			if ( inputFileSubPaths.Count != toFileSubPaths.Count )
 			{
-				toFileSubPaths = new string[0];
+				inputFileSubPaths = new List<string>();
+				toFileSubPaths = new List<string>();
+			}
+
+			if ( !collections )
+			{
+				return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
+					new Tuple<string[], string[]>(inputFileSubPaths.ToArray(), toFileSubPaths.ToArray()), 
+					fileIndexResultsList
+				);
+			}
+			
+			for (var i = 0; i < inputFileSubPaths.Count; i++)
+			{
+				var collectionPaths = _query.SingleItem(inputFileSubPaths[i], 
+					null, true, false).FileIndexItem.CollectionPaths;
+				inputFileSubPaths.AddRange(collectionPaths);
+				// one file could have move than 1 collections files
+				for ( var j = 0; j < collectionPaths.Count; j++ )
+				{
+					toFileSubPaths.Add(toFileSubPaths[i]);
+				}
 			}
 
 			return new Tuple<Tuple<string[], string[]>, List<FileIndexItem>>(
-				new Tuple<string[], string[]>(inputFileSubPaths, toFileSubPaths), 
+				new Tuple<string[], string[]>(inputFileSubPaths.ToArray(), toFileSubPaths.ToArray()), 
 				fileIndexResultsList
 				);
 		}

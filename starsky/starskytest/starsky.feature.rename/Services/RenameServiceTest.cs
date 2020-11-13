@@ -502,6 +502,22 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
 		}
 
+		[TestMethod]
+		public void InputOutputSubPathsPreflight_()
+		{
+			
+			var itemInChildFolderPath = "/child_folder/test_01.jpg";
+			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
+			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
+				new List<string>{"/child_folder/test_01.jpg", "/child_folder/test_01.png"});
+
+			var preflight = new RenameService(_query, iStorage)
+				.InputOutputSubPathsPreflight(itemInChildFolderPath, "/child_folder2", true);
+
+			Console.WriteLine();
+		}
+
 		// [TestMethod]
 		// public void RenameFsTest_MergeToLowerPath()
 		// {
