@@ -19,5 +19,11 @@ namespace starskytest.FakeMocks
 			Receive?.Invoke(this, subPath);
 			return Task.FromResult(new List<FileIndexItem>());
 		}
+
+		public Task<List<FileIndexItem>> SingleFile(string subPath)
+		{
+			throw new NotImplementedException();
+			return Task.FromResult(new List<FileIndexItem>());
+		}
 	}
 }

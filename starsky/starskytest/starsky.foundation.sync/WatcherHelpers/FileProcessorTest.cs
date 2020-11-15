@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,12 +14,10 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	{
 		private List<string> IsExecuted { get; set; } = new List<string>();
 
-#pragma warning disable 1998
-		private async Task<List<FileIndexItem>> TestExecuted(string filePath, bool test)
-#pragma warning restore 1998
+		private Task<List<FileIndexItem>> TestExecuted(Tuple<string, WatcherChangeTypes> value)
 		{
-			IsExecuted.Add(filePath);
-			return new List<FileIndexItem>();
+			IsExecuted.Add(value.Item1);
+			return Task.FromResult(new List<FileIndexItem>());
 		}
 		
 		[TestMethod]
@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var fileProcessor = new FileProcessor(TestExecuted);
 
 			const string path = "/test";
-			fileProcessor.QueueInput(path);
+			fileProcessor.QueueInput(path, WatcherChangeTypes.Changed);
 
 			var workerThread =
 				new Thread(fileProcessor.EndlessWorkQueue) {Priority = ThreadPriority.BelowNormal};
@@ -42,7 +42,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				
 			IsExecuted = new List<string>();
 		}
-		
+
 		[TestMethod]
 		[Timeout(1000)]
 		public async Task FileProcessor_CheckInput_existingThread()
@@ -50,7 +50,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var fileProcessor = new FileProcessor(TestExecuted);
 
 			const string path = "/test";
-			fileProcessor.QueueInput(path);
+			fileProcessor.QueueInput(path, WatcherChangeTypes.Changed);
 
 			var workerThread =
 				new Thread(fileProcessor.EndlessWorkQueue) {Priority = ThreadPriority.BelowNormal};
@@ -58,8 +58,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			await Task.Delay(5);
 			
-			fileProcessor.QueueInput(path + "/2");
-			
+			fileProcessor.QueueInput(path+ "/2", WatcherChangeTypes.Changed);
+
 			await Task.Delay(10);
 
 			Assert.AreEqual(2,IsExecuted.Count);
