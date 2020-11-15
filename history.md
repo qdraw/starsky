@@ -657,7 +657,7 @@ _Version number does not match SemVer_
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
-- http push headers update (add /api/info to push on detailview)
+- http push headers update (add /api/info to push on detailView)
 - Initial release of the `sync/rename` api (not implemented in the front-end)
 - Mark FilesHelper as deprecated, use IStorage now
 
