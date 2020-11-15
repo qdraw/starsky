@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
@@ -19,6 +20,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var services = new ServiceCollection();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
+			services.AddSingleton<AppSettings>();
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}

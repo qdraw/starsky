@@ -9,6 +9,10 @@
     <!-- used for RazorLight -->
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)\build.vstest.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+    
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
