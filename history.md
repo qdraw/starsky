@@ -33,7 +33,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.4.1 _(Unreleased)_ - 2020-11-??
-- nothing yet
+- [x]   (Fixed) _Back-end_ Extra security headers for browsers
 
 # version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
@@ -53,7 +53,8 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Added) _Back-end_ In the rename/move API When enable Collections, this files are also moved (file to folder)
 - [x]   (Added) _Back-end_ Xmp sidecar files are moved with gif/bmp/Raw/mp4 file types
 - [x]   (Added) _Back-end_ In the rename API When enable Collections, this files are also moved (file to deleted)
-- [x]   (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change. if you update those could be gone. but you could set them again 
+- [x]   (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change. 
+                            if you update those could be gone. but you could set them again 
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
