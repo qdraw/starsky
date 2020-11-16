@@ -15,16 +15,16 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		}
 		
 		[TestMethod]
-		[Timeout(500)]
+		[Timeout(5000)]
 		[ExpectedException(typeof(TimeoutException))]
 		public async Task TimeoutAfter_CheckIfTimeouts_ExpectException()
 		{
-			await EndlessTest().TimeoutAfter(3);
+			await EndlessTest().TimeoutAfter(1);
 			// expect TimeoutException
 		}
 		
 		[TestMethod]
-        [Timeout(500)]
+        [Timeout(5000)]
         [ExpectedException(typeof(TimeoutException))]
         public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
         {
