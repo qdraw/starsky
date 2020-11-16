@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 	public class StorageHostFullPathFilesystemTest
 	{
 		[TestMethod]
-		public void Files_GetFilesRecrusiveTest()
+		public void Files_GetFilesRecursiveTest()
 		{            
 			var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
