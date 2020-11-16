@@ -28,8 +28,8 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   const language = new Language(settings.language);
   const MessageNoPhotosInFolder = language.text("Er zijn geen foto's in deze map",
     "There are no photos in this folder");
-  const MessageItemsOutsideFilter = language.text("Er zijn meer items, maar deze vallen buiten je filters",
-    "There are more items, but these are outside of your filters");
+  const MessageItemsOutsideFilter = language.text("Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'",
+    "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'");
 
   useEffect(() => {
     var navigationState = history.location.state as INavigateState;

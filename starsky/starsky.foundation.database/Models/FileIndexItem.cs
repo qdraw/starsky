@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -55,14 +56,15 @@ namespace starsky.foundation.database.Models
         private string FilePathPrivate { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Get a concatenated subpath style filepath to find the location
+		/// Get a concatenated subPath style filepath to find the location
 		/// </summary>
 		/// <value>
 		/// The file path.
 		/// </value>
 		[Column(Order = 2)]
 		[MaxLength(380)]
-        public string FilePath
+		[SuppressMessage("ReSharper", "ValueParameterNotUsed")]
+		public string FilePath
         {
             get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
             set
@@ -78,7 +80,8 @@ namespace starsky.foundation.database.Models
 		/// <param name="value">The value.</param>
 		public void SetFilePath(string value)
 		{
-			_parentDirectory = FilenamesHelper.GetParentPath(value);
+			// Home has no parentDirectory and filename slash
+			_parentDirectory = value == "/" ? null : FilenamesHelper.GetParentPath(value);
 	        
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash

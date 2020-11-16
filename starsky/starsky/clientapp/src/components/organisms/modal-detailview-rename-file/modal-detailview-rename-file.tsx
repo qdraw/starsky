@@ -108,6 +108,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", state.fileIndexItem.filePath);
     bodyParams.append("to", filePathAfterChange);
+    bodyParams.append("collections", state.collections !== undefined ? state.collections.toString() : 'true');
 
     const result = await FetchPost(new UrlQuery().UrlSyncRename(), bodyParams.toString());
 

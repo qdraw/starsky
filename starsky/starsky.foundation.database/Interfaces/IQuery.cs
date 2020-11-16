@@ -12,7 +12,14 @@ namespace starsky.foundation.database.Interfaces
         
         List<FileIndexItem> GetAllRecursive(string subPath = "");
 
-        // to do the query and return object
+        /// <summary>
+        /// to do the query and return object
+        /// </summary>
+        /// <param name="subPath">subPath style</param>
+        /// <param name="colorClassActiveList">filter the colorClass</param>
+        /// <param name="enableCollections">enable to show only one file with a base name</param>
+        /// <param name="hideDeleted">files that are marked as trash</param>
+        /// <returns></returns>
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<ColorClassParser.Color> colorClassActiveList = null,

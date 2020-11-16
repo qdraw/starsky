@@ -217,8 +217,9 @@ namespace starsky.foundation.database.Query
 
         private string CachingDbName(string functionName, string singleItemDbPath)
         {
+	        // when is nothing assume its the home item
+            if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
             // For creating an unique name: DetailView_/2018/01/1.jpg
-            
             var uniqueSingleDbCacheNameBuilder = new StringBuilder();
             uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
             return uniqueSingleDbCacheNameBuilder.ToString();
@@ -291,52 +292,9 @@ namespace starsky.foundation.database.Query
 
             return updateStatusContent;
         }
-
-        /// <summary>
-        /// Update one single item in the database
-        /// For the API/update endpoint
-        /// </summary>
-        /// <param name="updateStatusContent">content to updated</param>
-        /// <returns>this item</returns>
-        public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
-        {
-	        //  Update te last edited time manual
-	        updateStatusContent.SetLastEdited();
-	        try
-	        {
-		        _context.Attach(updateStatusContent).State = EntityState.Modified;
-		        await _context.SaveChangesAsync();
-		        _context.Attach(updateStatusContent).State = EntityState.Detached;
-	        }
-	        catch ( ObjectDisposedException e)
-	        {
-		        await RetrySaveChangesAsync(updateStatusContent, e);
-	        }
-            
-	        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-
-	        return updateStatusContent;
-        }
         
         /// <summary>
         /// Retry when an Exception has occured
-        /// </summary>
-        /// <param name="updateStatusContent"></param>
-        /// <param name="e">Exception</param>
-        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
-        {
-	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
-	        // https://go.microsoft.com/fwlink/?linkid=2097913
-	        await Task.Delay(10);
-	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
-	        var context = new InjectServiceScope(_scopeFactory).Context();
-	        context.Attach(updateStatusContent).State = EntityState.Modified;
-	        await context.SaveChangesAsync();
-	        context.Attach(updateStatusContent).State = EntityState.Detached; 
-        }
-        
-        /// <summary>
-        /// Sync version to Retry when an Exception has occured
         /// </summary>
         /// <param name="updateStatusContent"></param>
         /// <param name="e">Exception</param>
@@ -351,7 +309,6 @@ namespace starsky.foundation.database.Query
 	        context.SaveChanges();
 	        context.Attach(updateStatusContent).State = EntityState.Detached; 
         }
-
 
 	    internal bool IsCacheEnabled()
 	    {
@@ -389,7 +346,7 @@ namespace starsky.foundation.database.Query
 			{
 				// ToList() > Collection was modified; enumeration operation may not execute.
 				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-				item.ParentDirectory);
+					item.ParentDirectory);
 				
 				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
 				
@@ -445,8 +402,8 @@ namespace starsky.foundation.database.Query
             if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
             var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                PathHelper.RemoveLatestSlash(directoryName));
-            if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return false;
+                PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+            if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
             _cache.Remove(queryCacheName);
             return true;
@@ -487,26 +444,25 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
-		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
-		    {
-			    await context.FileIndex.AddAsync(fileIndexItem);
-			    await context.SaveChangesAsync();
-			    // Fix for: The instance of entity type 'Item' cannot be tracked because
-			    // another instance with the same key value for {'Id'} is already being tracked
-			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
-			    AddCacheItem(fileIndexItem);
-			    return fileIndexItem;
-		    }
-		    
 		    try
 		    {
-			    return await LocalQuery(_context);
+			    await _context.FileIndex.AddAsync(fileIndexItem);
+			    await _context.SaveChangesAsync();
+			    // Fix for: The instance of entity type 'Item' cannot be tracked because
+			    // another instance with the same key value for {'Id'} is already being tracked
+			    _context.Entry(fileIndexItem).State = EntityState.Unchanged;
 		    }
 		    catch (ObjectDisposedException)
 		    {
 			    var context = new InjectServiceScope( _scopeFactory).Context();
-			    return await LocalQuery(context);
+			    await context.FileIndex.AddAsync(fileIndexItem);
+			    await context.SaveChangesAsync();
+			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
 		    }
+            
+		    AddCacheItem(fileIndexItem);
+
+		    return fileIndexItem;
 	    }
 	    
 	    /// <summary>
@@ -527,8 +483,8 @@ namespace starsky.foundation.database.Query
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
 		    var toAddList = new List<FileIndexItem>();
-		    var indexItems = await _context.FileIndex
-			    .Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    var indexItems = await _context.FileIndex.Where(p => 
+			    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
 
 		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
@@ -573,34 +529,5 @@ namespace starsky.foundation.database.Query
 			ResetItemByHash(updateStatusContent.FileHash);
 			return updateStatusContent;
 	    }
-	    
-	    /// <summary>
-	    /// Remove a new item from the database (NOT from the file system)
-	    /// </summary>
-	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
-	    /// <returns></returns>
-	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
-	    {
-		    try
-		    {
-			    _context.FileIndex.Remove(updateStatusContent);
-			    await _context.SaveChangesAsync();
-		    }
-		    catch ( ObjectDisposedException )
-		    {
-			    var context = new InjectServiceScope(_scopeFactory).Context();
-			    context.FileIndex.Remove(updateStatusContent);
-			    await context.SaveChangesAsync();
-		    }
-
-		    // remove parent directory cache
-		    RemoveCacheItem(updateStatusContent);
-
-		    // remove getFileHash Cache
-		    ResetItemByHash(updateStatusContent.FileHash);
-		    return updateStatusContent;
-	    }
     }
-	
-	
 }

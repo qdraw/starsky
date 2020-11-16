@@ -207,20 +207,54 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 
 		[TestMethod]
-		public void AppSettingsGenerateSlugLenghtCheck()
+		public void AppSettingsGenerateSlugLengthCheck()
 		{
-			var appSettings = new AppSettings();
-			string slug = appSettings.GenerateSlug("12345678901234567890123456789012345678901234567890");
-			// lenght == 45
-			Assert.AreEqual(slug.Length,45);
+			var slug = new AppSettings().GenerateSlug("1234567890123456789012345678901234567890123" +
+			                                          "456789012345678901234567890123456789012345678901234567890"+
+			                                          "456789012345678901234567890123456789012345678901234567890");
+			// Length == 65
+			Assert.AreEqual(slug.Length,65);
 		}
 
+		[TestMethod]
+		public void GenerateSlug_Lowercase_Disabled()
+		{
+			var slug = new AppSettings().GenerateSlug("ABC", true, false);
+			Assert.AreEqual("ABC", slug);
+		}
+		
+		[TestMethod]
+		public void GenerateSlug_Lowercase_Enabled()
+		{
+			var slug = new AppSettings().GenerateSlug("ABC");
+			Assert.AreEqual("abc", slug);
+		}
+		
+		[TestMethod]
+		public void GenerateSlug_Trim()
+		{
+			var slug = new AppSettings().GenerateSlug("   abc   ");
+			Assert.AreEqual("abc", slug);
+		}
+		
+		[TestMethod]
+		public void GenerateSlug_AllowUnderscore()
+		{
+			var slug = new AppSettings().GenerateSlug("a_b_c ", true);
+			Assert.AreEqual("a_b_c", slug);
+		}
+		
+		[TestMethod]
+		public void GenerateSlug_Underscore_Disabled()
+		{
+			var slug = new AppSettings().GenerateSlug("a_b_c ");
+			Assert.AreEqual("abc", slug);
+		}
 
 		[TestMethod]
 		public void AppSettingsWebFtp_http()
 		{
-			var appSettings = new AppSettings();
-			appSettings.WebFtp = "https://google.com";
+			var appSettings = new AppSettings {WebFtp = "https://google.com"};
 			Assert.AreEqual(string.Empty,appSettings.WebFtp);
 		}
 		

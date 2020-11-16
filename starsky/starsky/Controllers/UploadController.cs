@@ -100,6 +100,7 @@ namespace starsky.Controllers
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				
+				// Sync folder
 				_iSync.SyncFiles(subPath,false);
 				
 				 // clear directory cache

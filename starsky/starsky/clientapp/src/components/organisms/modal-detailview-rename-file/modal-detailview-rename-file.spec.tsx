@@ -54,7 +54,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff");
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true");
 
       // find does not work in this case
       expect(modal.html()).toContain('warning-box');
@@ -134,7 +134,7 @@ describe("ModalDetailviewRenameFile", () => {
       });
 
       expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg");
+      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true");
 
       // cleanup
       jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });

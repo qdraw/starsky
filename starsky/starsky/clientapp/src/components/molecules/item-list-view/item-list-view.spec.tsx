@@ -34,7 +34,7 @@ describe("ItemListView", () => {
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
       var component = shallow(<ItemListView fileIndexItems={[]} colorClassUsage={[2]} />)
-      expect(component.text()).toBe("There are more items, but these are outside of your filters");
+      expect(component.text()).toBe("There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'");
     });
 
     it("scroll to state with filePath [item exist]", () => {
