@@ -23,6 +23,5 @@ namespace starsky.foundation.sync.WatcherInterfaces
 		string Filter { get; set; }
 		public NotifyFilters NotifyFilter { get; set; }
 
-		new void Dispose();
 	}
 }

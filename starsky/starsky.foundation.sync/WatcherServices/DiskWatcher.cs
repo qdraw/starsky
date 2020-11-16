@@ -1,7 +1,6 @@
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
-using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 

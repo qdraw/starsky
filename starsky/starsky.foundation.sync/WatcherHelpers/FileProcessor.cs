@@ -6,9 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Models;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Storage;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers

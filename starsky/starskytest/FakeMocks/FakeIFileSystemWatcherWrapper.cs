@@ -27,10 +27,6 @@ namespace starskytest.FakeMocks
 		public string Filter { get; set; }
 		public NotifyFilters NotifyFilter { get; set; }
 		
-		void IFileSystemWatcherWrapper.Dispose()
-		{
-		}
-
 		void IDisposable.Dispose()
 		{
 		}
