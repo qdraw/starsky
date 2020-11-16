@@ -25,6 +25,33 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, 
 					FakeCreateAn.CreateAnImageColorClass.Bytes});
 		}
+
+		[TestMethod]
+		public async Task FileType_NotSupported()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+			var result = await sync.SingleFile("/non_exist.ext");
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.FirstOrDefault().Status);
+		}
+		
+		[TestMethod]
+		public async Task ImageFormat_Corrupt()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+			
+			var storage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/corrupt.jpg"},
+				new List<byte[]>{new byte[5]});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeSelectorStorage(storage), new ConsoleWrapper());
+			var result = await sync.SingleFile("/corrupt.jpg");
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.FirstOrDefault().Status);
+		}
 		
 		[TestMethod]
 		public async Task AddNewFile()
@@ -131,6 +158,31 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
 			// checks if the byte size is updated
 			Assert.AreEqual(_iStorageFake.Info("/test.jpg").Size, fileIndexItem.Size);
+		}
+		
+		[TestMethod]
+		public async Task FileAlreadyExist_With_Same_ByteSize()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+				{
+					FileHash = fileHash,
+					Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
+					Tags = "the tags should not be updated" // <= the tags in /test.jpg is nothing
+				}
+			});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+			await sync.SingleFile("/test.jpg");
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
 		}
 
 		[TestMethod]
