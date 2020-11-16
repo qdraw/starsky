@@ -267,14 +267,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
         }
 
         [TestMethod]
-        public void QueryAddSingleItemSubPathSlashRemoveTest()
-        {
-            InsertSearchData();
-            // SubPathSlashRemove
-            Assert.AreEqual("/test", _query.SubPathSlashRemove("/test/"));
-        }
-
-        [TestMethod]
         public void QueryAddSingleItemNextWinnerTest()
         {
             InsertSearchData();
