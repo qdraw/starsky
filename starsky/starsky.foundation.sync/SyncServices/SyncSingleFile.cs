@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
@@ -16,21 +17,21 @@ namespace starsky.foundation.sync.SyncServices
 	public class SyncSingleFile
 	{
 		private readonly IStorage _subPathStorage;
-		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 		private readonly NewItem _newItem;
+		private readonly IConsole _console;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IConsole console)
 		{
-			_appSettings = appSettings;
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_query = query;
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, _appSettings));
+			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
+			_console = console;
 		}
 
 		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
 		{
-			Console.WriteLine($"sync file {subPath}" );
+			_console.WriteLine($"sync file {subPath}" );
 			var statusItem = new FileIndexItem(subPath);
 
 			// File extension is not supported
@@ -61,25 +62,30 @@ namespace starsky.foundation.sync.SyncServices
 				return new List<FileIndexItem>{dbItem};
 			}
 
-			// when size or fileHash is different
-			if ( !CompareByteSize(dbItem) || !await CompareFileHash(dbItem))
-			{
-				var updateItem = await _newItem.PrepareUpdateFileItem(dbItem);
-				await _query.UpdateItemAsync(updateItem);
-				await _query.AddParentItemsAsync(subPath);
-				return new List<FileIndexItem>{updateItem};
-			}
+			// when size is the same dont update
+			var (isByteSizeTheSame, size) = CompareByteSizeIsTheSame(dbItem);
+			if (isByteSizeTheSame) return new List<FileIndexItem> {dbItem};
+			dbItem.Size = size;
 
-			return new List<FileIndexItem>{dbItem};
+			// when byte hash is different update
+			var (fileHashTheSame, newFileHash ) = await CompareFileHashIsTheSame(dbItem);
+			if ( fileHashTheSame ) return new List<FileIndexItem>{dbItem};
+			dbItem.FileHash = newFileHash;
+			
+			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
+			await _query.UpdateItemAsync(updateItem);
+			await _query.AddParentItemsAsync(subPath);
+			return new List<FileIndexItem>{updateItem};
+
 		}
 		
 		
-		private async Task<bool> CompareFileHash(FileIndexItem dbItem)
+		private async Task<Tuple<bool,string>> CompareFileHashIsTheSame(FileIndexItem dbItem)
 		{
-			var (localHash, success) = await new 
+			var (localHash,_) = await new 
 				FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath);
-			if ( !success ) return false;
-			return dbItem.FileHash == localHash;
+			var isTheSame = dbItem.FileHash == localHash;
+			return new Tuple<bool, string>(isTheSame, localHash);
 		}
 
 		/// <summary>
@@ -87,9 +93,10 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="dbItem"></param>
 		/// <returns></returns>
-		private bool CompareByteSize(FileIndexItem dbItem)
+		private Tuple<bool,long> CompareByteSizeIsTheSame(FileIndexItem dbItem)
 		{
-			return dbItem.Size == _subPathStorage.Info(dbItem.FilePath).Size;
+			var storageByteSize = _subPathStorage.Info(dbItem.FilePath).Size;
+			return new Tuple<bool, long>(dbItem.Size == storageByteSize, storageByteSize);
 		}
 
 	}

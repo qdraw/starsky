@@ -48,12 +48,13 @@ namespace starsky.foundation.sync.Helpers
 		/// 
 		/// </summary>
 		/// <param name="dbItem"></param>
+		/// <param name="size"></param>
 		/// <returns></returns>
-		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem)
+		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem, long size)
 		{
 			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
 			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
-			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
+			dbItem.Size = size;
 			await SetFileHashStatus(dbItem, dbItem);
 
 			return dbItem;
