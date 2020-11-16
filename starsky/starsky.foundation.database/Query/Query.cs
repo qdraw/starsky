@@ -125,10 +125,11 @@ namespace starsky.foundation.database.Query
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
-			Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
+			async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 			{
-				return context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				return await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
 			}
+			
 			try
 			{
 				return await LocalQuery(_context);
