@@ -21,7 +21,7 @@ namespace starsky.foundation.database.Query
 	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 	public partial class Query : IQuery
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IMemoryCache _cache;
         private readonly AppSettings _appSettings;
