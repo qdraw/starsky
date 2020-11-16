@@ -18,7 +18,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), new FakeSelectorStorage());
 			var result = await sync.Sync("/not_found.jpg");
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result.FirstOrDefault().Status);
 		}
 		
 		[TestMethod]
@@ -44,7 +44,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var result = await sync.Sync("/");
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.FirstOrDefault().Status);
+			// subject to change
+			Assert.AreEqual(0, result.Count);
 		}
 	}
 }
