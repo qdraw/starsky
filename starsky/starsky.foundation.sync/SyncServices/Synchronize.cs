@@ -43,7 +43,7 @@ namespace starsky.foundation.sync.SyncServices
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await Folder(subPath);
+					throw new NotImplementedException();
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					_console.WriteLine("file");
 					return await _syncSingleFile.SingleFile(subPath);
@@ -60,14 +60,6 @@ namespace starsky.foundation.sync.SyncServices
 			return _syncSingleFile.SingleFile(subPath);
 		}
 
-		
-
-		private async Task<List<FileIndexItem>> Folder(string subPath)
-		{
-			// todo: not supported yet
-			return new List<FileIndexItem>();
-		}
-		
 		
 	}
 }

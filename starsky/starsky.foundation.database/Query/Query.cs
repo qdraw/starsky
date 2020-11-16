@@ -225,49 +225,6 @@ namespace starsky.foundation.database.Query
             uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
             return uniqueSingleDbCacheNameBuilder.ToString();
         }
-
-
-        /// <summary>
-        /// Update a list of items in the index
-        /// Used for the API/update endpoint
-        /// </summary>
-        /// <param name="updateStatusContentList">list of items to be updated</param>
-        /// <returns>the same list, and updated in the database</returns>
-        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
-        {
-            void CatchLoop(Exception e)
-            {
-	            foreach ( var item in updateStatusContentList )
-	            {
-		            item.SetLastEdited();
-		            RetrySaveChanges(item, e);
-	            }
-            }
-
-            try
-            {
-	            foreach (var item in updateStatusContentList)
-	            {
-		            //  Update te last edited time manual
-		            item.SetLastEdited();
-		            // Set state to edit mode
-		            _context.Attach(item).State = EntityState.Modified;
-	            }
-	            _context.SaveChanges();
-            }
-            catch (ObjectDisposedException e)
-            {
-	            CatchLoop(e);
-            }
-            catch (InvalidOperationException e)
-            {
-	            CatchLoop(e);
-            }
-
-            CacheUpdateItem(updateStatusContentList);
-            return updateStatusContentList;
-        }
-        
         
         /// <summary>
         /// Update one single item in the database
@@ -368,6 +325,47 @@ namespace starsky.foundation.database.Query
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
+        }
+        
+        /// <summary>
+        /// Update a list of items in the index
+        /// Used for the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContentList">list of items to be updated</param>
+        /// <returns>the same list, and updated in the database</returns>
+        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
+        {
+	        void CatchLoop(Exception e)
+	        {
+		        foreach ( var item in updateStatusContentList )
+		        {
+			        item.SetLastEdited();
+			        RetrySaveChanges(item, e);
+		        }
+	        }
+
+	        try
+	        {
+		        foreach (var item in updateStatusContentList)
+		        {
+			        //  Update te last edited time manual
+			        item.SetLastEdited();
+			        // Set state to edit mode
+			        _context.Attach(item).State = EntityState.Modified;
+		        }
+		        _context.SaveChanges();
+	        }
+	        catch (ObjectDisposedException e)
+	        {
+		        CatchLoop(e);
+	        }
+	        catch (InvalidOperationException e)
+	        {
+		        CatchLoop(e);
+	        }
+
+	        CacheUpdateItem(updateStatusContentList);
+	        return updateStatusContentList;
         }
         
         /// <summary>

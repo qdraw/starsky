@@ -12,6 +12,12 @@ namespace starskytest.FakeMocks
 		}
 		
 		public event FileSystemEventHandler Created;
+		
+		public void TriggerOnDeleted(RenamedEventArgs args)
+		{
+			Deleted?.Invoke(this, args);
+		}
+		
 		public event FileSystemEventHandler Deleted;
 		
 		public void TriggerOnRename(RenamedEventArgs args)
@@ -20,6 +26,12 @@ namespace starskytest.FakeMocks
 		}
 		
 		public event RenamedEventHandler Renamed;
+		
+		public void TriggerOnChanged(RenamedEventArgs args)
+		{
+			Changed?.Invoke(this, args);
+		}
+		
 		public event FileSystemEventHandler Changed;
 		public bool EnableRaisingEvents { get; set; }
 		public bool IncludeSubdirectories { get; set; }
