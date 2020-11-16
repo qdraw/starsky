@@ -137,6 +137,15 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(UpdateItem(updateStatusContent));
 		}
 
+		public Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
+		{
+			foreach ( var item in updateStatusContentList )
+			{
+				UpdateItem(item);
+			}
+			return Task.FromResult(updateStatusContentList);
+		}
+
 		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
 		{
 			throw new System.NotImplementedException();

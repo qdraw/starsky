@@ -627,6 +627,68 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        await query.RemoveItemAsync(getItem);
         }
+        
+        [TestMethod]
+        public async Task UpdateItemAsync_Multiple()
+        {
+	        var item1 = new FileIndexItem("/test24f1s54.jpg");
+	        var item2 = new FileIndexItem("/test885828.jpg");
+
+	        await _query.AddItemAsync(item1);
+	        await _query.AddItemAsync(item2);
+
+	        item1.Tags = "test";
+	        item2.Tags = "test";
+
+	        await _query.UpdateItemAsync(new List<FileIndexItem>{item1,item2});
+
+	        var getItem = await _query.GetObjectByFilePathAsync("/test24f1s54.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        var getItem2 = await _query.GetObjectByFilePathAsync("/test885828.jpg");
+	        Assert.IsNotNull(getItem2);
+	        Assert.AreEqual("test", getItem2.Tags);
+
+	        await _query.RemoveItemAsync(getItem);
+	        await _query.RemoveItemAsync(getItem2);
+        }
+        
+        [TestMethod]
+        public async Task UpdateItemAsync_Multiple_DisposedItem()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+	        var item = new FileIndexItem("/test/8284574.jpg");
+	        await dbContext.FileIndex.AddAsync(item);
+	        await dbContext.SaveChangesAsync();
+	        
+	        var item2 = new FileIndexItem("/test/8284575.jpg");
+	        await dbContext.FileIndex.AddAsync(item2);
+	        await dbContext.SaveChangesAsync();
+	        
+	        // Important to dispose!
+	        await dbContext.DisposeAsync();
+
+	        item.Tags = "test";
+	        item2.Tags = "test";
+
+	        await query.UpdateItemAsync(new List<FileIndexItem>{item,item2});
+
+	        var getItem = await query.GetObjectByFilePathAsync("/test/8284574.jpg");
+	        Assert.IsNotNull(getItem);
+	        Assert.AreEqual("test", getItem.Tags);
+
+	        var getItem2 = await query.GetObjectByFilePathAsync("/test/8284575.jpg");
+	        Assert.IsNotNull(getItem2);
+	        Assert.AreEqual("test", getItem2.Tags);
+	        
+	        await query.RemoveItemAsync(getItem);
+	        await query.RemoveItemAsync(getItem2);
+        }
 
         [TestMethod]
         public void QueryTest_PrevFilePathCachingConflicts_Deleted()

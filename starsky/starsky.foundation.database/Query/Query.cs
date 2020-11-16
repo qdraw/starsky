@@ -294,7 +294,38 @@ namespace starsky.foundation.database.Query
 	        return updateStatusContent;
         }
 
-                
+        public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
+        {
+	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
+	        {
+		        foreach ( var item in fileIndexItems )
+		        {
+			        item.SetLastEdited();
+			        context.Attach(item).State = EntityState.Modified;
+		        }
+
+		        await context.SaveChangesAsync();
+		        
+		        foreach ( var item in fileIndexItems )
+		        {
+			        context.Attach(item).State = EntityState.Detached;
+		        }
+
+		        return fileIndexItems;
+	        }
+
+	        try
+	        {
+		        return await LocalQuery(_context, updateStatusContentList);
+	        }
+	        catch (ObjectDisposedException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return await LocalQuery(context, updateStatusContentList);
+	        }
+        }
+
+
         /// <summary>
         /// Retry when an Exception has occured
         /// </summary>

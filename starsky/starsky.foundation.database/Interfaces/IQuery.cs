@@ -73,6 +73,9 @@ namespace starsky.foundation.database.Interfaces
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
+        Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
+        Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
+
         [Obsolete("use PathHelper.RemoveLatestSlash()")]
         string SubPathSlashRemove(string subPath = "/");
 
@@ -82,6 +85,5 @@ namespace starsky.foundation.database.Interfaces
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
         Task AddParentItemsAsync(string subPath);
-        Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
     }
 }
