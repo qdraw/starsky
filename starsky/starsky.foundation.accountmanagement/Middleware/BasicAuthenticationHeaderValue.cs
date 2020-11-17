@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Middleware
 {
     public class BasicAuthenticationHeaderValue

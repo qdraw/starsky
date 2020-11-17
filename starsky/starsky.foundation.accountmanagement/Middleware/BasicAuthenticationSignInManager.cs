@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Interfaces;
 
+// ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Middleware
 {
     public class BasicAuthenticationSignInManager

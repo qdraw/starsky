@@ -57,7 +57,8 @@ namespace starskyGeoCli
 			if (getSubPathRelative != null)
 			{
 				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-				inputPath = appSettings.DatabasePathToFilePath(new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
+				inputPath = appSettings.DatabasePathToFilePath(
+					new StructureService(startupHelper.SubPathStorage(), appSettings.Structure)
 					.ParseSubfolders(dateTime),false);
 			}
 			

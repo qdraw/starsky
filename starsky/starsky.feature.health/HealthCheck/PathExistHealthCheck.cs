@@ -25,7 +25,8 @@ namespace starsky.feature.health.HealthCheck
 			HealthCheckContext context,
 			CancellationToken cancellationToken = default)
 		{
-			var resultsList = _options.ConfiguredPaths.Select(path => new StorageHostFullPathFilesystem().IsFolderOrFile(path)).ToList();
+			var resultsList = _options.ConfiguredPaths.Select(path => new StorageHostFullPathFilesystem()
+				.IsFolderOrFile(path)).ToList();
 
 			if ( !resultsList.Any() )
 				return Task.FromResult(new HealthCheckResult(context.Registration.FailureStatus,

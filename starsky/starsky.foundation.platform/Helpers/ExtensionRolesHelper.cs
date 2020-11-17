@@ -363,7 +363,8 @@ namespace starsky.foundation.platform.Helpers
 			var xmp = Encoding.ASCII.GetBytes("<x:xmpmeta"); // xmp
 			var gpx = new byte[] {60, 103, 112}; // <gpx
 			
-			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]  66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+			var fTypMp4 = new byte[] {102, 116, 121, 112}; //  00  00  00  [skip this byte]
+                                                  // 66  74  79  70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 			// Zip:
 			// 50 4B 03 04

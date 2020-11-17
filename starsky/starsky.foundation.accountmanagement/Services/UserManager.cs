@@ -128,7 +128,8 @@ namespace starsky.foundation.accountmanagement.Services
 		    {
 			    allUsers = _dbContext.Users.ToList();
 			    if(IsCacheEnabled())
-				    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+				    _cache.Set("UserManager_AllUsers", allUsers, 
+					    new TimeSpan(99,0,0));
 		    }
 
 		    return allUsers;
@@ -143,7 +144,8 @@ namespace starsky.foundation.accountmanagement.Services
 		    var allUsers = AllUsers();
 		    if(allUsers.Contains(user)) return;
 		    allUsers.Add(user);
-		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+		    _cache.Set("UserManager_AllUsers", allUsers, 
+			    new TimeSpan(99,0,0));
 	    }
 	    
 	    /// <summary>
@@ -154,7 +156,8 @@ namespace starsky.foundation.accountmanagement.Services
 		    if ( !IsCacheEnabled() ) return;
 		    var allUsers = AllUsers();
 		    allUsers.Remove(user);
-		    _cache.Set("UserManager_AllUsers", allUsers, new TimeSpan(99,0,0));
+		    _cache.Set("UserManager_AllUsers", allUsers, 
+			    new TimeSpan(99,0,0));
 	    }
 
 	    /// <summary>
@@ -418,7 +421,8 @@ namespace starsky.foundation.accountmanagement.Services
 
 	        // Cache ValidateResult always query on passwords and return result
 	        ValidateResult validateResult; 
-	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + credential.Secret + credential.UserId, out var objectValidateResult))
+	        if (IsCacheEnabled() && _cache.TryGetValue("ValidateResult_" + 
+	                                                   credential.Secret + credential.UserId, out var objectValidateResult))
 	        {
 		        validateResult = ( ValidateResult ) objectValidateResult;
 	        }
@@ -462,7 +466,8 @@ namespace starsky.foundation.accountmanagement.Services
 
 	        var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.UserId == credential.UserId);
 	        
-	        if(userRole == null || user == null || credential == null) return new ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
+	        if(userRole == null || user == null || credential == null) return new 
+		        ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
 
 	        _dbContext.Credentials.Remove(credential);
 	        _dbContext.Users.Remove(user);
@@ -614,13 +619,15 @@ namespace starsky.foundation.accountmanagement.Services
         {
 	        var existingRolePermissions = new List<KeyValuePair<string,AppPermissions>>
 	        {
-		        new KeyValuePair<string, AppPermissions>(AccountRoles.AppAccountRoles.Administrator.ToString(), AppPermissions.AppSettingsWrite),
+		        new KeyValuePair<string, AppPermissions>(
+			        AccountRoles.AppAccountRoles.Administrator.ToString(), AppPermissions.AppSettingsWrite),
 	        };
 	        
 	        foreach ( var rolePermissionsDictionary in existingRolePermissions )
 	        {
 		        var role = _dbContext.Roles.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
-		        var permission = _dbContext.Permissions.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Value.ToString());
+		        var permission = _dbContext.Permissions.FirstOrDefault(p => 
+			        p.Code == rolePermissionsDictionary.Value.ToString());
 
 		        if ( permission == null || role == null ) continue;
 		        var rolePermission = _dbContext.RolePermissions.FirstOrDefault(p =>

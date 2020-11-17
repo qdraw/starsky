@@ -42,10 +42,12 @@ namespace starsky.foundation.http.Streaming
 		               true, false) + Path.GetExtension(requestHeaders);
         }
         
-        public static async Task<List<string>> StreamFile(this HttpRequest request, AppSettings appSettings, ISelectorStorage selectorStorage)
+        public static async Task<List<string>> StreamFile(this HttpRequest request, 
+	        AppSettings appSettings, ISelectorStorage selectorStorage)
         {
             // The Header 'filename' is for uploading on file without a form.
-            return await StreamFile(request.ContentType, request.Body, appSettings, selectorStorage, HeaderFileName(request,appSettings));            
+            return await StreamFile(request.ContentType, request.Body, appSettings, 
+	            selectorStorage, HeaderFileName(request,appSettings));            
         }
 
         public static async Task<List<string>> StreamFile(string contentType, Stream requestBody, AppSettings appSettings, 
@@ -85,7 +87,8 @@ namespace starsky.foundation.http.Streaming
             var section = await reader.ReadNextSectionAsync();
             while (section != null)
             {
-	            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
+	            var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(
+		            section.ContentDisposition, out var contentDisposition);
 
                 if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {

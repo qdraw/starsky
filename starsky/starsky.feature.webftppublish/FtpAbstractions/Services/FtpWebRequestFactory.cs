@@ -6,6 +6,7 @@ using starsky.foundation.injection;
 namespace starsky.feature.webftppublish.FtpAbstractions.Services
 {
 	/// <summary>
+	/// Abstract the Response and Request
 	/// @see: https://stackoverflow.com/a/9823224
 	/// </summary>
 	[Service(typeof(IFtpWebRequestFactory), InjectionLifetime = InjectionLifetime.Scoped)]

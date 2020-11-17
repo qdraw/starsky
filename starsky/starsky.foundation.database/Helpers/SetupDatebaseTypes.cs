@@ -38,10 +38,12 @@ namespace starsky.foundation.database.Helpers
 					);
 					break;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
-					_services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("starsky"));
+					_services.AddDbContext<ApplicationDbContext>(
+						options => options.UseInMemoryDatabase("starsky"));
 					break;
 				case AppSettings.DatabaseTypeList.Sqlite:
-					_services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(_appSettings.DatabaseConnection, 
+					_services.AddDbContext<ApplicationDbContext>(
+						options => options.UseSqlite(_appSettings.DatabaseConnection, 
 						b =>
 						{
 							if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )

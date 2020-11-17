@@ -1,11 +1,13 @@
 using System.Globalization;
-// source: https://github.com/Macross-Software/core/blob/9da46ac4aff13a16c639f9a354214798cfc3a38b/ClassLibraries/Macross.Json.Extensions/Code/System.Text.Json.Serialization/JsonTimeSpanConverter.cs
+// source: https://github.com/Macross-Software/core/blob/9da46ac4aff13a16c639f9a354214798cfc3a38b/
+// ClassLibraries/Macross.Json.Extensions/Code/System.Text.Json.Serialization/JsonTimeSpanConverter.cs
 
 // ReSharper disable once CheckNamespace
 namespace System.Text.Json.Serialization
 {
 	/// <summary>
-	/// <see cref="JsonConverterFactory"/> to convert <see cref="TimeSpan"/> to and from strings. Supports <see cref="Nullable{TimeSpan}"/>.
+	/// <see cref="JsonConverterFactory"/> to convert <see cref="TimeSpan"/> to
+	/// and from strings. Supports <see cref="Nullable{TimeSpan}"/>.
 	/// </summary>
 	/// <remarks>
 	/// TimeSpans are transposed using the constant ("c") format specifier: [-][d.]hh:mm:ss[.fffffff].

@@ -24,7 +24,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
 
-		/// <summary>Do a sync of files uning a subpath</summary>
+		/// <summary>Do a sync of files using a subPath</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
 		/// <param name="selectorStorage">storage abstraction</param>
@@ -47,12 +47,18 @@ namespace starsky.feature.metaupdate.Services
 		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
 			// when you search for nothing, your fast done
-			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>{new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}};
+			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>
+			{
+				new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}
+			};
 
 			// escaping null values
 			if ( string.IsNullOrEmpty(replace) ) replace = string.Empty;
 
-			if ( ! FileIndexCompareHelper.CheckIfPropertyExist(fieldName) ) return new List<FileIndexItem>{new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}};
+			if ( ! FileIndexCompareHelper.CheckIfPropertyExist(fieldName) ) return new List<FileIndexItem>
+			{
+				new FileIndexItem{Status = FileIndexItem.ExifStatus.OperationNotSupported}
+			};
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
 			// the result list
@@ -99,7 +105,8 @@ namespace starsky.feature.metaupdate.Services
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
-					var itemDetailView = _query.SingleItem(item, null, false, false).FileIndexItem;
+					var itemDetailView = _query.SingleItem(item, null, 
+						false, false).FileIndexItem;
 					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
 					fileIndexResultsList.Add(itemDetailView);
 				}
@@ -111,7 +118,8 @@ namespace starsky.feature.metaupdate.Services
 			return fileIndexResultsList;
 		}
 
-		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, string fieldName, string search, string replace)
+		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
+			string fieldName, string search, string replace)
 		{
 			foreach ( var fileIndexItem in fileIndexResultsList.Where( 
 				p => p.Status == FileIndexItem.ExifStatus.Ok 
@@ -120,8 +128,10 @@ namespace starsky.feature.metaupdate.Services
 				var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 				var replacedToObject = new object();
 				
-				PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-				PropertyInfo property = propertiesA.FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
+				PropertyInfo[] propertiesA = new FileIndexItem().GetType().GetProperties(
+					BindingFlags.Public | BindingFlags.Instance);
+				PropertyInfo property = propertiesA.FirstOrDefault(p => string.Equals(
+					p.Name, fieldName, StringComparison.InvariantCultureIgnoreCase));
 
 				if ( property.PropertyType == typeof(string) )
 				{
