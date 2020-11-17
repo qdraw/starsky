@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -10,8 +11,9 @@ namespace starsky.foundation.database.Interfaces
     {
         List<FileIndexItem> GetAllFiles(string subPath);
         
-        List<FileIndexItem> GetAllRecursive(string subPath = "");
-
+        List<FileIndexItem> GetAllRecursive(string subPath = "/");
+        Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
+        
         /// <summary>
         /// to do the query and return object
         /// </summary>
@@ -85,5 +87,7 @@ namespace starsky.foundation.database.Interfaces
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
         Task AddParentItemsAsync(string subPath);
+        IQuery Clone( ApplicationDbContext applicationDbContext);
+        void Invoke(ApplicationDbContext applicationDbContext);
     }
 }

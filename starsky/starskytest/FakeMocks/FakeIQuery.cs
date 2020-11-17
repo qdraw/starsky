@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -26,10 +27,18 @@ namespace starskytest.FakeMocks
 
 		public List<FileIndexItem> GetAllRecursive(string subPath = "")
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.Where
+					(p => p.ParentDirectory.StartsWith(subPath))
+				.OrderBy(r => r.FileName).ToList();
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", List<ColorClassParser.Color> colorClassActiveList = null,
+		public Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
+		{
+			return Task.FromResult(GetAllRecursive(subPath));
+		}
+
+		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
+			List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
 			throw new System.NotImplementedException();
@@ -81,7 +90,7 @@ namespace starskytest.FakeMocks
 
 		public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 		{
-			throw new NotImplementedException();
+			return Task.FromResult(RemoveItem(updateStatusContent));
 		}
 
 		public bool RemoveCacheParentItem(string directoryName)
@@ -196,6 +205,17 @@ namespace starskytest.FakeMocks
 			}
 
 			await AddRangeAsync(toAddList);
+		}
+
+		public IQuery Clone(ApplicationDbContext applicationDbContext)
+		{
+			var query = (IQuery) MemberwiseClone();
+			query.Invoke(applicationDbContext);
+			return query;
+		}
+
+		public void Invoke(ApplicationDbContext applicationDbContext)
+		{
 		}
 
 		public bool IsCacheEnabled()

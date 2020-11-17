@@ -21,7 +21,7 @@ namespace starsky.foundation.database.Query
 	[Service(typeof(IQuery), InjectionLifetime = InjectionLifetime.Scoped)]
 	public partial class Query : IQuery
     {
-        private readonly ApplicationDbContext _context;
+        private ApplicationDbContext _context;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IMemoryCache _cache;
         private readonly AppSettings _appSettings;
@@ -69,13 +69,13 @@ namespace starsky.foundation.database.Query
 	    /// Used for Orphan Check
 	    /// All files in
 	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
+	    /// <param name="subPath">local path</param>
+	    /// <returns>results</returns>
         public List<FileIndexItem> GetAllRecursive(string subPath = "/")
         {
             subPath = PathHelper.RemoveLatestSlash(subPath);
             
-            List<FileIndexItem> Query(ApplicationDbContext context)
+            List<FileIndexItem> LocalQuery(ApplicationDbContext context)
             {
 	            return context.FileIndex.Where
 			            (p => p.ParentDirectory.Contains(subPath) )
@@ -84,13 +84,45 @@ namespace starsky.foundation.database.Query
             
             try
             {
-	            return Query(_context);
+	            return LocalQuery(_context);
             }
             catch ( ObjectDisposedException )
             {
-	            return Query(new InjectServiceScope(_scopeFactory).Context());
+	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
+	    
+	    /// <summary>
+	    /// Includes sub items in file
+	    /// Used for Orphan Check
+	    /// All files in
+	    /// </summary>
+	    /// <param name="subPath">local path</param>
+	    /// <returns>results</returns>
+	    public async Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
+	    {
+		    subPath = PathHelper.RemoveLatestSlash(subPath);
+            
+		    async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
+		    {
+			    return await context.FileIndex.Where
+					    (p => p.ParentDirectory.StartsWith(subPath) )
+				    .OrderBy(r => r.FileName).ToListAsync();
+		    }
+
+		    try
+		    {
+			    return await LocalQuery(_context);
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+		    catch ( InvalidOperationException )
+		    {
+			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+	    }
 
 		/// <summary>
 		/// Returns a database object file or folder
@@ -613,16 +645,23 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
 	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	    {
+		    async Task LocalQuery(ApplicationDbContext context)
+		    {
+			    context.FileIndex.Remove(updateStatusContent);
+			    await context.SaveChangesAsync();
+		    }
+
 		    try
 		    {
-			    _context.FileIndex.Remove(updateStatusContent);
-			    await _context.SaveChangesAsync();
+			    await LocalQuery(_context);
 		    }
 		    catch ( ObjectDisposedException )
 		    {
-			    var context = new InjectServiceScope(_scopeFactory).Context();
-			    context.FileIndex.Remove(updateStatusContent);
-			    await context.SaveChangesAsync();
+			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+		    catch ( InvalidOperationException )
+		    {
+			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 		    }
 
 		    // remove parent directory cache
