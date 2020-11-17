@@ -45,7 +45,8 @@ namespace starskyAdminCli
 			}
 			
 			RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>()).ConfigureAwait(false);
-			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
+			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
+				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 		}
 	}
 }

@@ -23,13 +23,18 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+
     - name: setup mono
       uses: maxim-lobanov/setup-xamarin@v1.1
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS:  true
       with:
         mono-version: 6.8 # specify version in '<major>.<minor>' format
+        
     - name: ls
       shell: bash
       run: ls
+        
     - name: BuildNetFramework
       shell: bash
       working-directory: ./starsky.netframework/

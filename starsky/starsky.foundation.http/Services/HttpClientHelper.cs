@@ -62,7 +62,8 @@ namespace starsky.foundation.http.Services
 			Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
-			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return new KeyValuePair<bool, string>(false,string.Empty);
+			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
+				new KeyValuePair<bool, string>(false,string.Empty);
             
 			using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
 			using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())

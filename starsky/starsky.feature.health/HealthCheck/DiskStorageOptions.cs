@@ -4,7 +4,8 @@ namespace starsky.feature.health.HealthCheck
 {
 	public class DiskStorageOptions
 	{
-		internal Dictionary<string, (string DriveName, long MinimumFreeMegabytes)> ConfiguredDrives { get; } = new Dictionary<string, (string, long)>();
+		internal Dictionary<string, (string DriveName, long MinimumFreeMegabytes)> ConfiguredDrives { get; } = 
+			new Dictionary<string, (string, long)>();
 
 		public void AddDrive(string driveName,
 			long minimumFreeMegabytes = 1)

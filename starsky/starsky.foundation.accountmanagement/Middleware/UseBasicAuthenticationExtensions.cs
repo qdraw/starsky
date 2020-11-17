@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
+// ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Middleware
 {
     public static class UseBasicAuthenticationExtensions

@@ -551,7 +551,8 @@ namespace starsky.foundation.database.Models
             
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
-            if (currentOrentation >= 0 && currentOrentation+relativeRotation < _orderRotation.Count && currentOrentation+relativeRotation >= 0)
+            if (currentOrentation >= 0 && currentOrentation+relativeRotation < 
+	            _orderRotation.Count && currentOrentation+relativeRotation >= 0)
             {
                 return _orderRotation[currentOrentation + relativeRotation];
             }

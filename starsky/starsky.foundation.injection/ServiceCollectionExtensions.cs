@@ -11,7 +11,8 @@ namespace starsky.foundation.injection
 {
     public static class ServiceCollectionExtensions
     {
-	    public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection, params string[] assemblyFilters)
+	    public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection,
+		    params string[] assemblyFilters)
         {
             var assemblies = GetAssemblies(assemblyFilters);
             serviceCollection.AddClassesWithServiceAttribute(assemblies);
@@ -22,7 +23,8 @@ namespace starsky.foundation.injection
 	    /// </summary>
 	    /// <param name="serviceCollection"></param>
 	    /// <param name="assemblies"></param>
-        public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection, params Assembly[] assemblies)
+        public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection,
+		    params Assembly[] assemblies)
         {
             var typesWithAttributes = assemblies
                 .Where(assembly => !assembly.IsDynamic)
@@ -75,7 +77,8 @@ namespace starsky.foundation.injection
             }
         }
 
-        public static void Add(this IServiceCollection serviceCollection, Type serviceType, Type implementationType, InjectionLifetime ioCLifetime)
+        public static void Add(this IServiceCollection serviceCollection, Type serviceType, 
+	        Type implementationType, InjectionLifetime ioCLifetime)
         {
             switch (ioCLifetime)
             {

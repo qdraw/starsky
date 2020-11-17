@@ -47,7 +47,8 @@ namespace starsky.foundation.platform.Models
         }
 
         /// <summary>
-        /// @see: https://tomasherceg.com/blog/post/azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
+        /// @see: https://tomasherceg.com/blog/post/
+        /// azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
         /// </summary>
         private void CreateDefaultFolders()
         {
@@ -182,7 +183,8 @@ namespace starsky.foundation.platform.Models
             var matchNotRegexString = @"[^a-zA-Z0-9\s-]";
             if(allowUnderScore) matchNotRegexString = @"[^a-zA-Z0-9\s-_]";     // allow underscores
             
-            text = Regex.Replace(text,matchNotRegexString, string.Empty);                   // remove invalid characters
+            text = Regex.Replace(text,matchNotRegexString, string.Empty);         
+            //						^^^ remove invalid characters
             text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
             text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
             text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
@@ -657,7 +659,8 @@ namespace starsky.foundation.platform.Models
         /// <param name="connectionString">SQLite</param>
         /// <param name="baseDirectoryProject">path</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or missing Data Source in connection string</exception>
+        /// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or
+        /// missing Data Source in connection string</exception>
         public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
         {
             if (DatabaseType == DatabaseTypeList.Mysql && string.IsNullOrWhiteSpace(connectionString)) 

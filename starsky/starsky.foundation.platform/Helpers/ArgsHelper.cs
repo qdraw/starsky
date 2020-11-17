@@ -219,7 +219,8 @@ namespace starsky.foundation.platform.Helpers
 					break;
 				case AppSettings.StarskyAppType.Geo:
 					// When this change please update ./readme.md
-					_console.WriteLine("--path or -p == parameter: (string) ; without addition is current directory, full path (all locations are supported) ");
+					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					                   "without addition is current directory, full path (all locations are supported) ");
 					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database ");
 					_console.WriteLine("--subpathrelative or -g == Overwrite subpath to use relative days to select a folder" +
 					                   ", use for example '1' to select yesterday. (structure is required)");
@@ -230,20 +231,23 @@ namespace starsky.foundation.platform.Helpers
 				break;
 				case AppSettings.StarskyAppType.WebHtml:
 					// When this change please update ./readme.md
-					_console.WriteLine("--path or -p == parameter: (string) ; full path (select a folder), use '-p' for current directory");
+					_console.WriteLine("--path or -p == parameter: (string) ; full path (select a folder), " +
+					                   "use '-p' for current directory");
 					_console.WriteLine("--name or -n == parameter: (string) ; name of blog item ");
 				break;
 				case AppSettings.StarskyAppType.Importer:
 					// When this change please update ./readme.md
 					_console.WriteLine("--path or -p == parameter: (string) ; full path");
 					_console.WriteLine("                can be an folder or file, use '-p' for current directory");
-					_console.WriteLine("                for multiple items use dot comma (;) to split and quotes (\") around the input string");
+					_console.WriteLine("                for multiple items use dot comma (;) " +
+					                   "to split and quotes (\") around the input string");
 					_console.WriteLine("--move or -m == delete file after importing (default false / copy file)");
 					_console.WriteLine("--recursive or -r == Import Directory recursive " +
 					                   "(default: false / only the selected folder) ");
 					_console.WriteLine("--structure == overwrite app-settings with file-directory structure "+
 					                   "based on exif and filename create datetime");
-					_console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true");
+					_console.WriteLine("--index or -i == parameter: (bool) ; indexing, false is always copy," +
+					                   " true is check if exist in db, default true");
 					_console.WriteLine("--clean or -x == true is to add a xmp sidecar file for raws, default true");
 					_console.WriteLine("--colorclass == update color-class to this number value, default don't change");
 				break;
@@ -258,7 +262,8 @@ namespace starsky.foundation.platform.Helpers
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					_console.WriteLine("--index or -i == parameter: (bool) ; enable indexing, default true");
 					_console.WriteLine("--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false");
-					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder if thumbnails are needed, delete unused files");
+					_console.WriteLine("--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder" +
+					                   " if thumbnails are needed, delete unused files");
 					_console.WriteLine("--orphanfolder or -o == To delete files without a parent folder " +
 					                   "(heavy cpu usage), default false");
 					_console.WriteLine("--verbose or -v == verbose, more detailed info");
@@ -342,7 +347,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine($".NET Version - {version}");
 			_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
 			                   "- build at: " +
-			                   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(new CultureInfo("nl-NL")));
+			                   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
+				                   new CultureInfo("nl-NL")));
 		}
 		
 		/// <summary>

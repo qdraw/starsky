@@ -37,7 +37,8 @@ namespace starsky.feature.geolookup.Services
             
             // Create our ReverseGeoCode class and supply it with data
             _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-                GeoFileReader.ReadExtendedGeoNames(Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt"))
+                GeoFileReader.ReadExtendedGeoNames(
+	                Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt"))
             );
             _cache = memoryCache;
         }
@@ -99,10 +100,12 @@ namespace starsky.feature.geolookup.Services
             
 	        new GeoCacheStatusService(_cache).Update(subPath, metaFilesInDirectory.Count, StatusType.Total);
 
-            foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
+            foreach (var metaFileItem in metaFilesInDirectory.Select(
+	            (value, index) => new { value, index }))
             {
                 // Create a point from a lat/long pair from which we want to conduct our search(es) (center)
-                var place = _reverseGeoCode.CreateFromLatLong(metaFileItem.value.Latitude, metaFileItem.value.Longitude);
+                var place = _reverseGeoCode.CreateFromLatLong(
+	                metaFileItem.value.Latitude, metaFileItem.value.Longitude);
             
                 // Find nearest
                 var nearestPlace = _reverseGeoCode.NearestNeighbourSearch(place, 1).FirstOrDefault();

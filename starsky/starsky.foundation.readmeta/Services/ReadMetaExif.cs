@@ -25,7 +25,8 @@ namespace starsky.foundation.readmeta.Services
 			_iStorage = iStorage;
 			_appSettings = appSettings;
 		}
-		public FileIndexItem ReadExifFromFile(string subPath, FileIndexItem existingFileIndexItem = null) // use null to create an object
+		public FileIndexItem ReadExifFromFile(string subPath, 
+			FileIndexItem existingFileIndexItem = null) // use null to create an object
         {
             List<Directory> allExifItems;
 
@@ -139,14 +140,16 @@ namespace starsky.foundation.readmeta.Services
                 }
                 
                 //    [IPTC] Province/State = Overijssel
-                var locationState = GetLocationPlaces(exifItem, "Province/State","photoshop:State");
+                var locationState = GetLocationPlaces(exifItem, 
+	                "Province/State","photoshop:State");
                 if(!string.IsNullOrEmpty(locationState)) // null = is not the right tag or empty tag
                 {
                     item.LocationState = locationState;
                 }
                 
                 //    [IPTC] Country/Primary Location Name = Nederland
-                var locationCountry = GetLocationPlaces(exifItem, "Country/Primary Location Name","photoshop:Country");
+                var locationCountry = GetLocationPlaces(exifItem, 
+	                "Country/Primary Location Name","photoshop:Country");
                 if(!string.IsNullOrEmpty(locationCountry)) // null = is not the right tag or empty tag
                 {
                     item.LocationCountry = locationCountry;
@@ -203,9 +206,7 @@ namespace starsky.foundation.readmeta.Services
 	            {
 		            item.Software = software;
 	            }
-	            
             }
-            
             return item;
         }
 
@@ -306,7 +307,8 @@ namespace starsky.foundation.readmeta.Services
                 // for xmp notes
                 if (exifItem is XmpDirectory xmpDirectory && xmpDirectory.XmpMeta != null)
                 {
-	                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(p => !string.IsNullOrEmpty(p.Path)))
+	                foreach (var property in xmpDirectory.XmpMeta.Properties.Where(
+		                p => !string.IsNullOrEmpty(p.Path)))
 	                {
 		                Console.WriteLine($"{exifItem.Name},{property.Namespace},{property.Path},{property.Value}");
 	                }
@@ -396,7 +398,8 @@ namespace starsky.foundation.readmeta.Services
             var ratingCounts = exifItem.Tags.Count(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"));
             if (ratingCounts >= 1)
             {
-                var prefsTag = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"))?.Description;
+                var prefsTag = exifItem.Tags.FirstOrDefault(p => 
+	                p.DirectoryName == "IPTC" && p.Name.Contains("0x02dd"))?.Description;
     
                 // Results for example
                 //     0:1:0:-00001
@@ -431,28 +434,34 @@ namespace starsky.foundation.readmeta.Services
             var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
             if (dtCounts >= 1)
             {
-                var dateString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
+                var dateString = exifItem.Tags.FirstOrDefault(p => 
+	                p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
     
                 // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
                 //2018:01:01 11:29:36
-                DateTime.TryParseExact(dateString, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+                DateTime.TryParseExact(dateString, pattern, provider, 
+	                DateTimeStyles.AdjustToUniversal, out itemDateTime);
             }
 
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
-            var dateStringOriginal = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
-            DateTime.TryParseExact(dateStringOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+            var dateStringOriginal = exifItem.Tags.FirstOrDefault(p => 
+	            p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
+            DateTime.TryParseExact(dateStringOriginal, pattern, provider, 
+	            DateTimeStyles.AdjustToUniversal, out itemDateTime);
             
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
             // 1970-01-01T02:00:03 formatted
             var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
-            DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, DateTimeStyles.AdjustToUniversal, out itemDateTime);
+            DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, 
+	            DateTimeStyles.AdjustToUniversal, out itemDateTime);
            
             if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
 
             // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
-            var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
+            var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => 
+	            p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
             DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
 	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
             // to avoid errors scanning gpx files (with this it would be Local)
@@ -563,8 +572,9 @@ namespace starsky.foundation.readmeta.Services
                 }
             }
 
-            // this value is always an int but current culture formated
-            var parsedAltitudeString = double.TryParse(altitudeString, NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
+            // this value is always an int but current culture formatted
+            var parsedAltitudeString = double.TryParse(altitudeString, 
+	            NumberStyles.Number, CultureInfo.CurrentCulture, out var altitude);
             
             if (altitudeRef == "Below sea level" ) altitude *= -1;
 
@@ -677,7 +687,8 @@ namespace starsky.foundation.readmeta.Services
             // The size lives normaly in the first 5 headers
             // > "Exif IFD0" .dng
             // [Exif SubIFD] > arw; on header place 17&18
-            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", "QuickTime Track Header", "Exif IFD0", "Exif SubIFD"};
+            var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", 
+	            "QuickTime Track Header", "Exif IFD0", "Exif SubIFD"};
             foreach (var dirName in directoryNames)
             {
                 var typeName = "Image Height";
@@ -694,11 +705,13 @@ namespace starsky.foundation.readmeta.Services
                     var exifItem = allExifItems[i];
 
                     var ratingCountsJpeg =
-                        exifItem.Tags.Count(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0");
+                        exifItem.Tags.Count(p => p.DirectoryName == dirName 
+                                                 && p.Name.Contains(typeName) && p.Description != "0");
                     if (ratingCountsJpeg >= 1)
                     {
                         var widthTag = exifItem.Tags
-                            .FirstOrDefault(p => p.DirectoryName == dirName && p.Name.Contains(typeName) && p.Description != "0")
+                            .FirstOrDefault(p => p.DirectoryName == dirName 
+                                                 && p.Name.Contains(typeName) && p.Description != "0")
                             ?.Description;
                         widthTag = widthTag?.Replace(" pixels", string.Empty);
                         int.TryParse(widthTag, out var widthInt);
@@ -764,11 +777,13 @@ namespace starsky.foundation.readmeta.Services
         
 	    public double GetAperture(Directory exifItem)
 	    {
-		    var apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
+		    var apertureString = exifItem.Tags.FirstOrDefault(p => 
+			    p.DirectoryName == "Exif SubIFD" && p.Name == "Aperture Value")?.Description;
 
 		    if (string.IsNullOrEmpty(apertureString))
 		    {
-			    apertureString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
+			    apertureString = exifItem.Tags.FirstOrDefault(p => 
+				    p.DirectoryName == "Exif SubIFD" && p.Name == "F-Number")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:FNumber,9/1
@@ -790,11 +805,13 @@ namespace starsky.foundation.readmeta.Services
 	    // [Exif SubIFD] Shutter Speed Value = 1/2403 sec
 	    public string GetShutterSpeedValue(Directory exifItem)
 	    {
-		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
+		    var shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
+			    p.DirectoryName == "Exif SubIFD" && p.Name == "Shutter Speed Value")?.Description;
 
 		    if (string.IsNullOrEmpty(shutterSpeedString))
 		    {
-			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
+			    shutterSpeedString = exifItem.Tags.FirstOrDefault(p => 
+				    p.DirectoryName == "Exif SubIFD" && p.Name == "Exposure Time")?.Description;
 		    }
 		    
 		    // XMP,http://ns.adobe.com/exif/1.0/,exif:ExposureTime,1/20
@@ -815,16 +832,21 @@ namespace starsky.foundation.readmeta.Services
 
 	    public int GetIsoSpeedValue(Directory exifItem)
 	    {
-		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
+		    var isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
+			    p.DirectoryName == "Exif SubIFD" && p.Name == "ISO Speed Ratings")?.Description;
 
 		    if ( string.IsNullOrEmpty(isoSpeedString) )
 		    {
-			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
+			    isoSpeedString = exifItem.Tags.FirstOrDefault(p => 
+				    p.DirectoryName == "Canon Makernote" && p.Name == "Iso")?.Description;
 			    if ( isoSpeedString == "Auto" )
 			    {
-				    // src: https://github.com/exiftool/exiftool/blob/6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
-				    var autoIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
-				    var baseIso = exifItem.Tags.FirstOrDefault(p => p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
+				    // src: https://github.com/exiftool/exiftool/blob/
+				    // 6b994069d52302062b9d7a462dc27082c4196d95/lib/Image/ExifTool/Canon.pm#L8882
+				    var autoIso = exifItem.Tags.FirstOrDefault(p => 
+					    p.DirectoryName == "Canon Makernote" && p.Name == "Auto ISO")?.Description;
+				    var baseIso = exifItem.Tags.FirstOrDefault(p => 
+					    p.DirectoryName == "Canon Makernote" && p.Name == "Base ISO")?.Description;
 				    if ( !string.IsNullOrEmpty(autoIso) && !string.IsNullOrEmpty(baseIso) )
 				    {
 					    int.TryParse(autoIso, NumberStyles.Number, CultureInfo.InvariantCulture, out var autoIsoSpeed);

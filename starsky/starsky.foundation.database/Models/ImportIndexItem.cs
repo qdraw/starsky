@@ -107,7 +107,7 @@ namespace starsky.foundation.database.Models
 
             var fileName = Path.GetFileNameWithoutExtension(SourceFullFilePath);
             
-            // Replace Astriks > escape all options
+            // Replace asterisk > escape all options
             var structuredFileName = Structure.Split("/".ToCharArray()).LastOrDefault();
             structuredFileName = structuredFileName.Replace("*", "");
             structuredFileName = structuredFileName.Replace(".ext", string.Empty);

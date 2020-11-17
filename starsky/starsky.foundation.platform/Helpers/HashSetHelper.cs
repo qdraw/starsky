@@ -70,10 +70,10 @@ namespace starsky.foundation.platform.Helpers
 
 
 		/// <summary>
-		/// Get a string with comma seperated values from the hashset
+		/// Get a string with comma separated values from the hashset
 		/// </summary>
 		/// <param name="hashSetKeywords">import hashset</param>
-		/// <returns>string with comma seperated values</returns>
+		/// <returns>string with comma separated values</returns>
 		public static string HashSetToString(HashSet<string> hashSetKeywords)
 		{
 			if ( hashSetKeywords == null )

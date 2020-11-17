@@ -25,7 +25,8 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			{
 				var item = fileIndexList[i];
 
-				using ( var stream = new Thumbnail(_iStorage,_thumbnailStorage).ResizeThumbnail(item.FilePath, 4, null, true,
+				using ( var stream = new Thumbnail(_iStorage,_thumbnailStorage).ResizeThumbnail(
+					item.FilePath, 4, null, true,
 					ExtensionRolesHelper.ImageFormat.png) )
 				{
 					base64ImageArray[i] = "data:image/png;base64," + Base64Helper.ToBase64(stream);
