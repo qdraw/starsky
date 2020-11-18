@@ -5,6 +5,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
 {
@@ -12,11 +13,13 @@ namespace starsky.foundation.database.Helpers
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection _services;
+		private readonly IConsole _console;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services, IConsole console = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
+			_console = console;
 		}
 
 		public ApplicationDbContext BuilderDbFactory()
@@ -24,7 +27,7 @@ namespace starsky.foundation.database.Helpers
 			return new ApplicationDbContext(BuilderDbFactorySwitch());
 		}
 		
-		private DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
+		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
 		{
 			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
 
@@ -65,7 +68,8 @@ namespace starsky.foundation.database.Helpers
 
 		public void BuilderDb(string foundationDatabaseName = "")
 		{
-			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
+			if ( _console != null && _appSettings.Verbose ) 
+				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
 
