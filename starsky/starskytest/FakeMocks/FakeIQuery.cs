@@ -25,6 +25,11 @@ namespace starskytest.FakeMocks
 			return _fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
+		public Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
+		{
+			return Task.FromResult(GetAllFiles(subPath));
+		}
+
 		public List<FileIndexItem> GetAllRecursive(string subPath = "")
 		{
 			return _fakeContext.Where

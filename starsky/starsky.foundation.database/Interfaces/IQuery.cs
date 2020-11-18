@@ -10,6 +10,7 @@ namespace starsky.foundation.database.Interfaces
     public interface IQuery
     {
         List<FileIndexItem> GetAllFiles(string subPath);
+        Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
         List<FileIndexItem> GetAllRecursive(string subPath = "/");
         Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
@@ -86,6 +87,18 @@ namespace starsky.foundation.database.Interfaces
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
+        /// <summary>
+        /// Add Sub Path Folder - Parent Folders
+        ///  root(/)
+        ///      /2017  *= index only this folder
+        ///      /2018
+        /// If you use the cmd: $ starskycli -s "/2017"
+        /// the folder '2017' it self is not added 
+        /// and all parent paths are not included
+        /// this class does add those parent folders
+        /// </summary>
+        /// <param name="subPath">subPath as input</param>
+        /// <returns>void</returns>
         Task AddParentItemsAsync(string subPath);
         IQuery Clone( ApplicationDbContext applicationDbContext);
         void Invoke(ApplicationDbContext applicationDbContext);

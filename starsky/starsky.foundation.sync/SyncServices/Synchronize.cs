@@ -32,7 +32,7 @@ namespace starsky.foundation.sync.SyncServices
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, selectorStorage, _console);
 			_syncRemove = new SyncRemove(appSettings, serviceScopeFactory, query);
-			_syncFolder = new SyncFolder(query, selectorStorage);
+			_syncFolder = new SyncFolder(appSettings, serviceScopeFactory, query, selectorStorage, _console);
 		}
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
@@ -50,7 +50,8 @@ namespace starsky.foundation.sync.SyncServices
 					return await _syncFolder.Folder(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					_console.WriteLine("file");
-					return await _syncSingleFile.SingleFile(subPath);
+					var item = await _syncSingleFile.SingleFile(subPath);
+					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					_console.WriteLine("Remove");
 					return await _syncRemove.Remove(subPath);
@@ -58,10 +59,6 @@ namespace starsky.foundation.sync.SyncServices
 					throw new AggregateException("enum is not valid");
 			}
 		}
-		
-		public Task<List<FileIndexItem>> SingleFile(string subPath)
-		{
-			return _syncSingleFile.SingleFile(subPath);
-		}
+
 	}
 }

@@ -24,6 +24,14 @@ namespace starsky.foundation.sync.SyncServices
 			_query = query;
 		}
 
+		public SyncRemove(AppSettings appSettings, SetupDatabaseTypes setupDatabaseTypes,
+			IQuery query)
+		{
+			_appSettings = appSettings;
+			_setupDatabaseTypes = setupDatabaseTypes;
+			_query = query;
+		}
+
 		public async Task<List<FileIndexItem>> Remove(string subPath)
 		{
 			return await Remove(new List<string> {subPath});
@@ -32,19 +40,13 @@ namespace starsky.foundation.sync.SyncServices
 		private async Task<List<FileIndexItem>> Remove(List<string> subPaths)
 		{
 			var toDeleteList = new List<FileIndexItem>();
-
-			async Task<IQuery> LocalQuery()
-			{
-				await using var context =  _setupDatabaseTypes.BuilderDbFactory();
-				return _query.Clone(context);
-			}
-			
+		
 			await subPaths
 				.ForEachAsync(
 					async subPath =>
 					{
-						var query = await LocalQuery();
-
+						var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
+						
 						var directItem = await query.GetObjectByFilePathAsync(subPath);
 						if ( directItem != null )
 						{
@@ -60,7 +62,7 @@ namespace starsky.foundation.sync.SyncServices
 			await toDeleteList
 				.ForEachAsync(async item =>
 				{
-					var query = await LocalQuery();
+					var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
 					await query.RemoveItemAsync(item);
 					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 					return item;

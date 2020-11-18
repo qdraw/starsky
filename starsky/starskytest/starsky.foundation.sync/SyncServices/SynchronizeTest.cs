@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await sync.Sync("/");
 
 			// subject to change
-			Assert.AreEqual(0, result.Count);
+			Assert.AreEqual(1, result.Count);
 		}
 	}
 }

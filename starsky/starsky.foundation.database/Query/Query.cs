@@ -37,6 +37,14 @@ namespace starsky.foundation.database.Query
             _scopeFactory = scopeFactory;
         }
 
+        private IOrderedQueryable<FileIndexItem> GetAllFilesQuery(ApplicationDbContext context, string subPath)
+        {
+	        if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+	        return context.FileIndex.Where
+			        (p => p.IsDirectory == false && p.ParentDirectory == subPath)
+		        .OrderBy(r => r.FileName);
+        }
+
 	    /// <summary>
 		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
@@ -45,24 +53,33 @@ namespace starsky.foundation.database.Query
 		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath)
         {
-            if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
-
-            List<FileIndexItem> LocalQuery(ApplicationDbContext context)
-            {
-	            return context.FileIndex.Where
-			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
-		            .OrderBy(r => r.FileName).ToList();
-            }
-            
             try
             {
-	            return LocalQuery(_context);
+	            return GetAllFilesQuery(_context,subPath).ToList();
             }
             catch ( ObjectDisposedException )
             {
-	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+	            return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToList();
             }
         }
+	    
+	    /// <summary>
+	    /// Get a list of all files inside an folder (NOT recursive)
+	    /// But this uses a database as source
+	    /// </summary>
+	    /// <param name="subPath">relative database path</param>
+	    /// <returns>list of FileIndex-objects</returns>
+	    public async Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
+	    {
+		    try
+		    {
+			    return await GetAllFilesQuery(_context,subPath).ToListAsync();
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    return await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync();
+		    }
+	    }
 	    
 	    /// <summary>
 	    /// Includes sub items in file
@@ -576,15 +593,15 @@ namespace starsky.foundation.database.Query
 	    /// <summary>
 	    /// Add Sub Path Folder - Parent Folders
 	    ///  root(/)
-	    ///      /2017  <= index only this folder
+	    ///      /2017  *= index only this folder
 	    ///      /2018
 	    /// If you use the cmd: $ starskycli -s "/2017"
 	    /// the folder '2017' it self is not added 
 	    /// and all parent paths are not included
 	    /// this class does add those parent folders
 	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
+	    /// <param name="subPath">subPath as input</param>
+	    /// <returns>void</returns>
 	    public async Task AddParentItemsAsync(string subPath)
 	    {
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);

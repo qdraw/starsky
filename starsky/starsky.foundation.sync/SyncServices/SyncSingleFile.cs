@@ -29,25 +29,31 @@ namespace starsky.foundation.sync.SyncServices
 			_console = console;
 		}
 
-		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
+		internal async Task<FileIndexItem> SingleFile(string subPath)
 		{
-			_console.WriteLine($"sync file {subPath}" );
+			_console?.WriteLine($"sync file {subPath}" );
+
 			var statusItem = new FileIndexItem(subPath);
 
 			// File extension is not supported
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(subPath) )
 			{
 				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-				return new List<FileIndexItem>{statusItem};
+				return statusItem;
 			}
 
 			// File check if jpg #not corrupt
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_subPathStorage.ReadStream(subPath,160));
-			// ReSharper disable once InvertIf
+			if ( imageFormat == ExtensionRolesHelper.ImageFormat.notfound )
+			{
+				statusItem.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+				return statusItem;
+			}
+			
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
 			{
 				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
-				return new List<FileIndexItem>{statusItem};
+				return statusItem;
 			}
 
 			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
@@ -59,27 +65,30 @@ namespace starsky.foundation.sync.SyncServices
 
 				await _query.AddItemAsync(dbItem);
 				await _query.AddParentItemsAsync(subPath);
-				return new List<FileIndexItem>{dbItem};
+				return dbItem;
 			}
 
 			// when size is the same dont update
 			var (isByteSizeTheSame, size) = CompareByteSizeIsTheSame(dbItem);
-			if (isByteSizeTheSame) return new List<FileIndexItem> {dbItem};
+			if (isByteSizeTheSame) return dbItem;
 			dbItem.Size = size;
 
 			// when byte hash is different update
 			var (fileHashTheSame, newFileHash ) = await CompareFileHashIsTheSame(dbItem);
-			if ( fileHashTheSame ) return new List<FileIndexItem>{dbItem};
+			if ( fileHashTheSame ) return dbItem;
 			dbItem.FileHash = newFileHash;
 			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);
-			return new List<FileIndexItem>{updateItem};
-
+			return updateItem;
 		}
 		
-		
+		/// <summary>
+		/// Compare the file hash en return 
+		/// </summary>
+		/// <param name="dbItem">database item</param>
+		/// <returns>tuple that has value: is the same; and the fileHash</returns>
 		private async Task<Tuple<bool,string>> CompareFileHashIsTheSame(FileIndexItem dbItem)
 		{
 			var (localHash,_) = await new 

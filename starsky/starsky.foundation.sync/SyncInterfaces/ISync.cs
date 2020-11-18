@@ -10,6 +10,5 @@ namespace starsky.foundation.sync.SyncInterfaces
 	public interface ISynchronize
 	{
 		Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true);
-		Task<List<FileIndexItem>> SingleFile(string subPath);
 	}
 }

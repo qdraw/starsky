@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
 			var result = await sync.SingleFile("/non_exist.ext");
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
 		}
 		
 		[TestMethod]
@@ -50,7 +50,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FakeSelectorStorage(storage), new ConsoleWrapper());
 			var result = await sync.SingleFile("/corrupt.jpg");
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.FirstOrDefault().Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
 		}
 		
 		[TestMethod]
@@ -217,7 +217,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileAlreadyExist_With_Changed_FileHash_MetaDataCheck()
 		{
-			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/color_class_test.jpg");
+			var (fileHash, _) = await new FileHash(_iStorageFake)
+				.GetHashCodeAsync("/color_class_test.jpg");
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
