@@ -47,22 +47,18 @@ namespace starsky.foundation.sync.SyncServices
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-				var indexItems = await Loop(subPath, fileIndexItems, pathsOnDisk);
+				var indexItems = await Loop(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
 			}
+			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
 		}
-		private async Task<List<FileIndexItem>> Loop(string subPath, IEnumerable<FileIndexItem> fileIndexItems, 
+		
+		private async Task<List<FileIndexItem>> Loop(IEnumerable<FileIndexItem> fileIndexItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItems, pathsOnDisk);
-			if ( !pathsToUpdateInDatabase.Any() )
-			{
-				return new List<FileIndexItem>
-				{
-					await AddParentFolder(subPath)
-				};
-			}
+			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
 			var result = await pathsToUpdateInDatabase
 				.ForEachAsync(async subPathInFiles =>
@@ -86,8 +82,15 @@ namespace starsky.foundation.sync.SyncServices
 		private async Task<FileIndexItem> AddParentFolder(string subPath)
 		{
 			var item = await _query.GetObjectByFilePathAsync(subPath);
-			if ( item != null ) return item;
+			
+			// Current item exist
+			if ( item != null )
+			{
+				item.Status = FileIndexItem.ExifStatus.Ok;
+				return item;
+			}
 
+			// Not on disk
 			if ( !_subPathStorage.ExistFolder(subPath) )
 			{
 				return new FileIndexItem(subPath)
@@ -96,8 +99,8 @@ namespace starsky.foundation.sync.SyncServices
 				};
 			}
 			
-			item = await _query.AddItemAsync(new FileIndexItem(subPath)
-			{
+			// not in db but should add this
+			item = await _query.AddItemAsync(new FileIndexItem(subPath){
 				IsDirectory = true
 			});
 			item.SetLastEdited();
@@ -123,7 +126,5 @@ namespace starsky.foundation.sync.SyncServices
 			// and order by alphabet and remove duplicates
 			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
 		}
-		
-		
 	}
 }
