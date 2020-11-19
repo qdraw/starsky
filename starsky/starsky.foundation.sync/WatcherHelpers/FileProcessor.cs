@@ -54,15 +54,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 		}
 
-
-		internal void EndlessWorkQueue()
+		private void EndlessWorkQueue()
 		{
-			EndlessWorkQueueAsync().GetAwaiter().GetResult();
+			EndlessWorkQueueAsync(CancellationToken.None).GetAwaiter().GetResult();
 		}
 
 		[SuppressMessage("ReSharper", "FunctionNeverReturns")]
 		[SuppressMessage("ReSharper", "MethodOverloadWithOptionalParameter")]
-		private async Task EndlessWorkQueueAsync()
+		internal async Task EndlessWorkQueueAsync(CancellationToken token)
 		{
 			while ( true )
 			{
@@ -73,7 +72,11 @@ namespace starsky.foundation.sync.WatcherHelpers
 					await _processFile.Invoke(retrieveFileObject);
 					continue;
 				}
-
+				
+				if ( token.IsCancellationRequested )
+				{
+					return;
+				}
 				// If no files left to process then wait
 				_waitHandle.WaitOne();
 			}

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.sync.WatcherHelpers;
 
 namespace starskytest.starsky.foundation.sync.WatcherHelpers
@@ -19,7 +20,17 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			IsExecuted.Add(value.Item1);
 			return Task.FromResult(new List<FileIndexItem>());
 		}
-		
+
+		[TestMethod]
+		[Timeout(9000)]
+		public async Task FileProcessor_EndlessWorkQueueAsync()
+		{
+			CancellationTokenSource source = new CancellationTokenSource();
+			source.Cancel();
+			var fileProcessor = new FileProcessor(TestExecuted);
+			await fileProcessor.EndlessWorkQueueAsync(source.Token);
+		}
+
 		[TestMethod]
 		[Timeout(9000)]
 		public async Task FileProcessor_QueueInput()

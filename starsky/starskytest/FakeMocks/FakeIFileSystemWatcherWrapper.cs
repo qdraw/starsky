@@ -34,6 +34,12 @@ namespace starskytest.FakeMocks
 		
 		public event FileSystemEventHandler Changed;
 		public event ErrorEventHandler Error;
+		
+		public void TriggerOnError(ErrorEventArgs args)
+		{
+			Error?.Invoke(this, args);
+		}
+		
 		public bool EnableRaisingEvents { get; set; }
 		public bool IncludeSubdirectories { get; set; }
 		public string Path { get; set; }

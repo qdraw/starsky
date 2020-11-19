@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -15,14 +16,16 @@ namespace starsky.foundation.sync.WatcherServices
 	{
 		private readonly FileProcessor _fileProcessor;
 		private readonly IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
+		private readonly IConsole _console;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
-			IServiceScopeFactory scopeFactory)
+			IServiceScopeFactory scopeFactory, IConsole console)
 		{
 
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherPreflight(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
+			_console = console;
 		}
 
 		/// <summary>
@@ -61,7 +64,7 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnError(object source, ErrorEventArgs e)
 		{
 			//  Show that an error has been detected.
-			Console.WriteLine("The FileSystemWatcher has detected an error");
+			_console.WriteLine("The FileSystemWatcher has detected an error");
 			//  Give more information if the error is due to an internal buffer overflow.
 			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
 			{
@@ -69,8 +72,8 @@ namespace starsky.foundation.sync.WatcherServices
 				//  and internal buffer of the  FileSystemWatcher is not large enough to handle this
 				//  rate of events. The InternalBufferOverflowException error informs the application
 				//  that some of the file system events are being lost.
-				Console.WriteLine(("The file system watcher experienced an internal buffer overflow: " 
-				                   + e.GetException().Message));
+				_console.WriteLine(("The file system watcher experienced an internal buffer overflow: " 
+				                    + e.GetException().Message));
 			}
 		}
 		
