@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 
 namespace starsky.foundation.database.Query
@@ -14,16 +16,19 @@ namespace starsky.foundation.database.Query
 		/// <returns>items with id</returns>
 		public virtual async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
 		{
+			async Task LocalQuery(ApplicationDbContext context)
+			{
+				await context.FileIndex.AddRangeAsync(fileIndexItemList);
+				await context.SaveChangesAsync();
+			}
+			
 			try
 			{
-				await _context.FileIndex.AddRangeAsync(fileIndexItemList);
-				await _context.SaveChangesAsync();
+				await LocalQuery(_context);
 			}
 			catch (ObjectDisposedException)
 			{
-				var context = new InjectServiceScope(_scopeFactory).Context();
-				await context.FileIndex.AddRangeAsync(fileIndexItemList);
-				await context.SaveChangesAsync();
+				await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 
 			foreach ( var fileIndexItem in fileIndexItemList )

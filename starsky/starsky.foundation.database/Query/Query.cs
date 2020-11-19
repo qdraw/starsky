@@ -589,6 +589,25 @@ namespace starsky.foundation.database.Query
 			    return await LocalQuery(context);
 		    }
 	    }
+
+	    private async Task<List<FileIndexItem>> GetParentItems(List<string> pathListShouldExist)
+	    {
+		    async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
+		    {
+			    return await context.FileIndex.Where(p => 
+				    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    }
+
+		    try
+		    {
+			    return await LocalQuery(_context);
+
+		    }
+		    catch ( ObjectDisposedException)
+		    {
+			    return await LocalQuery(new InjectServiceScope( _scopeFactory).Context());
+		    }
+	    }
 	    
 	    /// <summary>
 	    /// Add Sub Path Folder - Parent Folders
@@ -607,10 +626,9 @@ namespace starsky.foundation.database.Query
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
-		    var toAddList = new List<FileIndexItem>();
-		    var indexItems = await _context.FileIndex.Where(p => 
-			    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    var indexItems = await GetParentItems(pathListShouldExist);
 
+		    var toAddList = new List<FileIndexItem>();
 		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
 		    {
