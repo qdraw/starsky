@@ -52,6 +52,5 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			IsExecuted = new List<string>();
 		}
-		
 	}
 }
