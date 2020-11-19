@@ -41,17 +41,23 @@ namespace starsky.foundation.sync.WatcherHelpers
 				_workerThread = new Thread(EndlessWorkQueue);
 				_workerThread.Start();
 			}
-			else if (_workerThread.ThreadState == ThreadState.WaitSleepJoin)
+			// https://docs.microsoft.com/en-us/dotnet/api/system.threading.threadstate?view=net-5.0
+			else switch ( _workerThread.ThreadState )
 			{
-				// If thread is waiting then start it
-				_waitHandle.Set();
+				case ThreadState.WaitSleepJoin:
+					// If thread is waiting then start it
+					_waitHandle.Set();
+					break;
+				case ThreadState.Stopped:
+					_waitHandle.Set();
+					break;
 			}
 		}
 
 
 		internal void EndlessWorkQueue()
 		{
-			EndlessWorkQueueAsync().ConfigureAwait(false);
+			EndlessWorkQueueAsync().GetAwaiter().GetResult();
 		}
 
 		[SuppressMessage("ReSharper", "FunctionNeverReturns")]

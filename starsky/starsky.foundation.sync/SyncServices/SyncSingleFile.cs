@@ -21,9 +21,9 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly NewItem _newItem;
 		private readonly IConsole _console;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IConsole console)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IConsole console)
 		{
-			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
 			_console = console;
@@ -63,6 +63,9 @@ namespace starsky.foundation.sync.SyncServices
 				// Add a new Item
 				dbItem = await _newItem.NewFileItem(statusItem);
 
+				// When not OK do not Add
+				if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
+				
 				await _query.AddItemAsync(dbItem);
 				await _query.AddParentItemsAsync(subPath);
 				return dbItem;

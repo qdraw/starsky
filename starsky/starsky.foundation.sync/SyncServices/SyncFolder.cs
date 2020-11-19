@@ -65,7 +65,7 @@ namespace starsky.foundation.sync.SyncServices
 				{
 					var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_selectorStorage, null).SingleFile(subPathInFiles);
+						_subPathStorage, _console).SingleFile(subPathInFiles);
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{
 						await new SyncRemove(_appSettings, _setupDatabaseTypes, query)

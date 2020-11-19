@@ -33,6 +33,7 @@ namespace starskytest.FakeMocks
 		}
 		
 		public event FileSystemEventHandler Changed;
+		public event ErrorEventHandler Error;
 		public bool EnableRaisingEvents { get; set; }
 		public bool IncludeSubdirectories { get; set; }
 		public string Path { get; set; }

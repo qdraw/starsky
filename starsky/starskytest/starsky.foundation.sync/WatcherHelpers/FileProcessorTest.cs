@@ -20,51 +20,14 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			return Task.FromResult(new List<FileIndexItem>());
 		}
 		
-		// [TestMethod]
-		[Timeout(1000)]
-		public async Task FileProcessor_CheckInput_newThread()
-		{
-			var fileProcessor = new FileProcessor(TestExecuted);
-
-			const string path = "/test";
-			fileProcessor.QueueInput(path, WatcherChangeTypes.Changed);
-
-			var workerThread =
-				new Thread(fileProcessor.EndlessWorkQueue) {Priority = ThreadPriority.BelowNormal};
-			workerThread.Start();
-
-			await Task.Delay(10);
-						
-			
-			
-			
-			// TODO: FIX!!!!!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!! !!!!
-
-
-
-
-
-
-			Assert.AreEqual(1,IsExecuted.Count);
-			Assert.IsTrue(IsExecuted.Contains(path));
-			
-			workerThread.Interrupt();
-				
-			IsExecuted = new List<string>();
-		}
-
 		[TestMethod]
-		[Timeout(1000)]
-		public async Task FileProcessor_CheckInput_existingThread()
+		[Timeout(9000)]
+		public async Task FileProcessor_QueueInput()
 		{
 			var fileProcessor = new FileProcessor(TestExecuted);
 
 			const string path = "/test";
 			fileProcessor.QueueInput(path, WatcherChangeTypes.Changed);
-
-			var workerThread =
-				new Thread(fileProcessor.EndlessWorkQueue) {Priority = ThreadPriority.BelowNormal};
-			workerThread.Start();
 
 			await Task.Delay(5);
 			
@@ -75,8 +38,6 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			Assert.AreEqual(2,IsExecuted.Count);
 			Assert.IsTrue(IsExecuted.Contains(path));
 			Assert.IsTrue(IsExecuted.Contains(path+ "/2"));
-
-			workerThread.Interrupt();
 			
 			IsExecuted = new List<string>();
 		}

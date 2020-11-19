@@ -29,8 +29,6 @@ namespace starsky.foundation.database.Helpers
 		
 		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
 		{
-			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
-
 			switch ( _appSettings.DatabaseType )
 			{
 				case ( AppSettings.DatabaseTypeList.Mysql ):

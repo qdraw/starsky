@@ -35,13 +35,14 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileSystemWatcherWrapper.Path = fullFilePath;
 			_fileSystemWatcherWrapper.Filter = "*";
 			_fileSystemWatcherWrapper.IncludeSubdirectories = true;
-			_fileSystemWatcherWrapper.NotifyFilter =   NotifyFilters.LastAccess
+			_fileSystemWatcherWrapper.NotifyFilter = NotifyFilters.FileName
+			                                         | NotifyFilters.DirectoryName
+			                                         | NotifyFilters.Attributes
 			                                         | NotifyFilters.Size
 			                                         | NotifyFilters.LastWrite
-			                                         | NotifyFilters.FileName
-			                                         | NotifyFilters.DirectoryName
-			                                         | NotifyFilters.CreationTime;
-
+			                                         | NotifyFilters.LastAccess
+			                                         | NotifyFilters.CreationTime
+			                                         | NotifyFilters.Security;
 
 			// Watch for changes in LastAccess and LastWrite times, and
 			// the renaming of files or directories.
@@ -76,10 +77,10 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
+			Console.WriteLine(e.FullPath + " " +  e.ChangeType + " --1--");
 			_fileProcessor.QueueInput(e.FullPath, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 			// e.FullPath e.ChangeType
-			Console.WriteLine(e.FullPath, e.ChangeType);
 		}
 
 		private void OnRenamed(object source, RenamedEventArgs e)

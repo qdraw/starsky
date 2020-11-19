@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			var result = await sync.SingleFile("/non_exist.ext");
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
@@ -47,7 +47,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>{new byte[5]});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(storage), new ConsoleWrapper());
+				storage, new ConsoleWrapper());
 			var result = await sync.SingleFile("/corrupt.jpg");
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
@@ -58,7 +58,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 
 			// should add files to db
@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(iStorageFake), new ConsoleWrapper());
+				iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/level/deep/test.jpg");
 
 			var detailView = fakeQuery.SingleItem("/level/deep/test.jpg");
@@ -91,7 +91,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(fileIndexItem.FilePath, "/level/deep/test.jpg");
 			
 			// should not duplicate add items
-			var count= fakeQuery.GetAllFiles("/level/deep").Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/level/deep"))
+				.Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
 			// should add parent items
@@ -125,7 +126,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 
 			var count= fakeQuery.GetAllFiles("/").Count(p => p.FileName == "test.jpg");
@@ -152,7 +153,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -176,7 +177,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -200,7 +201,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 
 			var count= fakeQuery.GetAllFiles("/").Count(p => p.FileName == "test.jpg");
@@ -229,7 +230,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				new FakeSelectorStorage(_iStorageFake), new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper());
 			
 			await sync.SingleFile("/color_class_test.jpg");
 			

@@ -160,7 +160,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var storage = GetStorage();
 			var folderPath = "/should_add_root2";
-			
+			storage.CreateDirectory(folderPath);
+
 			var query = new FakeIQuery();
 			var result = await new SyncFolder(_appSettings, 
 				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
