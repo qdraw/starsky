@@ -136,7 +136,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.IsFalse(string.IsNullOrWhiteSpace(result[0].Tags));
 		}
 
-
 		[TestMethod]
 		public async Task ShouldAddFolderItSelfAndParentFolders()
 		{
@@ -145,14 +144,79 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			storage.CreateDirectory(folderPath);
 
 			var query = new FakeIQuery();
-			var result = await new SyncFolder(_appSettings, 
+			var results = await new SyncFolder(_appSettings, 
 				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper()).Folder(folderPath);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual(folderPath, results[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,results[0].Status);
+		}
+
+		[TestMethod]
+		public async Task AddParentFolder_NewFolders()
+		{
+			var storage = GetStorage();
+			var folderPath = "/should_add_root2";
+			
+			var query = new FakeIQuery();
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+		}
 		
-			Console.WriteLine();
+		[TestMethod]
+		public async Task AddParentFolder_ExistingFolder()
+		{
+			var storage = GetStorage();
+			var folderPath = "/exist2";
+			
+			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/exist2")
+			{
+				IsDirectory = true
+			}});
+			
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+
+			// should not add duplicate content
+			var allItems = await query.GetAllRecursiveAsync("/");
+			
+			Assert.AreEqual(1, allItems.Count);
+			Assert.AreEqual(folderPath, allItems[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,allItems[0].Status);
+		}
+
+		[TestMethod]
+		public async Task AddParentFolder_NotFound()
+		{
+			var storage = GetStorage();
+			var folderPath = "/not-found";
+			
+			var query = new FakeIQuery();
+			
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.Status);
+
+			// should not add content
+			var allItems = await query.GetAllRecursiveAsync("/");
+			Assert.AreEqual(0, allItems.Count);
 		}
 
 		[TestMethod]

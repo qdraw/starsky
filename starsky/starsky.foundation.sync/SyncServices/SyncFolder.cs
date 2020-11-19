@@ -79,7 +79,7 @@ namespace starsky.foundation.sync.SyncServices
 			return result == null ? new List<FileIndexItem>() : result.ToList();
 		}
 		
-		private async Task<FileIndexItem> AddParentFolder(string subPath)
+		internal async Task<FileIndexItem> AddParentFolder(string subPath)
 		{
 			var item = await _query.GetObjectByFilePathAsync(subPath);
 			
