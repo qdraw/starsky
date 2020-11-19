@@ -30,7 +30,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
-		
 		[TestMethod]
 		public async Task Sync_NotFound()
 		{
@@ -52,7 +51,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// is missing actual bytes
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 		}
-		
 				
 		[TestMethod]
 		public async Task Sync_Folder()

@@ -47,14 +47,14 @@ namespace starsky.foundation.sync.SyncServices
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-				var indexItems = await Loop(fileIndexItems, pathsOnDisk);
+				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
 			}
 			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
 		}
 		
-		private async Task<List<FileIndexItem>> Loop(IEnumerable<FileIndexItem> fileIndexItems, 
+		private async Task<List<FileIndexItem>> LoopOverFolder(IEnumerable<FileIndexItem> fileIndexItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItems, pathsOnDisk);

@@ -89,7 +89,10 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
-			_fakeContext.Remove(updateStatusContent);
+			if ( _fakeContext.Exists(p => p.FilePath == updateStatusContent.FilePath) )
+			{
+				_fakeContext.Remove(updateStatusContent);
+			}
 			return updateStatusContent;
 		}
 
