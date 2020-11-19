@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -9,7 +8,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
-using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.Helpers;
 
 namespace starsky.foundation.sync.SyncServices
@@ -63,7 +61,7 @@ namespace starsky.foundation.sync.SyncServices
 				// Add a new Item
 				dbItem = await _newItem.NewFileItem(statusItem);
 
-				// When not OK do not Add
+				// When not OK do not Add (fileHash issues)
 				if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
 				
 				await _query.AddItemAsync(dbItem);
