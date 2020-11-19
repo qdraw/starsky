@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
@@ -46,13 +47,30 @@ namespace starsky.foundation.sync.WatcherServices
 			// the renaming of files or directories.
 
 			// Add event handlers.
-			_fileSystemWatcherWrapper.Changed += OnChanged;
 			_fileSystemWatcherWrapper.Created += OnChanged;
+			_fileSystemWatcherWrapper.Changed += OnChanged;
 			_fileSystemWatcherWrapper.Deleted += OnChanged;
 			_fileSystemWatcherWrapper.Renamed += OnRenamed;
-
+			_fileSystemWatcherWrapper.Error += OnError;
+				
 			// Begin watching.
 			_fileSystemWatcherWrapper.EnableRaisingEvents = true;
+		}
+		
+		private void OnError(object source, ErrorEventArgs e)
+		{
+			//  Show that an error has been detected.
+			Console.WriteLine("The FileSystemWatcher has detected an error");
+			//  Give more information if the error is due to an internal buffer overflow.
+			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
+			{
+				//  This can happen if Windows is reporting many file system events quickly 
+				//  and internal buffer of the  FileSystemWatcher is not large enough to handle this
+				//  rate of events. The InternalBufferOverflowException error informs the application
+				//  that some of the file system events are being lost.
+				Console.WriteLine(("The file system watcher experienced an internal buffer overflow: " 
+				                   + e.GetException().Message));
+			}
 		}
 		
 		// Define the event handlers.
@@ -61,10 +79,13 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileProcessor.QueueInput(e.FullPath, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 			// e.FullPath e.ChangeType
+			Console.WriteLine(e.FullPath, e.ChangeType);
 		}
 
 		private void OnRenamed(object source, RenamedEventArgs e)
 		{
+			Console.WriteLine(e.OldFullPath, e.FullPath);
+
 			_fileProcessor.QueueInput(e.OldFullPath, WatcherChangeTypes.Deleted);
 			_fileProcessor.QueueInput(e.FullPath, WatcherChangeTypes.Created);
 			// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath

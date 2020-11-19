@@ -7,7 +7,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncInterfaces;
 
-namespace starsky.foundation.sync.WatcherServices
+namespace starsky.foundation.sync.WatcherHelpers
 {
 	public class SyncWatcherPreflight
 	{

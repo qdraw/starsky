@@ -14,6 +14,7 @@ namespace starsky.foundation.sync.WatcherInterfaces
 		event FileSystemEventHandler Deleted;
 		event RenamedEventHandler Renamed;
 		event FileSystemEventHandler Changed;
+		event ErrorEventHandler Error;
 
 		bool EnableRaisingEvents { get; set; }
 
@@ -22,6 +23,5 @@ namespace starsky.foundation.sync.WatcherInterfaces
 		string Path { get; set; }
 		string Filter { get; set; }
 		public NotifyFilters NotifyFilter { get; set; }
-
 	}
 }
