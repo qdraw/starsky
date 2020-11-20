@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
@@ -27,7 +28,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var serviceScope = CreateNewScope();
             var scope = serviceScope.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            _query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+            _query = new Query(dbContext,_memoryCache, 
 	            new AppSettings{Verbose = true}, serviceScope);
         }
 
@@ -199,7 +200,49 @@ namespace starskytest.starsky.foundation.database.QueryTest
                 getAllResultSubfolder.Select(p => p.FilePath).ToList());
         }
 
+        [TestMethod]
+        public async Task GetAllFilesAsync_GetResult()
+        {
+	        var appSettings = new AppSettings
+	        {
+		        DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+	        };
+	        var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+	        var query = new Query(dbContext);
 
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test/test.jpg"));
+	        await dbContext.SaveChangesAsync();
+	        
+	        var items = await query.GetAllFilesAsync("/");
+
+	        Assert.AreEqual("/test.jpg", items[0].FilePath);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+        }
+        
+        [TestMethod]
+        public async Task GetAllFilesAsync_Disposed()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
+		        
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
+	        await dbContext.SaveChangesAsync();
+
+	        // And dispose
+	        await dbContext.DisposeAsync();
+	        
+	        var items = await query.GetAllFilesAsync("/");
+
+	        Assert.AreEqual("/test.jpg", items[0].FilePath);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+        }
 
         [TestMethod]
         public void QueryAddSingleItemGetAllRecursiveTest()
