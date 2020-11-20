@@ -210,15 +210,15 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
 	        var query = new Query(dbContext);
 
-	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/") {IsDirectory = true});
-	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test") {IsDirectory = true});
-	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
-	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/test/test.jpg"));
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test.jpg"));
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test/test.jpg"));
 	        await dbContext.SaveChangesAsync();
 	        
-	        var items = await query.GetAllFilesAsync("/");
+	        var items = await query.GetAllFilesAsync("/GetAllFilesAsync");
 
-	        Assert.AreEqual("/test.jpg", items[0].FilePath);
+	        Assert.AreEqual("/GetAllFilesAsync/test.jpg", items[0].FilePath);
 	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
         }
         
@@ -244,6 +244,57 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
         }
 
+        [TestMethod]
+        public async Task GetAllRecursiveAsync_GetResult()
+        {
+	        var appSettings = new AppSettings
+	        {
+		        DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+	        };
+	        var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+	        var query = new Query(dbContext);
+
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test.jpg"));
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test/test.jpg"));
+	        await dbContext.SaveChangesAsync();
+	        
+	        var items = await query.GetAllRecursiveAsync("/GetAllRecursiveAsync");
+
+	        Assert.AreEqual(3,items.Count);
+	        Assert.AreEqual("/GetAllRecursiveAsync/test", items[0].FilePath);
+	        Assert.AreEqual("/GetAllRecursiveAsync/test.jpg", items[1].FilePath);
+	        Assert.AreEqual("/GetAllRecursiveAsync/test/test.jpg", items[2].FilePath);
+
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[1].Status);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[2].Status);
+        }
+        
+        [TestMethod]
+        public async Task GetAllRecursiveAsync_Disposed()
+        {
+	        var serviceScope = CreateNewScope();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope);
+		        
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") {IsDirectory = true});
+	        await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"));
+	        await dbContext.SaveChangesAsync();
+
+	        // And dispose
+	        await dbContext.DisposeAsync();
+	        
+	        var items = await query.GetAllRecursiveAsync("/gar");
+
+	        Assert.AreEqual(1,items.Count);
+	        Assert.AreEqual("/gar/test.jpg", items[0].FilePath);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+        }
+        
         [TestMethod]
         public void QueryAddSingleItemGetAllRecursiveTest()
         {
@@ -579,7 +630,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
 		        new AppSettings{Verbose = true}, serviceScope);
-	        var item = await query.AddItemAsync(new FileIndexItem("/test.jpg")
+	        var item = await query.AddItemAsync(new FileIndexItem("/GetObjectByFilePathAsync/test.jpg")
 	        {
 		        Tags = "hi"
 	        });
@@ -590,9 +641,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        item.Tags = "test";
 	        await query.UpdateItemAsync(item);
 	        
-	        var getItem = await query.GetObjectByFilePathAsync("/test.jpg");
+	        var getItem = await query.GetObjectByFilePathAsync("/GetObjectByFilePathAsync/test.jpg");
 	        Assert.IsNotNull(getItem);
-	        Assert.AreEqual("/test.jpg", getItem.FilePath);
+	        Assert.AreEqual("/GetObjectByFilePathAsync/test.jpg", getItem.FilePath);
 	        Assert.AreEqual("test.jpg", getItem.FileName);
 	        Assert.AreEqual("test", getItem.Tags);
         }
