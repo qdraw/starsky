@@ -62,8 +62,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_With_ChildItems()
 		{
+			var query = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/folder_content") {IsDirectory = true},
+				new FileIndexItem("/folder_content/test.jpg"),
+				new FileIndexItem("/folder_content/test2.jpg")
+			});
+			
 			var result= await new SyncRemove(_appSettings, 
-				_serviceScopeFactory, _query).Remove("/folder_content");
+				_serviceScopeFactory, query).Remove("/folder_content");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
