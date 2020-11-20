@@ -10,7 +10,8 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
   <PropertyGroup>
-    <RunSettingsFilePath>$(MSBuildProjectDirectory)\build.vstest.runsettings</RunSettingsFilePath>
+    <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>
+    <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>
   </PropertyGroup>
     
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
