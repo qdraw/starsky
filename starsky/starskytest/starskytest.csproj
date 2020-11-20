@@ -86,4 +86,9 @@
     <ItemGroup>
       <Folder Include="starsky.feature.health\Helpers" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\build.vstest.runsettings">
+        <Link>build.vstest.runsettings</Link>
+      </Content>
+    </ItemGroup>
 </Project>

@@ -513,6 +513,11 @@ namespace starsky.foundation.platform.Models
 	    public bool UseRealtime { get; set; } = true;
 
 	    /// <summary>
+	    /// Watch the fileSystem for changes
+	    /// </summary>
+	    public bool UseDiskWatcher { get; set; } = false;
+	    
+	    /// <summary>
 	    /// Check if there are updates
 	    /// </summary>
 	    public bool CheckForUpdates { get; set; } = true;

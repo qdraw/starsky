@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,9 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <returns>Task/nothing</returns>
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
+			Console.WriteLine(_appSettings.UseDiskWatcher ? "UseDiskWatcher is enabled" : "UseDiskWatcher is disabled");
+			if ( !_appSettings.UseDiskWatcher ) return Task.CompletedTask;
+
 			_diskWatcher.Watcher(_appSettings.StorageFolder);
 			return Task.CompletedTask;
 		}
