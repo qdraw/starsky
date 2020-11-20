@@ -120,13 +120,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[1].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
+
+			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test1.jpg").Result.Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test2.jpg").Result.Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test3.jpg").Result.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[2].Status);
+
 		}
 		
 		[TestMethod]

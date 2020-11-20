@@ -46,7 +46,7 @@ namespace starskytest.FakeMocks
 			List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
@@ -91,15 +91,14 @@ namespace starskytest.FakeMocks
 		{
 			Console.WriteLine($"updateStatusContent {updateStatusContent}");
 
-			foreach ( var c in _fakeContext )
-			{
-				Console.WriteLine(c.FilePath);
-			}
-			
-			if ( _fakeContext.Exists(p => p.FilePath == updateStatusContent.FilePath) )
+			try
 			{
 				_fakeContext.Remove(updateStatusContent);
 			}
+			catch ( ArgumentOutOfRangeException)
+			{
+			}
+
 			return updateStatusContent;
 		}
 
