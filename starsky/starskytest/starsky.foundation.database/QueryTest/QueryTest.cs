@@ -39,7 +39,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        return serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
 
-        private readonly global::starsky.foundation.database.Query.Query _query;
+        private readonly Query _query;
 
         private static FileIndexItem _insertSearchDatahiJpgInput;
         private static FileIndexItem _insertSearchDatahi2JpgInput;
