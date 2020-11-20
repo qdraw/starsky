@@ -38,8 +38,12 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FileIndexItem("/folder_no_content/") {IsDirectory = true},
 					new FileIndexItem("/folder_content") {IsDirectory = true},
 					new FileIndexItem("/folder_content/test.jpg"),
-					new FileIndexItem("/folder_content/test2.jpg")
-				};
+					new FileIndexItem("/folder_content/test2.jpg"),
+					
+					new FileIndexItem("/Folder_With_ChildItems") {IsDirectory = true},
+					new FileIndexItem("/Folder_With_ChildItems/test.jpg"),
+					new FileIndexItem("/Folder_With_ChildItems/test2.jpg"),
+					};
 			}
 			var services = new ServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();
@@ -75,18 +79,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_With_ChildItems()
 		{
-			var (query, serviceScopeFactory) = CreateNewExampleData(null);
-			
 			var result= await new SyncRemove(_appSettings, 
-				serviceScopeFactory, query).Remove("/folder_content");
+				_serviceScopeFactory, _query).Remove("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[1].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[2].Status);
-			Assert.AreEqual("/folder_content", result[0].FilePath);
-			Assert.AreEqual("/folder_content/test.jpg", result[1].FilePath);
-			Assert.AreEqual("/folder_content/test2.jpg", result[2].FilePath);
+			Assert.AreEqual("/Folder_With_ChildItems", result[0].FilePath);
+			Assert.AreEqual("/Folder_With_ChildItems/test.jpg", result[1].FilePath);
+			Assert.AreEqual("/Folder_With_ChildItems/test2.jpg", result[2].FilePath);
 		}
 	}
 }
