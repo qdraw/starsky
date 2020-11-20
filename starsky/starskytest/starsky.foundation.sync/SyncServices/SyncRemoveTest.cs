@@ -25,22 +25,27 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			(_query, _serviceScopeFactory) = CreateNewExampleData();
+			(_query, _serviceScopeFactory) = CreateNewExampleData(null);
 		}
 
-		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData()
+		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData(List<FileIndexItem> content)
 		{
+			// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
+			if ( content == null )
+			{
+				content = new List<FileIndexItem>
+				{
+					new FileIndexItem("/folder_no_content/") {IsDirectory = true},
+					new FileIndexItem("/folder_content") {IsDirectory = true},
+					new FileIndexItem("/folder_content/test.jpg"),
+					new FileIndexItem("/folder_content/test2.jpg")
+				};
+			}
 			var services = new ServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();
 
 			services.AddScoped(p =>_appSettings);
-			var query = new FakeIQuery(new List<FileIndexItem>
-			{
-				new FileIndexItem("/folder_no_content/") {IsDirectory = true},
-				new FileIndexItem("/folder_content") {IsDirectory = true},
-				new FileIndexItem("/folder_content/test.jpg"),
-				new FileIndexItem("/folder_content/test2.jpg")
-			});
+			var query = new FakeIQuery(content);
 			services.AddScoped<IQuery, FakeIQuery>(p => query);
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
@@ -70,7 +75,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_With_ChildItems()
 		{
-			var (query, serviceScopeFactory) = CreateNewExampleData();
+			var (query, serviceScopeFactory) = CreateNewExampleData(null);
 			
 			var result= await new SyncRemove(_appSettings, 
 				serviceScopeFactory, query).Remove("/folder_content");

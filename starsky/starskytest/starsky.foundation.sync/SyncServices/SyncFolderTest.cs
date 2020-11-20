@@ -89,26 +89,45 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_FilesOnDiskButNotInTheDb()
 		{
-			var (query, serviceScopeFactory) = CreateNewExampleData();
 
-			var syncFolder = new SyncFolder(_appSettings,
-				serviceScopeFactory, query, new FakeSelectorStorage(GetStorage()),
-				new ConsoleWrapper());
-			var result = await syncFolder.Folder("/");
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/Folder_FilesOnDiskButNotInTheDb"
+				}, 
+				new List<string>
+				{
+					"/Folder_FilesOnDiskButNotInTheDb/test1.jpg",
+					"/Folder_FilesOnDiskButNotInTheDb/test2.jpg",
+					"/Folder_FilesOnDiskButNotInTheDb/test3.jpg",
+				},
+				new List<byte[]>
+				{
+					FakeCreateAn.CreateAnImage.Bytes,
+					FakeCreateAn.CreateAnImageColorClass.Bytes,
+					FakeCreateAn.CreateAnImageNoExif.Bytes,
+				});
 			
-			Assert.AreEqual("/test1.jpg",result[0].FilePath);
-			Assert.AreEqual("/test2.jpg",result[1].FilePath);
-			Assert.AreEqual("/test3.jpg",result[2].FilePath);
+			var syncFolder = new SyncFolder(_appSettings,
+				_serviceScopeFactory, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			
+			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
+			
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",result[0].FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",result[1].FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",result[2].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[1].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				query.SingleItem("/test1.jpg").FileIndexItem.Status);
+				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test1.jpg").FileIndexItem.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				query.SingleItem("/test2.jpg").FileIndexItem.Status);
+				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test2.jpg").FileIndexItem.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				query.SingleItem("/test3.jpg").FileIndexItem.Status);
+				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test3.jpg").FileIndexItem.Status);
 		}
 		
 		[TestMethod]
