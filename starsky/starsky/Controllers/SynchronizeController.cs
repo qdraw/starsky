@@ -34,7 +34,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]	   
 		public async Task<IActionResult> Index(string f)
 		{
-			var fileIndexItem = _query.SingleItem(f)?.FileIndexItem;
+			var fileIndexItem = await _query.GetObjectByFilePathAsync(f);
 			if ( fileIndexItem == null )
 			{
 				return NotFound(new List<FileIndexItem>

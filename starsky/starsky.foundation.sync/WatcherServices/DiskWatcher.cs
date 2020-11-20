@@ -19,13 +19,13 @@ namespace starsky.foundation.sync.WatcherServices
 		private readonly IConsole _console;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
-			IServiceScopeFactory scopeFactory, IConsole console)
+			IServiceScopeFactory scopeFactory)
 		{
 
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherPreflight(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
-			_console = console;
+			_console = scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>();
 		}
 
 		/// <summary>
