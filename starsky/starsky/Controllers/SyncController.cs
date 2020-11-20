@@ -50,7 +50,7 @@ namespace starsky.Controllers
 	        var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 	        var syncResultsList = new List<SyncViewModel>();
 
-	        foreach ( var subPath in inputFilePaths.Select(subPath => PathHelper.RemoveLatestSlash(subPath)) )
+	        foreach ( var subPath in inputFilePaths.Select(PathHelper.RemoveLatestSlash) )
 	        {
 
 		        var toAddStatus = new SyncViewModel
@@ -99,7 +99,7 @@ namespace starsky.Controllers
             // the result list
             var syncResultsList = new List<SyncViewModel>();
 
-            for (int i = 0; i < inputFilePaths.Count; i++)
+            for (var i = 0; i < inputFilePaths.Count; i++)
             {
                 var subPath = inputFilePaths[i];
 	            subPath = PathHelper.RemoveLatestSlash(subPath);
@@ -150,7 +150,6 @@ namespace starsky.Controllers
 					Console.WriteLine(">>> running clear cache "+ subPath);
 					_query.RemoveCacheParentItem(subPath);
 				});
-	            
 			}
 			
 			return Json(syncResultsList);

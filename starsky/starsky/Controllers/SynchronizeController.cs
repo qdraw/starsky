@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.Controllers
@@ -9,10 +12,12 @@ namespace starsky.Controllers
 	public class SynchronizeController : Controller
 	{
 		private readonly ISynchronize _synchronize;
+		private readonly IQuery _query;
 
-		public SynchronizeController(ISynchronize synchronize )
+		public SynchronizeController(ISynchronize synchronize, IQuery query )
 		{
 			_synchronize = synchronize;
+			_query = query;
 		}
 
 		/// <summary>
@@ -29,6 +34,17 @@ namespace starsky.Controllers
 		[Produces("application/json")]	   
 		public async Task<IActionResult> Index(string f)
 		{
+			var fileIndexItem = _query.SingleItem(f)?.FileIndexItem;
+			if ( fileIndexItem == null )
+			{
+				return NotFound(new List<FileIndexItem>
+				{
+					new FileIndexItem(f)
+					{
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+					}
+				});
+			}
 			return Ok(await _synchronize.Sync(f));
 		}
 	}

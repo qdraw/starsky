@@ -41,7 +41,7 @@ namespace starsky.foundation.sync.SyncServices
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
 
-			_console.WriteLine(subPath);
+			_console.WriteLine($"Sync {subPath}");
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
