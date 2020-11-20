@@ -98,8 +98,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task InDbButNotOnDisk()
 		{
+			var query = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/folder_content") {IsDirectory = true},
+				new FileIndexItem("/folder_content/test.jpg"),
+				new FileIndexItem("/folder_content/test2.jpg"),
+				new FileIndexItem("/") {IsDirectory = true}
+			});
+			
 			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,_query, new FakeSelectorStorage(GetStorage()),
+				_serviceScopeFactory, query, new FakeSelectorStorage(GetStorage()),
 				new ConsoleWrapper()).Folder("/folder_content");
 
 			Assert.AreEqual("/folder_content/test.jpg",result[0].FilePath);
@@ -108,9 +116,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
 			
 			Assert.AreEqual(null, 
-				_query.SingleItem("/folder_content/test.jpg"));
+				query.SingleItem("/folder_content/test.jpg"));
 			Assert.AreEqual(null, 
-				_query.SingleItem("/folder_content/test2.jpg"));
+				query.SingleItem("/folder_content/test2.jpg"));
 		}
 
 		[TestMethod]
