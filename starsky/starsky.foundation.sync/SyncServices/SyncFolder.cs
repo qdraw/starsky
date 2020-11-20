@@ -20,13 +20,11 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
 		private readonly IQuery _query;
 		private readonly IStorage _subPathStorage;
-		private readonly ISelectorStorage _selectorStorage;
 		private readonly IConsole _console;
 
 		public SyncFolder(AppSettings appSettings, IServiceScopeFactory serviceScopeFactory, IQuery query, 
 			ISelectorStorage selectorStorage, IConsole console)
 		{
-			_selectorStorage = selectorStorage;
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
 			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,
