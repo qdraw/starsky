@@ -123,11 +123,11 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test1.jpg").FileIndexItem.Status);
+				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test1.jpg").Result.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test2.jpg").FileIndexItem.Status);
+				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test2.jpg").Result.Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				_query.SingleItem("/Folder_FilesOnDiskButNotInTheDb/test3.jpg").FileIndexItem.Status);
+				_query.GetObjectByFilePathAsync("/Folder_FilesOnDiskButNotInTheDb/test3.jpg").Result.Status);
 		}
 		
 		[TestMethod]

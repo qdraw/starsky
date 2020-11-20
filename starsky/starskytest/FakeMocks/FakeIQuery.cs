@@ -89,6 +89,13 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
+			Console.WriteLine($"updateStatusContent {updateStatusContent}");
+
+			foreach ( var c in _fakeContext )
+			{
+				Console.WriteLine(c.FilePath);
+			}
+			
 			if ( _fakeContext.Exists(p => p.FilePath == updateStatusContent.FilePath) )
 			{
 				_fakeContext.Remove(updateStatusContent);
