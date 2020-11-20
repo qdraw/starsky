@@ -59,6 +59,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new ConsoleWrapper());
+			
 			await sync.SingleFile("/test.jpg");
 
 			// should add files to db
@@ -68,9 +69,30 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(fileIndexItem.FilePath, "/test.jpg");
 			
 			// should not duplicate add items
-			var count= fakeQuery.GetAllFiles("/").Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 		}
+	
+		[TestMethod]
+        public async Task AddNewFile_NoConsole()
+        {
+        	var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+        	var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+        		_iStorageFake, null); //  % % % % % % % % % % % % % % No Console % % % %
+        	
+        	await sync.SingleFile("/test.jpg");
+
+        	// should add files to db
+        	var detailView = fakeQuery.SingleItem("/test.jpg");
+        	Assert.IsNotNull(detailView);
+        	var fileIndexItem = detailView.FileIndexItem;
+        	Assert.AreEqual(fileIndexItem.FilePath, "/test.jpg");
+        	
+        	// should not duplicate add items
+        	var count= (await fakeQuery.GetAllFilesAsync("/")).Count(
+	            p => p.FileName == "test.jpg");
+        	Assert.AreEqual(1,count);
+        }
 		
 		[TestMethod]
 		public async Task AddNewFile_WithParentFolders()
@@ -129,7 +151,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 
-			var count= fakeQuery.GetAllFiles("/").Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
 			var detailView = fakeQuery.SingleItem("/test.jpg");
