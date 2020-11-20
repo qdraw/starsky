@@ -53,13 +53,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		private IStorage GetStorage()
 		{
 			return new FakeIStorage(
-				new List<string> {"/", "/test"}, 
+				new List<string>
+				{
+					"/", 
+					"/test",
+					"/folder_no_content"
+				}, 
 				new List<string>
 				{
 					"/test1.jpg",
 					"/test2.jpg",
 					"/test3.jpg",
-					"/test/test4.jpg"
+					"/test/test4.jpg",
 				},
 				new List<byte[]>
 				{
@@ -71,7 +76,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task Dir_NotFound()
+		public async Task Folder_Dir_NotFound()
 		{
 			var result = await new SyncFolder(_appSettings, 
 				_serviceScopeFactory,_query, new FakeSelectorStorage(GetStorage()), 
@@ -82,7 +87,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task FilesOnDiskButNotInTheDb()
+		public async Task Folder_FilesOnDiskButNotInTheDb()
 		{
 			var result = await new SyncFolder(_appSettings, 
 				_serviceScopeFactory,_query, new FakeSelectorStorage(GetStorage()),
@@ -104,7 +109,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task InDbButNotOnDisk()
+		public async Task Folder_InDbButNotOnDisk()
 		{
 			var (query, serviceScopeFactory) = CreateNewExampleData();
 
@@ -122,9 +127,22 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(null, 
 				query.SingleItem("/folder_content/test2.jpg"));
 		}
+		
+		[TestMethod]
+		public async Task Folder_FolderWithNoContent()
+		{
+			var (query, serviceScopeFactory) = CreateNewExampleData();
+
+			var result = await new SyncFolder(_appSettings, 
+				serviceScopeFactory, query, new FakeSelectorStorage(GetStorage()),
+				new ConsoleWrapper()).Folder("/folder_no_content");
+
+			Assert.AreEqual("/folder_no_content",result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
+		}
 
 		[TestMethod]
-		public async Task FileSizeIsChanged()
+		public async Task Folder_FileSizeIsChanged()
 		{
 			var subPath = "/change/test_change.jpg";
 			await _query.AddItemAsync(new FileIndexItem(subPath)
@@ -147,7 +165,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task ShouldAddFolderItSelfAndParentFolders()
+		public async Task Folder_ShouldAddFolderItSelfAndParentFolders()
 		{
 			var storage = GetStorage();
 			var folderPath = "/should_add_root";
