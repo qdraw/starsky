@@ -5,6 +5,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
 {
@@ -12,49 +13,63 @@ namespace starsky.foundation.database.Helpers
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IServiceCollection _services;
+		private readonly IConsole _console;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services, IConsole console = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
+			_console = console;
 		}
-		public void BuilderDb(string foundationDatabaseName = "")
+
+		public ApplicationDbContext BuilderDbFactory()
 		{
-			if ( _appSettings.Verbose ) Console.WriteLine(_appSettings.DatabaseConnection);
-			switch (_appSettings.DatabaseType)
+			return new ApplicationDbContext(BuilderDbFactorySwitch());
+		}
+		
+		internal DbContextOptions<ApplicationDbContext> BuilderDbFactorySwitch(string foundationDatabaseName = "")
+		{
+			switch ( _appSettings.DatabaseType )
 			{
-				case (AppSettings.DatabaseTypeList.Mysql):
-					_services.AddDbContext<ApplicationDbContext>(
-						options => options.UseMySql(_appSettings.DatabaseConnection, mySqlOptions =>
+				case ( AppSettings.DatabaseTypeList.Mysql ):
+					var mysql = new DbContextOptionsBuilder<ApplicationDbContext>()
+						.UseMySql(_appSettings.DatabaseConnection, mySqlOptions =>
 						{
 							mySqlOptions.CharSet(CharSet.Utf8Mb4);
 							mySqlOptions.CharSetBehavior(CharSetBehavior.AppendToAllColumns);
 							mySqlOptions.EnableRetryOnFailure(2);
-							if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+							if ( !string.IsNullOrWhiteSpace(foundationDatabaseName) )
 							{
 								mySqlOptions.MigrationsAssembly(foundationDatabaseName);
 							}
-						})
-					);
-					break;
+						});
+					return mysql.Options;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
-					_services.AddDbContext<ApplicationDbContext>(
-						options => options.UseInMemoryDatabase("starsky"));
-					break;
+					var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
+						.UseInMemoryDatabase("starsky");
+					return memoryDatabase.Options;
 				case AppSettings.DatabaseTypeList.Sqlite:
-					_services.AddDbContext<ApplicationDbContext>(
-						options => options.UseSqlite(_appSettings.DatabaseConnection, 
-						b =>
-						{
-							if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+					var sqlite = new DbContextOptionsBuilder<ApplicationDbContext>()
+						.UseSqlite(_appSettings.DatabaseConnection, 
+							b =>
 							{
-								b.MigrationsAssembly(foundationDatabaseName);
-							}
-						}));
-					break;
+								if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+								{
+									b.MigrationsAssembly(foundationDatabaseName);
+								}
+							});
+					return sqlite.Options;
 				default:
 					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
+
+		public void BuilderDb(string foundationDatabaseName = "")
+		{
+			if ( _console != null && _appSettings.Verbose ) 
+				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
+			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+		}
+
 	}
 }

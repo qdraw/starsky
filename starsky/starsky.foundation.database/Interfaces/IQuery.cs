@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -9,9 +10,11 @@ namespace starsky.foundation.database.Interfaces
     public interface IQuery
     {
         List<FileIndexItem> GetAllFiles(string subPath);
+        Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
-        List<FileIndexItem> GetAllRecursive(string subPath = "");
-
+        List<FileIndexItem> GetAllRecursive(string subPath = "/");
+        Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
+        
         /// <summary>
         /// to do the query and return object
         /// </summary>
@@ -52,6 +55,7 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
         
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
+        Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 
         /// <summary>
         /// Clear the directory name from the cache
@@ -72,6 +76,9 @@ namespace starsky.foundation.database.Interfaces
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
+        Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
+        Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
+
         [Obsolete("use PathHelper.RemoveLatestSlash()")]
         string SubPathSlashRemove(string subPath = "/");
 
@@ -80,6 +87,20 @@ namespace starsky.foundation.database.Interfaces
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
+        /// <summary>
+        /// Add Sub Path Folder - Parent Folders
+        ///  root(/)
+        ///      /2017  *= index only this folder
+        ///      /2018
+        /// If you use the cmd: $ starskycli -s "/2017"
+        /// the folder '2017' it self is not added 
+        /// and all parent paths are not included
+        /// this class does add those parent folders
+        /// </summary>
+        /// <param name="subPath">subPath as input</param>
+        /// <returns>void</returns>
         Task AddParentItemsAsync(string subPath);
+        IQuery Clone( ApplicationDbContext applicationDbContext);
+        void Invoke(ApplicationDbContext applicationDbContext);
     }
 }

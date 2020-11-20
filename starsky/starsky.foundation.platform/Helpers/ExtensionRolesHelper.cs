@@ -332,6 +332,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>ImageFormat enum</returns>
 		public static ImageFormat GetImageFormat(Stream stream)
 		{
+			if ( stream == Stream.Null ) return ImageFormat.notfound;
 			byte[] buffer = new byte[43];
 			try
 			{

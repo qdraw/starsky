@@ -23,7 +23,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (Added) _Frond-end_  Search details show exact query behind modal
 - [ ]   (Added) _Front-end_ Zoom in picture
 - [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
-- [ ]   (Added) _Back-end_ Realtime Files API (issue #75) __not implemented__
 
 # Importer, Epic (Work in Progress)
 - [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
@@ -34,6 +33,10 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.1 _(Unreleased)_ - 2020-11-??
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
+- [x]   (Added) _Back-end_ Change fileHash behavior to have more timeout time
+- [x]   (Added) _Back-end_ add round for focalLength
+- [x]   (Added) _Back-end_ Realtime Files API (issue #75) behind _useDiskWatcher_ feature toggle
+- [x]   (Added) _Back-end_ New Sync service 'starsky.foundation.sync' behind new API
 
 # version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_

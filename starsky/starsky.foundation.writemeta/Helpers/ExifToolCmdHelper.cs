@@ -491,7 +491,7 @@ namespace starsky.foundation.writemeta.Helpers
 	    {
 		    if ( !comparedNames.Contains(nameof(FileIndexItem.FocalLength).ToLowerInvariant()) ) return command;
 
-		    var focalLength = $"{updateModel.FocalLength} mm";
+		    var focalLength = $"{updateModel.FocalLength.ToString(CultureInfo.InvariantCulture)} mm";
 		    command += $" -FocalLength=\"{focalLength}\" \"-xmp:FocalLength={focalLength}\" ";
 
 		    return command;

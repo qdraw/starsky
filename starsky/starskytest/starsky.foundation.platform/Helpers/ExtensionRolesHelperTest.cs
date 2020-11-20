@@ -246,5 +246,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
 	        Assert.IsFalse(result);
         }
+
+        [TestMethod]
+        public void GetImageFormat_NotFound()
+        {
+	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.notfound, 
+		        ExtensionRolesHelper.GetImageFormat(Stream.Null));
+        }
 	}
 }

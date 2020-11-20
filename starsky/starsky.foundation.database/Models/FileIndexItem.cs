@@ -231,19 +231,45 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public enum ExifStatus
         {
+	        /// <summary>
+	        /// Default (should update)
+	        /// </summary>
             Default,
+	        /// <summary>
+	        /// Writing is not supported
+	        /// </summary>
             ExifWriteNotSupported,
+            /// <summary>
+            /// This file is not in the database
+            /// </summary>
             NotFoundNotInIndex,
+            /// <summary>
+            /// Source is missing on disk
+            /// </summary>
             NotFoundSourceMissing,
-            NotFoundIsDir,
+            /// <summary>
+            /// The operation is not supported
+            /// </summary>
 	        OperationNotSupported,
 	        /// <summary>
 	        /// Directory is read only
 	        /// </summary>
             DirReadOnly,
+	        /// <summary>
+	        /// Not allowed to edit
+	        /// </summary>
             ReadOnly,
+	        /// <summary>
+	        /// Not allowed
+	        /// </summary>
             Unauthorized,
+            /// <summary>
+            /// Everything is Good
+            /// </summary>
             Ok,
+            /// <summary>
+            /// File is in trash
+            /// </summary>
             Deleted,
         }
 

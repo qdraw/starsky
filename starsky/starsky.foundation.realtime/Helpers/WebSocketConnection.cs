@@ -101,7 +101,7 @@ namespace starsky.foundation.realtime.Helpers
 			catch ( WebSocketException webSocketException ) when ( webSocketException.WebSocketErrorCode ==
 			                                         WebSocketError.ConnectionClosedPrematurely )
 			{
-				Console.WriteLine("connection ConnectionClosedPrematurely");
+				Console.WriteLine("connection ConnectionClosedPrematurely (exception is catch-ed) ");
 			}
 		}
 

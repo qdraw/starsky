@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -20,18 +22,31 @@ namespace starskytest.FakeMocks
 		
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
+		}
+
+		public Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
+		{
+			return Task.FromResult(GetAllFiles(subPath));
 		}
 
 		public List<FileIndexItem> GetAllRecursive(string subPath = "")
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.Where
+					(p => p.ParentDirectory.StartsWith(subPath))
+				.OrderBy(r => r.FileName).ToList();
 		}
 
-		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", List<ColorClassParser.Color> colorClassActiveList = null,
+		public Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
+		{
+			return Task.FromResult(GetAllRecursive(subPath));
+		}
+
+		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
+			List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new System.NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
@@ -69,13 +84,27 @@ namespace starskytest.FakeMocks
 
 		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
-			throw new NotImplementedException();
+			return Task.FromResult(_fakeContext.FirstOrDefault(p => p.FilePath == filePath));
 		}
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
-			_fakeContext.Remove(updateStatusContent);
+			Console.WriteLine($"updateStatusContent {updateStatusContent}");
+
+			try
+			{
+				_fakeContext.Remove(updateStatusContent);
+			}
+			catch ( ArgumentOutOfRangeException)
+			{
+			}
+
 			return updateStatusContent;
+		}
+
+		public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+		{
+			return Task.FromResult(RemoveItem(updateStatusContent));
 		}
 
 		public bool RemoveCacheParentItem(string directoryName)
@@ -95,7 +124,7 @@ namespace starskytest.FakeMocks
 
 		public List<FileIndexItem> GetAllFolders()
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.Where(p => p.IsDirectory == true).ToList();
 		}
 
 		public FileIndexItem AddItem(FileIndexItem updateStatusContent)
@@ -104,12 +133,10 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
-#pragma warning disable 1998
-		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
-#pragma warning restore 1998
+		public Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 		{
 			// ReSharper disable once MethodHasAsyncOverload
-			return AddItem(updateStatusContent);
+			return Task.FromResult(AddItem(updateStatusContent));
 		}
 
 		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
@@ -123,7 +150,23 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 		{
-			throw new System.NotImplementedException();
+			_fakeContext = _fakeContext.Where(p => p.FilePath == updateStatusContent.FilePath)
+				.Select(c => updateStatusContent).ToList();
+			return updateStatusContent;
+		}
+		
+		public Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
+		{
+			return Task.FromResult(UpdateItem(updateStatusContent));
+		}
+
+		public Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
+		{
+			foreach ( var item in updateStatusContentList )
+			{
+				UpdateItem(item);
+			}
+			return Task.FromResult(updateStatusContentList);
 		}
 
 		public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
@@ -151,9 +194,41 @@ namespace starskytest.FakeMocks
 			Console.WriteLine("CacheUpdateItem is called");
 		}
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 		public async Task AddParentItemsAsync(string subPath)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+		{
+			var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
+			var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
+
+			var toAddList = new List<FileIndexItem>();
+			
+			var indexItems = _fakeContext
+				.Where(p => pathListShouldExist.Any(f => f == p.FilePath)).ToList();
+
+			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+			foreach ( var pathShouldExist in pathListShouldExist )
+			{
+				if ( !indexItems.Select(p => p.FilePath).Contains(pathShouldExist) )
+				{
+					toAddList.Add(new FileIndexItem(pathShouldExist)
+					{
+						IsDirectory = true,
+						AddToDatabase = DateTime.UtcNow,
+						ColorClass = ColorClassParser.Color.None
+					});
+				}
+			}
+
+			await AddRangeAsync(toAddList);
+		}
+
+		public IQuery Clone(ApplicationDbContext applicationDbContext)
+		{
+			var query = (IQuery) MemberwiseClone();
+			query.Invoke(applicationDbContext);
+			return query;
+		}
+
+		public void Invoke(ApplicationDbContext applicationDbContext)
 		{
 		}
 

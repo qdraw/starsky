@@ -37,6 +37,14 @@ namespace starsky.foundation.database.Query
             _scopeFactory = scopeFactory;
         }
 
+        private IOrderedQueryable<FileIndexItem> GetAllFilesQuery(ApplicationDbContext context, string subPath)
+        {
+	        if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+	        return context.FileIndex.Where
+			        (p => p.IsDirectory == false && p.ParentDirectory == subPath)
+		        .OrderBy(r => r.FileName);
+        }
+
 	    /// <summary>
 		/// Get a list of all files inside an folder (NOT recursive)
 		/// But this uses a database as source
@@ -45,12 +53,49 @@ namespace starsky.foundation.database.Query
 		/// <returns>list of FileIndex-objects</returns>
         public List<FileIndexItem> GetAllFiles(string subPath)
         {
-            if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
-
+            try
+            {
+	            return GetAllFilesQuery(_context,subPath).ToList();
+            }
+            catch ( ObjectDisposedException )
+            {
+	            return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToList();
+            }
+        }
+	    
+	    /// <summary>
+	    /// Get a list of all files inside an folder (NOT recursive)
+	    /// But this uses a database as source
+	    /// </summary>
+	    /// <param name="subPath">relative database path</param>
+	    /// <returns>list of FileIndex-objects</returns>
+	    public async Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
+	    {
+		    try
+		    {
+			    return await GetAllFilesQuery(_context,subPath).ToListAsync();
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    return await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync();
+		    }
+	    }
+	    
+	    /// <summary>
+	    /// Includes sub items in file
+	    /// Used for Orphan Check
+	    /// All files in
+	    /// </summary>
+	    /// <param name="subPath">local path</param>
+	    /// <returns>results</returns>
+        public List<FileIndexItem> GetAllRecursive(string subPath = "/")
+        {
+            subPath = PathHelper.RemoveLatestSlash(subPath);
+            
             List<FileIndexItem> LocalQuery(ApplicationDbContext context)
             {
 	            return context.FileIndex.Where
-			            (p => p.IsDirectory == false && p.ParentDirectory == subPath)
+			            (p => p.ParentDirectory.Contains(subPath) )
 		            .OrderBy(r => r.FileName).ToList();
             }
             
@@ -69,28 +114,32 @@ namespace starsky.foundation.database.Query
 	    /// Used for Orphan Check
 	    /// All files in
 	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
-        public List<FileIndexItem> GetAllRecursive(string subPath = "/")
-        {
-            subPath = PathHelper.RemoveLatestSlash(subPath);
+	    /// <param name="subPath">local path</param>
+	    /// <returns>results</returns>
+	    public async Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
+	    {
+		    subPath = PathHelper.RemoveLatestSlash(subPath);
             
-            List<FileIndexItem> Query(ApplicationDbContext context)
-            {
-	            return context.FileIndex.Where
-			            (p => p.ParentDirectory.Contains(subPath) )
-		            .OrderBy(r => r.FileName).ToList();
-            }
-            
-            try
-            {
-	            return Query(_context);
-            }
-            catch ( ObjectDisposedException )
-            {
-	            return Query(new InjectServiceScope(_scopeFactory).Context());
-            }
-        }
+		    async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
+		    {
+			    return await context.FileIndex.Where
+					    (p => p.ParentDirectory.StartsWith(subPath) )
+				    .OrderBy(r => r.FileName).ToListAsync();
+		    }
+
+		    try
+		    {
+			    return await LocalQuery(_context);
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+		    catch ( InvalidOperationException )
+		    {
+			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+	    }
 
 		/// <summary>
 		/// Returns a database object file or folder
@@ -125,10 +174,11 @@ namespace starsky.foundation.database.Query
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
-			Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
+			async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 			{
-				return context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
+				return await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
 			}
+			
 			try
 			{
 				return await LocalQuery(_context);
@@ -224,49 +274,82 @@ namespace starsky.foundation.database.Query
             uniqueSingleDbCacheNameBuilder.Append(functionName + "_" + singleItemDbPath);
             return uniqueSingleDbCacheNameBuilder.ToString();
         }
+        
+        /// <summary>
+        /// Update one single item in the database
+        /// For the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContent">content to updated</param>
+        /// <returns>this item</returns>
+        public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
+        {
+	        //  Update te last edited time manual
+	        updateStatusContent.SetLastEdited();
+	        try
+	        {
+		        _context.Attach(updateStatusContent).State = EntityState.Modified;
+		        await _context.SaveChangesAsync();
+		        _context.Attach(updateStatusContent).State = EntityState.Detached;
+	        }
+	        catch ( ObjectDisposedException e)
+	        {
+		        await RetrySaveChangesAsync(updateStatusContent, e);
+	        }
+            
+	        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+
+	        return updateStatusContent;
+        }
+
+        public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
+        {
+	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
+	        {
+		        foreach ( var item in fileIndexItems )
+		        {
+			        item.SetLastEdited();
+			        context.Attach(item).State = EntityState.Modified;
+		        }
+
+		        await context.SaveChangesAsync();
+		        
+		        foreach ( var item in fileIndexItems )
+		        {
+			        context.Attach(item).State = EntityState.Detached;
+		        }
+
+		        return fileIndexItems;
+	        }
+
+	        try
+	        {
+		        return await LocalQuery(_context, updateStatusContentList);
+	        }
+	        catch (ObjectDisposedException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return await LocalQuery(context, updateStatusContentList);
+	        }
+        }
 
 
         /// <summary>
-        /// Update a list of items in the index
-        /// Used for the API/update endpoint
+        /// Retry when an Exception has occured
         /// </summary>
-        /// <param name="updateStatusContentList">list of items to be updated</param>
-        /// <returns>the same list, and updated in the database</returns>
-        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
+        /// <param name="updateStatusContent"></param>
+        /// <param name="e">Exception</param>
+        private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-            void CatchLoop(Exception e)
-            {
-	            foreach ( var item in updateStatusContentList )
-	            {
-		            item.SetLastEdited();
-		            RetrySaveChanges(item, e);
-	            }
-            }
-
-            try
-            {
-	            foreach (var item in updateStatusContentList)
-	            {
-		            //  Update te last edited time manual
-		            item.SetLastEdited();
-		            // Set state to edit mode
-		            _context.Attach(item).State = EntityState.Modified;
-	            }
-	            _context.SaveChanges();
-            }
-            catch (ObjectDisposedException e)
-            {
-	            CatchLoop(e);
-            }
-            catch (InvalidOperationException e)
-            {
-	            CatchLoop(e);
-            }
-
-            CacheUpdateItem(updateStatusContentList);
-            return updateStatusContentList;
+	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
+	        // https://go.microsoft.com/fwlink/?linkid=2097913
+	        await Task.Delay(10);
+	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
+	        var context = new InjectServiceScope(_scopeFactory).Context();
+	        context.Attach(updateStatusContent).State = EntityState.Modified;
+	        await context.SaveChangesAsync();
+	        context.Attach(updateStatusContent).State = EntityState.Detached; 
         }
-
+        
         /// <summary>
         /// Update one single item in the database
         /// For the API/update endpoint
@@ -291,6 +374,47 @@ namespace starsky.foundation.database.Query
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
+        }
+        
+        /// <summary>
+        /// Update a list of items in the index
+        /// Used for the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContentList">list of items to be updated</param>
+        /// <returns>the same list, and updated in the database</returns>
+        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
+        {
+	        void CatchLoop(Exception e)
+	        {
+		        foreach ( var item in updateStatusContentList )
+		        {
+			        item.SetLastEdited();
+			        RetrySaveChanges(item, e);
+		        }
+	        }
+
+	        try
+	        {
+		        foreach (var item in updateStatusContentList)
+		        {
+			        //  Update te last edited time manual
+			        item.SetLastEdited();
+			        // Set state to edit mode
+			        _context.Attach(item).State = EntityState.Modified;
+		        }
+		        _context.SaveChanges();
+	        }
+	        catch (ObjectDisposedException e)
+	        {
+		        CatchLoop(e);
+	        }
+	        catch (InvalidOperationException e)
+	        {
+		        CatchLoop(e);
+	        }
+
+	        CacheUpdateItem(updateStatusContentList);
+	        return updateStatusContentList;
         }
         
         /// <summary>
@@ -444,48 +568,67 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
-		    try
+		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
-			    await _context.FileIndex.AddAsync(fileIndexItem);
-			    await _context.SaveChangesAsync();
+			    await context.FileIndex.AddAsync(fileIndexItem);
+			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
-			    _context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    AddCacheItem(fileIndexItem);
+			    return fileIndexItem;
+		    }
+		    
+		    try
+		    {
+			    return await LocalQuery(_context);
 		    }
 		    catch (ObjectDisposedException)
 		    {
 			    var context = new InjectServiceScope( _scopeFactory).Context();
-			    await context.FileIndex.AddAsync(fileIndexItem);
-			    await context.SaveChangesAsync();
-			    context.Entry(fileIndexItem).State = EntityState.Unchanged;
+			    return await LocalQuery(context);
 		    }
-            
-		    AddCacheItem(fileIndexItem);
+	    }
 
-		    return fileIndexItem;
+	    private async Task<List<FileIndexItem>> GetParentItems(List<string> pathListShouldExist)
+	    {
+		    async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
+		    {
+			    return await context.FileIndex.Where(p => 
+				    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    }
+
+		    try
+		    {
+			    return await LocalQuery(_context);
+
+		    }
+		    catch ( ObjectDisposedException)
+		    {
+			    return await LocalQuery(new InjectServiceScope( _scopeFactory).Context());
+		    }
 	    }
 	    
 	    /// <summary>
 	    /// Add Sub Path Folder - Parent Folders
 	    ///  root(/)
-	    ///      /2017  <= index only this folder
+	    ///      /2017  *= index only this folder
 	    ///      /2018
 	    /// If you use the cmd: $ starskycli -s "/2017"
 	    /// the folder '2017' it self is not added 
 	    /// and all parent paths are not included
 	    /// this class does add those parent folders
 	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
+	    /// <param name="subPath">subPath as input</param>
+	    /// <returns>void</returns>
 	    public async Task AddParentItemsAsync(string subPath)
 	    {
 		    var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
 		    var pathListShouldExist = Breadcrumbs.BreadcrumbHelper(path).ToList();
 
-		    var toAddList = new List<FileIndexItem>();
-		    var indexItems = await _context.FileIndex.Where(p => 
-			    pathListShouldExist.Any(f => f == p.FilePath)).ToListAsync();
+		    var indexItems = await GetParentItems(pathListShouldExist);
 
+		    var toAddList = new List<FileIndexItem>();
 		    // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 		    foreach ( var pathShouldExist in pathListShouldExist )
 		    {
@@ -528,6 +671,40 @@ namespace starsky.foundation.database.Query
 			// remove getFileHash Cache
 			ResetItemByHash(updateStatusContent.FileHash);
 			return updateStatusContent;
+	    }
+	    
+	    /// <summary>
+	    /// Remove a new item from the database (NOT from the file system)
+	    /// </summary>
+	    /// <param name="updateStatusContent">the FileIndexItem with database data</param>
+	    /// <returns></returns>
+	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+	    {
+		    async Task LocalQuery(ApplicationDbContext context)
+		    {
+			    context.FileIndex.Remove(updateStatusContent);
+			    await context.SaveChangesAsync();
+		    }
+
+		    try
+		    {
+			    await LocalQuery(_context);
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+		    catch ( InvalidOperationException )
+		    {
+			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+		    }
+
+		    // remove parent directory cache
+		    RemoveCacheItem(updateStatusContent);
+
+		    // remove getFileHash Cache
+		    ResetItemByHash(updateStatusContent.FileHash);
+		    return updateStatusContent;
 	    }
     }
 }

@@ -1,0 +1,315 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
+using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.sync.SyncServices;
+using starskytest.FakeMocks;
+
+namespace starskytest.starsky.foundation.sync.SyncServices
+{
+	[TestClass]
+	public class SyncFolderTest
+	{
+		private readonly IServiceScopeFactory _serviceScopeFactory;
+		private readonly AppSettings _appSettings;
+		private readonly IQuery _query;
+
+		public SyncFolderTest()
+		{
+			var services = new ServiceCollection();
+			_appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			};
+			(_query, _serviceScopeFactory) = CreateNewExampleData();
+		}
+		
+		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData()
+		{
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+
+			services.AddScoped(p =>_appSettings);
+			var query = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/folder_no_content/") {IsDirectory = true},
+				new FileIndexItem("/folder_content") {IsDirectory = true},
+				new FileIndexItem("/folder_content/test.jpg"),
+				new FileIndexItem("/folder_content/test2.jpg")
+			});
+			services.AddScoped<IQuery, FakeIQuery>(p => query);
+			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
+		}
+
+		
+		private IStorage GetStorage()
+		{
+			return new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/test",
+					"/folder_no_content"
+				}, 
+				new List<string>
+				{
+					"/test1.jpg",
+					"/test2.jpg",
+					"/test3.jpg",
+					"/test/test4.jpg",
+				},
+				new List<byte[]>
+				{
+					FakeCreateAn.CreateAnImage.Bytes,
+					FakeCreateAn.CreateAnImageColorClass.Bytes,
+					FakeCreateAn.CreateAnImageNoExif.Bytes,
+					FakeCreateAn.CreateAnImage.Bytes
+				});
+		}
+		
+		[TestMethod]
+		public async Task Folder_Dir_NotFound()
+		{
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,_query, new FakeSelectorStorage(GetStorage()), 
+				new ConsoleWrapper()).Folder("/not_found");
+
+			Assert.AreEqual("/not_found",result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
+		}
+
+		[TestMethod]
+		public async Task Folder_FilesOnDiskButNotInTheDb()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/Folder_FilesOnDiskButNotInTheDb"
+				}, 
+				new List<string>
+				{
+					"/Folder_FilesOnDiskButNotInTheDb/test1.jpg",
+					"/Folder_FilesOnDiskButNotInTheDb/test2.jpg",
+					"/Folder_FilesOnDiskButNotInTheDb/test3.jpg",
+				},
+				new List<byte[]>
+				{
+					FakeCreateAn.CreateAnImage.Bytes,
+					FakeCreateAn.CreateAnImageColorClass.Bytes,
+					FakeCreateAn.CreateAnImageNoExif.Bytes,
+				});
+			
+			var syncFolder = new SyncFolder(_appSettings,
+				_serviceScopeFactory, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			
+			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
+			
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",result[0].FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",result[1].FilePath);
+			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",result[2].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
+
+			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[2].Status);
+
+		}
+		
+		[TestMethod]
+		public async Task Folder_InDbButNotOnDisk()
+		{
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk/test.jpg"));
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk/test2.jpg"));
+
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory, _query, new FakeSelectorStorage(GetStorage()),
+				new ConsoleWrapper()).Folder("/Folder_InDbButNotOnDisk");
+
+			Assert.AreEqual("/Folder_InDbButNotOnDisk/test.jpg",result[0].FilePath);
+			Assert.AreEqual("/Folder_InDbButNotOnDisk/test2.jpg",result[1].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
+			
+			Assert.AreEqual(null, 
+				_query.SingleItem("/Folder_InDbButNotOnDisk/test.jpg"));
+			Assert.AreEqual(null, 
+				_query.SingleItem("/Folder_InDbButNotOnDisk/test2.jpg"));
+		}
+		
+		[TestMethod]
+		public async Task Folder_FolderWithNoContent()
+		{
+			var (query, serviceScopeFactory) = CreateNewExampleData();
+
+			var result = await new SyncFolder(_appSettings, 
+				serviceScopeFactory, query, new FakeSelectorStorage(GetStorage()),
+				new ConsoleWrapper()).Folder("/folder_no_content");
+
+			Assert.AreEqual("/folder_no_content",result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
+		}
+
+		[TestMethod]
+		public async Task Folder_FileSizeIsChanged()
+		{
+			var subPath = "/change/test_change.jpg";
+			await _query.AddItemAsync(new FileIndexItem(subPath)
+			{
+				Size = 123456
+			});
+			
+			var storage = GetStorage();
+			await storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImage.Bytes),
+				subPath);
+			
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,_query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).Folder("/change");
+
+			Assert.AreEqual(subPath,result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
+			Assert.IsTrue(result[0].Size != 123456);
+			Assert.IsFalse(string.IsNullOrWhiteSpace(result[0].Tags));
+		}
+
+		[TestMethod]
+		public async Task Folder_ShouldAddFolderItSelfAndParentFolders()
+		{
+			var storage = GetStorage();
+			var folderPath = "/should_add_root";
+			storage.CreateDirectory(folderPath);
+
+			var query = new FakeIQuery();
+			var results = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).Folder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual(folderPath, results[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,results[0].Status);
+		}
+
+		[TestMethod]
+		public async Task AddParentFolder_NewFolders()
+		{
+			var storage = GetStorage();
+			var folderPath = "/should_add_root2";
+			storage.CreateDirectory(folderPath);
+
+			var query = new FakeIQuery();
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+		}
+		
+		[TestMethod]
+		public async Task AddParentFolder_ExistingFolder()
+		{
+			var storage = GetStorage();
+			var folderPath = "/exist2";
+			
+			var query = new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/exist2")
+			{
+				IsDirectory = true
+			}});
+			
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+
+			// should not add duplicate content
+			var allItems = await query.GetAllRecursiveAsync("/");
+			
+			Assert.AreEqual(1, allItems.Count);
+			Assert.AreEqual(folderPath, allItems[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,allItems[0].Status);
+		}
+
+		[TestMethod]
+		public async Task AddParentFolder_NotFound()
+		{
+			var storage = GetStorage();
+			var folderPath = "/not-found";
+			
+			var query = new FakeIQuery();
+			
+			var result = await new SyncFolder(_appSettings, 
+				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper()).AddParentFolder(folderPath);
+
+			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
+			Assert.AreEqual(folderPath, result.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result.Status);
+
+			// should not add content
+			var allItems = await query.GetAllRecursiveAsync("/");
+			Assert.AreEqual(0, allItems.Count);
+		}
+
+		[TestMethod]
+		public void PathsToUpdateInDatabase_FilesOnDiskButNotInTheDb()
+		{
+			var results = SyncFolder.PathsToUpdateInDatabase(
+				new List<FileIndexItem>(), new List<string>
+				{
+					"/test.jpg",
+				});
+
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual("/test.jpg", results[0]);
+		}
+		
+		[TestMethod]
+		public void PathsToUpdateInDatabase_InDbButNotOnDisk()
+		{
+			var results = SyncFolder.PathsToUpdateInDatabase(
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg")
+				}, new string[0]);
+
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual("/test.jpg", results[0]);
+		}
+		
+		[TestMethod]
+		public void PathsToUpdateInDatabase_ExistBoth()
+		{
+			var results = SyncFolder.PathsToUpdateInDatabase(
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg")
+				}, new List<string>
+				{
+					"/test.jpg",
+				});
+
+			Assert.AreEqual(1, results.Count);
+			Assert.AreEqual("/test.jpg", results[0]);
+		}
+	}
+}

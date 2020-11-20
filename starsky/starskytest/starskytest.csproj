@@ -9,6 +9,11 @@
     <!-- used for RazorLight -->
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
+  <PropertyGroup>
+    <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>
+    <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+    
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
   <ItemGroup>
@@ -42,6 +47,7 @@
     <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
     <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
     <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
     <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
     <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
@@ -79,5 +85,10 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="starsky.feature.health\Helpers" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\build.vstest.runsettings">
+        <Link>build.vstest.runsettings</Link>
+      </Content>
     </ItemGroup>
 </Project>

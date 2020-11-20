@@ -105,8 +105,10 @@ Task("TestEnv")
 Task("CleanNetCore")
     .Does(() =>
     {
+        /*
+        Issues with .NET 5
         Information("DotNetCoreClean for .");
-        DotNetCoreClean(".");
+        DotNetCoreClean("."); */
 
         foreach(var runtime in runtimes)
         {
