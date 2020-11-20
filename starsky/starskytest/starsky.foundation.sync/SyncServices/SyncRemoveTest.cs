@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,26 +17,33 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
-		private readonly FakeIQuery _query;
+		private readonly IQuery _query;
 
 		public SyncRemoveTest()
 		{
-			var services = new ServiceCollection();
-			var serviceProvider = services.BuildServiceProvider();
 			_appSettings = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
+			(_query, _serviceScopeFactory) = CreateNewExampleData();
+		}
+
+		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData()
+		{
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+
 			services.AddScoped(p =>_appSettings);
-			_query = new FakeIQuery(new List<FileIndexItem>
+			var query = new FakeIQuery(new List<FileIndexItem>
 			{
 				new FileIndexItem("/folder_no_content/") {IsDirectory = true},
 				new FileIndexItem("/folder_content") {IsDirectory = true},
 				new FileIndexItem("/folder_content/test.jpg"),
 				new FileIndexItem("/folder_content/test2.jpg")
 			});
-			services.AddScoped<IQuery, FakeIQuery>(p => _query);
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			services.AddScoped<IQuery, FakeIQuery>(p => query);
+			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
 		}
 
 		[TestMethod]
@@ -62,15 +70,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_With_ChildItems()
 		{
-			var query = new FakeIQuery(new List<FileIndexItem>
-			{
-				new FileIndexItem("/folder_content") {IsDirectory = true},
-				new FileIndexItem("/folder_content/test.jpg"),
-				new FileIndexItem("/folder_content/test2.jpg")
-			});
+			var (query, serviceScopeFactory) = CreateNewExampleData();
 			
 			var result= await new SyncRemove(_appSettings, 
-				_serviceScopeFactory, query).Remove("/folder_content");
+				serviceScopeFactory, query).Remove("/folder_content");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);

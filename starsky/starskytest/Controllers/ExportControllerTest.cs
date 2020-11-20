@@ -40,7 +40,6 @@ namespace starskytest.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readmeta;
 
 		public ExportControllerTest()
 		{
@@ -59,9 +58,11 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();
 
-			// Fake the readmeta output
+			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
+			_bgTaskQueue = new BackgroundTaskQueue();
+			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
@@ -93,7 +94,7 @@ namespace starskytest.Controllers
 			// inject fake exiftool
 			new FakeExifTool(new FakeIStorage(),_appSettings );
 
-			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			serviceProvider.GetRequiredService<IReadMeta>();
 			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
