@@ -45,7 +45,7 @@ namespace starsky.Controllers
 					}
 				});
 			}
-			return Ok(await _synchronize.Sync(f));
+			return Ok(await _synchronize.Sync(fileIndexItem.FilePath));
 		}
 	}
 }
