@@ -90,24 +90,15 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
-			Console.WriteLine($"updateStatusContent {updateStatusContent}");
-
-			try
-			{
-				_fakeContext.Remove(updateStatusContent);
-			}
-			catch ( ArgumentOutOfRangeException)
-			{
-				Thread.Sleep(new Random().Next(1,10));
-				_fakeContext.Remove(updateStatusContent);
-			}
-
+			_fakeContext.Remove(updateStatusContent);
 			return updateStatusContent;
 		}
 
-		public Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
+		public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 		{
-			return Task.FromResult(RemoveItem(updateStatusContent));
+			await Task.Delay(new Random().Next(1, 5));
+			_fakeContext.Remove(updateStatusContent);
+			return updateStatusContent;
 		}
 
 		public bool RemoveCacheParentItem(string directoryName)
@@ -136,10 +127,10 @@ namespace starskytest.FakeMocks
 			return updateStatusContent;
 		}
 
-		public Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
+		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 		{
-			// ReSharper disable once MethodHasAsyncOverload
-			return Task.FromResult(AddItem(updateStatusContent));
+			await Task.Delay(new Random().Next(1, 5));
+			return AddItem(updateStatusContent);
 		}
 
 		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)
