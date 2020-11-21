@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -97,6 +98,8 @@ namespace starskytest.FakeMocks
 			}
 			catch ( ArgumentOutOfRangeException)
 			{
+				Thread.Sleep(new Random().Next(1,10));
+				_fakeContext.Remove(updateStatusContent);
 			}
 
 			return updateStatusContent;
