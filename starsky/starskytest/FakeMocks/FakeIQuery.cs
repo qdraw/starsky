@@ -136,8 +136,13 @@ namespace starskytest.FakeMocks
 
 		public async Task<FileIndexItem> AddItemAsync(FileIndexItem updateStatusContent)
 		{
+			_fakeContext.Add(updateStatusContent);
 			await Task.Delay(new Random().Next(1, 5));
-			return AddItem(updateStatusContent);
+			if ( _fakeContext.FirstOrDefault(p => p.FilePath == updateStatusContent.FilePath) !=
+			     null ) return updateStatusContent;
+			
+			_fakeContext.Add(updateStatusContent);
+			return updateStatusContent;
 		}
 
 		public async Task<List<FileIndexItem>> AddRangeAsync(List<FileIndexItem> fileIndexItemList)

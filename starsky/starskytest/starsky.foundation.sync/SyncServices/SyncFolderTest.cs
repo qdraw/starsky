@@ -123,7 +123,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
 
 			Console.WriteLine("Flaky tests: files.Count " + files.Count);
-			if ( files.Count != 3 ) await Task.Delay(10);
 			Assert.AreEqual(3,files.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
