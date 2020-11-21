@@ -8,6 +8,13 @@ namespace starskytest.FakeMocks
 {
 	public class FakeISynchronize : ISynchronize
 	{
+		private readonly List<FileIndexItem> _data = new List<FileIndexItem>();
+
+		public FakeISynchronize(List<FileIndexItem> data = null)
+		{
+			if ( data != null ) _data = data;
+		}
+		
 		public event EventHandler<string> Receive;
 
 		public List<Tuple<string, bool>> Inputs { get; set; } = new List<Tuple<string, bool>>();
@@ -17,12 +24,7 @@ namespace starskytest.FakeMocks
 			Console.WriteLine($"sync => {subPath}");
 			Inputs.Add(new Tuple<string, bool>(subPath,recursive));
 			Receive?.Invoke(this, subPath);
-			return Task.FromResult(new List<FileIndexItem>());
-		}
-
-		public Task<List<FileIndexItem>> SingleFile(string subPath)
-		{
-			return Task.FromResult(new List<FileIndexItem>());
+			return Task.FromResult(_data);
 		}
 	}
 }
