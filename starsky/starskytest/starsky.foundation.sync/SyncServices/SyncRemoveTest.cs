@@ -77,7 +77,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task Folder_With_ChildItems()
+		public async Task Remove_Folder_With_ChildItems()
 		{
 			var result= await new SyncRemove(_appSettings, 
 				_serviceScopeFactory, _query).Remove("/Folder_With_ChildItems");

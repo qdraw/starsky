@@ -96,8 +96,15 @@ namespace starskytest.FakeMocks
 
 		public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 		{
-			await Task.Delay(new Random().Next(1, 5));
-			_fakeContext.Remove(updateStatusContent);
+			try
+			{
+				_fakeContext.Remove(updateStatusContent);
+			}
+			catch ( ArgumentOutOfRangeException )
+			{
+				await Task.Delay(new Random().Next(1, 5));
+				_fakeContext.Remove(updateStatusContent);
+			}
 			return updateStatusContent;
 		}
 

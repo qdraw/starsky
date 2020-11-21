@@ -48,7 +48,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			return new Tuple<IQuery, IServiceScopeFactory>(query, serviceScopeFactory);
 		}
-
 		
 		private IStorage GetStorage()
 		{
@@ -122,11 +121,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
 
 			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
-			
+
+			Console.WriteLine("Flaky tests: files.Count " + files.Count);
+			if ( files.Count != 3 ) await Task.Delay(10);
+			Assert.AreEqual(3,files.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[2].Status);
-
 		}
 		
 		[TestMethod]
