@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				fakeIThumbnailService, new FakeIThumbnailCleaner(),
 				new FakeSelectorStorage(storage));
 			
-			thumbnailService.Thumbnail(new []{"-t","true", "-p", Path.Combine(appSettings.StorageFolder, "test")});
+			thumbnailService.Thumbnail(new []{"-v", "true", "-t","true", "-p", Path.Combine(appSettings.StorageFolder, "test")});
 			
 			Assert.AreEqual("/test", fakeIThumbnailService.Inputs[0].Item1);
 		}
