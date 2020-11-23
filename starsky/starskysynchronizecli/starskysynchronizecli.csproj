@@ -6,7 +6,8 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{7e1136a7-cc43-49d2-91d3-48e557f0fb66}</ProjectGuid>
         <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
-        <RootNamespace>starskysynccli</RootNamespace>
+        <RootNamespace>starskysynchronizecli</RootNamespace>
+        <Version>0.4.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

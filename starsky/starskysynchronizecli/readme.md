@@ -56,7 +56,7 @@ When you start this application at first please update the `appsettings.json`
 ./starskysynccli --help
 ```
 
-### The StarskyCli --Help window:
+### The Sync --Help window:
 ```
 Starksy Sync Cli ~ Help:
 --help or -h == help (this window)
@@ -65,9 +65,6 @@ Starksy Sync Cli ~ Help:
 --subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
 -p, -s, -g == you need to select one of those tags
 --index or -i == parameter: (bool) ; enable indexing, default true
---thumbnail or -t == parameter: (bool) ; enable thumbnail, default false
---clean or -x == parameter: (bool) ; enable checks in thumbnailtempfolder if thumbnails are needed, delete unused files
---orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false
 --verbose or -v == verbose, more detailed info
 --databasetype or -d == Overwrite EnvironmentVariable for DatabaseType
 --basepath or -b == Overwrite EnvironmentVariable for StorageFolder
