@@ -20,7 +20,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private readonly ISynchronize _synchronize;
 		private readonly AppSettings _appSettings;
 		private readonly IWebSocketConnectionsService _websockets;
-		private IQuery _query;
+		private readonly IQuery _query;
 
 		public SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
 			IWebSocketConnectionsService websockets, IQuery query)
