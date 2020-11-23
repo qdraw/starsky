@@ -12,6 +12,7 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.Helpers;
 using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
@@ -37,6 +38,8 @@ namespace starsky.foundation.sync.SyncServices
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
 		{
+			if ( FilterCommonTempFiles.Filter(subPath) ) return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
+			
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
@@ -59,6 +62,5 @@ namespace starsky.foundation.sync.SyncServices
 					throw new AggregateException("enum is not valid");
 			}
 		}
-
 	}
 }

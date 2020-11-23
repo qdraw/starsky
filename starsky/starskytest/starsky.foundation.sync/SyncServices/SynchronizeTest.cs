@@ -72,5 +72,35 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("/test.jpg", result[0].FilePath);
 			Assert.AreEqual("/", result[1].FilePath);
 		}
+
+		[TestMethod]
+		public async Task Sync_TempFile_DS_Store()
+		{
+			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), 
+				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]>
+					{
+						CreateAnImage.Bytes
+					})), _serviceScopeFactory);
+
+			var dsStore = await sync.Sync("/.DS_Store");
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
+		}
+		
+		[TestMethod]
+		public async Task Sync_TempFile_DesktopIni()
+		{
+			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), 
+				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/test.jpg"}, 
+					new List<byte[]>
+					{
+						CreateAnImage.Bytes
+					})), _serviceScopeFactory);
+
+			var dsStore = await sync.Sync("/desktop.ini");
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
+		}
 	}
 }

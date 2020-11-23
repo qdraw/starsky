@@ -41,13 +41,20 @@ namespace starsky.foundation.sync.WatcherHelpers
 		{
 			var (fullFilePath,_ ) = watcherOutput;
 			var syncData = await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
-			if ( syncData.Any() )
-			{
-				await _websockets.SendToAllAsync(JsonSerializer.Serialize(syncData,
-					DefaultJsonSerializer.CamelCase), CancellationToken.None);
-			}
-
+			await FilterBeforeSocket(syncData);
 			return syncData;
+		}
+
+		private async Task FilterBeforeSocket(IReadOnlyCollection<FileIndexItem> syncData)
+		{
+			var fileIndexItems = syncData.Where(p =>
+				p.Status == FileIndexItem.ExifStatus.Ok ||
+				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
+				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
+			if ( !fileIndexItems.Any() ) return;
+
+			await _websockets.SendToAllAsync(JsonSerializer.Serialize(fileIndexItems,
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 		}
 	}
 }

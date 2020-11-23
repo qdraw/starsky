@@ -28,7 +28,10 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void Sync_CheckInput_Socket()
 		{
-			var sync = new FakeISynchronize(new List<FileIndexItem>{new FileIndexItem("/test")});
+			var sync = new FakeISynchronize(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test"){Status = FileIndexItem.ExifStatus.Ok}
+			});
 			var websockets = new FakeIWebSocketConnectionsService();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, websockets);
@@ -36,7 +39,26 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new Tuple<string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), WatcherChangeTypes.Changed));
 
+			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count);
 			Assert.IsTrue(websockets.FakeSendToAllAsync[0].Contains("filePath\":\"/test\""));
+			Assert.AreEqual("/test", sync.Inputs[0].Item1);
+		}
+
+		[TestMethod]
+		public void Sync_CheckInput_Socket_Ignore()
+		{
+			var sync = new FakeISynchronize(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test"){Status = FileIndexItem.ExifStatus.OperationNotSupported}
+			});
+			var websockets = new FakeIWebSocketConnectionsService();
+			var appSettings = new AppSettings();
+			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, websockets);
+			syncWatcherPreflight.Sync(
+				new Tuple<string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), WatcherChangeTypes.Changed));
+
+			Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
 	}
