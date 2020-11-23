@@ -236,7 +236,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		public void ParseSubfolders_Int_RelativeToday()
 		{
 			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
-			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(null);
+			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(0);
 			Assert.IsTrue(result.Contains(DateTime.UtcNow.ToString("yyyy_MM_dd")));
 		}
 	}
