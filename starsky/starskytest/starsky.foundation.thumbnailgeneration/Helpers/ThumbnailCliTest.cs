@@ -103,6 +103,23 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
+		public void Thumbnail_MinusS_SubPath_Direct()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			var fakeIThumbnailService = new FakeIThumbnailService();
+			var appSettings = new AppSettings();
+			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var thumbnailService = new ThumbnailCli(appSettings, fakeConsole,
+				fakeIThumbnailService, new FakeIThumbnailCleaner(),
+				new FakeSelectorStorage(storage));
+			
+			thumbnailService.Thumbnail(new []{"-t","true", "-s", "/test.jpg"});
+			
+			Assert.AreEqual("/test.jpg", fakeIThumbnailService.Inputs[0].Item1);
+			Assert.IsNotNull(fakeIThumbnailService.Inputs[0].Item2);
+		}
+		
+		[TestMethod]
 		public void Thumbnail_MinusG_Relative()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
@@ -119,6 +136,20 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				.ParseSubfolders(0);
 			
 			Assert.AreEqual(subPathRelative, fakeIThumbnailService.Inputs[0].Item1);
+		}
+
+		[TestMethod]
+		public void Thumbnail_MinusX_CleanAllUnusedFiles()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var fakeIThumbnailCleaner = new FakeIThumbnailCleaner();
+			var thumbnailService = new ThumbnailCli(new AppSettings(), fakeConsole,
+				new FakeIThumbnailService(), fakeIThumbnailCleaner,
+				new FakeSelectorStorage(storage));
+			thumbnailService.Thumbnail(new []{"--clean","true"});
+
+			Assert.IsTrue(fakeIThumbnailCleaner.Inputs[0]);
 		}
 	}
 }
