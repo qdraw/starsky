@@ -179,5 +179,17 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			Assert.IsTrue(result);
 		}
 		
+		[TestMethod]
+		public void RotateThumbnail_Corrupt()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
+
+			var result = new Thumbnail(storage, storage).RotateThumbnail("test", 1);
+			Assert.IsFalse(result);
+		}
+		
 	}
 }
