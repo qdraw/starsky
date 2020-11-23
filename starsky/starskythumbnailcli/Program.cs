@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -26,7 +27,7 @@ namespace starskythumbnailcli
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-			// new SetupDatabaseTypes(appSettings,services).BuilderDb();
+			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
 			var thumbnailService = serviceProvider.GetService<IThumbnailService>();

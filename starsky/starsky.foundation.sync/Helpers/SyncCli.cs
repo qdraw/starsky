@@ -38,15 +38,7 @@ namespace starsky.foundation.sync.Helpers
 			
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
-			// Using both options
-			// -s = if subPath || -p is path
-			var subPath = new ArgsHelper(_appSettings).IsSubPathOrPath(args) ? 
-				new ArgsHelper(_appSettings).GetSubpathFormArgs(args) : 
-				new ArgsHelper(_appSettings).GetPathFormArgs(args);
-            
-			// overwrite subPath with relative days
-			// use -g or --SubPathRelative to use it.
-			// envs are not supported
+			var subPath = new ArgsHelper(_appSettings).SubPathOrPathValue(args);
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
