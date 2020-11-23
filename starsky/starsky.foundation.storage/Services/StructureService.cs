@@ -70,7 +70,6 @@ namespace starsky.foundation.storage.Services
 
 			return ApplyStructureRangeToStorage(
 				parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
-
 		}
 		
 		/// <summary>
