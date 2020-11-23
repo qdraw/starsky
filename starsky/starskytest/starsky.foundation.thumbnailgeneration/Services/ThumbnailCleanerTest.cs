@@ -13,12 +13,11 @@ using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
-namespace starskytest.Services
+namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 {
 	[TestClass]
 	public class ThumbnailCleanerTest
 	{
-		private readonly IMemoryCache _memoryCache;
 		private readonly Query _query;
 
 		public ThumbnailCleanerTest()
@@ -26,13 +25,13 @@ namespace starskytest.Services
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context,_memoryCache, new AppSettings());
+			_query = new Query(context,memoryCache, new AppSettings());
 		}
 		
 		[TestMethod]
@@ -54,8 +53,10 @@ namespace starskytest.Services
 				Directory.CreateDirectory(existFullDir);
 			}
 			
-			if (!File.Exists(Path.Join(existFullDir,"EXIST.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"EXIST.jpg"));
-			if (!File.Exists(Path.Join(existFullDir,"DELETE.jpg"))) File.Copy(createAnImage.FullFilePath, Path.Join(existFullDir,"DELETE.jpg"));
+			if (!File.Exists(Path.Join(existFullDir,"EXIST.jpg"))) File.Copy(createAnImage.FullFilePath, 
+				Path.Join(existFullDir,"EXIST.jpg"));
+			if (!File.Exists(Path.Join(existFullDir,"DELETE.jpg"))) File.Copy(createAnImage.FullFilePath, 
+				Path.Join(existFullDir,"DELETE.jpg"));
 
 			_query.AddItem(new FileIndexItem
 			{

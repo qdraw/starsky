@@ -119,6 +119,10 @@ namespace starsky.foundation.platform.Models
 	        /// Admin CLI
 	        /// </summary>
 	        Admin = 6,
+	        /// <summary>
+	        /// Thumbnail Generator CLI
+	        /// </summary>
+	        Thumbnail = 7
         }
 		
 		/// <summary>

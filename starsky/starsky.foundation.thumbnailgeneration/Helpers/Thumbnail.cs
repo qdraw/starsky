@@ -14,7 +14,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 
-namespace starsky.foundation.thumbnailgeneration.Services
+namespace starsky.foundation.thumbnailgeneration.Helpers
 {
 	public class Thumbnail
 	{
@@ -65,8 +65,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
 		/// </summary>
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
-		/// <param name="fileHash">the base32 hash of the subpath file</param>
-		/// <returns>true, if succesfull</returns>
+		/// <param name="fileHash">the base32 hash of the subPath file</param>
+		/// <returns>true, if successful</returns>
 		public bool CreateThumb(string subPath, string fileHash)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));

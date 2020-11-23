@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Helpers;
 

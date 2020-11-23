@@ -223,5 +223,21 @@ namespace starskytest.starsky.foundation.storage.Services
 			// ExpectedException
 		}
 
+
+		[TestMethod]
+		public void ParseSubfolders_Int_Null()
+		{
+			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(null);
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public void ParseSubfolders_Int_RelativeToday()
+		{
+			var structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
+			var result = new StructureService(new FakeIStorage(),structure).ParseSubfolders(null);
+			Assert.IsTrue(result.Contains(DateTime.UtcNow.ToString("yyyy_MM_dd")));
+		}
 	}
 }

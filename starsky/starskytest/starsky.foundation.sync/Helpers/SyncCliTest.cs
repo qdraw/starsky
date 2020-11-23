@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.storage.Services;
 using starsky.foundation.sync.Helpers;
 using starskytest.FakeMocks;
 
@@ -69,7 +69,7 @@ namespace starskytest.starsky.foundation.sync.Helpers
 
 			Assert.AreEqual("/test", fakeSync.Inputs[0].Item1);
 		}
-		
+
 		[TestMethod]
 		public async Task Sync_MinusG_Relative()
 		{
@@ -80,27 +80,10 @@ namespace starskytest.starsky.foundation.sync.Helpers
 			await syncCli.Sync(
 				new List<string>{"-g", "0"}.ToArray());
 
-			var subPathRelative = syncCli.GetSubPathRelative(0);
+			var subPathRelative = new StructureService(new FakeIStorage(),appSettings.Structure)
+				.ParseSubfolders(0);
 			
 			Assert.AreEqual(subPathRelative, fakeSync.Inputs[0].Item1);
-		}
-
-		[TestMethod]
-		public void GetSubPathRelativeNull()
-		{
-			var subPathRelative = new SyncCli(null,null,null,null).GetSubPathRelative(null);
-			Assert.IsNull(subPathRelative);
-		}
-		
-		[TestMethod]
-		public void GetSubPathRelativeToday()
-		{
-			var subPathRelative = new SyncCli(null,new AppSettings
-			{
-				Structure = "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext"
-			},null,new FakeSelectorStorage()).GetSubPathRelative(0);
-			
-			Assert.IsTrue(subPathRelative.Contains(DateTime.UtcNow.ToString("yyyy_MM_dd")));
 		}
 	}
 }
