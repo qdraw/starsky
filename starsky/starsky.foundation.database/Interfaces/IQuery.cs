@@ -85,6 +85,12 @@ namespace starsky.foundation.database.Interfaces
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+        
+        /// <summary>
+        /// Cache API within Query to update cached items
+        /// For DisplayFileFolders and SingleItem
+        /// </summary>
+        /// <param name="updateStatusContent">items to update</param>
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
         /// <summary>

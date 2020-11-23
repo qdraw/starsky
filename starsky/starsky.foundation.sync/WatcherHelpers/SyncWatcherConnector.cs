@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
@@ -19,13 +20,15 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private readonly ISynchronize _synchronize;
 		private readonly AppSettings _appSettings;
 		private readonly IWebSocketConnectionsService _websockets;
+		private IQuery _query;
 
 		public SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets)
+			IWebSocketConnectionsService websockets, IQuery query)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
 			_websockets = websockets;
+			_query = query;
 		}
 
 		public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
@@ -35,26 +38,33 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
 			_appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			_websockets = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+			_query = scope.ServiceProvider.GetRequiredService<IQuery>();
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, WatcherChangeTypes> watcherOutput)
 		{
 			var (fullFilePath,_ ) = watcherOutput;
 			var syncData = await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
-			await FilterBeforeSocket(syncData);
+			
+			var filtered = FilterBefore(syncData);
+			if ( !filtered.Any() ) return syncData;
+
+			// update users who are active right now
+			await _websockets.SendToAllAsync(JsonSerializer.Serialize(filtered,
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			
+			// And update the query Cache
+			_query.CacheUpdateItem(filtered);
+			
 			return syncData;
 		}
 
-		private async Task FilterBeforeSocket(IReadOnlyCollection<FileIndexItem> syncData)
+		private List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
-			var fileIndexItems = syncData.Where(p =>
+			return syncData.Where(p =>
 				p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
-			if ( !fileIndexItems.Any() ) return;
-
-			await _websockets.SendToAllAsync(JsonSerializer.Serialize(fileIndexItems,
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 		}
 	}
 }
