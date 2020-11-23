@@ -44,7 +44,7 @@ const useSockets = (): IUseSockets => {
   useInterval(doIntervalCheck, 30000);
 
   function doIntervalCheck() {
-    if (!isEnabled.current || !ws.current || !ws.current.close || !countRetry.current) return;
+    if (!isEnabled.current || !ws.current || !ws.current.close || countRetry.current === undefined) return;
     setShowSocketError(countRetry.current >= 1)
 
     if (DifferenceInDate(keepAliveTime.getTime()) > 0.5) {
