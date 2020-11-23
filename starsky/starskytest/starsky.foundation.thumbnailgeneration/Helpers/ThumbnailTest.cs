@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -24,7 +25,16 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		[TestMethod]
-		public void CreateThumbTest_ImageSubPathNotFound()
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void CreateThumbTest_FileHash_FileHashNull()
+		{
+			new Thumbnail(_iStorage, _iStorage).CreateThumb(
+				"/notfound.jpg", null);
+			// expect ArgumentNullException
+		}
+
+		[TestMethod]
+		public void CreateThumbTest_FileHash_ImageSubPathNotFound()
 		{
 			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb(
 				"/notfound.jpg", _fakeIStorageImageSubPath);
@@ -32,7 +42,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public void CreateThumbTest_WrongImageType()
+		public void CreateThumbTest_FileHash_WrongImageType()
 		{
 			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb(
 				"/notfound.dng", _fakeIStorageImageSubPath);
@@ -40,7 +50,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public void CreateThumbTest_ThumbnailAlreadyExist()
+		public void CreateThumbTest_FileHash_ThumbnailAlreadyExist()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
@@ -50,9 +60,21 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
-		
+
 		[TestMethod]
-		public void Thumbnail_ResizeThumbnailToStream__HostDependecy__JPEG_Test()
+		public void CreateThumbTest_1arg_ThumbnailAlreadyExist()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{_fakeIStorageImageSubPath}, 
+				new List<byte[]>{CreateAnImage.Bytes});
+			
+			var isCreated = new Thumbnail(storage, storage).CreateThumb(
+				_fakeIStorageImageSubPath);
+			Assert.AreEqual(true,isCreated);
+		}
+
+		[TestMethod]
+		public void ResizeThumbnailToStream__HostDependency__JPEG_Test()
 		{
 			var newImage = new CreateAnImage();
 			var iStorage = new StorageHostFullPathFilesystem();
@@ -65,7 +87,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
         
 		[TestMethod]
-		public void Thumbnail_ResizeThumbnailToStream__PNG_Test()
+		public void ResizeThumbnailToStream__PNG_Test()
 		{
 			var thumb = new Thumbnail(_iStorage,_iStorage).ResizeThumbnail(
 				_fakeIStorageImageSubPath, 1, null, true,
