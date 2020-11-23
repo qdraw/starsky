@@ -26,5 +26,15 @@ namespace starskytest.FakeMocks
 			Receive?.Invoke(this, subPath);
 			return Task.FromResult(_data);
 		}
+
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, bool recursive = true)
+		{
+			var results = new List<FileIndexItem>();
+			foreach ( var subPath in subPaths )
+			{
+				results.AddRange(await Sync(subPath, recursive));
+			}
+			return results;
+		}
 	}
 }

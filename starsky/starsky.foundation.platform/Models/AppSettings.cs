@@ -67,6 +67,8 @@ namespace starsky.foundation.platform.Models
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskyadmincli", "starsky")
 		    .Replace("starskysynccli", "starsky")
+		    .Replace("starskythumbnailcli", "starsky")
+		    .Replace("starskysynclegacycli", "starsky")
 		    .Replace("starsky.foundation.database", "starsky")
 		    .Replace("starskyImporterNetFrameworkCli", "starsky")
 		    .Replace("netframework-msbuild", "starsky")

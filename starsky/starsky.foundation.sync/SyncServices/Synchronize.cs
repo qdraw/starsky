@@ -62,5 +62,15 @@ namespace starsky.foundation.sync.SyncServices
 					throw new AggregateException("enum is not valid");
 			}
 		}
+
+		public async Task<List<FileIndexItem>> Sync(List<string> subPaths, bool recursive = true)
+		{
+			var results = new List<FileIndexItem>();
+			foreach ( var subPath in subPaths )
+			{
+				results.AddRange(await Sync(subPath, recursive));
+			}
+			return results;
+		}
 	}
 }

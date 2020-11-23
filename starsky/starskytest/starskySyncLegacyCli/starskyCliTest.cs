@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskycore.Attributes;
 using starskysynclegacycli;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.starskySyncCli
+namespace starskytest.StarskyLegacyCliTest
 {
     [TestClass]
-    public class StarskyCliTest
+    public class StarskyLegacyCliTest
     {
         [TestMethod]
         public void StarskyCliHelpVerbose()
@@ -19,7 +18,6 @@ namespace starskytest.starskySyncCli
             Program.Main(args);
         }
         
-        [ExcludeFromCoverage]
         [TestMethod]
         public void StarskyCliHelpTest()
         {
@@ -31,7 +29,6 @@ namespace starskytest.starskySyncCli
             Program.Main(args);
         }
         
-        [ExcludeFromCoverage]
         [TestMethod]
         public void StarskyCliSubPathOneImage()
         {
