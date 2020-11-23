@@ -54,7 +54,8 @@
     <ProjectReference Include="..\starskycore\starskycore.csproj" />
     <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
     <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
-    <ProjectReference Include="..\starskysynclegacycli\starskysynclegacycli.csproj" />
+    <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
+    <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
     <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
     <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />

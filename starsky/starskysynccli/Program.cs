@@ -1,42 +1,40 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.sync.Helpers;
-using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.thumbnailgeneration.Interfaces;
+using starskycore.Interfaces;
+using starskycore.Services;
 
-namespace starskysynclegacycli
+namespace starskysynccli
 {
-	static class Program
-	{
-		static async Task Main(string[] args)
-		{
-			// Use args in application
-			new ArgsHelper().SetEnvironmentByArgs(args);
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+	        // Use args in application
+	        new ArgsHelper().SetEnvironmentByArgs(args);
 
-			var services = new ServiceCollection();
+	        // Setup AppSettings
+	        var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
-			// Setup AppSettings
-			services = SetupAppSettings.FirstStepToAddSingleton(services);
-
-			// Inject services
-			new RegisterDependencies().Configure(services);
-			var serviceProvider = services.BuildServiceProvider();
-			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+	        // Inject services
+	        new RegisterDependencies().Configure(services);
+	        var serviceProvider = services.BuildServiceProvider();
+	        var appSettings = serviceProvider.GetRequiredService<AppSettings>();
             
-			new SetupDatabaseTypes(appSettings,services).BuilderDb();
-			serviceProvider = services.BuildServiceProvider();
+	        new SetupDatabaseTypes(appSettings,services).BuilderDb();
+	        serviceProvider = services.BuildServiceProvider();
 
-			var synchronize = serviceProvider.GetService<ISynchronize>();
-			var console = serviceProvider.GetRequiredService<IConsole>();
+	        var syncService = serviceProvider.GetService<ISync>();
+	        var console = serviceProvider.GetRequiredService<IConsole>();
+			var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
-			// Help and other Command Line Tools args are included in the SyncCLI 
-			await new SyncCli(synchronize, appSettings, console, selectorStorage).Sync(args);
-		}
-	}
+            new SyncServiceCli().Sync(args, syncService, appSettings,console, thumbnailCleaner, selectorStorage);
+        }
+    }
 }

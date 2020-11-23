@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starskysynclegacycli;
+using starskysynchronizecli;
 using starskytest.FakeCreateAn;
 
-namespace starskytest.StarskyLegacyCliTest
+namespace starskytest.starskySynchronizeCli
 {
     [TestClass]
-    public class StarskyLegacyCliTest
+    public class SynchronizeCliTest
     {
         [TestMethod]
         public void StarskyCliHelpVerbose()

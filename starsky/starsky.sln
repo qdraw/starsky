@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starsky", "starsky\starsky.csproj", "{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynclegacycli", "starskysynclegacycli\starskysynclegacycli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynccli", "starskysynccli\starskysynccli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
@@ -87,7 +87,7 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.sync", "starsky.foundation.sync\starsky.foundation.sync.csproj", "{8CD2E452-AB62-446C-AD42-7D90B63D1B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskysynccli", "starskysynccli\starskysynccli.csproj", "{2146484C-070D-4384-9BA6-642F63789591}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskysynchronizecli", "starskysynchronizecli\starskysynchronizecli.csproj", "{2146484C-070D-4384-9BA6-642F63789591}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

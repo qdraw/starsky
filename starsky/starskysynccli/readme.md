@@ -1,9 +1,9 @@
 # Starsky Sync CLI
 ## List of [Starsky](../../readme.md) Projects
-* [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
-* [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
+ * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
+ * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
-        *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
+      *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * __[starskySyncCli](../../starsky/starskysynccli/readme.md)  database command line interface__
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
@@ -12,11 +12,12 @@
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
-* [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
-* [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
-* [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
+ * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 
 ## starskysynccli docs
+_Deprecated and replaced by `starskysynchronizecli`_
 
 ### Starsky Sync Indexer:
 With this command line tool it possible to manual sync the filesystem with the database, update one file in the database, generate thumbnails, clean the thumbnail cache. The goal of this wrapper is to get command line access to the photo index database.
@@ -47,7 +48,7 @@ When you start this application at first please update the `appsettings.json`
 #### Appsettings Notes
 1.  The `Structure`-setting is used by the `StarskyImporterCli` and the `/import` endpoint. This always uses slash as directory marker.
 2.  The settings: `ExifToolPath`, `ThumbnailTempFolder` and  `StorageFolder` uses the system path.
-    When using Windows please escape the backslash, otherwise the application will crash.
+When using Windows please escape the backslash, otherwise the application will crash.
 3.  The `AddMemoryCache` setting is ignored in the console/cli applications
 
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starskycore.Attributes;
-using starskysynclegacycli;
+using starskysynccli;
 using starskytest.FakeCreateAn;
 
 namespace starskytest.starskySyncCli
