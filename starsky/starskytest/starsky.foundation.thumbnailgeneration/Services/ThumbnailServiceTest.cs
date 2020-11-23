@@ -19,7 +19,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		[TestMethod]
 		public void NotFoundNonExistingHash()
 		{
-			var result = new ThumbnailService(new FakeSelectorStorage()).CreateThumb("/not-found","non-existing-hash");
+			var result = new ThumbnailService(new FakeSelectorStorage())
+				.CreateThumb("/not-found","non-existing-hash");
 			Assert.IsFalse(result);
 		}
 	}
