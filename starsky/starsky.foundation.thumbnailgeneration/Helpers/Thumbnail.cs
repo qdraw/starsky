@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -14,6 +15,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.thumbnailgeneration.Helpers
 {
 	public class Thumbnail
@@ -108,15 +110,13 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// Check if the image has the right first bytes, if not remove
 		/// </summary>
 		/// <param name="fileHash">the fileHash file</param>
-		private void RemoveCorruptImage(string fileHash)
+		internal bool RemoveCorruptImage(string fileHash)
 		{
-			if (!_thumbnailStorage.ExistFile(fileHash)) return;
-            
+			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash,160));
-			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-			{
-				_thumbnailStorage.FileDelete(fileHash);
-			}
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
+			_thumbnailStorage.FileDelete(fileHash);
+			return true;
 		}
 
 		public MemoryStream ResizeThumbnail(string subPath, 

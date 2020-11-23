@@ -94,5 +94,41 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				ExtensionRolesHelper.ImageFormat.png);
 			Assert.AreEqual(true,thumb.CanRead);
 		}
+
+		[TestMethod]
+		public void RemoveCorruptImage_RemoveCorruptImage()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
+
+			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void RemoveCorruptImage_ShouldIgnore()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void RemoveCorruptImage_NotExist()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> (), 
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			Assert.IsFalse(result);
+		}
 	}
 }
