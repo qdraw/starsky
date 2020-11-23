@@ -1,4 +1,3 @@
-using System;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -7,7 +6,6 @@ using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Interfaces;
-using starsky.foundation.thumbnailgeneration.Services;
 
 namespace starsky.foundation.thumbnailgeneration.Helpers
 {
@@ -55,14 +53,14 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				subPath = new StructureService(_selectorStorage.Get(
+						SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
 			}
 
 			if (new ArgsHelper(_appSettings).GetThumbnail(args))
 			{
 				var storage = _selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-				var thumbnailStorage =  _selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
@@ -78,7 +76,6 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				{
 					_thumbnailService.CreateThumb(subPath);
 				}
-                
 				_console.WriteLine("Thumbnail Done!");
 			}
             

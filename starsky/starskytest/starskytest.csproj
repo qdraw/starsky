@@ -56,6 +56,7 @@
     <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
     <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
     <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
+    <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
     <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
     <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
     <ProjectReference Include="..\starsky\starsky.csproj" />
