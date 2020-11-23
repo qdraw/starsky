@@ -94,7 +94,34 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				ExtensionRolesHelper.ImageFormat.png);
 			Assert.AreEqual(true,thumb.CanRead);
 		}
+		
+		[TestMethod]
+		public void ResizeThumbnailToStream_CorruptImage()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
 
+			var result = new Thumbnail(storage, 
+				storage).ResizeThumbnail("test",1);
+			Assert.IsNull(result);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void ResizeThumbnailImageFormat_NullInput()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
+
+			new Thumbnail(storage, 
+				storage).ResizeThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
+			// ArgumentNullException
+		}
+		
 		[TestMethod]
 		public void RemoveCorruptImage_RemoveCorruptImage()
 		{
@@ -103,7 +130,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			var result = new Thumbnail(storage, 
+				storage).RemoveCorruptImage("test");
 			Assert.IsTrue(result);
 		}
 		
@@ -130,5 +158,26 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
 			Assert.IsFalse(result);
 		}
+
+		[TestMethod]
+		public void RotateThumbnail_NotFound()
+		{
+			var result = new Thumbnail(_iStorage, _iStorage).RotateThumbnail("not-found",0, 3);
+			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public void RotateThumbnail_Rotate()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"/test.jpg"}, 
+				new List<byte[]> {CreateAnImage.Bytes});
+			
+			var result = new Thumbnail(storage, storage).RotateThumbnail("/test.jpg",-1, 3);
+			
+			Assert.IsTrue(result);
+		}
+		
 	}
 }

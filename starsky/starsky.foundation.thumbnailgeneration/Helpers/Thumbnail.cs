@@ -176,7 +176,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		private void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
@@ -202,7 +202,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="orientation">-1 > Rotage -90degrees, anything else 90 degrees</param>
 		/// <param name="width">to resize, default 1000</param>
 		/// <param name="height">to resize, default keep ratio (0)</param>
-		/// <returns>Is successfull? // private feature</returns>
+		/// <returns>Is successful? // private feature</returns>
 		public bool RotateThumbnail(string fileHash, int orientation, int width = 1000, int height = 0 )
 		{
 			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
