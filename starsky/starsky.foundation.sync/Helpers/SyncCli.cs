@@ -50,9 +50,7 @@ namespace starsky.foundation.sync.Helpers
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
-					.ParseSubfolders(dateTime);
+				subPath = GetSubPathRelative(getSubPathRelative);
 			}
 
 			if (new ArgsHelper().GetIndexMode(args))
@@ -63,6 +61,14 @@ namespace starsky.foundation.sync.Helpers
 			}
 
 			_console.WriteLine("Done!");
+		}
+
+		internal string GetSubPathRelative(int? getSubPathRelative)
+		{
+			if ( getSubPathRelative == null ) return null;
+			var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+			return new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				.ParseSubfolders(dateTime);
 		}
 	}
 }
