@@ -18,9 +18,11 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IQuery _query;
 		private readonly NewItem _newItem;
 		private readonly IConsole _console;
+		private readonly AppSettings _appSettings;
 
 		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IConsole console)
 		{
+			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
@@ -29,7 +31,7 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task<FileIndexItem> SingleFile(string subPath)
 		{
-			_console?.WriteLine($"sync file {subPath}" );
+			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 
 			var statusItem = new FileIndexItem(subPath);
 
