@@ -77,7 +77,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				Console.WriteLine(e);
+				Console.WriteLine($"catch-ed UnauthorizedAccessException{e.Message}");
 				return new string[]{};
 			}
 

@@ -51,11 +51,9 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 					return await _syncFolder.Folder(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					_console.WriteLine("file");
 					var item = await _syncSingleFile.SingleFile(subPath);
 					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					_console.WriteLine("Remove");
 					return await _syncRemove.Remove(subPath);
 				default:
 					throw new AggregateException("enum is not valid");

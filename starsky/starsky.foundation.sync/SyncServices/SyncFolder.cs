@@ -40,9 +40,11 @@ namespace starsky.foundation.sync.SyncServices
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
 			
 			var allResults = new List<FileIndexItem>();
+			// Loop trough all folders recursive
 			foreach ( var subPath in subPaths )
 			{
 				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
+				// And check files within this folder
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
