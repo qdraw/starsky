@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -26,14 +25,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IConsole _console;
 		private readonly SyncFolder _syncFolder;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, 
-			IServiceScopeFactory serviceScopeFactory)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
-			_syncRemove = new SyncRemove(appSettings, serviceScopeFactory, query);
-			_syncFolder = new SyncFolder(appSettings, serviceScopeFactory, query, selectorStorage, _console);
+			_syncRemove = new SyncRemove(appSettings, query);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
 		}
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
@@ -52,11 +50,9 @@ namespace starsky.foundation.sync.SyncServices
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 					return await _syncFolder.Folder(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					_console.WriteLine("file");
 					var item = await _syncSingleFile.SingleFile(subPath);
 					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					_console.WriteLine("Remove");
 					return await _syncRemove.Remove(subPath);
 				default:
 					throw new AggregateException("enum is not valid");

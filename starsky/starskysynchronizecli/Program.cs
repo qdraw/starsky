@@ -22,13 +22,15 @@ namespace starskysynchronizecli
 
 			// Setup AppSettings
 			services = SetupAppSettings.FirstStepToAddSingleton(services);
-
+			
 			// Inject services
 			new RegisterDependencies().Configure(services);
+			
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
+
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
+				
 			serviceProvider = services.BuildServiceProvider();
 
 			var synchronize = serviceProvider.GetService<ISynchronize>();

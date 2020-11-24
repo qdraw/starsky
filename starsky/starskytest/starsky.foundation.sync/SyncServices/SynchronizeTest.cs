@@ -14,26 +14,22 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public class SynchronizeTest
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
-
 		public SynchronizeTest()
 		{
 			var services = new ServiceCollection();
-			var serviceProvider = services.BuildServiceProvider();
 			_appSettings = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
 			services.AddScoped(p =>_appSettings);
 			services.AddScoped<IQuery, FakeIQuery>();
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		
 		[TestMethod]
 		public async Task Sync_NotFound()
 		{
-			var sync = new Synchronize(_appSettings, new FakeIQuery(), new FakeSelectorStorage(), _serviceScopeFactory);
+			var sync = new Synchronize(_appSettings, new FakeIQuery(), new FakeSelectorStorage());
 			var result = await sync.Sync("/not_found.jpg");
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -44,7 +40,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), 
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
-					new List<string>{"/test.jpg"})), _serviceScopeFactory);
+					new List<string>{"/test.jpg"})));
 			
 			var result = await sync.Sync("/test.jpg");
 
@@ -55,13 +51,17 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Sync_Folder()
 		{
-			var sync = new Synchronize(new AppSettings(), new FakeIQuery(), 
+			var sync = new Synchronize(new AppSettings
+				{
+					DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+				}, 
+				new FakeIQuery(), 
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
 					new List<string>{"/test.jpg"}, 
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), _serviceScopeFactory);
+					})));
 			
 			var result = await sync.Sync("/");
 
@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), _serviceScopeFactory);
+					})));
 
 			var dsStore = await sync.Sync("/.DS_Store");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>
 					{
 						CreateAnImage.Bytes
-					})), _serviceScopeFactory);
+					})));
 
 			var dsStore = await sync.Sync("/desktop.ini");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, dsStore[0].Status);
@@ -112,7 +112,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					{
 						CreateAnImage.Bytes,
 						CreateAnImage.Bytes
-					})), _serviceScopeFactory);
+					})));
 
 			var result = await sync.Sync(new List<string> {"/test.jpg", "/test2.jpg"});
 

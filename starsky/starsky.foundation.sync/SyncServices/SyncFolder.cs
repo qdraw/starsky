@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -11,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.Helpers;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -22,13 +22,12 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
 
-		public SyncFolder(AppSettings appSettings, IServiceScopeFactory serviceScopeFactory, IQuery query, 
+		public SyncFolder(AppSettings appSettings, IQuery query, 
 			ISelectorStorage selectorStorage, IConsole console)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
-			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,
-				serviceScopeFactory.CreateScope().ServiceProvider.GetService<IServiceCollection>());
+			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,null);
 			_query = query;
 			_console = console;
 		}
@@ -39,9 +38,11 @@ namespace starsky.foundation.sync.SyncServices
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
 			
 			var allResults = new List<FileIndexItem>();
+			// Loop trough all folders recursive
 			foreach ( var subPath in subPaths )
 			{
 				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
+				// And check files within this folder
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
@@ -52,18 +53,22 @@ namespace starsky.foundation.sync.SyncServices
 			return allResults;
 		}
 		
-		private async Task<List<FileIndexItem>> LoopOverFolder(IEnumerable<FileIndexItem> fileIndexItems, 
+		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItems, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 
+				
 			var result = await pathsToUpdateInDatabase
 				.ForEachAsync(async subPathInFiles =>
 				{
-					var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
+					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_subPathStorage, _console).SingleFile(subPathInFiles);
+						_subPathStorage, _console).SingleFile(subPathInFiles, 
+						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
+					
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{
 						await new SyncRemove(_appSettings, _setupDatabaseTypes, query)

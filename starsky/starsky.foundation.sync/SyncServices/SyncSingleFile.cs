@@ -29,11 +29,87 @@ namespace starsky.foundation.sync.SyncServices
 			_console = console;
 		}
 
+		/// <summary>
+		/// For Checking single items without querying the database
+		/// </summary>
+		/// <param name="subPath">path</param>
+		/// <param name="dbItem">current item, can be null</param>
+		/// <returns>updated item with status</returns>
+		internal async Task<FileIndexItem> SingleFile(string subPath, FileIndexItem dbItem)
+		{
+			// when item does not exist in db
+			if ( dbItem == null )
+			{
+				return await SingleFile(subPath);
+			}
+
+			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
+			
+			var statusItem = CheckForStatusNotOk(subPath);
+			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+			{
+				return statusItem;
+			}
+			
+			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
+			if ( isSame ) return updatedDbItem;
+
+			return await UpdateItem(dbItem, dbItem.Size, subPath);
+		}
+
+		/// <summary>
+		/// Query the database and check if an single item has changed
+		/// </summary>
+		/// <param name="subPath">path</param>
+		/// <returns>updated item with status</returns>
 		internal async Task<FileIndexItem> SingleFile(string subPath)
 		{
 			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 
-			var statusItem = new FileIndexItem(subPath);
+			var statusItem = CheckForStatusNotOk(subPath);
+			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
+			{
+				return statusItem;
+			}
+
+			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
+			// // // when item does not exist in Database
+			if ( dbItem == null )
+			{
+				return await NewItem(statusItem, subPath);
+			}
+
+			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
+			if ( isSame ) return updatedDbItem;
+
+			return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+		}
+
+		/// <summary>
+		/// When the same stop checking and return value
+		/// </summary>
+		/// <param name="dbItem">item that contain size and fileHash</param>
+		/// <returns>database item</returns>
+		private async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
+		{
+			// when size is the same dont update
+			var (isByteSizeTheSame, size) = CompareByteSizeIsTheSame(dbItem);
+			dbItem.Size = size;
+			if (isByteSizeTheSame) return new Tuple<bool, FileIndexItem>(true ,dbItem);
+
+			// when byte hash is different update
+			var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
+			return new Tuple<bool, FileIndexItem>(fileHashTheSame ,dbItem);
+		}
+
+		/// <summary>
+		/// When the file is not supported or does not exist return status
+		/// </summary>
+		/// <param name="subPath">relative path</param>
+		/// <returns>item with status</returns>
+		private FileIndexItem CheckForStatusNotOk(string subPath)
+		{
+			var statusItem = new FileIndexItem(subPath){Status = FileIndexItem.ExifStatus.Ok};
 
 			// File extension is not supported
 			if ( !ExtensionRolesHelper.IsExtensionSyncSupported(subPath) )
@@ -50,37 +126,43 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 			
+			// ReSharper disable once InvertIf
 			if ( !ExtensionRolesHelper.ExtensionSyncSupportedList.Contains(imageFormat.ToString()) )
 			{
 				statusItem.Status = FileIndexItem.ExifStatus.OperationNotSupported;
 				return statusItem;
 			}
+			return statusItem;
+		}
 
-			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
-			// // // when item does not exist in Database
-			if ( dbItem == null )
-			{
-				// Add a new Item
-				dbItem = await _newItem.NewFileItem(statusItem);
+		/// <summary>
+		/// Create an new item in the database
+		/// </summary>
+		/// <param name="statusItem">contains the status</param>
+		/// <param name="subPath">relative path</param>
+		/// <returns>database item</returns>
+		private async Task<FileIndexItem> NewItem(FileIndexItem statusItem, string subPath)
+		{
+			// Add a new Item
+			var dbItem = await _newItem.NewFileItem(statusItem);
 
-				// When not OK do not Add (fileHash issues)
-				if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
+			// When not OK do not Add (fileHash issues)
+			if ( dbItem.Status != FileIndexItem.ExifStatus.Ok ) return dbItem;
 				
-				await _query.AddItemAsync(dbItem);
-				await _query.AddParentItemsAsync(subPath);
-				return dbItem;
-			}
+			await _query.AddItemAsync(dbItem);
+			await _query.AddParentItemsAsync(subPath);
+			return dbItem;
+		}
 
-			// when size is the same dont update
-			var (isByteSizeTheSame, size) = CompareByteSizeIsTheSame(dbItem);
-			if (isByteSizeTheSame) return dbItem;
-			dbItem.Size = size;
-
-			// when byte hash is different update
-			var (fileHashTheSame, newFileHash ) = await CompareFileHashIsTheSame(dbItem);
-			if ( fileHashTheSame ) return dbItem;
-			dbItem.FileHash = newFileHash;
-			
+		/// <summary>
+		/// Update item to database
+		/// </summary>
+		/// <param name="dbItem">item to update</param>
+		/// <param name="size">byte size</param>
+		/// <param name="subPath">relative path</param>
+		/// <returns>same item</returns>
+		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
+		{
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);
@@ -97,6 +179,7 @@ namespace starsky.foundation.sync.SyncServices
 			var (localHash,_) = await new 
 				FileHash(_subPathStorage).GetHashCodeAsync(dbItem.FilePath);
 			var isTheSame = dbItem.FileHash == localHash;
+			dbItem.FileHash = localHash;
 			return new Tuple<bool, string>(isTheSame, localHash);
 		}
 
@@ -108,7 +191,9 @@ namespace starsky.foundation.sync.SyncServices
 		private Tuple<bool,long> CompareByteSizeIsTheSame(FileIndexItem dbItem)
 		{
 			var storageByteSize = _subPathStorage.Info(dbItem.FilePath).Size;
-			return new Tuple<bool, long>(dbItem.Size == storageByteSize, storageByteSize);
+			var isTheSame = dbItem.Size == storageByteSize;
+			dbItem.Size = storageByteSize;
+			return new Tuple<bool, long>(isTheSame, storageByteSize);
 		}
 
 	}

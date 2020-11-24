@@ -71,13 +71,26 @@ namespace starsky.foundation.database.Query
 	    /// <returns>list of FileIndex-objects</returns>
 	    public async Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
 	    {
+
+		    List<FileIndexItem> FormatOk(List<FileIndexItem> input)
+		    {
+			    return input.Select(p =>
+			    {
+				    if ( p != null )
+				    {
+					    p.Status = FileIndexItem.ExifStatus.Ok;
+				    }
+				    return p;
+			    }).ToList();
+		    }
+		    
 		    try
 		    {
-			    return await GetAllFilesQuery(_context,subPath).ToListAsync();
+			    return FormatOk(await GetAllFilesQuery(_context, subPath).ToListAsync());
 		    }
 		    catch ( ObjectDisposedException )
 		    {
-			    return await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync();
+			    return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync());
 		    }
 	    }
 	    
