@@ -4,8 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
@@ -17,18 +19,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public class SyncFolderTest
 	{
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 
 		public SyncFolderTest()
 		{
-			var services = new ServiceCollection();
 			_appSettings = new AppSettings
 			{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
-			(_query, _serviceScopeFactory) = CreateNewExampleData();
+			(_query, _) = CreateNewExampleData();
 		}
 		
 		private Tuple<IQuery, IServiceScopeFactory> CreateNewExampleData()
@@ -77,87 +77,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Folder_Dir_NotFound()
 		{
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,_query, new FakeSelectorStorage(GetStorage()), 
-				new ConsoleWrapper()).Folder("/not_found");
-
+			var storage = new FakeIStorage();
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/not_found");
+			
 			Assert.AreEqual("/not_found",result[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
 		}
 
-		[TestMethod]
-		public async Task Folder_FilesOnDiskButNotInTheDb()
-		{
-			var storage =  new FakeIStorage(
-				new List<string>
-				{
-					"/", 
-					"/Folder_FilesOnDiskButNotInTheDb"
-				}, 
-				new List<string>
-				{
-					"/Folder_FilesOnDiskButNotInTheDb/test1.jpg",
-					"/Folder_FilesOnDiskButNotInTheDb/test2.jpg",
-					"/Folder_FilesOnDiskButNotInTheDb/test3.jpg",
-				},
-				new List<byte[]>
-				{
-					FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImageColorClass.Bytes,
-					FakeCreateAn.CreateAnImageNoExif.Bytes,
-				});
-			
-			var syncFolder = new SyncFolder(_appSettings,
-				_serviceScopeFactory, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper());
-			
-			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
-			
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",result[0].FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test2.jpg",result[1].FilePath);
-			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test3.jpg",result[2].FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[2].Status);
 
-			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
-
-			Console.WriteLine("Flaky tests: files.Count " + files.Count);
-			Assert.AreEqual(3,files.Count);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[2].Status);
-		}
-		
-		[TestMethod]
-		public async Task Folder_InDbButNotOnDisk()
-		{
-			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk/test.jpg"));
-			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk/test2.jpg"));
-
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory, _query, new FakeSelectorStorage(GetStorage()),
-				new ConsoleWrapper()).Folder("/Folder_InDbButNotOnDisk");
-
-			Assert.AreEqual("/Folder_InDbButNotOnDisk/test.jpg",result[0].FilePath);
-			Assert.AreEqual("/Folder_InDbButNotOnDisk/test2.jpg",result[1].FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[1].Status);
-			
-			Assert.AreEqual(null, 
-				_query.SingleItem("/Folder_InDbButNotOnDisk/test.jpg"));
-			Assert.AreEqual(null, 
-				_query.SingleItem("/Folder_InDbButNotOnDisk/test2.jpg"));
-		}
-		
 		[TestMethod]
 		public async Task Folder_FolderWithNoContent()
 		{
-			var (query, serviceScopeFactory) = CreateNewExampleData();
-
-			var result = await new SyncFolder(_appSettings, 
-				serviceScopeFactory, query, new FakeSelectorStorage(GetStorage()),
-				new ConsoleWrapper()).Folder("/folder_no_content");
+			var storage = GetStorage();
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/folder_no_content");
 
 			Assert.AreEqual("/folder_no_content",result[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
@@ -176,9 +112,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			await storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImage.Bytes),
 				subPath);
 			
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,_query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper()).Folder("/change");
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/change");
 
 			Assert.AreEqual(subPath,result[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
@@ -194,15 +130,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			storage.CreateDirectory(folderPath);
 
 			var query = new FakeIQuery();
-			var results = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper()).Folder(folderPath);
+
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder(folderPath);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
-			Assert.AreEqual(1, results.Count);
-			Assert.AreEqual(folderPath, results[0].FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,results[0].Status);
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(folderPath, result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
 		}
 
 		[TestMethod]
@@ -213,9 +150,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			storage.CreateDirectory(folderPath);
 
 			var query = new FakeIQuery();
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper()).AddParentFolder(folderPath);
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.AddParentFolder(folderPath);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync("/"));
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
@@ -234,9 +171,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				IsDirectory = true
 			}});
 			
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper()).AddParentFolder(folderPath);
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.AddParentFolder(folderPath);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
 			Assert.AreEqual(folderPath, result.FilePath);
@@ -257,9 +194,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var query = new FakeIQuery();
 			
-			var result = await new SyncFolder(_appSettings, 
-				_serviceScopeFactory,query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper()).AddParentFolder(folderPath);
+			var syncFolder = new SyncFolder(_appSettings, query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.AddParentFolder(folderPath);
 
 			Assert.IsNotNull(query.GetObjectByFilePathAsync(folderPath));
 			Assert.AreEqual(folderPath, result.FilePath);

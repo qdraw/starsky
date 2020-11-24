@@ -46,7 +46,7 @@ namespace starsky.foundation.database.Helpers
 					return mysql.Options;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
-						.UseInMemoryDatabase("starsky");
+						.UseInMemoryDatabase(string.IsNullOrEmpty(_appSettings.DatabaseConnection) ? "starsky" : _appSettings.DatabaseConnection );
 					return memoryDatabase.Options;
 				case AppSettings.DatabaseTypeList.Sqlite:
 					var sqlite = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -64,11 +64,13 @@ namespace starsky.foundation.database.Helpers
 			}
 		}
 
-		public void BuilderDb(string foundationDatabaseName = "")
+		public ApplicationDbContext BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _console != null && _appSettings.Verbose ) 
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
-			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+			var context = new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName));
+			_services.AddScoped(provider => context);
+			return context;
 		}
 
 	}

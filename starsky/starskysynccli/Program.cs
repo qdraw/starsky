@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -34,7 +36,10 @@ namespace starskysynccli
 			var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
+			var stopWatch = Stopwatch.StartNew();
             new SyncServiceCli().Sync(args, syncService, appSettings,console, thumbnailCleaner, selectorStorage);
+            Console.WriteLine("Time: " + stopWatch.Elapsed.TotalSeconds);
+
         }
     }
 }

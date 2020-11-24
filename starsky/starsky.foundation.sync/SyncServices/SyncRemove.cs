@@ -7,6 +7,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
+using starsky.foundation.sync.Helpers;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -16,11 +17,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
 		private readonly IQuery _query;
 
-		public SyncRemove(AppSettings appSettings, IServiceScopeFactory serviceScopeFactory, IQuery query)
+		public SyncRemove(AppSettings appSettings, IQuery query)
 		{
 			_appSettings = appSettings;
-			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,
-				serviceScopeFactory.CreateScope().ServiceProvider.GetService<IServiceCollection>());
+			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,null);
 			_query = query;
 		}
 
@@ -45,7 +45,7 @@ namespace starsky.foundation.sync.SyncServices
 				.ForEachAsync(
 					async subPath =>
 					{
-						var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
+						var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 						
 						var directItem = await query.GetObjectByFilePathAsync(subPath);
 						if ( directItem != null )
@@ -62,7 +62,7 @@ namespace starsky.foundation.sync.SyncServices
 			await toDeleteList
 				.ForEachAsync(async item =>
 				{
-					var query = await new QueryFactory(_setupDatabaseTypes, _query).Query();
+					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 					await query.RemoveItemAsync(item);
 					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
 					return item;

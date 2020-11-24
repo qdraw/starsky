@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task FileType_NotSupported()
+		public async Task SingleFile_FileType_NotSupported()
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task ImageFormat_Corrupt()
+		public async Task SingleFile_ImageFormat_Corrupt()
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			
@@ -54,7 +54,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task AddNewFile()
+		public async Task SingleFile_AddNewFile()
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 	
 		[TestMethod]
-        public async Task AddNewFile_NoConsole()
+        public async Task SingleFile_AddNewFile_NoConsole()
         {
         	var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
         	var sync = new SyncSingleFile(new AppSettings{Verbose = true}, fakeQuery,
@@ -95,7 +95,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
         }
 		
 		[TestMethod]
-		public async Task AddNewFile_WithParentFolders()
+		public async Task SingleFile_AddNewFile_WithParentFolders()
 		{
 			var iStorageFake = new FakeIStorage(new List<string>{"/level/deep/"},
 				new List<string>{"/level/deep/test.jpg"},
@@ -135,7 +135,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task FileAlreadyExist_WithSameFileHash()
+		public async Task SingleFile_FileAlreadyExist_WithSameFileHash()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 			
@@ -161,7 +161,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task FileAlreadyExist_With_Changed_ByteSize()
+		public async Task SingleFile_FileAlreadyExist_With_Changed_ByteSize()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 
@@ -184,7 +184,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task FileAlreadyExist_With_Same_ByteSize()
+		public async Task SingleFile_FileAlreadyExist_With_Same_ByteSize()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
 
@@ -209,16 +209,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task FileAlreadyExist_With_Changed_FileHash()
+		public async Task SingleFile_FileAlreadyExist_With_Changed_FileHash()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
-			
+				
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg")
 				{
 					FileHash = "THIS_IS_THE_OLD_HASH",
-					Size = 8951862 // byte size is different
+					Size = 99999999 // % % % that's not the right size % % %
 				}
 			});
 			
@@ -226,7 +226,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg");
 
-			var count= fakeQuery.GetAllFiles("/").Count(p => p.FileName == "test.jpg");
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
 			var detailView = fakeQuery.SingleItem("/test.jpg");
@@ -235,6 +235,81 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = detailView.FileIndexItem;
 			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_DbItem_Updated()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH",
+				Size = 99999999 // % % % that's not the right size % % %
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			await sync.SingleFile("/test.jpg",item);  // % % % % Enter item here % % % % % 
+
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			Assert.AreEqual(1,count);
+			
+			var detailView = fakeQuery.SingleItem("/test.jpg");
+			
+			Assert.IsNotNull(detailView);
+			var fileIndexItem = detailView.FileIndexItem;
+			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_DbItem_NoContent_NoItemInDb()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH",
+				Size = 99999999 // % % % that's not the right size % % %
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
+
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
+			Assert.AreEqual(1,count);
+			
+			var detailView = fakeQuery.SingleItem("/test.jpg");
+			
+			Assert.IsNotNull(detailView);
+			var fileIndexItem = detailView.FileIndexItem;
+			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
+			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+		}
+		
+		[TestMethod]
+		public async Task SingleFile_DbItem_FileAlreadyExist_With_Same_ByteSize()
+		{
+			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash,
+				Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
+				Tags = "the tags should not be updated" // <= the tags in /test.jpg is nothing
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			await sync.SingleFile("/test.jpg",item); // % % % % Enter item here % % % % % 
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+
+			Assert.AreNotEqual(string.Empty, fileIndexItem.Tags);
+			Assert.AreEqual("the tags should not be updated", fileIndexItem.Tags);
 		}
 		
 		[TestMethod]

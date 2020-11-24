@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 
 namespace starskytest.FakeMocks
 {
@@ -17,6 +20,13 @@ namespace starskytest.FakeMocks
 		{
 			if ( fakeContext == null ) return;
 			_fakeContext = fakeContext;
+		}
+
+		public FakeIQuery(ApplicationDbContext context, 
+			IMemoryCache memoryCache = null, 
+			AppSettings appSettings = null,
+			IServiceScopeFactory scopeFactory = null)
+		{
 		}
 		
 		private List<FileIndexItem> _fakeContext = new List<FileIndexItem>();

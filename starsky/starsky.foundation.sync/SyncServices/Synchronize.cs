@@ -26,14 +26,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IConsole _console;
 		private readonly SyncFolder _syncFolder;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, 
-			IServiceScopeFactory serviceScopeFactory)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
-			_syncRemove = new SyncRemove(appSettings, serviceScopeFactory, query);
-			_syncFolder = new SyncFolder(appSettings, serviceScopeFactory, query, selectorStorage, _console);
+			_syncRemove = new SyncRemove(appSettings, query);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
 		}
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
