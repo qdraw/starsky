@@ -39,6 +39,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ New Sync service 'starsky.foundation.sync' behind new API
 - [x]   (Added) _Back-end_ Split Sync in starskysynchronizecli and starskythumbnailcli
 - [x]   (Deprecated) _Back-end_ Old Sync CLI, replaced by starskysynchronizecli (to be removed in future release)
+- [x]   (Added) _Back-end_ Notify realtime websockets when DiskWatcher detects changes
 
 # version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
