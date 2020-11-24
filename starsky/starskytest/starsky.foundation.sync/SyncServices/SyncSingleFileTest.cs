@@ -302,7 +302,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			};
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
-			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
 				_iStorageFake, new ConsoleWrapper());
 			await sync.SingleFile("/test.jpg",item); // % % % % Enter item here % % % % % 
 			
