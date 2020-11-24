@@ -64,13 +64,11 @@ namespace starsky.foundation.database.Helpers
 			}
 		}
 
-		public ApplicationDbContext BuilderDb(string foundationDatabaseName = "")
+		public void BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _console != null && _appSettings.Verbose ) 
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
-			var context = new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName));
-			_services.AddScoped(provider => context);
-			return context;
+			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
 
 	}
