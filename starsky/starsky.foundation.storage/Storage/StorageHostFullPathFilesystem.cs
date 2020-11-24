@@ -309,7 +309,7 @@ namespace starsky.foundation.storage.Storage
 
             /* I begin a recursion, following the order:
              * - Insert all the files in the current directory with the recursion
-             * - Insert all subdirectories in the list and rebegin the recursion from there until the end
+             * - Insert all subdirectories in the list and re-begin the recursion from there until the end
              */
             RecurseFind( path, findlist );
 
