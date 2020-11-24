@@ -62,6 +62,8 @@ var publishProjectNames = new List<string>{
     "starskygeocli",
     "starskyimportercli",
     "starskysynccli",
+    "starskysynchronizecli",
+    "starskythumbnailcli",
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
