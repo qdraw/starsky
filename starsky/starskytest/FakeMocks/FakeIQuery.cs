@@ -83,9 +83,17 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
-		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
 		{
-			return Task.FromResult(_fakeContext.FirstOrDefault(p => p.FilePath == filePath));
+			try
+			{
+				return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
+			}
+			catch (InvalidOperationException)
+			{
+				await Task.Delay(new Random().Next(1, 5));
+				return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
+			}
 		}
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
