@@ -77,7 +77,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
         public async Task AddNewFile_NoConsole()
         {
         	var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
-        	var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+        	var sync = new SyncSingleFile(new AppSettings{Verbose = true}, fakeQuery,
         		_iStorageFake, null); //  % % % % % % % % % % % % % % No Console % % % %
         	
         	await sync.SingleFile("/test.jpg");
