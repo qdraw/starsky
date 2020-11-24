@@ -38,12 +38,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FileIndexItem("/folder_no_content/") {IsDirectory = true},
 					new FileIndexItem("/folder_content") {IsDirectory = true},
 					new FileIndexItem("/folder_content/test.jpg"),
-					new FileIndexItem("/folder_content/test2.jpg"),
-					
-					new FileIndexItem("/Folder_With_ChildItems") {IsDirectory = true},
-					new FileIndexItem("/Folder_With_ChildItems/test.jpg"),
-					new FileIndexItem("/Folder_With_ChildItems/test2.jpg"),
-					};
+					new FileIndexItem("/folder_content/test2.jpg")
+				};
 			}
 			var services = new ServiceCollection();
 			var serviceProvider = services.BuildServiceProvider();

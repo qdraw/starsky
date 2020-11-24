@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +24,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			_appSettings = new AppSettings{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
-				Verbose = true
+				Verbose = true,
+				DatabaseConnection = nameof(SyncRemoveTestInMemoryDb)
 			};
 
 			provider.AddSingleton(_appSettings);
@@ -40,6 +42,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task Remove_Folder_With_ChildItems()
 		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/Folder_With_ChildItems") {IsDirectory = true},
+				new FileIndexItem("/Folder_With_ChildItems/test.jpg"),
+				new FileIndexItem("/Folder_With_ChildItems/test2.jpg"),
+			});
+			
 			var result= await new SyncRemove(_appSettings, _query).Remove("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);

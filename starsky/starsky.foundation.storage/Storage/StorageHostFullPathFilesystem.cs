@@ -135,7 +135,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					Console.WriteLine("UnauthorizedAccessException => " + e);
+					Console.WriteLine("Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
 			return folderList.OrderBy(p => p);

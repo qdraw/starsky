@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
@@ -51,7 +52,7 @@ namespace starsky.foundation.sync.Helpers
 				var stopWatch = Stopwatch.StartNew();
 				_console.WriteLine($"Start indexing {subPath}");
 				await _synchronize.Sync(subPath);
-				_console.WriteLine($"\nDone SyncFiles! (in sec: {stopWatch.Elapsed.TotalSeconds}");
+				_console.WriteLine($"\nDone SyncFiles! (in sec: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)})");
 			}
 			_console.WriteLine("Done!");
 		}

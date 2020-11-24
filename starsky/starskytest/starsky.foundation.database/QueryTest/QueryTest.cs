@@ -219,7 +219,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var items = await query.GetAllFilesAsync("/GetAllFilesAsync");
 
 	        Assert.AreEqual("/GetAllFilesAsync/test.jpg", items[0].FilePath);
-	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
         }
         
         [TestMethod]
@@ -241,7 +241,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var items = await query.GetAllFilesAsync("/");
 
 	        Assert.AreEqual("/test.jpg", items[0].FilePath);
-	        Assert.AreEqual(FileIndexItem.ExifStatus.Default, items[0].Status);
+	        Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
         }
 
         [TestMethod]
