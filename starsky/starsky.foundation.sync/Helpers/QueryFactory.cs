@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Query;
@@ -26,11 +25,5 @@ namespace starsky.foundation.sync.Helpers
 			}
 			return Activator.CreateInstance(_query.GetType(), context, null, null, null) as IQuery;
 		}
-
-		// public async Task<IQuery> Query(Type type)
-		// {
-		// 	await using var context =  _setupDatabaseTypes.BuilderDbFactory();
-		// 	return Activator.CreateInstance(type, context, null, null, null) as IQuery;
-		// }
 	}
 }
