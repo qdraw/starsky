@@ -43,10 +43,25 @@ namespace starsky.foundation.storage.Services
 		/// <summary>
 		/// Parse the parent folder and ignore the filename
 		/// </summary>
+		/// <param name="getSubPathRelative">datetime relative to now</param>
+		/// <param name="fileNameBase">include fileName if requested in structure</param>
+		/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
+		/// <returns>sub Path including folders</returns>
+		public string ParseSubfolders(int? getSubPathRelative, string fileNameBase = "",
+			string extensionWithoutDot = "")
+		{
+			if ( getSubPathRelative == null ) return null;
+			var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
+			return ParseSubfolders(dateTime, fileNameBase, extensionWithoutDot);
+		}
+
+		/// <summary>
+		/// Parse the parent folder and ignore the filename
+		/// </summary>
 		/// <param name="dateTime">DateTime to parse</param>
 		/// <param name="fileNameBase">include fileName if requested in structure</param>
 		/// <param name="extensionWithoutDot">include parentFolder if requested in structure (not recommend)</param>
-		/// <returns></returns>
+		/// <returns>sub Path including folders</returns>
 		public string ParseSubfolders(DateTime dateTime, string fileNameBase = "", 
 			string extensionWithoutDot = "")
 		{
@@ -55,7 +70,6 @@ namespace starsky.foundation.storage.Services
 
 			return ApplyStructureRangeToStorage(
 				parsedStructuredList.GetRange(0, parsedStructuredList.Count - 1));
-
 		}
 		
 		/// <summary>

@@ -23,7 +23,7 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 
 			// File Processor has an endless loop
-			_fileProcessor = new FileProcessor(new SyncWatcherPreflight(scopeFactory).Sync);
+			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 			_console = scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>();
 		}

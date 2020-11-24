@@ -23,10 +23,14 @@ Check at least those files
  - [x] `starsky/starskyadmincli/starskyadmincli.csproj`
  - [x] `starsky/starskygeocli/starskygeocli.csproj`
  - [x] `starsky/starskyimportercli/starskyimportercli.csproj`
- - [x] `starsky/starskysynccli/starskysynccli.csproj`
+ - [x] `starsky/starskysynchronizecli/starskysynchronizecli.csproj`
+ - [x] `starsky/starskythumbnailcli/starskythumbnailcli.csproj`
  - [x] `starsky/starskytest/starskytest.csproj`
  - [x] `starsky/starskywebftpcli/starskywebftpcli.csproj`
  - [x] `starsky/starskywebhtmlcli/starskywebhtmlcli.csproj`
+
+## Marked as deprecated
+- [x] `starsky/starskysynccli/starskysynccli.csproj`
 
 ## Legacy project
  - [x] `starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj`

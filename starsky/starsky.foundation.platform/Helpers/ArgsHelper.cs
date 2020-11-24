@@ -556,6 +556,17 @@ namespace starsky.foundation.platform.Helpers
 			}
 			return true;
 		}
+
+		/// <summary>
+		/// Using both options
+		/// -s = if subPath || -p is path
+		/// </summary>
+		/// <param name="args"></param>
+		/// <returns></returns>
+		public string SubPathOrPathValue(IReadOnlyList<string> args)
+		{
+			return IsSubPathOrPath(args) ? GetSubpathFormArgs(args) : GetPathFormArgs(args);
+		}
 	 
 		/// <summary>
 		/// --thumbnail bool

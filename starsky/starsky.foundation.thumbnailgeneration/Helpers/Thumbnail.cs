@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -14,7 +15,8 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 
-namespace starsky.foundation.thumbnailgeneration.Services
+[assembly: InternalsVisibleTo("starskytest")]
+namespace starsky.foundation.thumbnailgeneration.Helpers
 {
 	public class Thumbnail
 	{
@@ -65,8 +67,8 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
 		/// </summary>
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
-		/// <param name="fileHash">the base32 hash of the subpath file</param>
-		/// <returns>true, if succesfull</returns>
+		/// <param name="fileHash">the base32 hash of the subPath file</param>
+		/// <returns>true, if successful</returns>
 		public bool CreateThumb(string subPath, string fileHash)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
@@ -108,15 +110,13 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// Check if the image has the right first bytes, if not remove
 		/// </summary>
 		/// <param name="fileHash">the fileHash file</param>
-		private void RemoveCorruptImage(string fileHash)
+		internal bool RemoveCorruptImage(string fileHash)
 		{
-			if (!_thumbnailStorage.ExistFile(fileHash)) return;
-            
+			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash,160));
-			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-			{
-				_thumbnailStorage.FileDelete(fileHash);
-			}
+			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
+			_thumbnailStorage.FileDelete(fileHash);
+			return true;
 		}
 
 		public MemoryStream ResizeThumbnail(string subPath, 
@@ -176,7 +176,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		private void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
@@ -202,7 +202,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		/// <param name="orientation">-1 > Rotage -90degrees, anything else 90 degrees</param>
 		/// <param name="width">to resize, default 1000</param>
 		/// <param name="height">to resize, default keep ratio (0)</param>
-		/// <returns>Is successfull? // private feature</returns>
+		/// <returns>Is successful? // private feature</returns>
 		public bool RotateThumbnail(string fileHash, int orientation, int width = 1000, int height = 0 )
 		{
 			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
@@ -230,7 +230,6 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			}
 			catch (Exception ex)            
 			{
-				if (!(ex is ImageFormatException) && !(ex is ArgumentException)) throw;
 				Console.WriteLine(ex);
 				return false;
 			}

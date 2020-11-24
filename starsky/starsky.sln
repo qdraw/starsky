@@ -87,6 +87,10 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.sync", "starsky.foundation.sync\starsky.foundation.sync.csproj", "{8CD2E452-AB62-446C-AD42-7D90B63D1B81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskysynchronizecli", "starskysynchronizecli\starskysynchronizecli.csproj", "{2146484C-070D-4384-9BA6-642F63789591}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskythumbnailcli", "starskythumbnailcli\starskythumbnailcli.csproj", "{26399A15-B762-4550-BC1E-5B4C1F71F7E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +213,14 @@ Global
 		{8CD2E452-AB62-446C-AD42-7D90B63D1B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CD2E452-AB62-446C-AD42-7D90B63D1B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CD2E452-AB62-446C-AD42-7D90B63D1B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2146484C-070D-4384-9BA6-642F63789591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2146484C-070D-4384-9BA6-642F63789591}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2146484C-070D-4384-9BA6-642F63789591}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2146484C-070D-4384-9BA6-642F63789591}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,5 +258,7 @@ Global
 		{B159081F-4CD0-4C72-A180-9E95423211EA} = {4B9276C3-651E-48D3-B3A7-3F4D74F3D01A}
 		{497FEDB5-3119-4ED3-BE43-13ADC70F47D6} = {C757587F-8490-4815-97CE-9BE39A6C82C6}
 		{8CD2E452-AB62-446C-AD42-7D90B63D1B81} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{2146484C-070D-4384-9BA6-642F63789591} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{26399A15-B762-4550-BC1E-5B4C1F71F7E3} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 	EndGlobalSection
 EndGlobal

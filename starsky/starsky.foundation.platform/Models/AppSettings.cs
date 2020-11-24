@@ -66,6 +66,8 @@ namespace starsky.foundation.platform.Models
 
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskyadmincli", "starsky")
+		    .Replace("starskysynchronizecli", "starsky")
+		    .Replace("starskythumbnailcli", "starsky")
 		    .Replace("starskysynccli", "starsky")
 		    .Replace("starsky.foundation.database", "starsky")
 		    .Replace("starskyImporterNetFrameworkCli", "starsky")
@@ -117,6 +119,10 @@ namespace starsky.foundation.platform.Models
 	        /// Admin CLI
 	        /// </summary>
 	        Admin = 6,
+	        /// <summary>
+	        /// Thumbnail Generator CLI
+	        /// </summary>
+	        Thumbnail = 7
         }
 		
 		/// <summary>

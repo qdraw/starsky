@@ -250,7 +250,11 @@ namespace starsky.foundation.database.Query
 	        }
         }
 
-	    // Remove the '/' from the end of the url
+	    /// <summary>
+	    /// Remove the '/' from the end of the url
+	    /// </summary>
+	    /// <param name="subPath">path</param>
+	    /// <returns>removed / at end</returns>
 	    [Obsolete("use PathHelper.RemoveLatestSlash()")]
         public string SubPathSlashRemove(string subPath = "/")
         {
@@ -265,6 +269,12 @@ namespace starsky.foundation.database.Query
             return subPath;
         }
 
+        /// <summary>
+        /// Get the name of Key in the cache db
+        /// </summary>
+        /// <param name="functionName">how is the function called</param>
+        /// <param name="singleItemDbPath">the path</param>
+        /// <returns>an unique key</returns>
         private string CachingDbName(string functionName, string singleItemDbPath)
         {
 	        // when is nothing assume its the home item
@@ -301,6 +311,12 @@ namespace starsky.foundation.database.Query
 	        return updateStatusContent;
         }
 
+        /// <summary>
+        /// Update item in Database Async
+        /// You should update the cache yourself (so this is NOT done)
+        /// </summary>
+        /// <param name="updateStatusContentList">content to update</param>
+        /// <returns>same item</returns>
         public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
         {
 	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
@@ -440,7 +456,10 @@ namespace starsky.foundation.database.Query
 		    return true;
 	    }
 
-	    // Private api within Query to add cached items
+	    /// <summary>
+	    /// Private api within Query to add cached items
+	    /// </summary>
+	    /// <param name="updateStatusContent">the content to add</param>
         internal void AddCacheItem(FileIndexItem updateStatusContent)
         {
             // If cache is turned of
@@ -461,7 +480,10 @@ namespace starsky.foundation.database.Query
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
-        // Private api within Query to update cached items
+        /// <summary>
+        /// Cache API within Query to update cached items
+        /// </summary>
+        /// <param name="updateStatusContent">items to update</param>
         public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
@@ -495,8 +517,11 @@ namespace starsky.foundation.database.Query
 			}
         }
         
-        // Private api within Query to remove cached items
-        // This Does remove a SINGLE item from the cache NOT from the database
+        /// <summary>
+        /// Cache Only! Private api within Query to remove cached items
+        /// This Does remove a SINGLE item from the cache NOT from the database
+        /// </summary>
+        /// <param name="updateStatusContent"></param>
         private void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabled caching
@@ -531,6 +556,24 @@ namespace starsky.foundation.database.Query
             
             _cache.Remove(queryCacheName);
             return true;
+        }
+
+        /// <summary>
+        /// Add an new Parent Item
+        /// </summary>
+        /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
+        /// <param name="items">the items in the folder</param>
+        internal bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+        {
+	        // Add protection for disabled caching
+	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
+            
+	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
+            
+	        _cache.Set(queryCacheName, items,  
+		        new TimeSpan(1,0,0));
+	        return true;
         }
 
 	    /// <summary>

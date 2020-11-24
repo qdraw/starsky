@@ -18,6 +18,14 @@ if [ -f starskysynccli ]; then
     chmod +rwx ./starskysynccli
 fi
 
+if [ -f starskysynchronizecli ]; then
+    chmod +rwx ./starskysynchronizecli
+fi
+
+if [ -f starskythumbnailcli ]; then
+    chmod +rwx ./starskythumbnailcli
+fi
+
 if [ -f starskywebftpcli ]; then
     chmod +rwx ./starskywebftpcli
 fi

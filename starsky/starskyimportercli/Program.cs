@@ -10,9 +10,9 @@ using starsky.foundation.platform.Models;
 
 namespace starskyimportercli
 {
-    static class Program
+    public static class Program
     {
-        static async Task Main(string[] args)
+	    public static async Task Main(string[] args)
         {
             // Use args in application
             new ArgsHelper().SetEnvironmentByArgs(args);
