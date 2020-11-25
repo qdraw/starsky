@@ -192,7 +192,9 @@ Task("RestoreNetCore")
               System.Console.WriteLine(genericName);
 
               DotNetCoreRestore(".",
-                  new DotNetCoreRestoreSettings());
+                  new DotNetCoreRestoreSettings{
+                    UseLockFile = true
+                  });
               continue;
             }
 

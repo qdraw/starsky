@@ -1,96 +1,97 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
-    <DebugType>Full</DebugType>
-    <!-- SonarQube needs this -->
-    <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
-    <IsPackable>false</IsPackable>
-    <!-- used for RazorLight -->
-    <PreserveCompilationContext>true</PreserveCompilationContext>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>
-    <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>
-  </PropertyGroup>
-    
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
-    <PackageReference Include="coverlet.collector" Version="1.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
+        <DebugType>Full</DebugType>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
+        <IsPackable>false</IsPackable>
+        <!-- used for RazorLight -->
+        <PreserveCompilationContext>true</PreserveCompilationContext>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
+    <PropertyGroup>
+        <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>
+        <RunSettingsFilePath>$(RootFolder)\build.vstest.runsettings</RunSettingsFilePath>
+    </PropertyGroup>
 
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
+        <PackageReference Include="coverlet.collector" Version="1.3.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-  </ItemGroup>
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
-    <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
-    <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
-    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-    <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
-    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-    <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
-    <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
-    <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
-    <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
-    <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
-    <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
-    <ProjectReference Include="..\starskycore\starskycore.csproj" />
-    <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
-    <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
-    <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
-    <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
-    <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
-    <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
-    <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
-    <ProjectReference Include="..\starsky\starsky.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
+        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
+        <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+        <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+        <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+        <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
+        <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
+        <ProjectReference Include="..\starskycore\starskycore.csproj" />
+        <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
+        <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
+        <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
+        <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
+        <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
+        <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
+        <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
+        <ProjectReference Include="..\starsky\starsky.csproj" />
+    </ItemGroup>
     <ItemGroup>
         <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.4" />
     </ItemGroup>
     <ItemGroup>
-      <Compile Remove="coverage-report.zip" />
-      <Compile Remove="coverage-report\**" />
-      <Compile Remove="TestResults\**" />
+        <Compile Remove="coverage-report.zip" />
+        <Compile Remove="coverage-report\**" />
+        <Compile Remove="TestResults\**" />
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Remove="coverage-report.zip" />
-      <EmbeddedResource Remove="coverage-report\**" />
-      <EmbeddedResource Remove="TestResults\**" />
+        <EmbeddedResource Remove="coverage-report.zip" />
+        <EmbeddedResource Remove="coverage-report\**" />
+        <EmbeddedResource Remove="TestResults\**" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="coverage-report\**" />
-      <None Remove="coverage-merge-cobertura.xml" />
-      <None Remove="jest-coverage.cobertura.xml" />
-      <None Remove="netcore-coverage.opencover.xml" />
-      <None Remove="coverage-report.zip" />
-      <None Remove="TestResults\**" />
+        <None Remove="coverage-report\**" />
+        <None Remove="coverage-merge-cobertura.xml" />
+        <None Remove="jest-coverage.cobertura.xml" />
+        <None Remove="netcore-coverage.opencover.xml" />
+        <None Remove="coverage-report.zip" />
+        <None Remove="TestResults\**" />
     </ItemGroup>
     <ItemGroup>
-      <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
+        <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="starsky.feature.health\Helpers" />
+        <Folder Include="starsky.feature.health\Helpers" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="..\build.vstest.runsettings">
-        <Link>build.vstest.runsettings</Link>
-      </Content>
+        <Content Include="..\build.vstest.runsettings">
+            <Link>build.vstest.runsettings</Link>
+        </Content>
     </ItemGroup>
 </Project>
