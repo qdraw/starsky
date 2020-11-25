@@ -60,7 +60,7 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: 'nuget | "$(Agent.OS)" | **/packages.lock.json,!**/bin/**'
+    key: 'nuget | "$(Agent.OS)" | $(Build.SourcesDirectory)\starsky\nuget-packages-list.json'
     restoreKeys: |
        nuget | "$(Agent.OS)"
     path: $(NUGET_PACKAGES)
@@ -75,7 +75,7 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)\starsky\starskyapp\package-lock.json'
+    key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)\**\starskyapp\package-lock.json'
     restoreKeys: |
        npm | "$(Agent.OS)"
     path: $(npm_config_cache)
