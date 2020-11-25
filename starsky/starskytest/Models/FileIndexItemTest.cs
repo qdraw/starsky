@@ -279,6 +279,26 @@ namespace starskytest.Models
 	    }
 
 	    [TestMethod]
+	    public void LensModel_Defaults()
+	    {
+		    var item = new FileIndexItem{MakeModel = string.Empty};
+		    Assert.AreEqual(string.Empty,item.LensModel);
+	    }
+	    [TestMethod]
+	    public void LensModel_ShouldReplace()
+	    {
+		    var item = new FileIndexItem{MakeModel = "test|Canon|Canon Lens"};
+		    Assert.AreEqual("Lens",item.LensModel);
+	    }
+	    
+	    [TestMethod]
+	    public void LensModel_ShouldNotReplace()
+	    {
+		    var item = new FileIndexItem{MakeModel = "test||Canon Lens"};
+		    Assert.AreEqual("Canon Lens",item.LensModel);
+	    }
+	    
+	    [TestMethod]
 	    public void FileIndexItemTest_MakeModel_UsingFieldNull()
 	    {
 		    var item = new FileIndexItem{MakeModel = null};

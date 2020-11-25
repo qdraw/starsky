@@ -1,109 +1,113 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
-    <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.9</RuntimeFrameworkVersion>
-    <Description>An attempt to create a database driven photo library</Description>
-    <!-- use node script to update version -->
-    <Version>0.4.0</Version>
-    <!-- SonarQube needs this -->
-    <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
-    <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
-    <DebugType>Full</DebugType>
-    <!-- <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked> -->
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <WarningLevel>0</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
-    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-  </ItemGroup>
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="pm2-new-instance.sh">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="pm2-deploy-on-env.sh">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="pm2-warmup.sh">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="pm2-restore-x-rights.sh">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Remove="clientapp\coverage\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
     <PropertyGroup>
-      <!-- starsky.feature.webhtmlpublish https://github.com/toddams/RazorLight/issues/258  -->
-      <PreserveCompilationReferences>true</PreserveCompilationReferences>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.9</RuntimeFrameworkVersion>
+        <Description>An attempt to create a database driven photo library</Description>
+        <!-- use node script to update version -->
+        <Version>0.4.0</Version>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
+        <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
+        <DebugType>Full</DebugType>
+        <!-- <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked> -->
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-    <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
-    <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
-    <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
-    <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
-    <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
-    <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
-    <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
-    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-    <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
-    <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
-    <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
-    <ProjectReference Include="..\starskycore\starskycore.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-   <Content Remove="clientapp\build\*.*" />
-   <Content Include="clientapp\build\*.*">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   </Content>
-   <Content Remove="clientapp\build\static\*\*.*" />
-   <Content Include="clientapp\build\static\*\*.*">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-   </Content>
- </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="clientapp\node_modules\**" />
-    <Compile Remove="clientapp\coverage\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="clientapp\node_modules\**" />
-    <EmbeddedResource Remove="clientapp\coverage\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="clientapp\node_modules\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="clientapp\node_modules\**" />
-    <None Remove="clientapp\coverage\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="clientapp\coverage\coverage-final.json" />
-  </ItemGroup>
-<PropertyGroup>
-    <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
-</PropertyGroup>
-    
-<!--    for azure creates the folders after build-->
-<Target Name="MakeMyDir" AfterTargets="Publish">
-    <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
-    <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
-    <MakeDir Directories="$(OutDir)storageFolder" />
-    <WriteLinesToFile File="$(OutDir)storageFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
-    <MakeDir Directories="$(OutDir)temp" />
-    <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False" />
-</Target>
-    
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
+        <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <Content Include="pm2-new-instance.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="pm2-deploy-on-env.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="pm2-warmup.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="pm2-restore-x-rights.sh">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <PropertyGroup>
+        <!-- starsky.feature.webhtmlpublish https://github.com/toddams/RazorLight/issues/258  -->
+        <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.export\starsky.feature.export.csproj" />
+        <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
+        <ProjectReference Include="..\starsky.feature.health\starsky.feature.health.csproj" />
+        <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj" />
+        <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj" />
+        <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj" />
+        <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+        <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
+        <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
+        <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+        <ProjectReference Include="..\starskycore\starskycore.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="clientapp\build\*.*" />
+        <Content Include="clientapp\build\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Remove="clientapp\build\static\*\*.*" />
+        <Content Include="clientapp\build\static\*\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="clientapp\node_modules\**" />
+        <Compile Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="clientapp\node_modules\**" />
+        <EmbeddedResource Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="clientapp\node_modules\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="clientapp\node_modules\**" />
+        <None Remove="clientapp\coverage\**" />
+    </ItemGroup>
+    <PropertyGroup>
+        <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
+    </PropertyGroup>
+
+    <!--    for azure creates the folders after build-->
+    <Target Name="MakeMyDir" AfterTargets="Publish">
+        <MakeDir Directories="$(OutDir)thumbnailTempFolder" />
+        <WriteLinesToFile File="$(OutDir)thumbnailTempFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
+        <MakeDir Directories="$(OutDir)storageFolder" />
+        <WriteLinesToFile File="$(OutDir)storageFolder\.gitkeep" Lines="keep this directory" Overwrite="False" />
+        <MakeDir Directories="$(OutDir)temp" />
+        <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False" />
+    </Target>
+
 </Project>

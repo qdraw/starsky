@@ -8,6 +8,14 @@
         <Version>0.4.0</Version>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />

@@ -881,8 +881,10 @@ namespace starsky.foundation.database.Models
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    var makeModelList = MakeModel.Split("|".ToCharArray());
-			    // ReSharper disable once ConvertIfStatementToReturnStatement
 			    if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+			    // ReSharper disable once ConvertIfStatementToReturnStatement
+			    if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
+			    // It replaces the Camera Model in the lens
 			    return makeModelList[2].Replace(Model,string.Empty).Trim();
 		    }
 	    }

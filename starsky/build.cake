@@ -191,8 +191,12 @@ Task("RestoreNetCore")
             {
               System.Console.WriteLine(genericName);
 
+                // https://cakebuild.net/api/Cake.Common.Tools.DotNetCore.Restore/DotNetCoreRestoreSettings/C6DB42EB
               DotNetCoreRestore(".",
-                  new DotNetCoreRestoreSettings());
+                  new DotNetCoreRestoreSettings{
+                    UseLockFile = true,
+                    LockedMode = true
+                  });
               continue;
             }
 
@@ -748,6 +752,8 @@ Task("ProjectCheckNetCore")
     {
         /* Checks for valid Project GUIDs in csproj files */
         NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
+        /* List of nuget packages */
+        NpmRunScript("nuget-package-list", s => s.FromPath("../starsky-tools/build-tools/"));
   });
 
 // React app build steps
