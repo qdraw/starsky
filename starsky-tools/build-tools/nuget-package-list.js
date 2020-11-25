@@ -30,7 +30,7 @@ async function checkCsProjFile(filePathList) {
     }
   }
 
-  console.log(join(starskySolutionFolder,"nuget-packages-list.json"));
+  console.log("Updated Nuget Packages List -> " + join(starskySolutionFolder,"nuget-packages-list.json"));
   await writeFile(join(starskySolutionFolder,"nuget-packages-list.json"),
     JSON.stringify(Array.from(packageReferenceSet),null, 2));
 }
