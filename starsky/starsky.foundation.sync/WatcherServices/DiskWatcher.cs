@@ -43,7 +43,7 @@ namespace starsky.foundation.sync.WatcherServices
 			                                         | NotifyFilters.Attributes
 			                                         | NotifyFilters.Size
 			                                         | NotifyFilters.LastWrite
-			                                         | NotifyFilters.LastAccess
+			                                         // NotifyFilters.LastAccess is removed
 			                                         | NotifyFilters.CreationTime
 			                                         | NotifyFilters.Security;
 
