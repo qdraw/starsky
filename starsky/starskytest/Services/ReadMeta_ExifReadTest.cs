@@ -135,7 +135,18 @@ namespace starskytest.Services
 		     Assert.AreEqual( "SLT-A58", item.Model);
 		     Assert.AreEqual( "24-105mm F3.5-4.5", item.LensModel);
 		 }
-		 
+
+		 [TestMethod]
+		 public void ExifRead_ReadExifFromFileTest_DeletedTag()
+		 {
+			 var newImage = CreateAnImageStatusDeleted.Bytes;
+			 var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				 new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+		     
+			 var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			 Assert.AreEqual("!delete!", item.Tags);
+		 }
+
 		 [TestMethod]
 		 public void ExifRead_ReadExif_FromPngInFileXMP_FileTest()
 		 {
