@@ -42,6 +42,15 @@ namespace starsky.Helpers
 			}
 			return Task.CompletedTask;
 		}
+
+		/// <summary>
+		/// to run ExecuteAsync from outside this class
+		/// </summary>
+		/// <returns></returns>
+		internal void ExecuteAsync()
+		{
+			ExecuteAsync(CancellationToken.None).ConfigureAwait(false);
+		}
 		
 		/// <summary>
 		/// Export Values to Storage
@@ -50,9 +59,9 @@ namespace starsky.Helpers
 		/// <param name="selectorStorage">Storage Provider</param>
 		/// <param name="swaggerProvider">Swagger</param>
 		/// <exception cref="ArgumentNullException">swaggerJsonText = null</exception>
-		public void Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
+		public bool Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
 		{
-			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return;
+			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return false;
 			
 			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
 			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", nameof(swaggerProvider));
@@ -66,6 +75,7 @@ namespace starsky.Helpers
 				swaggerJsonFullPath);
 
 			if ( appSettings.Verbose ) Console.WriteLine($"app__addSwaggerExport {swaggerJsonFullPath}");
+			return true;
 		}
 
 		/// <summary>
@@ -74,7 +84,7 @@ namespace starsky.Helpers
 		/// <param name="swaggerProvider">Swagger provider</param>
 		/// <param name="docName">document name</param>
 		/// <returns></returns>
-		private static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
+		internal static string GenerateSwagger(ISwaggerProvider swaggerProvider, string docName)
 		{
 			if ( swaggerProvider == null ) return string.Empty;
 
