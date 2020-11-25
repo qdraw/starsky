@@ -4,10 +4,16 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ProjectGuid>{09ccbfa9-612f-4d5e-ae27-c0c06e7114c9}</ProjectGuid>
         <Version>0.4.0</Version>
-        <!-- Enable nuget lock files for CI caching -->
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />

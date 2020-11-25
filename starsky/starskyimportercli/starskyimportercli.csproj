@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <!-- SonarQube needs this -->
-    <ProjectGuid>{23e4ea86-970a-4de1-badc-8d7e9d3d4dd6}</ProjectGuid>
-      <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
-      <DebugType>Full</DebugType>
-      <Version>0.4.0</Version>
-      <!-- Enable nuget lock files for CI caching -->
-      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{23e4ea86-970a-4de1-badc-8d7e9d3d4dd6}</ProjectGuid>
+        <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">3.1.9</RuntimeFrameworkVersion>
+        <DebugType>Full</DebugType>
+        <Version>0.4.0</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
+    </ItemGroup>
 </Project>

@@ -1,28 +1,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-      <!-- SonarQube needs this -->
-      <ProjectGuid>{23e26a58-29c5-4d0c-813b-9f7bd991b107}</ProjectGuid>
-      <RootNamespace>starsky.feature.geolookup</RootNamespace>
-      <DebugType>Full</DebugType>
-      <Version>0.4.0</Version>
-      <!-- Enable nuget lock files for CI caching -->
-      <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{23e26a58-29c5-4d0c-813b-9f7bd991b107}</ProjectGuid>
+        <RootNamespace>starsky.feature.geolookup</RootNamespace>
+        <DebugType>Full</DebugType>
+        <Version>0.4.0</Version>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.9" />
-    <PackageReference Include="NGeoNames" Version="1.5.1" />
-  </ItemGroup>
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
-    <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
-    <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
-    <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.9" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.9" />
+        <PackageReference Include="NGeoNames" Version="1.5.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+        <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    </ItemGroup>
 
 </Project>

@@ -6,10 +6,16 @@
         <ProjectGuid>{8cd2e452-ab62-446c-ad42-7d90b63d1b81}</ProjectGuid>
         <Version>0.3.0-beta.0</Version>
         <RootNamespace>starsky.foundation.sync</RootNamespace>
-        <!-- Enable nuget lock files for CI caching -->
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    </PropertyGroup>
+    
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />

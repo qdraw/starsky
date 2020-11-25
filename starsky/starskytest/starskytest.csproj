@@ -8,8 +8,13 @@
         <IsPackable>false</IsPackable>
         <!-- used for RazorLight -->
         <PreserveCompilationContext>true</PreserveCompilationContext>
+    </PropertyGroup>
+    <PropertyGroup>
         <!-- Enable nuget lock files for CI caching -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     </PropertyGroup>
     <PropertyGroup>
         <RootFolder>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RootFolder>

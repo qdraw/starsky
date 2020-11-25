@@ -11,9 +11,16 @@
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
         <DebugType>Full</DebugType>
         <!-- <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked> -->
+    </PropertyGroup>
+
+    <PropertyGroup>
         <!-- Enable nuget lock files for CI caching -->
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <RestoreLockedMode>true</RestoreLockedMode>
+        <NoWarn>NU1603</NoWarn>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     </PropertyGroup>
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
