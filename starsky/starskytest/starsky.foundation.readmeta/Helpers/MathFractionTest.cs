@@ -1,8 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.readmeta.Helpers;
-using starskycore.Helpers;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.foundation.readmeta.Helpers
 {
 	[TestClass]
 	public class MathFractionTest
@@ -19,6 +18,13 @@ namespace starskytest.Helpers
 		{
 			var fraction = new MathFraction().Fraction("7/8");
 			Assert.AreEqual(0.875,fraction,0.00001);
+		}
+
+		[TestMethod]
+		public void MathFraction_FractionNotRight()
+		{
+			var fraction = new MathFraction().Fraction("7/8/0");
+			Assert.AreEqual(0,fraction,0.00001);
 		}
 	}
 }

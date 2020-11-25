@@ -137,6 +137,42 @@ namespace starskytest.Controllers
 	        _query.RemoveItem(item0);
 	        _query.RemoveItem(item1);
         }
-        
+
+        [TestMethod]
+        public void SearchRelative_NotFound()
+        {
+	        var controller = new SearchController(_search);
+	        var notFoundObjectResult = controller.SearchRelative("/not-found.jpg","test", 0) as NotFoundObjectResult;
+
+	        Assert.AreEqual(404, notFoundObjectResult.StatusCode);
+        }
+
+        [TestMethod]
+        public void SearchRelative_LastItem()
+        {
+	        var item0 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test",
+		        FileHash = "FileHash1"
+	        });
+	        var item1 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "test1.jpg",
+		        ParentDirectory = "/",
+		        Tags = "test",
+		        FileHash = "FileHash2"
+	        });
+	        var controller = new SearchController(_search);
+	        var jsonResult = controller.SearchRelative("/test1.jpg","test", 0) as JsonResult;
+	        var relativeObjects = jsonResult.Value as RelativeObjects;
+		    
+	        Assert.IsNull(relativeObjects.NextFilePath);
+	        Assert.IsNull(relativeObjects.NextHash);
+
+	        _query.RemoveItem(item0);
+	        _query.RemoveItem(item1);
+        }
     }
 }
