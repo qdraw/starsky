@@ -3,6 +3,7 @@ variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   NUGET_XMLDOC_MODE: skip
   CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
 
 pool:
   vmImage: windows-2019
@@ -62,6 +63,14 @@ steps:
     command: custom
     custom: tool
     arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+
+- task: Cache@2
+  inputs:
+    key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)\starsky\starsky\starskyapp\package-lock.json'
+    restoreKeys: |
+       npm | "$(Agent.OS)"
+    path: $(npm_config_cache)
+  displayName: Cache npm
 
 - task: PowerShell@2
   displayName: 'Cake Client'
