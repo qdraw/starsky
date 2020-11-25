@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -110,7 +111,8 @@ namespace starskytest.Controllers
 
 		private FileIndexItem InsertSearchData()
 		{
-			_iStorage = new FakeIStorage(new List<string> { "/" }, new List<string> { _createAnImage.DbPath });
+			_iStorage = new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
 			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 			
 			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
@@ -145,10 +147,12 @@ namespace starskytest.Controllers
 			};
 
 			var newImage = CreateAnImage.Bytes;
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query,storageSelector);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query,storageSelector, 
+				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/") as JsonResult;
@@ -170,7 +174,8 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
@@ -193,7 +198,8 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
 			var result = controller.SyncIndex("/404") as JsonResult;
@@ -204,7 +210,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public void SyncControllerTest_Rename_NotFoundInIndex()
+		public async Task SyncControllerTest_Rename_NotFoundInIndex()
 		{
 
 			var context = new ControllerContext
@@ -214,16 +220,17 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector);
+			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
-			var result = controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
+			var result = await controller.Rename("/notfound-image.jpg", "/test.jpg") as NotFoundObjectResult;
 			
 			Assert.AreEqual(404,result.StatusCode);
 		}
 		
 		[TestMethod]
-		public void SyncControllerTest_Rename_Good()
+		public async Task SyncControllerTest_Rename_Good()
 		{
 			InsertSearchData();
 
@@ -237,20 +244,47 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
 				};
 			
-			var result = controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
+			var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg") as JsonResult;
 			var list = result.Value as List<FileIndexItem>;
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
+		}
+		
+		[TestMethod]
+		public async Task SyncControllerTest_Rename_Good_SocketUpdate()
+		{
+			InsertSearchData();
 
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			var socket = new FakeIWebSocketConnectionsService();
+
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					socket)
+				{
+					ControllerContext = context
+				};
+			
+			await controller.Rename(_createAnImage.DbPath, "/test.jpg");
+			
+			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
 		}
 
 		[TestMethod]
-		public void SyncControllerTest_Mkdir_Good()
+		public async Task SyncControllerTest_Mkdir_Good()
 		{
 			InsertSearchData();
 			var context = new ControllerContext
@@ -263,19 +297,45 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
 				};
 			
-			var result = controller.Mkdir("/test_dir") as JsonResult;
+			var result = await controller.Mkdir("/test_dir") as JsonResult;
 			var list = result.Value as List<SyncViewModel>;
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
-
 		}
 		
 		[TestMethod]
-		public void SyncControllerTest_Mkdir_Exist()
+		public async Task SyncControllerTest_Mkdir_Good_SocketUpdate()
+		{
+			InsertSearchData();
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+
+			var socket = new FakeIWebSocketConnectionsService();
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					socket)
+				{
+					ControllerContext = context
+				};
+			
+			await controller.Mkdir("/test_dir");
+			
+			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test_dir"));
+		}
+		
+		[TestMethod]
+		public async Task SyncControllerTest_Mkdir_Exist()
 		{
 			InsertSearchData();
 			var context = new ControllerContext
@@ -288,15 +348,15 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector)
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
 				};
 			
-			var result = controller.Mkdir("/test_dir") as JsonResult;
+			var result = await controller.Mkdir("/test_dir") as JsonResult;
 			var list = result.Value as List<SyncViewModel>;
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,list.FirstOrDefault().Status);
-
 		}
 	}
 }
