@@ -7,20 +7,6 @@
         <ProjectGuid>{b90175e1-ba3f-4a18-a0ff-2cde71e8151e}</ProjectGuid>
         <Version>0.4.0</Version>
     </PropertyGroup>
-
-    <PropertyGroup>
-        <!-- Enable nuget lock files for CI caching -->
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <RestoreLockedMode
-            Condition="'$(RestoreLockedMode)' == '' 
-                and ('$(TF_BUILD)' != '' 
-                or '$(CI)' != '')"
-        >
-            true
-        </RestoreLockedMode>
-        <NoWarn>NU1603</NoWarn>
-        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-    </PropertyGroup>
     
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />

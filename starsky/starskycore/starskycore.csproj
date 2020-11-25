@@ -11,20 +11,6 @@
         <DebugType>Full</DebugType>
     </PropertyGroup>
     
-    <PropertyGroup>
-        <!-- Enable nuget lock files for CI caching -->
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <RestoreLockedMode
-            Condition="'$(RestoreLockedMode)' == '' 
-                and ('$(TF_BUILD)' != '' 
-                or '$(CI)' != '')"
-        >
-            true
-        </RestoreLockedMode>
-        <NoWarn>NU1603</NoWarn>
-        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-    </PropertyGroup>
-    
     <ItemGroup>
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     </ItemGroup>
