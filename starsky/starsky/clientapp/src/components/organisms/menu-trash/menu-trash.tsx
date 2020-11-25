@@ -3,6 +3,7 @@ import { ArchiveContext, defaultStateFallback } from '../../../contexts/archive-
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useLocation from '../../../hooks/use-location';
 import FetchPost from '../../../shared/fetch-post';
+import { FileListCache } from '../../../shared/filelist-cache';
 import { Language } from '../../../shared/language';
 import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
 import { Select } from '../../../shared/select';
@@ -92,6 +93,7 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
       dispatch({ type: 'remove', toRemoveFileList: toUndoTrashList });
       ClearSearchCache(history.location.search);
       setIsLoading(false);
+      new FileListCache().CacheCleanEverything();
     });
   }
 

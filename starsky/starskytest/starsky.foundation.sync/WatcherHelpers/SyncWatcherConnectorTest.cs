@@ -106,5 +106,21 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg").FileIndexItem.Tags);
 		}
+
+		[TestMethod]
+		public void FilterBefore_AllowedStatus()
+		{
+			var fileIndexItems = new List<FileIndexItem>
+			{
+				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Deleted},
+				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Ok},
+				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundNotInIndex},
+				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
+			};
+
+			var result = new SyncWatcherConnector(null,null,
+				null,null).FilterBefore(fileIndexItems);
+			Assert.AreEqual(4,result.Count);
+		}
 	}
 }

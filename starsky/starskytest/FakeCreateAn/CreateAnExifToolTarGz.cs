@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnExifToolTarGz
 	{
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string ImageExifToolTarGzUnix =
 			"H4sIACE9w14AA+3UPU7DMBQHcIOEEJ2YGJiMOje1ncZRJRYGkDogEM3ABDKNQyvSpCJpYeIsHKF34DLMiAPg0Fa" +
 			"lKCoZwvf/Jz05thz7RS92q68udW3/thd4cRzWOLeazTopF2PMdRz62spJa8zaSYfbUjJpS5sJyrgUzCHUKTmPXM" +

@@ -59,10 +59,11 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return syncData;
 		}
 
-		private List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
 			return syncData.Where(p =>
 				p.Status == FileIndexItem.ExifStatus.Ok ||
+				p.Status == FileIndexItem.ExifStatus.Deleted ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 		}

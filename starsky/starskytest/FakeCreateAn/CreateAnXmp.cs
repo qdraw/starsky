@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnXmp
 	{
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string XmpString =
 			"<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Image::ExifTool 11.16\"><rdf:RDF xmlns:" +
 			"rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><rdf:Description xmlns:exif=\"http:" +

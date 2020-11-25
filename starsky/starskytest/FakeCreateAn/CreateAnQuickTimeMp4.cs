@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public class CreateAnQuickTimeMp4
 	{
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64QuickTimeMp4String =
 			"AAAAFGZ0eXBxdCAgAAAAAHF0ICAAAAAId2lkZQAAAdRtZGF0AAAAFQYFEQOH9E7NCkvcoZQ6w9SbFx8AgAAAABc" +
 			"luAgCBf/4gNZ988Brh5pePU0VlUZf8AAAABolbgIAgX/x8gez754DXDyWyqMd8y5gRq6/gAAAABUGBREDh/ROzQ" +
@@ -40,6 +42,7 @@ namespace starskytest.FakeCreateAn
 		/// <summary>
 		/// @see: https://superuser.com/a/1467266 and 80 chars
 		/// </summary>
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64QuickTimeMp4StringWithLocation =
 			"AAAAFGZ0eXBxdCAgAAAAAHF0ICAAAAAId2lkZQAAZhhtZGF0ANAABwD0Fy40ViowBCEhgF8ed7TC8nck" + 
 			"xupl4ZCkNnoxcqa0tO8Q8Q+TOyJ/Vf87BP/JWf5Ogn/hCf5CZL7O/x4SH8PT7DktZ6pIfRn4/EcFyghq" +
