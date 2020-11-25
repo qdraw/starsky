@@ -191,9 +191,11 @@ Task("RestoreNetCore")
             {
               System.Console.WriteLine(genericName);
 
+                // https://cakebuild.net/api/Cake.Common.Tools.DotNetCore.Restore/DotNetCoreRestoreSettings/C6DB42EB
               DotNetCoreRestore(".",
                   new DotNetCoreRestoreSettings{
-                    UseLockFile = true
+                    UseLockFile = true,
+                    LockedMode = true
                   });
               continue;
             }
