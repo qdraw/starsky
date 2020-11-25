@@ -99,7 +99,18 @@ namespace starsky.foundation.sync.SyncServices
 
 			// when byte hash is different update
 			var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
-			return new Tuple<bool, FileIndexItem>(fileHashTheSame ,dbItem);
+
+			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
+		}
+
+		private FileIndexItem AddDeleteStatus(FileIndexItem dbItem)
+		{
+			if ( dbItem == null ) return null;
+			if ( dbItem.Tags.Contains("!delete!") )
+			{
+				dbItem.Status = FileIndexItem.ExifStatus.Deleted;
+			}
+			return dbItem;
 		}
 
 		/// <summary>
@@ -151,6 +162,7 @@ namespace starsky.foundation.sync.SyncServices
 				
 			await _query.AddItemAsync(dbItem);
 			await _query.AddParentItemsAsync(subPath);
+			AddDeleteStatus(dbItem);
 			return dbItem;
 		}
 
@@ -166,6 +178,7 @@ namespace starsky.foundation.sync.SyncServices
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);
+			AddDeleteStatus(dbItem);
 			return updateItem;
 		}
 		
