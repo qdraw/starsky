@@ -103,7 +103,7 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
 		}
 
-		private FileIndexItem AddDeleteStatus(FileIndexItem dbItem)
+		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem)
 		{
 			if ( dbItem == null ) return null;
 			if ( dbItem.Tags.Contains("!delete!") )

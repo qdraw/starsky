@@ -341,5 +341,31 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("tete de balacha, bergtop, mist, flaine", fileIndexItem.Tags);
 			Assert.AreEqual(ColorClassParser.Color.Winner, fileIndexItem.ColorClass);
 		}
+
+		[TestMethod]
+		public void AddDeleteStatus_NotDeleted()
+		{
+			var item = new FileIndexItem() {Tags = "test", Status = FileIndexItem.ExifStatus.Ok};
+			
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+				_iStorageFake, new ConsoleWrapper());
+
+			var result = sync.AddDeleteStatus(item);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result.Status);
+		}
+		
+		[TestMethod]
+		public void AddDeleteStatus_Deleted()
+		{
+			var item = new FileIndexItem() {Tags = "!delete!"};
+			
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+				_iStorageFake, new ConsoleWrapper());
+
+			var result = sync.AddDeleteStatus(item);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
+		}
+		
+		
 	}
 }
