@@ -36,7 +36,7 @@ namespace starskytest.Helpers
 				{ "App:Verbose", "true" },
 				{ "App:AddSwagger", "true" },
 				{ "App:AddSwaggerExport", "true" },
-				{ "App:TempFolder", "/" },
+				{ "App:TempFolder", Path.DirectorySeparatorChar.ToString() },
 				{ "App:Name", "starsky_test_name" },
 			};
 			// Start using dependency injection
