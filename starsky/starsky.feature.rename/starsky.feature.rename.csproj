@@ -4,6 +4,8 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <ProjectGuid>{a864f834-133f-4ea8-9a4d-53e5cad837ab}</ProjectGuid>
         <Version>0.4.0</Version>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <ItemGroup>

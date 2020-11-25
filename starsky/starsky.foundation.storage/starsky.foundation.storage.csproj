@@ -6,6 +6,8 @@
         <ProjectGuid>{12f5ae66-8d7f-4d81-86c5-e3e3864f44a1}</ProjectGuid>
         <DebugType>Full</DebugType>
         <Version>0.4.0</Version>
+        <!-- Enable nuget lock files for CI caching -->
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <ItemGroup>
