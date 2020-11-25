@@ -9,6 +9,7 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.SyncServices;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
@@ -21,9 +22,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public SyncSingleFileTest()
 		{
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg","/color_class_test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes, 
-					FakeCreateAn.CreateAnImageColorClass.Bytes});
+				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
+				new List<byte[]>{CreateAnImageNoExif.Bytes, 
+					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes});
 		}
 
 		[TestMethod]
@@ -71,6 +72,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
+		}
+		
+		[TestMethod]
+		public async Task SingleFile_AddNewFile_StatusDeleted()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			
+			var result = await sync.SingleFile("/status_deleted.jpg");
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.Status);
 		}
 	
 		[TestMethod]

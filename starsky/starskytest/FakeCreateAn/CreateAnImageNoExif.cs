@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using starskycore.Helpers;
@@ -19,6 +20,7 @@ namespace starskytest.FakeCreateAn
 		public readonly string BasePath =
 		Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
 
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64JpgString =	"/9j/4AAQSkZJRgABAQAAAQABAAD/2wDFAAEBAQEB"+
 		    "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAAQEBAQEBA" + 
 		    "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQABAQEBAQEBAQE" +

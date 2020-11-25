@@ -1,10 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnExifToolTar
 	{
-
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		public static string ImageExifToolTarUnix = "SW1hZ2UtRXhpZlRvb2wtMTEuOTkvAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
 				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAwMDc1NSAAMDAwNzY1IAAwMDAw" +
 				"MDAgADAwMDAwMDAwMDAwIDEzNjYwNjM2MzAyIDAxNjIwNQAgNQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
