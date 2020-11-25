@@ -254,6 +254,8 @@ namespace starskytest.Controllers
 			var list = result.Value as List<FileIndexItem>;
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list.FirstOrDefault().Status);
+
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
 		}
 		
 		[TestMethod]
@@ -280,7 +282,10 @@ namespace starskytest.Controllers
 			
 			await controller.Rename(_createAnImage.DbPath, "/test.jpg");
 			
+			Assert.AreEqual(1,socket.FakeSendToAllAsync.Count);
 			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+			
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
 		}
 
 		[TestMethod]
