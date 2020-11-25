@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -33,7 +34,7 @@ namespace starskytest.Controllers
             var options = builder.Options;
             var context = new ApplicationDbContext(options);
             _query = new Query(context, memoryCache);
-            _search = new SearchService(context);
+            _search = new SearchService(context, memoryCache);
         }
 
         
@@ -173,6 +174,48 @@ namespace starskytest.Controllers
 
 	        _query.RemoveItem(item0);
 	        _query.RemoveItem(item1);
+        }
+
+        [TestMethod]
+        public void GetIndexFilePathFromSearch_Notfound()
+        {
+	        var result = new SearchController(_search).GetIndexFilePathFromSearch(new SearchViewModel(),"test");
+			Assert.AreEqual(-1, result);
+        }
+        
+        [TestMethod]
+        public void RemoveCache_NotFound()
+        {
+	        var controller = new SearchController(_search);
+	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+	        var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
+	        var resultValue = jsonResult.Value as string;
+	        Assert.AreEqual( "there is no cached item", resultValue);
+        }
+        
+        [TestMethod]
+        public void RemoveCache_CacheDisabled()
+        {
+	        var controller = new SearchController(new SearchService(null));
+	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+	        var jsonResult = controller.RemoveCache("non-existing-cache-item") as JsonResult;
+	        var resultValue = jsonResult.Value as string;
+	        Assert.AreEqual( "cache disabled in config", resultValue);
+        }
+        
+        [TestMethod]
+        public void RemoveCache_cacheCleared()
+        {
+	        var controller = new SearchController(_search);
+	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+	        _search.Search("1234567890987654");
+	        
+	        var jsonResult = controller.RemoveCache("1234567890987654") as JsonResult;
+	        var resultValue = jsonResult.Value as string;
+	        Assert.AreEqual( "cache cleared", resultValue);
         }
     }
 }
