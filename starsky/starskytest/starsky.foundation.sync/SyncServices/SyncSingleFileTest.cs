@@ -277,6 +277,23 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
+		public async Task SingleItem_DbItem_Updated_StatusDeleted()
+		{
+			var item = new FileIndexItem("/status_deleted.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH",
+				Size = 99999999 // % % % that's not the right size % % %
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			var result = await sync.SingleFile("/status_deleted.jpg",item);  // % % % % Enter item here % % % % % 
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
+		}
+		
+		[TestMethod]
 		public async Task SingleItem_DbItem_NoContent_NoItemInDb()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
@@ -355,6 +372,17 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(ColorClassParser.Color.Winner, fileIndexItem.ColorClass);
 		}
 
+		[TestMethod]
+		public void AddDeleteStatus_Null()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+				_iStorageFake, new ConsoleWrapper());
+
+			var result = sync.AddDeleteStatus(null);
+			Assert.IsNull(result);
+		}
+		
+		
 		[TestMethod]
 		public void AddDeleteStatus_NotDeleted()
 		{
