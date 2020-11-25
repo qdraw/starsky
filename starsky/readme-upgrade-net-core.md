@@ -36,8 +36,13 @@ Check at least those files
  - [x] `starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj`
  - [x] `starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj`
 
+Might useful to force evaluate packages
+```
+dotnet restore --force-evaluate
+```
+
 
 ## Go to starsky root directory
 ```
 atom  starsky/starsky/starsky.csproj starsky/starskyadmincli/starskyadmincli.csproj starsky/starskygeocli/starskygeocli.csproj starsky/starskyimportercli/starskyimportercli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskytest/starskytest.csproj starsky/starskywebftpcli/starskywebftpcli.csproj starsky/starskywebhtmlcli/starskywebhtmlcli.csproj starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj
-``` 
+```
