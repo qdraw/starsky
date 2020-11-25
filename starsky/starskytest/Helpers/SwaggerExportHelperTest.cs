@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -85,7 +86,7 @@ namespace starskytest.Helpers
 			var selectorStorage = _serviceProvider.GetService<ISelectorStorage>();
 			var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
-			Assert.IsTrue(storage.ExistFile("/starsky_test_name.json"));
+			Assert.IsTrue(storage.ExistFile( Path.DirectorySeparatorChar +"starsky_test_name.json"));
 		}
 	}
 }
