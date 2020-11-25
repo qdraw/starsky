@@ -61,14 +61,14 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var createNewImage = new CreateAnImage();
 
-			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes),"StorageThumbnailFilesystemTest_WriteStream");
+			_thumbnailStorage.WriteStream(new MemoryStream(CreateAnImage.Bytes),
+				"StorageThumbnailFilesystemTest_WriteStream");
 
 			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStream");
 			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
+			readStream.Dispose();
 
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
-
-			readStream.Dispose();
 		}
 		
 		[TestMethod]
@@ -76,14 +76,14 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var createNewImage = new CreateAnImage();
 
-			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes),"StorageThumbnailFilesystemTest_WriteStreamAsync");
+			await _thumbnailStorage.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes),
+				"StorageThumbnailFilesystemTest_WriteStreamAsync");
 
 			var readStream =_thumbnailStorage.ReadStream("StorageThumbnailFilesystemTest_WriteStreamAsync");
 			Assert.AreEqual(CreateAnImage.Bytes.Length,readStream.Length);
+			await readStream.DisposeAsync();
 
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_WriteStreamAsync.jpg"));
-
-			await readStream.DisposeAsync();
 		}
 	}
 }
