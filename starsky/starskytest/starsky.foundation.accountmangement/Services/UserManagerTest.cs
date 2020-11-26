@@ -56,9 +56,9 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
-			userManager.SignUp("user01", "email", "dont@mail.us", "pass");
+			userManager.SignUp("user01", "email", "login@mail.us", "pass");
 
-			var result = userManager.Validate("email", "dont@mail.us", "pass");
+			var result = userManager.Validate("email", "login@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
 		}
 		

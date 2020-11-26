@@ -227,22 +227,23 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( ! ExistFile(path) ) return Stream.Null;
 			
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 			if ( _appSettings.Verbose ) Console.WriteLine(path);
-				
-			FileStream fileStream;
-			if ( maxRead <= 1 )
+
+			FileStream LocalGet()
 			{
-				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
-			}
-			else
-			{
-				fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
+				var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+				if ( maxRead <= 1 )
+				{
+					return new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
+				}
+				return new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
 					FileShare.Read, maxRead);
 			}
 
-			return fileStream;
+			return new RetryStream().Retry(LocalGet);
 		}
+
+
 		
 		
 		/// <summary>
