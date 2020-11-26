@@ -6,23 +6,35 @@ namespace starsky.foundation.storage.Storage
 {
 	public class RetryStream
 	{
+		private readonly int _waitTime;
+
+		public RetryStream(int waitTime = 2000)
+		{
+			_waitTime = waitTime;
+		}
+		
 		public delegate Stream RetryStreamDelegate();
 
-		public Stream Retry(RetryStreamDelegate LocalGet)
+		/// <summary>
+		/// Retry Stream
+		/// </summary>
+		/// <param name="localGet">Stream RetryStreamDelegate</param>
+		/// <returns>Stream</returns>
+		public Stream Retry(RetryStreamDelegate localGet)
 		{
-			var maxRetry = 3;
-			for ( int retry = 0; retry < maxRetry; retry++ )
+			const int maxRetry = 3;
+			for ( var retry = 0; retry < maxRetry; retry++ )
 			{
 				try
 				{
-					return LocalGet();
+					return localGet();
 				}
 				catch ( IOException error )
 				{
 					if ( retry < maxRetry - 1 )
 					{
-						Console.WriteLine($"catched > {retry}/{maxRetry} {error}");
-						Thread.Sleep(2000);
+						Console.WriteLine($"catch-ed > {retry}/{maxRetry-1} {error}");
+						Thread.Sleep(_waitTime);
 						continue;
 					}
 					Console.WriteLine("FAIL > " + error);
