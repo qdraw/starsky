@@ -17,6 +17,7 @@ namespace starsky.foundation.storage.Storage
 
 		/// <summary>
 		/// Retry Stream
+		/// @see: https://stackoverflow.com/a/26378102/8613589
 		/// </summary>
 		/// <param name="localGet">Stream RetryStreamDelegate</param>
 		/// <returns>Stream</returns>
