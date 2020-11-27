@@ -399,3 +399,38 @@ table th {
     border-bottom: 0;
   }
 }
+
+
+.btn {
+  margin-top: 3px;
+  text-decoration: none;
+    display: inline-block;
+    padding: 6px 10px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    font-family: inherit;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+.btn.btn-default {
+    color: #fff;
+    background-color: #263238;
+}
+
+.btn-info {
+    color: #263238;
+    background-color: #fff;
+    border: 1px solid #263238;
+}
