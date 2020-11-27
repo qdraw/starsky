@@ -594,7 +594,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Importer_ShouldNotUpdateQuery_IndexModeFalse()
 		{
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
