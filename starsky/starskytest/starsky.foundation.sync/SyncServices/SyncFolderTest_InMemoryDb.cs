@@ -21,7 +21,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 
 		public SyncFolderTestInMemoryDb()
 		{
@@ -40,7 +39,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var serviceProvider = provider.BuildServiceProvider();
 			
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_query = serviceProvider.GetRequiredService<IQuery>();
 		}
 			
@@ -61,12 +59,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImageColorClass.Bytes,
-					FakeCreateAn.CreateAnImageNoExif.Bytes,
+					CreateAnImage.Bytes,
+					CreateAnImageColorClass.Bytes,
+					CreateAnImageNoExif.Bytes,
 				});
-
-
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper());
@@ -81,7 +77,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
 
-			Console.WriteLine("Flaky tests: files.Count " + files.Count);
 			Assert.AreEqual(3,files.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);
@@ -109,5 +104,40 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(null, 
 				_query.SingleItem("/Folder_InDbButNotOnDisk/test2.jpg"));
 		}
+
+		[TestMethod]
+		public async Task Folder_Duplicate()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/Folder_Duplicate"
+				}, 
+				new List<string>
+				{
+					"/Folder_Duplicate/test.jpg",
+				},
+				new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+				});
+			
+			// yes this is duplicate!
+			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg"));
+			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg")); // yes this is duplicate!
+			
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/Folder_Duplicate");
+
+			Assert.AreEqual(2, result.Count);
+			var queryResult = await _query.GetAllFilesAsync("/Folder_Duplicate");
+			Assert.AreEqual(1, queryResult.Count);
+
+			await _query.RemoveItemAsync(queryResult[0]);
+		}
+		
+		
 	}
 }
