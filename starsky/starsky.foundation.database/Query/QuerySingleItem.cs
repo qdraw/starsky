@@ -81,7 +81,14 @@ namespace starsky.foundation.database.Query
             
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
 
-            if (currentFileIndexItem == null) return null;
+            // Could be not found or not in directory cache
+            if ( currentFileIndexItem == null )
+            {
+	            // retry
+	            currentFileIndexItem = GetObjectByFilePath(singleItemDbPath);
+	            if ( currentFileIndexItem == null ) return null;
+	           AddCacheItem(currentFileIndexItem);
+            }
 
             // To know when a file is deleted
             if ( currentFileIndexItem.Tags.Contains("!delete!") )
