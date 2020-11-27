@@ -369,7 +369,7 @@ namespace starsky.feature.import.Services
 			if ( !preflightItemList.Any() ) return new List<ImportIndexItem>();
 
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
-			await CreateParentFolders(directoriesContent);
+			if ( importSettings.IndexMode ) await CreateParentFolders(directoriesContent);
 
 			var importIndexItemsIEnumerable = await preflightItemList.AsEnumerable()
 				.ForEachAsync(

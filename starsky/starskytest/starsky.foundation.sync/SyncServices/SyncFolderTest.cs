@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncServices;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
@@ -118,6 +119,39 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result[0].Status);
 			Assert.IsTrue(result[0].Size != 123456);
 			Assert.IsFalse(string.IsNullOrWhiteSpace(result[0].Tags));
+		}
+		
+		[TestMethod]
+		public async Task Folder_Duplicate()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/Folder_Duplicate"
+				}, 
+				new List<string>
+				{
+					"/Folder_Duplicate/test.jpg",
+				},
+				new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+				});
+			
+			// yes this is duplicate!
+			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg"));
+			await _query.AddItemAsync(new FileIndexItem("/Folder_Duplicate/test.jpg")); // yes this is duplicate!
+			
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/Folder_Duplicate");
+
+			Assert.AreEqual(2, result.Count);
+			var queryResult = await _query.GetAllFilesAsync("/Folder_Duplicate");
+			Assert.AreEqual(1, queryResult.Count);
+
+			await _query.RemoveItemAsync(queryResult[0]);
 		}
 
 		[TestMethod]
