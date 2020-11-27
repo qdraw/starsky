@@ -437,7 +437,7 @@ namespace starsky.feature.import.Services
 			{
 				if ( _appSettings.Verbose ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
 				                                               $"IndexMode {importSettings.IndexMode} " +
-				                                               $"TestConnection {_importQuery.TestConnection()}");
+				                                               $"TestConnection {_importQuery?.TestConnection()}");
 				return importIndexItem;
 			}
 
