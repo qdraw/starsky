@@ -162,6 +162,16 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		    Assert.AreEqual(1, result.Count);
 		    Assert.AreEqual("/",result.FirstOrDefault());
 	    }
+	    
+	    [TestMethod]
+	    public void GetPathListFormArgsTest_CurrentDirectory()
+	    {
+		    var args = new List<string> {"-p"}.ToArray();
+		    var result = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
+		    
+		    Assert.AreEqual(1, result.Count);
+		    Assert.AreEqual(Directory.GetCurrentDirectory(),result.FirstOrDefault());
+	    }
 
 	    [TestMethod]
 	    [ExpectedException(typeof(FieldAccessException))]
