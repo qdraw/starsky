@@ -378,8 +378,6 @@ namespace starsky.feature.import.Services
 					_appSettings.MaxDegreesOfParallelism);
 
 			return importIndexItemsIEnumerable.ToList();
-			
-			// return await AddToQueryAndImportDatabaseAsync(importIndexItemsIEnumerable.ToList(), importSettings);
 		}
 
 		/// <summary>
