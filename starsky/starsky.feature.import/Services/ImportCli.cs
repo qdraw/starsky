@@ -2,53 +2,77 @@ using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Helpers;
 using starskycore.Models;
 
 namespace starsky.feature.import.Services
 {
 	public class ImportCli
 	{
-		public async Task Importer(string[] args, IImport importService, AppSettings appSettings, IConsole console)
+		private readonly IImport _importService;
+		private readonly AppSettings _appSettings;
+		private readonly IConsole _console;
+		private readonly IHttpClientHelper _httpClientHelper;
+
+		public ImportCli(IImport importService, AppSettings appSettings, IConsole console, IHttpClientHelper httpClientHelper)
 		{
-			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_importService = importService;
+			_appSettings = appSettings;
+			_console = console;
+			_httpClientHelper = httpClientHelper;
+		}
+		
+		/// <summary>
+		/// Command line importer to Database and update disk
+		/// </summary>
+		/// <param name="args">arguments provided by command line app</param>
+		/// <returns>Void Task</returns>
+		public async Task Importer(string[] args)
+		{
+			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+
+			await new ExifToolDownload(_httpClientHelper, _appSettings)
+				.DownloadExifTool(_appSettings.IsWindows);
 			
-			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(appSettings).GetPathFormArgs(args,false).Length <= 1)
+			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
+				.GetPathFormArgs(args,false).Length <= 1)
 			{
-				appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
-				new ArgsHelper(appSettings, console).NeedHelpShowDialog();
+				_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
+				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
             
-			var inputPathListFormArgs = new ArgsHelper(appSettings).GetPathListFormArgs(args);
+			var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 			
-			if ( appSettings.Verbose ) foreach ( var inputPath in inputPathListFormArgs )
+			if ( _appSettings.Verbose ) foreach ( var inputPath in inputPathListFormArgs )
 			{
-				console.WriteLine($">> import: {inputPath}");
+				_console.WriteLine($">> import: {inputPath}");
 			}
 			
 			var importSettings = new ImportSettingsModel {
-					DeleteAfter = new ArgsHelper(appSettings).GetMove(args),
+					DeleteAfter = new ArgsHelper(_appSettings).GetMove(args),
 					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
 					IndexMode = new ArgsHelper().GetIndexMode(args),
 					ColorClass = new ArgsHelper().GetColorClass(args),
 				};
 
-			if ( appSettings.Verbose ) 
+			if ( _appSettings.Verbose ) 
 			{
-				console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
+				_console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
 				                  $"RecursiveDirectory {importSettings.RecursiveDirectory}, " +
 				                  $"ColorClass (overwrite) {importSettings.ColorClass}, " +
-				                  $"Structure {appSettings.Structure}, " +
+				                  $"Structure {_appSettings.Structure}, " +
 				                  $"IndexMode {importSettings.IndexMode}");
 			}
 
-			var result = await importService.Importer(inputPathListFormArgs, importSettings);
+			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
 			
-			console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
-			console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+			_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
+			_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
 		}
 	}
 }

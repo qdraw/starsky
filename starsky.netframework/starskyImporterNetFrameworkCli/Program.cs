@@ -8,6 +8,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Query;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -53,8 +54,9 @@ namespace starskyImporterNetFrameworkCli
 
 			var import = serviceProvider.GetService<IImport>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
+			var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
 
-			await new ImportCli().Importer(args, import, appSettings, console);
+			await new ImportCli(import, appSettings, console, httpClientHelper).Importer(args);
 		}
 	}
 }
