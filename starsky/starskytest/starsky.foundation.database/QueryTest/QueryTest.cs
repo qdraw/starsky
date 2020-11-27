@@ -159,6 +159,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var queryResult = _query.SingleItem(newItem);
 	        Assert.IsNotNull(queryResult);
 			Assert.AreEqual(newItem, queryResult.FileIndexItem.FilePath);
+
+			foreach ( var items in _query.GetAllRecursive("/cache_test") )
+			{
+				_query.RemoveItem(items);
+			}
         }
 
         [TestMethod]
