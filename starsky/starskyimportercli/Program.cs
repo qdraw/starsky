@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -32,9 +33,10 @@ namespace starskyimportercli
 
             var import = serviceProvider.GetService<IImport>();
             var console = serviceProvider.GetRequiredService<IConsole>();
+            var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
 
             // Help and other Command Line Tools args are included in the ImporterCli 
-            await new ImportCli().Importer(args, import, appSettings, console);
+            await new ImportCli(import, appSettings, console, httpClientHelper).Importer(args);
         }
     }
 }
