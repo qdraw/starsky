@@ -15,7 +15,7 @@ namespace starsky.foundation.database.Helpers
 		private readonly IServiceCollection _services;
 		private readonly IConsole _console;
 
-		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services, IConsole console = null)
+		public SetupDatabaseTypes(AppSettings appSettings, IServiceCollection services = null, IConsole console = null)
 		{
 			_appSettings = appSettings;
 			_services = services;
@@ -66,6 +66,7 @@ namespace starsky.foundation.database.Helpers
 
 		public void BuilderDb(string foundationDatabaseName = "")
 		{
+			if ( _services == null ) throw new AggregateException("services is missing");
 			if ( _console != null && _appSettings.Verbose ) 
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));

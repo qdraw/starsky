@@ -1,9 +1,8 @@
 using System;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.database.Query;
 
-namespace starsky.foundation.sync.Helpers
+namespace starsky.foundation.database.Query
 {
 	public class QueryFactory
 	{

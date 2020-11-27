@@ -348,7 +348,7 @@ namespace starskytest.starsky.feature.import.Services
 		/// <param name="inputFileFullPath">subPath style </param>
 		/// <param name="index">number</param>
 		/// <returns>expected result</returns>
-		private string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
+		public static string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
 			var fileIndexItem = new ReadMeta(storage).ReadExifAndXmpFromFile(inputFileFullPath);
 			var importIndexItem = new ImportIndexItem(appSettings)
@@ -373,23 +373,7 @@ namespace starskytest.starsky.feature.import.Services
 			return result;
 		}
 
-		[TestMethod]
-		public async Task Importer_ToDefaultFolderStructure_default_HappyFlow()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query,_console);
 
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel());
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-		}
 		
 		[TestMethod]
 		public async Task Importer_DeleteAfter()
@@ -411,26 +395,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));			
 		}
 
-		[TestMethod]
-		public async Task Importer_Gpx()
-		{
-			var appSettings = new AppSettings{Verbose = true};
-			var query = new FakeIQuery();
-			var storage = new FakeIStorage(
-				new List<string>{"/"}, 
-				new List<string>{"/test.gpx"},
-				new List<byte[]>{CreateAnGpx.Bytes});
-			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(storage, appSettings),query,_console);
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.gpx");
 
-			var result = await importService.Importer(new List<string> {"/test.gpx"},
-				new ImportSettingsModel());
-			
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
-			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
-		}
 		
 		[TestMethod]
 		public async Task Importer_XmpChecked()
@@ -449,7 +414,7 @@ namespace starskytest.starsky.feature.import.Services
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
 			
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
+			Assert.AreEqual(expectedFilePath, result[0].FileIndexItem.FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
 			// Apple is read from XMP
 			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
@@ -508,28 +473,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		
-		[TestMethod]
-		public async Task Importer_OverwriteColorClass()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
 
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel{
-					ColorClass = 5
-				});
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			var queryResult = query.GetObjectByFilePath(expectedFilePath);
-			
-			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
-			Assert.AreEqual(ColorClassParser.Color.Typical,queryResult.ColorClass);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-		}
 
 		[TestMethod]
 		public async Task Importer_CheckIfAddToDatabaseTime()
@@ -544,34 +488,8 @@ namespace starskytest.starsky.feature.import.Services
 			
 			// AddToDatabase is Used by the importer History agent
 
-			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
-			Assert.IsTrue(result.FirstOrDefault().AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
-		}
-
-		[TestMethod]
-		public async Task Importer_OverwriteStructure_HappyFlow()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
-			
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel{
-					Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-				});
-			
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, new AppSettings
-			{
-				Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-			}, "/test.jpg");
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			var queryResult = query.GetObjectByFilePath(expectedFilePath);
-			
-			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
+			Assert.IsTrue(result[0].FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+			Assert.IsTrue(result[0].AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
 		}
 
 		[TestMethod]

@@ -156,8 +156,8 @@ namespace starskytest.FakeMocks
 		{
 			_fakeContext.Add(updateStatusContent);
 			await Task.Delay(new Random().Next(1, 5));
-			if ( _fakeContext.FirstOrDefault(p => p.FilePath == updateStatusContent.FilePath) !=
-			     null ) return updateStatusContent;
+			if ( _fakeContext.FirstOrDefault(p => 
+				     p.FilePath == updateStatusContent.FilePath) != null ) return updateStatusContent;
 			
 			_fakeContext.Add(updateStatusContent);
 			return updateStatusContent;

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -27,7 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
-			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,null);
+			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings);
 			_query = query;
 			_console = console;
 		}
