@@ -72,7 +72,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/test.gpx"},
 				new List<byte[]>{CreateAnGpx.Bytes});
 			
-			var importService = new Import(new FakeSelectorStorage(storage), _appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, _appSettings),_query,_console);
 			var expectedFilePath = ImportTest.GetExpectedFilePath(storage, _appSettings, "/test.gpx");
 
@@ -80,6 +80,7 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 
 			var getResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+			Assert.IsNotNull(getResult);
 			Assert.AreEqual(expectedFilePath,getResult.FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result[0].Status);
 			
@@ -90,7 +91,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Importer_OverwriteStructure_HappyFlow()
 		{
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
-				_appSettings, new FakeIImportQuery(null),
+				_appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),_query, _console);
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -106,6 +107,7 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(expectedFilePath,result[0].FilePath);
 			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
 			
+			Assert.IsNotNull(queryResult);
 			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
 
 			_iStorageFake.FileDelete(expectedFilePath);
@@ -117,7 +119,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Importer_HappyFlow_ItShouldAddTo_ImportDb()
 		{
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
-				_appSettings, new FakeIImportQuery(null),
+				_appSettings, _importQuery,
 				new FakeExifTool(_iStorageFake, _appSettings),_query, _console);
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -134,7 +136,8 @@ namespace starskytest.starsky.feature.import.Services
 			}, "/test.jpg");
 			
 			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			
+			Assert.IsNotNull(queryResult);
+
 			_iStorageFake.FileDelete(expectedFilePath);
 			await _query.RemoveItemAsync(queryResult);
 		}
@@ -142,7 +145,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Importer_OverwriteColorClass()
 		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),_query, _console);
 
 			var expectedFilePath = ImportTest.GetExpectedFilePath(_iStorageFake, _appSettings, "/test.jpg");
@@ -153,7 +156,8 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
 			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
-			
+			Assert.IsNotNull(queryResult);
+
 			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
 			Assert.AreEqual(ColorClassParser.Color.Typical,queryResult.ColorClass);
 
@@ -164,7 +168,7 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task Importer_ToDefaultFolderStructure_default_HappyFlow()
 		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, _appSettings),_query,_console);
 
 			var expectedFilePath = ImportTest.GetExpectedFilePath(_iStorageFake, _appSettings, "/test.jpg");
@@ -173,6 +177,7 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.AreEqual(expectedFilePath,result[0].FilePath);
 			var queryResult = await _query.GetObjectByFilePathAsync(expectedFilePath);
+			Assert.IsNotNull(queryResult);
 			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
 
 			_iStorageFake.FileDelete(expectedFilePath);

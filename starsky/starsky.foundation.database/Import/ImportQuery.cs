@@ -26,18 +26,18 @@ namespace starsky.foundation.database.Import
 		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
 		/// </summary>
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
-		public ImportQuery(IServiceScopeFactory scopeFactory)
+		/// <param name="dbContext"></param>
+		public ImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
-			_isConnection = TestConnection();
-		}
-
-		public ImportQuery(ApplicationDbContext dbContext)
-		{
 			_dbContext = dbContext;
 			_isConnection = TestConnection();
 		}
-
+		
+		/// <summary>
+		/// Get the database context
+		/// </summary>
+		/// <returns>database context</returns>
 		private ApplicationDbContext GetDbContext()
 		{
 			return _scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext;

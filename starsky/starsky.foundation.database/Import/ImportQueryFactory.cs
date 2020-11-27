@@ -20,9 +20,9 @@ namespace starsky.foundation.database.Import
 			var context = _setupDatabaseTypes.BuilderDbFactory();
 			if ( _importQuery.GetType() == typeof(ImportQuery) )
 			{
-				return new ImportQuery(context);
+				return new ImportQuery(null,context);
 			}
-			return Activator.CreateInstance(_importQuery.GetType(), context, null, null, null) as IImportQuery;
+			return Activator.CreateInstance(_importQuery.GetType(), null,context) as IImportQuery;
 		}
 	}
 }

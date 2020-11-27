@@ -87,7 +87,7 @@ namespace starskytest.starsky.foundation.database.Import
 		[TestMethod]
 		public async Task IsHashInImportDbAsync_ContextFail()
 		{
-			var result = await new ImportQuery(null).IsHashInImportDbAsync("TEST");
+			var result = await new ImportQuery(null as IServiceScopeFactory).IsHashInImportDbAsync("TEST");
 			Assert.IsFalse(result);
 		}
 		

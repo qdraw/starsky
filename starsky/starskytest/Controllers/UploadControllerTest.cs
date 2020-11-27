@@ -57,7 +57,7 @@ namespace starskytest.Controllers
 
 			var services = new ServiceCollection();
 
-			// Fake the readmeta output
+			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
 			// Inject Config helper
@@ -77,7 +77,7 @@ namespace starskytest.Controllers
 	        var selectorStorage = new FakeSelectorStorage(_iStorage);
 	        _iSync = new SyncService(_query,_appSettings, selectorStorage);
 
-			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(null),
+			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
 			 new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper());
 
 			// Start using dependency injection

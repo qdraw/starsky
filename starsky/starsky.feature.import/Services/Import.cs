@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
@@ -442,11 +443,13 @@ namespace starsky.feature.import.Services
 				return importIndexItem;
 			}
 
+			// Add to Normal File Index database
 			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query).Query();
 			await query.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
-			await _importQuery.AddAsync(importIndexItem);
+			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery).ImportQuery();
+			await importQuery.AddAsync(importIndexItem);
 			
 			return importIndexItem;
 		}
