@@ -43,6 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Notify other users when a file or folder is moved #212
 - [x]   (Changed) _Back-end_ Importer does update the database when file copy happens #104
 - [x]   (Fixed) _Back-end_ Item exist but not in folder cache, it now add this item to cache #228
+- [x]   (Added) _Back-end_ Check if Exiftool exist before running the import CLI
 
 # version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
