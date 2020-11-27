@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +8,6 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
-using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -21,7 +19,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	{
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 
 		public SyncFolderTestInMemoryDb()
 		{
@@ -40,7 +37,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var serviceProvider = provider.BuildServiceProvider();
 			
-			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_query = serviceProvider.GetRequiredService<IQuery>();
 		}
 			
@@ -61,12 +57,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImageColorClass.Bytes,
-					FakeCreateAn.CreateAnImageNoExif.Bytes,
+					CreateAnImage.Bytes,
+					CreateAnImageColorClass.Bytes,
+					CreateAnImageNoExif.Bytes,
 				});
-
-
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 				new ConsoleWrapper());
@@ -81,7 +75,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var files = await _query.GetAllFilesAsync("/Folder_FilesOnDiskButNotInTheDb");
 
-			Console.WriteLine("Flaky tests: files.Count " + files.Count);
 			Assert.AreEqual(3,files.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[0].Status);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, files[1].Status);

@@ -84,6 +84,15 @@ namespace starskytest.starsky.foundation.database.Helpers
 		}
 		
 		[TestMethod]
+		[ExpectedException(typeof(AggregateException))]
+		public void BuilderDb_fail()
+		{
+			var appSettings = new AppSettings {Verbose = true};
+			new SetupDatabaseTypes(appSettings).BuilderDb();
+			// expect exception
+		}
+		
+		[TestMethod]
 		public void BuilderDb_console()
 		{
 			var console = new FakeConsoleWrapper();

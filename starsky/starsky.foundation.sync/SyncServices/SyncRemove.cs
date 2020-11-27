@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
-using starsky.foundation.sync.Helpers;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -19,7 +19,7 @@ namespace starsky.foundation.sync.SyncServices
 		public SyncRemove(AppSettings appSettings, IQuery query)
 		{
 			_appSettings = appSettings;
-			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,null);
+			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings);
 			_query = query;
 		}
 

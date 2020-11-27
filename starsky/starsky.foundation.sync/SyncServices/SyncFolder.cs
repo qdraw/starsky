@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -21,15 +22,17 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IQuery _query;
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
+		private readonly Duplicate _duplicate;
 
 		public SyncFolder(AppSettings appSettings, IQuery query, 
 			ISelectorStorage selectorStorage, IConsole console)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
-			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings,null);
+			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings);
 			_query = query;
 			_console = console;
+			_duplicate = new Duplicate(_query);
 		}
 
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath)
@@ -42,6 +45,8 @@ namespace starsky.foundation.sync.SyncServices
 			foreach ( var subPath in subPaths )
 			{
 				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
+				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
+				
 				// And check files within this folder
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
@@ -58,7 +63,6 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItems, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
-
 				
 			var result = await pathsToUpdateInDatabase
 				.ForEachAsync(async subPathInFiles =>

@@ -5,8 +5,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Import;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -366,7 +369,7 @@ namespace starsky.feature.import.Services
 			if ( !preflightItemList.Any() ) return new List<ImportIndexItem>();
 
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
-			await CreateParentFolders(directoriesContent);
+			if ( importSettings.IndexMode ) await CreateParentFolders(directoriesContent);
 
 			var importIndexItemsIEnumerable = await preflightItemList.AsEnumerable()
 				.ForEachAsync(
@@ -374,7 +377,7 @@ namespace starsky.feature.import.Services
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism);
 
-			return await AddToQueryAndImportDatabaseAsync(importIndexItemsIEnumerable.ToList(), importSettings);
+			return importIndexItemsIEnumerable.ToList();
 		}
 
 		/// <summary>
@@ -423,35 +426,30 @@ namespace starsky.feature.import.Services
 	            if ( _appSettings.Verbose ) _console.WriteLine($"🚮 Delete file: {importIndexItem.SourceFullFilePath}");
 	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
             }
-
             if ( _appSettings.Verbose ) Console.Write("+");
-	        return importIndexItem;
+            return await AddToQueryAndImportDatabaseAsync(importIndexItem,importSettings);
 		}
 
-		private async Task<List<ImportIndexItem>> AddToQueryAndImportDatabaseAsync(
-			List<ImportIndexItem> importIndexItemList, ImportSettingsModel importSettings)
+		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
+			ImportSettingsModel importSettings)
 		{
 			if ( !importSettings.IndexMode || !_importQuery.TestConnection() )
 			{
 				if ( _appSettings.Verbose ) _console.WriteLine($" AddToQueryAndImportDatabaseAsync Ignored - " +
 				                                               $"IndexMode {importSettings.IndexMode} " +
-				                                               $"TestConnection {_importQuery.TestConnection()}");
-				return importIndexItemList;
+				                                               $"TestConnection {_importQuery?.TestConnection()}");
+				return importIndexItem;
 			}
+
+			// Add to Normal File Index database
+			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query).Query();
+			await query.AddItemAsync(importIndexItem.FileIndexItem);
 			
-			var fileIndexItems = importIndexItemList.Where(p
-				=> p.Status == ImportStatus.Ok).
-				Select(importIndexItem => importIndexItem.FileIndexItem).
-				ToList();
+			// Add to check db, to avoid duplicate input
+			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery).ImportQuery();
+			await importQuery.AddAsync(importIndexItem);
 			
-			await _query.AddRangeAsync(fileIndexItems);
-			
-			// To the list of imported folders
-			await _importQuery.AddRangeAsync(
-				importIndexItemList.Where(p => p.Status == ImportStatus.Ok).ToList()
-				);
-			
-			return importIndexItemList; 
+			return importIndexItem;
 		}
 
 		/// <summary>
