@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,21 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			_httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), null);
 		}
-		
+
+		[TestMethod]
+		public async Task ImporterCli_CheckIfExifToolIsCalled()
+		{
+			var fakeHttpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(fakeHttpProvider, null);
+			
+			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			await new ImportCli( 
+				new FakeIImport(new FakeSelectorStorage()), new AppSettings{TempFolder = "/___not___found_"},
+				fakeConsole, httpClientHelper).Importer(new List<string>().ToArray());
+
+			Assert.IsTrue(fakeHttpProvider.UrlCalled[0].Contains("exiftool"));
+		}
+
 		[TestMethod]
 		public async Task ImporterCli_NoArgs_DefaultHelp()
 		{

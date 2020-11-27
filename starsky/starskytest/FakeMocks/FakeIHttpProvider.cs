@@ -8,6 +8,8 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIHttpProvider : IHttpProvider
 	{
+		public List<string> UrlCalled = new List<string>();
+		
 		private readonly Dictionary<string, HttpContent> _inputDictionary;
 		
 		public FakeIHttpProvider(Dictionary<string,HttpContent> inputDictionary = null)
@@ -20,6 +22,8 @@ namespace starskytest.FakeMocks
 		public async Task<HttpResponseMessage> GetAsync(string requestUri)
 #pragma warning restore 1998
 		{
+			UrlCalled.Add(requestUri);
+
 			if ( !_inputDictionary.ContainsKey(requestUri) )
 			{
 				return new HttpResponseMessage(HttpStatusCode.NotFound){
