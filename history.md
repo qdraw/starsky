@@ -31,7 +31,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.1 _(Unreleased)_ - 2020-11-??
+# version 0.4.2 _(Unreleased)_ - 2020-12-??
+- nothing yet
+
+# version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
 - [x]   (Added) _Back-end_ Change fileHash behavior to have more timeout time
 - [x]   (Added) _Back-end_ add round for focalLength

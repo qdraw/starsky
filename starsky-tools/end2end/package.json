@@ -1,6 +1,6 @@
 {
   "name": "end2end",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "scripts": {
     "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
     "start:env": "cypress open",
