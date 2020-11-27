@@ -471,6 +471,8 @@ namespace starsky.foundation.database.Query
 
 	    /// <summary>
 	    /// Private api within Query to add cached items
+	    /// Assumes that the parent directory already exist in the cache
+	    /// @see: AddCacheParentItem to add parent item
 	    /// </summary>
 	    /// <param name="updateStatusContent">the content to add</param>
         internal void AddCacheItem(FileIndexItem updateStatusContent)

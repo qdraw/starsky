@@ -139,6 +139,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
             hiJpgOutput = _query.GetObjectByFilePath(_insertSearchDatahiJpgInput.FilePath);
             Assert.AreEqual(_insertSearchDatahiJpgInput.FilePath, hiJpgOutput.FilePath);
         }
+        
+        /// <summary>
+        ///  Item exist but not in folder cache, it now add this item to cache #228 
+        /// </summary>
+        [TestMethod]
+        public void SingleItem_ItemExistInDbButNotInFolderCache()
+        {
+	        _query.AddItem(new FileIndexItem("/cache_test")
+	        {
+		        IsDirectory = true
+	        });
+	        var existingItem = new FileIndexItem("/cache_test/test.jpg");
+	        _query.AddItem(existingItem);
+	        _query.AddCacheParentItem("/cache_test", new List<FileIndexItem>{existingItem});
+	        const string newItem = "/cache_test/test2.jpg";
+	        _query.AddItem(new FileIndexItem(newItem));
+
+	        var queryResult = _query.SingleItem(newItem);
+	        Assert.IsNotNull(queryResult);
+			Assert.AreEqual(newItem, queryResult.FileIndexItem.FilePath);
+
+			foreach ( var items in _query.GetAllRecursive("/cache_test") )
+			{
+				_query.RemoveItem(items);
+			}
+        }
 
         [TestMethod]
         public void QueryAddSingleItemRootFolderTest()
@@ -159,7 +185,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
             CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), 
                 getAllResult.Select(p => p.FilePath).ToList());
         }
-        
+
         [TestMethod]
         public void GetAllFiles_DisposedItem()
         {
