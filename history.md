@@ -41,6 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Deprecated) _Back-end_ Old Sync CLI, replaced by starskysynchronizecli (to be removed in future release)
 - [x]   (Added) _Back-end_ Notify realtime websockets when DiskWatcher detects changes
 - [x]   (Added) _Back-end_ Notify other users when a file or folder is moved #212
+- [x]   (Changed) _Back-end_ Importer does update the database when file copy happens #104
 
 # version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
