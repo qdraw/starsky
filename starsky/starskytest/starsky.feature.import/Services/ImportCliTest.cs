@@ -60,7 +60,24 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-        public async Task ImporterCli_ArgPath_Verbose()
+		public async Task ImporterCli_ArgPath_Verbose()
+		{
+			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test"}, 
+				new List<byte[]>(new byte[0][]));
+			
+			var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
+				new AppSettings {Verbose = true}, fakeConsole,_httpClientHelper);
+				
+			// verbose is entered here 
+			await cli.Importer(new List<string>{"-p", "/test", "-v", "true"}.ToArray());
+			
+			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed: 2"));
+		}
+		
+		[TestMethod]
+        public async Task ImporterCli_ArgPath_Failed()
         {
         	var fakeConsole = new FakeConsoleWrapper(new List<string>());
         	var storage = new FakeIStorage(new List<string>{"/"}, 
@@ -68,7 +85,7 @@ namespace starskytest.starsky.feature.import.Services
         		new List<byte[]>(new byte[0][]));
         	
         	await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
-	            new AppSettings{Verbose = true}, fakeConsole,_httpClientHelper)
+	            new AppSettings{Verbose = false}, fakeConsole,_httpClientHelper)
 	            .Importer(new List<string>{"-p", "/test"}.ToArray());
         	Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
         }
