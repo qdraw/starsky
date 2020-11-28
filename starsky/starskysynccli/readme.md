@@ -1,6 +1,5 @@
 # Starsky Sync CLI
-## List of [Starsky](../../readme.md) Projects
- * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
+## List of [Starsky](../../../readme.md) Projects
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_

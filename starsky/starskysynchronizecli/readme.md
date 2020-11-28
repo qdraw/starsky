@@ -1,25 +1,26 @@
-# Starsky Sync CLI
+# Starsky Synchronize Cli
 ## List of [Starsky](../../readme.md) Projects
-* [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
-* [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
+ * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
-        *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * __[starskySyncCli](../../starsky/starskysynccli/readme.md)  database command line interface__
+      *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * __[starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database__
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
-* [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
-* [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
-* [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
+ * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../../history.md) _Release notes and history_
 
 ## starskySynchronizeCli docs
 
 ### Starsky Sync Indexer:
-With this command line tool it possible to manual sync the filesystem with the database, update one file in the database, generate thumbnails, clean the thumbnail cache. The goal of this wrapper is to get command line access to the photo index database.
+With this command line tool it possible to manual sync the filesystem with the database, update one file in the database. The goal of this wrapper is to get command line access to the photo index database.
 
 ### Before you start
 

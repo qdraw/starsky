@@ -1,29 +1,31 @@
 # Project Readme
 ## List of __[Starsky](readme.md)__ Projects
- * [inotify-settings](inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
     * [starsky](starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines_
+ * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](history.md) _Release notes and history_
 
 ## What is Starsky?
 > [Check the introduction page to learn more about the scope of the application](index.md)
 
 ## Demo app
-Starsky has a demo application online. 
-> Username: `demo@qdraw.nl` and Password: `demo@qdraw.nl`
->
-> [Starsky Demo App](https://starskydemo.herokuapp.com)
+Starsky has a demo application online.
+
+[See the online demo](https://starskydemo.herokuapp.com?classes=btn,btn-default)
+
+> Use the username: `demo@qdraw.nl` and Password: `demo@qdraw.nl` to access the demo
 
 ## Project Readme   
 
@@ -34,7 +36,7 @@ This section deals with how to set up a Starsky system on-premises. You will fin
 The general application is Starsky solution (sln). You need to [install the solution](starsky/readme.md) first.
 
 ### Command line tools
-The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
+The command tools to sync the database manually use [Synchronize CLI](starsky/starskysynchronizecli/readme.md) to generate thumbnail use [Thumbnail CLI](starsky/starskythumbnailcli/readme.md). The [Importer CLI](starsky/starskyimportercli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
 
 To reverse geo code location information in images use the UI or the [Geo CLI](starsky/starskygeocli/readme.md). Use your photo to track location and match this with your camera.With this tool you add a location trail (gpx) to a folder and match the datetime to images in the folder.
 
