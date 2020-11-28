@@ -35,7 +35,8 @@ function copyFolderRecursiveSync( source, target ) {
             if (file.indexOf("node_modules") === -1 && file.indexOf("package") === -1 &&
             file.indexOf(".md") === -1 && file.indexOf("docs.js") === -1 &&
             file.indexOf("server-develop.js") === -1 &&
-            file.indexOf("copy.js") === -1
+            file.indexOf("copy.js") === -1 &&
+            file.indexOf("swagger.js") === -1
             ) {
               var curSource = path.join( source, file );
               if ( fs.lstatSync( curSource ).isDirectory() ) {
