@@ -28,7 +28,8 @@
 |   └── starskyadmincli
 |   └── starskygeocli
 |   └── starskyimportercli
-|   └── starskysynccli
+|   └── starskysynchronizecli
+|   └── starskythumbnailcli
 |   └── starskywebftpcli
 |   └── starskywebhtmlcli
 └── Feature
@@ -67,6 +68,8 @@
 |   |     WebSockets Middleware
 |   └── starsky.foundation.storage
 |   |     Filesystem abstractions
+|   └── starsky.foundation.sync
+|   |     Compare disk with database
 |   └── starsky.foundation.thumbnailgeneration
 |   |     Generate Thumbnails
 |   └── starsky.foundation.writemeta

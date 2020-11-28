@@ -344,9 +344,16 @@ table {
 }
 
 table tr {
-  background-color: #f8f8f8;
+  background-color: #ECEFF1;
   border: 1px solid #ddd;
   padding: .35em;
+}
+
+table tr:nth-child(even) {
+  background-color: #fff;
+}
+table thead tr{
+  background-color: #CFD8DC;
 }
 
 table th,
@@ -448,15 +455,15 @@ table th {
 #list-of-starskyreadmemd-projects {
   padding-top: 5px;
   padding-left: 5px;
-  background-color:#F5F5F5;
+  background-color:#ECEFF1;
   font-size: 20px;
 }
 
 #list-of-__starskyreadmemd__-projects + ul,
 #list-of-starskyreadmemd-projects + ul{
   padding: 5px;
-  background-color:#F5F5F5;
-  border-bottom: 1px solid #ccc;
+  background-color:#ECEFF1;
+  border-bottom: 1px solid #90A4AE;
 }
 
 
@@ -475,7 +482,7 @@ table th {
   #list-of-__starskyreadmemd__-projects,
   #list-of-starskyreadmemd-projects  {
     top: 35px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #90A4AE;
     height: 40px;
   }
 
