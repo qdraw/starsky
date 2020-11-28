@@ -15,6 +15,7 @@
  * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * __[starsky-tools](../starsky-tools/readme.md) nodejs tools to add-on tasks__
  * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../history.md) _Release notes and history_
 
 ## Starsky Tools docs
 

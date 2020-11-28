@@ -1,6 +1,23 @@
-[< readme](readme.md)
-
 # History Changelog
+## List of __[Starsky](readme.md)__ Projects
+ * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
+    * [starsky](starsky/starsky/readme.md) _web api application / interface_
+      *  [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
+    * [starskyImporterCli](starsky/starskyimportercli/readme.md)  _import command line interface_
+    * [starskyGeoCli](starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
+    * [starskyWebFtpCli](starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
+    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
+    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
+ * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
+ * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
+ * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * __[Changelog](history.md) Release notes and history__
+
+## Release notes of Starsky
 
 Semantic Versioning 2.0.0 is from version 0.1.6+
 
@@ -32,7 +49,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [ ]   (x) Move multiple files __not implemented__
 
 # version 0.4.2 _(Unreleased)_ - 2020-12-??
-- nothing yet
+- [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
 
 # version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
