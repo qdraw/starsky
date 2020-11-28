@@ -40,30 +40,38 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  Command line argumements in the Cli applications to set in-app environment variables
 
 ### Required settings to start
-1. There are __no__ settings required
+1. To start it is __not__ mandatory to adjust any settings.
+
 ### Recommend settings
 1.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
 2.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
 3.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
 4.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
 5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
+
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
 3.  `AddMemoryCache` - Enable caching _(default true)_
-4.  `IsAccountRegisterOpen`  - Keep registrations always open. 
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
-5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
-6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
-7.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
-8.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-9.  `Verbose` - show more console logging  _(default false)_
-10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
-11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
-12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
-13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+4.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+5.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
+6.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+7.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
+8.  `Verbose` - show more console logging  _(default false)_
+9. `WebFtp` - ftp path, this is used by starskyWebFtpCli
+10. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
+11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
+12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+13. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
 14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
-15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. This toggle is always disabled in debug/develop mode _(default false)_
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. 
+     This toggle is always disabled in debug/develop mode _(default false)_
+16. `Name` Name of the application, does not have much effect _(default Starsky)_
+17. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+18. `UseRealtime` Update the user interface realtime _default true_
+19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
+20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
 
 ### Appsettings.json example
 ```json

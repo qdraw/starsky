@@ -22,9 +22,10 @@
 
 ## Demo app
 Starsky has a demo application online.
-> Username: `demo@qdraw.nl` and Password: `demo@qdraw.nl`
->
-> [Starsky Demo App](https://starskydemo.herokuapp.com)
+
+[See the online demo](https://starskydemo.herokuapp.com?classes=btn,btn-default)
+
+> Use the username: `demo@qdraw.nl` and Password: `demo@qdraw.nl` to access the demo
 
 ## Project Readme   
 
@@ -35,7 +36,7 @@ This section deals with how to set up a Starsky system on-premises. You will fin
 The general application is Starsky solution (sln). You need to [install the solution](starsky/readme.md) first.
 
 ### Command line tools
-The command tools to sync the database manually use [Sync CLI](starsky/starskysynccli/readme.md) to generate thumbnail use [Sync CLI](starsky/starskysynccli/readme.md). The [Importer CLI](starsky/starskysynccli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
+The command tools to sync the database manually use [Synchronize CLI](starsky/starskysynchronizecli/readme.md) to generate thumbnail use [Thumbnail CLI](starsky/starskythumbnailcli/readme.md). The [Importer CLI](starsky/starskyimportercli/readme.md)  can be used to copy files in a folder structure based on the creation datetime. The datetime structure can be configured.
 
 To reverse geo code location information in images use the UI or the [Geo CLI](starsky/starskygeocli/readme.md). Use your photo to track location and match this with your camera.With this tool you add a location trail (gpx) to a folder and match the datetime to images in the folder.
 
