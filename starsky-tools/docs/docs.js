@@ -14,7 +14,6 @@ var filePathList = [
 	"readme.md",
 	"history.md",
 	"starsky-tools/readme.md",
-	"inotify-settings/readme.md",
 	"starsky/readme.md",
 	"starsky/readme-docker-instructions.md",
 	"starsky/starsky/readme.md",
@@ -22,6 +21,8 @@ var filePathList = [
 	"starsky/starskybusinesslogic/readme.md",
 	"starsky/starsky.feature.geolookup/readme.md",
 	"starsky/starsky.foundation.injection/readme.md",
+	"starsky/starskysynchronizecli/readme.md",
+	"starsky/starskythumbnailcli/readme.md",
 	"starsky/starskyadmincli/readme.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
@@ -122,7 +123,6 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 
 	fs.writeFileSync(htmlPath, contentsHtml);
 }
-
 
 function classMapper(contentsHtml) {
 	// (?<=<a href=".+classes=).+">

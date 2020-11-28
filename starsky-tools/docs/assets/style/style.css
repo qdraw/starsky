@@ -212,13 +212,21 @@ body {
 
 
 .container {
-    width: 960px;
+    width: 840px;
     margin: 0px auto 50px auto;
     margin-left: auto;
     margin-right: auto;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1500px) {
+	.container{
+		width: calc(97% - 340px);
+		margin-left: 340px;
+		margin-right: 10px;
+	}
+}
+
+@media (max-width: 860px) {
 	.container{
 		width: 97%;
 		margin-left: 10px;
@@ -433,4 +441,48 @@ table th {
     color: #263238;
     background-color: #fff;
     border: 1px solid #263238;
+}
+
+
+#list-of-__starskyreadmemd__-projects,
+#list-of-starskyreadmemd-projects {
+  padding-top: 5px;
+  padding-left: 5px;
+  background-color:#F5F5F5;
+  font-size: 20px;
+}
+
+#list-of-__starskyreadmemd__-projects + ul,
+#list-of-starskyreadmemd-projects + ul{
+  padding: 5px;
+  background-color:#F5F5F5;
+  border-bottom: 1px solid #ccc;
+}
+
+
+@media (min-width: 860px) {
+
+  #list-of-__starskyreadmemd__-projects,
+  #list-of-starskyreadmemd-projects,
+  #list-of-__starskyreadmemd__-projects + ul,
+  #list-of-starskyreadmemd-projects + ul {
+    position: fixed;
+    top: 90px;
+    left: 0px;
+    width: 320px;
+  }
+
+  #list-of-__starskyreadmemd__-projects,
+  #list-of-starskyreadmemd-projects  {
+    top: 35px;
+    border-bottom: 1px solid #ccc;
+    height: 40px;
+  }
+
+  #list-of-__starskyreadmemd__-projects + ul,
+  #list-of-starskyreadmemd-projects + ul {
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding-right: 10px;
+  }
 }
