@@ -17,7 +17,7 @@
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
  * [Changelog](../../history.md) _Release notes and history_
 
-## Starsky Admin Cli docs
+## Options for the Admin CLI
 
 ### Account creation
 This first question is 'What is the username/email?'

@@ -17,7 +17,7 @@
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
  * [Changelog](../../history.md) _Release notes and history_
 
-## starskyGeoSync docs
+## Geo Sync Options
 
 ### Introduction gpx tagging
 When your camera has no GPS support build in you can use your mobile phone to keep your track. This application can combine a list of your recent locations and when the photo has taken into a location. When you have a GPX track file and a photo you can know where it is taken. With various sport track apps support exporting gpx files.

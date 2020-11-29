@@ -17,7 +17,7 @@
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
  * [Changelog](../../history.md) _Release notes and history_
 
-## starskyimportercli docs
+## Importer CLI Options
 
 To automatically copy files from for example a SD-card to the photo library. It could copy a single file, a directory with only the direct child files or a recursive directory.  It automatically sort on the photos creation date.
 The 'importer Cli' could handle local imports, and in the 'Starsky web interface' there is a web import available.

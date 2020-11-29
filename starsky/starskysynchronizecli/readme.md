@@ -17,7 +17,7 @@
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
  * [Changelog](../../history.md) _Release notes and history_
 
-## starskySynchronizeCli docs
+## Synchronize Cli Options
 
 ### Starsky Sync Indexer:
 With this command line tool it possible to manual sync the filesystem with the database, update one file in the database. The goal of this wrapper is to get command line access to the photo index database.
