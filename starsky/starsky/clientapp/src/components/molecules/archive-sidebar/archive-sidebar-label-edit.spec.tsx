@@ -8,7 +8,7 @@ describe("ArchiveSidebarLabelEdit", () => {
   });
 
   it("click on SwitchButton go to Replace", () => {
-    var component = mount(<ArchiveSidebarLabelEdit />);
+    var component = mount(<ArchiveSidebarLabelEdit>t</ArchiveSidebarLabelEdit>);
 
     var item = component.find('input[type="radio"]').last();
     item.simulate('change');

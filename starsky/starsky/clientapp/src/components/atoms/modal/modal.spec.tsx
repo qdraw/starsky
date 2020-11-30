@@ -47,6 +47,8 @@ describe("Modal", () => {
 
     it("modal-exit-button", () => {
 
+      console.log(document.body.innerHTML);
+      
       console.log(compontent.html());
       
       // expect(spyScrollTo).toBeCalledWith(0, 0);

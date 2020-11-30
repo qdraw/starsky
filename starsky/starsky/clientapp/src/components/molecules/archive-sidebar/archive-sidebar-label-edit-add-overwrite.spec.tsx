@@ -100,7 +100,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it('Should change value when onChange was called', () => {
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = mount(<ArchiveSidebarLabelEditAddOverwrite>t</ArchiveSidebarLabelEditAddOverwrite>);
 
       act(() => {
         // update component

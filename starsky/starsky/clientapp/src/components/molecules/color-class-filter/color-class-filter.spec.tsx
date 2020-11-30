@@ -12,18 +12,18 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value", () => {
-    var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}></ColorClassFilter>)
+    var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}>t</ColorClassFilter>)
     expect(component.exists('.colorclass--2')).toBeTruthy();
     component.find('.colorclass--2').last().simulate('click');
   });
 
   it("outside current scope display reset", () => {
-    var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[3]}></ColorClassFilter>);
+    var component = shallow(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[3]}>t</ColorClassFilter>);
     expect(component.exists('.colorclass--reset')).toBeTruthy();
   });
 
   it("onClick value and preloader exist", () => {
-    var component = mount(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}></ColorClassFilter>)
+    var component = mount(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}>t</ColorClassFilter>)
 
     expect(component.exists('.colorclass--2')).toBeTruthy();
 
@@ -37,7 +37,7 @@ describe("ColorClassFilter", () => {
 
     globalHistory.navigate("/?colorclass=1");
 
-    var component = mount(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}></ColorClassFilter>)
+    var component = mount(<ColorClassFilter itemsCount={1} subPath={"/test"} colorClassActiveList={[1]} colorClassUsage={[1, 2]}>t</ColorClassFilter>)
 
     expect(component.find('.colorclass--1').last().hasClass('active')).toBeTruthy();
 

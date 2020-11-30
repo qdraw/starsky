@@ -131,7 +131,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
       jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = mount(<ArchiveSidebarLabelEditSearchReplace>t</ArchiveSidebarLabelEditSearchReplace>);
 
       act(() => {
         // update component + now press a key

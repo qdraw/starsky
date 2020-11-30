@@ -33,7 +33,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
 
   const settings = useGlobalSettings();
 
-  if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return null
+  if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return <></>
 
   var language = new Language(settings.language);
 
