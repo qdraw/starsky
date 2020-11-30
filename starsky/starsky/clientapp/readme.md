@@ -149,6 +149,10 @@ npm install --save enzyme-adapter-react-16
 npm install --save-dev @storybook/react
 ```
 
+```
+npm install --save @wojtekmaj/enzyme-adapter-react-17
+```
+
 #### Update the name of the project
 ```json
  "name": "clientapp",
@@ -173,7 +177,7 @@ This is added to the `package.json`
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20200831 3.4.3 (2020-08-12)'"
+"upgrade": "echo 'check readme.md 20201130  v4.0.1 (2020-11-23)'"
 ```
 
 ### collectCoverageFrom and coverageReporters
@@ -203,7 +207,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
     "global": {
       "branches": 65,
       "functions": 70,
-      "lines": 78,
+      "lines": 80,
       "statements": 75
     }
   }

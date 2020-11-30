@@ -80,6 +80,12 @@
       "last 1 safari version"
     ]
   },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "root": true,
   "devDependencies": {
     "@storybook/react": "^6.0.21"
   }

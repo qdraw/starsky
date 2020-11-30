@@ -1,0 +1,1 @@
+esbenp.prettier-vscode

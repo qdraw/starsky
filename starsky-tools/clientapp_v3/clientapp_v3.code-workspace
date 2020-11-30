@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../../../starsky-tools/mock"
+			"path": "../mock"
 		}
 	],
 	"settings": {
@@ -20,8 +20,6 @@
 		"html.format.endWithNewline": true,
 		"javascript.preferences.quoteStyle": "single",
 		"javascript.updateImportsOnFileMove.enabled": "always",
-		"tslint.autoFixOnSave": true,
-		"tslint.enable": true,
 		"jest.disabledWorkspaceFolders": [
 			"node_modules",
 			"mock",
