@@ -144,7 +144,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     if (!videoRef.current || !event.target) return;
     const mousePosition = getMousePosition(event);
     
-    const result = !isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
+    const result = isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
     console.log('result', result);
 
     videoRef.current.currentTime = result;
