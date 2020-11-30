@@ -12,6 +12,7 @@ import { URLPath } from '../../../shared/url-path';
 import { UrlQuery } from '../../../shared/url-query';
 import DropArea from '../../atoms/drop-area/drop-area';
 import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
+import ModalDropAreaFilesAdded from '../../atoms/modal-drop-area-files-added/modal-drop-area-files-added';
 import MoreMenu from '../../atoms/more-menu/more-menu';
 import MenuSearchBar from '../../molecules/menu-inline-search/menu-inline-search';
 import MenuOptionMoveToTrash from '../../molecules/menu-option-move-to-trash/menu-option-move-to-trash';
@@ -20,7 +21,6 @@ import ModalArchiveRename from '../modal-archive-rename/modal-archive-rename';
 import ModalArchiveSynchronizeManually from '../modal-archive-synchronize-manually/modal-archive-synchronize-manually';
 import ModalDisplayOptions from '../modal-display-options/modal-display-options';
 import ModalDownload from '../modal-download/modal-download';
-import ModalDropAreaFilesAdded from '../modal-drop-area-files-added/modal-drop-area-files-added';
 import ModalPublish from '../modal-publish/modal-publish';
 import NavContainer from '../nav-container/nav-container';
 
