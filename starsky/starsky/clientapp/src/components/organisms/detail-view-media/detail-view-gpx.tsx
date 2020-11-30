@@ -2,6 +2,7 @@ import L from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react';
 import useLocation from '../../../hooks/use-location';
 import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
+import { Coordinates } from '../../../shared/coordinates-position.types';
 import FetchXml from '../../../shared/fetch-xml';
 import { Geo } from '../../../shared/geo';
 import { LeafletEmptyImageUrlGridLayer } from '../../../shared/leaflet-modify-empty-image-url-gridlayer';
