@@ -81,6 +81,7 @@ describe("DetailViewMp4", () => {
       ReactDOM.render(<DetailViewMp4 />, component);
       var progress = component.querySelector('progress');
       if (progress == null) throw new Error('missing progress tag');
+
       progress.click();
 
     });

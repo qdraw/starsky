@@ -142,7 +142,9 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   function updateProgressByClick(event: React.MouseEvent) {
     if (!videoRef.current || !event.target) return;
-    var mousePosition = getMousePosition(event);
+    const mousePosition = getMousePosition(event);
+    console.log('mousePosition', mousePosition);
+    
     videoRef.current.currentTime = !isNaN(mousePosition) ? mousePosition * videoRef.current.duration : 0;
   }
 
