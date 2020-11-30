@@ -22,14 +22,25 @@ describe("ArchiveSidebar", () => {
     });
 
     it("restore scroll after unmount", () => {
+
+      jest.spyOn(window, 'scrollTo').mockReset();
       var scrollTo = jest.spyOn(window, 'scrollTo')
         .mockImplementationOnce(() => { })
 
       const component = mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
         isReadOnly={true} colorClassUsage={[]}
-        fileIndexItems={newIFileIndexItemArray()} />);
+        fileIndexItems={newIFileIndexItemArray()}>t</ArchiveSidebar>);
 
       component.unmount();
+
+      //  document.body.classList.remove("lock-screen")
+
+      console.log('document.body.classList');
+      
+      console.log(document.body.classList);
+      
+     
+
 
       expect(scrollTo).toBeCalled();
       expect(scrollTo).toBeCalledWith(0, -0);
@@ -37,7 +48,7 @@ describe("ArchiveSidebar", () => {
 
     it("no warning if is not read only", () => {
       var component = mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
-        isReadOnly={false} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />);
+        isReadOnly={false} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()}>t</ArchiveSidebar>);
       expect(component.find('.warning-box')).toBeTruthy();
     });
 
@@ -63,7 +74,7 @@ describe("ArchiveSidebar", () => {
       document.body.style.top = "";
     });
 
-    it("scroll event and set body style no scroll ", () => {
+    it("scroll event and set body style no scroll", () => {
 
       mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
         isReadOnly={false} colorClassUsage={[]} fileIndexItems={newIFileIndexItemArray()} />);

@@ -25,7 +25,7 @@ describe("ListImageTest", () => {
         fileName: 'test',
         status: IExifStatus.Ok
       } as IFileIndexItem
-      var component = mount(<ListImageBox item={fileIndexItem} />)
+      var component = mount(<ListImageBox item={fileIndexItem}>t</ListImageBox>)
       component.find(Link).simulate('click', {
         metaKey: false
       });
@@ -34,7 +34,7 @@ describe("ListImageTest", () => {
       component.unmount();
     });
 
-    it(" when click on Link, with command key it should ignore preloader", () => {
+    it("when click on Link, with command key it should ignore preloader", () => {
 
       var fileIndexItem = {
         fileName: 'test',

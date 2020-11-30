@@ -34,7 +34,7 @@ describe("HealthStatusError", () => {
         return null;
       });
 
-      var component = mount(<HealthStatusError />);
+      var component = mount(<HealthStatusError>t</HealthStatusError>);
 
       expect(notificationSpy).toBeCalled();
 
