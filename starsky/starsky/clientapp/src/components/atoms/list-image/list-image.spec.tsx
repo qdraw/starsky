@@ -15,7 +15,7 @@ describe("ListImageTest", () => {
 
   it('useIntersection = true', () => {
     (useIntersection as jest.Mock<any>).mockImplementation(() => (true));
-    var element = mount(<ListImage fileHash={'test.jpg'} imageFormat={ImageFormat.jpg} />);
+    var element = mount(<ListImage fileHash={'test.jpg'} imageFormat={ImageFormat.jpg}>test</ListImage>);
     element.find('img').simulate("load");
 
     expect(element.find('img').length).toBe(1);

@@ -9,20 +9,24 @@ describe("Portal", () => {
   });
 
   it("default render", () => {
-    var component = mount(<Portal />);
+    var component = mount(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
     component.unmount();
   });
 
   it("default cleanup after render", () => {
-    var component = mount(<Portal />);
+    var component = mount(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
+        console.log(document.body.innerHTML);
+
     component.unmount();
-    expect(document.querySelectorAll("#portal-root").length).toBe(0);
+    expect(component.exists()).toBeFalsy();
+
+    // it should not exist in the body anymore
   });
 
   it("null cleanup after render", () => {
-    var component = mount(<Portal />);
+    var component = mount(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
 
     var tempItem = document.querySelector("#portal-root");
