@@ -37,7 +37,8 @@ describe("Modal", () => {
     Object.defineProperty(window, 'scrollTo', { value: spyScrollTo });
 
     var handleExit = jest.fn();
-    const compontent = mount(<div><Modal
+    const compontent = mount(<div>
+      <Modal
       id="test-modal"
       isOpen={false}
       handleExit={handleExit}>
@@ -45,15 +46,11 @@ describe("Modal", () => {
     <div className="root" />
     </div>);
 
-    it("modal-exit-button", () => {
+    it("sould open modal", () => {
+      var element = document.body.querySelector('.modal-bg--open');
+           expect(element).toBeTruthy();
 
-      console.log(document.body.innerHTML);
-      
-      console.log(compontent.html());
-      
-      // expect(spyScrollTo).toBeCalledWith(0, 0);
-
-      expect(handleExit).toBeCalled()
+      compontent.unmount();
       spyScrollTo.mockClear();
     });
   });
