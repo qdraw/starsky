@@ -1,0 +1,130 @@
+
+
+
+div.modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  background: rgba(96, 125, 139, 0.7);
+  transition: opacity 250ms ease 250ms;
+  pointer-events: none;
+  touch-action: none;
+  z-index: 600;
+}
+
+div.modal-bg.modal-bg--open {
+  opacity: 1;
+  pointer-events: initial;
+  touch-action: initial;
+  transition: opacity 250ms ease;
+  cursor: pointer;
+}
+
+div.modal-content {
+  max-width: 400px;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(188, 193, 217, 0.5),
+    0 4px 12px rgba(188, 193, 217, 0.5);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  opacity: 0;
+  transition: transform 250ms ease-out, opacity 200ms ease-out;
+  cursor: default;
+  max-height: 100%;
+}
+
+div.modal-content h4 {
+	font-weight: 300;
+}
+
+@media (prefers-color-scheme: dark) {
+  div.modal-content {
+    background-color: #37474F;
+    color: #fff;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+	div.modal-content a{
+		color: #fff;
+	}
+}
+
+@media screen and (max-width: 450px) {
+  div.modal-content {
+    max-width: 320px;
+  }
+}
+div.modal-content > .modal-close-bar {
+  height: 50px;
+  background-color: #CFD8DC;
+}
+
+@media (prefers-color-scheme: dark) {
+	div.modal-content > .modal-close-bar {
+      background-color: #263238;
+  }
+}
+
+div.modal-content button.modal-exit-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size:16px;
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  padding: 17px;
+}
+
+@media (prefers-color-scheme: dark) {
+	div.modal-content button.modal-exit-button {
+      color: #fff;
+  }
+}
+
+div.modal-content button.modal-exit-button::before {
+  content:"";
+  margin-right:10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  background-color: #263238;
+  mask-repeat: no-repeat;
+  mask-position: left center;
+  mask-image: url("../images/s-cross.svg");
+}
+
+@media (prefers-color-scheme: dark) {
+	div.modal-content button.modal-exit-button::before {
+      background-color: #fff;
+  }
+}
+
+div.modal-content button.modal-exit-button:active svg {
+  opacity: 0.5;
+}
+div.modal-content button.modal-exit-button.exit-button--showing {
+  opacity: 1;
+  pointer-events: initial;
+  touch-action: initial;
+}
+
+
+div.modal-content.modal-content--show {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  max-height: 95%;
+}
+
+div.modal-content.modal-content--show .preloader.preloader--inside {
+  height: 50px;
+  width: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
