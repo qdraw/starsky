@@ -38,9 +38,7 @@ describe("More Menu", () => {
   });
 
   it("turn off using event", (done) => {
-    var element = mount(<MoreMenu>
-      test
-    </MoreMenu>);
+    var element = mount(<MoreMenu>test</MoreMenu>);
 
     act(() => {
       element.find(".menu-context").simulate('click');

@@ -17,23 +17,29 @@ describe("Geo", () => {
 
 
     it("point 1 has wrong input", () => {
+      let shouldGiveError : any;
       try {
         geo.Distance([1, 1, 1], []);
         throw Error("should fail");
       } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect(error).toHaveProperty('message', 'point 1 has wrong input');
+        shouldGiveError = error;
       }
+
+      expect(shouldGiveError).toBeInstanceOf(Error);
+      expect(shouldGiveError).toHaveProperty('message', 'point 1 has wrong input');
     });
 
     it("point 2 has wrong input", () => {
+      let shouldGiveError : any;
       try {
         geo.Distance([1, 1], []);
         throw Error("should fail");
       } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect(error).toHaveProperty('message', 'point 2 has wrong input');
+        shouldGiveError = error;
       }
+
+      expect(shouldGiveError).toBeInstanceOf(Error);
+      expect(shouldGiveError).toHaveProperty('message', 'point 2 has wrong input');
     });
 
   });

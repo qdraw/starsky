@@ -58,7 +58,8 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: [{ status: IExifStatus.Ok }] as IFileIndexItem[] });
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} 
+      filePath={"/test1"} onToggle={(value) => { }}>t</ColorClassSelect>)
 
     // need to await this click
     await act(async () => {
@@ -89,7 +90,8 @@ describe("ColorClassSelect", () => {
     const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 404, data: [{ status: IExifStatus.ReadOnly }] as IFileIndexItem[] });
     var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} />)
+    var wrapper = mount(<ColorClassSelect collections={true} clearAfter={true} 
+      isEnabled={true} filePath={"/test1"} onToggle={(value) => { }} >t</ColorClassSelect>)
 
     // need to await this click
     await act(async () => {

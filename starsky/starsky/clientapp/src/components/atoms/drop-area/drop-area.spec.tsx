@@ -106,7 +106,7 @@ describe("DropArea", () => {
     it("Test dragenter and then dragleave", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {

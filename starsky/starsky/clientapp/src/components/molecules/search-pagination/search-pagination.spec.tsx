@@ -15,7 +15,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2} />)
+    var component = mount(<SearchPagination lastPageNumber={2}>t</SearchPagination>)
     expect(component.find('a.next').props().href).toBe('/?p=1')
   });
 
@@ -25,7 +25,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2} />)
+    var component = mount(<SearchPagination lastPageNumber={2}>t</SearchPagination>)
     expect(component.find('a.prev').props().href).toBe('/?p=0')
   });
 
@@ -35,7 +35,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1&select=test");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2} />);
+    var component = mount(<SearchPagination lastPageNumber={2}>t</SearchPagination>)
 
     expect(component.find('a.prev').props().href).toBe('/?p=0&select=')
   });
@@ -46,7 +46,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0&select=test");
     });
 
-    var component = mount(<SearchPagination lastPageNumber={2} />)
+    var component = mount(<SearchPagination lastPageNumber={2}>t</SearchPagination>)
     expect(component.find('a.next').props().href).toBe('/?p=1&select=')
   });
 

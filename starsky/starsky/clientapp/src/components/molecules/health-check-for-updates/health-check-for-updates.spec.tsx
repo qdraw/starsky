@@ -12,7 +12,7 @@ describe("HealthCheckForUpdates", () => {
   });
 
   describe("with Context", () => {
-    it("Default not shown ", () => {
+    it("Default not shown", () => {
 
       const mockGetIConnectionDefault = {
         statusCode: 200, data: null
@@ -27,7 +27,7 @@ describe("HealthCheckForUpdates", () => {
       component.unmount()
     });
 
-    it("Default shown when getting status 202 ", () => {
+    it("Default shown when getting status 202", () => {
 
       const mockGetIConnectionDefault = {
         statusCode: 202, data: null
@@ -61,7 +61,7 @@ describe("HealthCheckForUpdates", () => {
 
       var item = localStorage.getItem(CheckForUpdatesLocalStorageName);
       if (!item) throw new Error("item should not be null")
-      expect(parseInt(item) > 1604424674178) // 3 nov '20
+      expect(parseInt(item) > 1604424674178).toBeTruthy() // 3 nov '20
 
       localStorage.removeItem(CheckForUpdatesLocalStorageName)
     });
@@ -89,7 +89,11 @@ describe("HealthCheckForUpdates", () => {
       } as IConnectionDefault;
 
       const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
+
+      // React 17 / Enzyme
+      // Error: mockConstructor(...): Nothing was returned from render. 
+      // This usually means a return statement is missing. Or, to render nothing, return null 
+      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>)
 
       expect(component.exists(Notification.default)).toBeTruthy();
 
@@ -99,8 +103,9 @@ describe("HealthCheckForUpdates", () => {
 
     });
 
-    it("Default shown when getting status 202 and should ignore non valid sessionStorageItem", () => {
+    it("There a no links in the Notification when using electron", () => {
 
+      // This is the difference
       (window as any).isElectron = true;
 
       const mockGetIConnectionDefault = {
@@ -108,7 +113,7 @@ describe("HealthCheckForUpdates", () => {
       } as IConnectionDefault;
 
       const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
+      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>)
 
       expect(component.exists(Notification.default)).toBeTruthy();
 

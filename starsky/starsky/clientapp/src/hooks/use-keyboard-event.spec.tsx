@@ -17,7 +17,7 @@ describe("useKeyboardEvent", () => {
 
   it("check if is called once", () => {
     var callback = jest.fn()
-    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}/>);
+    mount(<UseKeyboardEventComponentTest dependencies={[]} regex={new RegExp("q")} callback={callback}></UseKeyboardEventComponentTest>);
 
     var event = new KeyboardEvent("keydown", {
       bubbles: true,
