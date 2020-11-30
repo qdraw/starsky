@@ -19,4 +19,6 @@ npm install --save @types/enzyme
 npm install --save-dev @storybook/react
 npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save-dev prettier
+npm install --save storybook
+npm install --save @storybook/preset-create-react-app
 ```

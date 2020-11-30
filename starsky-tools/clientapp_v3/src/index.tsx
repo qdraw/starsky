@@ -2,10 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider as ReduxProvider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
-import App from "./App";
 import configureStore from "./global-store/store-config/configure-store";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
+import RouterApp from "./router-app/router-app";
 
 const store = configureStore();
 
@@ -13,7 +13,7 @@ ReactDOM.render(
 	<React.StrictMode>
 		<ReduxProvider store={store}>
 			<Router>
-				<App />
+				<RouterApp />
 			</Router>
 		</ReduxProvider>
 	</React.StrictMode>,
