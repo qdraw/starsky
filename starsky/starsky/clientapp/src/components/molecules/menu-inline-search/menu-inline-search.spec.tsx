@@ -24,10 +24,10 @@ describe("Menu.SearchBar", () => {
       var menuBar = mount(<MenuInlineSearch />);
 
       // default
-      expect(menuBar.find('label').hasClass('icon-addon--search'))
+      expect(menuBar.find('label').hasClass('icon-addon--search')).toBeTruthy()
 
       menuBar.find('input').simulate('focus');
-      expect(menuBar.find('label').hasClass('icon-addon--search-focus'))
+      expect(menuBar.find('label').hasClass('icon-addon--search-focus')).toBeTruthy()
 
       menuBar.unmount();
     });
@@ -46,11 +46,11 @@ describe("Menu.SearchBar", () => {
 
       // go to focus
       menuBar.find('input').simulate('focus');
-      expect(menuBar.find('label').hasClass('icon-addon--search-focus'))
+      expect(menuBar.find('label').hasClass('icon-addon--search-focus')).toBeTruthy()
 
       // go to blur
       menuBar.find('input').simulate('blur');
-      expect(menuBar.find('label').hasClass('icon-addon--search'))
+      expect(menuBar.find('label').hasClass('icon-addon--search')).toBeTruthy()
 
       menuBar.unmount();
     });

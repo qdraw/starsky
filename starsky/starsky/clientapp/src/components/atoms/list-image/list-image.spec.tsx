@@ -32,7 +32,7 @@ describe("ListImageTest", () => {
     })).toHaveLength(1);
   });
 
-  it('img-box--error null', () => {
+  it('img-box--error null 2', () => {
     var element = shallow(<ListImage imageFormat={ImageFormat.jpg} fileHash={'null'} />);
 
     expect(element.filterWhere((item) => {

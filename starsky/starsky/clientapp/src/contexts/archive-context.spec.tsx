@@ -104,7 +104,7 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].title).toBe('title');
   });
 
-  it("update - check if item is update (append false)", () => {
+  it("update - check if item is update when not found (append false)", () => {
     var state = {
       fileIndexItems: [{
         fileName: 'test.jpg',
@@ -352,7 +352,7 @@ describe("ArchiveContext", () => {
       }]);
   });
 
-  it("add -- duplicate", () => {
+  it("add -- duplicate 2", () => {
 
     // current state
     var state = {
@@ -368,7 +368,6 @@ describe("ArchiveContext", () => {
     var result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
-
   });
 
   it("add -- duplicate (in collections mode true)", () => {

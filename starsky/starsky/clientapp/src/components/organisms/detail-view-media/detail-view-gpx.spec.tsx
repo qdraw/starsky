@@ -204,7 +204,7 @@ describe("DetailViewGpx", () => {
       });
     });
 
-    it("zoom out", async () => {
+    it("zoom out 2", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
         statusCode: 200, data: xmlParser.parseFromString(responseString, 'text/xml')
       } as IConnectionDefault);

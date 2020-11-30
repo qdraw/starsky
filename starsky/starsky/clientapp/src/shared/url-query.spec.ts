@@ -92,11 +92,11 @@ describe("url-query", () => {
     expect(result).toContain("itemName=name")
   });
 
-  it("UrlSearchTrashApi", () => {
+  it("UrlSearchTrashApi should contain trash", () => {
     var result = urlQuery.UrlSearchTrashApi();
     expect(result).toContain("trash")
   });
-  it("UrlQuerySearchApi", () => {
+  it("UrlQuerySearchApi should contain test", () => {
     var result = urlQuery.UrlQuerySearchApi("test");
     expect(result).toContain("test")
   });
@@ -174,7 +174,6 @@ describe("url-query", () => {
     beforeAll(() => {
       // @ts-ignore
       delete window.location;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       window.location = {
         href: '',
