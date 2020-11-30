@@ -18,7 +18,11 @@ function useInterval(callback: Function, delay: number) {
       let id = setInterval(tick, delay);
       console.log('----1');
       
-      return () => clearInterval(id);
+      return () => {
+        console.log('---111');
+        
+        window.clearInterval(id);
+      }
     }
   }, [delay]);
 }

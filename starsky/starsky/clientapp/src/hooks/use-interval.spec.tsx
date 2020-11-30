@@ -11,7 +11,9 @@ describe("useInterval", () => {
 
   const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo((props) => {
     useInterval(props.callback, props.timer);
-    return null;
+    console.log('-h');
+    
+    return <></>;
   });
 
   it("check if is called once", (done) => {
@@ -22,10 +24,11 @@ describe("useInterval", () => {
   });
 
   it("check unmount component", () => {
-    var clearInterval = jest.spyOn(global, 'clearInterval').mockImplementationOnce(() => { });
+    var clearInterval = jest.spyOn(window, 'clearInterval').mockImplementationOnce(() => { });
 
-    var interval = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
-    interval.unmount();
+    var component = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
+    component.unmount();
+    component.unmount();
 
     expect(clearInterval).toBeCalled();
   });

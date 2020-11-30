@@ -41,7 +41,9 @@ describe("Modal", () => {
       id="test-modal"
       isOpen={false}
       handleExit={handleExit}>
-    </Modal><div className="root" /></div>);
+    </Modal>
+    <div className="root" />
+    </div>);
 
     it("modal-exit-button", () => {
       expect(spyScrollTo).toBeCalledWith(0, 0);
