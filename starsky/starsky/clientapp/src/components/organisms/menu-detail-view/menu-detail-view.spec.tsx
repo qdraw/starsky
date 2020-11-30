@@ -46,7 +46,7 @@ describe("MenuDetailView", () => {
       var moveModal = jest.spyOn(ModalMoveFile, 'default')
         .mockImplementationOnce(() => { return <></> });
 
-      var component = mount(<MenuDetailView />);
+      var component = mount(<MenuDetailView>t</MenuDetailView>);
 
       var item = component.find('[data-test="move"]');
 
@@ -92,7 +92,7 @@ describe("MenuDetailView", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<MenuDetailView />)
+      var component = mount(<MenuDetailView>t</MenuDetailView>);
       var item = component.find('[data-test="trash"]');
 
       act(() => {
@@ -134,7 +134,7 @@ describe("MenuDetailView", () => {
       // add search query to url
       globalHistory.navigate("/?t=test&p=0");
 
-      var component = mount(<MenuDetailView />);
+      var component = mount(<MenuDetailView>t</MenuDetailView>);
 
       expect(component.exists('.item--search')).toBeTruthy();
 
@@ -171,7 +171,7 @@ describe("MenuDetailView", () => {
         globalHistory.navigate("/?details=true");
       });
 
-      var component = mount(<MenuDetailView />);
+      var component = mount(<MenuDetailView>t</MenuDetailView>);
 
       expect(component.exists(".autosave")).toBeFalsy();
 

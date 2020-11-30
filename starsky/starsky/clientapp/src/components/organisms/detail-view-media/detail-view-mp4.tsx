@@ -94,6 +94,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   function playPause() {
     if (!videoRef.current) return;
+    console.log(typeof videoRef.current.play );
+    
     if (!(videoRef.current.play instanceof Promise)) {
         setIsError(MessageVideoPlayBackError);
         return;

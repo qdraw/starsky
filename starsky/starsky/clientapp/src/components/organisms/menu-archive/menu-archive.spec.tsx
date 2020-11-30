@@ -78,7 +78,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
 
-      var component = mount(<MenuArchive />);
+      var component = mount(<MenuArchive>t</MenuArchive>);
 
       expect(component.exists('[data-test="selected-0"]')).toBeTruthy();
 
@@ -99,7 +99,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
 
-      var component = mount(<MenuArchive />);
+      var component = mount(<MenuArchive>t</MenuArchive>);
 
       expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
 
@@ -126,7 +126,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
 
-      var component = mount(<MenuArchive />);
+      var component = mount(<MenuArchive>t</MenuArchive>);
 
       var item = component.find('[data-test="mkdir"]');
 
@@ -158,7 +158,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => { return contextValues })
         .mockImplementationOnce(() => { return contextValues })
 
-      var component = mount(<MenuArchive />);
+      var component = mount(<MenuArchive>t</MenuArchive>);
 
       var item = component.find('[data-test="rename"]');
 

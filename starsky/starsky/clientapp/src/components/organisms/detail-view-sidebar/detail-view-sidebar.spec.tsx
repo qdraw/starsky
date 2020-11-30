@@ -316,7 +316,7 @@ describe("DetailViewSidebar", () => {
       component.unmount()
     });
 
-    it("search cache clear AND when a tag is updated ", async () => {
+    it("search cache clear AND when a tag is updated", async () => {
 
       act(() => {
         globalHistory.navigate("/?t=test");
@@ -426,7 +426,7 @@ describe("DetailViewSidebar", () => {
           <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = mount(<DeletedTestComponent>t</DeletedTestComponent>);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
