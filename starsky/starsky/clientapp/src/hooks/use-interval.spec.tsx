@@ -11,8 +11,6 @@ describe("useInterval", () => {
 
   const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo((props) => {
     useInterval(props.callback, props.timer);
-    console.log('-h');
-    
     return <></>;
   });
 
