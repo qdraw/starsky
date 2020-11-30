@@ -28,7 +28,6 @@ describe("useInterval", () => {
 
     var component = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
     component.unmount();
-    component.unmount();
 
     expect(clearInterval).toBeCalled();
   });

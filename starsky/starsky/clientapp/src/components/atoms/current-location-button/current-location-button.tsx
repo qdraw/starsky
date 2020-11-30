@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 
+type Coordinates {
+  
+}
+
 export type CurrentLocationButtonPropTypes = {
   callback?(coords: Coordinates): void;
 }
