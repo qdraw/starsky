@@ -25,7 +25,7 @@ describe("ArchiveContextWrapper", () => {
       var archive = jest.spyOn(Archive, 'default').mockImplementationOnce(() => { return <></> })
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      mount(<ArchiveContextWrapper {...args} />);
+      mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
       expect(archive).toBeCalled();
     });
 

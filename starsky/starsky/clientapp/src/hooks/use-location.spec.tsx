@@ -16,7 +16,7 @@ describe("useLocation", () => {
       return [setState, setState]
     });
 
-    mount(<UseLocationComponentTest/>);
+    mount(<UseLocationComponentTest></UseLocationComponentTest>);
 
     expect(useStateSpy).toBeCalled();
   });

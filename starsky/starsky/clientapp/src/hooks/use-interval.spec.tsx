@@ -20,15 +20,16 @@ describe("useInterval", () => {
     function callback() {
       done();
     }
-    mount(<UseIntervalComponentTest timer={0} callback={callback}/>);
+    mount(<UseIntervalComponentTest timer={0} callback={callback}>t</UseIntervalComponentTest>);
   });
 
-  it("check unmount component", () => {
-    var clearInterval = jest.spyOn(window, 'clearInterval').mockImplementationOnce(() => { });
+  it("check if setInterval is called", () => {
+    var clearIntervalSpy = jest.spyOn(globalThis, 'setInterval')
+      .mockImplementationOnce(() => { return {} as any })
 
     var component = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
     component.unmount();
-
-    expect(clearInterval).toBeCalled();
+   
+    expect(clearIntervalSpy).toBeCalled();
   });
 });
