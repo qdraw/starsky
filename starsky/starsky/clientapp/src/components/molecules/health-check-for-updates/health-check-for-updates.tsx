@@ -33,7 +33,7 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
 
   const settings = useGlobalSettings();
 
-  if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return null
+  if (SkipDisplayOfUpdate() || checkForUpdates.statusCode !== 202) return (<>ignore</>);
 
   var language = new Language(settings.language);
 
@@ -49,7 +49,8 @@ const HealthCheckForUpdates: React.FunctionComponent = () => {
     "Er is een nieuwe versie beschikbaar {WhereToFindRelease}",
     "A new version is available {WhereToFindRelease}");
 
-  const MessageNewVersionUpdateHtml = language.token(MessageNewVersionUpdateToken, ["{WhereToFindRelease}"], [WhereToFindRelease])
+  const MessageNewVersionUpdateHtml = language.token(MessageNewVersionUpdateToken, 
+    ["{WhereToFindRelease}"], [WhereToFindRelease])
 
   return (
     <Notification

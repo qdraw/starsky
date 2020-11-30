@@ -16,7 +16,7 @@ describe("MenuDefault", () => {
     });
 
     it("check if on click the hamburger opens", () => {
-      var component = mount(<MenuDefault isEnabled={true} />);
+      var component = mount(<MenuDefault isEnabled={true}>t</MenuDefault>);
 
       expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
 

@@ -32,7 +32,7 @@ describe("MenuOptionMoveToTrash", () => {
 
       var dispatch = jest.fn()
       var component = await mount(<MenuOptionMoveToTrash setSelect={jest.fn()} select={["test.jpg"]}
-        isReadOnly={false} state={test} dispatch={dispatch} />);
+        isReadOnly={false} state={test} dispatch={dispatch}>t</MenuOptionMoveToTrash>);
 
       await act(async () => {
         await component.find('li').simulate('click');

@@ -54,7 +54,7 @@ describe("useSockets", () => {
     component.unmount();
   });
 
-  it('test retry when no response ', () => {
+  it('test retry when no response', () => {
     console.log('test retry when no response');
 
     (window as any).appInsights = jest.fn();

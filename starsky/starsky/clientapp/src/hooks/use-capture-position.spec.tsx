@@ -14,7 +14,7 @@ describe("capturePosition", () => {
     scrollToSpy = jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
   });
 
-  it('freeze ', () => {
+  it('freeze', () => {
 
     hook.freeze();
 
@@ -25,7 +25,7 @@ describe("capturePosition", () => {
     scrollToSpy.mockReset();
   });
 
-  it('unfreeze ', () => {
+  it('unfreeze', () => {
 
     hook.unfreeze();
 

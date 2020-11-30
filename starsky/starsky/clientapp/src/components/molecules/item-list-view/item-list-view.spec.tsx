@@ -51,7 +51,8 @@ describe("ItemListView", () => {
       } as INavigateState;
       jest.useFakeTimers();
 
-      var component = mount(<ItemListView fileIndexItems={exampleData} colorClassUsage={[]} />, { attachTo: (window as any).domNode });
+      var component = mount(<ItemListView fileIndexItems={exampleData} colorClassUsage={[]}>item</ItemListView>, 
+        { attachTo: (window as any).domNode });
 
       act(() => {
         jest.advanceTimersByTime(100);
