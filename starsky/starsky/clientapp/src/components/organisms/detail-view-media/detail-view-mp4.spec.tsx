@@ -85,7 +85,7 @@ describe("DetailViewMp4", () => {
 
     });
 
-    it("progress ", () => {
+    it("progress", () => {
       var component = mount(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
@@ -123,7 +123,7 @@ describe("DetailViewMp4", () => {
       var notificationSpy = jest.spyOn(Notification, 'default').mockImplementationOnce(() => {
         return <></>
       })
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+      var component = mount(<DetailViewMp4>g</DetailViewMp4>);
 
       expect(useContextSpy).toBeCalled();
       expect(notificationSpy).toBeCalled();

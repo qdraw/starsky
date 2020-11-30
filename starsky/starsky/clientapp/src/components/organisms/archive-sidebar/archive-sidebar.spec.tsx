@@ -1,4 +1,5 @@
 import { globalHistory } from '@reach/router';
+import { act } from '@testing-library/react';
 import { mount, shallow } from "enzyme";
 import React from 'react';
 import { PageType } from '../../../interfaces/IDetailView';
@@ -29,19 +30,14 @@ describe("ArchiveSidebar", () => {
 
       const component = mount(<ArchiveSidebar pageType={PageType.Archive} subPath={"/"}
         isReadOnly={true} colorClassUsage={[]}
-        fileIndexItems={newIFileIndexItemArray()}>t</ArchiveSidebar>);
+        fileIndexItems={newIFileIndexItemArray()}>t</ArchiveSidebar>, 
+        { attachTo: (window as any).domNode });
 
-      component.unmount();
+      act(()=>{
+        component.unmount();
+      })
 
-      //  document.body.classList.remove("lock-screen")
-
-      console.log('document.body.classList');
-      
-      console.log(document.body.classList);
-      
-     
-
-
+      expect(document.body.classList.contains("lock-screen")).toBeFalsy();
       expect(scrollTo).toBeCalled();
       expect(scrollTo).toBeCalledWith(0, -0);
     });

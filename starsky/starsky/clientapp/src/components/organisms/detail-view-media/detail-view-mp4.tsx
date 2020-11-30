@@ -136,6 +136,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   function getMousePosition(event: React.MouseEvent | MouseEvent) {
     const target = (event.target as HTMLProgressElement);
+    if (!target.offsetLeft) return 0;
     return (event.pageX - (target.offsetLeft + (target.offsetParent as HTMLElement).offsetLeft)) / target.offsetWidth;
   }
 
