@@ -15,7 +15,7 @@ describe("ListImageTest", () => {
 
   it('useIntersection = true', () => {
     (useIntersection as jest.Mock<any>).mockImplementation(() => (true));
-    var element = mount(<ListImage fileHash={'test.jpg'} imageFormat={ImageFormat.jpg} />);
+    var element = mount(<ListImage fileHash={'test.jpg'} imageFormat={ImageFormat.jpg}>test</ListImage>);
     element.find('img').simulate("load");
 
     expect(element.find('img').length).toBe(1);
@@ -32,7 +32,7 @@ describe("ListImageTest", () => {
     })).toHaveLength(1);
   });
 
-  it('img-box--error null', () => {
+  it('img-box--error null 2', () => {
     var element = shallow(<ListImage imageFormat={ImageFormat.jpg} fileHash={'null'} />);
 
     expect(element.filterWhere((item) => {

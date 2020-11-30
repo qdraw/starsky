@@ -11,7 +11,7 @@ describe("WsCurrentStart", () => {
   }
 
   describe("WsCurrentStart or default", () => {
-    it("is connected and returns default", () => {
+    it("connected and returns default", () => {
 
       var setSocketConnectedSpy = jest.fn();
       var wsCurrentStart = WsCurrentStart(true, setSocketConnectedSpy, { current: true },
@@ -82,25 +82,25 @@ describe("WsCurrentStart", () => {
       expect(setKeepAliveTimeSpy).toBeCalled();
     });
 
-    it("it should ignore undefined data", () => {
+    it("should ignore undefined data", () => {
       var setKeepAliveTimeSpy = jest.fn()
       FireOnMessage(new MessageEvent("t", { data: undefined }), setKeepAliveTimeSpy);
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
 
-    it("it should ignore invalid json data", () => {
+    it("should ignore invalid json data", () => {
       var setKeepAliveTimeSpy = jest.fn()
       FireOnMessage(new MessageEvent("t", { data: "1{1\\" }), setKeepAliveTimeSpy);
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
 
-    it("it should ignore keep alive when sending real message", () => {
+    it("should ignore keep alive when sending real message", () => {
       var setKeepAliveTimeSpy = jest.fn()
       FireOnMessage(new MessageEvent("t", { data: "{\"data\": 1}" }), setKeepAliveTimeSpy);
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
     });
 
-    it("it should fire an event", (done) => {
+    it("should fire an event", (done) => {
       document.body.addEventListener(useSocketsEventName, (e) => {
         var event = e as CustomEvent;
         expect(event.detail).toStrictEqual({ data: 1 });
@@ -112,7 +112,7 @@ describe("WsCurrentStart", () => {
   });
 
   describe("HandleKeepAliveMessage", () => {
-    it("it should ignore keep alive when sending real message", () => {
+    it("should ignore keep alive when sending real message", () => {
       var setKeepAliveTimeSpy = jest.fn()
       HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: "{\"data\": 1}" });
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);

@@ -25,7 +25,7 @@ describe("ItemListView", () => {
     });
 
     it("Portal is already gone", () => {
-      var component = mount(<Notification type={NotificationType.default} />);
+      var component = mount(<Notification type={NotificationType.default}>test</Notification>);
 
       var portalElement = document.getElementById(PortalId)
       if (!portalElement) throw new Error("portal should not be undefined");
@@ -38,7 +38,7 @@ describe("ItemListView", () => {
 
     it("Callback test Ok close and remove element from DOM", () => {
       var callback = jest.fn();
-      var component = mount(<Notification callback={callback} type={NotificationType.default} />);
+      var component = mount(<Notification callback={callback} type={NotificationType.default}>test</Notification>);
 
       component.find('.icon--close').simulate('click');
 

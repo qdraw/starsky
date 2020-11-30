@@ -21,7 +21,7 @@ describe("FormControl", () => {
 
     it("limitLengthKey - null/nothing", () => {
 
-      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">&nbsp;</FormControl>);
+      var component = mount(<FormControl contentEditable={true} maxlength={10} onBlur={() => { }} name="test">test</FormControl>);
 
       var preventDefaultSpy = jest.fn();
 

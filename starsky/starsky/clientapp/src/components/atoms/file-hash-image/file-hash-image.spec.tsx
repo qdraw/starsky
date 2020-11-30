@@ -34,7 +34,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
 
     // need to await here
-    var component = mount(<></>);
+    var component = mount(<>test</>);
     await act(async () => {
       component = await mount(<FileHashImage isError={false} fileHash="hash" orientation={Orientation.Horizontal} />);
     })

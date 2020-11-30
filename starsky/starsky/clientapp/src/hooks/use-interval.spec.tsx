@@ -11,22 +11,25 @@ describe("useInterval", () => {
 
   const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo((props) => {
     useInterval(props.callback, props.timer);
-    return null;
+    console.log('-h');
+    
+    return <></>;
   });
 
   it("check if is called once", (done) => {
     function callback() {
       done();
     }
-    mount(<UseIntervalComponentTest timer={0} callback={callback}/>);
+    mount(<UseIntervalComponentTest timer={0} callback={callback}>t</UseIntervalComponentTest>);
   });
 
-  it("check unmount component", () => {
-    var clearInterval = jest.spyOn(global, 'clearInterval').mockImplementationOnce(() => { });
+  it("check if setInterval is called", () => {
+    var clearIntervalSpy = jest.spyOn(globalThis, 'setInterval')
+      .mockImplementationOnce(() => { return {} as any })
 
-    var interval = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
-    interval.unmount();
-
-    expect(clearInterval).toBeCalled();
+    var component = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
+    component.unmount();
+   
+    expect(clearIntervalSpy).toBeCalled();
   });
 });

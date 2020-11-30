@@ -15,7 +15,7 @@ describe("useIntersection", () => {
     const focus = jest.fn();
     const useRefSpy = jest.spyOn(React, 'useRef').mockReturnValueOnce({ current: { focus } });
 
-    mount(<IntersectionComponentTest />)
+    mount(<IntersectionComponentTest></IntersectionComponentTest>)
     expect(useRefSpy).toHaveBeenCalledTimes(1)
   });
 
