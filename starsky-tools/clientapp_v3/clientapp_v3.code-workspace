@@ -33,5 +33,6 @@
 			"colorclass",
 			"unmount"
 		],
+		"typescript.tsdk": "clientapp_v3/node_modules/typescript/lib",
 	}
 }
