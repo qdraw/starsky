@@ -42,7 +42,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo((pro
   // can't set this inside effect or if ==> performance issue, runs to often
   const responseObject = useFetch(new UrlQuery().UrlSearchSuggestApi(query), 'get');
   useEffect(() => {
-    if (!responseObject.data || !responseObject.data.length) {
+    if (!responseObject || !responseObject.data || !responseObject.data.length) {
       if (suggest && suggest.length >= 1) setSuggest([])
       return;
     }
