@@ -15,10 +15,10 @@ interface IBreadcrumbProps {
 
 const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
 
-  if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb" />);
-
   // used for reading current location
   var history = useLocation();
+
+    if (!props.subPath || !props.breadcrumb) return (<div className="breadcrumb" />);
 
   return (
     <div className={props.subPath.length >= 28 ? "breadcrumb breadcrumb--long" : "breadcrumb"}>

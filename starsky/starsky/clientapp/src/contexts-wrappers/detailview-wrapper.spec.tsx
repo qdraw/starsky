@@ -58,7 +58,6 @@ describe("DetailViewWrapper", () => {
     beforeAll(() => {
       // @ts-ignore
       delete window.location;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       window.location = {
         search: "/?f=/test.jpg",
