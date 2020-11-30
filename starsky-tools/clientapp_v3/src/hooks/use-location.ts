@@ -7,6 +7,7 @@ export interface IUseLocation {
 }
 
 const useLocation = () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const initialState = {
     location: globalHistory.location,
     navigate: globalHistory.navigate,
