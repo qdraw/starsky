@@ -1,21 +1,23 @@
 # Starsky ClientApp
+
 ## List of [Starsky](../../../readme.md) Projects
- * [starsky (sln)](../../../starsky/readme.md) _database photo index & import index project_
-    * [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
-      *  __[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application__
-    * [starskyImporterCli](../../../starsky/starskyimportercli/readme.md)  _import command line interface_
-    * [starskyGeoCli](../../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
-    * [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
-    * [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
-    * [starskyAdminCli](../../../starsky/starskyadmincli/readme.md)  _manage user accounts_
-    * [starskySynchronizeCli](../../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
-    * [starskyThumbnailCli](../../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
-    * [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
-    * [starskyTest](../../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
- * [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
- * [Changelog](../../../history.md) _Release notes and history_
+
+-   [starsky (sln)](../../../starsky/readme.md) _database photo index & import index project_
+    -   [starsky](../../../starsky/starsky/readme.md) _web api application / interface_
+        -   **[clientapp](../../../starsky/starsky/clientapp/readme.md) react front-end application**
+    -   [starskyImporterCli](../../../starsky/starskyimportercli/readme.md) _import command line interface_
+    -   [starskyGeoCli](../../../starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
+    -   [starskyWebHtmlCli](../../../starsky/starskywebhtmlcli/readme.md) _publish web images to a content package_
+    -   [starskyWebFtpCli](../../../starsky/starskywebftpcli/readme.md) _copy a content package to a ftp service_
+    -   [starskyAdminCli](../../../starsky/starskyadmincli/readme.md) _manage user accounts_
+    -   [starskySynchronizeCli](../../../starsky/starskysynchronizecli/readme.md) _check if disk changes are updated in the database_
+    -   [starskyThumbnailCli](../../../starsky/starskythumbnailcli/readme.md) _speed web performance by generating smaller images_
+    -   [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
+    -   [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests_
+-   [starsky.netframework](../../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
+-   [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
+-   [starskyapp](../../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+-   [Changelog](../../../history.md) _Release notes and history_
 
 ## starsky/starsky/clientapp docs
 
@@ -59,7 +61,7 @@ In this application we use the `build.sh` or `build.ps1` to combine the frontend
 Storybook is an open source tool for developing UI components in isolation for React and other platfoms. It makes building stunning UIs organized and efficient.
 
 A Storybook is a collection of stories. Each story represents a single visual state of a component.
-    Technically, a story is a function that returns something that can be rendered to screen.
+Technically, a story is a function that returns something that can be rendered to screen.
 
 ```
 •
@@ -70,8 +72,6 @@ A Storybook is a collection of stories. Each story represents a single visual st
                 ├── button-styled.tsx
                 └── button-styled.stories.tsx
 ```
-
-
 
 ## Project structure
 
@@ -90,7 +90,7 @@ The clientapp uses the following folder structure
     |   |      Folder has .tsx for component
     |   |      Folder has stories.tsx for storybook
     |   |      Folder has spec.tsx for unit-tests
-    |   |         
+    |   |
     |   └── molecules
     |   |     Molecules are groups of atoms bonded together
     |   └── organisms
@@ -118,12 +118,10 @@ The clientapp uses the following folder structure
            CSS Styling
 ```
 
-
 ### Upgrade `Create React App` to a newer version
 
 The default Create React App package is used to keep future upgrades less painfull.
 In the repository of [Create React App releases](https://github.com/facebook/create-react-app/releases) you can find if we are using the latest version.
-
 
 #### To keep all CRA dependencies in place
 
@@ -131,10 +129,10 @@ In the repository of [Create React App releases](https://github.com/facebook/cre
 npx create-react-app my-app --template typescript
 ```
 
-- copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
-
+-   copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
 
 The following packages are added:
+
 ```
 npm install --save abortcontroller-polyfill
 npm install --save @reach/router
@@ -150,11 +148,13 @@ npm install --save-dev @storybook/react
 ```
 
 #### Update the name of the project
+
 ```json
  "name": "clientapp",
 ```
 
 #### Proxy tag for backend services
+
 Used when running `npm start`
 
 ```json
@@ -162,11 +162,13 @@ Used when running `npm start`
 ```
 
 #### Homepage
+
 ```json
 "homepage": "/starsky/",
 ```
 
 #### `npm run test:ci` is used by the build-script to run all tests and ESlint
+
 This is added to the `package.json`
 
 ```json
@@ -177,6 +179,7 @@ This is added to the `package.json`
 ```
 
 ### collectCoverageFrom and coverageReporters
+
 With jest `collectCoverageFrom` and `coverageReporters` are used to get the right output
 
 ```json
@@ -215,3 +218,13 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Known issues
+
+I keep getting this errors:
+
+Argument for '--jsx' option must be: 'preserve', 'react-native', 'react'
+Cannot use JSX unless the '--jsx' flag is provided.
+
+read this:
+https://stackoverflow.com/questions/64974648/problem-with-visual-studio-code-using-react-jsx-as-jsx-value-with-create-react

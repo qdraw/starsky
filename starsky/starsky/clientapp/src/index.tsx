@@ -18,7 +18,7 @@ import './style/css/00-index.css';
 ReactDOM.render(
   <React.StrictMode>
     <RouterApp />,
-  </React.StrictMode>
+  </React.StrictMode>,
   document.getElementById('root'),
 );
 
