@@ -13,7 +13,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => { });
 
     var contextSpy = jest.spyOn(ArchiveContextWrapper, 'default').mockImplementationOnce(() => { return <></> });
-    mount(<SearchPage></SearchPage>);
+    mount(<SearchPage>t</SearchPage>);
     expect(contextSpy).toBeCalled();
   });
 });

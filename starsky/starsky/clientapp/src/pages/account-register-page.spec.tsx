@@ -6,7 +6,7 @@ import AccountRegisterPage from './account-register-page';
 describe("ContentPage", () => {
   it("default", () => {
     var accountRegisterSpy = jest.spyOn(AccountRegister, 'default').mockImplementationOnce(() => { return <></> });
-    mount(<AccountRegisterPage></AccountRegisterPage>);
+    mount(<AccountRegisterPage>g</AccountRegisterPage>);
     expect(accountRegisterSpy).toBeCalledTimes(1)
   });
 

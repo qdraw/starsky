@@ -13,7 +13,7 @@ describe("TrashPage", () => {
       return {} as IUseTrashList
     });
 
-    var error = mount(<TrashPage></TrashPage>);
+    var error = mount(<TrashPage>t</TrashPage>);
     expect(error.text()).toBe("Something went wrong")
   });
 
@@ -27,7 +27,7 @@ describe("TrashPage", () => {
       } as IUseTrashList
     });
 
-    var trashPage = mount(<TrashPage></TrashPage>);
+    var trashPage = mount(<TrashPage>t</TrashPage>);
 
     expect(contextSpy).toBeCalled();
 
