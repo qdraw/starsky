@@ -6,13 +6,21 @@
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.2.2",
+    "@types/enzyme": "^3.10.8",
     "@types/jest": "^26.0.15",
+    "@types/leaflet": "^1.5.19",
     "@types/node": "^12.19.7",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
     "@types/react-redux": "^7.1.11",
     "@types/react-router-dom": "^5.1.6",
     "@types/redux-immutable-state-invariant": "^2.1.1",
+    "@types/storybook__react": "^5.2.1",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.3.1",
+    "abortcontroller-polyfill": "^1.5.0",
+    "enzyme": "^3.11.0",
+    "intersection-observer": "^0.11.0",
+    "leaflet": "^1.7.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.2.2",
@@ -75,6 +83,7 @@
     ]
   },
   "devDependencies": {
+    "@storybook/react": "^6.1.9",
     "prettier": "^2.2.1"
   }
 }
