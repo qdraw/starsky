@@ -6,6 +6,7 @@ import configureStore from "./global-store/store-config/configure-store";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import RouterApp from "./router-app/router-app";
+import "./style/css/00-index.css";
 
 const store = configureStore();
 
