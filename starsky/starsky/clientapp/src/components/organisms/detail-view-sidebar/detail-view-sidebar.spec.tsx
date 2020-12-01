@@ -2,11 +2,9 @@ import { globalHistory } from '@reach/router';
 import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import * as useDetailViewContext from '../../../contexts/detailview-context';
 import { DetailViewContext } from '../../../contexts/detailview-context';
-import * as useFetch from '../../../hooks/use-fetch';
 import { IConnectionDefault, newIConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import { IRelativeObjects, newDetailView, PageType } from '../../../interfaces/IDetailView';
+import { IRelativeObjects, PageType } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { IFileIndexItem, newIFileIndexItem } from '../../../interfaces/IFileIndexItem';
 import { ClipboardHelper } from '../../../shared/clipboard-helper';
@@ -281,42 +279,7 @@ describe("DetailViewSidebar", () => {
       component.unmount()
     });
 
-    xit("SKIPPED test /info content ---- d", () => {
-
-      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
-      var fetchContent = {
-        ...newIConnectionDefault(), statusCode: 200, data: [{
-          filePath: 'a',
-          lastEdited: '',
-          status: IExifStatus.Ok,
-        } as IFileIndexItem] as IFileIndexItem[]
-      };
-      jest.spyOn(useFetch, 'default')
-        .mockImplementationOnce(() => fetchContent)
-        .mockImplementationOnce(() => fetchContent)
-        .mockImplementationOnce(() => fetchContent)
-
-
-      var contextObject = {
-        dispatch: jest.fn(),
-        state: { ...newDetailView(), lastEdited: '' }
-      } as useDetailViewContext.IDetailViewContext;
-
-      jest.spyOn(useDetailViewContext, 'useDetailViewContext')
-        .mockImplementationOnce(() => contextObject)
-        .mockImplementationOnce(() => contextObject)
-
-
-      var component = mount(<DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>);
-
-      // FAIL!!!
-
-      console.log(component.html());
-
-      component.unmount()
-    });
-
-    it("search cache clear AND when a tag is updated", async () => {
+    it("search cache clear AND when a tag is updated ", async () => {
 
       act(() => {
         globalHistory.navigate("/?t=test");
@@ -426,7 +389,7 @@ describe("DetailViewSidebar", () => {
           <DetailViewSidebar status={IExifStatus.Ok} filePath={"/t"}></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent>t</DeletedTestComponent>);
+      var component = mount(<DeletedTestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,

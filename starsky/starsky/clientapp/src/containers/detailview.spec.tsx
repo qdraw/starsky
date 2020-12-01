@@ -323,7 +323,7 @@ describe("DetailView", () => {
     });
 
 
-    xit("Escape key Keyboard", () => {
+    it("Escape key Keyboard", () => {
       var navigateSpy = jest.fn();
       var locationSpy = jest.spyOn(useLocation, 'default').mockImplementationOnce(() => {
         return {

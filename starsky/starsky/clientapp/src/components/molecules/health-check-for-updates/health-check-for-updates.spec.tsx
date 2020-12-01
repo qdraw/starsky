@@ -79,7 +79,7 @@ describe("HealthCheckForUpdates", () => {
       localStorage.removeItem(CheckForUpdatesLocalStorageName)
     });
 
-    xit("Default shown when getting status 202 and should ignore non valid sessionStorageItem", () => {
+    it("Default shown when getting status 202 and should ignore non valid sessionStorageItem", () => {
 
       // This is an non valid Session storage item
       localStorage.setItem(CheckForUpdatesLocalStorageName, "non valid number")
@@ -103,7 +103,7 @@ describe("HealthCheckForUpdates", () => {
 
     });
 
-    xit("There a no links in the Notification when using electron", () => {
+    it("There a no links in the Notification when using electron", () => {
 
       // This is the difference
       (window as any).isElectron = true;
