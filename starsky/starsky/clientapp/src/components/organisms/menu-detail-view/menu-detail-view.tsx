@@ -1,11 +1,11 @@
 
 import { Link } from '@reach/router';
 import React, { useEffect, useState } from 'react';
-import { DetailViewContext } from '../../../contexts/detailview-context';
+import { DetailViewAction } from '../../../contexts/detailview-context';
 import useGlobalSettings from '../../../hooks/use-global-settings';
 import useKeyboardEvent from '../../../hooks/use-keyboard-event';
 import useLocation from '../../../hooks/use-location';
-import { IDetailView, PageType } from '../../../interfaces/IDetailView';
+import { IDetailView } from '../../../interfaces/IDetailView';
 import { IExifStatus } from '../../../interfaces/IExifStatus';
 import { Orientation } from '../../../interfaces/IFileIndexItem';
 import { INavigateState } from '../../../interfaces/INavigateState';
@@ -25,7 +25,12 @@ import ModalDetailviewRenameFile from '../modal-detailview-rename-file/modal-det
 import ModalDownload from '../modal-download/modal-download';
 import ModalMoveFile from '../modal-move-file/modal-move-file';
 
-const MenuDetailView: React.FunctionComponent = () => {
+export interface MenuDetailViewProps {
+  state: IDetailView,
+  dispatch: React.Dispatch<DetailViewAction>
+}
+
+const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, dispatch}) => {
 
   // content
   const settings = useGlobalSettings();
@@ -42,22 +47,6 @@ const MenuDetailView: React.FunctionComponent = () => {
 
   var history = useLocation();
 
-  let { state, dispatch } = React.useContext(DetailViewContext);
-
-  // fallback state
-  if (!state) {
-    state = {
-      pageType: PageType.Loading,
-      isReadOnly: true,
-      fileIndexItem: {
-        parentDirectory: "/",
-        fileName: '',
-        filePath: "/",
-        lastEdited: new Date(1970, 1, 1).toISOString(),
-      }
-    } as IDetailView;
-  }
-
   const [isDetails, setDetails] = React.useState(new URLPath().StringToIUrl(history.location.search).details);
   useEffect(() => {
     var details = new URLPath().StringToIUrl(history.location.search).details;
@@ -73,14 +62,14 @@ const MenuDetailView: React.FunctionComponent = () => {
   /* show marker with 'Saved' */
   const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));
   useEffect(() => {
-    if (!state.fileIndexItem.lastEdited) return;
+    if (!state?.fileIndexItem?.lastEdited) return;
     const isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);
     if (!isEditedNow) {
       setRecentEdited(false);
       return;
     }
     setRecentEdited(isEditedNow);
-  }, [state.fileIndexItem.lastEdited]);
+  }, [state?.fileIndexItem?.lastEdited]);
 
   function toggleLabels() {
     const urlObject = new URLPath().StringToIUrl(history.location.search);

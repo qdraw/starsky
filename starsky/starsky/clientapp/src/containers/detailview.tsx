@@ -4,7 +4,6 @@ import Preloader from '../components/atoms/preloader/preloader';
 import DetailViewGpx from '../components/organisms/detail-view-media/detail-view-gpx';
 import DetailViewMp4 from '../components/organisms/detail-view-media/detail-view-mp4';
 import DetailViewSidebar from '../components/organisms/detail-view-sidebar/detail-view-sidebar';
-import MenuDetailView from '../components/organisms/menu-detail-view/menu-detail-view';
 import { DetailViewContext } from '../contexts/detailview-context';
 import useKeyboardEvent from '../hooks/use-keyboard-event';
 import useLocation from '../hooks/use-location';
@@ -16,6 +15,7 @@ import { Keyboard } from '../shared/keyboard';
 import { UpdateRelativeObject } from '../shared/update-relative-object';
 import { URLPath } from '../shared/url-path';
 import { UrlQuery } from '../shared/url-query';
+import MenuDetailViewContainer from './menu-detailview-container/menu-detailview-container';
 
 const DetailView: React.FC<IDetailView> = () => {
 
@@ -190,7 +190,7 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   return (<>
-    <MenuDetailView />
+    <MenuDetailViewContainer/>
     <div className={isDetails ? "detailview detailview--edit" : "detailview"}>
       {isLoading ? <Preloader parent={state.fileIndexItem.parentDirectory} isDetailMenu={true} isOverlay={true} /> : ""}
 
