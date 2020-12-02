@@ -33,15 +33,13 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 	var history = useLocation();
 
 	// to show errors
-	const useErrorHandler = (initialState: string | null) => {
-		return initialState;
-	};
+	const useErrorHandler = (initialState: string | null) => initialState;
 	const [error, setError] = React.useState(useErrorHandler(null));
 
 	/**
 	 * Move {props.selectedSubPath} to {currentFolderPath}
 	 */
-	async function move() {
+	async function MoveFile() {
 		const bodyParams = new URLSearchParams();
 		bodyParams.append("f", props.selectedSubPath);
 		bodyParams.append("to", currentFolderPath);
@@ -59,14 +57,14 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 		) {
 			console.error("server error");
 			setError("Server error");
-			return;
+			return null;
 		}
 
 		var fileIndexItems = resultDo.data as IFileIndexItem[];
 		if (resultDo.statusCode !== 200) {
 			console.error(resultDo);
 			setError(fileIndexItems[0].status.toString());
-			return;
+			return null;
 		}
 
 		// clean user cache
@@ -92,6 +90,8 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 			pageType: PageType.Loading
 		} as IFileList;
 	}
+
+	console.log("--dsfsdknlfsdklfsdnlk");
 
 	return (
 		<Modal
@@ -159,7 +159,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 							usesFileList.pageType === PageType.Loading
 						}
 						className="btn btn--default"
-						onClick={move}
+						onClick={MoveFile}
 					>
 						Verplaats
 					</button>

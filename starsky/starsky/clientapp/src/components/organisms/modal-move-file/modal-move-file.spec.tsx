@@ -10,6 +10,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
+import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
 import ModalMoveFile from "./modal-move-file";
 
 describe("ModalMoveFile", () => {
@@ -313,19 +314,23 @@ describe("ModalMoveFile", () => {
 		});
 
 		it("click to folder -> move and generic fail", () => {
-			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-				{
-					statusCode: 500,
-					data: [
-						{
-							filePath: "test"
-						}
-					]
-				} as IConnectionDefault
-			);
+			const mockIConnectionDefault = Promise.resolve({
+				statusCode: 500,
+				data: [
+					{
+						filePath: "test"
+					}
+				]
+			} as IConnectionDefault);
+
 			var fetchPostSpy = jest
 				.spyOn(FetchPost, "default")
 				.mockImplementationOnce(() => mockIConnectionDefault);
+
+			jest
+				.spyOn(ItemTextListView, "default")
+				.mockImplementationOnce(() => null);
+			console.log("d-fsnk");
 
 			var modal = mount(
 				<ModalMoveFile
@@ -333,7 +338,9 @@ describe("ModalMoveFile", () => {
 					selectedSubPath="/test.jpg"
 					isOpen={true}
 					handleExit={() => {}}
-				></ModalMoveFile>
+				>
+					t
+				</ModalMoveFile>
 			);
 
 			act(() => {
