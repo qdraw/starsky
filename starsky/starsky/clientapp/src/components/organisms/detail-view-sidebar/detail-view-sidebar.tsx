@@ -35,7 +35,6 @@ interface IDetailViewSidebarProps {
 	state: IDetailView;
 	dispatch: any;
 }
-// let { state, dispatch } = useDetailViewContext();
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo(
 	({ state, dispatch, ...props }) => {
@@ -243,6 +242,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 			(event: KeyboardEvent) => {
 				if (new Keyboard().isInForm(event)) return;
 				event.preventDefault();
+				console.log(event);
+
 				new ClipboardHelper().Paste(
 					tagsReference,
 					descriptionReference,
