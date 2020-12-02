@@ -27,9 +27,7 @@ describe("DetailViewMp4", () => {
 
 			var playSpy = jest
 				.spyOn(HTMLMediaElement.prototype, "play")
-				.mockImplementationOnce(() => {
-					return Promise.resolve();
-				});
+				.mockImplementationOnce(() => Promise.resolve());
 
 			component.find('[data-test="video"]').simulate("click");
 

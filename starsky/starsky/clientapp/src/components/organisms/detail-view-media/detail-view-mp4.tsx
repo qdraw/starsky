@@ -123,7 +123,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 		if (isPaused) {
 			var promise = videoRef.current.play();
 
-			promise.catch(() => {
+			promise?.catch(() => {
 				setIsError(MessageVideoPlayBackError);
 				return;
 			});
