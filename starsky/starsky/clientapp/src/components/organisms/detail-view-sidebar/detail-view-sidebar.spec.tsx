@@ -279,11 +279,9 @@ describe("DetailViewSidebar", () => {
       component.unmount()
     });
 
-    it("search cache clear AND when a tag is updated ", async () => {
+    it("search cache clear AND when a tag is updated", async () => {
 
-      act(() => {
         globalHistory.navigate("/?t=test");
-      })
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';

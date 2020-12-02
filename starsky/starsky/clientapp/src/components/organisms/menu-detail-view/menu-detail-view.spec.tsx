@@ -136,6 +136,8 @@ describe("MenuDetailView", () => {
 
       var component = mount(<MenuDetailView state={updateState} dispatch={jest.fn()} />);
 
+      console.log(component.html());
+      
       expect(component.exists(".autosave")).toBeTruthy();
 
       act(() => {

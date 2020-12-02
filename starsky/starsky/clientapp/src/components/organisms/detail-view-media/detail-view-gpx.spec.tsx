@@ -3,6 +3,7 @@ import { mount, shallow } from 'enzyme';
 import L from 'leaflet';
 import React from 'react';
 import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
+import { Coordinates } from '../../../shared/coordinates-position.types';
 import * as FetchXml from '../../../shared/fetch-xml';
 import * as CurrentLocationButton from '../../atoms/current-location-button/current-location-button';
 import { CurrentLocationButtonPropTypes } from '../../atoms/current-location-button/current-location-button';
@@ -134,7 +135,8 @@ describe("DetailViewGpx", () => {
         } as any;
       })
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, { attachTo: (window as any).domNode });
+      // , { attachTo: (window as any).domNode }
+      var gpx = mount(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await gpx.find(".main--gpx").simulate("click");
