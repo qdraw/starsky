@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import ButtonStyled from "../components/atoms/button-styled/button-styled";
+import Preloader from "../components/atoms/preloader/preloader";
 import useFetch from "../hooks/use-fetch";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location";
@@ -82,7 +83,7 @@ const Login: React.FC<ILoginProps> = () => {
 				replace: true
 			});
 		}
-	}, [accountStatus.statusCode, history, MessageLogin, MessageLogout]);
+	}, [accountStatus?.statusCode, history, MessageLogin, MessageLogout]);
 
 	const authHandler = async () => {
 		try {
@@ -110,6 +111,8 @@ const Login: React.FC<ILoginProps> = () => {
 			setError(err.message);
 		}
 	};
+
+	if (!accountStatus) return <Preloader isOverlay={true}></Preloader>;
 
 	return (
 		<>
