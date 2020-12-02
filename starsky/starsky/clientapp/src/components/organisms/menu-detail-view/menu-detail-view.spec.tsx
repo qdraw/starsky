@@ -17,7 +17,19 @@ import MenuDetailView from './menu-detail-view';
 describe("MenuDetailView", () => {
 
   it("renders", () => {
-    shallow(<MenuDetailView state={undefined as any} dispatch={jest.fn()} />)
+      const state = {
+        subPath: "/test/image.jpg",
+        isReadOnly: true,
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          fileHash: '000',
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 1).toISOString(),
+          parentDirectory: '/test'
+        }
+      } as IDetailView;
+    shallow(<MenuDetailView state={state} dispatch={jest.fn()} />)
   });
 
   describe("readonly status context", () => {
