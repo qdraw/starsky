@@ -84,7 +84,7 @@ const Login: React.FC<ILoginProps> = () => {
 				replace: true
 			});
 		}
-	}, [accountStatus?.statusCode, history, MessageLogin, MessageLogout]);
+	}, [accountStatus, history, MessageLogin, MessageLogout]);
 
 	const authHandler = async () => {
 		try {
