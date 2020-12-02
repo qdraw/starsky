@@ -1,11 +1,11 @@
-import { mount, shallow } from "enzyme";
+import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import * as Archive from "../containers/archive";
 import * as Login from "../containers/login";
 import * as Search from "../containers/search";
 import * as Trash from "../containers/trash";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
+import { mountReactHook } from "../hooks/___tests___/test-hook";
 import { newIArchive } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
@@ -36,8 +36,11 @@ describe("ArchiveContextWrapper", () => {
 				});
 
 			args.fileIndexItems.push({} as IFileIndexItem);
-			mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
+			const component = mount(
+				<ArchiveContextWrapper {...args}></ArchiveContextWrapper>
+			);
 			expect(archive).toBeCalled();
+			component.unmount();
 		});
 
 		it("check if search is mounted", () => {
@@ -58,8 +61,11 @@ describe("ArchiveContextWrapper", () => {
 
 			args.fileIndexItems.push({} as IFileIndexItem);
 
-			mount(<ArchiveContextWrapper {...args}></ArchiveContextWrapper>);
+			const component = mount(
+				<ArchiveContextWrapper {...args}></ArchiveContextWrapper>
+			);
 			expect(search).toBeCalled();
+			component.unmount();
 		});
 
 		it("check if Unauthorized/Login is mounted", () => {
@@ -73,8 +79,9 @@ describe("ArchiveContextWrapper", () => {
 			});
 
 			args.fileIndexItems.push({} as IFileIndexItem);
-			mount(<ArchiveContextWrapper {...args} />);
+			const component = mount(<ArchiveContextWrapper {...args} />);
 			expect(login).toBeCalled();
+			component.unmount();
 		});
 
 		it("check if Trash is mounted", () => {
@@ -88,8 +95,9 @@ describe("ArchiveContextWrapper", () => {
 			});
 
 			args.fileIndexItems.push({} as IFileIndexItem);
-			mount(<ArchiveContextWrapper {...args} />);
+			const component = mount(<ArchiveContextWrapper {...args} />);
 			expect(login).toBeCalled();
+			component.unmount();
 		});
 	});
 
@@ -108,6 +116,7 @@ describe("ArchiveContextWrapper", () => {
 			);
 
 			expect(component.text()).toBe("(ArchiveWrapper) = no state");
+			component.unmount();
 		});
 
 		it("No fileIndexItems", () => {
@@ -124,6 +133,7 @@ describe("ArchiveContextWrapper", () => {
 			);
 
 			expect(component.text()).toBe("");
+			component.unmount();
 		});
 
 		it("No pageType", () => {
@@ -143,6 +153,7 @@ describe("ArchiveContextWrapper", () => {
 			);
 
 			expect(component.text()).toBe("");
+			component.unmount();
 		});
 	});
 
@@ -165,10 +176,7 @@ describe("ArchiveContextWrapper", () => {
 			window.location = location;
 		});
 
-		it("Check if event is received", (done) => {
-			var fileNameJestFn = {
-				localeCompare: jest.fn()
-			};
+		it("Check if event is received", () => {
 			var dispatch = (e: any) => {
 				// should ignore the first one
 				expect(e).toStrictEqual({
@@ -176,7 +184,7 @@ describe("ArchiveContextWrapper", () => {
 						{
 							colorclass: undefined,
 							description: "",
-							fileName: fileNameJestFn,
+							fileName: "test",
 							filePath: "/test.jpg",
 							parentDirectory: "/",
 							tags: "",
@@ -185,22 +193,15 @@ describe("ArchiveContextWrapper", () => {
 					],
 					type: "add"
 				});
-				done();
 			};
 
-			function TestComponent() {
-				ArchiveEventListenerUseEffect(dispatch);
-				return <></>;
-			}
-
-			var component = mount(<TestComponent />);
-
+			var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
 			var detail = [
 				{
 					colorclass: undefined,
 					...newIFileIndexItem(),
 					filePath: "/test.jpg",
-					fileName: fileNameJestFn,
+					fileName: "test",
 					parentDirectory: "/"
 				}
 			];
@@ -208,48 +209,39 @@ describe("ArchiveContextWrapper", () => {
 				detail
 			});
 
-			act(() => {
-				document.body.dispatchEvent(event);
-			});
+			document.body.dispatchEvent(event);
 
-			component.unmount();
+			var element = (result.componentMount as any) as ReactWrapper;
+			element.unmount();
 		});
 
-		it("When outside current directory it should be ignored", (done) => {
+		it("When outside current directory it should be ignored 2", () => {
 			var dispatch = (e: any) => {
 				// should ignore the first one
 				expect(e).toStrictEqual({
 					add: [],
 					type: "add"
 				});
-				done();
 			};
 
-			function TestComponent() {
-				ArchiveEventListenerUseEffect(dispatch);
-				return <></>;
-			}
-
-			var component = mount(<TestComponent />);
-
+			var result = mountReactHook(ArchiveEventListenerUseEffect, [dispatch]);
 			var detail = [
 				{
 					colorclass: undefined,
 					...newIFileIndexItem(),
 					filePath: "/test.jpg",
-					fileName: "test.jpg",
-					parentDirectory: "/__something__different"
+					fileName: "test",
+					parentDirectory: "__something__different"
 				}
 			];
 			var event = new CustomEvent(useSocketsEventName, {
 				detail
 			});
 
-			act(() => {
-				document.body.dispatchEvent(event);
-			});
+			document.body.dispatchEvent(event);
 
-			component.unmount();
+			var element = (result.componentMount as any) as ReactWrapper;
+			element.unmount();
 		});
 	});
 });
