@@ -106,6 +106,8 @@ describe("HealthCheckForUpdates", () => {
 				.spyOn(useFetch, "default")
 				.mockImplementationOnce(() => mockGetIConnectionDefault);
 
+			jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
+
 			// React 17 / Enzyme
 			// Error: mockConstructor(...): Nothing was returned from render.
 			// This usually means a return statement is missing. Or, to render nothing, return null
@@ -126,6 +128,8 @@ describe("HealthCheckForUpdates", () => {
 				statusCode: 202,
 				data: null
 			} as IConnectionDefault;
+
+			jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
 
 			const useFetchSpy = jest
 				.spyOn(useFetch, "default")
