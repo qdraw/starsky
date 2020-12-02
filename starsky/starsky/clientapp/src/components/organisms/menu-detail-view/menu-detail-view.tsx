@@ -79,7 +79,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(state.fileIndexItem.status === IExifStatus.Deleted);
+  const [isMarkedAsDeleted, setMarkedAsDeleted] = React.useState(state?.fileIndexItem?.status === IExifStatus.Deleted);
 
   /* only update when the state is changed */
   useEffect(() => {
