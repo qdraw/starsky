@@ -4,7 +4,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
-storiesOf("components/organisms/modal-drop-area-files-added", module)
+storiesOf("components/molecules/modal-drop-area-files-added", module)
 	.add("default", () => {
 		return (
 			<ModalDropAreaFilesAdded
