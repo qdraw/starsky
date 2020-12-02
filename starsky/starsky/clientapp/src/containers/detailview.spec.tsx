@@ -172,18 +172,20 @@ describe("DetailView", () => {
 			act(() => {
 				detailview.unmount();
 			});
+			jest.spyOn(useLocation, "default").mockReset();
 		});
 
 		it("Prev Click", () => {
 			const navigateSpy = jest.fn().mockResolvedValueOnce("");
+			const locationObject = {
+				location: globalHistory.location,
+				navigate: navigateSpy
+			};
 			const locationSpy = jest
 				.spyOn(useLocation, "default")
-				.mockImplementationOnce(() => {
-					return {
-						location: globalHistory.location,
-						navigate: navigateSpy
-					};
-				});
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject);
 
 			const detailview = mount(<TestComponent />);
 
@@ -205,22 +207,21 @@ describe("DetailView", () => {
 
 		it("Prev Keyboard", () => {
 			const navigateSpy = jest.fn().mockResolvedValueOnce("");
-
-			var useLocationSpy = {
+			const locationObject = {
 				location: globalHistory.location,
 				navigate: navigateSpy
 			};
+			const locationSpy = jest
+				.spyOn(useLocation, "default")
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject);
 
 			jest
 				.spyOn(UpdateRelativeObject.prototype, "Update")
 				.mockImplementationOnce(() => {
 					return Promise.resolve() as any;
 				});
-
-			var locationSpy = jest
-				.spyOn(useLocation, "default")
-				.mockImplementationOnce(() => useLocationSpy)
-				.mockImplementationOnce(() => useLocationSpy);
 
 			const detailview = mount(<TestComponent />);
 
@@ -249,14 +250,15 @@ describe("DetailView", () => {
 
 		it("Next Keyboard", () => {
 			const navigateSpy = jest.fn().mockResolvedValueOnce("");
-			var locationSpy = jest
+			const locationObject = {
+				location: globalHistory.location,
+				navigate: navigateSpy
+			};
+			const locationSpy = jest
 				.spyOn(useLocation, "default")
-				.mockImplementationOnce(() => {
-					return {
-						location: globalHistory.location,
-						navigate: navigateSpy
-					};
-				});
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject);
 
 			jest
 				.spyOn(UpdateRelativeObject.prototype, "Update")
@@ -344,14 +346,21 @@ describe("DetailView", () => {
 		});
 
 		it("Escape key Keyboard", () => {
-			var navigateSpy = jest.fn();
-			var locationSpy = jest
+			const navigateSpy = jest.fn().mockResolvedValueOnce("");
+			const locationObject = {
+				location: { ...globalHistory.location, search: "" },
+				navigate: navigateSpy
+			};
+
+			const locationSpy = jest
 				.spyOn(useLocation, "default")
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject)
+				.mockImplementationOnce(() => locationObject);
+			jest
+				.spyOn(UpdateRelativeObject.prototype, "Update")
 				.mockImplementationOnce(() => {
-					return {
-						location: { ...globalHistory.location, search: "" },
-						navigate: navigateSpy
-					};
+					return Promise.resolve() as any;
 				});
 
 			var component = mount(<TestComponent />);
