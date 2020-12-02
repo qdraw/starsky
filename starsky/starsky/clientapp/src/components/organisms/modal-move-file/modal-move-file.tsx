@@ -148,7 +148,9 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 							callback={(path) => {
 								setCurrentFolderPath(path);
 							}}
-						/>
+						>
+							content
+						</ItemTextListView>
 					) : null}
 				</div>
 				<div className="modal modal-move-button">
