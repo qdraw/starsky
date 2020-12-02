@@ -49,11 +49,12 @@ describe("DetailViewGpx", () => {
 
 			act(() => {
 				gpx.unmount();
+				document.body.innerHTML = "";
+				(window as any).domNode = null;
 			});
 		});
 
-		var responseString = `<?xml version="1.0" encoding="UTF - 8" ?>
-      <gpx version="1.1">
+		var responseString = `<gpx version="1.1">
         <trkpt lat="52" lon="13"></trkpt>
         <trkpt lat="52" lon="13"></trkpt>
         <trkpt lat="55" lon="13"></trkpt>
@@ -67,6 +68,9 @@ describe("DetailViewGpx", () => {
 					data: xmlParser.parseFromString(responseString, "text/xml")
 				} as IConnectionDefault
 			);
+
+			jest.spyOn(FetchXml, "default").mockReset();
+
 			var spyGet = jest
 				.spyOn(FetchXml, "default")
 				.mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -110,8 +114,8 @@ describe("DetailViewGpx", () => {
 			expect(spyMap).toBeCalled();
 			expect(polylineSpy).toBeCalled();
 
-			act(() => {
-				gpx.unmount();
+			await act(async () => {
+				await gpx.unmount();
 			});
 		});
 
@@ -168,8 +172,8 @@ describe("DetailViewGpx", () => {
 			expect(zoomIn).toBeCalled();
 			expect(enable).toBeCalled();
 
-			act(() => {
-				gpx.unmount();
+			await act(async () => {
+				await gpx.unmount();
 			});
 		});
 
@@ -227,8 +231,8 @@ describe("DetailViewGpx", () => {
 			expect(zoomOut).toBeCalled();
 			expect(enable).toBeCalled();
 
-			act(() => {
-				gpx.unmount();
+			await act(async () => {
+				await gpx.unmount();
 			});
 		});
 
@@ -289,8 +293,8 @@ describe("DetailViewGpx", () => {
 
 			expect(disable).toBeCalled();
 
-			act(() => {
-				gpx.unmount();
+			await act(async () => {
+				await gpx.unmount();
 			});
 		});
 
