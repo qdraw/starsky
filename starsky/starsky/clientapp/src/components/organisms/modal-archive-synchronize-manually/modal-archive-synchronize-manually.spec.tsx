@@ -119,7 +119,17 @@ describe("ModalArchiveSynchronizeManually", () => {
 			});
 
 			it("geo-sync (only first post)", () => {
-				// FetchPOST is magicly not working
+				const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+					{
+						statusCode: 200,
+						data: null
+					} as IConnectionDefault
+				);
+
+				var fetchPostSpy = jest
+					.spyOn(FetchPost, "default")
+					.mockImplementationOnce(() => mockGetIConnectionDefault);
+
 				var urlGeoSyncUrlQuerySpy = jest
 					.spyOn(UrlQuery.prototype, "UrlGeoSync")
 					.mockImplementationOnce(() => "");
@@ -128,6 +138,7 @@ describe("ModalArchiveSynchronizeManually", () => {
 
 				modal.find('[data-test="geo-sync"]').simulate("click");
 				expect(urlGeoSyncUrlQuerySpy).toBeCalled();
+				expect(fetchPostSpy).toBeCalled();
 			});
 
 			it("remove-cache (only first POST)", () => {
