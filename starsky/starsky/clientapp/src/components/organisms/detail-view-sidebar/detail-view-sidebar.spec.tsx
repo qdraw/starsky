@@ -2,6 +2,7 @@ import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { DetailViewContext } from "../../../contexts/detailview-context";
+import * as useKeyboardEvent from "../../../hooks/use-keyboard-event";
 import {
 	IConnectionDefault,
 	newIConnectionDefault
@@ -28,6 +29,8 @@ describe("DetailViewSidebar", () => {
 			<DetailViewSidebar
 				status={IExifStatus.Default}
 				filePath={"/t"}
+				state={{ fileIndexItem: { lastEdited: "" } } as any}
+				dispatch={jest.fn()}
 			></DetailViewSidebar>
 		);
 	});
@@ -37,6 +40,8 @@ describe("DetailViewSidebar", () => {
 			<DetailViewSidebar
 				status={IExifStatus.Default}
 				filePath={"/t"}
+				state={undefined as any}
+				dispatch={jest.fn()}
 			></DetailViewSidebar>
 		);
 		expect(
@@ -84,6 +89,8 @@ describe("DetailViewSidebar", () => {
 					<DetailViewSidebar
 						status={IExifStatus.Default}
 						filePath={"/t"}
+						state={contextProvider.state}
+						dispatch={jest.fn()}
 					></DetailViewSidebar>
 				</DetailViewContext.Provider>
 			);
@@ -291,6 +298,8 @@ describe("DetailViewSidebar", () => {
 					<DetailViewSidebar
 						status={IExifStatus.Ok}
 						filePath={"/t"}
+						state={contextProvider.state}
+						dispatch={jest.fn()}
 					></DetailViewSidebar>
 				</DetailViewContext.Provider>
 			);
@@ -319,6 +328,8 @@ describe("DetailViewSidebar", () => {
 				<DetailViewContext.Provider value={contextProvider}>
 					<DetailViewSidebar
 						status={IExifStatus.Ok}
+						state={contextProvider.state}
+						dispatch={jest.fn()}
 						filePath={"/t"}
 					></DetailViewSidebar>
 				</DetailViewContext.Provider>
@@ -378,48 +389,119 @@ describe("DetailViewSidebar", () => {
 
 			document.location.search = "";
 		});
-
-		it("Press v to paste", () => {
-			var event = new KeyboardEvent("keydown", {
-				bubbles: true,
-				cancelable: true,
-				key: "v"
-			});
-
-			var pasteSpy = jest
-				.spyOn(ClipboardHelper.prototype, "Paste")
-				.mockImplementationOnce(() => {
-					return true;
-				});
-
-			act(() => {
-				window.dispatchEvent(event);
-			});
-
-			expect(pasteSpy).toBeCalled();
-		});
 	});
 
-	it("Press c to copy", () => {
-		var event = new KeyboardEvent("keydown", {
-			bubbles: true,
-			cancelable: true,
-			key: "c"
+	describe("Copy paste", () => {
+		const state = {
+			breadcrumb: [],
+			fileIndexItem: {
+				filePath: "/test.jpg",
+				status: IExifStatus.Ok
+			} as IFileIndexItem,
+			status: IExifStatus.Default,
+			pageType: PageType.DetailView,
+			colorClassActiveList: []
+		} as any;
+
+		it("Press v to paste", () => {
+			let vPasteIsCalled = false;
+			function keyboardCallback(regex: RegExp, callback: Function) {
+				if (regex.source === "^([v])$") {
+					var event = new KeyboardEvent("keydown", {
+						bubbles: true,
+						cancelable: true,
+						key: "v"
+					});
+					vPasteIsCalled = true;
+					callback(event);
+				}
+			}
+
+			jest
+				.spyOn(useKeyboardEvent, "default")
+				.mockImplementationOnce(keyboardCallback)
+				.mockImplementationOnce(keyboardCallback)
+				.mockImplementationOnce(keyboardCallback);
+
+			jest
+				.spyOn(Keyboard.prototype, "SetFocusOnEndField")
+				.mockImplementationOnce(() => {});
+
+			jest
+				.spyOn(Keyboard.prototype, "isInForm")
+				.mockImplementationOnce(() => false);
+
+			jest
+				.spyOn(ClipboardHelper.prototype, "Paste")
+				.mockImplementationOnce(() => {
+					return false;
+				});
+
+			var component = mount(
+				<DetailViewSidebar
+					status={IExifStatus.Default}
+					filePath={"/t"}
+					state={state}
+					dispatch={jest.fn()}
+				></DetailViewSidebar>
+			);
+
+			expect(vPasteIsCalled).toBeTruthy();
+
+			component.unmount();
 		});
 
-		var copySpy = jest
-			.spyOn(ClipboardHelper.prototype, "Copy")
-			.mockImplementationOnce(() => {
-				return true;
-			});
+		it("Press c to copy", () => {
+			let cCopyIsCalled = false;
+			function keyboardCallback(regex: RegExp, callback: Function) {
+				if (regex.source === "^([c])$") {
+					var event = new KeyboardEvent("keydown", {
+						bubbles: true,
+						cancelable: true,
+						key: "c"
+					});
+					cCopyIsCalled = true;
+					callback(event);
+				}
+			}
 
-		window.dispatchEvent(event);
+			jest
+				.spyOn(useKeyboardEvent, "default")
+				.mockImplementationOnce(keyboardCallback)
+				.mockImplementationOnce(keyboardCallback)
+				.mockImplementationOnce(keyboardCallback);
 
-		expect(copySpy).toBeCalled();
+			jest
+				.spyOn(Keyboard.prototype, "SetFocusOnEndField")
+				.mockImplementationOnce(() => {});
+
+			jest
+				.spyOn(Keyboard.prototype, "isInForm")
+				.mockImplementationOnce(() => false);
+
+			jest
+				.spyOn(ClipboardHelper.prototype, "Copy")
+				.mockImplementationOnce(() => {
+					return false;
+				});
+
+			var component = mount(
+				<DetailViewSidebar
+					status={IExifStatus.Default}
+					filePath={"/t"}
+					state={state}
+					dispatch={jest.fn()}
+				></DetailViewSidebar>
+			);
+
+			expect(cCopyIsCalled).toBeTruthy();
+
+			component.unmount();
+		});
 	});
 
 	describe("own context", () => {
-		it("keydown t/i should be fired", () => {
+		xit("keydown t/i should be fired", () => {
 			var contextProvider = {
 				dispatch: () => jest.fn(),
 				state: {
@@ -462,6 +544,8 @@ describe("DetailViewSidebar", () => {
 					<DetailViewSidebar
 						status={IExifStatus.Ok}
 						filePath={"/t"}
+						state={contextProvider.state}
+						dispatch={jest.fn()}
 					></DetailViewSidebar>
 				</DetailViewContext.Provider>
 			);

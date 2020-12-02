@@ -218,7 +218,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 			(event: KeyboardEvent) => {
 				if (new Keyboard().isInForm(event)) return;
 				event.preventDefault();
-				console.log(event);
 				var copy = new ClipboardHelper().Copy(
 					tagsReference,
 					descriptionReference,
