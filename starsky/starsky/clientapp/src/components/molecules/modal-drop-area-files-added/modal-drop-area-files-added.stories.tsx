@@ -5,27 +5,27 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
 storiesOf("components/molecules/modal-drop-area-files-added", module)
-	.add("default", () => {
-		return (
-			<ModalDropAreaFilesAdded
-				isOpen={true}
-				uploadFilesList={[]}
-				handleExit={() => {}}
-			/>
-		);
-	})
-	.add("2 items", () => {
-		return (
-			<ModalDropAreaFilesAdded
-				isOpen={true}
-				uploadFilesList={[
-					{ fileName: "test.jpg", status: IExifStatus.Ok } as IFileIndexItem,
-					{
-						fileName: "file-error.png",
-						status: IExifStatus.FileError
-					} as IFileIndexItem
-				]}
-				handleExit={() => {}}
-			/>
-		);
-	});
+  .add("default", () => {
+    return (
+      <ModalDropAreaFilesAdded
+        isOpen={true}
+        uploadFilesList={[]}
+        handleExit={() => {}}
+      />
+    );
+  })
+  .add("2 items", () => {
+    return (
+      <ModalDropAreaFilesAdded
+        isOpen={true}
+        uploadFilesList={[
+          { fileName: "test.jpg", status: IExifStatus.Ok } as IFileIndexItem,
+          {
+            fileName: "file-error.png",
+            status: IExifStatus.FileError
+          } as IFileIndexItem
+        ]}
+        handleExit={() => {}}
+      />
+    );
+  });

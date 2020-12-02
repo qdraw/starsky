@@ -1,204 +1,204 @@
 .detailview {
-	position: absolute;
-	top: 50px;
-	bottom: 0px;
-	height: calc(100% - 50px);
-	width: 100%;
-	background-color: #000;
-	overflow: hidden; /*for edge*/
+  position: absolute;
+  top: 50px;
+  bottom: 0px;
+  height: calc(100% - 50px);
+  width: 100%;
+  background-color: #000;
+  overflow: hidden; /*for edge*/
 }
 
 .detailview .main {
-	height: 100%;
-	overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 .detailview--edit .main {
-	width: calc(100% - 320px);
+  width: calc(100% - 320px);
 }
 
 .detailview .main.main--error {
-	background-color: #ccc;
-	background-image: url("../images/baseline-broken_image-24px.svg");
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: 48px;
+  background-color: #ccc;
+  background-image: url("../images/baseline-broken_image-24px.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 48px;
 }
 .detailview .image--default.Horizontal {
-	max-width: 100%;
-	max-height: 100%;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .detailview--edit .image--default.Horizontal {
-	max-width: calc(100% - 321px);
-	left: calc(50% - 160px);
+  max-width: calc(100% - 321px);
+  left: calc(50% - 160px);
 }
 @media screen and (max-width: 450px) {
-	.detailview--edit .image--default.Horizontal {
-		display: none;
-	}
+  .detailview--edit .image--default.Horizontal {
+    display: none;
+  }
 }
 
 /* 180 deg*/
 .detailview .image--default.Rotate180 {
-	max-width: 100%;
-	max-height: 100vh;
-	transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%))
-		rotate(180deg);
+  max-width: 100%;
+  max-height: 100vh;
+  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%))
+    rotate(180deg);
 }
 .detailview.detailview--edit .image--default.Rotate180 {
-	max-width: calc(100% - 160px);
-	transform: translatex(calc(50vw - 160px - 50%))
-		translatey(calc(50vh - 25px - 50%)) rotate(180deg);
+  max-width: calc(100% - 160px);
+  transform: translatex(calc(50vw - 160px - 50%))
+    translatey(calc(50vh - 25px - 50%)) rotate(180deg);
 }
 @media screen and (max-width: 450px) {
-	.detailview.detailview--edit .image--default.Rotate180 {
-		display: none;
-	}
+  .detailview.detailview--edit .image--default.Rotate180 {
+    display: none;
+  }
 }
 
 /* 90 deg*/
 .detailview .image--default.Rotate90Cw {
-	max-width: calc(100vh - 50px);
-	max-height: calc(100vw);
-	transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
-		rotate(90deg);
+  max-width: calc(100vh - 50px);
+  max-height: calc(100vw);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
+    rotate(90deg);
 }
 .detailview--edit .image--default.Rotate90Cw {
-	max-height: calc(100vw - 160px); /* is width */
-	transform: translateX(calc(50vw - 160px - 50%))
-		translateY(calc(50vh - 25px - 50%)) rotate(90deg);
+  max-height: calc(100vw - 160px); /* is width */
+  transform: translateX(calc(50vw - 160px - 50%))
+    translateY(calc(50vh - 25px - 50%)) rotate(90deg);
 }
 @media screen and (max-width: 450px) {
-	.detailview.detailview--edit .image--default.Rotate90Cw {
-		display: none;
-	}
+  .detailview.detailview--edit .image--default.Rotate90Cw {
+    display: none;
+  }
 }
 
 /* 270 deg*/
 .detailview .image--default.Rotate270Cw {
-	max-width: calc(100vh - 50px);
-	max-height: calc(100vw);
-	transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
-		rotate(270deg);
+  max-width: calc(100vh - 50px);
+  max-height: calc(100vw);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
+    rotate(270deg);
 }
 .detailview--edit .image--default.Rotate270Cw {
-	max-height: calc(100vw - 160px); /* is width */
-	transform: translateX(calc(50vw - 160px - 50%))
-		translateY(calc(50vh - 25px - 50%)) rotate(270deg);
+  max-height: calc(100vw - 160px); /* is width */
+  transform: translateX(calc(50vw - 160px - 50%))
+    translateY(calc(50vh - 25px - 50%)) rotate(270deg);
 }
 @media screen and (max-width: 450px) {
-	.detailview.detailview--edit .image--default.Rotate270Cw {
-		display: none;
-	}
+  .detailview.detailview--edit .image--default.Rotate270Cw {
+    display: none;
+  }
 }
 
 .detailview .main .nextprev:focus {
-	box-shadow: 0px 0px 0px #fff;
+  box-shadow: 0px 0px 0px #fff;
 }
 
 .detailview .main .nextprev {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 20%;
-	height: 100%;
-	transition: background-image 1s;
-	pointer-events: none;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 20%;
+  height: 100%;
+  transition: background-image 1s;
+  pointer-events: none;
 }
 
 .detailview .main .nextprev.nextprev--next,
 .detailview .main .nextprev.nextprev--prev {
-	pointer-events: auto;
-	cursor: pointer;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 /* dont overlap the sidebar */
 @media screen and (max-width: 450px) {
-	.detailview.detailview--edit .main .nextprev {
-		display: none;
-	}
+  .detailview.detailview--edit .main .nextprev {
+    display: none;
+  }
 }
 .detailview.detailview--edit .main .nextprev.nextprev--next {
-	left: calc(80% - 320px);
+  left: calc(80% - 320px);
 }
 
 .detailview .main .nextprev.nextprev--next {
-	left: 80%;
+  left: 80%;
 }
 
 .detailview .main .nextprev.nextprev--prev:hover {
-	background-image: linear-gradient(-90deg, transparent, rgba(54, 56, 57, 0.4));
+  background-image: linear-gradient(-90deg, transparent, rgba(54, 56, 57, 0.4));
 }
 .detailview .main .nextprev.nextprev--next:hover {
-	background-image: linear-gradient(90deg, transparent, rgba(54, 56, 57, 0.4));
+  background-image: linear-gradient(90deg, transparent, rgba(54, 56, 57, 0.4));
 }
 
 .detailview .main .nextprev:hover .icon {
-	position: absolute;
-	width: 48px;
-	height: 48px;
-	margin-left: 15px;
-	margin-right: 15px;
-	background-color: rgba(255, 255, 255, 0.54);
-	top: calc(50% - 24px);
-	border-radius: 24px;
-	background-image: url("../images/m-prev-arrow.svg");
-	background-position: 30% center;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  margin-left: 15px;
+  margin-right: 15px;
+  background-color: rgba(255, 255, 255, 0.54);
+  top: calc(50% - 24px);
+  border-radius: 24px;
+  background-image: url("../images/m-prev-arrow.svg");
+  background-position: 30% center;
 }
 
 .detailview .main .nextprev.nextprev--next:hover .icon {
-	left: calc(100% - 78px);
-	background-image: url("../images/m-next-arrow.svg");
-	background-position: 60% center;
+  left: calc(100% - 78px);
+  background-image: url("../images/m-next-arrow.svg");
+  background-position: 60% center;
 }
 
 .detailview .main.main--gpx {
-	cursor: not-allowed;
+  cursor: not-allowed;
 }
 
 /* when hovering over map (default) */
 .detailview .main.main--gpx.leaflet-grab {
-	cursor: grab;
+  cursor: grab;
 }
 
 /* default value when dragging in leaflet */
 .detailview .main.main--gpx.leaflet-drag-target {
-	cursor: move;
-	cursor: grabbing;
+  cursor: move;
+  cursor: grabbing;
 }
 
 /* GPX */
 .detailview .main.main--gpx .nextprev.nextprev--next,
 .detailview .main.main--gpx .nextprev.nextprev--prev {
-	z-index: 2;
+  z-index: 2;
 }
 
 .detailview .main.main--gpx .nextprev.nextprev--prev {
-	background-image: linear-gradient(
-		-90deg,
-		transparent,
-		rgba(54, 56, 57, 0.4),
-		rgba(54, 56, 57, 0.4),
-		rgba(54, 56, 57, 0.4)
-	);
+  background-image: linear-gradient(
+    -90deg,
+    transparent,
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4)
+  );
 }
 .detailview .main.main--gpx .nextprev.nextprev--next {
-	background-image: linear-gradient(
-		90deg,
-		transparent,
-		rgba(54, 56, 57, 0.4),
-		rgba(54, 56, 57, 0.4),
-		rgba(54, 56, 57, 0.4)
-	);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4)
+  );
 }
 
 .detailview .main--gpx .leaflet-control-zoom {
-	display: none;
+  display: none;
 }
 
 .detailview .main.main--gpx .leaflet-top,
@@ -207,77 +207,77 @@
 .detailview .main.main--gpx .leaflet-tile-loaded,
 .detailview .main.main--gpx .leaflet-map-pane svg,
 .detailview .main.main--gpx .leaflet-tile-pane {
-	z-index: 1;
+  z-index: 1;
 }
 
 /* align in center of component */
 @media screen and (min-width: 450px) {
-	.detailview--edit .preloader.preloader--icon {
-		left: calc(50% - 210px);
-		/* // (320/2)+ (100/2) */
-	}
+  .detailview--edit .preloader.preloader--icon {
+    left: calc(50% - 210px);
+    /* // (320/2)+ (100/2) */
+  }
 }
 
 .detailview .main.main--mp4 {
-	background-image: url("../images/baseline-file-mp4-24px.svg");
+  background-image: url("../images/baseline-file-mp4-24px.svg");
 }
 
 .gpx-controls {
-	position: absolute;
-	z-index: 1002;
-	bottom: 10px;
-	left: 10px;
-	width: 300px;
-	height: 35px;
-	border-radius: 3px;
+  position: absolute;
+  z-index: 1002;
+  bottom: 10px;
+  left: 10px;
+  width: 300px;
+  height: 35px;
+  border-radius: 3px;
 }
 
 .current-location.icon,
 .gpx-controls .icon {
-	float: left;
-	height: 40px;
-	background-repeat: no-repeat;
-	background-position: 5px;
-	padding-left: 33px;
-	padding-right: 7px;
-	margin-right: 5px;
-	background-color: #fff;
-	cursor: pointer;
+  float: left;
+  height: 40px;
+  background-repeat: no-repeat;
+  background-position: 5px;
+  padding-left: 33px;
+  padding-right: 7px;
+  margin-right: 5px;
+  background-color: #fff;
+  cursor: pointer;
 }
 
 .gpx-controls .icon.icon--lock {
-	background-image: url("../images/baseline-lock-24px.svg");
+  background-image: url("../images/baseline-lock-24px.svg");
 }
 
 .gpx-controls .icon.icon--lock_open {
-	background-image: url("../images/baseline-lock_open-24px.svg");
+  background-image: url("../images/baseline-lock_open-24px.svg");
 }
 
 .gpx-controls .icon.icon--lock,
 .gpx-controls .icon.icon--lock_open {
-	min-width: 86px;
+  min-width: 86px;
 }
 
 .gpx-controls .icon.icon--zoom_in {
-	background-image: url("../images/baseline-zoom_in-24px.svg");
+  background-image: url("../images/baseline-zoom_in-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_out {
-	background-image: url("../images/baseline-zoom_out-24px.svg");
+  background-image: url("../images/baseline-zoom_out-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
-	text-indent: -999px;
-	padding-left: 37px; /* needed for safari instead of 40 */
-	background-position: 12px;
-	max-width: 40px;
+  text-indent: -999px;
+  padding-left: 37px; /* needed for safari instead of 40 */
+  background-position: 12px;
+  max-width: 40px;
 }
 
 .current-location.icon.icon--location_on {
-	background-image: url("../images/baseline-location_on-24px.svg");
+  background-image: url("../images/baseline-location_on-24px.svg");
 }
 
 .current-location.icon.icon--wrong_location {
-	background-image: url("../images/baseline-wrong_location-24px.svg");
+  background-image: url("../images/baseline-wrong_location-24px.svg");
 }

@@ -15,14 +15,14 @@ import "./style/css/00-index.css";
 /// <reference path='./index.d.ts'/>
 
 ReactDOM.render(
-	<React.StrictMode>
-		<RouterApp />
-	</React.StrictMode>,
-	document.getElementById("root")
+  <React.StrictMode>
+    <RouterApp />
+  </React.StrictMode>,
+  document.getElementById("root")
 );
 
 // when React is loaded 'trouble loading' is not needed
 const troubleLoading = document.querySelector(".trouble-loading");
 if (troubleLoading && troubleLoading.parentElement) {
-	troubleLoading.parentElement.removeChild(troubleLoading);
+  troubleLoading.parentElement.removeChild(troubleLoading);
 }

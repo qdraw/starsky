@@ -11,105 +11,105 @@ import { UrlQuery } from "../../../shared/url-query";
 import FileHashImage from "./file-hash-image";
 
 describe("FileHashImage", () => {
-	it("renders", () => {
-		shallow(<FileHashImage isError={false} fileHash={""} />);
-	});
+  it("renders", () => {
+    shallow(<FileHashImage isError={false} fileHash={""} />);
+  });
 
-	it("Rotation API is called return 202", async () => {
-		console.log("-- Rotation API is called return 202 --");
+  it("Rotation API is called return 202", async () => {
+    console.log("-- Rotation API is called return 202 --");
 
-		const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-			{
-				statusCode: 202,
-				data: {
-					subPath: "/test/image.jpg",
-					pageType: PageType.DetailView,
-					fileIndexItem: {
-						orientation: Orientation.Rotate270Cw,
-						fileHash: "needed",
-						status: IExifStatus.Ok,
-						filePath: "/test/image.jpg",
-						fileName: "image.jpg"
-					}
-				} as IDetailView
-			} as IConnectionDefault
-		);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 202,
+        data: {
+          subPath: "/test/image.jpg",
+          pageType: PageType.DetailView,
+          fileIndexItem: {
+            orientation: Orientation.Rotate270Cw,
+            fileHash: "needed",
+            status: IExifStatus.Ok,
+            filePath: "/test/image.jpg",
+            fileName: "image.jpg"
+          }
+        } as IDetailView
+      } as IConnectionDefault
+    );
 
-		let detectRotationSpy = jest
-			.spyOn(DetectAutomaticRotation, "default")
-			.mockImplementationOnce(() => {
-				return Promise.resolve(false);
-			});
+    let detectRotationSpy = jest
+      .spyOn(DetectAutomaticRotation, "default")
+      .mockImplementationOnce(() => {
+        return Promise.resolve(false);
+      });
 
-		var spyGet = jest
-			.spyOn(FetchGet, "default")
-			.mockImplementationOnce(() => mockGetIConnectionDefault);
+    var spyGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-		// need to await here
-		var component = mount(<>test</>);
-		await act(async () => {
-			component = await mount(
-				<FileHashImage
-					isError={false}
-					fileHash="hash"
-					orientation={Orientation.Horizontal}
-				/>
-			);
-		});
+    // need to await here
+    var component = mount(<>test</>);
+    await act(async () => {
+      component = await mount(
+        <FileHashImage
+          isError={false}
+          fileHash="hash"
+          orientation={Orientation.Horizontal}
+        />
+      );
+    });
 
-		await expect(detectRotationSpy).toBeCalled();
+    await expect(detectRotationSpy).toBeCalled();
 
-		expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
+    expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
-		component.unmount();
-	});
+    component.unmount();
+  });
 
-	it("Rotation API is called return 200", async () => {
-		console.log("-- Rotation API is called return 200 --");
+  it("Rotation API is called return 200", async () => {
+    console.log("-- Rotation API is called return 200 --");
 
-		const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-			{
-				statusCode: 200,
-				data: {
-					subPath: "/test/image.jpg",
-					pageType: PageType.DetailView,
-					fileIndexItem: {
-						orientation: Orientation.Rotate270Cw,
-						fileHash: "needed",
-						status: IExifStatus.Ok,
-						filePath: "/test/image.jpg",
-						fileName: "image.jpg"
-					}
-				} as IDetailView
-			} as IConnectionDefault
-		);
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 200,
+        data: {
+          subPath: "/test/image.jpg",
+          pageType: PageType.DetailView,
+          fileIndexItem: {
+            orientation: Orientation.Rotate270Cw,
+            fileHash: "needed",
+            status: IExifStatus.Ok,
+            filePath: "/test/image.jpg",
+            fileName: "image.jpg"
+          }
+        } as IDetailView
+      } as IConnectionDefault
+    );
 
-		let detectRotationSpy = jest
-			.spyOn(DetectAutomaticRotation, "default")
-			.mockImplementationOnce(() => {
-				return Promise.resolve(false);
-			});
+    let detectRotationSpy = jest
+      .spyOn(DetectAutomaticRotation, "default")
+      .mockImplementationOnce(() => {
+        return Promise.resolve(false);
+      });
 
-		var spyGet = jest
-			.spyOn(FetchGet, "default")
-			.mockImplementationOnce(() => mockGetIConnectionDefault);
+    var spyGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-		// need to await here
-		var component = mount(<></>);
-		await act(async () => {
-			component = await mount(
-				<FileHashImage
-					isError={false}
-					fileHash="hash"
-					orientation={Orientation.Horizontal}
-				/>
-			);
-		});
+    // need to await here
+    var component = mount(<></>);
+    await act(async () => {
+      component = await mount(
+        <FileHashImage
+          isError={false}
+          fileHash="hash"
+          orientation={Orientation.Horizontal}
+        />
+      );
+    });
 
-		await expect(detectRotationSpy).toBeCalled();
+    await expect(detectRotationSpy).toBeCalled();
 
-		expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
+    expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
-		component.unmount();
-	});
+    component.unmount();
+  });
 });

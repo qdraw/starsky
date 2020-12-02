@@ -86,7 +86,7 @@
     "semi": true,
     "singleQuote": false,
     "tabWidth": 2,
-    "useTabs": true
+    "useTabs": false
   },
   "browserslist": {
     "production": [

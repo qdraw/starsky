@@ -9,146 +9,146 @@ import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url-query";
 import Notification, {
-	NotificationType
+  NotificationType
 } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
 
 export interface IColorClassSelectProps {
-	currentColorClass?: number;
-	isEnabled: boolean;
-	filePath: string;
-	clearAfter?: boolean;
-	onToggle(value: number): void;
-	collections: boolean;
+  currentColorClass?: number;
+  isEnabled: boolean;
+  filePath: string;
+  clearAfter?: boolean;
+  onToggle(value: number): void;
+  collections: boolean;
 }
 
 /**
  * Used to update colorclasses
  */
 const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
-	props
+  props
 ) => {
-	// content
-	const settings = useGlobalSettings();
-	const language = new Language(settings.language);
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
 
-	const colorContent: Array<string> = [
-		language.text("Kleurloos", "Colorless"),
-		language.text("Paars", "Purple"),
-		language.text("Rood", "Red"),
-		language.text("Oranje", "Orange"),
-		language.text("Geel", "Yellow"),
-		language.text("Groen", "Green"),
-		language.text("Azuur", "Azure"),
-		language.text("Blauw", "Blue"),
-		language.text("Grijs", "Grey")
-	];
+  const colorContent: Array<string> = [
+    language.text("Kleurloos", "Colorless"),
+    language.text("Paars", "Purple"),
+    language.text("Rood", "Red"),
+    language.text("Oranje", "Orange"),
+    language.text("Geel", "Yellow"),
+    language.text("Groen", "Green"),
+    language.text("Azuur", "Azure"),
+    language.text("Blauw", "Blue"),
+    language.text("Grijs", "Grey")
+  ];
 
-	const MessageErrorReadOnly = new Language(settings.language).text(
-		"Eén of meerdere bestanden zijn alleen lezen. " +
-			"Alleen de bestanden met schrijfrechten zijn geupdate.",
-		"One or more files are read only. " +
-			"Only the files with write permissions have been updated."
-	);
+  const MessageErrorReadOnly = new Language(settings.language).text(
+    "Eén of meerdere bestanden zijn alleen lezen. " +
+      "Alleen de bestanden met schrijfrechten zijn geupdate.",
+    "One or more files are read only. " +
+      "Only the files with write permissions have been updated."
+  );
 
-	const [currentColorClass, setCurrentColorClass] = React.useState(
-		props.currentColorClass
-	);
+  const [currentColorClass, setCurrentColorClass] = React.useState(
+    props.currentColorClass
+  );
 
-	/** re-render when switching page */
-	useEffect(() => {
-		setCurrentColorClass(props.currentColorClass);
-	}, [props.currentColorClass, props.filePath]);
+  /** re-render when switching page */
+  useEffect(() => {
+    setCurrentColorClass(props.currentColorClass);
+  }, [props.currentColorClass, props.filePath]);
 
-	// for showing a notification
-	const [isError, setIsError] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
+  // for showing a notification
+  const [isError, setIsError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-	/**
-	 * Used for Updating Colorclasses
-	 * @param colorClass value to update
-	 */
-	var handleColorClassUpdate = (colorClass: number) => {
-		if (!props.isEnabled) return;
+  /**
+   * Used for Updating Colorclasses
+   * @param colorClass value to update
+   */
+  var handleColorClassUpdate = (colorClass: number) => {
+    if (!props.isEnabled) return;
 
-		setIsLoading(true);
-		var updateApiUrl = new UrlQuery().UrlUpdateApi();
+    setIsLoading(true);
+    var updateApiUrl = new UrlQuery().UrlUpdateApi();
 
-		var bodyParams = new URLSearchParams();
-		bodyParams.append("f", props.filePath);
-		bodyParams.append("colorclass", colorClass.toString());
-		bodyParams.append("collections", props.collections.toString());
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", props.filePath);
+    bodyParams.append("colorclass", colorClass.toString());
+    bodyParams.append("collections", props.collections.toString());
 
-		FetchPost(updateApiUrl, bodyParams.toString()).then((anyData) => {
-			var result = new CastToInterface().InfoFileIndexArray(anyData.data);
-			setIsLoading(false);
-			if (
-				!result ||
-				result.find((item) => {
-					return item.status === IExifStatus.ReadOnly;
-				})
-			) {
-				setIsError(MessageErrorReadOnly);
-				return;
-			}
-			setCurrentColorClass(colorClass);
-			props.onToggle(colorClass);
-		});
+    FetchPost(updateApiUrl, bodyParams.toString()).then((anyData) => {
+      var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+      setIsLoading(false);
+      if (
+        !result ||
+        result.find((item) => {
+          return item.status === IExifStatus.ReadOnly;
+        })
+      ) {
+        setIsError(MessageErrorReadOnly);
+        return;
+      }
+      setCurrentColorClass(colorClass);
+      props.onToggle(colorClass);
+    });
 
-		if (!props.clearAfter) return;
+    if (!props.clearAfter) return;
 
-		setTimeout(function () {
-			setCurrentColorClass(undefined);
-		}, 1000);
-	};
+    setTimeout(function () {
+      setCurrentColorClass(undefined);
+    }, 1000);
+  };
 
-	useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
-		if (new Keyboard().isInForm(event)) return;
-		handleColorClassUpdate(Number(event.key));
-	});
+  useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
+    if (new Keyboard().isInForm(event)) return;
+    handleColorClassUpdate(Number(event.key));
+  });
 
-	return (
-		<>
-			{isError ? (
-				<Notification
-					callback={() => setIsError("")}
-					type={NotificationType.danger}
-				>
-					{isError}
-				</Notification>
-			) : null}
-			{isLoading ? (
-				<Portal>
-					<Preloader isDetailMenu={false} isOverlay={true} />
-				</Portal>
-			) : null}
-			<div
-				className={
-					props.isEnabled
-						? "colorclass colorclass--select"
-						: "colorclass colorclass--select colorclass--disabled"
-				}
-			>
-				{colorContent.map((item, index) => (
-					<button
-						key={index}
-						onClick={() => {
-							handleColorClassUpdate(index);
-						}}
-						className={
-							currentColorClass === index
-								? "btn btn--default colorclass colorclass--" + index + " active"
-								: "btn colorclass colorclass--" + index
-						}
-					>
-						<label />
-						<span>{item}</span>
-					</button>
-				))}
-			</div>
-		</>
-	);
+  return (
+    <>
+      {isError ? (
+        <Notification
+          callback={() => setIsError("")}
+          type={NotificationType.danger}
+        >
+          {isError}
+        </Notification>
+      ) : null}
+      {isLoading ? (
+        <Portal>
+          <Preloader isDetailMenu={false} isOverlay={true} />
+        </Portal>
+      ) : null}
+      <div
+        className={
+          props.isEnabled
+            ? "colorclass colorclass--select"
+            : "colorclass colorclass--select colorclass--disabled"
+        }
+      >
+        {colorContent.map((item, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              handleColorClassUpdate(index);
+            }}
+            className={
+              currentColorClass === index
+                ? "btn btn--default colorclass colorclass--" + index + " active"
+                : "btn colorclass colorclass--" + index
+            }
+          >
+            <label />
+            <span>{item}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
 };
 
 export default ColorClassSelect;

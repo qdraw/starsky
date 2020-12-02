@@ -3,7 +3,7 @@
 // name: "ApplicationDbContext"
 
 export interface IHealthEntry {
-	duration: string;
-	isHealthy: boolean;
-	name: string;
+  duration: string;
+  isHealthy: boolean;
+  name: string;
 }

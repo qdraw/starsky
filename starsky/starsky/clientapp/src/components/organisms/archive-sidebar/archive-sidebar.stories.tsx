@@ -7,31 +7,31 @@ import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebar from "./archive-sidebar";
 
 storiesOf("components/organisms/archive-sidebar", module)
-	.add("disabled", () => {
-		globalHistory.navigate("/?sidebar=true");
-		return (
-			<ArchiveSidebar
-				pageType={PageType.Archive}
-				subPath={"/"}
-				isReadOnly={true}
-				colorClassUsage={[]}
-				fileIndexItems={newIFileIndexItemArray()}
-			/>
-		);
-	})
-	.add("one item selected", () => {
-		globalHistory.navigate("/?sidebar=true&select=test.jpg");
-		var archive = {
-			isReadOnly: false,
-			fileIndexItems: [{ fileName: "test.jpg", filePath: "/test.jpg" }]
-		} as IArchiveProps;
-		return (
-			<ArchiveSidebar
-				pageType={PageType.Archive}
-				subPath={"/"}
-				isReadOnly={false}
-				colorClassUsage={[]}
-				fileIndexItems={archive.fileIndexItems}
-			/>
-		);
-	});
+  .add("disabled", () => {
+    globalHistory.navigate("/?sidebar=true");
+    return (
+      <ArchiveSidebar
+        pageType={PageType.Archive}
+        subPath={"/"}
+        isReadOnly={true}
+        colorClassUsage={[]}
+        fileIndexItems={newIFileIndexItemArray()}
+      />
+    );
+  })
+  .add("one item selected", () => {
+    globalHistory.navigate("/?sidebar=true&select=test.jpg");
+    var archive = {
+      isReadOnly: false,
+      fileIndexItems: [{ fileName: "test.jpg", filePath: "/test.jpg" }]
+    } as IArchiveProps;
+    return (
+      <ArchiveSidebar
+        pageType={PageType.Archive}
+        subPath={"/"}
+        isReadOnly={false}
+        colorClassUsage={[]}
+        fileIndexItems={archive.fileIndexItems}
+      />
+    );
+  });

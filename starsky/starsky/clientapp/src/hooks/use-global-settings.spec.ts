@@ -3,45 +3,45 @@ import useGlobalSettings, { IGlobalSettings } from "./use-global-settings";
 import { shallowReactHook } from "./___tests___/test-hook";
 
 describe("useGlobalSettings", () => {
-	describe("language", () => {
-		let setupComponent;
-		let hook: IGlobalSettings;
+  describe("language", () => {
+    let setupComponent;
+    let hook: IGlobalSettings;
 
-		function runHook() {
-			setupComponent = shallowReactHook(useGlobalSettings, []);
-			hook = setupComponent.componentHook as IGlobalSettings;
-		}
+    function runHook() {
+      setupComponent = shallowReactHook(useGlobalSettings, []);
+      hook = setupComponent.componentHook as IGlobalSettings;
+    }
 
-		it("get default language", () => {
-			runHook();
-			expect(hook.language).toBe(SupportedLanguages.en);
-		});
+    it("get default language", () => {
+      runHook();
+      expect(hook.language).toBe(SupportedLanguages.en);
+    });
 
-		it("get dutch language nl", () => {
-			var languageGetter = jest.spyOn(window.navigator, "language", "get");
-			languageGetter.mockReturnValue("nl");
+    it("get dutch language nl", () => {
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl");
 
-			runHook();
+      runHook();
 
-			expect(hook.language).toBe(SupportedLanguages.nl);
-		});
+      expect(hook.language).toBe(SupportedLanguages.nl);
+    });
 
-		it("get dutch language nl-NL", () => {
-			var languageGetter = jest.spyOn(window.navigator, "language", "get");
-			languageGetter.mockReturnValue("nl-NL");
+    it("get dutch language nl-NL", () => {
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl-NL");
 
-			runHook();
+      runHook();
 
-			expect(hook.language).toBe(SupportedLanguages.nl);
-		});
+      expect(hook.language).toBe(SupportedLanguages.nl);
+    });
 
-		it("get dutch language nl-BE", () => {
-			var languageGetter = jest.spyOn(window.navigator, "language", "get");
-			languageGetter.mockReturnValue("nl-BE");
+    it("get dutch language nl-BE", () => {
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl-BE");
 
-			runHook();
+      runHook();
 
-			expect(hook.language).toBe(SupportedLanguages.nl);
-		});
-	});
+      expect(hook.language).toBe(SupportedLanguages.nl);
+    });
+  });
 });

@@ -7,6 +7,6 @@ import Breadcrumb from "./breadcrumbs";
  * Breadcrumb variable should only contain parent Folders
  */
 storiesOf("components/molecules/breadcrumbs", module).add("default", () => {
-	var breadcrumbs = ["/", "/test"];
-	return <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />;
+  var breadcrumbs = ["/", "/test"];
+  return <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />;
 });

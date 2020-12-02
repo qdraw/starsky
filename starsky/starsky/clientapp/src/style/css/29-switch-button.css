@@ -1,68 +1,68 @@
 .switch-field input {
-	position: absolute;
-	height: 1px;
-	width: 1px;
-	border: 0;
-	overflow: hidden;
-	opacity: 0;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
+  opacity: 0;
 }
 
 .switch-field label {
-	border: 1px solid rgba(0, 0, 0, 0.2);
-	display: inline-block;
-	width: 140px;
-	background-color: #fff;
-	line-height: 1;
-	color: rgba(0, 0, 0, 0.6);
-	font-size: 16px;
-	text-align: center;
-	text-shadow: none;
-	padding: 7px 10px;
-	transition: all 0.1s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  width: 140px;
+  background-color: #fff;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 16px;
+  text-align: center;
+  text-shadow: none;
+  padding: 7px 10px;
+  transition: all 0.1s ease-in-out;
 }
 
 /* switches opposite colors */
 @media (prefers-color-scheme: dark) {
-	.switch-field label {
-		background-color: #263238;
-		color: #fff;
-	}
+  .switch-field label {
+    background-color: #263238;
+    color: #fff;
+  }
 }
 
 .switch-field label:hover {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .switch-field input:checked + label {
-	background-color: #263238;
-	color: #fff;
-	box-shadow: none;
+  background-color: #263238;
+  color: #fff;
+  box-shadow: none;
 }
 
 /* white is selected instead of black */
 /* switches opposite colors */
 @media (prefers-color-scheme: dark) {
-	.switch-field input:checked + label {
-		background-color: #fff;
-		color: #263238;
-	}
+  .switch-field input:checked + label {
+    background-color: #fff;
+    color: #263238;
+  }
 }
 
 .switch-field.disabled input:checked + label {
-	background-color: #eceff1;
-	color: #263238;
+  background-color: #eceff1;
+  color: #263238;
 }
 
 .switch-field.disabled label {
-	cursor: not-allowed;
+  cursor: not-allowed;
 }
 
 .switch-field label:first-of-type {
-	border-radius: 16px 0 0 16px;
+  border-radius: 16px 0 0 16px;
 }
 
 .switch-field label:last-of-type {
-	border-radius: 0 16px 16px 0;
+  border-radius: 0 16px 16px 0;
 }
 
 /* https://codepen.io/coralsea/pen/mMwwBz */

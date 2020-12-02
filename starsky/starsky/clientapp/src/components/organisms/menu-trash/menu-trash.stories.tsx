@@ -3,7 +3,7 @@ import React from "react";
 import MenuTrash from "./menu-trash";
 
 storiesOf("components/organisms/menu-trash", module).add("default", () => {
-	return (
-		<MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />
-	);
+  return (
+    <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={() => {}} />
+  );
 });

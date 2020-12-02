@@ -4,13 +4,13 @@ import * as Login from "../containers/login";
 import LoginPage from "./login-page";
 
 describe("LoginPage", () => {
-	it("has Login child Component", () => {
-		const spyLoginComponent = jest
-			.spyOn(Login, "default")
-			.mockImplementationOnce(() => {
-				return <></>;
-			});
-		mount(<LoginPage>t</LoginPage>);
-		expect(spyLoginComponent).toBeCalled();
-	});
+  it("has Login child Component", () => {
+    const spyLoginComponent = jest
+      .spyOn(Login, "default")
+      .mockImplementationOnce(() => {
+        return <></>;
+      });
+    mount(<LoginPage>t</LoginPage>);
+    expect(spyLoginComponent).toBeCalled();
+  });
 });

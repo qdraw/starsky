@@ -6,29 +6,29 @@ import * as PreferencesUsername from "../components/organisms/preferences-userna
 import { Preferences } from "./preferences";
 
 describe("Preferences", () => {
-	it("renders", () => {
-		shallow(<Preferences />);
-	});
+  it("renders", () => {
+    shallow(<Preferences />);
+  });
 
-	describe("status", () => {
-		it("should mount child components", () => {
-			var preferencesUsernameSpy = jest
-				.spyOn(PreferencesUsername, "default")
-				.mockImplementationOnce(() => <></>);
-			var preferencesPasswordSpy = jest
-				.spyOn(PreferencesPassword, "default")
-				.mockImplementationOnce(() => <></>);
-			var preferencesAppSettingsSpy = jest
-				.spyOn(PreferencesAppSettings, "default")
-				.mockImplementationOnce(() => <></>);
+  describe("status", () => {
+    it("should mount child components", () => {
+      var preferencesUsernameSpy = jest
+        .spyOn(PreferencesUsername, "default")
+        .mockImplementationOnce(() => <></>);
+      var preferencesPasswordSpy = jest
+        .spyOn(PreferencesPassword, "default")
+        .mockImplementationOnce(() => <></>);
+      var preferencesAppSettingsSpy = jest
+        .spyOn(PreferencesAppSettings, "default")
+        .mockImplementationOnce(() => <></>);
 
-			var component = mount(<Preferences />);
+      var component = mount(<Preferences />);
 
-			expect(preferencesUsernameSpy).toBeCalled();
-			expect(preferencesPasswordSpy).toBeCalled();
-			expect(preferencesAppSettingsSpy).toBeCalled();
+      expect(preferencesUsernameSpy).toBeCalled();
+      expect(preferencesPasswordSpy).toBeCalled();
+      expect(preferencesAppSettingsSpy).toBeCalled();
 
-			component.unmount();
-		});
-	});
+      component.unmount();
+    });
+  });
 });

@@ -6,20 +6,20 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";
 
 storiesOf(
-	"components/molecules/archive-sidebar/label-edit-add-overwrite",
-	module
+  "components/molecules/archive-sidebar/label-edit-add-overwrite",
+  module
 )
-	.add("disabled", () => {
-		globalHistory.navigate("/");
-		return <ArchiveSidebarLabelEditAddOverwrite />;
-	})
-	.add("enabled", () => {
-		globalHistory.navigate("/?select=test.jpg");
-		var archive = {} as IArchiveProps;
-		return (
-			<ArchiveContextProvider {...archive}>
-				{" "}
-				<ArchiveSidebarLabelEditAddOverwrite />
-			</ArchiveContextProvider>
-		);
-	});
+  .add("disabled", () => {
+    globalHistory.navigate("/");
+    return <ArchiveSidebarLabelEditAddOverwrite />;
+  })
+  .add("enabled", () => {
+    globalHistory.navigate("/?select=test.jpg");
+    var archive = {} as IArchiveProps;
+    return (
+      <ArchiveContextProvider {...archive}>
+        {" "}
+        <ArchiveSidebarLabelEditAddOverwrite />
+      </ArchiveContextProvider>
+    );
+  });

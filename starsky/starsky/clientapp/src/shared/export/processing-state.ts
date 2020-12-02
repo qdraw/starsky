@@ -1,6 +1,6 @@
 export enum ProcessingState {
-	default,
-	server,
-	ready,
-	fail
+  default,
+  server,
+  ready,
+  fail
 }

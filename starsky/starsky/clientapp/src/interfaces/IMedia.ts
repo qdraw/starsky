@@ -7,17 +7,17 @@ import { IDetailView } from "./IDetailView";
  */
 // let op, hij maakt hier stiekem een interface van ipv type
 export interface IMediaTypes {
-	DetailView: IDetailView;
-	Archive: IArchive;
+  DetailView: IDetailView;
+  Archive: IArchive;
 }
 
 export interface IMedia<T extends keyof IMediaTypes = keyof IMediaTypes> {
-	type: T;
-	data: IMediaTypes[T];
+  type: T;
+  data: IMediaTypes[T];
 }
 
 export function newIMedia(): IMedia {
-	return {} as IMedia;
+  return {} as IMedia;
 }
 
 // // import { ChatServiceConfig } from './chat-service-config.types';

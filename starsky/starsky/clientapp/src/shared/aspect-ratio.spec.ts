@@ -1,115 +1,115 @@
 import AspectRatio from "./aspect-ratio";
 
 describe("AspectRatio", () => {
-	var aspectRatio = new AspectRatio();
+  var aspectRatio = new AspectRatio();
 
-	it("Dimensions = 1280 x 1024", () => {
-		var width = 1280;
-		var height = 1024;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("Dimensions = 1280 x 1024", () => {
+    var width = 1280;
+    var height = 1024;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(256);
-		expect(ratio).toBe("5:4");
-	});
+    expect(gcd).toBe(256);
+    expect(ratio).toBe("5:4");
+  });
 
-	it("1152 x 960", () => {
-		var width = 1152;
-		var height = 960;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("1152 x 960", () => {
+    var width = 1152;
+    var height = 960;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(192);
-		expect(ratio).toBe("6:5");
-	});
+    expect(gcd).toBe(192);
+    expect(ratio).toBe("6:5");
+  });
 
-	it("1280 x 960", () => {
-		var width = 1280;
-		var height = 960;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("1280 x 960", () => {
+    var width = 1280;
+    var height = 960;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(320);
-		expect(ratio).toBe("4:3");
-	});
+    expect(gcd).toBe(320);
+    expect(ratio).toBe("4:3");
+  });
 
-	it("1920 x 1080", () => {
-		var width = 1920;
-		var height = 1080;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("1920 x 1080", () => {
+    var width = 1920;
+    var height = 1080;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(120);
-		expect(ratio).toBe("16:9");
-	});
+    expect(gcd).toBe(120);
+    expect(ratio).toBe("16:9");
+  });
 
-	it("4032 × 2688", () => {
-		var width = 4032;
-		var height = 2688;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("4032 × 2688", () => {
+    var width = 4032;
+    var height = 2688;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(1344);
-		expect(ratio).toBe("3:2");
-	});
+    expect(gcd).toBe(1344);
+    expect(ratio).toBe("3:2");
+  });
 
-	it("4000 × 4000", () => {
-		var width = 4000;
-		var height = 4000;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("4000 × 4000", () => {
+    var width = 4000;
+    var height = 4000;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(4000);
-		expect(ratio).toBe("1:1");
-	});
+    expect(gcd).toBe(4000);
+    expect(ratio).toBe("1:1");
+  });
 
-	it("0 × 10", () => {
-		var width = 0;
-		var height = 10;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("0 × 10", () => {
+    var width = 0;
+    var height = 10;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(10);
-		expect(ratio).toBe("0:1");
-	});
+    expect(gcd).toBe(10);
+    expect(ratio).toBe("0:1");
+  });
 
-	it("10 × 0", () => {
-		var width = 10;
-		var height = 0;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("10 × 0", () => {
+    var width = 10;
+    var height = 0;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(10);
-		expect(ratio).toBe("1:0");
-	});
+    expect(gcd).toBe(10);
+    expect(ratio).toBe("1:0");
+  });
 
-	it("4240 × 2832 (filter)", () => {
-		var width = 4240;
-		var height = 2832;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height, true);
+  it("4240 × 2832 (filter)", () => {
+    var width = 4240;
+    var height = 2832;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height, true);
 
-		expect(gcd).toBe(16);
-		expect(ratio).toBe(null);
-	});
+    expect(gcd).toBe(16);
+    expect(ratio).toBe(null);
+  });
 
-	it("4240 × 2832 (no-filter)", () => {
-		var width = 4240;
-		var height = 2832;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height, false);
+  it("4240 × 2832 (no-filter)", () => {
+    var width = 4240;
+    var height = 2832;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height, false);
 
-		expect(gcd).toBe(16);
-		expect(ratio).toBe("265:177");
-	});
+    expect(gcd).toBe(16);
+    expect(ratio).toBe("265:177");
+  });
 
-	it("3758 × 2505", () => {
-		var width = 3758;
-		var height = 2505;
-		var gcd = aspectRatio.gcd(width, height);
-		var ratio = aspectRatio.ratio(width, height);
+  it("3758 × 2505", () => {
+    var width = 3758;
+    var height = 2505;
+    var gcd = aspectRatio.gcd(width, height);
+    var ratio = aspectRatio.ratio(width, height);
 
-		expect(gcd).toBe(1);
-		expect(ratio).toBe(null);
-	});
+    expect(gcd).toBe(1);
+    expect(ratio).toBe(null);
+  });
 });

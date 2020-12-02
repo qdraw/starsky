@@ -8,33 +8,33 @@ import { PageType } from "../interfaces/IDetailView";
 import TrashPage from "./trash-page";
 
 describe("TrashPage", () => {
-	it("default error case", () => {
-		jest.spyOn(useTrashList, "default").mockImplementationOnce(() => {
-			return {} as IUseTrashList;
-		});
+  it("default error case", () => {
+    jest.spyOn(useTrashList, "default").mockImplementationOnce(() => {
+      return {} as IUseTrashList;
+    });
 
-		var error = mount(<TrashPage>t</TrashPage>);
-		expect(error.text()).toBe("Something went wrong");
-	});
+    var error = mount(<TrashPage>t</TrashPage>);
+    expect(error.text()).toBe("Something went wrong");
+  });
 
-	it("check if context is called", () => {
-		var contextSpy = jest
-			.spyOn(ArchiveContextWrapper, "default")
-			.mockImplementationOnce(() => {
-				return <></>;
-			});
+  it("check if context is called", () => {
+    var contextSpy = jest
+      .spyOn(ArchiveContextWrapper, "default")
+      .mockImplementationOnce(() => {
+        return <></>;
+      });
 
-		jest.spyOn(useTrashList, "default").mockImplementationOnce(() => {
-			return {
-				archive: newIArchive(),
-				pageType: PageType.Trash
-			} as IUseTrashList;
-		});
+    jest.spyOn(useTrashList, "default").mockImplementationOnce(() => {
+      return {
+        archive: newIArchive(),
+        pageType: PageType.Trash
+      } as IUseTrashList;
+    });
 
-		var trashPage = mount(<TrashPage>t</TrashPage>);
+    var trashPage = mount(<TrashPage>t</TrashPage>);
 
-		expect(contextSpy).toBeCalled();
+    expect(contextSpy).toBeCalled();
 
-		trashPage.unmount();
-	});
+    trashPage.unmount();
+  });
 });

@@ -3,8 +3,8 @@ import React from "react";
 import PreferencesPassword from "./preferences-password";
 
 storiesOf("components/organisms/preferences-password", module).add(
-	"default",
-	() => {
-		return <PreferencesPassword />;
-	}
+  "default",
+  () => {
+    return <PreferencesPassword />;
+  }
 );

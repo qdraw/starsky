@@ -9,12 +9,12 @@ import detectAutomaticRotationJpeg from "../style/images/detect-automatic-rotati
  * @see: https://github.com/davejm/client-compress/issues/4#issuecomment-630109722
  */
 export const testAutoOrientationImageURL =
-	"data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAA" +
-	"AAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA" +
-	"QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE" +
-	"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAEAAgMBEQACEQEDEQH/x" +
-	"ABKAAEAAAAAAAAAAAAAAAAAAAALEAEAAAAAAAAAAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAA" +
-	"AAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8H//2Q==";
+  "data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAA" +
+  "AAAD/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA" +
+  "QEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE" +
+  "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAf/AABEIAAEAAgMBEQACEQEDEQH/x" +
+  "ABKAAEAAAAAAAAAAAAAAAAAAAALEAEAAAAAAAAAAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAA" +
+  "AAAAAEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/8H//2Q==";
 
 /**
  * check if browser supports automatic image orientation
@@ -22,21 +22,21 @@ export const testAutoOrientationImageURL =
  * Hacked/Supported though BrowserDetect hack: Safari on iOS 12 and lower
  */
 const DetectAutomaticRotation = async (): Promise<boolean> => {
-	// iOS 12 and lower don't update the img.width but does rotate the image.
-	// this BrowserDetect method detect if the browser is iOS or iPad OS
-	if (new BrowserDetect().IsIOS()) {
-		return true;
-	}
+  // iOS 12 and lower don't update the img.width but does rotate the image.
+  // this BrowserDetect method detect if the browser is iOS or iPad OS
+  if (new BrowserDetect().IsIOS()) {
+    return true;
+  }
 
-	return new Promise((resolve) => {
-		const img = new Image();
-		img.onload = () => {
-			// Check if browser supports automatic image orientation:
-			const supported = img.width === 1 && img.height === 2;
-			resolve(supported);
-		};
-		img.src = detectAutomaticRotationJpeg;
-	});
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      // Check if browser supports automatic image orientation:
+      const supported = img.width === 1 && img.height === 2;
+      resolve(supported);
+    };
+    img.src = detectAutomaticRotationJpeg;
+  });
 };
 
 /*

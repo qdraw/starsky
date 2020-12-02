@@ -7,21 +7,21 @@ import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
 
 storiesOf("components/molecules/archive-sidebar/selection-list", module)
-	.add("disabled", () => {
-		globalHistory.navigate("/");
-		return (
-			<ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />
-		);
-	})
-	.add("one item selected", () => {
-		globalHistory.navigate("/?select=test.jpg");
-		var archive = {
-			fileIndexItems: [{ fileName: "test", filePath: "/test.jpg" }]
-		} as IArchiveProps;
-		return (
-			<ArchiveContextProvider {...archive}>
-				{" "}
-				<ArchiveSidebarSelectionList fileIndexItems={archive.fileIndexItems} />
-			</ArchiveContextProvider>
-		);
-	});
+  .add("disabled", () => {
+    globalHistory.navigate("/");
+    return (
+      <ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />
+    );
+  })
+  .add("one item selected", () => {
+    globalHistory.navigate("/?select=test.jpg");
+    var archive = {
+      fileIndexItems: [{ fileName: "test", filePath: "/test.jpg" }]
+    } as IArchiveProps;
+    return (
+      <ArchiveContextProvider {...archive}>
+        {" "}
+        <ArchiveSidebarSelectionList fileIndexItems={archive.fileIndexItems} />
+      </ArchiveContextProvider>
+    );
+  });

@@ -5,52 +5,52 @@ import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import PreferencesUsername from "./preferences-username";
 
 describe("PreferencesUsername", () => {
-	it("renders", () => {
-		shallow(<PreferencesUsername />);
-	});
+  it("renders", () => {
+    shallow(<PreferencesUsername />);
+  });
 
-	describe("context", () => {
-		it("Error 500", () => {
-			jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-				return { ...newIConnectionDefault(), statusCode: 500 };
-			});
+  describe("context", () => {
+    it("Error 500", () => {
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return { ...newIConnectionDefault(), statusCode: 500 };
+      });
 
-			var component = mount(<PreferencesUsername />);
-			expect(component.find(".content--text").text()).toBe("Unknown username");
-			component.unmount();
-		});
+      var component = mount(<PreferencesUsername />);
+      expect(component.find(".content--text").text()).toBe("Unknown username");
+      component.unmount();
+    });
 
-		it("Incomplete data", () => {
-			jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
-				return {
-					...newIConnectionDefault(),
-					data: {
-						credentials: []
-					},
-					statusCode: 200
-				};
-			});
+    it("Incomplete data", () => {
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return {
+          ...newIConnectionDefault(),
+          data: {
+            credentials: []
+          },
+          statusCode: 200
+        };
+      });
 
-			var component = mount(<PreferencesUsername />);
-			expect(component.find(".content--text").text()).toBe("Unknown username");
-			component.unmount();
-		});
+      var component = mount(<PreferencesUsername />);
+      expect(component.find(".content--text").text()).toBe("Unknown username");
+      component.unmount();
+    });
 
-		it("should get the identifier", () => {
-			var testReply = {
-				...newIConnectionDefault(),
-				data: {
-					credentialsIdentifiers: ["test"]
-				},
-				statusCode: 200
-			};
-			jest
-				.spyOn(useFetch, "default")
-				.mockImplementationOnce(() => testReply)
-				.mockImplementationOnce(() => testReply);
+    it("should get the identifier", () => {
+      var testReply = {
+        ...newIConnectionDefault(),
+        data: {
+          credentialsIdentifiers: ["test"]
+        },
+        statusCode: 200
+      };
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => testReply)
+        .mockImplementationOnce(() => testReply);
 
-			var component = mount(<PreferencesUsername />);
-			expect(component.find(".content--text").text()).toBe("test");
-		});
-	});
+      var component = mount(<PreferencesUsername />);
+      expect(component.find(".content--text").text()).toBe("test");
+    });
+  });
 });

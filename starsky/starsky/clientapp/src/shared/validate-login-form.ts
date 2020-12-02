@@ -7,21 +7,21 @@
  * @param password - user's auth password
  */
 export const validateLoginForm = (
-	email: string,
-	password: string
+  email: string,
+  password: string
 ): boolean | null => {
-	// Check for undefined or empty input fields
-	if (!email || !password) {
-		return false;
-	}
+  // Check for undefined or empty input fields
+  if (!email || !password) {
+    return false;
+  }
 
-	if (!validateEmail(email)) {
-		return null;
-	}
-	return true;
+  if (!validateEmail(email)) {
+    return null;
+  }
+  return true;
 };
 
 function validateEmail(email: string) {
-	var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	return re.test(String(email).toLowerCase());
+  var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 }

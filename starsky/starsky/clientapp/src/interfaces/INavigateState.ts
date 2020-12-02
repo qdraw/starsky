@@ -1,3 +1,3 @@
 export interface INavigateState {
-	filePath: string;
+  filePath: string;
 }

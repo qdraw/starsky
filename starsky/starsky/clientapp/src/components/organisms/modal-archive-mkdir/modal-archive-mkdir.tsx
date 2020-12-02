@@ -13,156 +13,156 @@ import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFileProps {
-	isOpen: boolean;
-	handleExit: Function;
-	state: IArchiveProps;
-	dispatch: React.Dispatch<ArchiveAction>;
+  isOpen: boolean;
+  handleExit: Function;
+  state: IArchiveProps;
+  dispatch: React.Dispatch<ArchiveAction>;
 }
 
 const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
-	state,
-	dispatch,
-	...props
+  state,
+  dispatch,
+  ...props
 }) => {
-	// content
-	const settings = useGlobalSettings();
-	const language = new Language(settings.language);
-	const MessageFeatureName = language.text(
-		"Nieuwe map aanmaken",
-		"Create new folder"
-	);
-	const MessageNonValidDirectoryName = language.text(
-		"Controleer de naam, deze map kan niet zo worden aangemaakt",
-		"Check the name, this folder cannot be created in this way"
-	);
-	const MessageGeneralMkdirCreateError = language.text(
-		"Er is misgegaan met het aanmaken van deze map",
-		"An error occurred while creating this folder"
-	);
-	const MessageDirectoryExistError = language.text(
-		"De map bestaat al, probeer een andere naam",
-		"The folder already exists, try a different name"
-	);
+  // content
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageFeatureName = language.text(
+    "Nieuwe map aanmaken",
+    "Create new folder"
+  );
+  const MessageNonValidDirectoryName = language.text(
+    "Controleer de naam, deze map kan niet zo worden aangemaakt",
+    "Check the name, this folder cannot be created in this way"
+  );
+  const MessageGeneralMkdirCreateError = language.text(
+    "Er is misgegaan met het aanmaken van deze map",
+    "An error occurred while creating this folder"
+  );
+  const MessageDirectoryExistError = language.text(
+    "De map bestaat al, probeer een andere naam",
+    "The folder already exists, try a different name"
+  );
 
-	// to show errors
-	const useErrorHandler = (initialState: string | null) => {
-		return initialState;
-	};
-	const [error, setError] = React.useState(useErrorHandler(null));
+  // to show errors
+  const useErrorHandler = (initialState: string | null) => {
+    return initialState;
+  };
+  const [error, setError] = React.useState(useErrorHandler(null));
 
-	// when you are waiting on the API
-	const [loading, setIsLoading] = React.useState(false);
+  // when you are waiting on the API
+  const [loading, setIsLoading] = React.useState(false);
 
-	// The directory name to submit
-	const [directoryName, setDirectoryName] = React.useState("");
+  // The directory name to submit
+  const [directoryName, setDirectoryName] = React.useState("");
 
-	// allow summit
-	const [buttonState, setButtonState] = React.useState(false);
+  // allow summit
+  const [buttonState, setButtonState] = React.useState(false);
 
-	const [isFormEnabled, setFormEnabled] = React.useState(true);
+  const [isFormEnabled, setFormEnabled] = React.useState(true);
 
-	function handleUpdateChange(
-		event:
-			| React.ChangeEvent<HTMLDivElement>
-			| React.KeyboardEvent<HTMLDivElement>
-	) {
-		let fieldValue = "";
-		if (event.currentTarget.textContent) {
-			fieldValue = event.currentTarget.textContent.trim();
-		}
+  function handleUpdateChange(
+    event:
+      | React.ChangeEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>
+  ) {
+    let fieldValue = "";
+    if (event.currentTarget.textContent) {
+      fieldValue = event.currentTarget.textContent.trim();
+    }
 
-		setDirectoryName(fieldValue);
-		setButtonState(true);
+    setDirectoryName(fieldValue);
+    setButtonState(true);
 
-		var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
+    var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
 
-		if (!isValidFileName) {
-			setError(MessageNonValidDirectoryName);
-			setButtonState(false);
-		} else {
-			setError(null);
-		}
-	}
+    if (!isValidFileName) {
+      setError(MessageNonValidDirectoryName);
+      setButtonState(false);
+    } else {
+      setError(null);
+    }
+  }
 
-	async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
-		// Show icon with load ++ disable forms
-		setFormEnabled(false);
-		setIsLoading(true);
+  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+    // Show icon with load ++ disable forms
+    setFormEnabled(false);
+    setIsLoading(true);
 
-		var newDirectorySubPath = `${state.subPath}/${directoryName}`;
+    var newDirectorySubPath = `${state.subPath}/${directoryName}`;
 
-		// API call
-		var bodyParams = new URLSearchParams();
-		bodyParams.append("f", newDirectorySubPath);
+    // API call
+    var bodyParams = new URLSearchParams();
+    bodyParams.append("f", newDirectorySubPath);
 
-		var result = await FetchPost(
-			new UrlQuery().UrlSyncMkdir(),
-			bodyParams.toString()
-		);
+    var result = await FetchPost(
+      new UrlQuery().UrlSyncMkdir(),
+      bodyParams.toString()
+    );
 
-		if (result.statusCode !== 200) {
-			setError(
-				result.statusCode !== 409
-					? MessageGeneralMkdirCreateError
-					: MessageDirectoryExistError
-			);
-			// and renable
-			setIsLoading(false);
-			setFormEnabled(true);
-			return;
-		}
+    if (result.statusCode !== 200) {
+      setError(
+        result.statusCode !== 409
+          ? MessageGeneralMkdirCreateError
+          : MessageDirectoryExistError
+      );
+      // and renable
+      setIsLoading(false);
+      setFormEnabled(true);
+      return;
+    }
 
-		// Force update
-		var connectionResult = await FetchGet(
-			new UrlQuery().UrlIndexServerApi({ f: state.subPath })
-		);
-		var forceSyncResult = new CastToInterface().MediaArchive(
-			connectionResult.data
-		);
-		var payload = forceSyncResult.data as IArchiveProps;
-		if (payload.fileIndexItems) {
-			dispatch({ type: "force-reset", payload });
-		}
+    // Force update
+    var connectionResult = await FetchGet(
+      new UrlQuery().UrlIndexServerApi({ f: state.subPath })
+    );
+    var forceSyncResult = new CastToInterface().MediaArchive(
+      connectionResult.data
+    );
+    var payload = forceSyncResult.data as IArchiveProps;
+    if (payload.fileIndexItems) {
+      dispatch({ type: "force-reset", payload });
+    }
 
-		new FileListCache().CacheCleanEverything();
-		// Close window
-		props.handleExit();
-	}
+    new FileListCache().CacheCleanEverything();
+    // Close window
+    props.handleExit();
+  }
 
-	return (
-		<Modal
-			id="modal-archive-mkdir"
-			isOpen={props.isOpen}
-			handleExit={() => {
-				props.handleExit();
-			}}
-		>
-			<div className="content">
-				<div className="modal content--subheader">{MessageFeatureName}</div>
-				<div className="modal content--text">
-					<FormControl
-						name="directoryname"
-						onInput={handleUpdateChange}
-						contentEditable={isFormEnabled}
-					>
-						&nbsp;
-					</FormControl>
+  return (
+    <Modal
+      id="modal-archive-mkdir"
+      isOpen={props.isOpen}
+      handleExit={() => {
+        props.handleExit();
+      }}
+    >
+      <div className="content">
+        <div className="modal content--subheader">{MessageFeatureName}</div>
+        <div className="modal content--text">
+          <FormControl
+            name="directoryname"
+            onInput={handleUpdateChange}
+            contentEditable={isFormEnabled}
+          >
+            &nbsp;
+          </FormControl>
 
-					{error && (
-						<div className="warning-box--under-form warning-box">{error}</div>
-					)}
+          {error && (
+            <div className="warning-box--under-form warning-box">{error}</div>
+          )}
 
-					<button
-						disabled={!isFormEnabled || loading || !buttonState}
-						className="btn btn--default"
-						onClick={pushRenameChange}
-					>
-						{loading ? "Loading..." : MessageFeatureName}
-					</button>
-				</div>
-			</div>
-		</Modal>
-	);
+          <button
+            disabled={!isFormEnabled || loading || !buttonState}
+            className="btn btn--default"
+            onClick={pushRenameChange}
+          >
+            {loading ? "Loading..." : MessageFeatureName}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
 };
 
 export default ModalArchiveMkdir;

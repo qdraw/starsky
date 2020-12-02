@@ -10,224 +10,224 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
 describe("ModalDetailviewRenameFile", () => {
-	it("renders", () => {
-		shallow(
-			<ModalDetailviewRenameFile
-				state={{} as any}
-				isOpen={true}
-				handleExit={() => {}}
-			>
-				test
-			</ModalDetailviewRenameFile>
-		);
-	});
+  it("renders", () => {
+    shallow(
+      <ModalDetailviewRenameFile
+        state={{} as any}
+        isOpen={true}
+        handleExit={() => {}}
+      >
+        test
+      </ModalDetailviewRenameFile>
+    );
+  });
 
-	describe("rename", () => {
-		it("to wrong extension", async () => {
-			// spy on fetch
-			// use this import => import * as FetchPost from '../shared/fetch-post';
-			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-				{ statusCode: 200 } as IConnectionDefault
-			);
-			var fetchPostSpy = jest
-				.spyOn(FetchPost, "default")
-				.mockImplementationOnce(() => mockIConnectionDefault);
+  describe("rename", () => {
+    it("to wrong extension", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 200 } as IConnectionDefault
+      );
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
-			var state = {
-				fileIndexItem: {
-					status: IExifStatus.Ok,
-					filePath: "/test/image.jpg",
-					fileName: "image.jpg"
-				}
-			} as IDetailView;
-			var contextValues = { state, dispatch: jest.fn() };
+      var state = {
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() };
 
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        });
 
-			var modal = mount(
-				<ModalDetailviewRenameFile
-					isOpen={true}
-					state={state}
-					handleExit={() => {}}
-				></ModalDetailviewRenameFile>
-			);
+      var modal = mount(
+        <ModalDetailviewRenameFile
+          isOpen={true}
+          state={state}
+          handleExit={() => {}}
+        ></ModalDetailviewRenameFile>
+      );
 
-			var submitButtonBefore = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonBefore).toBeTruthy();
+      var submitButtonBefore = (modal
+        .find(".btn--default")
+        .getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonBefore).toBeTruthy();
 
-			act(() => {
-				modal.find('[data-name="filename"]').getDOMNode().textContent =
-					"file-with-different-extension.tiff";
-				modal.find('[data-name="filename"]').simulate("input");
-			});
+      act(() => {
+        modal.find('[data-name="filename"]').getDOMNode().textContent =
+          "file-with-different-extension.tiff";
+        modal.find('[data-name="filename"]').simulate("input");
+      });
 
-			// await is needed
-			await act(async () => {
-				await modal.find(".btn--default").simulate("click");
-			});
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
 
-			expect(fetchPostSpy).toBeCalled();
-			expect(fetchPostSpy).toBeCalledWith(
-				new UrlQuery().UrlSyncRename(),
-				"f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
-			);
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(
+        new UrlQuery().UrlSyncRename(),
+        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
+      );
 
-			// find does not work in this case
-			expect(modal.html()).toContain("warning-box");
-			expect(modal.html()).toContain("disabled");
+      // find does not work in this case
+      expect(modal.html()).toContain("warning-box");
+      expect(modal.html()).toContain("disabled");
 
-			// cleanup
-			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-			modal.unmount();
-		});
+      // cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
 
-		it("to non valid extension", async () => {
-			var state = {
-				fileIndexItem: {
-					status: IExifStatus.Ok,
-					filePath: "/test/image.jpg",
-					fileName: "image.jpg"
-				}
-			} as IDetailView;
-			var contextValues = { state, dispatch: jest.fn() };
+    it("to non valid extension", async () => {
+      var state = {
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() };
 
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        });
 
-			var modal = mount(
-				<ModalDetailviewRenameFile
-					isOpen={true}
-					state={state}
-					handleExit={() => {}}
-				></ModalDetailviewRenameFile>
-			);
+      var modal = mount(
+        <ModalDetailviewRenameFile
+          isOpen={true}
+          state={state}
+          handleExit={() => {}}
+        ></ModalDetailviewRenameFile>
+      );
 
-			var submitButtonBefore = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonBefore).toBeTruthy();
+      var submitButtonBefore = (modal
+        .find(".btn--default")
+        .getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonBefore).toBeTruthy();
 
-			act(() => {
-				modal.find('[data-name="filename"]').getDOMNode().textContent =
-					"file-without-extension";
-				modal.find('[data-name="filename"]').simulate("input");
-			});
+      act(() => {
+        modal.find('[data-name="filename"]').getDOMNode().textContent =
+          "file-without-extension";
+        modal.find('[data-name="filename"]').simulate("input");
+      });
 
-			// await is needed => there is no button
-			await act(async () => {
-				await modal.find(".btn--default").simulate("click");
-			});
+      // await is needed => there is no button
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
 
-			expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(modal.exists(".warning-box")).toBeTruthy();
 
-			var submitButtonAfter = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonAfter).toBeTruthy();
+      var submitButtonAfter = (modal
+        .find(".btn--default")
+        .getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonAfter).toBeTruthy();
 
-			// cleanup
-			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-			modal.unmount();
-		});
+      // cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
 
-		it("submit filename change", async () => {
-			// spy on fetch
-			// use this import => import * as FetchPost from '../shared/fetch-post';
-			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-				{ statusCode: 200 } as IConnectionDefault
-			);
-			var fetchPostSpy = jest
-				.spyOn(FetchPost, "default")
-				.mockImplementationOnce(() => mockIConnectionDefault);
+    it("submit filename change", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 200 } as IConnectionDefault
+      );
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
-			var state = {
-				fileIndexItem: {
-					status: IExifStatus.Ok,
-					filePath: "/test/image.jpg",
-					fileName: "image.jpg"
-				}
-			} as IDetailView;
-			var contextValues = { state, dispatch: jest.fn() };
+      var state = {
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg"
+        }
+      } as IDetailView;
+      var contextValues = { state, dispatch: jest.fn() };
 
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        });
 
-			var modal = mount(
-				<ModalDetailviewRenameFile
-					isOpen={true}
-					state={state}
-					handleExit={() => {}}
-				></ModalDetailviewRenameFile>
-			);
+      var modal = mount(
+        <ModalDetailviewRenameFile
+          isOpen={true}
+          state={state}
+          handleExit={() => {}}
+        ></ModalDetailviewRenameFile>
+      );
 
-			act(() => {
-				modal.find('[data-name="filename"]').getDOMNode().textContent =
-					"name.jpg";
-				modal.find('[data-name="filename"]').simulate("input");
-			});
+      act(() => {
+        modal.find('[data-name="filename"]').getDOMNode().textContent =
+          "name.jpg";
+        modal.find('[data-name="filename"]').simulate("input");
+      });
 
-			// await is needed
-			await act(async () => {
-				await modal.find(".btn--default").simulate("click");
-			});
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
 
-			expect(fetchPostSpy).toBeCalled();
-			expect(fetchPostSpy).toBeCalledWith(
-				new UrlQuery().UrlSyncRename(),
-				"f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
-			);
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(
+        new UrlQuery().UrlSyncRename(),
+        "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
+      );
 
-			// cleanup
-			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-			modal.unmount();
-		});
+      // cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
 
-		it("test if handleExit is called", () => {
-			// simulate if a user press on close
-			// use as ==> import * as Modal from './modal';
-			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
-				props.handleExit();
-				return <>{props.children}</>;
-			});
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>;
+      });
 
-			var handleExitSpy = jest.fn();
+      var handleExitSpy = jest.fn();
 
-			var component = mount(
-				<ModalDetailviewRenameFile
-					state={{} as any}
-					isOpen={true}
-					handleExit={handleExitSpy}
-				/>
-			);
+      var component = mount(
+        <ModalDetailviewRenameFile
+          state={{} as any}
+          isOpen={true}
+          handleExit={handleExitSpy}
+        />
+      );
 
-			expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toBeCalled();
 
-			// and clean afterwards
-			component.unmount();
-		});
-	});
+      // and clean afterwards
+      component.unmount();
+    });
+  });
 });

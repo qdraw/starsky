@@ -3,55 +3,55 @@ import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
 
 type MoreMenuPropTypes = {
-	children?: React.ReactNode;
-	defaultEnableMenu?: boolean;
+  children?: React.ReactNode;
+  defaultEnableMenu?: boolean;
 };
 
 export const MoreMenuEventCloseConst = "CLOSE_MORE_MENU";
 
 const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
-	children,
-	defaultEnableMenu
+  children,
+  defaultEnableMenu
 }) => {
-	const settings = useGlobalSettings();
-	const language = new Language(settings.language);
-	const MessageMore = language.text("Meer", "More");
-	const [enabledMenu, setEnabledMenu] = React.useState(defaultEnableMenu);
+  const settings = useGlobalSettings();
+  const language = new Language(settings.language);
+  const MessageMore = language.text("Meer", "More");
+  const [enabledMenu, setEnabledMenu] = React.useState(defaultEnableMenu);
 
-	function toggleMoreMenu() {
-		if (!children) return;
-		setEnabledMenu(!enabledMenu);
-	}
+  function toggleMoreMenu() {
+    if (!children) return;
+    setEnabledMenu(!enabledMenu);
+  }
 
-	var offMoreMenu = () => setEnabledMenu(false);
+  var offMoreMenu = () => setEnabledMenu(false);
 
-	useEffect(() => {
-		// Bind the event listener
-		window.addEventListener(MoreMenuEventCloseConst, offMoreMenu);
+  useEffect(() => {
+    // Bind the event listener
+    window.addEventListener(MoreMenuEventCloseConst, offMoreMenu);
 
-		return () => {
-			// Unbind the event listener on clean up
-			window.removeEventListener(MoreMenuEventCloseConst, offMoreMenu);
-		};
-	});
+    return () => {
+      // Unbind the event listener on clean up
+      window.removeEventListener(MoreMenuEventCloseConst, offMoreMenu);
+    };
+  });
 
-	return (
-		<div
-			className={!children ? "item item--more disabled" : "item item--more"}
-			onClick={toggleMoreMenu}
-		>
-			<span>{MessageMore}</span>
-			<div
-				onChange={offMoreMenu}
-				onClick={toggleMoreMenu}
-				className={
-					enabledMenu ? "menu-context" : "menu-context menu-context--hide"
-				}
-			>
-				<ul className="menu-options">{children}</ul>
-			</div>
-		</div>
-	);
+  return (
+    <div
+      className={!children ? "item item--more disabled" : "item item--more"}
+      onClick={toggleMoreMenu}
+    >
+      <span>{MessageMore}</span>
+      <div
+        onChange={offMoreMenu}
+        onClick={toggleMoreMenu}
+        className={
+          enabledMenu ? "menu-context" : "menu-context menu-context--hide"
+        }
+      >
+        <ul className="menu-options">{children}</ul>
+      </div>
+    </div>
+  );
 };
 
 export default MoreMenu;

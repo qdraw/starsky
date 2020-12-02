@@ -5,9 +5,9 @@ import Login from "../containers/login";
 import Search from "../containers/search";
 import Trash from "../containers/trash";
 import {
-	ArchiveAction,
-	ArchiveContext,
-	ArchiveContextProvider
+  ArchiveAction,
+  ArchiveContext,
+  ArchiveContextProvider
 } from "../contexts/archive-context";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
@@ -21,54 +21,54 @@ import { URLPath } from "../shared/url-path";
  * @param archive the archive props
  */
 export default function ArchiveContextWrapper(archive: IArchiveProps) {
-	return (
-		<ArchiveContextProvider>
-			<ArchiveWrapper {...archive} />
-		</ArchiveContextProvider>
-	);
+  return (
+    <ArchiveContextProvider>
+      <ArchiveWrapper {...archive} />
+    </ArchiveContextProvider>
+  );
 }
 
 function ArchiveWrapper(archive: IArchiveProps) {
-	let { state, dispatch } = React.useContext(ArchiveContext);
+  let { state, dispatch } = React.useContext(ArchiveContext);
 
-	/**
-	 * Running on changing searchQuery or subpath
-	 */
-	useEffect(() => {
-		// don't update the cache
-		dispatch({ type: "set", payload: archive });
-		// disable to prevent duplicate api calls
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		archive.subPath,
-		archive.searchQuery,
-		archive.pageNumber,
-		archive.colorClassUsage
-	]);
+  /**
+   * Running on changing searchQuery or subpath
+   */
+  useEffect(() => {
+    // don't update the cache
+    dispatch({ type: "set", payload: archive });
+    // disable to prevent duplicate api calls
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    archive.subPath,
+    archive.searchQuery,
+    archive.pageNumber,
+    archive.colorClassUsage
+  ]);
 
-	useEffect(() => {
-		if (!state) return;
-		new DocumentTitle().SetDocumentTitle(state);
-	}, [state]);
+  useEffect(() => {
+    if (!state) return;
+    new DocumentTitle().SetDocumentTitle(state);
+  }, [state]);
 
-	ArchiveEventListenerUseEffect(dispatch);
+  ArchiveEventListenerUseEffect(dispatch);
 
-	if (!state) return <>(ArchiveWrapper) = no state</>;
-	if (!state.fileIndexItems) return <></>;
-	if (!state.pageType) return <></>;
+  if (!state) return <>(ArchiveWrapper) = no state</>;
+  if (!state.fileIndexItems) return <></>;
+  if (!state.pageType) return <></>;
 
-	switch (state.pageType) {
-		case PageType.Trash:
-			return <Trash {...state} />;
-		case PageType.Search:
-			return <Search {...state} />;
-		case PageType.Unauthorized:
-			return <Login />;
-		case PageType.Archive:
-			return <Archive {...state} />;
-		default:
-			return <Preloader isOverlay={true} isTransition={false} />;
-	}
+  switch (state.pageType) {
+    case PageType.Trash:
+      return <Trash {...state} />;
+    case PageType.Search:
+      return <Search {...state} />;
+    case PageType.Unauthorized:
+      return <Login />;
+    case PageType.Archive:
+      return <Archive {...state} />;
+    default:
+      return <Preloader isOverlay={true} isTransition={false} />;
+  }
 }
 
 /**
@@ -76,18 +76,18 @@ function ArchiveWrapper(archive: IArchiveProps) {
  * @param dispatch - function to update the state
  */
 export function ArchiveEventListenerUseEffect(
-	dispatch: React.Dispatch<ArchiveAction>
+  dispatch: React.Dispatch<ArchiveAction>
 ) {
-	// Catch events from updates
-	const update = (event: Event) => updateArchiveFromEvent(event, dispatch);
-	useEffect(() => {
-		document.body.addEventListener(useSocketsEventName, update);
-		return () => {
-			document.body.removeEventListener(useSocketsEventName, update);
-		};
-		// only when start of view
-		// eslint-disable-next-line
-	}, []);
+  // Catch events from updates
+  const update = (event: Event) => updateArchiveFromEvent(event, dispatch);
+  useEffect(() => {
+    document.body.addEventListener(useSocketsEventName, update);
+    return () => {
+      document.body.removeEventListener(useSocketsEventName, update);
+    };
+    // only when start of view
+    // eslint-disable-next-line
+  }, []);
 }
 
 /**
@@ -96,21 +96,21 @@ export function ArchiveEventListenerUseEffect(
  * @param dispatch - function to update the state
  */
 function updateArchiveFromEvent(
-	event: Event,
-	dispatch: React.Dispatch<ArchiveAction>
+  event: Event,
+  dispatch: React.Dispatch<ArchiveAction>
 ) {
-	const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
-	// useLocation, state or archive is here always the default value
-	var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f;
+  const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
+  // useLocation, state or archive is here always the default value
+  var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f;
 
-	var toAddedFiles = [];
-	for (let index = 0; index < pushMessagesEvent.length; index++) {
-		const pushMessage = pushMessagesEvent[index];
-		// only update the state of the current view
-		if (parentLocationPath !== pushMessage.parentDirectory) {
-			continue;
-		}
-		toAddedFiles.push(pushMessage);
-	}
-	dispatch({ type: "add", add: toAddedFiles });
+  var toAddedFiles = [];
+  for (let index = 0; index < pushMessagesEvent.length; index++) {
+    const pushMessage = pushMessagesEvent[index];
+    // only update the state of the current view
+    if (parentLocationPath !== pushMessage.parentDirectory) {
+      continue;
+    }
+    toAddedFiles.push(pushMessage);
+  }
+  dispatch({ type: "add", add: toAddedFiles });
 }

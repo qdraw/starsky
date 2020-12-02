@@ -12,173 +12,173 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 describe("ModalArchiveMkdir", () => {
-	it("renders", () => {
-		shallow(
-			<ModalArchiveMkdir
-				dispatch={jest.fn()}
-				state={{} as any}
-				isOpen={true}
-				handleExit={() => {}}
-			>
-				test
-			</ModalArchiveMkdir>
-		);
-	});
+  it("renders", () => {
+    shallow(
+      <ModalArchiveMkdir
+        dispatch={jest.fn()}
+        state={{} as any}
+        isOpen={true}
+        handleExit={() => {}}
+      >
+        test
+      </ModalArchiveMkdir>
+    );
+  });
 
-	describe("mkdir", () => {
-		it("to non valid dirname", async () => {
-			var state = {} as IArchiveProps;
-			var contextValues = { state, dispatch: jest.fn() };
+  describe("mkdir", () => {
+    it("to non valid dirname", async () => {
+      var state = {} as IArchiveProps;
+      var contextValues = { state, dispatch: jest.fn() };
 
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        })
+        .mockImplementationOnce(() => {
+          return contextValues;
+        });
 
-			var modal = mount(
-				<ModalArchiveMkdir
-					state={state}
-					dispatch={jest.fn()}
-					isOpen={true}
-					handleExit={() => {}}
-				></ModalArchiveMkdir>
-			);
+      var modal = mount(
+        <ModalArchiveMkdir
+          state={state}
+          dispatch={jest.fn()}
+          isOpen={true}
+          handleExit={() => {}}
+        ></ModalArchiveMkdir>
+      );
 
-			var submitButtonBefore = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonBefore).toBeTruthy();
+      var submitButtonBefore = (modal
+        .find(".btn--default")
+        .getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonBefore).toBeTruthy();
 
-			act(() => {
-				modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-					"f";
-				modal.find('[data-name="directoryname"]').simulate("input");
-			});
+      act(() => {
+        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
+          "f";
+        modal.find('[data-name="directoryname"]').simulate("input");
+      });
 
-			// await is needed => there is no button
-			await act(async () => {
-				await modal.find(".btn--default").simulate("click");
-			});
+      // await is needed => there is no button
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
 
-			expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(modal.exists(".warning-box")).toBeTruthy();
 
-			var submitButtonAfter = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonAfter).toBeTruthy();
+      var submitButtonAfter = (modal
+        .find(".btn--default")
+        .getDOMNode() as HTMLButtonElement).disabled;
+      expect(submitButtonAfter).toBeTruthy();
 
-			// cleanup
-			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-			modal.unmount();
-		});
+      // cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
 
-		it("submit mkdir", async () => {
-			// spy on fetch
-			// use this import => import * as FetchPost from '../shared/fetch-post';
-			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-				{ statusCode: 200 } as IConnectionDefault
-			);
+    it("submit mkdir", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 200 } as IConnectionDefault
+      );
 
-			var fetchPostSpy = jest
-				.spyOn(FetchPost, "default")
-				.mockImplementationOnce(() => mockIConnectionDefault);
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
-			// use ==> import * as FetchGet from '../shared/fetch-get';
-			const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-				{
-					statusCode: 202,
-					data: {
-						...newIArchive(),
-						fileIndexItems: [],
-						pageType: PageType.Search
-					} as IArchiveProps
-				} as IConnectionDefault
-			);
+      // use ==> import * as FetchGet from '../shared/fetch-get';
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        {
+          statusCode: 202,
+          data: {
+            ...newIArchive(),
+            fileIndexItems: [],
+            pageType: PageType.Search
+          } as IArchiveProps
+        } as IConnectionDefault
+      );
 
-			var fetchGetSpy = jest
-				.spyOn(FetchGet, "default")
-				.mockImplementationOnce(() => mockGetIConnectionDefault);
+      var fetchGetSpy = jest
+        .spyOn(FetchGet, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-			var state = {
-				subPath: "/test"
-			} as IArchive;
-			var contextValues = { state, dispatch: jest.fn() };
+      var state = {
+        subPath: "/test"
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() };
 
-			var modal = mount(
-				<ModalArchiveMkdir
-					state={state}
-					dispatch={contextValues.dispatch}
-					isOpen={true}
-					handleExit={() => {}}
-				></ModalArchiveMkdir>
-			);
+      var modal = mount(
+        <ModalArchiveMkdir
+          state={state}
+          dispatch={contextValues.dispatch}
+          isOpen={true}
+          handleExit={() => {}}
+        ></ModalArchiveMkdir>
+      );
 
-			act(() => {
-				modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-					"new folder";
-				modal.find('[data-name="directoryname"]').simulate("input");
-			});
+      act(() => {
+        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
+          "new folder";
+        modal.find('[data-name="directoryname"]').simulate("input");
+      });
 
-			// await is needed
-			await act(async () => {
-				await modal.find(".btn--default").simulate("click");
-			});
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
 
-			// to create new directory
-			expect(fetchPostSpy).toBeCalled();
-			expect(fetchPostSpy).toBeCalledWith(
-				new UrlQuery().UrlSyncMkdir(),
-				"f=%2Ftest%2Fnew+folder"
-			);
+      // to create new directory
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(
+        new UrlQuery().UrlSyncMkdir(),
+        "f=%2Ftest%2Fnew+folder"
+      );
 
-			// to get the update
-			expect(fetchGetSpy).toBeCalled();
-			expect(fetchGetSpy).toBeCalledWith(
-				new UrlQuery().UrlIndexServerApi({ f: "/test" })
-			);
+      // to get the update
+      expect(fetchGetSpy).toBeCalled();
+      expect(fetchGetSpy).toBeCalledWith(
+        new UrlQuery().UrlIndexServerApi({ f: "/test" })
+      );
 
-			// to update context
-			expect(contextValues.dispatch).toBeCalled();
-			expect(contextValues.dispatch).toBeCalledWith({
-				payload: { fileIndexItems: [], pageType: "Search" },
-				type: "force-reset"
-			});
+      // to update context
+      expect(contextValues.dispatch).toBeCalled();
+      expect(contextValues.dispatch).toBeCalledWith({
+        payload: { fileIndexItems: [], pageType: "Search" },
+        type: "force-reset"
+      });
 
-			// cleanup
-			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
-			modal.unmount();
-		});
+      // cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
 
-		it("test if handleExit is called", () => {
-			// simulate if a user press on close
-			// use as ==> import * as Modal from './modal';
-			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
-				props.handleExit();
-				return <>{props.children}</>;
-			});
+    it("test if handleExit is called", () => {
+      // simulate if a user press on close
+      // use as ==> import * as Modal from './modal';
+      jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+        props.handleExit();
+        return <>{props.children}</>;
+      });
 
-			var handleExitSpy = jest.fn();
+      var handleExitSpy = jest.fn();
 
-			var component = mount(
-				<ModalArchiveMkdir
-					state={{} as any}
-					isOpen={true}
-					dispatch={jest.fn()}
-					handleExit={handleExitSpy}
-				/>
-			);
+      var component = mount(
+        <ModalArchiveMkdir
+          state={{} as any}
+          isOpen={true}
+          dispatch={jest.fn()}
+          handleExit={handleExitSpy}
+        />
+      );
 
-			expect(handleExitSpy).toBeCalled();
+      expect(handleExitSpy).toBeCalled();
 
-			// and clean afterwards
-			component.unmount();
-		});
-	});
+      // and clean afterwards
+      component.unmount();
+    });
+  });
 });

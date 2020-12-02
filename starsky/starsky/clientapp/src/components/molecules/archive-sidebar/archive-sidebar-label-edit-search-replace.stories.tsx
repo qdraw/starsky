@@ -6,20 +6,20 @@ import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-search-replace";
 
 storiesOf(
-	"components/molecules/archive-sidebar/label-edit-search-replace",
-	module
+  "components/molecules/archive-sidebar/label-edit-search-replace",
+  module
 )
-	.add("disabled", () => {
-		globalHistory.navigate("/");
-		return <ArchiveSidebarLabelEditSearchReplace />;
-	})
-	.add("enabled", () => {
-		globalHistory.navigate("/?select=test.jpg");
-		var archive = {} as IArchiveProps;
-		return (
-			<ArchiveContextProvider {...archive}>
-				{" "}
-				<ArchiveSidebarLabelEditSearchReplace />
-			</ArchiveContextProvider>
-		);
-	});
+  .add("disabled", () => {
+    globalHistory.navigate("/");
+    return <ArchiveSidebarLabelEditSearchReplace />;
+  })
+  .add("enabled", () => {
+    globalHistory.navigate("/?select=test.jpg");
+    var archive = {} as IArchiveProps;
+    return (
+      <ArchiveContextProvider {...archive}>
+        {" "}
+        <ArchiveSidebarLabelEditSearchReplace />
+      </ArchiveContextProvider>
+    );
+  });

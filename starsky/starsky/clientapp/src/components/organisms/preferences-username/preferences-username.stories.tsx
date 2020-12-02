@@ -3,8 +3,8 @@ import React from "react";
 import PreferencesUsername from "./preferences-username";
 
 storiesOf("components/organisms/preferences-username", module).add(
-	"default",
-	() => {
-		return <PreferencesUsername />;
-	}
+  "default",
+  () => {
+    return <PreferencesUsername />;
+  }
 );

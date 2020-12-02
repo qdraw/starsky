@@ -10,25 +10,25 @@ import { URLPath } from "../shared/url-path";
 interface ITrashPageProps {}
 
 const TrashPage: FunctionComponent<RouteComponentProps<ITrashPageProps>> = (
-	props
+  props
 ) => {
-	var history = useLocation();
+  var history = useLocation();
 
-	var urlObject = new URLPath().StringToIUrl(history.location.search);
-	var searchList = useTrashList(urlObject.p);
+  var urlObject = new URLPath().StringToIUrl(history.location.search);
+  var searchList = useTrashList(urlObject.p);
 
-	if (!searchList) return <>Something went wrong</>;
-	if (!searchList.archive) return <>Something went wrong</>;
-	if (searchList.pageType === PageType.Loading)
-		return (
-			<Preloader
-				isTransition={false}
-				isOverlay={true}
-				isDetailMenu={false}
-			></Preloader>
-		);
+  if (!searchList) return <>Something went wrong</>;
+  if (!searchList.archive) return <>Something went wrong</>;
+  if (searchList.pageType === PageType.Loading)
+    return (
+      <Preloader
+        isTransition={false}
+        isOverlay={true}
+        isDetailMenu={false}
+      ></Preloader>
+    );
 
-	return <ArchiveContextWrapper {...searchList.archive} />;
+  return <ArchiveContextWrapper {...searchList.archive} />;
 };
 
 export default TrashPage;

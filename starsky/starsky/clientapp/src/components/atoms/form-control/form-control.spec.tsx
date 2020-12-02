@@ -4,319 +4,319 @@ import { act } from "react-dom/test-utils";
 import FormControl from "./form-control";
 
 describe("FormControl", () => {
-	it("renders", () => {
-		shallow(
-			<FormControl contentEditable={true} onBlur={() => {}} name="test">
-				&nbsp;
-			</FormControl>
-		);
-	});
+  it("renders", () => {
+    shallow(
+      <FormControl contentEditable={true} onBlur={() => {}} name="test">
+        &nbsp;
+      </FormControl>
+    );
+  });
 
-	describe("with events", () => {
-		beforeAll(() => {
-			(window as any).getSelection = () => {
-				return {
-					removeAllRanges: () => {}
-				};
-			};
-		});
+  describe("with events", () => {
+    beforeAll(() => {
+      (window as any).getSelection = () => {
+        return {
+          removeAllRanges: () => {}
+        };
+      };
+    });
 
-		it("limitLengthKey - null/nothing", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					test
-				</FormControl>
-			);
+    it("limitLengthKey - null/nothing", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          test
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "";
-				component.simulate("keydown", {
-					key: "x",
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate("keydown", {
+          key: "x",
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthKey - keydown max limit/preventDefault", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					123456789
-				</FormControl>
-			);
+    it("limitLengthKey - keydown max limit/preventDefault", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          123456789
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "12345678901";
-				component.simulate("keydown", {
-					key: "x",
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.getDOMNode().innerHTML = "12345678901";
+        component.simulate("keydown", {
+          key: "x",
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			expect(preventDefaultSpy).toBeCalled();
+      expect(preventDefaultSpy).toBeCalled();
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthKey - keydown max limit but allow control/command a", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					123456789
-				</FormControl>
-			);
+    it("limitLengthKey - keydown max limit but allow control/command a", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          123456789
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "12345678901";
-				component.simulate("keydown", {
-					key: "a",
-					metaKey: true,
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.getDOMNode().innerHTML = "12345678901";
+        component.simulate("keydown", {
+          key: "a",
+          metaKey: true,
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			// command a is to select all
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      // command a is to select all
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthKey - keydown max limit but allow control/command e", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					123456789
-				</FormControl>
-			);
+    it("limitLengthKey - keydown max limit but allow control/command e", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          123456789
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "12345678901";
-				component.simulate("keydown", {
-					key: "e",
-					ctrlKey: true,
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.getDOMNode().innerHTML = "12345678901";
+        component.simulate("keydown", {
+          key: "e",
+          ctrlKey: true,
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			// ctrl e to go the begin of the field
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      // ctrl e to go the begin of the field
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthKey - keydown ok", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					123456
-				</FormControl>
-			);
+    it("limitLengthKey - keydown ok", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          123456
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "1234567";
+      act(() => {
+        component.getDOMNode().innerHTML = "1234567";
 
-				component.simulate("keydown", {
-					key: "x",
-					preventDefault: preventDefaultSpy
-				});
-			});
+        component.simulate("keydown", {
+          key: "x",
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					987654321
-				</FormControl>
-			);
+    it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          987654321
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			var mockDataTransfer = {
-				getData: () => {
-					return "01";
-				}
-			};
+      var mockDataTransfer = {
+        getData: () => {
+          return "01";
+        }
+      };
 
-			act(() => {
-				component.simulate("paste", {
-					clipboardData: mockDataTransfer,
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.simulate("paste", {
+          clipboardData: mockDataTransfer,
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			// limit!
-			expect(preventDefaultSpy).toBeCalled();
+      // limit!
+      expect(preventDefaultSpy).toBeCalled();
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthPaste - copy -> paste ok", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					12345
-				</FormControl>
-			);
+    it("limitLengthPaste - copy -> paste ok", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          12345
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			var mockDataTransfer = {
-				getData: () => {
-					return "?";
-				}
-			};
+      var mockDataTransfer = {
+        getData: () => {
+          return "?";
+        }
+      };
 
-			act(() => {
-				component.simulate("paste", {
-					clipboardData: mockDataTransfer,
-					preventDefault: preventDefaultSpy
-				});
-			});
+      act(() => {
+        component.simulate("paste", {
+          clipboardData: mockDataTransfer,
+          preventDefault: preventDefaultSpy
+        });
+      });
 
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthBlur - null/nothing", () => {
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={() => {}}
-					name="test"
-				>
-					&nbsp;
-				</FormControl>
-			);
+    it("limitLengthBlur - null/nothing", () => {
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          &nbsp;
+        </FormControl>
+      );
 
-			var preventDefaultSpy = jest.fn();
+      var preventDefaultSpy = jest.fn();
 
-			act(() => {
-				component.getDOMNode().innerHTML = "";
-				component.simulate("blur");
-			});
+      act(() => {
+        component.getDOMNode().innerHTML = "";
+        component.simulate("blur");
+      });
 
-			expect(preventDefaultSpy).toBeCalledTimes(0);
+      expect(preventDefaultSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthBlur - onBlur pushed/ok", () => {
-			var onBlurSpy = jest.fn();
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={onBlurSpy}
-					name="test"
-				>
-					abcdefghi
-				</FormControl>
-			);
+    it("limitLengthBlur - onBlur pushed/ok", () => {
+      var onBlurSpy = jest.fn();
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={onBlurSpy}
+          name="test"
+        >
+          abcdefghi
+        </FormControl>
+      );
 
-			act(() => {
-				component.simulate("blur");
-			});
+      act(() => {
+        component.simulate("blur");
+      });
 
-			expect(component.exists(".warning-box")).toBeFalsy();
-			expect(onBlurSpy).toBeCalled();
+      expect(component.exists(".warning-box")).toBeFalsy();
+      expect(onBlurSpy).toBeCalled();
 
-			onBlurSpy.mockReset();
-			component.unmount();
-		});
+      onBlurSpy.mockReset();
+      component.unmount();
+    });
 
-		it("limitLengthBlur - onBlur limit/preventDefault", () => {
-			var onBlurSpy = jest.fn();
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={onBlurSpy}
-					name="test123"
-				>
-					012345678919000000
-				</FormControl>
-			);
+    it("limitLengthBlur - onBlur limit/preventDefault", () => {
+      var onBlurSpy = jest.fn();
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={onBlurSpy}
+          name="test123"
+        >
+          012345678919000000
+        </FormControl>
+      );
 
-			// need to dispatch on child element
-			component.find(".form-control").simulate("blur");
+      // need to dispatch on child element
+      component.find(".form-control").simulate("blur");
 
-			expect(onBlurSpy).toBeCalledTimes(0);
-			expect(component.exists(".warning-box")).toBeTruthy();
+      expect(onBlurSpy).toBeCalledTimes(0);
+      expect(component.exists(".warning-box")).toBeTruthy();
 
-			component.unmount();
-		});
+      component.unmount();
+    });
 
-		it("limitLengthBlur - onBlur limit", () => {
-			var onBlurSpy = jest.fn();
-			var component = mount(
-				<FormControl
-					contentEditable={true}
-					maxlength={10}
-					onBlur={onBlurSpy}
-					name="test"
-				>
-					1234567890123
-				</FormControl>
-			);
+    it("limitLengthBlur - onBlur limit", () => {
+      var onBlurSpy = jest.fn();
+      var component = mount(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={onBlurSpy}
+          name="test"
+        >
+          1234567890123
+        </FormControl>
+      );
 
-			act(() => {
-				component.simulate("blur");
-			});
+      act(() => {
+        component.simulate("blur");
+      });
 
-			expect(component.exists(".warning-box")).toBeTruthy();
-			expect(onBlurSpy).toBeCalledTimes(0);
+      expect(component.exists(".warning-box")).toBeTruthy();
+      expect(onBlurSpy).toBeCalledTimes(0);
 
-			component.unmount();
-		});
-	});
+      component.unmount();
+    });
+  });
 });

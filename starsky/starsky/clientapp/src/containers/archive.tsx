@@ -10,42 +10,42 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { URLPath } from "../shared/url-path";
 
 function Archive(archive: IArchiveProps) {
-	var history = useLocation();
+  var history = useLocation();
 
-	// The sidebar
-	const [sidebar, setSidebar] = React.useState(
-		new URLPath().StringToIUrl(history.location.search).sidebar
-	);
-	useEffect(() => {
-		setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
-	}, [history.location.search]);
+  // The sidebar
+  const [sidebar, setSidebar] = React.useState(
+    new URLPath().StringToIUrl(history.location.search).sidebar
+  );
+  useEffect(() => {
+    setSidebar(new URLPath().StringToIUrl(history.location.search).sidebar);
+  }, [history.location.search]);
 
-	if (archive && (!archive.colorClassUsage || !archive.colorClassActiveList))
-		return <>(Archive) = no colorClassLists</>;
+  if (archive && (!archive.colorClassUsage || !archive.colorClassActiveList))
+    return <>(Archive) = no colorClassLists</>;
 
-	return (
-		<>
-			<MenuArchive />
-			<div className={!sidebar ? "archive" : "archive collapsed"}>
-				<ArchiveSidebar {...archive} />
+  return (
+    <>
+      <MenuArchive />
+      <div className={!sidebar ? "archive" : "archive collapsed"}>
+        <ArchiveSidebar {...archive} />
 
-				<div className="content">
-					<Breadcrumb
-						breadcrumb={archive.breadcrumb}
-						subPath={archive.subPath}
-					/>
-					<ArchivePagination relativeObjects={archive.relativeObjects} />
+        <div className="content">
+          <Breadcrumb
+            breadcrumb={archive.breadcrumb}
+            subPath={archive.subPath}
+          />
+          <ArchivePagination relativeObjects={archive.relativeObjects} />
 
-					<ColorClassFilter
-						itemsCount={archive.collectionsCount}
-						subPath={archive.subPath}
-						colorClassActiveList={archive.colorClassActiveList}
-						colorClassUsage={archive.colorClassUsage}
-					/>
-					<ItemListView {...archive}> </ItemListView>
-				</div>
-			</div>
-		</>
-	);
+          <ColorClassFilter
+            itemsCount={archive.collectionsCount}
+            subPath={archive.subPath}
+            colorClassActiveList={archive.colorClassActiveList}
+            colorClassUsage={archive.colorClassUsage}
+          />
+          <ItemListView {...archive}> </ItemListView>
+        </div>
+      </div>
+    </>
+  );
 }
 export default Archive;

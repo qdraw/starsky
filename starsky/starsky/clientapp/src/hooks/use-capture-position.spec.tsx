@@ -2,32 +2,32 @@ import capturePosition, { ICaptionPosition } from "./use-capture-position";
 import { shallowReactHook } from "./___tests___/test-hook";
 
 describe("capturePosition", () => {
-	let setupComponent;
-	let hook: ICaptionPosition;
-	let scrollToSpy: jest.SpyInstance<any>;
+  let setupComponent;
+  let hook: ICaptionPosition;
+  let scrollToSpy: jest.SpyInstance<any>;
 
-	beforeEach(() => {
-		setupComponent = shallowReactHook(capturePosition, []); // Mount a Component with our hook
-		hook = setupComponent.componentHook as ICaptionPosition;
+  beforeEach(() => {
+    setupComponent = shallowReactHook(capturePosition, []); // Mount a Component with our hook
+    hook = setupComponent.componentHook as ICaptionPosition;
 
-		scrollToSpy = jest
-			.spyOn(window, "scrollTo")
-			.mockImplementationOnce(() => {});
-	});
+    scrollToSpy = jest
+      .spyOn(window, "scrollTo")
+      .mockImplementationOnce(() => {});
+  });
 
-	it("freeze", () => {
-		hook.freeze();
+  it("freeze", () => {
+    hook.freeze();
 
-		expect(document.body.style.top).toBe("0px");
-		expect(document.body.style.position).toBe("fixed");
-		expect(scrollToSpy).toBeCalledTimes(0);
+    expect(document.body.style.top).toBe("0px");
+    expect(document.body.style.position).toBe("fixed");
+    expect(scrollToSpy).toBeCalledTimes(0);
 
-		scrollToSpy.mockReset();
-	});
+    scrollToSpy.mockReset();
+  });
 
-	it("unfreeze", () => {
-		hook.unfreeze();
+  it("unfreeze", () => {
+    hook.unfreeze();
 
-		expect(scrollToSpy).toBeCalledTimes(1);
-	});
+    expect(scrollToSpy).toBeCalledTimes(1);
+  });
 });
