@@ -219,14 +219,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 				if (new Keyboard().isInForm(event)) return;
 				event.preventDefault();
 				console.log(event);
-				if (
-					!new ClipboardHelper().Copy(
-						tagsReference,
-						descriptionReference,
-						titleReference
-					)
-				)
-					return;
+				var copy = new ClipboardHelper().Copy(
+					tagsReference,
+					descriptionReference,
+					titleReference
+				);
+				if (!copy) return;
 				setCopyPasteAction(MessageCopiedLabels);
 			},
 			[props]
@@ -240,17 +238,14 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 		useKeyboardEvent(
 			/^([v])$/,
 			(event: KeyboardEvent) => {
-				console.log("---dddd");
-
 				if (new Keyboard().isInForm(event)) return;
 				event.preventDefault();
-				console.log(event);
-
-				new ClipboardHelper().Paste(
+				const paste = new ClipboardHelper().Paste(
 					tagsReference,
 					descriptionReference,
 					titleReference
 				);
+				if (!paste) return;
 				setCopyPasteAction(MessagePasteLabels);
 			},
 			[props]
