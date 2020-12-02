@@ -1,5 +1,5 @@
 import React from "react";
-import { ArchiveContext } from "../../../contexts/archive-context";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { CastToInterface } from "../../../shared/cast-to-interface";
@@ -15,11 +15,15 @@ import Modal from "../../atoms/modal/modal";
 interface IModalRenameFileProps {
 	isOpen: boolean;
 	handleExit: Function;
+	state: IArchiveProps;
+	dispatch: React.Dispatch<ArchiveAction>;
 }
 
-const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (
-	props
-) => {
+const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
+	state,
+	dispatch,
+	...props
+}) => {
 	// content
 	const settings = useGlobalSettings();
 	const language = new Language(settings.language);
@@ -39,9 +43,6 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (
 		"De map bestaat al, probeer een andere naam",
 		"The folder already exists, try a different name"
 	);
-
-	// Context of Archive
-	let { state, dispatch } = React.useContext(ArchiveContext);
 
 	// to show errors
 	const useErrorHandler = (initialState: string | null) => {
