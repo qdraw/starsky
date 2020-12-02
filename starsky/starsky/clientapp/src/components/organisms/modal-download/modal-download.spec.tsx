@@ -31,7 +31,7 @@ describe("ModalDownload", () => {
 		// use ==> import * as useFetch from '../hooks/use-fetch';
 		const mockGetIConnectionDefault = {
 			statusCode: 200,
-			data: null,
+			data: null
 		} as IConnectionDefault;
 		var useFetchSpy = jest
 			.spyOn(useFetch, "default")
@@ -61,7 +61,7 @@ describe("ModalDownload", () => {
 		// use ==> import * as useFetch from '../hooks/use-fetch';
 		const mockGetIConnectionDefault = {
 			statusCode: 200,
-			data: null,
+			data: null
 		} as IConnectionDefault;
 
 		jest
@@ -75,10 +75,12 @@ describe("ModalDownload", () => {
 			.mockImplementationOnce(() => {});
 
 		// use ==> import * as FetchGet from '../shared/fetch-get';
-		const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-			statusCode: 200,
-			data: null,
-		} as IConnectionDefault);
+		const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+			{
+				statusCode: 200,
+				data: null
+			} as IConnectionDefault
+		);
 
 		var fetchPostSpy = jest
 			.spyOn(FetchPost, "default")
@@ -112,7 +114,7 @@ describe("ModalDownload", () => {
 		// use ==> import * as useFetch from '../hooks/use-fetch';
 		const mockGetIConnectionDefault = {
 			statusCode: 415,
-			data: null,
+			data: null
 		} as IConnectionDefault;
 		var useFetchSpy = jest
 			.spyOn(useFetch, "default")
@@ -151,14 +153,21 @@ describe("ModalDownload", () => {
 		// use ==> import * as useFetch from '../hooks/use-fetch';
 		const mockGetIConnectionDefault = {
 			statusCode: 415,
-			data: null,
+			data: null
 		} as IConnectionDefault;
-		jest.spyOn(useFetch, "default").mockImplementationOnce(() => mockGetIConnectionDefault);
+		jest
+			.spyOn(useFetch, "default")
+			.mockImplementationOnce(() => mockGetIConnectionDefault);
 
 		var handleExitSpy = jest.fn();
 
 		var modal = mount(
-			<ModalDownload collections={false} select={["/"]} isOpen={true} handleExit={handleExitSpy} />
+			<ModalDownload
+				collections={false}
+				select={["/"]}
+				isOpen={true}
+				handleExit={handleExitSpy}
+			/>
 		);
 
 		expect(handleExitSpy).toBeCalled();

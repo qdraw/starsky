@@ -1,133 +1,167 @@
-import React from 'react';
-import { ArchiveContext } from '../../../contexts/archive-context';
-import useGlobalSettings from '../../../hooks/use-global-settings';
-import { IArchiveProps } from '../../../interfaces/IArchiveProps';
-import { CastToInterface } from '../../../shared/cast-to-interface';
-import FetchGet from '../../../shared/fetch-get';
-import FetchPost from '../../../shared/fetch-post';
-import { FileExtensions } from '../../../shared/file-extensions';
-import { FileListCache } from '../../../shared/filelist-cache';
-import { Language } from '../../../shared/language';
-import { UrlQuery } from '../../../shared/url-query';
-import FormControl from '../../atoms/form-control/form-control';
-import Modal from '../../atoms/modal/modal';
+import React from "react";
+import { ArchiveContext } from "../../../contexts/archive-context";
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import { CastToInterface } from "../../../shared/cast-to-interface";
+import FetchGet from "../../../shared/fetch-get";
+import FetchPost from "../../../shared/fetch-post";
+import { FileExtensions } from "../../../shared/file-extensions";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
+import { UrlQuery } from "../../../shared/url-query";
+import FormControl from "../../atoms/form-control/form-control";
+import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFileProps {
-  isOpen: boolean;
-  handleExit: Function;
+	isOpen: boolean;
+	handleExit: Function;
 }
 
-const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (props) => {
+const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = (
+	props
+) => {
+	// content
+	const settings = useGlobalSettings();
+	const language = new Language(settings.language);
+	const MessageFeatureName = language.text(
+		"Nieuwe map aanmaken",
+		"Create new folder"
+	);
+	const MessageNonValidDirectoryName = language.text(
+		"Controleer de naam, deze map kan niet zo worden aangemaakt",
+		"Check the name, this folder cannot be created in this way"
+	);
+	const MessageGeneralMkdirCreateError = language.text(
+		"Er is misgegaan met het aanmaken van deze map",
+		"An error occurred while creating this folder"
+	);
+	const MessageDirectoryExistError = language.text(
+		"De map bestaat al, probeer een andere naam",
+		"The folder already exists, try a different name"
+	);
 
-  // content
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageFeatureName = language.text("Nieuwe map aanmaken", "Create new folder");
-  const MessageNonValidDirectoryName = language.text("Controleer de naam, deze map kan niet zo worden aangemaakt",
-    "Check the name, this folder cannot be created in this way");
-  const MessageGeneralMkdirCreateError = language.text("Er is misgegaan met het aanmaken van deze map",
-    "An error occurred while creating this folder");
-  const MessageDirectoryExistError = language.text("De map bestaat al, probeer een andere naam",
-    "The folder already exists, try a different name");
+	// Context of Archive
+	let { state, dispatch } = React.useContext(ArchiveContext);
 
-  // Context of Archive
-  let { state, dispatch } = React.useContext(ArchiveContext);
+	// to show errors
+	const useErrorHandler = (initialState: string | null) => {
+		return initialState;
+	};
+	const [error, setError] = React.useState(useErrorHandler(null));
 
-  // to show errors
-  const useErrorHandler = (initialState: string | null) => { return initialState };
-  const [error, setError] = React.useState(useErrorHandler(null));
+	// when you are waiting on the API
+	const [loading, setIsLoading] = React.useState(false);
 
-  // when you are waiting on the API
-  const [loading, setIsLoading] = React.useState(false);
+	// The directory name to submit
+	const [directoryName, setDirectoryName] = React.useState("");
 
-  // The directory name to submit
-  const [directoryName, setDirectoryName] = React.useState('');
+	// allow summit
+	const [buttonState, setButtonState] = React.useState(false);
 
-  // allow summit
-  const [buttonState, setButtonState] = React.useState(false);
+	const [isFormEnabled, setFormEnabled] = React.useState(true);
 
-  const [isFormEnabled, setFormEnabled] = React.useState(true);
+	function handleUpdateChange(
+		event:
+			| React.ChangeEvent<HTMLDivElement>
+			| React.KeyboardEvent<HTMLDivElement>
+	) {
+		let fieldValue = "";
+		if (event.currentTarget.textContent) {
+			fieldValue = event.currentTarget.textContent.trim();
+		}
 
-  function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
+		setDirectoryName(fieldValue);
+		setButtonState(true);
 
-    let fieldValue = "";
-    if (event.currentTarget.textContent) {
-      fieldValue = event.currentTarget.textContent.trim();
-    }
+		var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
 
-    setDirectoryName(fieldValue);
-    setButtonState(true)
+		if (!isValidFileName) {
+			setError(MessageNonValidDirectoryName);
+			setButtonState(false);
+		} else {
+			setError(null);
+		}
+	}
 
-    var isValidFileName = new FileExtensions().IsValidDirectoryName(fieldValue);
+	async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
+		// Show icon with load ++ disable forms
+		setFormEnabled(false);
+		setIsLoading(true);
 
-    if (!isValidFileName) {
-      setError(MessageNonValidDirectoryName);
-      setButtonState(false);
-    }
-    else {
-      setError(null);
-    }
-  }
+		var newDirectorySubPath = `${state.subPath}/${directoryName}`;
 
-  async function pushRenameChange(event: React.MouseEvent<HTMLButtonElement>) {
-    // Show icon with load ++ disable forms
-    setFormEnabled(false);
-    setIsLoading(true);
+		// API call
+		var bodyParams = new URLSearchParams();
+		bodyParams.append("f", newDirectorySubPath);
 
-    var newDirectorySubPath = `${state.subPath}/${directoryName}`
+		var result = await FetchPost(
+			new UrlQuery().UrlSyncMkdir(),
+			bodyParams.toString()
+		);
 
-    // API call
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("f", newDirectorySubPath);
+		if (result.statusCode !== 200) {
+			setError(
+				result.statusCode !== 409
+					? MessageGeneralMkdirCreateError
+					: MessageDirectoryExistError
+			);
+			// and renable
+			setIsLoading(false);
+			setFormEnabled(true);
+			return;
+		}
 
-    var result = await FetchPost(new UrlQuery().UrlSyncMkdir(), bodyParams.toString())
+		// Force update
+		var connectionResult = await FetchGet(
+			new UrlQuery().UrlIndexServerApi({ f: state.subPath })
+		);
+		var forceSyncResult = new CastToInterface().MediaArchive(
+			connectionResult.data
+		);
+		var payload = forceSyncResult.data as IArchiveProps;
+		if (payload.fileIndexItems) {
+			dispatch({ type: "force-reset", payload });
+		}
 
-    if (result.statusCode !== 200) {
-      setError(result.statusCode !== 409 ? MessageGeneralMkdirCreateError : MessageDirectoryExistError);
-      // and renable
-      setIsLoading(false);
-      setFormEnabled(true);
-      return;
-    }
+		new FileListCache().CacheCleanEverything();
+		// Close window
+		props.handleExit();
+	}
 
-    // Force update 
-    var connectionResult = await FetchGet(new UrlQuery().UrlIndexServerApi({ f: state.subPath }))
-    var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
-    var payload = forceSyncResult.data as IArchiveProps;
-    if (payload.fileIndexItems) {
-      dispatch({ type: 'force-reset', payload });
-    }
+	return (
+		<Modal
+			id="modal-archive-mkdir"
+			isOpen={props.isOpen}
+			handleExit={() => {
+				props.handleExit();
+			}}
+		>
+			<div className="content">
+				<div className="modal content--subheader">{MessageFeatureName}</div>
+				<div className="modal content--text">
+					<FormControl
+						name="directoryname"
+						onInput={handleUpdateChange}
+						contentEditable={isFormEnabled}
+					>
+						&nbsp;
+					</FormControl>
 
-    new FileListCache().CacheCleanEverything();
-    // Close window
-    props.handleExit();
-  }
+					{error && (
+						<div className="warning-box--under-form warning-box">{error}</div>
+					)}
 
-  return <Modal
-    id="modal-archive-mkdir"
-    isOpen={props.isOpen}
-    handleExit={() => {
-      props.handleExit()
-    }}>
-    <div className="content">
-      <div className="modal content--subheader">{MessageFeatureName}</div>
-      <div className="modal content--text">
-
-        <FormControl name="directoryname"
-          onInput={handleUpdateChange}
-          contentEditable={isFormEnabled}>
-          &nbsp;
-        </FormControl>
-
-        {error && <div className="warning-box--under-form warning-box">{error}</div>}
-
-        <button disabled={!isFormEnabled || loading || !buttonState}
-          className="btn btn--default" onClick={pushRenameChange}>
-          {loading ? 'Loading...' : MessageFeatureName}
-        </button>
-      </div>
-    </div>
-  </Modal>
+					<button
+						disabled={!isFormEnabled || loading || !buttonState}
+						className="btn btn--default"
+						onClick={pushRenameChange}
+					>
+						{loading ? "Loading..." : MessageFeatureName}
+					</button>
+				</div>
+			</div>
+		</Modal>
+	);
 };
 
-export default ModalArchiveMkdir
+export default ModalArchiveMkdir;

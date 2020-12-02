@@ -1,104 +1,129 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import * as FetchPost from '../../../shared/fetch-post';
-import { UrlQuery } from '../../../shared/url-query';
-import * as Modal from '../../atoms/modal/modal';
-import ModalDatetime from './modal-edit-datetime';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchPost from "../../../shared/fetch-post";
+import { UrlQuery } from "../../../shared/url-query";
+import * as Modal from "../../atoms/modal/modal";
+import ModalDatetime from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
+	it("renders", () => {
+		shallow(
+			<ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>
+				test
+			</ModalDatetime>
+		);
+	});
+	describe("with Context", () => {
+		beforeEach(() => {
+			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+		});
 
-  it("renders", () => {
-    shallow(<ModalDatetime
-      isOpen={true}
-      subPath="/"
-      handleExit={() => { }}>
-      test
-    </ModalDatetime>)
-  });
-  describe("with Context", () => {
+		it("no date input", () => {
+			var modal = mount(
+				<ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
+			);
 
-    beforeEach(() => {
-      jest.spyOn(window, 'scrollTo')
-        .mockImplementationOnce(() => { })
-    });
+			expect(modal.exists(".warning-box")).toBeTruthy();
 
-    it("no date input", () => {
-      var modal = mount(<ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => { }} />)
+			// and button is disabled
+			var submitButtonBefore = (modal
+				.find(".btn--default")
+				.getDOMNode() as HTMLButtonElement).disabled;
+			expect(submitButtonBefore).toBeTruthy();
+		});
 
-      expect(modal.exists('.warning-box')).toBeTruthy();
+		it("example date no error dialog", () => {
+			var modal = mount(
+				<ModalDatetime
+					dateTime="2020-01-01T01:29:40"
+					subPath={"/test"}
+					isOpen={true}
+					handleExit={() => {}}
+				/>
+			);
 
-      // and button is disabled
-      var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
-      expect(submitButtonBefore).toBeTruthy();
-    });
+			// no warning
+			expect(modal.exists(".warning-box")).toBeFalsy();
 
-    it("example date no error dialog", () => {
-      var modal = mount(<ModalDatetime dateTime="2020-01-01T01:29:40" subPath={"/test"} isOpen={true} handleExit={() => { }} />)
+			// and button is enabled
+			var submitButtonBefore = (modal
+				.find(".btn--default")
+				.getDOMNode() as HTMLButtonElement).disabled;
+			expect(submitButtonBefore).toBeFalsy();
+		});
 
-      // no warning
-      expect(modal.exists('.warning-box')).toBeFalsy();
+		it("change all options", (done) => {
+			// spy on fetch
+			// use this import => import * as FetchPost from '../shared/fetch-post';
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ data: null, statusCode: 200 }
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      // and button is enabled
-      var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
-      expect(submitButtonBefore).toBeFalsy();
-    });
+			var modal = mount(
+				<ModalDatetime
+					dateTime="2020-01-01T01:29:40"
+					subPath={"/test"}
+					isOpen={true}
+					handleExit={() => {
+						done();
+					}}
+				/>
+			);
 
-    it("change all options", (done) => {
+			// update component + and blur
+			modal.find('[data-name="year"]').getDOMNode().textContent = "1998";
+			modal.find('[data-name="year"]').simulate("blur");
 
-      // spy on fetch
-      // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ data: null, statusCode: 200 });
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			modal.find('[data-name="month"]').getDOMNode().textContent = "12";
+			modal.find('[data-name="month"]').simulate("blur");
 
-      var modal = mount(<ModalDatetime dateTime="2020-01-01T01:29:40" subPath={"/test"} isOpen={true} handleExit={() => {
-        done();
-      }} />)
+			modal.find('[data-name="date"]').getDOMNode().textContent = "1";
+			modal.find('[data-name="date"]').simulate("blur");
 
-      // update component + and blur
-      modal.find('[data-name="year"]').getDOMNode().textContent = "1998";
-      modal.find('[data-name="year"]').simulate('blur');
+			modal.find('[data-name="hour"]').getDOMNode().textContent = "13";
+			modal.find('[data-name="hour"]').simulate("blur");
 
-      modal.find('[data-name="month"]').getDOMNode().textContent = "12";
-      modal.find('[data-name="month"]').simulate('blur');
+			modal.find('[data-name="minute"]').getDOMNode().textContent = "5";
+			modal.find('[data-name="minute"]').simulate("blur");
 
-      modal.find('[data-name="date"]').getDOMNode().textContent = "1";
-      modal.find('[data-name="date"]').simulate('blur');
+			modal.find('[data-name="sec"]').getDOMNode().textContent = "5";
+			modal.find('[data-name="sec"]').simulate("blur");
 
-      modal.find('[data-name="hour"]').getDOMNode().textContent = "13";
-      modal.find('[data-name="hour"]').simulate('blur');
+			modal.find(".btn--default").simulate("click");
 
-      modal.find('[data-name="minute"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="minute"]').simulate('blur');
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().prefix + "/api/update",
+				"f=%2Ftest&datetime=1998-12-01T13%3A05%3A05"
+			);
+		});
 
-      modal.find('[data-name="sec"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="sec"]').simulate('blur');
+		it("test if handleExit is called", () => {
+			// simulate if a user press on close
+			// use as ==> import * as Modal from './modal';
+			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+				props.handleExit();
+				return <>{props.children}</>;
+			});
 
-      modal.find('.btn--default').simulate('click');
+			var handleExitSpy = jest.fn();
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "f=%2Ftest&datetime=1998-12-01T13%3A05%3A05");
-    });
+			var component = mount(
+				<ModalDatetime
+					subPath="/test.jpg"
+					isOpen={true}
+					handleExit={handleExitSpy}
+				/>
+			);
 
-    it("test if handleExit is called", () => {
-      // simulate if a user press on close
-      // use as ==> import * as Modal from './modal';
-      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
-        props.handleExit();
-        return <>{props.children}</>
-      });
+			expect(handleExitSpy).toBeCalled();
 
-      var handleExitSpy = jest.fn();
-
-      var component = mount(<ModalDatetime subPath="/test.jpg" isOpen={true} handleExit={handleExitSpy} />);
-
-      expect(handleExitSpy).toBeCalled();
-
-      // and clean afterwards
-      component.unmount();
-    });
-
-
-  });
-
+			// and clean afterwards
+			component.unmount();
+		});
+	});
 });

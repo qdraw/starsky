@@ -1,177 +1,264 @@
 import React, { useEffect, useState } from "react";
-import { ArchiveContext } from '../../../contexts/archive-context';
-import useGlobalSettings from '../../../hooks/use-global-settings';
-import useLocation from '../../../hooks/use-location';
-import { PageType } from '../../../interfaces/IDetailView';
-import { IExifStatus } from '../../../interfaces/IExifStatus';
-import { ISidebarUpdate } from '../../../interfaces/ISidebarUpdate';
-import { CastToInterface } from '../../../shared/cast-to-interface';
-import FetchPost from '../../../shared/fetch-post';
-import { Language } from '../../../shared/language';
-import { ClearSearchCache } from '../../../shared/search/clear-search-cache';
-import { SidebarUpdate } from '../../../shared/sidebar-update';
-import { URLPath } from '../../../shared/url-path';
-import { UrlQuery } from '../../../shared/url-query';
-import FormControl from '../../atoms/form-control/form-control';
-import Notification, { NotificationType } from '../../atoms/notification/notification';
-import Preloader from '../../atoms/preloader/preloader';
+import { ArchiveContext } from "../../../contexts/archive-context";
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import useLocation from "../../../hooks/use-location";
+import { PageType } from "../../../interfaces/IDetailView";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { ISidebarUpdate } from "../../../interfaces/ISidebarUpdate";
+import { CastToInterface } from "../../../shared/cast-to-interface";
+import FetchPost from "../../../shared/fetch-post";
+import { Language } from "../../../shared/language";
+import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
+import { SidebarUpdate } from "../../../shared/sidebar-update";
+import { URLPath } from "../../../shared/url-path";
+import { UrlQuery } from "../../../shared/url-query";
+import FormControl from "../../atoms/form-control/form-control";
+import Notification, {
+	NotificationType
+} from "../../atoms/notification/notification";
+import Preloader from "../../atoms/preloader/preloader";
 
 const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
+	const settings = useGlobalSettings();
+	const language = new Language(settings.language);
+	const MessageSearchAndReplaceName = language.text(
+		"Zoeken en vervangen",
+		"Search and replace"
+	);
+	const MessageTitleName = language.text("Titel", "Title");
+	const MessageErrorReadOnly = new Language(settings.language).text(
+		"Eén of meerdere bestanden zijn alleen lezen. " +
+			"Alleen de bestanden met schrijfrechten zijn geupdate.",
+		"One or more files are read only. " +
+			"Only the files with write permissions have been updated."
+	);
+	const MessageErrorNotFoundSourceMissing = new Language(
+		settings.language
+	).text(
+		"Eén of meerdere bestanden zijn al verdwenen. " +
+			"Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
+		"One or more files are already gone. " +
+			"Only the files that are present are updated. Run a manual sync"
+	);
 
-  const settings = useGlobalSettings();
-  const language = new Language(settings.language);
-  const MessageSearchAndReplaceName = language.text("Zoeken en vervangen", "Search and replace");
-  const MessageTitleName = language.text("Titel", "Title");
-  const MessageErrorReadOnly = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn alleen lezen. " +
-    "Alleen de bestanden met schrijfrechten zijn geupdate.",
-    "One or more files are read only. " +
-    "Only the files with write permissions have been updated.");
-  const MessageErrorNotFoundSourceMissing = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn al verdwenen. " +
-    "Alleen de bestanden die wel aanwezig zijn geupdate. Draai een handmatige sync",
-    "One or more files are already gone. " +
-    "Only the files that are present are updated. Run a manual sync");
+	var history = useLocation();
+	let { state, dispatch } = React.useContext(ArchiveContext);
 
-  var history = useLocation();
-  let { state, dispatch } = React.useContext(ArchiveContext);
+	// state without any context
+	state = new CastToInterface().UndefinedIArchiveReadonly(state);
 
-  // state without any context
-  state = new CastToInterface().UndefinedIArchiveReadonly(state);
+	// show select info
+	const [select, setSelect] = React.useState(
+		new URLPath().getSelect(history.location.search)
+	);
+	useEffect(() => {
+		setSelect(new URLPath().getSelect(history.location.search));
+	}, [history.location.search]);
 
-  // show select info
-  const [select, setSelect] = React.useState(new URLPath().getSelect(history.location.search));
-  useEffect(() => {
-    setSelect(new URLPath().getSelect(history.location.search));
-  }, [history.location.search]);
+	// The Updated that is send to the api
+	const [update, setUpdate] = React.useState({} as ISidebarUpdate);
 
-  // The Updated that is send to the api
-  const [update, setUpdate] = React.useState({} as ISidebarUpdate);
+	// Add/Hide disabled state
+	const [isInputEnabled, setInputEnabled] = React.useState(false);
 
-  // Add/Hide disabled state
-  const [isInputEnabled, setInputEnabled] = React.useState(false);
+	// preloading icon
+	const [isLoading, setIsLoading] = useState(false);
 
-  // preloading icon
-  const [isLoading, setIsLoading] = useState(false);
+	// for showing a notification
+	const [isError, setIsError] = useState("");
 
-  // for showing a notification
-  const [isError, setIsError] = useState("");
+	// Update the disabled state + Local variable with input data
+	function handleUpdateChange(
+		event:
+			| React.ChangeEvent<HTMLDivElement>
+			| React.KeyboardEvent<HTMLDivElement>
+	) {
+		var sideBarUpdate = new SidebarUpdate().Change(event, update);
+		if (!sideBarUpdate) return;
+		setUpdate(sideBarUpdate);
+		setInputEnabled(new SidebarUpdate().IsFormUsed(update));
+	}
 
-  // Update the disabled state + Local variable with input data
-  function handleUpdateChange(event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) {
-    var sideBarUpdate = new SidebarUpdate().Change(event, update);
-    if (!sideBarUpdate) return;
-    setUpdate(sideBarUpdate);
-    setInputEnabled(new SidebarUpdate().IsFormUsed(update));
-  }
+	const Capitalize = (s: string) => {
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	};
 
-  const Capitalize = (s: string) => {
-    return s.charAt(0).toUpperCase() + s.slice(1)
-  };
+	/**
+	 * To search and replace
+	 */
+	function pushSearchAndReplace() {
+		// loading + update button
+		setIsLoading(true);
+		setInputEnabled(false);
 
-  /**
-   * To search and replace
-   */
-  function pushSearchAndReplace() {
+		update.append = false;
+		var subPaths = new URLPath().MergeSelectFileIndexItem(
+			select,
+			state.fileIndexItems
+		);
+		if (!subPaths) return;
+		var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(
+			subPaths,
+			""
+		);
 
-    // loading + update button
-    setIsLoading(true);
-    setInputEnabled(false);
+		if (selectPaths.length === 0) return;
 
-    update.append = false;
-    var subPaths = new URLPath().MergeSelectFileIndexItem(select, state.fileIndexItems);
-    if (!subPaths) return;
-    var selectPaths = new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
+		var bodyParams = new URLSearchParams();
+		bodyParams.append("f", selectPaths);
+		bodyParams.append(
+			"collections",
+			state.pageType !== PageType.Search
+				? (
+						new URLPath().StringToIUrl(history.location.search).collections !==
+						false
+				  ).toString()
+				: "false"
+		);
 
-    if (selectPaths.length === 0) return;
+		for (let key of Object.entries(update)) {
+			var fieldName = key[0];
+			var fieldValue = key[1];
 
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("f", selectPaths);
-    bodyParams.append('collections', state.pageType !== PageType.Search ? (new URLPath().StringToIUrl(history.location.search).collections !== false).toString() : 'false');
+			if (
+				fieldName &&
+				!fieldName.startsWith("replace") &&
+				fieldValue.length >= 1
+			) {
+				bodyParams.set("fieldName", fieldName);
+				bodyParams.set("search", fieldValue);
 
-    for (let key of Object.entries(update)) {
-      var fieldName = key[0];
-      var fieldValue = key[1];
+				var replaceFieldName = "replace" + Capitalize(fieldName);
+				var replaceAnyValue = (update as any)[replaceFieldName];
+				var replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
 
-      if (fieldName && !fieldName.startsWith("replace") && fieldValue.length >= 1) {
-        bodyParams.set("fieldName", fieldName);
-        bodyParams.set("search", fieldValue);
+				bodyParams.set("replace", replaceValue);
 
-        var replaceFieldName = "replace" + Capitalize(fieldName);
-        var replaceAnyValue = (update as any)[replaceFieldName];
-        var replaceValue: string = replaceAnyValue ? replaceAnyValue : "";
+				FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString())
+					.then((anyData) => {
+						var result = new CastToInterface().InfoFileIndexArray(anyData.data);
+						result.forEach((element) => {
+							if (element.status === IExifStatus.ReadOnly)
+								setIsError(MessageErrorReadOnly);
+							if (element.status === IExifStatus.NotFoundSourceMissing)
+								setIsError(MessageErrorNotFoundSourceMissing);
+							if (
+								element.status === IExifStatus.Ok ||
+								element.status === IExifStatus.Deleted
+							) {
+								dispatch({
+									type: "update",
+									...element,
+									select: [element.fileName]
+								});
+							}
+						});
 
-        bodyParams.set("replace", replaceValue);
+						// loading + update button
+						setIsLoading(false);
+						setInputEnabled(true);
 
-        FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then((anyData) => {
-          var result = new CastToInterface().InfoFileIndexArray(anyData.data);
-          result.forEach(element => {
-            if (element.status === IExifStatus.ReadOnly) setIsError(MessageErrorReadOnly);
-            if (element.status === IExifStatus.NotFoundSourceMissing) setIsError(MessageErrorNotFoundSourceMissing);
-            if (element.status === IExifStatus.Ok || element.status === IExifStatus.Deleted) {
-              dispatch({ type: 'update', ...element, select: [element.fileName] });
-            }
-          });
+						ClearSearchCache(history.location.search);
+					})
+					.catch(() => {
+						// loading + update button
+						setIsLoading(false);
+						setInputEnabled(true);
+					});
+			}
+		}
+	}
 
+	// noinspection HtmlUnknownAttribute
+	return (
+		<>
+			{isError !== "" ? (
+				<Notification
+					callback={() => setIsError("")}
+					type={NotificationType.danger}
+				>
+					{isError}
+				</Notification>
+			) : null}
 
-          // loading + update button
-          setIsLoading(false);
-          setInputEnabled(true);
+			{isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
 
-          ClearSearchCache(history.location.search);
-        }).catch(() => {
-          // loading + update button
-          setIsLoading(false);
-          setInputEnabled(true);
-        })
-      }
-    }
-  }
+			<h4>Tags:</h4>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="tags"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
+			<span className="arrow-to"></span>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="replace-tags"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
 
-  // noinspection HtmlUnknownAttribute
-  return (
-    <>
-      {isError !== "" ? <Notification callback={() => setIsError("")} type={NotificationType.danger}>{isError}</Notification> : null}
+			<h4>Info:</h4>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="description"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
+			<span className="arrow-to"></span>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="replace-description"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
 
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+			<h4>{MessageTitleName}:</h4>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="title"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
+			<span className="arrow-to"></span>
+			<FormControl
+				spellcheck={true}
+				onInput={handleUpdateChange}
+				name="replace-title"
+				className="form-control--half inline-block"
+				contentEditable={!state.isReadOnly && select.length !== 0}
+			>
+				&nbsp;
+			</FormControl>
 
-      <h4>Tags:</h4>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="tags" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-      <span className="arrow-to"></span>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-tags" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-
-      <h4>Info:</h4>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="description" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-      <span className="arrow-to"></span>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-description" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-
-      <h4>{MessageTitleName}:</h4>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="title" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-      <span className="arrow-to"></span>
-      <FormControl spellcheck={true} onInput={handleUpdateChange} name="replace-title" className="form-control--half inline-block"
-        contentEditable={!state.isReadOnly && select.length !== 0}>
-        &nbsp;
-      </FormControl>
-
-      {isInputEnabled && select.length !== 0 ?
-        <button className="btn btn--default" onClick={() => pushSearchAndReplace()}>{MessageSearchAndReplaceName}</button> :
-        <button disabled className="btn btn--default disabled">{MessageSearchAndReplaceName}</button>}
-    </>
-  );
+			{isInputEnabled && select.length !== 0 ? (
+				<button
+					className="btn btn--default"
+					onClick={() => pushSearchAndReplace()}
+				>
+					{MessageSearchAndReplaceName}
+				</button>
+			) : (
+				<button disabled className="btn btn--default disabled">
+					{MessageSearchAndReplaceName}
+				</button>
+			)}
+		</>
+	);
 };
-export default ArchiveSidebarLabelEditSearchReplace
+export default ArchiveSidebarLabelEditSearchReplace;

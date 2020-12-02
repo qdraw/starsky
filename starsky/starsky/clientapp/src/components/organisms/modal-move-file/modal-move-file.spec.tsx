@@ -52,17 +52,17 @@ describe("ModalMoveFile", () => {
 					filePath: "/test/",
 					fileName: "test",
 					isDirectory: true,
-					status: IExifStatus.Ok,
+					status: IExifStatus.Ok
 				},
 				{
 					filePath: "/image.jpg",
 					fileName: "image.jpg",
 					status: IExifStatus.ServerError,
-					isDirectory: false,
-				},
-			],
+					isDirectory: false
+				}
+			]
 		},
-		pageType: PageType.Archive,
+		pageType: PageType.Archive
 	} as IFileList;
 
 	const inTestFolderArchive = {
@@ -72,11 +72,11 @@ describe("ModalMoveFile", () => {
 					filePath: "/test/photo.jpg",
 					fileName: "photo.jpg",
 					status: IExifStatus.Ok,
-					isDirectory: false,
-				},
-			],
+					isDirectory: false
+				}
+			]
 		},
-		pageType: PageType.Archive,
+		pageType: PageType.Archive
 	} as IFileList;
 
 	it("default disabled", () => {
@@ -99,8 +99,9 @@ describe("ModalMoveFile", () => {
 		expect(modal.exists("button.btn--default")).toBeTruthy();
 
 		// can't move to the same folder
-		var submitButtonBefore = (modal.find(".btn--default").getDOMNode() as HTMLButtonElement)
-			.disabled;
+		var submitButtonBefore = (modal
+			.find(".btn--default")
+			.getDOMNode() as HTMLButtonElement).disabled;
 		expect(submitButtonBefore).toBeTruthy();
 
 		jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -123,15 +124,17 @@ describe("ModalMoveFile", () => {
 
 		// spy on fetch
 		// use this import => import * as FetchPost from '../shared/fetch-post';
-		const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-			statusCode: 200,
-			data: [
-				{
-					filePath: "/",
-					status: IExifStatus.Ok,
-				},
-			],
-		} as IConnectionDefault);
+		const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+			{
+				statusCode: 200,
+				data: [
+					{
+						filePath: "/",
+						status: IExifStatus.Ok
+					}
+				]
+			} as IConnectionDefault
+		);
 		var fetchPostSpy = jest
 			.spyOn(FetchPost, "default")
 			.mockImplementationOnce(() => mockIConnectionDefault);
@@ -162,7 +165,10 @@ describe("ModalMoveFile", () => {
 		bodyParams.append("to", "/");
 		bodyParams.append("collections", true.toString());
 
-		expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), bodyParams.toString());
+		expect(fetchPostSpy).toBeCalledWith(
+			new UrlQuery().UrlSyncRename(),
+			bodyParams.toString()
+		);
 
 		jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 		modal.unmount();
@@ -179,23 +185,25 @@ describe("ModalMoveFile", () => {
 		// use this import => import * as FetchPost from '../shared/fetch-post';
 		jest.spyOn(FetchPost, "default").mockReset();
 
-		const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-			statusCode: 200,
-			data: [
-				{
-					filePath: "test",
-					status: IExifStatus.Ok,
-					pageType: PageType.Archive,
-				},
-			],
-		} as IConnectionDefault);
+		const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+			{
+				statusCode: 200,
+				data: [
+					{
+						filePath: "test",
+						status: IExifStatus.Ok,
+						pageType: PageType.Archive
+					}
+				]
+			} as IConnectionDefault
+		);
 		var fetchPostSpy = jest
 			.spyOn(FetchPost, "default")
 			.mockImplementationOnce(() => mockIConnectionDefault);
 
 		var locationMockData = {
 			location: jest.fn(),
-			navigate: jest.fn(),
+			navigate: jest.fn()
 		} as any;
 
 		// use as ==> import * as useLocation from '../hooks/use-location';
@@ -219,8 +227,9 @@ describe("ModalMoveFile", () => {
 		});
 
 		// button isn't disabled anymore
-		var submitButtonBefore = (modal.find(".btn--default").getDOMNode() as HTMLButtonElement)
-			.disabled;
+		var submitButtonBefore = (modal
+			.find(".btn--default")
+			.getDOMNode() as HTMLButtonElement).disabled;
 		expect(submitButtonBefore).toBeFalsy();
 
 		act(() => {
@@ -236,7 +245,10 @@ describe("ModalMoveFile", () => {
 		bodyParams.append("to", "/test/");
 		bodyParams.append("collections", true.toString());
 
-		expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), bodyParams.toString());
+		expect(fetchPostSpy).toBeCalledWith(
+			new UrlQuery().UrlSyncRename(),
+			bodyParams.toString()
+		);
 
 		// and cleanup
 		jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -283,7 +295,7 @@ describe("ModalMoveFile", () => {
 
 			var locationMockData = {
 				location: jest.fn(),
-				navigate: jest.fn(),
+				navigate: jest.fn()
 			} as any;
 
 			// use as ==> import * as useLocation from '../hooks/use-location';
@@ -301,14 +313,16 @@ describe("ModalMoveFile", () => {
 		});
 
 		it("click to folder -> move and generic fail", () => {
-			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-				statusCode: 500,
-				data: [
-					{
-						filePath: "test",
-					},
-				],
-			} as IConnectionDefault);
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{
+					statusCode: 500,
+					data: [
+						{
+							filePath: "test"
+						}
+					]
+				} as IConnectionDefault
+			);
 			var fetchPostSpy = jest
 				.spyOn(FetchPost, "default")
 				.mockImplementationOnce(() => mockIConnectionDefault);
@@ -327,8 +341,9 @@ describe("ModalMoveFile", () => {
 			});
 
 			// button isn't disabled anymore
-			var submitButtonBefore = (modal.find(".btn--default").getDOMNode() as HTMLButtonElement)
-				.disabled;
+			var submitButtonBefore = (modal
+				.find(".btn--default")
+				.getDOMNode() as HTMLButtonElement).disabled;
 			expect(submitButtonBefore).toBeFalsy();
 
 			act(() => {
@@ -344,7 +359,10 @@ describe("ModalMoveFile", () => {
 			bodyParams.append("to", "/test/");
 			bodyParams.append("collections", true.toString());
 
-			expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), bodyParams.toString());
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlSyncRename(),
+				bodyParams.toString()
+			);
 
 			// Test is warning exist
 			expect(modal.find(".warning-box")).toBeTruthy();

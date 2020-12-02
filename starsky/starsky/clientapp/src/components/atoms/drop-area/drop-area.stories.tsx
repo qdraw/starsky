@@ -28,7 +28,9 @@ storiesOf("components/atoms/drop-area", module).add("default", () => {
 			{/* Upload drop Area */}
 			{dropAreaUploadFilesList.length !== 0 ? (
 				<ModalDropAreaFilesAdded
-					handleExit={() => setDropAreaUploadFilesList(newIFileIndexItemArray())}
+					handleExit={() =>
+						setDropAreaUploadFilesList(newIFileIndexItemArray())
+					}
 					uploadFilesList={dropAreaUploadFilesList}
 					isOpen={dropAreaUploadFilesList.length !== 0}
 				/>

@@ -120,7 +120,9 @@ describe("keyboard", () => {
 		});
 
 		it("get file name without extension on root", () => {
-			var result = fileExt.GetFileExtensionWithoutDot("/0000000000aaaaa__exifreadingtest00.jpg");
+			var result = fileExt.GetFileExtensionWithoutDot(
+				"/0000000000aaaaa__exifreadingtest00.jpg"
+			);
 			expect(result).toBe("jpg");
 		});
 	});
@@ -144,7 +146,9 @@ describe("keyboard", () => {
 		});
 
 		it("get file name without extension on root", () => {
-			var result = fileExt.GetFileNameWithoutExtension("/0000000000aaaaa__exifreadingtest00.jpg");
+			var result = fileExt.GetFileNameWithoutExtension(
+				"/0000000000aaaaa__exifreadingtest00.jpg"
+			);
 			expect(result).toBe("0000000000aaaaa__exifreadingtest00");
 		});
 	});

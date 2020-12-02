@@ -1,134 +1,164 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import * as FetchPost from '../../../shared/fetch-post';
-import { UrlQuery } from '../../../shared/url-query';
-import * as Modal from '../../atoms/modal/modal';
-import ModalArchiveRename from './modal-archive-rename';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import { act } from "react-dom/test-utils";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchPost from "../../../shared/fetch-post";
+import { UrlQuery } from "../../../shared/url-query";
+import * as Modal from "../../atoms/modal/modal";
+import ModalArchiveRename from "./modal-archive-rename";
 
 describe("ModalArchiveRename", () => {
+	it("renders", () => {
+		shallow(
+			<ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}>
+				test
+			</ModalArchiveRename>
+		);
+	});
+	describe("rename", () => {
+		it("rename to non valid directory name", async () => {
+			var modal = mount(
+				<ModalArchiveRename
+					isOpen={true}
+					subPath="/test"
+					handleExit={() => {}}
+				></ModalArchiveRename>
+			);
 
-  it("renders", () => {
-    shallow(<ModalArchiveRename
-      isOpen={true}
-      subPath="/"
-      handleExit={() => { }}>
-      test
-    </ModalArchiveRename>)
-  });
-  describe("rename", () => {
-    it("rename to non valid directory name", async () => {
+			var submitButtonBefore = (modal
+				.find(".btn--default")
+				.getDOMNode() as HTMLButtonElement).disabled;
+			expect(submitButtonBefore).toBeTruthy();
 
-      var modal = mount(<ModalArchiveRename
-        isOpen={true}
-        subPath="/test"
-        handleExit={() => { }}></ModalArchiveRename>);
+			act(() => {
+				modal.find('[data-name="foldername"]').getDOMNode().textContent =
+					"directory.test";
+				modal.find('[data-name="foldername"]').simulate("input");
+			});
 
-      var submitButtonBefore = (modal.find('.btn--default').getDOMNode() as HTMLButtonElement).disabled
-      expect(submitButtonBefore).toBeTruthy();
+			// await is needed => there is no button
+			await act(async () => {
+				await modal.find(".btn--default").simulate("click");
+			});
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent = "directory.test";
-        modal.find('[data-name="foldername"]').simulate('input');
-      });
+			// See warning message
+			expect(modal.exists(".warning-box")).toBeTruthy();
 
-      // await is needed => there is no button
-      await act(async () => {
-        await modal.find('.btn--default').simulate('click');
-      });
+			// Cleanup
+			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+			modal.unmount();
+		});
 
-      // See warning message
-      expect(modal.exists('.warning-box')).toBeTruthy();
+		it("change directory name", async () => {
+			// spy on fetch
+			// use this import => import * as FetchPost from '../../../shared/fetch-post';;
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ statusCode: 200 } as IConnectionDefault
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      // Cleanup
-      jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-      modal.unmount();
-    });
+			var modal = mount(
+				<ModalArchiveRename
+					isOpen={true}
+					subPath="/test"
+					handleExit={() => {}}
+				></ModalArchiveRename>
+			);
 
-    it("change directory name", async () => {
-      // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200 } as IConnectionDefault);
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			act(() => {
+				modal.find('[data-name="foldername"]').getDOMNode().textContent =
+					"directory";
+				modal.find('[data-name="foldername"]').simulate("input");
+			});
 
-      var modal = mount(<ModalArchiveRename
-        isOpen={true}
-        subPath="/test"
-        handleExit={() => { }}></ModalArchiveRename>);
+			// await is needed
+			await act(async () => {
+				await modal.find(".btn--default").simulate("click");
+			});
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent = "directory";
-        modal.find('[data-name="foldername"]').simulate('input');
-      });
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlSyncRename(),
+				"f=%2Ftest&to=%2Fdirectory"
+			);
 
-      // await is needed 
-      await act(async () => {
-        await modal.find('.btn--default').simulate('click');
-      });
+			// Cleanup
+			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+			modal.unmount();
+		});
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest&to=%2Fdirectory");
+		it("change directory name and FAIL", async () => {
+			// spy on fetch
+			// use this import => import * as FetchPost from '../../../shared/fetch-post';
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ statusCode: 500 } as IConnectionDefault
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      // Cleanup
-      jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-      modal.unmount();
-    });
+			var modal = mount(
+				<ModalArchiveRename
+					isOpen={true}
+					subPath="/test"
+					handleExit={() => {}}
+				></ModalArchiveRename>
+			);
 
-    it("change directory name and FAIL", async () => {
-      // spy on fetch
-      // use this import => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 500 } as IConnectionDefault);
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			act(() => {
+				modal.find('[data-name="foldername"]').getDOMNode().textContent =
+					"directory";
+				modal.find('[data-name="foldername"]').simulate("input");
+			});
 
-      var modal = mount(<ModalArchiveRename
-        isOpen={true}
-        subPath="/test"
-        handleExit={() => { }}></ModalArchiveRename>);
+			// await is needed
+			await act(async () => {
+				await modal.find(".btn--default").simulate("click");
+			});
 
-      act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent = "directory";
-        modal.find('[data-name="foldername"]').simulate('input');
-      });
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlSyncRename(),
+				"f=%2Ftest&to=%2Fdirectory"
+			);
 
-      // await is needed 
-      await act(async () => {
-        await modal.find('.btn--default').simulate('click');
-      });
+			// await is needed (button is disabled)
+			await act(async () => {
+				await modal.find(".btn--default").simulate("click");
+			});
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSyncRename(), "f=%2Ftest&to=%2Fdirectory");
+			// Where should be a warning
+			expect(modal.exists(".warning-box")).toBeTruthy();
 
-      // await is needed (button is disabled)
-      await act(async () => {
-        await modal.find('.btn--default').simulate('click');
-      });
+			// Cleanup
+			jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+			modal.unmount();
+		});
 
-      // Where should be a warning
-      expect(modal.exists('.warning-box')).toBeTruthy();
+		it("test if handleExit is called", () => {
+			// simulate if a user press on close
+			// use as ==> import * as Modal from '../../atoms/modal/modal';
+			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+				props.handleExit();
+				return <>{props.children}</>;
+			});
 
-      // Cleanup
-      jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-      modal.unmount();
-    });
+			var handleExitSpy = jest.fn();
 
-    it("test if handleExit is called", () => {
-      // simulate if a user press on close
-      // use as ==> import * as Modal from '../../atoms/modal/modal';
-      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
-        props.handleExit();
-        return <>{props.children}</>
-      });
+			var component = mount(
+				<ModalArchiveRename
+					subPath="/"
+					isOpen={true}
+					handleExit={handleExitSpy}
+				/>
+			);
 
-      var handleExitSpy = jest.fn();
+			expect(handleExitSpy).toBeCalled();
 
-      var component = mount(<ModalArchiveRename subPath="/" isOpen={true} handleExit={handleExitSpy} />);
-
-      expect(handleExitSpy).toBeCalled();
-
-      // and clean afterwards
-      component.unmount();
-    });
-
-  });
+			// and clean afterwards
+			component.unmount();
+		});
+	});
 });

@@ -230,7 +230,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
     }
   },
   "prettier": {
-    "trailingComma": "es5",
+		"trailingComma": "none",
     "bracketSpacing": true,
     "semi": true,
     "singleQuote": false,

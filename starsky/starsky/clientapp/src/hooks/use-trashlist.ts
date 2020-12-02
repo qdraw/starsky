@@ -1,70 +1,66 @@
-import { useEffect, useState } from 'react';
-import { IArchive, newIArchive } from '../interfaces/IArchive';
-import { PageType } from '../interfaces/IDetailView';
-import { CastToInterface } from '../shared/cast-to-interface';
-import { UrlQuery } from '../shared/url-query';
+import { useEffect, useState } from "react";
+import { IArchive, newIArchive } from "../interfaces/IArchive";
+import { PageType } from "../interfaces/IDetailView";
+import { CastToInterface } from "../shared/cast-to-interface";
+import { UrlQuery } from "../shared/url-query";
 
 export interface IUseTrashList {
-  archive?: IArchive,
-  pageType: PageType,
+	archive?: IArchive;
+	pageType: PageType;
 }
 
 const useTrashList = (pageNumber = 0): IUseTrashList | null => {
+	const [archive, setArchive] = useState(newIArchive());
+	const [pageType, setPageType] = useState(PageType.Loading);
 
-  const [archive, setArchive] = useState(newIArchive());
-  const [pageType, setPageType] = useState(PageType.Loading);
+	var location = new UrlQuery().UrlSearchTrashApi(pageNumber);
 
-  var location = new UrlQuery().UrlSearchTrashApi(pageNumber)
+	useEffect(() => {
+		const abortController = new AbortController();
 
-  useEffect(() => {
-    const abortController = new AbortController();
+		(async () => {
+			try {
+				if (!location) {
+					setPageType(PageType.NotFound);
+					return;
+				}
 
-    (async () => {
-      try {
+				const res: Response = await fetch(location, {
+					signal: abortController.signal,
+					credentials: "include",
+					method: "GET"
+				});
 
-        if (!location) {
-          setPageType(PageType.NotFound);
-          return;
-        }
+				if (res.status >= 400 && res.status <= 550) {
+					setPageType(PageType.ApplicationException);
+					return;
+				}
 
-        const res: Response = await fetch(location, {
-          signal: abortController.signal,
-          credentials: "include",
-          method: 'GET'
-        });
+				const responseObject = await res.json();
 
+				var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+				setPageType(archiveMedia.data.pageType);
 
-        if (res.status >= 400 && res.status <= 550) {
-          setPageType(PageType.ApplicationException);
-          return;
-        }
+				if (archiveMedia.data.pageType !== PageType.Trash) return;
 
-        const responseObject = await res.json();
+				// We don't know those values in the search context
+				archiveMedia.data.colorClassUsage = [];
+				archiveMedia.data.colorClassActiveList = [];
+				setArchive(archiveMedia.data);
+			} catch (e) {
+				console.error(e);
+			}
+		})();
 
-        var archiveMedia = new CastToInterface().MediaArchive(responseObject);
-        setPageType(archiveMedia.data.pageType);
+		return () => {
+			abortController.abort();
+		};
+	}, [location]);
 
-        if (archiveMedia.data.pageType !== PageType.Trash) return;
-
-        // We don't know those values in the search context
-        archiveMedia.data.colorClassUsage = [];
-        archiveMedia.data.colorClassActiveList = [];
-        setArchive(archiveMedia.data);
-
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [location]);
-
-  return {
-    archive,
-    pageType,
-  };
+	return {
+		archive,
+		pageType
+	};
 };
 
 export default useTrashList;

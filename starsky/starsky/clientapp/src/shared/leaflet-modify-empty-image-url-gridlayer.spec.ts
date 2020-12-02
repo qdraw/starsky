@@ -1,110 +1,111 @@
-import L, { Coords, InternalTiles } from 'leaflet';
-import { LeafletEmptyImageUrlGridLayer } from './leaflet-modify-empty-image-url-gridlayer';
+import L, { Coords, InternalTiles } from "leaflet";
+import { LeafletEmptyImageUrlGridLayer } from "./leaflet-modify-empty-image-url-gridlayer";
 
 describe("LeafletEmptyImageUrlGridLayer [leaflet-extension]", () => {
-  it("remove tile form leaflet [extension]", () => {
+	it("remove tile form leaflet [extension]", () => {
+		var gridlayer = new LeafletEmptyImageUrlGridLayer();
 
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
+		var el = document.createElement("div");
 
-    var el = document.createElement('div');
+		// mock a tile
+		(gridlayer as any)._tiles = {
+			test: {
+				coords: {} as Coords,
+				current: true,
+				el
+			}
+		} as InternalTiles;
 
-    // mock a tile
-    (gridlayer as any)._tiles = {
-      "test": {
-        coords: {} as Coords,
-        current: true,
-        el,
-      }
-    } as InternalTiles
+		var fire = jest.fn();
+		gridlayer.fire = fire;
 
-    var fire = jest.fn();
-    gridlayer.fire = fire
+		// this is normaly excuted by leaflet
+		gridlayer._removeTile("test");
 
-    // this is normaly excuted by leaflet
-    gridlayer._removeTile("test");
+		expect((gridlayer as any)._tiles).toStrictEqual({});
+		expect(fire).toBeCalled();
+	});
 
-    expect((gridlayer as any)._tiles).toStrictEqual({})
-    expect(fire).toBeCalled();
-  });
+	it("tile ready form leaflet (_fadeAnimated disabled) [extension]", () => {
+		var requestAnimFrameSpy = jest
+			.spyOn(L.Util, "requestAnimFrame")
+			.mockImplementationOnce(() => {
+				return 0;
+			});
 
-  it("tile ready form leaflet (_fadeAnimated disabled) [extension]", () => {
+		var exampleCoords = {
+			x: 51,
+			y: 10,
+			z: 1
+		} as Coords;
+		var el = document.createElement("div") as any;
 
-    var requestAnimFrameSpy = jest.spyOn(L.Util, 'requestAnimFrame').mockImplementationOnce(() => { return 0 });
+		var gridlayer = new LeafletEmptyImageUrlGridLayer();
 
-    var exampleCoords = {
-      x: 51,
-      y: 10,
-      z: 1
-    } as Coords;
-    var el = document.createElement('div') as any;
+		(gridlayer as any)._map = true;
+		// mock a tile
+		(gridlayer as any)._tiles = {
+			"51:10:1": {
+				coords: exampleCoords,
+				current: true,
+				el
+			}
+		} as InternalTiles;
 
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
+		var _pruneTiles = jest.fn();
+		(gridlayer as any)._pruneTiles = _pruneTiles;
 
-    (gridlayer as any)._map = true;
-    // mock a tile
-    (gridlayer as any)._tiles = {
-      "51:10:1": {
-        coords: exampleCoords,
-        current: true,
-        el,
-      }
-    } as InternalTiles
+		(gridlayer as any)._noTilesToLoad = () => {
+			return true;
+		};
 
-    var _pruneTiles = jest.fn();
-    (gridlayer as any)._pruneTiles = _pruneTiles;
+		gridlayer._tileReady(exampleCoords, null, el);
 
-    (gridlayer as any)._noTilesToLoad = () => { return true };
+		expect(_pruneTiles).toBeCalled();
+		expect(requestAnimFrameSpy).toBeCalled();
+	});
 
-    gridlayer._tileReady(exampleCoords, null, el);
+	it("tile ready form leaflet (_fadeAnimated enabled) [extension]", () => {
+		var requestAnimFrameSpy = jest
+			.spyOn(L.Util, "requestAnimFrame")
+			.mockImplementationOnce(() => {
+				return 0;
+			});
 
+		var timeoutSpy = jest.spyOn(global, "setTimeout");
 
-    expect(_pruneTiles).toBeCalled();
-    expect(requestAnimFrameSpy).toBeCalled();
+		var exampleCoords = {
+			x: 51,
+			y: 10,
+			z: 1
+		} as Coords;
+		var el = document.createElement("div") as any;
 
-  });
+		var gridlayer = new LeafletEmptyImageUrlGridLayer();
 
+		(gridlayer as any)._map = true;
 
-  it("tile ready form leaflet (_fadeAnimated enabled) [extension]", () => {
+		// mock a tile
+		(gridlayer as any)._tiles = {
+			"51:10:1": {
+				coords: exampleCoords,
+				current: true,
+				el
+			}
+		} as InternalTiles;
 
-    var requestAnimFrameSpy = jest.spyOn(L.Util, 'requestAnimFrame').mockImplementationOnce(() => { return 0 });
+		(gridlayer as any)._map = {
+			_fadeAnimated: true
+		};
 
-    var timeoutSpy = jest.spyOn(global, 'setTimeout');
+		(gridlayer as any)._noTilesToLoad = () => {
+			return true;
+		};
 
-    var exampleCoords = {
-      x: 51,
-      y: 10,
-      z: 1
-    } as Coords;
-    var el = document.createElement('div') as any;
+		// with error enabled
+		gridlayer._tileReady(exampleCoords, true, el);
 
-    var gridlayer = new LeafletEmptyImageUrlGridLayer();
-
-    (gridlayer as any)._map = true;
-
-    // mock a tile
-    (gridlayer as any)._tiles = {
-      "51:10:1": {
-        coords: exampleCoords,
-        current: true,
-        el,
-      }
-    } as InternalTiles
-
-
-    (gridlayer as any)._map = {
-      _fadeAnimated: true
-    };
-
-    (gridlayer as any)._noTilesToLoad = () => { return true };
-
-    // with error enabled
-    gridlayer._tileReady(exampleCoords, true, el);
-
-
-    expect(requestAnimFrameSpy).toBeCalled();
-    expect(timeoutSpy).toBeCalled();
-
-
-  });
-
+		expect(requestAnimFrameSpy).toBeCalled();
+		expect(timeoutSpy).toBeCalled();
+	});
 });

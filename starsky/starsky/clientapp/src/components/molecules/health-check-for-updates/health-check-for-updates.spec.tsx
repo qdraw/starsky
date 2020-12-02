@@ -1,131 +1,147 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import * as useFetch from '../../../hooks/use-fetch';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import * as Notification from '../../atoms/notification/notification';
-import HealthCheckForUpdates, { CheckForUpdatesLocalStorageName } from './health-check-for-updates';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import * as useFetch from "../../../hooks/use-fetch";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as Notification from "../../atoms/notification/notification";
+import HealthCheckForUpdates, {
+	CheckForUpdatesLocalStorageName
+} from "./health-check-for-updates";
 
 describe("HealthCheckForUpdates", () => {
+	it("renders (without state component)", () => {
+		shallow(<HealthCheckForUpdates />);
+	});
 
-  it("renders (without state component)", () => {
-    shallow(<HealthCheckForUpdates />)
-  });
+	describe("with Context", () => {
+		it("Default not shown", () => {
+			const mockGetIConnectionDefault = {
+				statusCode: 200,
+				data: null
+			} as IConnectionDefault;
 
-  describe("with Context", () => {
-    it("Default not shown", () => {
+			const useFetchSpy = jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			var component = mount(<HealthCheckForUpdates />);
 
-      const mockGetIConnectionDefault = {
-        statusCode: 200, data: null
-      } as IConnectionDefault;
+			expect(component.exists(Notification.default)).toBeFalsy();
 
-      const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
+			expect(useFetchSpy).toBeCalled();
+			component.unmount();
+		});
 
-      expect(component.exists(Notification.default)).toBeFalsy();
+		it("Default shown when getting status 202", () => {
+			const mockGetIConnectionDefault = {
+				statusCode: 202,
+				data: null
+			} as IConnectionDefault;
 
-      expect(useFetchSpy).toBeCalled();
-      component.unmount()
-    });
+			const useFetchSpy = jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			var component = mount(<HealthCheckForUpdates />);
 
-    it("Default shown when getting status 202", () => {
+			expect(component.exists(Notification.default)).toBeTruthy();
 
-      const mockGetIConnectionDefault = {
-        statusCode: 202, data: null
-      } as IConnectionDefault;
+			// there is a link to github
+			expect(component.find("a")).toBeTruthy();
 
-      const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
+			expect(useFetchSpy).toBeCalled();
+			component.unmount();
+		});
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+		it("Click on close and expect that date is set in localstorage", () => {
+			const mockGetIConnectionDefault = {
+				statusCode: 202,
+				data: null
+			} as IConnectionDefault;
 
-      // there is a link to github
-      expect(component.find("a")).toBeTruthy()
+			jest.spyOn(Notification, "default").mockImplementationOnce((arg) => {
+				if (!arg || !arg.callback) return null;
+				arg.callback();
+				return <></>;
+			});
+			jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			var component = mount(<HealthCheckForUpdates />);
+			component.unmount();
 
-      expect(useFetchSpy).toBeCalled();
-      component.unmount()
-    });
+			var item = localStorage.getItem(CheckForUpdatesLocalStorageName);
+			if (!item) throw new Error("item should not be null");
+			expect(parseInt(item) > 1604424674178).toBeTruthy(); // 3 nov '20
 
-    it("Click on close and expect that date is set in localstorage", () => {
-      const mockGetIConnectionDefault = {
-        statusCode: 202, data: null
-      } as IConnectionDefault;
+			localStorage.removeItem(CheckForUpdatesLocalStorageName);
+		});
 
-      jest.spyOn(Notification, 'default').mockImplementationOnce((arg) => {
-        if (!arg || !arg.callback) return null;
-        arg.callback()
-        return <></>
-      })
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
-      component.unmount();
+		it("Compontent should not shown when date is set in localstorage", () => {
+			localStorage.setItem(
+				CheckForUpdatesLocalStorageName,
+				Date.now().toString()
+			);
+			const mockGetIConnectionDefault = {
+				statusCode: 202,
+				data: null
+			} as IConnectionDefault;
+			jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			var component = mount(<HealthCheckForUpdates />);
+			expect(component.exists(Notification.default)).toBeFalsy();
 
-      var item = localStorage.getItem(CheckForUpdatesLocalStorageName);
-      if (!item) throw new Error("item should not be null")
-      expect(parseInt(item) > 1604424674178).toBeTruthy() // 3 nov '20
+			component.unmount();
+			localStorage.removeItem(CheckForUpdatesLocalStorageName);
+		});
 
-      localStorage.removeItem(CheckForUpdatesLocalStorageName)
-    });
+		it("Default shown when getting status 202 and should ignore non valid sessionStorageItem", () => {
+			// This is an non valid Session storage item
+			localStorage.setItem(CheckForUpdatesLocalStorageName, "non valid number");
 
-    it("Compontent should not shown when date is set in localstorage", () => {
-      localStorage.setItem(CheckForUpdatesLocalStorageName, Date.now().toString())
-      const mockGetIConnectionDefault = {
-        statusCode: 202, data: null
-      } as IConnectionDefault;
-      jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />)
-      expect(component.exists(Notification.default)).toBeFalsy();
+			const mockGetIConnectionDefault = {
+				statusCode: 202,
+				data: null
+			} as IConnectionDefault;
 
-      component.unmount();
-      localStorage.removeItem(CheckForUpdatesLocalStorageName)
-    });
+			const useFetchSpy = jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    it("Default shown when getting status 202 and should ignore non valid sessionStorageItem", () => {
+			// React 17 / Enzyme
+			// Error: mockConstructor(...): Nothing was returned from render.
+			// This usually means a return statement is missing. Or, to render nothing, return null
+			var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      // This is an non valid Session storage item
-      localStorage.setItem(CheckForUpdatesLocalStorageName, "non valid number")
+			expect(component.exists(Notification.default)).toBeTruthy();
 
-      const mockGetIConnectionDefault = {
-        statusCode: 202, data: null
-      } as IConnectionDefault;
+			expect(useFetchSpy).toBeCalled();
+			component.unmount();
+			localStorage.removeItem(CheckForUpdatesLocalStorageName);
+		});
 
-      const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
+		it("There a no links in the Notification when using electron", () => {
+			// This is the difference
+			(window as any).isElectron = true;
 
-      // React 17 / Enzyme
-      // Error: mockConstructor(...): Nothing was returned from render. 
-      // This usually means a return statement is missing. Or, to render nothing, return null 
-      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>)
+			const mockGetIConnectionDefault = {
+				statusCode: 202,
+				data: null
+			} as IConnectionDefault;
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+			const useFetchSpy = jest
+				.spyOn(useFetch, "default")
+				.mockImplementationOnce(() => mockGetIConnectionDefault);
+			var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      expect(useFetchSpy).toBeCalled();
-      component.unmount();
-      localStorage.removeItem(CheckForUpdatesLocalStorageName)
+			expect(component.exists(Notification.default)).toBeTruthy();
 
-    });
+			// there are no links here
+			var aHrefs = component.find("a").length;
+			expect(aHrefs).toBeFalsy();
 
-    it("There a no links in the Notification when using electron", () => {
+			expect(useFetchSpy).toBeCalled();
 
-      // This is the difference
-      (window as any).isElectron = true;
-
-      const mockGetIConnectionDefault = {
-        statusCode: 202, data: null
-      } as IConnectionDefault;
-
-      const useFetchSpy = jest.spyOn(useFetch, 'default').mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>)
-
-      expect(component.exists(Notification.default)).toBeTruthy();
-
-      // there are no links here
-      var aHrefs = component.find("a").length;
-      expect(aHrefs).toBeFalsy()
-
-      expect(useFetchSpy).toBeCalled();
-
-      component.unmount();
-      (window as any).isElectron = null;
-
-    });
-  });
+			component.unmount();
+			(window as any).isElectron = null;
+		});
+	});
 });

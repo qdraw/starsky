@@ -1,135 +1,147 @@
-import { act } from '@testing-library/react';
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { IDetailView } from '../../../interfaces/IDetailView';
-import { IExifStatus } from '../../../interfaces/IExifStatus';
-import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
-import * as Notification from '../../atoms/notification/notification';
-import DetailViewMp4 from './detail-view-mp4';
+import { act } from "@testing-library/react";
+import { mount, shallow } from "enzyme";
+import React from "react";
+import ReactDOM from "react-dom";
+import { IDetailView } from "../../../interfaces/IDetailView";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import * as Notification from "../../atoms/notification/notification";
+import DetailViewMp4 from "./detail-view-mp4";
 
 describe("DetailViewMp4", () => {
+	it("renders (without state component)", () => {
+		shallow(<DetailViewMp4></DetailViewMp4>);
+	});
 
-  it("renders (without state component)", () => {
-    shallow(<DetailViewMp4></DetailViewMp4>)
-  });
+	describe("with Context", () => {
+		beforeEach(() => {
+			jest
+				.spyOn(HTMLMediaElement.prototype, "load")
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
+		});
 
-  describe("with Context", () => {
+		it("click to play video resolve", () => {
+			var component = mount(<DetailViewMp4></DetailViewMp4>);
 
-    beforeEach(() => {
-      jest.spyOn(HTMLMediaElement.prototype, 'load').mockImplementationOnce(() => {
-        return Promise.resolve();
-      })
-    })
+			var playSpy = jest
+				.spyOn(HTMLMediaElement.prototype, "play")
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
 
-    it("click to play video resolve", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+			component.find('[data-test="video"]').simulate("click");
 
-      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
-        return Promise.resolve();
-      })
+			expect(playSpy).toBeCalled();
 
-      component.find('[data-test="video"]').simulate("click");
+			component.unmount();
+		});
 
-      expect(playSpy).toBeCalled();
+		it("click to play video rejected", async () => {
+			var component = mount(<DetailViewMp4></DetailViewMp4>);
 
-      component.unmount();
-    });
+			jest.spyOn(HTMLMediaElement.prototype, "play").mockReset();
 
-    it("click to play video rejected", async () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+			var playSpy = jest
+				.spyOn(HTMLMediaElement.prototype, "play")
+				.mockImplementationOnce(() => {
+					return Promise.reject();
+				});
 
-      jest.spyOn(HTMLMediaElement.prototype, 'play').mockReset();
+			await act(async () => {
+				await component.find('[data-test="video"]').simulate("click");
+			});
 
-      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
-        return Promise.reject();
-      });
+			expect(playSpy).toBeCalled();
+			expect(playSpy).toBeCalledTimes(1);
+			await act(async () => {
+				await component.unmount();
+			});
+		});
 
-      await act(async () => {
-        await component.find('[data-test="video"]').simulate("click");
-      })
+		it("click to play video and timeupdate", () => {
+			var component = mount(<DetailViewMp4></DetailViewMp4>);
 
+			var playSpy = jest
+				.spyOn(HTMLMediaElement.prototype, "play")
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
 
-      expect(playSpy).toBeCalled();
-      expect(playSpy).toBeCalledTimes(1);
-      await act(async () => {
-        await component.unmount();
-      })
-    });
+			expect(component.find(".time").text()).toBe("");
 
-    it("click to play video and timeupdate", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+			component.find('[data-test="video"]').simulate("click");
 
-      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
-        return Promise.resolve();
-      })
+			expect(component.find(".time").text()).toBe("0:00 / 0:00");
 
-      expect(component.find('.time').text()).toBe('');
+			expect(playSpy).toBeCalled();
 
-      component.find('[data-test="video"]').simulate("click");
+			component.unmount();
+		});
 
-      expect(component.find('.time').text()).toBe('0:00 / 0:00');
+		it("progress DOM", () => {
+			const component = document.createElement("div");
+			ReactDOM.render(<DetailViewMp4 />, component);
+			var progress = component.querySelector("progress");
+			if (progress == null) throw new Error("missing progress tag");
+			progress.click();
+		});
 
-      expect(playSpy).toBeCalled();
+		it("progress", () => {
+			var component = mount(<DetailViewMp4></DetailViewMp4>);
 
-      component.unmount();
-    });
+			var playSpy = jest
+				.spyOn(HTMLMediaElement.prototype, "play")
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
 
-    it("progress DOM", () => {
+			Object.defineProperty(HTMLElement.prototype, "offsetParent", {
+				get() {
+					return this.parentNode;
+				}
+			});
 
-      const component = document.createElement('div');
-      ReactDOM.render(<DetailViewMp4 />, component);
-      var progress = component.querySelector('progress');
-      if (progress == null) throw new Error('missing progress tag');
-      progress.click();
-    });
+			var progress = component
+				.find("progress")
+				.first()
+				.getDOMNode() as HTMLProgressElement;
+			component.find("progress").simulate("click", { target: progress });
 
-    it("progress", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+			console.log(component.html());
 
-      var playSpy = jest.spyOn(HTMLMediaElement.prototype, 'play').mockImplementationOnce(() => {
-        return Promise.resolve();
-      })
+			expect(component.find(".time").text()).toBe("0:00 / 0:00");
 
-      Object.defineProperty(HTMLElement.prototype, 'offsetParent', {
-        get() { return this.parentNode; },
-      });
+			expect(playSpy).toBeCalled();
 
-      var progress = component.find('progress').first().getDOMNode() as HTMLProgressElement;
-      component.find('progress').simulate("click", { target: progress });
+			component.unmount();
+		});
 
-      console.log(component.html());
-      
-      expect(component.find('.time').text()).toBe('0:00 / 0:00');
+		it("state not found and show error", () => {
+			const state = {
+				fileIndexItem: {
+					status: IExifStatus.NotFoundSourceMissing
+				} as IFileIndexItem
+			} as IDetailView;
 
-      expect(playSpy).toBeCalled();
+			var contextValues = { state, dispatch: jest.fn() };
 
-      component.unmount();
-    });
+			var useContextSpy = jest
+				.spyOn(React, "useContext")
+				.mockImplementation(() => contextValues);
 
-    it("state not found and show error", () => {
-      const state = {
-        fileIndexItem: {
-          status: IExifStatus.NotFoundSourceMissing
-        } as IFileIndexItem
-      } as IDetailView;
+			var notificationSpy = jest
+				.spyOn(Notification, "default")
+				.mockImplementationOnce(() => {
+					return <></>;
+				});
+			var component = mount(<DetailViewMp4>g</DetailViewMp4>);
 
-      var contextValues = { state, dispatch: jest.fn() }
+			expect(useContextSpy).toBeCalled();
+			expect(notificationSpy).toBeCalled();
 
-      var useContextSpy = jest
-        .spyOn(React, 'useContext')
-        .mockImplementation(() => contextValues);
-
-
-      var notificationSpy = jest.spyOn(Notification, 'default').mockImplementationOnce(() => {
-        return <></>
-      })
-      var component = mount(<DetailViewMp4>g</DetailViewMp4>);
-
-      expect(useContextSpy).toBeCalled();
-      expect(notificationSpy).toBeCalled();
-
-      component.unmount();
-    });
-  });
+			component.unmount();
+		});
+	});
 });

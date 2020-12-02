@@ -1,111 +1,141 @@
-import { globalHistory } from '@reach/router';
-import { mount, ReactWrapper, shallow } from 'enzyme';
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import * as Modal from '../../atoms/modal/modal';
-import ModalDisplayOptions from './modal-display-options';
+import { globalHistory } from "@reach/router";
+import { mount, ReactWrapper, shallow } from "enzyme";
+import React from "react";
+import { act } from "react-dom/test-utils";
+import * as Modal from "../../atoms/modal/modal";
+import ModalDisplayOptions from "./modal-display-options";
 
 describe("ModalDisplayOptions", () => {
+	it("renders", () => {
+		shallow(
+			<ModalDisplayOptions isOpen={true} parentFolder="/" handleExit={() => {}}>
+				test
+			</ModalDisplayOptions>
+		);
+	});
 
-  it("renders", () => {
-    shallow(<ModalDisplayOptions
-      isOpen={true}
-      parentFolder="/"
-      handleExit={() => { }}>
-      test
-    </ModalDisplayOptions>)
-  });
+	describe("with Context", () => {
+		describe("buttons exist", () => {
+			var modal: ReactWrapper;
+			beforeAll(() => {
+				modal = mount(
+					<ModalDisplayOptions
+						parentFolder={"/"}
+						isOpen={true}
+						handleExit={() => {}}
+					/>
+				);
+			});
 
-  describe("with Context", () => {
-    describe("buttons exist", () => {
+			afterAll(() => {
+				// and clean afterwards
+				act(() => {
+					jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+					modal.unmount();
+				});
+			});
 
-      var modal: ReactWrapper;
-      beforeAll(() => {
-        modal = mount(<ModalDisplayOptions parentFolder={"/"} isOpen={true} handleExit={() => { }} />)
-      });
+			it("toggle-collections", () => {
+				expect(modal.exists('[data-test="toggle-collections"]')).toBeTruthy();
+			});
+			it("toggle-slow-files", () => {
+				expect(modal.exists('[data-test="toggle-slow-files"]')).toBeTruthy();
+			});
+		});
 
-      afterAll(() => {
-        // and clean afterwards
-        act(() => {
-          jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-          modal.unmount();
-        });
-      });
+		describe("click button", () => {
+			var modal: ReactWrapper;
+			beforeEach(() => {
+				jest.useFakeTimers();
+				modal = mount(
+					<ModalDisplayOptions
+						parentFolder={"/"}
+						isOpen={true}
+						handleExit={() => {}}
+					/>
+				);
+			});
 
-      it("toggle-collections", () => {
-        expect(modal.exists('[data-test="toggle-collections"]')).toBeTruthy();
-      });
-      it("toggle-slow-files", () => {
-        expect(modal.exists('[data-test="toggle-slow-files"]')).toBeTruthy();
-      });
-    });
+			afterEach(() => {
+				// and clean afterwards
+				act(() => {
+					jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+					modal.unmount();
+				});
+				jest.useRealTimers();
+			});
 
-    describe("click button", () => {
-      var modal: ReactWrapper;
-      beforeEach(() => {
-        jest.useFakeTimers();
-        modal = mount(<ModalDisplayOptions parentFolder={"/"} isOpen={true} handleExit={() => { }} />)
-      });
+			it("toggle-collections", () => {
+				modal
+					.find('[data-test="toggle-collections"] input')
+					.first()
+					.simulate("change");
 
-      afterEach(() => {
-        // and clean afterwards
-        act(() => {
-          jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-          modal.unmount();
-        });
-        jest.useRealTimers();
-      })
+				expect(globalHistory.location.search).toBe("?collections=false");
 
-      it("toggle-collections", () => {
-        modal.find('[data-test="toggle-collections"] input').first().simulate('change');
+				modal
+					.find('[data-test="toggle-collections"] input')
+					.last()
+					.simulate("change");
 
-        expect(globalHistory.location.search).toBe('?collections=false');
+				expect(globalHistory.location.search).toBe("?collections=true");
+			});
 
-        modal.find('[data-test="toggle-collections"] input').last().simulate('change');
+			it("toggle-slow-files", () => {
+				modal
+					.find('[data-test="toggle-slow-files"] input')
+					.first()
+					.simulate("change");
 
-        expect(globalHistory.location.search).toBe('?collections=true');
-      });
+				expect(localStorage.getItem("issingleitem")).toBe("false");
 
-      it("toggle-slow-files", () => {
-        modal.find('[data-test="toggle-slow-files"] input').first().simulate('change');
+				modal
+					.find('[data-test="toggle-slow-files"] input')
+					.last()
+					.simulate("change");
 
-        expect(localStorage.getItem("issingleitem")).toBe('false');
+				expect(localStorage.getItem("issingleitem")).toBe("true");
+			});
 
-        modal.find('[data-test="toggle-slow-files"] input').last().simulate('change');
+			it("toggle-sockets", () => {
+				modal
+					.find('[data-test="toggle-sockets"] input')
+					.first()
+					.simulate("change");
 
-        expect(localStorage.getItem("issingleitem")).toBe('true');
-      });
+				expect(localStorage.getItem("use-sockets")).toBe("false");
 
-      it("toggle-sockets", () => {
-        modal.find('[data-test="toggle-sockets"] input').first().simulate('change');
+				modal
+					.find('[data-test="toggle-sockets"] input')
+					.last()
+					.simulate("change");
 
-        expect(localStorage.getItem("use-sockets")).toBe('false');
+				expect(localStorage.getItem("use-sockets")).toBe(null);
+			});
+		});
 
-        modal.find('[data-test="toggle-sockets"] input').last().simulate('change');
+		it("test if handleExit is called", () => {
+			// simulate if a user press on close
+			// use as ==> import * as Modal from './modal';
+			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+				props.handleExit();
+				return <>{props.children}</>;
+			});
 
-        expect(localStorage.getItem("use-sockets")).toBe(null);
-      });
+			var handleExitSpy = jest.fn();
 
-    });
+			var component = mount(
+				<ModalDisplayOptions
+					parentFolder="/"
+					isOpen={true}
+					handleExit={handleExitSpy}
+				/>
+			);
 
-    it("test if handleExit is called", () => {
-      // simulate if a user press on close
-      // use as ==> import * as Modal from './modal';
-      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
-        props.handleExit();
-        return <>{props.children}</>
-      });
+			expect(handleExitSpy).toBeCalled();
 
-      var handleExitSpy = jest.fn();
-
-      var component = mount(<ModalDisplayOptions parentFolder="/" isOpen={true} handleExit={handleExitSpy} />);
-
-      expect(handleExitSpy).toBeCalled();
-
-      // and clean afterwards
-      component.unmount();
-    });
-
-  });
-
+			// and clean afterwards
+			component.unmount();
+		});
+	});
 });

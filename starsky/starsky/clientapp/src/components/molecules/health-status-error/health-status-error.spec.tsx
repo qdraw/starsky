@@ -29,9 +29,11 @@ describe("HealthStatusError", () => {
 			});
 
 			// usage => import * as Notification from './notification';
-			var notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
-				return null;
-			});
+			var notificationSpy = jest
+				.spyOn(Notification, "default")
+				.mockImplementationOnce(() => {
+					return null;
+				});
 
 			var component = mount(<HealthStatusError>t</HealthStatusError>);
 
@@ -52,21 +54,23 @@ describe("HealthStatusError", () => {
 						entries: [
 							{
 								isHealthy: false,
-								name: "ServiceNameUnhealthy",
+								name: "ServiceNameUnhealthy"
 							},
 							{
 								isHealthy: true,
-								name: "ServiceNameIsHealthy",
-							},
-						] as IHealthEntry[],
-					},
+								name: "ServiceNameIsHealthy"
+							}
+						] as IHealthEntry[]
+					}
 				};
 			});
 
 			// usage => import * as Notification from './notification';
-			var notificationSpy = jest.spyOn(Notification, "default").mockImplementationOnce(() => {
-				return null;
-			});
+			var notificationSpy = jest
+				.spyOn(Notification, "default")
+				.mockImplementationOnce(() => {
+					return null;
+				});
 
 			var component = mount(<HealthStatusError />);
 

@@ -1,152 +1,183 @@
-import { mount, ReactWrapper, shallow } from 'enzyme';
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import * as FetchGet from '../../../shared/fetch-get';
-import * as FetchPost from '../../../shared/fetch-post';
-import { UrlQuery } from '../../../shared/url-query';
-import * as Modal from '../../atoms/modal/modal';
-import ModalArchiveSynchronizeManually from './modal-archive-synchronize-manually';
+import { mount, ReactWrapper, shallow } from "enzyme";
+import React from "react";
+import { act } from "react-dom/test-utils";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchGet from "../../../shared/fetch-get";
+import * as FetchPost from "../../../shared/fetch-post";
+import { UrlQuery } from "../../../shared/url-query";
+import * as Modal from "../../atoms/modal/modal";
+import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
 
 describe("ModalArchiveSynchronizeManually", () => {
+	it("renders", () => {
+		shallow(
+			<ModalArchiveSynchronizeManually
+				isOpen={true}
+				parentFolder="/"
+				handleExit={() => {}}
+			>
+				test
+			</ModalArchiveSynchronizeManually>
+		);
+	});
 
-  it("renders", () => {
-    shallow(<ModalArchiveSynchronizeManually
-      isOpen={true}
-      parentFolder="/"
-      handleExit={() => { }}>
-      test
-    </ModalArchiveSynchronizeManually>)
-  });
+	describe("with Context", () => {
+		describe("buttons exist", () => {
+			var modal: ReactWrapper;
+			beforeAll(() => {
+				modal = mount(
+					<ModalArchiveSynchronizeManually
+						parentFolder={"/"}
+						isOpen={true}
+						handleExit={() => {}}
+					/>
+				);
+			});
 
-  describe("with Context", () => {
-    describe("buttons exist", () => {
+			afterAll(() => {
+				// and clean afterwards
+				act(() => {
+					jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+					modal.unmount();
+				});
+			});
 
-      var modal: ReactWrapper;
-      beforeAll(() => {
-        modal = mount(<ModalArchiveSynchronizeManually parentFolder={"/"} isOpen={true} handleExit={() => { }} />)
-      });
+			it("force-sync", () => {
+				expect(modal.exists('[data-test="force-sync"]')).toBeTruthy();
+			});
+			it("remove-cache", () => {
+				expect(modal.exists('[data-test="remove-cache"]')).toBeTruthy();
+			});
+			it("geo-sync", () => {
+				expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+			});
+			it("thumbnail-generation", () => {
+				expect(modal.exists('[data-test="thumbnail-generation"]')).toBeTruthy();
+			});
+		});
 
-      afterAll(() => {
-        // and clean afterwards
-        act(() => {
-          jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-          modal.unmount();
-        });
-      });
+		describe("click button", () => {
+			var modal: ReactWrapper;
+			beforeEach(() => {
+				jest.useFakeTimers();
+				modal = mount(
+					<ModalArchiveSynchronizeManually
+						parentFolder={"/"}
+						isOpen={true}
+						handleExit={() => {}}
+					/>
+				);
+			});
 
-      it("force-sync", () => {
-        expect(modal.exists('[data-test="force-sync"]')).toBeTruthy();
-      });
-      it("remove-cache", () => {
-        expect(modal.exists('[data-test="remove-cache"]')).toBeTruthy();
-      });
-      it("geo-sync", () => {
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
-      });
-      it("thumbnail-generation", () => {
-        expect(modal.exists('[data-test="thumbnail-generation"]')).toBeTruthy();
-      });
-    });
+			afterEach(() => {
+				// and clean afterwards
+				act(() => {
+					jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+					modal.unmount();
+				});
+				jest.useRealTimers();
+			});
 
-    describe("click button", () => {
-      var modal: ReactWrapper;
-      beforeEach(() => {
-        jest.useFakeTimers();
-        modal = mount(<ModalArchiveSynchronizeManually parentFolder={"/"} isOpen={true} handleExit={() => { }} />)
-      });
+			it("force-sync (only first get)", () => {
+				const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+					{
+						statusCode: 200,
+						data: null
+					} as IConnectionDefault
+				);
 
-      afterEach(() => {
-        // and clean afterwards
-        act(() => {
-          jest.spyOn(window, 'scrollTo').mockImplementationOnce(() => { });
-          modal.unmount();
-        });
-        jest.useRealTimers();
-      })
+				var fetchPostSpy = jest
+					.spyOn(FetchPost, "default")
+					.mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      it("force-sync (only first get)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-          statusCode: 200, data: null
-        } as IConnectionDefault);
+				modal.find('[data-test="force-sync"]').simulate("click");
 
-        var fetchPostSpy = jest.spyOn(FetchPost, 'default')
-          .mockImplementationOnce(() => mockGetIConnectionDefault)
+				expect(fetchPostSpy).toBeCalled();
+				expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
+			});
 
-        modal.find('[data-test="force-sync"]').simulate('click');
+			it("remove-cache (only first get)", () => {
+				const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+					{
+						statusCode: 200,
+						data: null
+					} as IConnectionDefault
+				);
 
-        expect(fetchPostSpy).toBeCalled();
-        expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
+				var fetchGetSpy = jest
+					.spyOn(FetchGet, "default")
+					.mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      });
+				act(() => {
+					modal.find('[data-test="remove-cache"]').simulate("click");
+				});
 
-      it("remove-cache (only first get)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-          statusCode: 200, data: null
-        } as IConnectionDefault);
+				expect(fetchGetSpy).toBeCalled();
+				expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlRemoveCache("/"));
 
-        var fetchGetSpy = jest.spyOn(FetchGet, 'default')
-          .mockImplementationOnce(() => mockGetIConnectionDefault)
+				fetchGetSpy.mockReset();
+			});
 
-        act(() => {
-          modal.find('[data-test="remove-cache"]').simulate('click');
-        });
+			it("geo-sync (only first post)", () => {
+				// FetchPOST is magicly not working
+				var urlGeoSyncUrlQuerySpy = jest
+					.spyOn(UrlQuery.prototype, "UrlGeoSync")
+					.mockImplementationOnce(() => "");
 
-        expect(fetchGetSpy).toBeCalled();
-        expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlRemoveCache("/"));
+				expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
 
-        fetchGetSpy.mockReset();
-      });
+				modal.find('[data-test="geo-sync"]').simulate("click");
+				expect(urlGeoSyncUrlQuerySpy).toBeCalled();
+			});
 
-      it("geo-sync (only first post)", () => {
+			it("remove-cache (only first POST)", () => {
+				const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+					{
+						statusCode: 200,
+						data: null
+					} as IConnectionDefault
+				);
 
-        // FetchPOST is magicly not working
-        var urlGeoSyncUrlQuerySpy = jest.spyOn(UrlQuery.prototype, 'UrlGeoSync')
-          .mockImplementationOnce(() => "")
+				var fetchGetSpy = jest
+					.spyOn(FetchPost, "default")
+					.mockImplementationOnce(() => mockGetIConnectionDefault);
 
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+				act(() => {
+					modal.find('[data-test="thumbnail-generation"]').simulate("click");
+				});
 
-        modal.find('[data-test="geo-sync"]').simulate('click');
-        expect(urlGeoSyncUrlQuerySpy).toBeCalled();
-      });
+				expect(fetchGetSpy).toBeCalled();
+				expect(fetchGetSpy).toBeCalledWith(
+					new UrlQuery().UrlThumbnailGeneration(),
+					"f=%2F"
+				);
 
-      it("remove-cache (only first POST)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({
-          statusCode: 200, data: null
-        } as IConnectionDefault);
+				fetchGetSpy.mockReset();
+			});
+		});
 
-        var fetchGetSpy = jest.spyOn(FetchPost, 'default')
-          .mockImplementationOnce(() => mockGetIConnectionDefault)
+		it("test if handleExit is called", () => {
+			// simulate if a user press on close
+			// use as ==> import * as Modal from './modal';
+			jest.spyOn(Modal, "default").mockImplementationOnce((props) => {
+				props.handleExit();
+				return <>{props.children}</>;
+			});
 
-        act(() => {
-          modal.find('[data-test="thumbnail-generation"]').simulate('click');
-        });
+			var handleExitSpy = jest.fn();
 
-        expect(fetchGetSpy).toBeCalled();
-        expect(fetchGetSpy).toBeCalledWith(new UrlQuery().UrlThumbnailGeneration(), "f=%2F");
+			var component = mount(
+				<ModalArchiveSynchronizeManually
+					parentFolder="/"
+					isOpen={true}
+					handleExit={handleExitSpy}
+				/>
+			);
 
-        fetchGetSpy.mockReset();
-      });
-    });
+			expect(handleExitSpy).toBeCalled();
 
-    it("test if handleExit is called", () => {
-      // simulate if a user press on close
-      // use as ==> import * as Modal from './modal';
-      jest.spyOn(Modal, 'default').mockImplementationOnce((props) => {
-        props.handleExit();
-        return <>{props.children}</>
-      });
-
-      var handleExitSpy = jest.fn();
-
-      var component = mount(<ModalArchiveSynchronizeManually parentFolder="/" isOpen={true} handleExit={handleExitSpy} />);
-
-      expect(handleExitSpy).toBeCalled();
-
-      // and clean afterwards
-      component.unmount();
-    });
-
-  });
-
+			// and clean afterwards
+			component.unmount();
+		});
+	});
 });

@@ -1,185 +1,255 @@
 import { mount, shallow } from "enzyme";
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import * as FetchPost from '../../../shared/fetch-post';
-import { UrlQuery } from '../../../shared/url-query';
-import PreferencesPassword from './preferences-password';
+import React from "react";
+import { act } from "react-dom/test-utils";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import * as FetchPost from "../../../shared/fetch-post";
+import { UrlQuery } from "../../../shared/url-query";
+import PreferencesPassword from "./preferences-password";
 
 describe("PreferencesPassword", () => {
+	it("renders", () => {
+		shallow(<PreferencesPassword />);
+	});
 
-  it("renders", () => {
-    shallow(<PreferencesPassword />)
-  });
+	describe("context", () => {
+		it("default nothing entered", () => {
+			var component = mount(<PreferencesPassword />);
 
-  describe("context", () => {
+			component.find('form [type="submit"]').first().simulate("submit");
 
-    it("default nothing entered", () => {
-      var component = mount(<PreferencesPassword />);
+			expect(component.find(".warning-box").text()).toBe(
+				"Enter the current and new password"
+			);
 
-      component.find('form [type="submit"]').first().simulate('submit');
+			component.unmount();
+		});
 
-      expect(component.find('.warning-box').text()).toBe("Enter the current and new password");
+		it("The passwords do not match", () => {
+			var component = mount(<PreferencesPassword />);
 
-      component.unmount();
-    });
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="password"]')
+					.getDOMNode() as HTMLInputElement).value = "12345";
+				component.find('input[name="password"]').first().simulate("change");
+			});
 
-    it("The passwords do not match", () => {
-      var component = mount(<PreferencesPassword />);
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-password"]')
+					.first()
+					.simulate("change");
+			});
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="password"]').getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate('change');
-      });
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-confirm-password"]')
+					.getDOMNode() as HTMLInputElement).value = "something-else";
+				component
+					.find('input[name="changed-confirm-password"]')
+					.first()
+					.simulate("change");
+			});
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-password"]').first().simulate('change');
-      });
+			component.find('form [type="submit"]').first().simulate("submit");
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-confirm-password"]').getDOMNode() as HTMLInputElement).value = "something-else";
-        component.find('input[name="changed-confirm-password"]').first().simulate('change');
-      });
+			expect(component.find(".warning-box").text()).toBe(
+				"The passwords do not match"
+			);
 
-      component.find('form [type="submit"]').first().simulate('submit');
+			component.unmount();
+		});
 
-      expect(component.find('.warning-box').text()).toBe("The passwords do not match")
+		it("Your password has been successfully changed", async () => {
+			var component = mount(<PreferencesPassword />);
+			// spy on fetch
+			// use this using => import * as FetchPost from '../../../shared/fetch-post';
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ statusCode: 200, data: { success: true } }
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      component.unmount();
-    });
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="password"]')
+					.getDOMNode() as HTMLInputElement).value = "12345";
+				component.find('input[name="password"]').first().simulate("change");
+			});
 
-    it("Your password has been successfully changed", async () => {
-      var component = mount(<PreferencesPassword />);
-      // spy on fetch
-      // use this using => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 200, data: { success: true } });
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-password"]')
+					.first()
+					.simulate("change");
+			});
 
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-confirm-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-confirm-password"]')
+					.first()
+					.simulate("change");
+			});
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="password"]').getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate('change');
-      });
+			// need to await
+			await act(async () => {
+				await component.find('form [type="submit"]').first().simulate("submit");
+			});
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-password"]').first().simulate('change');
-      });
+			// force update to get the right text
+			component.update();
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-confirm-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-confirm-password"]').first().simulate('change');
-      });
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlAccountChangeSecret(),
+				"Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+			);
 
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate('submit');
-      });
+			expect(component.find(".warning-box").text()).toBe(
+				"Your password has been successfully changed"
+			);
 
-      // force update to get the right text
-      component.update();
+			component.unmount();
+		});
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1");
+		it("Enter your current password", async () => {
+			var component = mount(<PreferencesPassword />);
+			// spy on fetch
+			// use this using => import * as FetchPost from '../shared/fetch-post';
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ statusCode: 401, data: null }
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      expect(component.find('.warning-box').text()).toBe("Your password has been successfully changed")
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="password"]')
+					.getDOMNode() as HTMLInputElement).value = "12345";
+				component.find('input[name="password"]').first().simulate("change");
+			});
 
-      component.unmount();
-    });
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-password"]')
+					.first()
+					.simulate("change");
+			});
 
-    it("Enter your current password", async () => {
-      var component = mount(<PreferencesPassword />);
-      // spy on fetch
-      // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 401, data: null });
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-confirm-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-confirm-password"]')
+					.first()
+					.simulate("change");
+			});
 
+			// need to await
+			await act(async () => {
+				await component.find('form [type="submit"]').first().simulate("submit");
+			});
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="password"]').getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate('change');
-      });
+			// force update to get the right text
+			component.update();
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-password"]').first().simulate('change');
-      });
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlAccountChangeSecret(),
+				"Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+			);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-confirm-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-confirm-password"]').first().simulate('change');
-      });
+			expect(component.find(".warning-box").text()).toBe(
+				"Enter your current password"
+			);
 
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate('submit');
-      });
+			component.unmount();
+		});
 
-      // force update to get the right text
-      component.update();
+		it("Modal Error - The new password does not meet the criteria", async () => {
+			var component = mount(<PreferencesPassword />);
+			// spy on fetch
+			// use this using => import * as FetchPost from '../shared/fetch-post';
+			const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+				{ statusCode: 400, data: null }
+			);
+			var fetchPostSpy = jest
+				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault);
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1");
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="password"]')
+					.getDOMNode() as HTMLInputElement).value = "12345";
+				component.find('input[name="password"]').first().simulate("change");
+			});
 
-      expect(component.find('.warning-box').text()).toBe("Enter your current password")
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-password"]')
+					.first()
+					.simulate("change");
+			});
 
-      component.unmount();
-    });
+			act(() => {
+				// to use with: => import { act } from 'react-dom/test-utils';
+				(component
+					.find('input[name="changed-confirm-password"]')
+					.getDOMNode() as HTMLInputElement).value = "password1";
+				component
+					.find('input[name="changed-confirm-password"]')
+					.first()
+					.simulate("change");
+			});
 
-    it("Modal Error - The new password does not meet the criteria", async () => {
-      var component = mount(<PreferencesPassword />);
-      // spy on fetch
-      // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve({ statusCode: 400, data: null });
-      var fetchPostSpy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+			// need to await
+			await act(async () => {
+				await component.find('form [type="submit"]').first().simulate("submit");
+			});
 
+			// force update to get the right text
+			component.update();
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="password"]').getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate('change');
-      });
+			expect(fetchPostSpy).toBeCalled();
+			expect(fetchPostSpy).toBeCalledWith(
+				new UrlQuery().UrlAccountChangeSecret(),
+				"Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
+			);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-password"]').first().simulate('change');
-      });
+			expect(component.find(".warning-box").text()).toBe(
+				"The new password does not meet the criteria"
+			);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component.find('input[name="changed-confirm-password"]').getDOMNode() as HTMLInputElement).value = "password1";
-        component.find('input[name="changed-confirm-password"]').first().simulate('change');
-      });
-
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate('submit');
-      });
-
-      // force update to get the right text
-      component.update();
-
-      expect(fetchPostSpy).toBeCalled();
-      expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlAccountChangeSecret(),
-        "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1");
-
-      expect(component.find('.warning-box').text()).toBe("The new password does not meet the criteria")
-
-      component.unmount();
-    });
-
-  });
+			component.unmount();
+		});
+	});
 });

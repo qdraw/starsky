@@ -25,9 +25,9 @@ describe("PreferencesUsername", () => {
 				return {
 					...newIConnectionDefault(),
 					data: {
-						credentials: [],
+						credentials: []
 					},
-					statusCode: 200,
+					statusCode: 200
 				};
 			});
 
@@ -40,9 +40,9 @@ describe("PreferencesUsername", () => {
 			var testReply = {
 				...newIConnectionDefault(),
 				data: {
-					credentialsIdentifiers: ["test"],
+					credentialsIdentifiers: ["test"]
 				},
-				statusCode: 200,
+				statusCode: 200
 			};
 			jest
 				.spyOn(useFetch, "default")

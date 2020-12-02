@@ -3,14 +3,14 @@ import React from "react";
 import { act } from "react-dom/test-utils";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import {
-  IConnectionDefault,
-  newIConnectionDefault
+	IConnectionDefault,
+	newIConnectionDefault
 } from "../../../interfaces/IConnectionDefault";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
-  IFileIndexItem,
-  newIFileIndexItem
+	IFileIndexItem,
+	newIFileIndexItem
 } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { parseDate, parseTime } from "../../../shared/date";
@@ -69,14 +69,14 @@ describe("DetailViewSidebar", () => {
 						aperture: 2,
 						focalLength: 10,
 						longitude: 1,
-						latitude: 1,
+						latitude: 1
 					} as IFileIndexItem,
 					relativeObjects: {} as IRelativeObjects,
 					subPath: "/",
 					status: IExifStatus.Default,
 					pageType: PageType.DetailView,
-					colorClassActiveList: [],
-				} as any,
+					colorClassActiveList: []
+				} as any
 			};
 
 			TestComponent = () => (
@@ -156,7 +156,7 @@ describe("DetailViewSidebar", () => {
 				.spyOn(ModalDatetime, "default")
 				.mockImplementationOnce((props) => {
 					props.handleExit([
-						{ dateTime: "2020-02-01T13:15:20" },
+						{ dateTime: "2020-02-01T13:15:20" }
 					] as IFileIndexItem[]);
 					return <></>;
 				});
@@ -349,7 +349,7 @@ describe("DetailViewSidebar", () => {
 				{
 					...newIConnectionDefault(),
 					statusCode: 200,
-					data: [newIFileIndexItem()],
+					data: [newIFileIndexItem()]
 				}
 			);
 
@@ -379,29 +379,11 @@ describe("DetailViewSidebar", () => {
 			document.location.search = "";
 		});
 
-		it("Press c to copy", () => {
-			var event = new KeyboardEvent("keydown", {
-				bubbles: true,
-				cancelable: true,
-				key: "c",
-			});
-
-			var copySpy = jest
-				.spyOn(ClipboardHelper.prototype, "Copy")
-				.mockImplementationOnce(() => {
-					return true;
-				});
-
-			window.dispatchEvent(event);
-
-			expect(copySpy).toBeCalled();
-		});
-
 		it("Press v to paste", () => {
 			var event = new KeyboardEvent("keydown", {
 				bubbles: true,
 				cancelable: true,
-				key: "v",
+				key: "v"
 			});
 
 			var pasteSpy = jest
@@ -418,6 +400,24 @@ describe("DetailViewSidebar", () => {
 		});
 	});
 
+	it("Press c to copy", () => {
+		var event = new KeyboardEvent("keydown", {
+			bubbles: true,
+			cancelable: true,
+			key: "c"
+		});
+
+		var copySpy = jest
+			.spyOn(ClipboardHelper.prototype, "Copy")
+			.mockImplementationOnce(() => {
+				return true;
+			});
+
+		window.dispatchEvent(event);
+
+		expect(copySpy).toBeCalled();
+	});
+
 	describe("own context", () => {
 		it("keydown t/i should be fired", () => {
 			var contextProvider = {
@@ -426,12 +426,12 @@ describe("DetailViewSidebar", () => {
 					breadcrumb: [],
 					fileIndexItem: {
 						filePath: "/test.jpg",
-						status: IExifStatus.Ok,
+						status: IExifStatus.Ok
 					} as IFileIndexItem,
 					status: IExifStatus.Default,
 					pageType: PageType.DetailView,
-					colorClassActiveList: [],
-				} as any,
+					colorClassActiveList: []
+				} as any
 			};
 
 			var keyboardSpy = jest
@@ -471,7 +471,7 @@ describe("DetailViewSidebar", () => {
 				bubbles: true,
 				cancelable: true,
 				key: "t",
-				shiftKey: true,
+				shiftKey: true
 			});
 
 			act(() => {
