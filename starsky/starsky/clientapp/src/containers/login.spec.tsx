@@ -138,11 +138,13 @@ describe("Login", () => {
 	});
 
 	it("account 406 UrlAccountRegister", () => {
+		jest.spyOn(useFetch, "default").mockReset();
 		// usage ==> import * as useFetch from '../hooks/use-fetch';
 		const connectionDefaultExample = { statusCode: 406 } as IConnectionDefault;
 
 		var useFetchSpy = jest
 			.spyOn(useFetch, "default")
+			.mockImplementationOnce(() => connectionDefaultExample)
 			.mockImplementationOnce(() => connectionDefaultExample)
 			.mockImplementationOnce(() => connectionDefaultExample);
 
