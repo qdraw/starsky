@@ -400,7 +400,6 @@ describe("MenuDetailView", () => {
     //  file is marked as deleted › press 'Delete' on keyboard to trash
     it("press 'Delete' on keyboard to trash", () => {
 
-      jest.spyOn(React, 'useContext').mockReset();
       jest.spyOn(FetchPost, 'default').mockReset();
 
       var state = {
@@ -411,12 +410,6 @@ describe("MenuDetailView", () => {
           prevFilePath: '/'
         }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() }
-
-      jest.spyOn(React, 'useContext')
-        .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextValues })
 
       const component = mount(<MenuDetailView state={state} dispatch={jest.fn()} />)
 
@@ -459,8 +452,10 @@ describe("MenuDetailView", () => {
       const component = mount(<MenuDetailView state={state1} dispatch={jest.fn()} />);
       expect(component.find('header').getDOMNode().className).toBe("header header--main header--deleted");
 
-      state1.fileIndexItem.status = IExifStatus.Ok;
-      
+      act(() => {
+        state1.fileIndexItem.status = IExifStatus.Ok;
+      });
+
       act(() => {
         globalHistory.navigate("/?f=/test2.jpg");
       });
@@ -509,11 +504,6 @@ describe("MenuDetailView", () => {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
         } as IDetailView;
-        var contextValues = { state, dispatch: jest.fn() };
-
-        jest.spyOn(React, 'useContext')
-          .mockImplementationOnce(() => { return contextValues })
-          .mockImplementationOnce(() => { return contextValues })
 
         const component = mount(<MenuDetailView state={state} dispatch={jest.fn()}/>);
         var item = component.find('[data-test="rename"]');
@@ -528,11 +518,6 @@ describe("MenuDetailView", () => {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
         } as IDetailView;
-        var contextValues = { state, dispatch: jest.fn() };
-
-        jest.spyOn(React, 'useContext')
-          .mockImplementationOnce(() => { return contextValues })
-          .mockImplementationOnce(() => { return contextValues })
 
         const component = mount(<MenuDetailView state={state} dispatch={jest.fn()}/>);
         var item = component.find('[data-test="trash"]');
@@ -541,17 +526,11 @@ describe("MenuDetailView", () => {
       });
 
       it("when source is missing file can't be rotated", () => {
-        jest.spyOn(React, 'useContext').mockReset();
 
         var state = {
           subPath: "/trashed/test1.jpg",
           fileIndexItem: { status: IExifStatus.NotFoundSourceMissing, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
         } as IDetailView;
-        var contextValues = { state, dispatch: jest.fn() };
-
-        jest.spyOn(React, 'useContext')
-          .mockImplementationOnce(() => { return contextValues })
-          .mockImplementationOnce(() => { return contextValues })
 
         const component = mount(<MenuDetailView state={state} dispatch={jest.fn()}/>);
         var item = component.find('[data-test="rotate"]');
