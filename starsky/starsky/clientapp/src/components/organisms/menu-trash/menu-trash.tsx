@@ -1,10 +1,8 @@
-import React, { memo, useEffect } from "react";
-import {
-	ArchiveContext,
-	defaultStateFallback
-} from "../../../contexts/archive-context";
+import React, { useEffect } from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
@@ -19,7 +17,15 @@ import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import NavContainer from "../nav-container/nav-container";
 
-const MenuTrash: React.FunctionComponent<any> = memo((_) => {
+export interface IMenuTrashProps {
+	state: IArchiveProps;
+	dispatch: React.Dispatch<ArchiveAction>;
+}
+
+const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
+	state,
+	dispatch
+}) => {
 	const settings = useGlobalSettings();
 	const language = new Language(settings.language);
 
@@ -65,9 +71,6 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 		new Select(select, setSelect, state, history).undoSelection();
 	var removeSidebarSelection = () =>
 		new Select(select, setSelect, state, history).removeSidebarSelection();
-
-	let { state, dispatch } = React.useContext(ArchiveContext);
-	state = defaultStateFallback(state);
 
 	function forceDelete() {
 		if (!select) return;
@@ -273,6 +276,6 @@ const MenuTrash: React.FunctionComponent<any> = memo((_) => {
 			</header>
 		</>
 	);
-});
+};
 
 export default MenuTrash;

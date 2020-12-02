@@ -36,7 +36,7 @@ function Trash(archive: IArchiveProps) {
 	}, [history.location.search]);
 
 	// to dynamic update the number of trashed items
-	let { state } = React.useContext(ArchiveContext);
+	let { state, dispatch } = React.useContext(ArchiveContext);
 	state = defaultStateFallback(state);
 
 	const [collectionsCount, setCollectionsCount] = React.useState(
@@ -51,7 +51,7 @@ function Trash(archive: IArchiveProps) {
 
 	return (
 		<>
-			<MenuTrash />
+			<MenuTrash state={state} dispatch={dispatch} />
 			<div className={!sidebar ? "archive" : "archive collapsed"}>
 				{sidebar ? <ArchiveSidebar {...archive} /> : ""}
 
