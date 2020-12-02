@@ -335,7 +335,8 @@ namespace starsky.feature.rename.Services
 		internal void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexItems)
 		{
-			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems));
+			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems), 
+				"Should contain value");
 			
 			// 1. Get Direct child files
 			// 2. Get Direct folder and child folders
