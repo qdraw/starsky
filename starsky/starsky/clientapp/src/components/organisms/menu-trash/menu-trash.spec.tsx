@@ -16,7 +16,9 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
 	it("renders", () => {
-		shallow(<MenuTrash defaultText="" callback={() => {}} />);
+		shallow(
+			<MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
+		);
 	});
 
 	describe("with Context", () => {
@@ -57,7 +59,9 @@ describe("MenuTrash", () => {
 		});
 
 		it("open hamburger menu", () => {
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 			var hamburger = component.find(".hamburger");
 
 			expect(component.exists(".form-nav")).toBeTruthy();
@@ -76,7 +80,9 @@ describe("MenuTrash", () => {
 		});
 
 		it("select is not disabled", () => {
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			expect(component.exists(".item--select")).toBeTruthy();
 			expect(component.exists(".item--more")).toBeTruthy();
@@ -98,7 +104,9 @@ describe("MenuTrash", () => {
 				globalHistory.navigate("/");
 			});
 
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			var select = component.find(".item--select");
 
@@ -111,10 +119,6 @@ describe("MenuTrash", () => {
 		});
 
 		it("more select all", () => {
-			jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-				return contextValues;
-			});
-
 			// usage ==> import * as useFetch from '../hooks/use-fetch';
 			jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
 				return newIConnectionDefault();
@@ -125,7 +129,9 @@ describe("MenuTrash", () => {
 				globalHistory.navigate("/?select=");
 			});
 
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			var more = component.find(".item--more");
 			expect(more.exists(".disabled")).toBeFalsy();
@@ -169,7 +175,9 @@ describe("MenuTrash", () => {
 				globalHistory.navigate("/?select=test1.jpg");
 			});
 
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			var more = component.find(".item--more");
 			act(() => {
@@ -187,10 +195,6 @@ describe("MenuTrash", () => {
 		});
 
 		it("more force delete", () => {
-			jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-				return contextValues;
-			});
-
 			// usage ==> import * as useFetch from '../hooks/use-fetch';
 			jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
 				return newIConnectionDefault();
@@ -209,7 +213,9 @@ describe("MenuTrash", () => {
 				globalHistory.navigate("/?select=test1.jpg");
 			});
 
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			var item = component.find('[data-test="delete"]');
 
@@ -230,18 +236,6 @@ describe("MenuTrash", () => {
 		});
 
 		it("more restore-from-trash", async () => {
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
-
 			// usage ==> import * as useFetch from '../hooks/use-fetch';
 			jest
 				.spyOn(useFetch, "default")
@@ -272,7 +266,9 @@ describe("MenuTrash", () => {
 				globalHistory.navigate("/?select=test1.jpg");
 			});
 
-			var component = mount(<MenuTrash />);
+			var component = mount(
+				<MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+			);
 
 			var item = component.find('[data-test="restore-from-trash"]');
 
