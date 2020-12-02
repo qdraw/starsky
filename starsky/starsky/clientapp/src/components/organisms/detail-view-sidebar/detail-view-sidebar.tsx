@@ -240,6 +240,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 		useKeyboardEvent(
 			/^([v])$/,
 			(event: KeyboardEvent) => {
+				console.log("---dddd");
+
 				if (new Keyboard().isInForm(event)) return;
 				event.preventDefault();
 				console.log(event);
