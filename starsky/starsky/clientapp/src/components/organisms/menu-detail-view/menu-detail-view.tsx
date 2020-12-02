@@ -314,6 +314,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 			) : null}
 			{isModalRenameFileOpen && state && !isReadOnly ? (
 				<ModalDetailviewRenameFile
+					state={state}
 					handleExit={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
 					isOpen={isModalRenameFileOpen}
 				/>

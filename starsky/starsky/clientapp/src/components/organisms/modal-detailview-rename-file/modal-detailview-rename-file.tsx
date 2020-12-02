@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { DetailViewContext } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
-import { newDetailView } from "../../../interfaces/IDetailView";
+import { IDetailView, newDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { newIFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch-post";
@@ -16,11 +15,13 @@ import Modal from "../../atoms/modal/modal";
 interface IModalRenameFileProps {
 	isOpen: boolean;
 	handleExit: Function;
+	state: IDetailView;
 }
 
-const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = (
-	props
-) => {
+const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = ({
+	state,
+	...props
+}) => {
 	// content
 	const settings = useGlobalSettings();
 	const language = new Language(settings.language);
@@ -41,8 +42,6 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
 		"Bestandsnaam wijzigen",
 		"Rename file name"
 	);
-
-	let { state } = React.useContext(DetailViewContext);
 
 	// Fallback for no context
 	if (!state) {

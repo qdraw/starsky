@@ -7,6 +7,8 @@ storiesOf("components/organisms/modal-archive-mkdir", module).add(
 	() => {
 		return (
 			<ModalArchiveMkdir
+				state={{} as any}
+				dispatch={() => {}}
 				isOpen={true}
 				handleExit={() => {}}
 			></ModalArchiveMkdir>

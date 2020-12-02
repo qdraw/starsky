@@ -12,7 +12,11 @@ import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 describe("ModalDetailviewRenameFile", () => {
 	it("renders", () => {
 		shallow(
-			<ModalDetailviewRenameFile isOpen={true} handleExit={() => {}}>
+			<ModalDetailviewRenameFile
+				state={{} as any}
+				isOpen={true}
+				handleExit={() => {}}
+			>
 				test
 			</ModalDetailviewRenameFile>
 		);
@@ -50,6 +54,7 @@ describe("ModalDetailviewRenameFile", () => {
 			var modal = mount(
 				<ModalDetailviewRenameFile
 					isOpen={true}
+					state={state}
 					handleExit={() => {}}
 				></ModalDetailviewRenameFile>
 			);
@@ -110,6 +115,7 @@ describe("ModalDetailviewRenameFile", () => {
 			var modal = mount(
 				<ModalDetailviewRenameFile
 					isOpen={true}
+					state={state}
 					handleExit={() => {}}
 				></ModalDetailviewRenameFile>
 			);
@@ -173,6 +179,7 @@ describe("ModalDetailviewRenameFile", () => {
 			var modal = mount(
 				<ModalDetailviewRenameFile
 					isOpen={true}
+					state={state}
 					handleExit={() => {}}
 				></ModalDetailviewRenameFile>
 			);
@@ -210,7 +217,11 @@ describe("ModalDetailviewRenameFile", () => {
 			var handleExitSpy = jest.fn();
 
 			var component = mount(
-				<ModalDetailviewRenameFile isOpen={true} handleExit={handleExitSpy} />
+				<ModalDetailviewRenameFile
+					state={{} as any}
+					isOpen={true}
+					handleExit={handleExitSpy}
+				/>
 			);
 
 			expect(handleExitSpy).toBeCalled();
