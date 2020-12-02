@@ -145,8 +145,15 @@ npm install --save enzyme
 npm install --save @types/enzyme
 npm install --save-dev @storybook/react
 npm install --save @wojtekmaj/enzyme-adapter-react-17
-npm install --save-dev eslint-config-prettier
-npm install --save-dev eslint-plugin-prettier prettier
+npm install --save eslint-config-prettier
+npm install --save eslint-plugin-prettier
+npm install --save prettier
+```
+
+Remove this package
+
+```
+npm uninstall --save web-vitals
 ```
 
 #### Update the name of the project
