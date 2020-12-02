@@ -26,7 +26,7 @@ export const shallowReactHook = (hook: any, args: string[]) => {
 	return { componentMount, componentHook };
 };
 
-export const mountReactHook = (hook: any, args: string[]) => {
+export const mountReactHook = (hook: any, args: any[]) => {
 	const Component = ({ children }: ModalPropTypes) => {
 		return children(hook(...args));
 	};
