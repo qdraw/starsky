@@ -91,8 +91,6 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 		} as IFileList;
 	}
 
-	console.log("--dsfsdknlfsdklfsdnlk");
-
 	return (
 		<Modal
 			id="move-file-modal"

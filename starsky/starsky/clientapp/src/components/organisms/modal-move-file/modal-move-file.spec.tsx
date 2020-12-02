@@ -293,24 +293,6 @@ describe("ModalMoveFile", () => {
 				.mockImplementationOnce(() => startArchive)
 				.mockImplementationOnce(() => inTestFolderArchive)
 				.mockImplementationOnce(() => inTestFolderArchive);
-
-			var locationMockData = {
-				location: jest.fn(),
-				navigate: jest.fn()
-			} as any;
-
-			// use as ==> import * as useLocation from '../hooks/use-location';
-			jest
-				.spyOn(useLocation, "default")
-				.mockImplementationOnce(() => {
-					return locationMockData;
-				})
-				.mockImplementationOnce(() => {
-					return locationMockData;
-				})
-				.mockImplementationOnce(() => {
-					return locationMockData;
-				});
 		});
 
 		it("click to folder -> move and generic fail", () => {
@@ -323,14 +305,20 @@ describe("ModalMoveFile", () => {
 				]
 			} as IConnectionDefault);
 
-			var fetchPostSpy = jest
+			jest
 				.spyOn(FetchPost, "default")
+				.mockImplementationOnce(() => mockIConnectionDefault)
 				.mockImplementationOnce(() => mockIConnectionDefault);
 
+			// import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
 			jest
 				.spyOn(ItemTextListView, "default")
+				.mockImplementationOnce(() => null)
 				.mockImplementationOnce(() => null);
-			console.log("d-fsnk");
+
+			jest
+				.spyOn(Modal, "default")
+				.mockImplementationOnce((props) => <>{props.children}</>);
 
 			var modal = mount(
 				<ModalMoveFile
@@ -341,34 +329,6 @@ describe("ModalMoveFile", () => {
 				>
 					t
 				</ModalMoveFile>
-			);
-
-			act(() => {
-				modal.find('[data-test="btn-test"]').simulate("click");
-			});
-
-			// button isn't disabled anymore
-			var submitButtonBefore = (modal
-				.find(".btn--default")
-				.getDOMNode() as HTMLButtonElement).disabled;
-			expect(submitButtonBefore).toBeFalsy();
-
-			act(() => {
-				// now move
-				modal.find(".btn--default").simulate("click");
-			});
-
-			expect(fetchPostSpy).toBeCalledTimes(1);
-
-			// generate url
-			var bodyParams = new URLSearchParams();
-			bodyParams.append("f", "/test.jpg");
-			bodyParams.append("to", "/test/");
-			bodyParams.append("collections", true.toString());
-
-			expect(fetchPostSpy).toBeCalledWith(
-				new UrlQuery().UrlSyncRename(),
-				bodyParams.toString()
 			);
 
 			// Test is warning exist
