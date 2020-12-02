@@ -24,7 +24,7 @@ import MenuDetailViewContainer from "./menu-detailview-container/menu-detailview
 const DetailView: React.FC<IDetailView> = () => {
 	var history = useLocation();
 
-	let { state } = React.useContext(DetailViewContext);
+	let { state, dispatch } = React.useContext(DetailViewContext);
 
 	// if there is no state
 	if (!state) {
@@ -259,6 +259,8 @@ const DetailView: React.FC<IDetailView> = () => {
 
 				{isDetails && state.fileIndexItem.status ? (
 					<DetailViewSidebar
+						state={state}
+						dispatch={dispatch}
 						status={state.fileIndexItem.status}
 						filePath={state.fileIndexItem.filePath}
 					/>
