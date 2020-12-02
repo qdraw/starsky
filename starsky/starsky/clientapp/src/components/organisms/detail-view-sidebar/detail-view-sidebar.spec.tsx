@@ -501,7 +501,7 @@ describe("DetailViewSidebar", () => {
 	});
 
 	describe("own context", () => {
-		xit("keydown t/i should be fired", () => {
+		it("keydown t/i should be fired", () => {
 			var contextProvider = {
 				dispatch: () => jest.fn(),
 				state: {
