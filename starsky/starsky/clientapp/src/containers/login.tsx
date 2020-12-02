@@ -68,6 +68,7 @@ const Login: React.FC<ILoginProps> = () => {
 	var accountStatus = useFetch(new UrlQuery().UrlAccountStatus(), "get");
 
 	useEffect(() => {
+		if (!accountStatus) return;
 		setLogin(accountStatus.statusCode === 401);
 		new DocumentTitle().SetDocumentTitlePrefix(
 			accountStatus.statusCode === 401 ? MessageLogin : MessageLogout
