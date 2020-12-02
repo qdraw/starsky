@@ -1,10 +1,10 @@
 import { Link } from "@reach/router";
 import React, { memo, useEffect, useRef } from "react";
-import { useDetailViewContext } from "../../../contexts/detailview-context";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard-event";
 import useLocation from "../../../hooks/use-location";
+import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import AspectRatio from "../../../shared/aspect-ratio";
@@ -32,10 +32,13 @@ import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 interface IDetailViewSidebarProps {
 	filePath: string;
 	status: IExifStatus;
+	state: IDetailView;
+	dispatch: any;
 }
+// let { state, dispatch } = useDetailViewContext();
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo(
-	(props) => {
+	({ state, dispatch, ...props }) => {
 		// content
 		const settings = useGlobalSettings();
 		const language = new Language(settings.language);
@@ -91,7 +94,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 			"The labels have been overwritten"
 		);
 
-		let { state, dispatch } = useDetailViewContext();
 		var history = useLocation();
 
 		const [fileIndexItem, setFileIndexItem] = React.useState(
