@@ -1,6 +1,7 @@
 import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import * as DetailView from "../containers/detailview";
+import * as useDetailViewContext from "../contexts/detailview-context";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { mountReactHook } from "../hooks/___tests___/test-hook";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
@@ -29,15 +30,22 @@ describe("DetailViewWrapper", () => {
 		});
 
 		it("check if dispatch is called", () => {
-			var contextValues = { state: newIFileIndexItem(), dispatch: jest.fn() };
-			jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-				return contextValues;
-			});
+			var contextValues = {
+				state: { fileIndexItem: newIFileIndexItem() },
+				dispatch: jest.fn()
+			} as any;
+
+			jest
+				.spyOn(useDetailViewContext, "useDetailViewContext")
+				.mockImplementationOnce(() => contextValues as any)
+				.mockImplementationOnce(() => contextValues as any)
+				.mockImplementationOnce(() => contextValues as any);
 
 			var args = {
 				...newDetailView(),
 				fileIndexItem: newIFileIndexItem()
 			} as IDetailView;
+
 			var detailView = jest
 				.spyOn(DetailView, "default")
 				.mockImplementationOnce(() => {
@@ -48,19 +56,26 @@ describe("DetailViewWrapper", () => {
 
 			expect(contextValues.dispatch).toBeCalled();
 			expect(detailView).toBeCalled();
+
 			compontent.unmount();
 		});
 	});
 
 	describe("no context", () => {
 		it("No context if used", () => {
-			jest.spyOn(React, "useContext").mockImplementationOnce(() => {
-				return { state: null, dispatch: jest.fn() };
-			});
+			var contextValues = {
+				state: null,
+				dispatch: jest.fn()
+			} as any;
+
+			jest
+				.spyOn(useDetailViewContext, "useDetailViewContext")
+				.mockImplementationOnce(() => contextValues as any);
+
 			var args = { ...newDetailView() } as IDetailView;
 			var compontent = mount(<DetailViewWrapper {...args} />);
 
-			expect(compontent.text()).toBe("(DetailViewWrapper) = no state");
+			expect(compontent.text()).toBe("");
 			compontent.unmount();
 		});
 	});
@@ -85,13 +100,6 @@ describe("DetailViewWrapper", () => {
 		});
 
 		it("Check if event is received", () => {
-			// var dispatch = (e: any) => {
-			// 	console.log("-dfsdfnlk");
-
-			// 	// should ignore the first one
-			// 	expect(e).toStrictEqual(detail[1]);
-			// };
-
 			var dispatch = jest.fn();
 			document.body.innerHTML = "";
 			var result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);

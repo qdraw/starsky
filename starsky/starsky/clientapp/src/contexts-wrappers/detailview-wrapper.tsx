@@ -41,8 +41,7 @@ function DetailViewWrapper(detailViewProp: IDetailView) {
 
 	DetailViewEventListenerUseEffect(dispatch);
 
-	if (!state) return <>(DetailViewWrapper) = no state</>;
-	if (!state.fileIndexItem) return <></>;
+	if (!state || !state.fileIndexItem) return null;
 
 	return <DetailView {...state} />;
 }
