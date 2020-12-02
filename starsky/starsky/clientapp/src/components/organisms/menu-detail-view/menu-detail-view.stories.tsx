@@ -5,6 +5,6 @@ import MenuDetailView from "./menu-detail-view";
 storiesOf("components/organisms/menu-detail-view", module).add(
 	"default",
 	() => {
-		return <MenuDetailView />;
+		return <MenuDetailView state={{} as any} dispatch={() => {}} />;
 	}
 );

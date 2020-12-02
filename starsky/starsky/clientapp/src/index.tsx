@@ -9,7 +9,6 @@ import "core-js/features/url-search-params"; // new UrlSearchParams
 import React from "react";
 import * as ReactDOM from "react-dom";
 import RouterApp from "./router-app/router-app";
-import * as serviceWorker from "./service-worker";
 import "./style/css/00-index.css";
 
 /* used for image policy */
@@ -27,8 +26,3 @@ const troubleLoading = document.querySelector(".trouble-loading");
 if (troubleLoading && troubleLoading.parentElement) {
 	troubleLoading.parentElement.removeChild(troubleLoading);
 }
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();

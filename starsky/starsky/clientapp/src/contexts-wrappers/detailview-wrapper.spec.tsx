@@ -1,8 +1,8 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import * as DetailView from "../containers/detailview";
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
+import { mountReactHook } from "../hooks/___tests___/test-hook";
 import { IDetailView, newDetailView } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import DetailViewWrapper, {
@@ -23,8 +23,9 @@ describe("DetailViewWrapper", () => {
 					return <></>;
 				});
 
-			mount(<DetailViewWrapper {...args} />);
+			const compontent = mount(<DetailViewWrapper {...args} />);
 			expect(detailView).toBeCalled();
+			compontent.unmount();
 		});
 
 		it("check if dispatch is called", () => {
@@ -43,10 +44,11 @@ describe("DetailViewWrapper", () => {
 					return <></>;
 				});
 
-			mount(<DetailViewWrapper {...args} />);
+			const compontent = mount(<DetailViewWrapper {...args} />);
 
 			expect(contextValues.dispatch).toBeCalled();
 			expect(detailView).toBeCalled();
+			compontent.unmount();
 		});
 	});
 
@@ -59,6 +61,7 @@ describe("DetailViewWrapper", () => {
 			var compontent = mount(<DetailViewWrapper {...args} />);
 
 			expect(compontent.text()).toBe("(DetailViewWrapper) = no state");
+			compontent.unmount();
 		});
 	});
 
@@ -81,19 +84,17 @@ describe("DetailViewWrapper", () => {
 			window.location = location;
 		});
 
-		it("Check if event is received", (done) => {
-			var dispatch = (e: any) => {
-				// should ignore the first one
-				expect(e).toStrictEqual(detail[1]);
-				done();
-			};
+		it("Check if event is received", () => {
+			// var dispatch = (e: any) => {
+			// 	console.log("-dfsdfnlk");
 
-			function TestComponent() {
-				DetailViewEventListenerUseEffect(dispatch);
-				return <></>;
-			}
+			// 	// should ignore the first one
+			// 	expect(e).toStrictEqual(detail[1]);
+			// };
 
-			var component = mount(<TestComponent />);
+			var dispatch = jest.fn();
+			document.body.innerHTML = "";
+			var result = mountReactHook(DetailViewEventListenerUseEffect, [dispatch]);
 
 			var detail = [
 				{
@@ -111,11 +112,13 @@ describe("DetailViewWrapper", () => {
 				detail
 			});
 
-			act(() => {
-				document.body.dispatchEvent(event);
-			});
+			document.body.dispatchEvent(event);
 
-			component.unmount();
+			expect(dispatch).toBeCalled();
+			expect(dispatch).toBeCalledWith(detail[1]);
+
+			var element = (result.componentMount as any) as ReactWrapper;
+			element.unmount();
 		});
 	});
 });

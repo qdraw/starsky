@@ -3,5 +3,9 @@ import React from "react";
 import Modal from "./modal";
 
 storiesOf("components/atoms/modal", module).add("default", () => {
-	return <Modal id="test-modal" isOpen={true} handleExit={() => {}}></Modal>;
+	return (
+		<Modal id="test-modal" isOpen={true} handleExit={() => {}}>
+			data
+		</Modal>
+	);
 });

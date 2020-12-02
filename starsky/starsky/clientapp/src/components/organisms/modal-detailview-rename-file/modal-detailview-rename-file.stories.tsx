@@ -6,7 +6,11 @@ storiesOf("components/organisms/modal-detailview-rename-file", module).add(
 	"default",
 	() => {
 		return (
-			<ModalDetailviewRenameFile isOpen={true} handleExit={() => {}}>
+			<ModalDetailviewRenameFile
+				state={{} as any}
+				isOpen={true}
+				handleExit={() => {}}
+			>
 				test
 			</ModalDetailviewRenameFile>
 		);

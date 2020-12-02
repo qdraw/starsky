@@ -185,6 +185,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
 			{/* Modal new directory */}
 			{isModalMkdirOpen && !isReadOnly ? (
 				<ModalArchiveMkdir
+					state={state}
+					dispatch={dispatch}
 					handleExit={() => setModalMkdirOpen(!isModalMkdirOpen)}
 					isOpen={isModalMkdirOpen}
 				/>

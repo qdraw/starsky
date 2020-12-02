@@ -3,5 +3,5 @@ import React from "react";
 import MenuTrash from "./menu-trash";
 
 storiesOf("components/organisms/menu-trash", module).add("default", () => {
-	return <MenuTrash />;
+	return <MenuTrash state={{} as any} dispatch={() => {}} />;
 });
