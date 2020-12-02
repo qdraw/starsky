@@ -16,7 +16,7 @@
 		"editor.formatOnPaste": true,
 		"editor.tabSize": 2,
 		"editor.detectIndentation": false,
-		"editor.insertSpaces": false,
+		"editor.insertSpaces": true,
 		"html.format.wrapLineLength": 100,
 		"html.format.wrapAttributes": "force-aligned",
 		"html.format.contentUnformatted": "pre,code,textarea, span",
