@@ -41,7 +41,7 @@ const MediaContent: React.FC = () => {
 		"Please reload the page to try again"
 	);
 	const MessageConnectionRealtimeError = language.text(
-		"De verbinding is niet helemaal oké. " + "We proberen het te herstellen",
+		"De verbinding is niet helemaal oké. We proberen het te herstellen",
 		"The connection is not quite right. We are trying to fix it"
 	);
 
