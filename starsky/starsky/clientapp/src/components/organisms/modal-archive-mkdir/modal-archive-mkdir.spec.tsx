@@ -4,8 +4,7 @@ import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
-import { IDetailView, PageType } from "../../../interfaces/IDetailView";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { PageType } from "../../../interfaces/IDetailView";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -15,7 +14,12 @@ import ModalArchiveMkdir from "./modal-archive-mkdir";
 describe("ModalArchiveMkdir", () => {
 	it("renders", () => {
 		shallow(
-			<ModalArchiveMkdir isOpen={true} handleExit={() => {}}>
+			<ModalArchiveMkdir
+				dispatch={jest.fn()}
+				state={{} as any}
+				isOpen={true}
+				handleExit={() => {}}
+			>
 				test
 			</ModalArchiveMkdir>
 		);
@@ -23,13 +27,7 @@ describe("ModalArchiveMkdir", () => {
 
 	describe("mkdir", () => {
 		it("to non valid dirname", async () => {
-			var state = {
-				fileIndexItem: {
-					status: IExifStatus.Ok,
-					filePath: "/test/image.jpg",
-					fileName: "image.jpg"
-				}
-			} as IDetailView;
+			var state = {} as IArchiveProps;
 			var contextValues = { state, dispatch: jest.fn() };
 
 			jest
@@ -46,6 +44,8 @@ describe("ModalArchiveMkdir", () => {
 
 			var modal = mount(
 				<ModalArchiveMkdir
+					state={state}
+					dispatch={jest.fn()}
 					isOpen={true}
 					handleExit={() => {}}
 				></ModalArchiveMkdir>
@@ -111,17 +111,10 @@ describe("ModalArchiveMkdir", () => {
 			} as IArchive;
 			var contextValues = { state, dispatch: jest.fn() };
 
-			jest
-				.spyOn(React, "useContext")
-				.mockImplementationOnce(() => {
-					return contextValues;
-				})
-				.mockImplementationOnce(() => {
-					return contextValues;
-				});
-
 			var modal = mount(
 				<ModalArchiveMkdir
+					state={state}
+					dispatch={contextValues.dispatch}
 					isOpen={true}
 					handleExit={() => {}}
 				></ModalArchiveMkdir>
@@ -174,7 +167,12 @@ describe("ModalArchiveMkdir", () => {
 			var handleExitSpy = jest.fn();
 
 			var component = mount(
-				<ModalArchiveMkdir isOpen={true} handleExit={handleExitSpy} />
+				<ModalArchiveMkdir
+					state={{} as any}
+					isOpen={true}
+					dispatch={jest.fn()}
+					handleExit={handleExitSpy}
+				/>
 			);
 
 			expect(handleExitSpy).toBeCalled();
