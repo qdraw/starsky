@@ -9,25 +9,24 @@
 	],
 	"settings": {
 		"editor.codeActionsOnSave": {
-			"source.organizeImports": true
+			"source.organizeImports": true,
+			"source.fixAll": true,
+			"source.fixAll.eslint": true
 		},
 		"editor.formatOnPaste": true,
-		"editor.formatOnSave": true,
 		"editor.tabSize": 2,
-		"html.format.wrapLineLength": 140,
+		"html.format.wrapLineLength": 100,
 		"html.format.wrapAttributes": "force-aligned",
 		"html.format.contentUnformatted": "pre,code,textarea, span",
 		"html.format.endWithNewline": true,
-		"javascript.preferences.quoteStyle": "single",
+		"javascript.preferences.quoteStyle": "double",
 		"javascript.updateImportsOnFileMove.enabled": "always",
-		"tslint.autoFixOnSave": true,
-		"tslint.enable": true,
 		"jest.disabledWorkspaceFolders": [
 			"node_modules",
 			"mock",
 			"history.md"
 		],
-		"typescript.preferences.quoteStyle": "single",
+		"typescript.preferences.quoteStyle": "double",
 		"typescript.updateImportsOnFileMove.enabled": "always",
 		"cSpell.words": [
 			"Exif",
@@ -36,5 +35,6 @@
 			"unmount"
 		],
 		"typescript.tsdk": "clientapp/node_modules/typescript/lib",
+		"editor.formatOnSave": true,
 	}
 }

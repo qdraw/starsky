@@ -4,7 +4,7 @@ root = true
 [*]
 # Most of the standard properties are supported
 indent_size=4
-max_line_length=100
+max_line_length=80
 
 # Most frequently used .NET-coding-convention properties are supported
 csharp_space_between_parentheses=expressions, type_casts, control_flow_statements
@@ -12,6 +12,7 @@ csharp_style_var_for_built_in_types=true
 
 [*.{ts,tsx}]
 charset = utf-8
+indent_style = tab
 indent_size=2
 insert_final_newline = true
 

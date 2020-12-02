@@ -1,8 +1,7 @@
 {
   "recommendations": [
     "orta.vscode-jest",
-    "cake-build.cake-vscode",
-    "ms-vscode.vscode-typescript-tslint-plugin",
-    "ms-azure-devops.azure-pipelines"
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
   ]
 }

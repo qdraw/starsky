@@ -17,10 +17,9 @@
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
     "@types/storybook__react": "^5.2.1",
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.3.1",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.3.2",
     "abortcontroller-polyfill": "^1.5.0",
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.5",
     "intersection-observer": "^0.11.0",
     "leaflet": "^1.7.1",
     "react": "^17.0.1",
@@ -33,7 +32,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 30",
+    "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
     "storybook": "start-storybook",
     "upgrade": "echo 'check readme.md 20201130  v4.0.1 (2020-11-23)'"
@@ -69,8 +68,21 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+       "plugin:prettier/recommended"
+    ],
+    "plugins": ["prettier"],
+    "rules": {
+      "prettier/prettier": "error"
+    }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "useTabs": true
   },
   "browserslist": {
     "production": [
@@ -85,6 +97,9 @@
     ]
   },
   "devDependencies": {
-    "@storybook/react": "^6.1.9"
+    "@storybook/react": "^6.1.9",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.2.1"
   }
 }
