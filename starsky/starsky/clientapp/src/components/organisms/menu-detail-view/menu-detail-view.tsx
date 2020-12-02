@@ -60,7 +60,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({state, di
   }, [history.location.search]);
 
   /* show marker with 'Saved' */
-  const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state.fileIndexItem.lastEdited));
+  const [isRecentEdited, setRecentEdited] = React.useState(IsEditedNow(state?.fileIndexItem?.lastEdited));
   useEffect(() => {
     if (!state?.fileIndexItem?.lastEdited) return;
     const isEditedNow = IsEditedNow(state.fileIndexItem.lastEdited);

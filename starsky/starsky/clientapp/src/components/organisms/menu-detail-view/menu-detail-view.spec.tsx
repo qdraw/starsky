@@ -1,5 +1,5 @@
 import { globalHistory } from '@reach/router';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
@@ -16,8 +16,8 @@ import MenuDetailView from './menu-detail-view';
 
 describe("MenuDetailView", () => {
 
-  xit("renders", () => {
-    // shallow(<MenuDetailView state={undefined} dispatch={jest.fn()} />)
+  it("renders", () => {
+    shallow(<MenuDetailView state={undefined as any} dispatch={jest.fn()} />)
   });
 
   describe("readonly status context", () => {
@@ -128,15 +128,13 @@ describe("MenuDetailView", () => {
 
     it("last Edited change [true]", () => {
       globalHistory.navigate("/?details=true");
-
+      
       //  With updated LastEdited
 
-      var updateState = {...state, lastEdited : new Date().toISOString()}
+      var updateState = {...state, fileIndexItem: {...state.fileIndexItem, 
+        lastEdited : new Date().toISOString() } }
 
-
-      var component = mount(<MenuDetailView state={updateState} dispatch={jest.fn()} />);
-
-      console.log(component.html());
+        var component = mount(<MenuDetailView state={updateState} dispatch={jest.fn()} />);
       
       expect(component.exists(".autosave")).toBeTruthy();
 
@@ -438,30 +436,19 @@ describe("MenuDetailView", () => {
 
     it("navigate to next item and reset some states", () => {
 
-      jest.spyOn(React, 'useContext').mockReset();
-
-      var state = {
+      let state1 = {
         subPath: "/trashed/test1.jpg",
-        fileIndexItem: { status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg" }
+        fileIndexItem: { 
+          status: IExifStatus.Deleted, filePath: "/trashed/test1.jpg", fileName: "test1.jpg",
+          lastEdited: '' 
+        }
       } as IDetailView;
-      var contextValues = { state, dispatch: jest.fn() };
 
-      var contextNonDeleted = {
-        state: {
-          subPath: "/test2.jpg",
-          fileIndexItem: { status: IExifStatus.Ok, filePath: "/test2.jpg", fileName: "test2.jpg" }
-        } as IDetailView, dispatch: jest.fn()
-      };
-
-      jest.spyOn(React, 'useContext')
-        .mockImplementationOnce(() => { return contextValues })
-        .mockImplementationOnce(() => { return contextNonDeleted })
-        .mockImplementationOnce(() => { return contextNonDeleted })
-        .mockImplementationOnce(() => { return contextNonDeleted })
-
-      const component = mount(<MenuDetailView state={state} dispatch={jest.fn()} />);
+      const component = mount(<MenuDetailView state={state1} dispatch={jest.fn()} />);
       expect(component.find('header').getDOMNode().className).toBe("header header--main header--deleted");
 
+      state1.fileIndexItem.status = IExifStatus.Ok;
+      
       act(() => {
         globalHistory.navigate("/?f=/test2.jpg");
       });
