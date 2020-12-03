@@ -15,6 +15,40 @@ describe("keyboard", () => {
 
       expect(result).toBeNull();
     });
+
+    it("should ignore form-control", () => {
+      let target = document.createElement("div");
+      target.className = "form-control";
+
+      const event = new KeyboardEvent("keydown", {
+        keyCode: 37
+      } as KeyboardEventInit);
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: target
+      });
+
+      const result = keyboard.isInForm(event);
+
+      expect(result).toBeTruthy();
+    });
+
+    it("should ignore modal", () => {
+      let target = document.createElement("div");
+      target.className = "modal";
+
+      const event = new KeyboardEvent("keydown", {
+        keyCode: 37
+      } as KeyboardEventInit);
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: target
+      });
+
+      const result = keyboard.isInForm(event);
+
+      expect(result).toBeTruthy();
+    });
   });
 
   describe("SetFocusOnEndField", () => {
