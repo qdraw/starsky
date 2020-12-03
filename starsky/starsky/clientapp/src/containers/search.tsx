@@ -3,12 +3,12 @@ import ItemListView from "../components/molecules/item-list-view/item-list-view"
 import MenuSearchBar from "../components/molecules/menu-inline-search/menu-inline-search";
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import ArchiveSidebar from "../components/organisms/archive-sidebar/archive-sidebar";
-import MenuSearch from "../components/organisms/menu-search/menu-search";
 import useGlobalSettings from "../hooks/use-global-settings";
 import useLocation from "../hooks/use-location";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { Language } from "../shared/language";
 import { URLPath } from "../shared/url-path";
+import MenuMenuSearchContainer from "./menu-search-container/menu-search-container";
 
 function Search(archive: IArchiveProps) {
   // Content
@@ -48,7 +48,7 @@ function Search(archive: IArchiveProps) {
 
   return (
     <>
-      <MenuSearch />
+      <MenuMenuSearchContainer />
       <div className={!sidebar ? "archive" : "archive collapsed"}>
         <ArchiveSidebar {...archive} />
         <div className="content">

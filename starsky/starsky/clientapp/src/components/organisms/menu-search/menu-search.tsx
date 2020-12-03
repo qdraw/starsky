@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import {
-  ArchiveContext,
+  ArchiveAction,
   defaultStateFallback
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import { Language } from "../../../shared/language";
 import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
@@ -16,8 +17,15 @@ import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/men
 import ModalDownload from "../modal-download/modal-download";
 import NavContainer from "../nav-container/nav-container";
 
-export const MenuSearch: React.FunctionComponent<any> = (_) => {
-  let { state, dispatch } = React.useContext(ArchiveContext);
+export interface IMenuSearchProps {
+  state: IArchiveProps;
+  dispatch: React.Dispatch<ArchiveAction>;
+}
+
+export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
+  state,
+  dispatch
+}) => {
   state = defaultStateFallback(state);
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
