@@ -7,10 +7,10 @@ describe("CurrentLocationButton", () => {
     shallow(<ButtonStyled />);
   });
 
-  describe("context", () => {
-    it("no navigator.geolocation wrong_location", () => {
+  describe("ButtonStyled", () => {
+    it("set type", () => {
       var component = shallow(<ButtonStyled type={"submit"} />);
-      console.log(component.type);
+      expect(component.find("button").prop("type")).toEqual("submit");
     });
   });
 });
