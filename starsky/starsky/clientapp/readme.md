@@ -233,11 +233,12 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
     ],
     "plugins": ["prettier"],
     "rules": {
-      "prettier/prettier": {
-        "error": {
+      "prettier/prettier": [
+        "error",
+        {
           "endOfLine": "auto"
         }
-      }
+      ]
     }
   },
   "prettier": {
