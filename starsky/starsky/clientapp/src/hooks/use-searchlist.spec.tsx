@@ -40,7 +40,7 @@ describe("UseSearchList", () => {
       hook = setupComponent.componentHook as ISearchList;
     });
 
-    it("with archive content 200", async () => {
+    it("with search content 200", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       var controller = new AbortController();
@@ -64,7 +64,7 @@ describe("UseSearchList", () => {
       expect(hook.archive.fileIndexItems).toStrictEqual([]);
     });
 
-    it("with archive content 404", async () => {
+    it("with search content 404", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       var controller = new AbortController();
@@ -79,7 +79,7 @@ describe("UseSearchList", () => {
       expect(hook.pageType).toBe(PageType.NotFound);
     });
 
-    it("with archive content 401", async () => {
+    it("with search content 401", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       var controller = new AbortController();
@@ -94,7 +94,7 @@ describe("UseSearchList", () => {
       expect(hook.pageType).toBe(PageType.Unauthorized);
     });
 
-    it("with archive content 500", async () => {
+    it("with search content 500", async () => {
       expect(hook.pageType).toBe(PageType.Loading);
 
       var controller = new AbortController();
