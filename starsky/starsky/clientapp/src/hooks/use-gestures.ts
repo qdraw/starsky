@@ -137,6 +137,7 @@ export const callHandler = (
 ) => {
   if (
     eventName &&
+    handlers &&
     (handlers as any)[eventName] &&
     typeof (handlers as any)[eventName] === "function"
   ) {
