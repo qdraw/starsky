@@ -1,5 +1,6 @@
 import { mount } from "enzyme";
 import React from "react";
+import * as ApplicationException from "../components/organisms/application-exception/application-exception";
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
 import * as useSearchList from "../hooks/use-searchlist";
 import { ISearchList } from "../hooks/use-searchlist";
@@ -36,5 +37,45 @@ describe("TrashPage", () => {
     expect(contextSpy).toBeCalled();
 
     trashPage.unmount();
+  });
+
+  it("Internal Error null", () => {
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => null as any);
+
+    const component = mount(<TrashPage>t</TrashPage>);
+    expect(component.html()).toBe("Something went wrong");
+
+    component.unmount();
+  });
+
+  it("Internal Error plain object", () => {
+    jest
+      .spyOn(useSearchList, "default")
+      .mockImplementationOnce(() => ({} as any));
+
+    const component = mount(<TrashPage>t</TrashPage>);
+    expect(component.html()).toBe("Something went wrong");
+
+    component.unmount();
+  });
+
+  it("App exception", () => {
+    const applicationExceptionSpy = jest
+      .spyOn(ApplicationException, "default")
+      .mockImplementationOnce(() => null);
+
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
+      return {
+        pageType: PageType.ApplicationException
+      } as any;
+    });
+
+    const component = mount(<TrashPage>t</TrashPage>);
+
+    expect(applicationExceptionSpy).toBeCalled();
+
+    component.unmount();
   });
 });

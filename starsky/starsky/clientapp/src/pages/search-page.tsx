@@ -8,21 +8,17 @@ import useSearchList from "../hooks/use-searchlist";
 import { PageType } from "../interfaces/IDetailView";
 import { URLPath } from "../shared/url-path";
 
-interface ISearchPageProps {}
-
-const SearchPage: FunctionComponent<RouteComponentProps<ISearchPageProps>> = (
-  props
-) => {
+const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
   var history = useLocation();
 
   var urlObject = new URLPath().StringToIUrl(history.location.search);
   var searchList = useSearchList(urlObject.t, urlObject.p, true);
 
   if (!searchList) return <>Something went wrong</>;
-  if (!searchList.archive) return <>Something went wrong</>;
   if (searchList.pageType === PageType.ApplicationException) {
     return <ApplicationException></ApplicationException>;
   }
+  if (!searchList.archive) return <>Something went wrong</>;
 
   return (
     <>
