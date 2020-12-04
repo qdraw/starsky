@@ -1,6 +1,7 @@
 import { RouteComponentProps } from "@reach/router";
 import React, { FunctionComponent } from "react";
 import Preloader from "../components/atoms/preloader/preloader";
+import ApplicationException from "../components/organisms/application-exception/application-exception";
 import ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
 import useLocation from "../hooks/use-location";
 import useSearchList from "../hooks/use-searchlist";
@@ -19,6 +20,9 @@ const SearchPage: FunctionComponent<RouteComponentProps<ISearchPageProps>> = (
 
   if (!searchList) return <>Something went wrong</>;
   if (!searchList.archive) return <>Something went wrong</>;
+  if (searchList.pageType === PageType.ApplicationException) {
+    return <ApplicationException></ApplicationException>;
+  }
 
   return (
     <>
