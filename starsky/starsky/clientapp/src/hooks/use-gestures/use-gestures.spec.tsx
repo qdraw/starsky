@@ -163,7 +163,7 @@ describe("useGestures", () => {
 
       component.find("img").simulate("touchmove", exampleSingleTouches);
 
-      jest.advanceTimersByTime(20);
+      jest.advanceTimersByTime(201);
 
       // this does nothing
 
