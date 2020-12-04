@@ -128,6 +128,8 @@ export function useGestures(
         return;
       }
 
+      console.log(currentTouches.deltaX, currentTouches.deltaY);
+
       if (
         Math.abs(currentTouches.deltaX) >= options.minDelta &&
         Math.abs(currentTouches.deltaY) < options.minDelta
