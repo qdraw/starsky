@@ -9,11 +9,12 @@
   width: 100%;
   height: 100%;
   cursor: pointer;
+  z-index: 600;
 }
 
 @media (prefers-color-scheme: dark) {
-	.menu-context  {
-    background: rgba(69, 90, 100, 0.7); 
+  .menu-context {
+    background: rgba(69, 90, 100, 0.7);
     /* #455A64 */
   }
 }
@@ -36,15 +37,15 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	.menu-context .menu-options {
-    background-color: #37474F;
+  .menu-context .menu-options {
+    background-color: #37474f;
     color: #fff;
-    box-shadow: 0 2px 6px 0px #B0BEC5;
+    box-shadow: 0 2px 6px 0px #b0bec5;
   }
 }
 
-.header--edit > .wrapper > .item.item--more > .menu-context .menu-options{
-  right:240px;
+.header--edit > .wrapper > .item.item--more > .menu-context .menu-options {
+  right: 240px;
 }
 
 .menu-context .menu-options .menu-option {
@@ -57,28 +58,28 @@
 }
 
 .menu-context .menu-options .menu-option:nth-child(even) {
-  background-color: #ECEFF1;
+  background-color: #eceff1;
 }
 
 @media (prefers-color-scheme: dark) {
-	.menu-context .menu-options .menu-option:nth-child(even) {
+  .menu-context .menu-options .menu-option:nth-child(even) {
     background-color: #263238;
   }
 }
 
 .menu-context .menu-options .menu-option:hover {
-  background: #B0BEC5;
+  background: #b0bec5;
 }
 
 @media (prefers-color-scheme: dark) {
-	.menu-context .menu-options .menu-option:hover  {
-    background-color: #546E7A;
+  .menu-context .menu-options .menu-option:hover {
+    background-color: #546e7a;
   }
 }
 
 .menu-context .menu-options .menu-option.disabled {
-  cursor: not-allowed; 
-  color:#607D8B;
+  cursor: not-allowed;
+  color: #607d8b;
   text-decoration: line-through;
 }
 
@@ -87,7 +88,7 @@
   padding-left: 0px;
 }
 
-.menu-context .menu-options .menu-option .droparea-file-input + label{
+.menu-context .menu-options .menu-option .droparea-file-input + label {
   width: 100%;
   padding-left: 15px;
   /* placed last */
@@ -97,13 +98,13 @@
 
 .menu-context .menu-options .menu-option .droparea-file-input:focus + label,
 .menu-context .menu-options .menu-option .droparea-file-input + label:hover {
-  background: #B0BEC5;
+  background: #b0bec5;
 }
 
 @media (prefers-color-scheme: dark) {
-	.menu-context .menu-options .menu-option .droparea-file-input:focus + label,
+  .menu-context .menu-options .menu-option .droparea-file-input:focus + label,
   .menu-context .menu-options .menu-option .droparea-file-input + label:hover {
-    background-color: #546E7A;
+    background-color: #546e7a;
   }
 }
 

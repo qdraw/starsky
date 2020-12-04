@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 
 interface ISwitchButtonProps {
   onToggle(value: boolean, name?: string): void;
@@ -10,7 +10,6 @@ interface ISwitchButtonProps {
 }
 
 function SwitchButton(props: ISwitchButtonProps) {
-
   const [random, setRandom] = React.useState(0);
 
   useEffect(() => {
@@ -22,10 +21,14 @@ function SwitchButton(props: ISwitchButtonProps) {
   useEffect(() => {
     if (props.isOn === undefined) return;
     setChecked(props.isOn);
-  }, [props])
+  }, [props]);
 
   return (
-    <form className={props.isEnabled !== false ? "switch-field" : "switch-field disabled"}>
+    <form
+      className={
+        props.isEnabled !== false ? "switch-field" : "switch-field disabled"
+      }
+    >
       <input
         type="radio"
         disabled={props.isEnabled === false}

@@ -1,5 +1,4 @@
-
-import { Language, SupportedLanguages } from './language';
+import { Language, SupportedLanguages } from "./language";
 
 describe("keyboard", () => {
   var language = new Language(SupportedLanguages.nl);
@@ -17,13 +16,13 @@ describe("keyboard", () => {
 
   describe("token", () => {
     it("multiple tokens", () => {
-
-      var result = language.token("{lessThan1Minute} {minutes} {hour}",
+      var result = language.token(
+        "{lessThan1Minute} {minutes} {hour}",
         ["{lessThan1Minute}", "{minutes}", "{hour}"],
-        ["<1minute", "minutes", "hour"]);
+        ["<1minute", "minutes", "hour"]
+      );
 
       expect(result).toBe("<1minute minutes hour");
     });
   });
-
 });

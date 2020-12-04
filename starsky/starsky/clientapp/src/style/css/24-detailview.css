@@ -1,4 +1,3 @@
-
 .detailview {
   position: absolute;
   top: 50px;
@@ -9,19 +8,18 @@
   overflow: hidden; /*for edge*/
 }
 
-
 .detailview .main {
   height: 100%;
   overflow: hidden;
 }
 
-.detailview--edit .main{
+.detailview--edit .main {
   width: calc(100% - 320px);
 }
 
 .detailview .main.main--error {
-  background-color: #CCC;
-  background-image: url('../images/baseline-broken_image-24px.svg');
+  background-color: #ccc;
+  background-image: url("../images/baseline-broken_image-24px.svg");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 48px;
@@ -49,11 +47,13 @@
 .detailview .image--default.Rotate180 {
   max-width: 100%;
   max-height: 100vh;
-  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
+  transform: translatex(calc(50vw - 50%)) translatey(calc(50vh - 25px - 50%))
+    rotate(180deg);
 }
 .detailview.detailview--edit .image--default.Rotate180 {
   max-width: calc(100% - 160px);
-  transform: translatex(calc(50vw - 160px - 50%)) translatey(calc(50vh - 25px - 50%)) rotate(180deg);
+  transform: translatex(calc(50vw - 160px - 50%))
+    translatey(calc(50vh - 25px - 50%)) rotate(180deg);
 }
 @media screen and (max-width: 450px) {
   .detailview.detailview--edit .image--default.Rotate180 {
@@ -65,11 +65,13 @@
 .detailview .image--default.Rotate90Cw {
   max-width: calc(100vh - 50px);
   max-height: calc(100vw);
-  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
+    rotate(90deg);
 }
 .detailview--edit .image--default.Rotate90Cw {
   max-height: calc(100vw - 160px); /* is width */
-  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(90deg);
+  transform: translateX(calc(50vw - 160px - 50%))
+    translateY(calc(50vh - 25px - 50%)) rotate(90deg);
 }
 @media screen and (max-width: 450px) {
   .detailview.detailview--edit .image--default.Rotate90Cw {
@@ -81,11 +83,13 @@
 .detailview .image--default.Rotate270Cw {
   max-width: calc(100vh - 50px);
   max-height: calc(100vw);
-  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);
+  transform: translateX(calc(50vw - 50%)) translateY(calc(50vh - 25px - 50%))
+    rotate(270deg);
 }
 .detailview--edit .image--default.Rotate270Cw {
   max-height: calc(100vw - 160px); /* is width */
-  transform: translateX(calc(50vw - 160px - 50%)) translateY(calc(50vh - 25px - 50%)) rotate(270deg);
+  transform: translateX(calc(50vw - 160px - 50%))
+    translateY(calc(50vh - 25px - 50%)) rotate(270deg);
 }
 @media screen and (max-width: 450px) {
   .detailview.detailview--edit .image--default.Rotate270Cw {
@@ -99,10 +103,10 @@
 
 .detailview .main .nextprev {
   position: absolute;
-  top:0px;
+  top: 0px;
   left: 0px;
-  width: 20%; 
-  height:100%;
+  width: 20%;
+  height: 100%;
   transition: background-image 1s;
   pointer-events: none;
 }
@@ -128,28 +132,28 @@
 }
 
 .detailview .main .nextprev.nextprev--prev:hover {
-  background-image: linear-gradient(-90deg, transparent,  rgba(54,56,57,0.4));
+  background-image: linear-gradient(-90deg, transparent, rgba(54, 56, 57, 0.4));
 }
 .detailview .main .nextprev.nextprev--next:hover {
-  background-image: linear-gradient(90deg, transparent,  rgba(54,56,57,0.4));
+  background-image: linear-gradient(90deg, transparent, rgba(54, 56, 57, 0.4));
 }
 
-.detailview .main .nextprev:hover .icon{
+.detailview .main .nextprev:hover .icon {
   position: absolute;
   width: 48px;
   height: 48px;
   margin-left: 15px;
   margin-right: 15px;
-  background-color: rgba(255,255,255,0.54);
+  background-color: rgba(255, 255, 255, 0.54);
   top: calc(50% - 24px);
   border-radius: 24px;
-  background-image: url('../images/m-prev-arrow.svg');
+  background-image: url("../images/m-prev-arrow.svg");
   background-position: 30% center;
 }
 
-.detailview .main .nextprev.nextprev--next:hover .icon{
+.detailview .main .nextprev.nextprev--next:hover .icon {
   left: calc(100% - 78px);
-  background-image: url('../images/m-next-arrow.svg');
+  background-image: url("../images/m-next-arrow.svg");
   background-position: 60% center;
 }
 
@@ -159,13 +163,13 @@
 
 /* when hovering over map (default) */
 .detailview .main.main--gpx.leaflet-grab {
-	cursor: grab;
+  cursor: grab;
 }
 
 /* default value when dragging in leaflet */
 .detailview .main.main--gpx.leaflet-drag-target {
-	cursor: move;
-	cursor: grabbing;
+  cursor: move;
+  cursor: grabbing;
 }
 
 /* GPX */
@@ -175,17 +179,29 @@
 }
 
 .detailview .main.main--gpx .nextprev.nextprev--prev {
-  background-image: linear-gradient(-90deg, transparent, rgba(54,56,57,0.4), rgba(54,56,57,0.4), rgba(54,56,57,0.4));
+  background-image: linear-gradient(
+    -90deg,
+    transparent,
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4)
+  );
 }
 .detailview .main.main--gpx .nextprev.nextprev--next {
-  background-image: linear-gradient(90deg, transparent,  rgba(54,56,57,0.4), rgba(54,56,57,0.4), rgba(54,56,57,0.4) );
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4),
+    rgba(54, 56, 57, 0.4)
+  );
 }
 
 .detailview .main--gpx .leaflet-control-zoom {
   display: none;
 }
 
-.detailview .main.main--gpx .leaflet-top, 
+.detailview .main.main--gpx .leaflet-top,
 .detailview .main.main--gpx .leaflet-bottom,
 .detailview .main.main--gpx .leaflet-pane,
 .detailview .main.main--gpx .leaflet-tile-loaded,
@@ -197,13 +213,13 @@
 /* align in center of component */
 @media screen and (min-width: 450px) {
   .detailview--edit .preloader.preloader--icon {
-    left: calc( 50% - 210px ); 
+    left: calc(50% - 210px);
     /* // (320/2)+ (100/2) */
   }
 }
 
 .detailview .main.main--mp4 {
-  background-image: url('../images/baseline-file-mp4-24px.svg');
+  background-image: url("../images/baseline-file-mp4-24px.svg");
 }
 
 .gpx-controls {
@@ -217,7 +233,7 @@
 }
 
 .current-location.icon,
-.gpx-controls .icon{
+.gpx-controls .icon {
   float: left;
   height: 40px;
   background-repeat: no-repeat;
@@ -230,11 +246,11 @@
 }
 
 .gpx-controls .icon.icon--lock {
-  background-image: url('../images/baseline-lock-24px.svg');
+  background-image: url("../images/baseline-lock-24px.svg");
 }
 
 .gpx-controls .icon.icon--lock_open {
-  background-image: url('../images/baseline-lock_open-24px.svg');
+  background-image: url("../images/baseline-lock_open-24px.svg");
 }
 
 .gpx-controls .icon.icon--lock,
@@ -243,11 +259,11 @@
 }
 
 .gpx-controls .icon.icon--zoom_in {
-  background-image: url('../images/baseline-zoom_in-24px.svg');
+  background-image: url("../images/baseline-zoom_in-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_out {
-  background-image: url('../images/baseline-zoom_out-24px.svg');
+  background-image: url("../images/baseline-zoom_out-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_in,
@@ -258,12 +274,10 @@
   max-width: 40px;
 }
 
-
 .current-location.icon.icon--location_on {
-  background-image: url('../images/baseline-location_on-24px.svg');
+  background-image: url("../images/baseline-location_on-24px.svg");
 }
 
 .current-location.icon.icon--wrong_location {
-  background-image: url('../images/baseline-wrong_location-24px.svg');
+  background-image: url("../images/baseline-wrong_location-24px.svg");
 }
-

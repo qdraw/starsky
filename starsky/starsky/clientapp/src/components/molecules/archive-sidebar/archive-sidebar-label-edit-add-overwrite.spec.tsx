@@ -1,38 +1,37 @@
-import { globalHistory } from '@reach/router';
-import { act } from '@testing-library/react';
+import { globalHistory } from "@reach/router";
+import { act } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
-import React from 'react';
-import * as AppContext from '../../../contexts/archive-context';
-import { IArchive } from '../../../interfaces/IArchive';
-import { IConnectionDefault } from '../../../interfaces/IConnectionDefault';
-import { IExifStatus } from '../../../interfaces/IExifStatus';
-import { IFileIndexItem } from '../../../interfaces/IFileIndexItem';
-import * as FetchPost from '../../../shared/fetch-post';
-import { Keyboard } from '../../../shared/keyboard';
-import { UrlQuery } from '../../../shared/url-query';
-import FormControl from '../../atoms/form-control/form-control';
-import Notification from '../../atoms/notification/notification';
-import ArchiveSidebarLabelEditAddOverwrite from './archive-sidebar-label-edit-add-overwrite';
+import React from "react";
+import * as AppContext from "../../../contexts/archive-context";
+import { IArchive } from "../../../interfaces/IArchive";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
+import { IExifStatus } from "../../../interfaces/IExifStatus";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import * as FetchPost from "../../../shared/fetch-post";
+import { Keyboard } from "../../../shared/keyboard";
+import { UrlQuery } from "../../../shared/url-query";
+import FormControl from "../../atoms/form-control/form-control";
+import Notification from "../../atoms/notification/notification";
+import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditAddOverwrite />)
+    shallow(<ArchiveSidebarLabelEditAddOverwrite />);
   });
 
   it("isReadOnly: true", () => {
     const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
 
-    var formControl = mainElement.find('.form-control');
+    var formControl = mainElement.find(".form-control");
 
     // there are 3 classes [title,info,description]
-    formControl.forEach(element => {
-      var disabled = element.hasClass('disabled');
+    formControl.forEach((element) => {
+      var disabled = element.hasClass("disabled");
       expect(disabled).toBeTruthy();
     });
   });
 
   describe("with context", () => {
-
     var useContextSpy: jest.SpyInstance;
 
     var dispatchedValues: any[] = [];
@@ -41,7 +40,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       // is used in multiple ways
       // use this: ==> import * as AppContext from '../contexts/archive-context';
       useContextSpy = jest
-        .spyOn(React, 'useContext')
+        .spyOn(React, "useContext")
         .mockImplementation(() => contextValues);
 
       // clean array
@@ -50,29 +49,31 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       const contextValues = {
         state: {
           isReadOnly: false,
-          fileIndexItems: [{
-            fileName: 'test.jpg',
-            parentDirectory: '/'
-          }, {
-            fileName: 'test1.jpg',
-            parentDirectory: '/'
-          }]
+          fileIndexItems: [
+            {
+              fileName: "test.jpg",
+              parentDirectory: "/"
+            },
+            {
+              fileName: "test1.jpg",
+              parentDirectory: "/"
+            }
+          ]
         } as IArchive,
         dispatch: (value: any) => {
-          dispatchedValues.push(value)
-        },
+          dispatchedValues.push(value);
+        }
       } as AppContext.IArchiveContext;
 
-      jest.mock('@reach/router', () => ({
+      jest.mock("@reach/router", () => ({
         navigate: jest.fn(),
-        globalHistory: jest.fn(),
+        globalHistory: jest.fn()
       }));
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
         globalHistory.navigate("/?select=test.jpg");
       });
-
     });
 
     afterEach(() => {
@@ -81,13 +82,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("isReadOnly: false", () => {
-
       const component = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
 
       var formControl = component.find(FormControl);
 
       // there are 3 classes [title,info,description]
-      formControl.forEach(element => {
+      formControl.forEach((element) => {
         expect(element.props()["contentEditable"]).toBeTruthy();
       });
 
@@ -99,99 +99,118 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       });
     });
 
-    it('Should change value when onChange was called', () => {
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+    it("Should change value when onChange was called", () => {
+      const component = mount(
+        <ArchiveSidebarLabelEditAddOverwrite>
+          t
+        </ArchiveSidebarLabelEditAddOverwrite>
+      );
 
       act(() => {
         // update component
         component.find('[data-name="tags"]').getDOMNode().textContent = "a";
 
         // now press a key
-        component.find('[data-name="tags"]').simulate('input', { key: 'a' })
+        component.find('[data-name="tags"]').simulate("input", { key: "a" });
       });
 
-      var className = component.find('.btn.btn--default').getDOMNode().className
-      expect(className).toBe('btn btn--default');
+      var className = component.find(".btn.btn--default").getDOMNode()
+        .className;
+      expect(className).toBe("btn btn--default");
 
       act(() => {
         component.unmount();
       });
     });
 
-    it('click append', async () => {
-
+    it("click append", async () => {
       var connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [{
-          fileName: 'test.jpg',
-          parentDirectory: '/',
-          tags: 'test1, test2',
-          status: IExifStatus.Ok
-        }] as IFileIndexItem[]
+        data: [
+          {
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            tags: "test1, test2",
+            status: IExifStatus.Ok
+          }
+        ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+      var spy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
         component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate('input', { key: 'a' });
+        component.find('[data-name="tags"]').simulate("input", { key: "a" });
       });
 
-      expect(component.exists('.btn--default')).toBeTruthy();
+      expect(component.exists(".btn--default")).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find('.btn.btn--default').simulate('click');
+        await component.find(".btn.btn--default").simulate("click");
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2Ftest.jpg");
+      expect(spy).toBeCalledWith(
+        new UrlQuery().prefix + "/api/update",
+        "append=true&collections=true&tags=a&f=%2Ftest.jpg"
+      );
 
-      expect(dispatchedValues).toStrictEqual([{
-        type: 'update',
-        fileName: 'test.jpg',
-        parentDirectory: '/',
-        tags: 'test1, test2',
-        select: ['test.jpg'],
-        status: IExifStatus.Ok
-      }])
+      expect(dispatchedValues).toStrictEqual([
+        {
+          type: "update",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          tags: "test1, test2",
+          select: ["test.jpg"],
+          status: IExifStatus.Ok
+        }
+      ]);
 
       act(() => {
         component.unmount();
       });
-
     });
 
-    it('click append | read only', async () => {
-
-      jest.spyOn(FetchPost, 'default').mockReset();
+    it("click append | read only", async () => {
+      jest.spyOn(FetchPost, "default").mockReset();
 
       var connectionDefault: IConnectionDefault = {
         statusCode: 200,
-        data: [{
-          fileName: 'test.jpg',
-          parentDirectory: '/',
-          tags: 'test1, readonly',
-          status: IExifStatus.ReadOnly
-        }] as IFileIndexItem[]
+        data: [
+          {
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            tags: "test1, readonly",
+            status: IExifStatus.ReadOnly
+          }
+        ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
-      jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
         component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate('input', { key: 'a' });
+        component.find('[data-name="tags"]').simulate("input", { key: "a" });
       });
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find('.btn.btn--default').simulate('click');
+        await component.find(".btn.btn--default").simulate("click");
       });
 
       // force update to get the right state
@@ -202,83 +221,91 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       act(() => {
         component.unmount();
       });
-
     });
 
-
-    it('click append multiple', async () => {
-
+    it("click append multiple", async () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
         globalHistory.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
       });
 
-      jest.spyOn(FetchPost, 'default').mockReset();
+      jest.spyOn(FetchPost, "default").mockReset();
 
       var connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [
           {
-            fileName: 'test.jpg',
-            parentDirectory: '/',
-            tags: 'test1, test2',
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            tags: "test1, test2",
             status: IExifStatus.Ok
           },
           {
-            fileName: 'test1.jpg',
-            parentDirectory: '/',
-            tags: 'test, test2',
+            fileName: "test1.jpg",
+            parentDirectory: "/",
+            tags: "test, test2",
             status: IExifStatus.Ok
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(connectionDefault);
-      var spy = jest.spyOn(FetchPost, 'default').mockImplementationOnce(() => mockIConnectionDefault);
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+      var spy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
         component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate('input', { key: 'a' });
+        component.find('[data-name="tags"]').simulate("input", { key: "a" });
       });
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find('.btn.btn--default').simulate('click');
+        await component.find(".btn.btn--default").simulate("click");
       });
 
       expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(new UrlQuery().prefix + "/api/update", "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg");
+      expect(spy).toBeCalledWith(
+        new UrlQuery().prefix + "/api/update",
+        "append=true&collections=true&tags=a&f=%2Ftest.jpg%3B%2Ftest1.jpg"
+      );
 
-      expect(dispatchedValues).toStrictEqual([{
-        type: 'update',
-        fileName: 'test.jpg',
-        parentDirectory: '/',
-        tags: 'test1, test2',
-        select: ['test.jpg'],
-        status: IExifStatus.Ok
-      },
-      {
-        type: 'update',
-        fileName: 'test1.jpg',
-        parentDirectory: '/',
-        tags: 'test, test2',
-        select: ['test1.jpg'],
-        status: IExifStatus.Ok
-      }])
+      expect(dispatchedValues).toStrictEqual([
+        {
+          type: "update",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          tags: "test1, test2",
+          select: ["test.jpg"],
+          status: IExifStatus.Ok
+        },
+        {
+          type: "update",
+          fileName: "test1.jpg",
+          parentDirectory: "/",
+          tags: "test, test2",
+          select: ["test1.jpg"],
+          status: IExifStatus.Ok
+        }
+      ]);
     });
 
-    it('keydown should be fired', () => {
+    it("keydown should be fired", () => {
       const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var keyboardSpy = jest.spyOn(Keyboard.prototype, 'SetFocusOnEndField').mockImplementationOnce(() => { });
+      var keyboardSpy = jest
+        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+        .mockImplementationOnce(() => {});
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
         cancelable: true,
         key: "t",
-        shiftKey: true,
+        shiftKey: true
       });
       window.dispatchEvent(event);
 
@@ -288,6 +315,5 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         component.unmount();
       });
     });
-
   });
 });

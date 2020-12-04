@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import shallowEqual from '../shared/shallow-equal';
-export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void;
+import { useEffect, useRef, useState } from "react";
+import shallowEqual from "../shared/shallow-equal";
+export type IntersectionChangeHandler = (
+  entry: IntersectionObserverEntry
+) => void;
 
 // Polyfill needed for Safari 12.0 and older (12.1+ has native support)
-require('intersection-observer');
+require("intersection-observer");
 
 // credits for: https://github.com/cats-oss/use-intersection
 
@@ -15,13 +17,12 @@ export type IntersectionOptions = {
   defaultIntersecting?: boolean;
 };
 
-
 export const newIntersectionObserver = (
   ref: React.RefObject<Element>,
   setIntersecting: React.Dispatch<any>,
   once: boolean | undefined,
   optsRef: React.MutableRefObject<any>,
-  callback?: IntersectionChangeHandler,
+  callback?: IntersectionChangeHandler
 ): IntersectionObserver => {
   const observer = new IntersectionObserver(
     ([entry]) => {
@@ -37,21 +38,22 @@ export const newIntersectionObserver = (
     },
     {
       ...optsRef.current,
-      root: optsRef.current.root != null ? optsRef.current.root.current : null,
-    },
+      root: optsRef.current.root != null ? optsRef.current.root.current : null
+    }
   );
   return observer;
 };
 
-
 export const useIntersection = (
   ref: React.RefObject<Element>,
   options: IntersectionOptions = {},
-  callback?: IntersectionChangeHandler,
+  callback?: IntersectionChangeHandler
 ) => {
   const { defaultIntersecting, once, ...opts } = options;
   const optsRef = useRef(opts);
-  const [intersecting, setIntersecting] = useState(defaultIntersecting === true);
+  const [intersecting, setIntersecting] = useState(
+    defaultIntersecting === true
+  );
 
   useEffect(() => {
     if (!shallowEqual(optsRef.current, opts)) {
@@ -63,7 +65,13 @@ export const useIntersection = (
     if (ref.current == null) {
       return;
     }
-    var observer = newIntersectionObserver(ref, setIntersecting, once, optsRef, callback)
+    var observer = newIntersectionObserver(
+      ref,
+      setIntersecting,
+      once,
+      optsRef,
+      callback
+    );
 
     observer.observe(ref.current);
 

@@ -1,6 +1,3 @@
-
-
-
 div.modal-bg {
   position: fixed;
   top: 0;
@@ -40,20 +37,20 @@ div.modal-content {
 }
 
 div.modal-content h4 {
-	font-weight: 300;
+  font-weight: 300;
 }
 
 @media (prefers-color-scheme: dark) {
   div.modal-content {
-    background-color: #37474F;
+    background-color: #37474f;
     color: #fff;
   }
 }
 
 @media (prefers-color-scheme: dark) {
-	div.modal-content a{
-		color: #fff;
-	}
+  div.modal-content a {
+    color: #fff;
+  }
 }
 
 @media screen and (max-width: 450px) {
@@ -63,12 +60,12 @@ div.modal-content h4 {
 }
 div.modal-content > .modal-close-bar {
   height: 50px;
-  background-color: #CFD8DC;
+  background-color: #cfd8dc;
 }
 
 @media (prefers-color-scheme: dark) {
-	div.modal-content > .modal-close-bar {
-      background-color: #263238;
+  div.modal-content > .modal-close-bar {
+    background-color: #263238;
   }
 }
 
@@ -76,7 +73,7 @@ div.modal-content button.modal-exit-button {
   border: none;
   background: none;
   cursor: pointer;
-  font-size:16px;
+  font-size: 16px;
   font-family: inherit;
   font-weight: inherit;
   line-height: inherit;
@@ -84,14 +81,14 @@ div.modal-content button.modal-exit-button {
 }
 
 @media (prefers-color-scheme: dark) {
-	div.modal-content button.modal-exit-button {
-      color: #fff;
+  div.modal-content button.modal-exit-button {
+    color: #fff;
   }
 }
 
 div.modal-content button.modal-exit-button::before {
-  content:"";
-  margin-right:10px;
+  content: "";
+  margin-right: 10px;
   padding-right: 10px;
   padding-left: 10px;
   background-color: #263238;
@@ -101,8 +98,8 @@ div.modal-content button.modal-exit-button::before {
 }
 
 @media (prefers-color-scheme: dark) {
-	div.modal-content button.modal-exit-button::before {
-      background-color: #fff;
+  div.modal-content button.modal-exit-button::before {
+    background-color: #fff;
   }
 }
 
@@ -114,7 +111,6 @@ div.modal-content button.modal-exit-button.exit-button--showing {
   pointer-events: initial;
   touch-action: initial;
 }
-
 
 div.modal-content.modal-content--show {
   transform: translate(-50%, -50%);

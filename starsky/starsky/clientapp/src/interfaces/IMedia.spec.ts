@@ -1,4 +1,4 @@
-import { IMedia, newIMedia } from './IMedia';
+import { IMedia, newIMedia } from "./IMedia";
 
 describe("IMedia", () => {
   it("newIMedia", () => {

@@ -1,4 +1,4 @@
-import { ILogin, newILogin } from './ILogin';
+import { ILogin, newILogin } from "./ILogin";
 
 describe("ILogin", () => {
   it("newILogin", () => {

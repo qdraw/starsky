@@ -1,7 +1,7 @@
-import { SupportedLanguages } from './language';
+import { SupportedLanguages } from "./language";
 
 /**
- * Is the date Valid? 
+ * Is the date Valid?
  * @param inputDateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  */
 const isValidDate = (inputDateTime: string | undefined): boolean => {
@@ -10,7 +10,7 @@ const isValidDate = (inputDateTime: string | undefined): boolean => {
     return input > 0 && input < 7258118400 * 1000; // 01/01/2200
   }
   return false;
-}
+};
 
 /**
  * Add 0 + 1 left Pad
@@ -25,7 +25,10 @@ const leftPad = (n: number) => {
  * @param date a Javascript Datetime stamp (unix*1000)
  * @param now Javascript now
  */
-const DifferenceInDate = (date: number, now: number = new Date().valueOf()): number => {
+const DifferenceInDate = (
+  date: number,
+  now: number = new Date().valueOf()
+): number => {
   return (now - date) / 60000;
 };
 
@@ -46,7 +49,10 @@ const IsEditedNow = (inputDateTime: undefined | string): boolean | null => {
  * @param inputDateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  * @param locate Language
  */
-const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedLanguages): string => {
+const parseRelativeDate = (
+  inputDateTime: string | undefined,
+  locate: SupportedLanguages
+): string => {
   let date = "";
 
   if (!inputDateTime) return date;
@@ -57,33 +63,50 @@ const parseRelativeDate = (inputDateTime: string | undefined, locate: SupportedL
   let difference = DifferenceInDate(input);
 
   switch (true) {
-    case (difference <= 1):
+    case difference <= 1:
       return "{lessThan1Minute}";
-    case (difference < 60):
+    case difference < 60:
       return difference.toFixed(0) + " {minutes}";
-    case (difference < 1441):
+    case difference < 1441:
       return Math.round(difference / 60) + " {hour}";
     default:
       return parseDate(inputDateTime, locate);
   }
-}
+};
 /**
  * Get Date complete parsed for example: Monday, 4 May 2020
  * @param dateTime 2018-09-11T11:23:19 or 2018-09-11T11:23:19Z
  * @param locate Language
  */
-const parseDate = (dateTime: string | undefined, locate: SupportedLanguages): string => {
+const parseDate = (
+  dateTime: string | undefined,
+  locate: SupportedLanguages
+): string => {
   if (!dateTime) return "";
   // UTC DateTime already ends with Z
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
   // We prefer British English, uses day-month-year order
-  var locateString = locate === SupportedLanguages.en ? "en-GB" : locate.toString();
+  var locateString =
+    locate === SupportedLanguages.en ? "en-GB" : locate.toString();
   if (dateTime.endsWith("Z")) {
-    return dateTimeObject.toLocaleDateString(locateString, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    return dateTimeObject.toLocaleDateString(locateString, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
   }
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  return dateTimeObject.toLocaleDateString(locateString, { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-}
+  return dateTimeObject.toLocaleDateString(locateString, {
+    timeZone: "UTC",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+};
 
 /**
  * Get Day of the month (int)
@@ -93,11 +116,16 @@ const parseDateDate = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, day: 'numeric' });
+  var numberValue = dateTimeObject.toLocaleDateString([], {
+    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    day: "numeric"
+  });
   return Number(numberValue);
-}
+};
 
 /**
  * Get Year (int)
@@ -107,11 +135,16 @@ const parseDateYear = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, year: 'numeric' });
+  var numberValue = dateTimeObject.toLocaleDateString([], {
+    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    year: "numeric"
+  });
   return Number(numberValue);
-}
+};
 
 /**
  * Get Month 1-12 (int)
@@ -121,11 +154,16 @@ const parseDateMonth = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleDateString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, month: 'numeric' });
+  var numberValue = dateTimeObject.toLocaleDateString([], {
+    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    month: "numeric"
+  });
   return Number(numberValue);
-}
+};
 
 /**
  * Get Time (for example 23:02:03)
@@ -135,14 +173,19 @@ const parseTime = (dateTime: string | undefined): string => {
   if (!isValidDate(dateTime) || !dateTime) {
     return "";
   }
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
 
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
   return dateTimeObject.toLocaleTimeString([], {
-    timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, hour12: false,
-    hour: '2-digit', minute: '2-digit', second: '2-digit'
+    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
   });
-}
+};
 
 /**
  * Get Hour (for example 23) (int)
@@ -152,26 +195,44 @@ const parseTimeHour = (dateTime: string | undefined): number => {
   if (!isValidDate(dateTime) || !dateTime) {
     return 1;
   }
-  var dateTimeObject = new Date(!dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime);
+  var dateTimeObject = new Date(
+    !dateTime.endsWith("Z") ? `${dateTime}Z` : dateTime
+  );
   // toLocaleDateString assumes that the input is UTC, which is usaly not the case
-  var numberValue = dateTimeObject.toLocaleTimeString([], { timeZone: !dateTime.endsWith("Z") ? 'UTC' : undefined, hour12: false, hour: '2-digit' });
+  var numberValue = dateTimeObject.toLocaleTimeString([], {
+    timeZone: !dateTime.endsWith("Z") ? "UTC" : undefined,
+    hour12: false,
+    hour: "2-digit"
+  });
   return Number(numberValue);
-}
+};
 
 /**
  * Convert seconds to hours
  * @param seconds number of seconds
  */
 const secondsToHours = (seconds: number): string => {
-  if (isNaN(seconds)) return '0:00';
+  if (isNaN(seconds)) return "0:00";
   const time = new Date(0);
   time.setUTCSeconds(seconds);
-  if (time.getUTCHours() === 0) return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
-  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(time.getUTCSeconds())}`;
-}
-
-export {
-  IsEditedNow, DifferenceInDate, isValidDate, parseRelativeDate, parseDate, parseTime,
-  leftPad, secondsToHours, parseTimeHour, parseDateDate, parseDateMonth, parseDateYear
+  if (time.getUTCHours() === 0)
+    return `${time.getUTCMinutes()}:${leftPad(time.getUTCSeconds())}`;
+  return `${time.getUTCHours()}:${leftPad(time.getUTCMinutes())}:${leftPad(
+    time.getUTCSeconds()
+  )}`;
 };
 
+export {
+  IsEditedNow,
+  DifferenceInDate,
+  isValidDate,
+  parseRelativeDate,
+  parseDate,
+  parseTime,
+  leftPad,
+  secondsToHours,
+  parseTimeHour,
+  parseDateDate,
+  parseDateMonth,
+  parseDateYear
+};

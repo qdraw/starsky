@@ -1,4 +1,3 @@
-
 .modal-move {
   min-height: 65px;
   /* extra space for iOS */
@@ -31,31 +30,31 @@
 }
 
 .modal-move .box:nth-child(odd) {
-  background-color: #ECEFF1;
+  background-color: #eceff1;
 }
 
 .modal-move .box:nth-child(even) {
-  background-color: #CFD8DC;
+  background-color: #cfd8dc;
 }
 
 @media (prefers-color-scheme: dark) {
   .modal-move .box:nth-child(odd) {
-    background-color: #607D8B;
+    background-color: #607d8b;
   }
   .modal-move .box:nth-child(even) {
-    background-color: #78909C;
+    background-color: #78909c;
   }
 }
 
 .modal-move .box.parent {
-  background-color: #CFD8DC;
-  border-bottom: 3px solid #37474F;
+  background-color: #cfd8dc;
+  border-bottom: 3px solid #37474f;
   padding-bottom: 5px;
 }
 
 @media (prefers-color-scheme: dark) {
   .modal-move .box.parent {
-    background-color: #546E7A;
+    background-color: #546e7a;
   }
 }
 
@@ -70,19 +69,19 @@
 }
 
 .modal-move .box.parent:before {
-  background-image: url('../images/baseline-arrow_upward-24px.svg');
+  background-image: url("../images/baseline-arrow_upward-24px.svg");
 }
 
 .modal-move .box.isDirectory-true:before {
-  background-image: url('../images/baseline-folder-24px.svg');
+  background-image: url("../images/baseline-folder-24px.svg");
 }
 .modal-move .box.isDirectory-false:before {
-  background-image: url('../images/baseline-file-24px.svg');
+  background-image: url("../images/baseline-file-24px.svg");
 }
 
 /* invert on dark mode */
 @media (prefers-color-scheme: dark) {
-  .modal-move .box.parent:before ,
+  .modal-move .box.parent:before,
   .modal-move .box.isDirectory-true:before,
   .modal-move .box.isDirectory-false:before {
     filter: invert(100%);
@@ -90,17 +89,17 @@
 }
 
 .modal-move .box.error:nth-child(even) {
-  background-color: #E57373; 
+  background-color: #e57373;
   /* red 300 */
 }
 
 .modal-move .box.error:nth-child(odd) {
-    background-color: #E53935;
-    /* red 600 */
+  background-color: #e53935;
+  /* red 600 */
 }
 
 .modal-move .box.error:before {
-  background-image: url('../images/baseline-error-24px.svg');
+  background-image: url("../images/baseline-error-24px.svg");
 }
 
 .modal-move .box.error .error-status {
@@ -112,7 +111,6 @@
   margin-top: 10px;
 }
 
-
 .modal-move-button {
   background-color: #fff;
   min-height: 50px;
@@ -122,6 +120,6 @@
 
 @media (prefers-color-scheme: dark) {
   .modal-move-button {
-    background-color: #455A64;
+    background-color: #455a64;
   }
 }

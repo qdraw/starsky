@@ -1,21 +1,24 @@
-import 'core-js/features/string/match'; // event.key.match
-import { useEffect } from 'react';
+import "core-js/features/string/match"; // event.key.match
+import { useEffect } from "react";
 
-function useKeyboardEvent(regex: RegExp, callback: Function, dependencies: any = []) {
-
+function useKeyboardEvent(
+  regex: RegExp,
+  callback: Function,
+  dependencies: any = []
+) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (regex && event.key.match(regex)) {
-        callback(event)
+        callback(event);
         return;
       }
-    }
-    window.addEventListener('keydown', handler)
+    };
+    window.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener('keydown', handler)
-    }
+      window.removeEventListener("keydown", handler);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...dependencies, regex, callback])
+  }, [...dependencies, regex, callback]);
 }
 
 export default useKeyboardEvent;

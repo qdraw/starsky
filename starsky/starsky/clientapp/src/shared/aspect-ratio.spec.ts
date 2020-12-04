@@ -1,11 +1,11 @@
-import AspectRatio from './aspect-ratio';
+import AspectRatio from "./aspect-ratio";
 
 describe("AspectRatio", () => {
   var aspectRatio = new AspectRatio();
 
   it("Dimensions = 1280 x 1024", () => {
     var width = 1280;
-    var height = 1024
+    var height = 1024;
     var gcd = aspectRatio.gcd(width, height);
     var ratio = aspectRatio.ratio(width, height);
 
@@ -15,7 +15,7 @@ describe("AspectRatio", () => {
 
   it("1152 x 960", () => {
     var width = 1152;
-    var height = 960
+    var height = 960;
     var gcd = aspectRatio.gcd(width, height);
     var ratio = aspectRatio.ratio(width, height);
 
@@ -25,7 +25,7 @@ describe("AspectRatio", () => {
 
   it("1280 x 960", () => {
     var width = 1280;
-    var height = 960
+    var height = 960;
     var gcd = aspectRatio.gcd(width, height);
     var ratio = aspectRatio.ratio(width, height);
 
@@ -35,7 +35,7 @@ describe("AspectRatio", () => {
 
   it("1920 x 1080", () => {
     var width = 1920;
-    var height = 1080
+    var height = 1080;
     var gcd = aspectRatio.gcd(width, height);
     var ratio = aspectRatio.ratio(width, height);
 
@@ -45,7 +45,7 @@ describe("AspectRatio", () => {
 
   it("4032 × 2688", () => {
     var width = 4032;
-    var height = 2688
+    var height = 2688;
     var gcd = aspectRatio.gcd(width, height);
     var ratio = aspectRatio.ratio(width, height);
 
@@ -91,7 +91,7 @@ describe("AspectRatio", () => {
 
     expect(gcd).toBe(16);
     expect(ratio).toBe(null);
-  })
+  });
 
   it("4240 × 2832 (no-filter)", () => {
     var width = 4240;
@@ -101,7 +101,7 @@ describe("AspectRatio", () => {
 
     expect(gcd).toBe(16);
     expect(ratio).toBe("265:177");
-  })
+  });
 
   it("3758 × 2505", () => {
     var width = 3758;
@@ -113,4 +113,3 @@ describe("AspectRatio", () => {
     expect(ratio).toBe(null);
   });
 });
-

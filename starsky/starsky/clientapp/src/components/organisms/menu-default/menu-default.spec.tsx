@@ -1,12 +1,11 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import HamburgerMenuToggle from '../../atoms/hamburger-menu-toggle/hamburger-menu-toggle';
-import MenuDefault from './menu-default';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
+import MenuDefault from "./menu-default";
 
 describe("MenuDefault", () => {
-
   it("renders", () => {
-    shallow(<MenuDefault isEnabled={false} />)
+    shallow(<MenuDefault isEnabled={false} />);
   });
 
   describe("with Context", () => {
@@ -20,7 +19,7 @@ describe("MenuDefault", () => {
 
       expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
 
-      component.find('[data-test="hamburger"]').simulate('click');
+      component.find('[data-test="hamburger"]').simulate("click");
       expect(component.exists('[data-test="hamburger"] .open')).toBeTruthy();
 
       component.unmount();

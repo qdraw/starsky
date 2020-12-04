@@ -1,13 +1,12 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import { act } from 'react-dom/test-utils';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import { act } from "react-dom/test-utils";
 
 type ModalPropTypes = {
   children: (hookValues: any) => any;
-}
+};
 
 export const shallowReactHook = (hook: any, args: string[]) => {
-
   const Component = ({ children }: ModalPropTypes) => {
     return children(hook(...args));
   };
@@ -17,7 +16,7 @@ export const shallowReactHook = (hook: any, args: string[]) => {
   act(() => {
     componentMount = shallow(
       <Component>
-        {hookValues => {
+        {(hookValues) => {
           Object.assign(componentHook, hookValues);
           return null;
         }}
@@ -27,9 +26,7 @@ export const shallowReactHook = (hook: any, args: string[]) => {
   return { componentMount, componentHook };
 };
 
-
-export const mountReactHook = (hook: any, args: string[]) => {
-
+export const mountReactHook = (hook: any, args: any[]) => {
   const Component = ({ children }: ModalPropTypes) => {
     return children(hook(...args));
   };
@@ -39,7 +36,7 @@ export const mountReactHook = (hook: any, args: string[]) => {
   act(() => {
     componentMount = mount(
       <Component>
-        {hookValues => {
+        {(hookValues) => {
           Object.assign(componentHook, hookValues);
           return null;
         }}

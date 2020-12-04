@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 
 type PortalPropTypes = {
   children?: React.ReactNode;
-}
+};
 
-export const PortalId = 'portal-root'
+export const PortalId = "portal-root";
 
 const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
-  const [modalContainer] = useState(document.createElement('div'));
+  const [modalContainer] = useState(document.createElement("div"));
   useEffect(() => {
     // Find the root element in your DOM
     let modalRoot = document.getElementById(PortalId) as HTMLElement;
     // If there is no root then create one
     if (!modalRoot) {
-      const tempEl = document.createElement('div');
+      const tempEl = document.createElement("div");
       tempEl.id = PortalId;
       document.body.appendChild(tempEl);
       modalRoot = tempEl;
@@ -26,10 +26,10 @@ const Portal: React.FunctionComponent<PortalPropTypes> = ({ children }) => {
       modalRoot.remove();
     };
   }, [modalContainer]);
-  // ^^- The empty array with modalContainer 
+  // ^^- The empty array with modalContainer
   // tells react to apply the effect on mount / unmount
 
   return ReactDOM.createPortal(children, modalContainer);
 };
 
-export default Portal
+export default Portal;

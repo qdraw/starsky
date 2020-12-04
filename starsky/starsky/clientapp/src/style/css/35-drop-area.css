@@ -4,27 +4,26 @@
   height: 100%;
   z-index: 700;
   position: fixed;
-  top:0px;
+  top: 0px;
   left: 0px;
-  border: 10px dashed #1565C0;
+  border: 10px dashed #1565c0;
 }
 
-
 .droparea-file-input {
-	width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }
 
 .droparea-file-input + label {
-    display: inline-block;
-    cursor: pointer;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .droparea-file-input:focus + label,
 .droparea-file-input + label:hover {
-  background-color: #455A64;
+  background-color: #455a64;
 }

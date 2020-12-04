@@ -1,62 +1,60 @@
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
-import { IUrl } from '../interfaces/IUrl';
+import { IFileIndexItem } from "../interfaces/IFileIndexItem";
+import { IUrl } from "../interfaces/IUrl";
 
 export class URLPath {
-
   public FileNameBreadcrumb(filePath: string) {
     if (!filePath) return "/";
-    return filePath.split("/")[filePath.split("/").length - 1]
+    return filePath.split("/")[filePath.split("/").length - 1];
   }
 
   public StringToIUrl(locationHash: string): IUrl {
     let hash = this.RemovePrefixUrl(locationHash);
     let params = new URLSearchParams(hash).entries();
 
-    var urlObject: IUrl = {}
+    var urlObject: IUrl = {};
     for (let key of Array.from(params)) {
       switch (key[0].toLowerCase()) {
-        case 'colorClass'.toLowerCase():
+        case "colorClass".toLowerCase():
           const colorClassText = key[1];
-          urlObject.colorClass = this.stringToNumberArray(colorClassText)
+          urlObject.colorClass = this.stringToNumberArray(colorClassText);
           break;
-        case 'collections'.toLowerCase():
+        case "collections".toLowerCase():
           // default is true
           if (key[1] === "false") {
-            urlObject.collections = false
-          }
-          else {
-            urlObject.collections = true
+            urlObject.collections = false;
+          } else {
+            urlObject.collections = true;
           }
           break;
-        case 'details'.toLowerCase():
+        case "details".toLowerCase():
           if (key[1] === "true") {
-            urlObject.details = true
-          }
-          else {
-            urlObject.details = false
+            urlObject.details = true;
+          } else {
+            urlObject.details = false;
           }
           break;
-        case 'sidebar'.toLowerCase():
+        case "sidebar".toLowerCase():
           if (key[1] === "true") {
-            urlObject.sidebar = true
-          }
-          else {
-            urlObject.sidebar = false
+            urlObject.sidebar = true;
+          } else {
+            urlObject.sidebar = false;
           }
           break;
-        case 'f':
+        case "f":
           urlObject.f = key[1];
           break;
-        case 't': // used for search queries
+        case "t": // used for search queries
           urlObject.t = key[1];
           break;
-        case 'p': // used for search pagination
+        case "p": // used for search pagination
           var pagination = Number(key[1]);
           if (isNaN(pagination)) continue;
           urlObject.p = pagination;
           break;
-        case 'select'.toLowerCase():
-          urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
+        case "select".toLowerCase():
+          urlObject.select = this.getStringArrayFromCommaSeparatedString(
+            key[1]
+          );
           break;
         default:
           break;
@@ -67,36 +65,34 @@ export class URLPath {
 
   /**
    * Convert a comma separated string to a Array of strings
-   * @param colorClassText 
+   * @param colorClassText
    */
-  private getStringArrayFromCommaSeparatedString(colorClassText: string): string[] {
+  private getStringArrayFromCommaSeparatedString(
+    colorClassText: string
+  ): string[] {
     var colorClassArray: Array<string> = [];
-    if (colorClassText && (colorClassText.indexOf(",") === -1)) {
-      colorClassArray = [colorClassText]
-    }
-    else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach(element => {
+    if (colorClassText && colorClassText.indexOf(",") === -1) {
+      colorClassArray = [colorClassText];
+    } else if (colorClassText.indexOf(",") >= 1) {
+      colorClassText.split(",").forEach((element) => {
         colorClassArray.push(element);
       });
     }
     return colorClassArray;
   }
 
-
-
   /**
    * Convert a comma separated string to a Array of numbers
-   * @param colorClassText 
+   * @param colorClassText
    */
   private stringToNumberArray(colorClassText: string): number[] {
     var colorClassArray: Array<number> = [];
     if (colorClassText && !isNaN(Number(colorClassText))) {
-      colorClassArray = [Number(colorClassText)]
-    }
-    else if (colorClassText.indexOf(",") >= 1) {
-      colorClassText.split(",").forEach(element => {
+      colorClassArray = [Number(colorClassText)];
+    } else if (colorClassText.indexOf(",") >= 1) {
+      colorClassText.split(",").forEach((element) => {
         if (!isNaN(Number(element))) {
-          colorClassArray.push(Number(element))
+          colorClassArray.push(Number(element));
         }
       });
     }
@@ -113,20 +109,20 @@ export class URLPath {
       params.set(key[0], key[1]);
     }
     var url = this.AddPrefixUrl(params.toString());
-    url = url.replace(/\+/ig, " ").replace(/%2F/ig, "/").replace(/%2C/ig, ",");
+    url = url.replace(/\+/gi, " ").replace(/%2F/gi, "/").replace(/%2C/gi, ",");
     return url;
   }
 
   public encodeURI(url: string): string {
     url = encodeURI(url);
-    url = url.replace(/\+/ig, "%2B");
+    url = url.replace(/\+/gi, "%2B");
     return url;
   }
 
   /**
- * append=true&collections=true&tags=update
- * @param toUpdate 
- */
+   * append=true&collections=true&tags=update
+   * @param toUpdate
+   */
   public ObjectToSearchParams(toUpdate: Object): URLSearchParams {
     var bodyParams = new URLSearchParams();
     for (let key of Object.entries(toUpdate)) {
@@ -140,11 +136,10 @@ export class URLPath {
     return bodyParams;
   }
 
-
   public RemovePrefixUrl(input: string): string {
     if (!input) return "";
-    let output = input.replace(/^#?(\/)?/ig, "");
-    return output.replace(/\+/ig, "%2B");
+    let output = input.replace(/^#?(\/)?/gi, "");
+    return output.replace(/\+/gi, "%2B");
   }
 
   /**
@@ -158,7 +153,7 @@ export class URLPath {
   public getChild(getFilePath: string): string {
     if (!getFilePath) return "";
     getFilePath = this.removeEndOnSlash(getFilePath);
-    var result = getFilePath.split("/")[getFilePath.split("/").length - 1]
+    var result = getFilePath.split("/")[getFilePath.split("/").length - 1];
     return result;
   }
 
@@ -212,23 +207,24 @@ export class URLPath {
   /**
    * updateSelection
    */
-  public updateSelection(historyLocationHash: string, toUpdateSelect: string[]): IUrl {
+  public updateSelection(
+    historyLocationHash: string,
+    toUpdateSelect: string[]
+  ): IUrl {
     var urlObject = new URLPath().StringToIUrl(historyLocationHash);
     urlObject.select = toUpdateSelect;
     return urlObject;
   }
 
   public toggleSelection(fileName: string, locationHash: string): IUrl {
-
     var urlObject = new URLPath().StringToIUrl(locationHash);
     if (!urlObject.select) {
       urlObject.select = [];
     }
 
     if (!urlObject.select || urlObject.select.indexOf(fileName) === -1) {
-      urlObject.select.push(fileName)
-    }
-    else {
+      urlObject.select.push(fileName);
+    } else {
       var index = urlObject.select.indexOf(fileName);
       if (index !== -1) urlObject.select.splice(index, 1);
     }
@@ -236,27 +232,29 @@ export class URLPath {
   }
 
   /**
-   * Get an non-null list 
-   * @param historyLocationSearch 
+   * Get an non-null list
+   * @param historyLocationSearch
    */
   public getSelect(historyLocationSearch: string) {
     let selectList = new Array<string>();
-    var selectResult = new URLPath().StringToIUrl(historyLocationSearch).select
+    var selectResult = new URLPath().StringToIUrl(historyLocationSearch).select;
     if (selectResult !== undefined) {
       selectList = selectResult;
     }
     return selectList;
   }
 
-  public MergeSelectParent(select: string[] | undefined, parent: string | undefined): string[] {
+  public MergeSelectParent(
+    select: string[] | undefined,
+    parent: string | undefined
+  ): string[] {
     var subPaths: string[] = [];
     if (select === undefined || parent === undefined) return subPaths;
 
-    select.forEach(item => {
+    select.forEach((item) => {
       if (parent === "/") {
         subPaths.push("/" + item);
-      }
-      else {
+      } else {
         subPaths.push(parent + "/" + item);
       }
     });
@@ -264,16 +262,19 @@ export class URLPath {
   }
 
   /**
-   * To give back a fileName list of all items 
+   * To give back a fileName list of all items
    * Merge without parent path
    * @param select the current selection
    * @param fileIndexItems the current folder
    */
-  public GetAllSelection(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
-    fileIndexItems.forEach(fileIndexItem => {
+  public GetAllSelection(
+    select: string[],
+    fileIndexItems: IFileIndexItem[]
+  ): string[] {
+    fileIndexItems.forEach((fileIndexItem) => {
       var include = select.includes(fileIndexItem.fileName);
       if (!include) {
-        select.push(fileIndexItem.fileName)
+        select.push(fileIndexItem.fileName);
       }
     });
     return select;
@@ -282,15 +283,20 @@ export class URLPath {
   /**
    * Merge with parent path
    * @param select List of items that are already selected
-   * @param fileIndexItems 
+   * @param fileIndexItems
    */
-  public MergeSelectFileIndexItem(select: string[], fileIndexItems: IFileIndexItem[]): string[] {
+  public MergeSelectFileIndexItem(
+    select: string[],
+    fileIndexItems: IFileIndexItem[]
+  ): string[] {
     var subPaths: string[] = [];
 
-    fileIndexItems.forEach(item => {
+    fileIndexItems.forEach((item) => {
       if (select.indexOf(item.fileName) >= 0) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
-        subPaths.push(item.parentDirectory + new URLPath().StartOnSlash(item.fileName))
+        subPaths.push(
+          item.parentDirectory + new URLPath().StartOnSlash(item.fileName)
+        );
       }
     });
     return subPaths;
@@ -313,7 +319,10 @@ export class URLPath {
     return selectString;
   }
 
-  public ArrayToCommaSeperatedStringOneParent(select: string[], parent: string): string {
+  public ArrayToCommaSeperatedStringOneParent(
+    select: string[],
+    parent: string
+  ): string {
     var selectParams = "";
     for (let index = 0; index < select.length; index++) {
       const element = select[index];
@@ -328,5 +337,4 @@ export class URLPath {
     }
     return selectParams;
   }
-
 }

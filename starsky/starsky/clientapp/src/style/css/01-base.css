@@ -1,156 +1,258 @@
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    font: inherit;
-	font-size: 100%;
-	vertical-align: baseline; }
-
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section, picture {
-    display: block; }
-
-ol, ul {
-    list-style: none; }
-
-blockquote, q {
-    quotes: none;
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  font-size: 100%;
+  vertical-align: baseline;
 }
 
-blockquote:before, blockquote:after,
-q:before, q:after {
-    content: '';
-    content: none; }
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section,
+picture {
+  display: block;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
 
 table {
-    border-collapse: collapse;
-    border-spacing: 0; }
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 
-em, i {
-    font-style: italic;
+em,
+i {
+  font-style: italic;
 }
 
 button {
-    border:0px;
-    font:inherit;
-    padding:0;
-    text-align: left;
+  border: 0px;
+  font: inherit;
+  padding: 0;
+  text-align: left;
 }
 
 @font-face {
-    font-family: 'Gloriola Std';
-    font-style: normal;
-    font-weight: 100;
-    font-display: auto;
-    src: local("Gloriola Std Light"), local("Gloriola-Std-Light"), url(../fonts/GloriolaStd-Light.woff2) format("woff2"), url(../fonts/GloriolaStd-Light.woff) format("woff");
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+  font-family: "Gloriola Std";
+  font-style: normal;
+  font-weight: 100;
+  font-display: auto;
+  src: local("Gloriola Std Light"), local("Gloriola-Std-Light"),
+    url(../fonts/GloriolaStd-Light.woff2) format("woff2"),
+    url(../fonts/GloriolaStd-Light.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
 
 @font-face {
-    font-family: 'Gloriola Std';
-    font-style: normal;
-    font-weight: 300;
-    font-display: auto;
-    src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"), url(../fonts/GloriolaStd-Medium.woff2) format("woff2"), url(../fonts/GloriolaStd-Medium.woff) format("woff");
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+  font-family: "Gloriola Std";
+  font-style: normal;
+  font-weight: 300;
+  font-display: auto;
+  src: local("Gloriola Std Medium"), local("Gloriola-Std-Medium"),
+    url(../fonts/GloriolaStd-Medium.woff2) format("woff2"),
+    url(../fonts/GloriolaStd-Medium.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
 
 @font-face {
-    font-family: 'Gloriola Std';
-    font-style: normal;
-    font-weight: 800;
-    font-display: auto;
-    src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"), url(../fonts/GloriolaStd-Bold.woff2) format("woff2"), url(../fonts/GloriolaStd-Bold.woff) format("woff");
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000; }
+  font-family: "Gloriola Std";
+  font-style: normal;
+  font-weight: 800;
+  font-display: auto;
+  src: local("Gloriola Std Bold"), local("Gloriola-Std-Bold"),
+    url(../fonts/GloriolaStd-Bold.woff2) format("woff2"),
+    url(../fonts/GloriolaStd-Bold.woff) format("woff");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
 
 html {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    font-family: 'Gloriola Std', sans-serif;
-    /* only for firefox*/
-    scrollbar-color: #263238 #ECEFF1;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  font-family: "Gloriola Std", sans-serif;
+  /* only for firefox*/
+  scrollbar-color: #263238 #eceff1;
 }
 
 /* for Chrome + Safari */
 ::-webkit-scrollbar {
-    width: 15px;
-    height: 15px;
+  width: 15px;
+  height: 15px;
 }
 
-::-webkit-scrollbar-track-piece  {
-    background-color: #ECEFF1;
+::-webkit-scrollbar-track-piece {
+  background-color: #eceff1;
 }
 
 ::-webkit-scrollbar-thumb:vertical {
-    height: 30px;
-    background-color: #263238;
-    border-radius: 15px;
-    border: 2px solid #ECEFF1;
+  height: 30px;
+  background-color: #263238;
+  border-radius: 15px;
+  border: 2px solid #eceff1;
 }
 
-*, *:before, *:after {
-    box-sizing: border-box;
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
 
 body {
-    line-height: 1;
-    font-family: "Gloriola Std", sans-serif;
-    font-weight: 100;
-    font-size: 16px;
-    -webkit-overflow-scrolling: touch;
-    height: 100%;
+  line-height: 1;
+  font-family: "Gloriola Std", sans-serif;
+  font-weight: 100;
+  font-size: 16px;
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #37474F;
+    background-color: #37474f;
   }
 }
 
 @media screen and (max-width: 600px) {
-    body.lock-screen {
-        position: fixed;
-        touch-action: none;
-    }
-    body.lock-screen .archive .content {
-        pointer-events: none;
-    }
+  body.lock-screen {
+    position: fixed;
+    touch-action: none;
+  }
+  body.lock-screen .archive .content {
+    pointer-events: none;
+  }
 }
 
 #root,
 #app {
-    margin-top: 50px;
+  margin-top: 50px;
 }
 
 textarea,
-input{
-    /* disables box-shadow */
-    appearance: none;
-    border-radius: 0;
-    outline: none;
+input {
+  /* disables box-shadow */
+  appearance: none;
+  border-radius: 0;
+  outline: none;
 }
 
 a {
-    color: #000;
-    text-decoration: none;
+  color: #000;
+  text-decoration: none;
 }
 
 a:focus,
 button:focus,
 input:focus,
 textarea:focus {
-    outline: none;
-    box-shadow: 0px 0px 5px  #5C6BC0;
-    /* 5C6BC0= Indigo */
+  outline: none;
+  box-shadow: 0px 0px 5px #5c6bc0;
+  /* 5C6BC0= Indigo */
 }

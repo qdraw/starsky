@@ -1,8 +1,7 @@
-import L, { TileLayer } from 'leaflet';
-import EmptyImage from '../style/images/empty-image.gif';
+import L, { TileLayer } from "leaflet";
+import EmptyImage from "../style/images/empty-image.gif";
 
 export class LeafletEmptyImageUrlTileLayer extends TileLayer {
-
   /**
    * Include Strict CSP policy for TileLayer
    * You need Grid and Tile Layer

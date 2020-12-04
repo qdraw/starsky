@@ -1,14 +1,17 @@
-import { ISidebarUpdate } from '../interfaces/ISidebarUpdate';
+import { ISidebarUpdate } from "../interfaces/ISidebarUpdate";
 
 export class SidebarUpdate {
-
   /**
-  * Cast Update Fields to ISidebarUpdate
-  * @param fieldName e.g. tags
-  * @param fieldValue the value
-  * @param updateSidebar 'From Object'
-  */
-  public CastToISideBarUpdate = (fieldName: string, fieldValue: string, updateSidebar: ISidebarUpdate): ISidebarUpdate => {
+   * Cast Update Fields to ISidebarUpdate
+   * @param fieldName e.g. tags
+   * @param fieldValue the value
+   * @param updateSidebar 'From Object'
+   */
+  public CastToISideBarUpdate = (
+    fieldName: string,
+    fieldValue: string,
+    updateSidebar: ISidebarUpdate
+  ): ISidebarUpdate => {
     if (!fieldName) return updateSidebar;
     if (!fieldValue) return updateSidebar;
 
@@ -35,9 +38,14 @@ export class SidebarUpdate {
         break;
     }
     return updateSidebar;
-  }
+  };
 
-  public Change = (event: React.ChangeEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>, update: ISidebarUpdate): ISidebarUpdate | null => {
+  public Change = (
+    event:
+      | React.ChangeEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
+    update: ISidebarUpdate
+  ): ISidebarUpdate | null => {
     if (!event.currentTarget.textContent) return null;
     let fieldValue = event.currentTarget.textContent.trim();
     let fieldName = event.currentTarget.dataset["name"];
@@ -45,21 +53,24 @@ export class SidebarUpdate {
     if (!fieldName) return null;
     if (!fieldValue) return null;
 
-    return new SidebarUpdate().CastToISideBarUpdate(fieldName, fieldValue, update);
-  }
+    return new SidebarUpdate().CastToISideBarUpdate(
+      fieldName,
+      fieldValue,
+      update
+    );
+  };
 
   public IsFormUsed = (updateSidebar: ISidebarUpdate): boolean => {
     var totalChars = 0;
     if (updateSidebar.tags) {
-      totalChars += updateSidebar.tags.length
+      totalChars += updateSidebar.tags.length;
     }
     if (updateSidebar.description) {
-      totalChars += updateSidebar.description.length
+      totalChars += updateSidebar.description.length;
     }
     if (updateSidebar.title) {
-      totalChars += updateSidebar.title.length
+      totalChars += updateSidebar.title.length;
     }
-    return totalChars !== 0
-  }
-
+    return totalChars !== 0;
+  };
 }

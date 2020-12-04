@@ -1,9 +1,12 @@
-import { Dispatch } from 'react';
-import FetchGet from '../fetch-get';
-import { UrlQuery } from '../url-query';
-import { ProcessingState } from './processing-state';
+import { Dispatch } from "react";
+import FetchGet from "../fetch-get";
+import { UrlQuery } from "../url-query";
+import { ProcessingState } from "./processing-state";
 
-export async function ExportIntervalUpdate(zipKey: string, setProcessing: Dispatch<ProcessingState>) {
+export async function ExportIntervalUpdate(
+  zipKey: string,
+  setProcessing: Dispatch<ProcessingState>
+) {
   // need to check if ProcessingState = server
   if (!zipKey) return;
   var result = await FetchGet(new UrlQuery().UrlExportZipApi(zipKey, true));

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { DifferenceInDate } from '../../shared/date';
-import useInterval from '../use-interval';
-import WebSocketService from './websocket-service';
-import WsCurrentStart, { NewWebSocketService } from './ws-current-start';
+import { useEffect, useRef, useState } from "react";
+import { DifferenceInDate } from "../../shared/date";
+import useInterval from "../use-interval";
+import WebSocketService from "./websocket-service";
+import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
 export interface IUseSockets {
   showSocketError: boolean | null;
@@ -15,19 +15,17 @@ function Telemetry(message: string) {
   ai.trackTrace({ message });
 }
 
-
 /**
  * Set an localStorage cookie when no websocket client is used
  */
 function IsClientSideFeatureDisabled(): boolean {
-  return localStorage.getItem("use-sockets") === "false"
+  return localStorage.getItem("use-sockets") === "false";
 }
 
 /**
  * Use Socket as react hook
  */
 const useSockets = (): IUseSockets => {
-
   const ws = useRef({} as WebSocketService);
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
@@ -45,33 +43,54 @@ const useSockets = (): IUseSockets => {
 
   function doIntervalCheck() {
     console.log(isEnabled, ws, countRetry);
-    if (!isEnabled.current || !ws.current || !ws.current.close || countRetry.current === undefined) return;
-    setShowSocketError(countRetry.current >= 1)
+    if (
+      !isEnabled.current ||
+      !ws.current ||
+      !ws.current.close ||
+      countRetry.current === undefined
+    )
+      return;
+    setShowSocketError(countRetry.current >= 1);
 
     if (DifferenceInDate(keepAliveTime.getTime()) > 0.5) {
-      Telemetry('[use-sockets] --retry sockets');
+      Telemetry("[use-sockets] --retry sockets");
       setSocketConnected(false);
       countRetry.current++;
       ws.current.close();
-      ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime, NewWebSocketService);
-    }
-    else {
+      ws.current = WsCurrentStart(
+        socketConnected,
+        setSocketConnected,
+        isEnabled,
+        setKeepAliveTime,
+        NewWebSocketService
+      );
+    } else {
       countRetry.current = 0;
     }
   }
 
   useEffect(() => {
-    console.log(`[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`);
+    console.log(
+      `[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`
+    );
     // check to be removed in future version
     if (IsClientSideFeatureDisabled()) return;
 
-    ws.current = WsCurrentStart(socketConnected, setSocketConnected, isEnabled, setKeepAliveTime, NewWebSocketService);
+    ws.current = WsCurrentStart(
+      socketConnected,
+      setSocketConnected,
+      isEnabled,
+      setKeepAliveTime,
+      NewWebSocketService
+    );
     return () => {
-      console.log('[use-sockets] --end');
+      console.log("[use-sockets] --end");
       ws.current.close();
     };
+
+    // When switching the feature toggle
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [localStorage.getItem("use-sockets")]);
 
   return {
     showSocketError

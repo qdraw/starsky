@@ -1,8 +1,7 @@
-import { globalHistory } from '@reach/router';
-import { Sidebar } from './sidebar';
+import { globalHistory } from "@reach/router";
+import { Sidebar } from "./sidebar";
 
 describe("sidebar", () => {
-
   var setSidebarSpy = jest.fn();
   var sidebar: Sidebar;
   var navigateSpy = jest.fn();
@@ -12,16 +11,15 @@ describe("sidebar", () => {
     setSidebarSpy = jest.fn();
     sidebar = new Sidebar(true, setSidebarSpy, {
       location: globalHistory.location,
-      navigate: navigateSpy,
+      navigate: navigateSpy
     });
-  })
+  });
 
   describe("toggleSidebar", () => {
-
     it("default", () => {
       sidebar.toggleSidebar();
       expect(setSidebarSpy).toBeCalled();
-      expect(navigateSpy).toBeCalledWith('?sidebar=true', { replace: true })
+      expect(navigateSpy).toBeCalledWith("?sidebar=true", { replace: true });
     });
 
     it("toggle two times", () => {
@@ -30,14 +28,13 @@ describe("sidebar", () => {
       // invoke after update
       sidebar = new Sidebar(true, setSidebarSpy, {
         location: globalHistory.location,
-        navigate: navigateSpy,
-      })
+        navigate: navigateSpy
+      });
 
       sidebar.toggleSidebar();
 
       expect(setSidebarSpy).toBeCalledTimes(1);
-      expect(navigateSpy).toBeCalledWith('?sidebar=false', { replace: true })
+      expect(navigateSpy).toBeCalledWith("?sidebar=false", { replace: true });
     });
-
   });
 });

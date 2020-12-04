@@ -1,9 +1,11 @@
-import BrowserDetect from './browser-detect';
-import DetectAutomaticRotation, { testAutoOrientationImageURL } from './detect-automatic-rotation';
+import BrowserDetect from "./browser-detect";
+import DetectAutomaticRotation, {
+  testAutoOrientationImageURL
+} from "./detect-automatic-rotation";
 
 describe("select", () => {
   describe("removeSidebarSelection", () => {
-    jest.mock('../style/images/detect-automatic-rotation.jpg')
+    jest.mock("../style/images/detect-automatic-rotation.jpg");
 
     it("returns true if both arguments are null or undefined", async () => {
       // Fake onLoad Trigger
@@ -14,19 +16,22 @@ describe("select", () => {
             (this as any).onload(); // simulate success
           }, 1);
         }
-      }
-      expect(testAutoOrientationImageURL).toContain('data:image');
+      };
+      expect(testAutoOrientationImageURL).toContain("data:image");
 
       var result = await DetectAutomaticRotation();
       expect(result).toBeFalsy();
     });
 
     it("iOS should be true", async () => {
-      jest.spyOn(BrowserDetect.prototype, 'IsIOS').mockImplementationOnce(() => { return true });
+      jest
+        .spyOn(BrowserDetect.prototype, "IsIOS")
+        .mockImplementationOnce(() => {
+          return true;
+        });
 
       var result = await DetectAutomaticRotation();
       expect(result).toBeTruthy();
     });
-
   });
 });

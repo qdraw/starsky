@@ -1,12 +1,9 @@
-import { SupportedLanguages } from '../shared/language';
-import useGlobalSettings, { IGlobalSettings } from './use-global-settings';
-import { shallowReactHook } from './___tests___/test-hook';
-
+import { SupportedLanguages } from "../shared/language";
+import useGlobalSettings, { IGlobalSettings } from "./use-global-settings";
+import { shallowReactHook } from "./___tests___/test-hook";
 
 describe("useGlobalSettings", () => {
-
   describe("language", () => {
-
     let setupComponent;
     let hook: IGlobalSettings;
 
@@ -17,41 +14,34 @@ describe("useGlobalSettings", () => {
 
     it("get default language", () => {
       runHook();
-      expect(hook.language).toBe(SupportedLanguages.en)
+      expect(hook.language).toBe(SupportedLanguages.en);
     });
 
     it("get dutch language nl", () => {
-
-      var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
-      languageGetter.mockReturnValue('nl');
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl");
 
       runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.nl)
+      expect(hook.language).toBe(SupportedLanguages.nl);
     });
 
-
     it("get dutch language nl-NL", () => {
-
-      var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
-      languageGetter.mockReturnValue('nl-NL');
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl-NL");
 
       runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.nl)
+      expect(hook.language).toBe(SupportedLanguages.nl);
     });
 
     it("get dutch language nl-BE", () => {
-
-      var languageGetter = jest.spyOn(window.navigator, 'language', 'get')
-      languageGetter.mockReturnValue('nl-BE');
+      var languageGetter = jest.spyOn(window.navigator, "language", "get");
+      languageGetter.mockReturnValue("nl-BE");
 
       runHook();
 
-      expect(hook.language).toBe(SupportedLanguages.nl)
+      expect(hook.language).toBe(SupportedLanguages.nl);
     });
-
-
   });
-
 });

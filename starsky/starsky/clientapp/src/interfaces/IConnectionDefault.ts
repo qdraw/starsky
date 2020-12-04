@@ -1,6 +1,6 @@
 export interface IConnectionDefault {
-  data: any,
-  statusCode: number
+  data: any;
+  statusCode: number;
 }
 export function newIConnectionDefault(): IConnectionDefault {
   return {

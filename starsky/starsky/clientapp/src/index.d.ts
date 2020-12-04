@@ -8,4 +8,4 @@
 //   <img src={ logo } /> or <div style={``background: url(${logo});``}>…</div > (dunno how to escape backticks in inline code)
 // source: https://github.com/microsoft/TypeScript-React-Starter/issues/12#issuecomment-385165319
 
-declare module '*.gif';
+declare module "*.gif";

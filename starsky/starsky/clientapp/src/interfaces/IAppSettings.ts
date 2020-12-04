@@ -1,4 +1,4 @@
 export interface IAppSettings {
-  verbose: boolean,
+  verbose: boolean;
   storageFolder: string;
 }

@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
-import { IConnectionDefault, newIConnectionDefault } from '../interfaces/IConnectionDefault';
+import { useEffect, useState } from "react";
+import {
+  IConnectionDefault,
+  newIConnectionDefault
+} from "../interfaces/IConnectionDefault";
 
 /**
  * With abort signal
  * @param url http/https url
  * @param method ;get or post
  */
-const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
+const useFetch = (url: string, method: "get" | "post"): IConnectionDefault => {
   const [data, setData] = useState(newIConnectionDefault());
 
   useEffect(() => {
@@ -23,13 +26,13 @@ const useFetch = (url: string, method: 'get' | 'post'): IConnectionDefault => {
   return data;
 };
 
-export const fetchContent = async (url: string,
-  method: 'get' | 'post',
+export const fetchContent = async (
+  url: string,
+  method: "get" | "post",
   mounted: boolean,
   abortController: AbortController,
   setData: React.Dispatch<React.SetStateAction<IConnectionDefault>>
 ): Promise<void> => {
-
   let statusCode = 999;
   let data = null;
 
@@ -54,11 +57,9 @@ export const fetchContent = async (url: string,
   if (mounted) {
     setData(response);
   }
-}
+};
 
 export default useFetch;
 
 // Source:
 // https://github.com/bghveding/use-fetch
-
-

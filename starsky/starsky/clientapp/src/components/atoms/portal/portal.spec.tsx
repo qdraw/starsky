@@ -1,11 +1,10 @@
-import { mount, shallow } from 'enzyme';
-import React from 'react';
-import Portal from './portal';
+import { mount, shallow } from "enzyme";
+import React from "react";
+import Portal from "./portal";
 
 describe("Portal", () => {
-
   it("renders", () => {
-    shallow(<Portal />)
+    shallow(<Portal />);
   });
 
   it("default render", () => {
@@ -17,7 +16,7 @@ describe("Portal", () => {
   it("default cleanup after render", () => {
     var component = mount(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
-        console.log(document.body.innerHTML);
+    console.log(document.body.innerHTML);
 
     component.unmount();
     expect(component.exists()).toBeFalsy();

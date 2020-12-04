@@ -1,14 +1,10 @@
-
 export default class WebSocketService {
-
   private websocket?: WebSocket;
   constructor(url: string, protocols?: string | string[]) {
     try {
       this.websocket = new WebSocket(url, protocols);
-    } catch (error) {
-    }
+    } catch (error) {}
   }
-
 
   public onOpen(callback: (ev: Event) => void): void {
     if (!this.websocket) return;
@@ -22,11 +18,10 @@ export default class WebSocketService {
 
   public onError(callback: (ev: Event) => void): void {
     if (!this.websocket) {
-      return callback(new Event('error'))
+      return callback(new Event("error"));
     }
     this.websocket.onerror = callback;
   }
-
 
   public close(): void {
     if (!this.websocket) {
@@ -35,7 +30,9 @@ export default class WebSocketService {
     this.websocket.close();
   }
 
-  public send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView): void {
+  public send(
+    data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
+  ): void {
     if (!this.websocket) {
       return;
     }
@@ -48,5 +45,4 @@ export default class WebSocketService {
     }
     this.websocket.onmessage = callback;
   }
-
 }

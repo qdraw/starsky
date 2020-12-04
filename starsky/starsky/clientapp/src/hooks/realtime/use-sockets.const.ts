@@ -1,1 +1,1 @@
-export const useSocketsEventName = 'USE_SOCKETS';
+export const useSocketsEventName = "USE_SOCKETS";
