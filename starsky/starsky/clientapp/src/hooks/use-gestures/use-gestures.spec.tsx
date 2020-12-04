@@ -3,6 +3,7 @@ import { mount, ReactWrapper } from "enzyme";
 import React, { useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
+import * as debounce from "./debounce";
 import * as getCurrentTouchesAll from "./get-current-touches";
 import { getCurrentTouches } from "./get-current-touches";
 import * as PointerAll from "./pointer";
@@ -262,7 +263,177 @@ describe("useGestures", () => {
       component.unmount();
     });
 
+    it("touchmove deltaX/Y undefined", () => {
+      jest
+        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockImplementationOnce(() => {
+          return {
+            deltaX: undefined,
+            deltaY: undefined
+          } as any;
+        });
+
+      const debounceAnonymousFnSpy = jest.fn();
+      const debounceSpy = jest
+        .spyOn(debounce, "debounce")
+        .mockImplementationOnce(() => debounceAnonymousFnSpy);
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleSingleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(debounceSpy).toBeCalledTimes(0);
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+      debounceSpy.mockReset();
+    });
+
+    it("touchmove large delta swipe right should call deBounce", () => {
+      jest
+        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockImplementationOnce(() => {
+          return {
+            deltaX: 30,
+            deltaY: 0
+          } as any;
+        });
+
+      const debounceAnonymousFnSpy = jest.fn();
+      const debounceSpy = jest
+        .spyOn(debounce, "debounce")
+        .mockImplementationOnce(() => debounceAnonymousFnSpy);
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleSingleTouches);
+
+      console.log("onPanMo1111ve");
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(debounceSpy).toBeCalled();
+      expect(debounceAnonymousFnSpy).toBeCalledWith(
+        "onSwipeRight",
+        {},
+        "swipeRight"
+      );
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
+    it("touchmove large delta swipeLeft should call deBounce", () => {
+      jest
+        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockImplementationOnce(() => {
+          return {
+            deltaX: -30,
+            deltaY: 0
+          } as any;
+        });
+
+      const debounceAnonymousFnSpy = jest.fn();
+      const debounceSpy = jest
+        .spyOn(debounce, "debounce")
+        .mockImplementationOnce(() => debounceAnonymousFnSpy);
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleSingleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(debounceSpy).toBeCalled();
+      expect(debounceAnonymousFnSpy).toBeCalledWith(
+        "onSwipeLeft",
+        {},
+        "swipeLeft"
+      );
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
+    it("touchmove large delta swipeDown should call deBounce", () => {
+      jest
+        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockImplementationOnce(() => {
+          return {
+            deltaX: 0,
+            deltaY: 30
+          } as any;
+        });
+
+      const debounceAnonymousFnSpy = jest.fn();
+      const debounceSpy = jest
+        .spyOn(debounce, "debounce")
+        .mockImplementationOnce(() => debounceAnonymousFnSpy);
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleSingleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(debounceSpy).toBeCalled();
+      expect(debounceAnonymousFnSpy).toBeCalledWith(
+        "onSwipeDown",
+        {},
+        "swipeDown"
+      );
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
+    it("touchmove large delta onSwipeUp should call deBounce", () => {
+      jest
+        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
+        .mockImplementationOnce(() => {
+          return {
+            deltaX: 0,
+            deltaY: -30
+          } as any;
+        });
+
+      const debounceAnonymousFnSpy = jest.fn();
+      const debounceSpy = jest
+        .spyOn(debounce, "debounce")
+        .mockImplementationOnce(() => debounceAnonymousFnSpy);
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleSingleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(debounceSpy).toBeCalled();
+      expect(debounceAnonymousFnSpy).toBeCalledWith("onSwipeUp", {}, "swipeUp");
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
     it("touchmove double", () => {
+      jest.spyOn(callHandler, "callHandler").mockReset();
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockImplementationOnce(() => {});
@@ -280,7 +451,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toBeCalled();
       expect(callHandlerSpy).toBeCalledWith(
         "onPinchChanged",
-        expect.anything(),
+        undefined,
         undefined
       );
 
