@@ -1,5 +1,6 @@
 import { mount } from "enzyme";
 import React from "react";
+import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
 import * as ArchiveContextWrapper from "../contexts-wrappers/archive-wrapper";
 import * as useSearchList from "../hooks/use-searchlist";
@@ -61,6 +62,27 @@ describe("SearchPage", () => {
     const component = mount(<SearchPage>t</SearchPage>);
 
     expect(applicationExceptionSpy).toBeCalled();
+
+    component.unmount();
+  });
+
+  it("Loading should display preloader", () => {
+    const preloaderSpy = jest.spyOn(Preloader, "default");
+
+    jest.spyOn(useSearchList, "default").mockImplementationOnce(() => {
+      return {
+        archive: {},
+        pageType: PageType.Loading
+      } as any;
+    });
+
+    jest.spyOn(ArchiveContextWrapper, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+
+    const component = mount(<SearchPage>t</SearchPage>);
+
+    expect(preloaderSpy).toBeCalled();
 
     component.unmount();
   });
