@@ -118,8 +118,6 @@ export const getCurrentTouches = (
   // When single touch
   const pointer = new Pointer(touches[0]);
 
-  console.log(pointer.x, pointer.y, touches);
-
   return {
     preventDefault: originalEvent.preventDefault,
     stopPropagation: originalEvent.stopPropagation,
@@ -181,8 +179,6 @@ export default function useGestures(
     };
 
     const handleTouchStart = (event: globalThis.TouchEvent) => {
-      console.log(event.touches);
-
       const currentTouches = getCurrentTouches(
         event,
         event.touches,
@@ -212,9 +208,6 @@ export default function useGestures(
         callHandler("onPinchChanged", currentTouches);
         return;
       }
-
-      console.log(currentTouches.deltaX);
-      console.log(currentTouches.deltaY);
 
       callHandler("onPanMove", currentTouches);
 
@@ -252,8 +245,6 @@ export default function useGestures(
       } else {
         theGesture = "";
       }
-
-      console.log(eventName);
 
       if (eventName) {
         debounce(
