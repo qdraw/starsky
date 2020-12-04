@@ -90,7 +90,7 @@ interface ICurrentTouches {
   y?: number;
 }
 
-const getCurrentTouches = (
+export const getCurrentTouches = (
   originalEvent: globalThis.TouchEvent,
   touches: TouchList,
   prevTouch: ICurrentTouches | null,
@@ -103,7 +103,6 @@ const getCurrentTouches = (
     const pointer2 = new Pointer(touches[1]);
 
     const distance = getDistance(pointer1, pointer2);
-    console.log(distance);
 
     return {
       preventDefault: originalEvent.preventDefault,
