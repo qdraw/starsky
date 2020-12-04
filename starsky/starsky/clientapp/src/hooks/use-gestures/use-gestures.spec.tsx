@@ -6,7 +6,6 @@ import * as callHandler from "./call-handler";
 import * as debounce from "./debounce";
 import * as getCurrentTouchesAll from "./get-current-touches";
 import { getCurrentTouches } from "./get-current-touches";
-import * as PointerAll from "./pointer";
 import { Pointer } from "./pointer";
 import { getAngleDeg, getDistance, useGestures } from "./use-gestures";
 
@@ -459,45 +458,69 @@ describe("useGestures", () => {
       component.unmount();
     });
 
-    it("touchend", () => {
+    it("touchend single onPinchEnd", () => {
+      console.log("--en");
+
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockImplementationOnce(() => {});
 
-      const touchEndEvent = new TouchEvent("touchend", exampleSingleTouches);
-      const touchStartEvent = new TouchEvent(
-        "touchstart",
-        exampleSingleTouches
-      );
-
       jest
-        .spyOn(getCurrentTouchesAll, "getCurrentTouches")
-        .mockImplementationOnce(() => {
-          return {
-            deltaX: 1,
-            deltaY: 2
-          } as any;
-        });
-
-      jest.spyOn(PointerAll, "Pointer").mockImplementationOnce(() => {
-        return {
-          x: 1,
-          y: 1
-        };
-      });
+        .spyOn(React, "useState")
+        .mockImplementationOnce(() => [{ pointers: ["", "1"] }, jest.fn()]);
+      const touchEndEvent = new TouchEvent("touchend", exampleSingleTouches);
 
       const demoElement = document.createElement("div");
 
       var hook = mountReactHook(useGestures, [{ current: demoElement }]);
 
       act(() => {
-        demoElement.dispatchEvent(touchStartEvent);
         demoElement.dispatchEvent(touchEndEvent);
       });
 
       expect(callHandlerSpy).toBeCalled();
-      expect(callHandlerSpy).toBeCalledTimes(1);
+      expect(callHandlerSpy).toBeCalledWith("onPinchEnd", undefined, undefined);
 
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
+    it("touchend double onPinchEnd", () => {
+      console.log("--en");
+
+      const callHandlerSpy = jest
+        .spyOn(callHandler, "callHandler")
+        .mockImplementationOnce(() => {});
+
+      jest
+        .spyOn(React, "useState")
+        .mockImplementationOnce(() => [{ pointers: ["a"] }, jest.fn()])
+        .mockImplementationOnce(() => ["gesture1", jest.fn()]);
+
+      const touchEndEvent = new TouchEvent("touchend", exampleDoubleTouches);
+
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      act(() => {
+        demoElement.dispatchEvent(touchEndEvent);
+      });
+
+      expect(callHandlerSpy).toBeCalled();
+      expect(callHandlerSpy).toBeCalledWith("onPanEnd", undefined, undefined);
+      expect(callHandlerSpy).toHaveBeenNthCalledWith(
+        1,
+        "onPanEnd",
+        undefined,
+        undefined
+      );
+      expect(callHandlerSpy).toHaveBeenNthCalledWith(
+        2,
+        "onGesture1End",
+        undefined,
+        undefined
+      );
       const component = (hook.componentMount as any) as ReactWrapper;
       component.unmount();
     });
