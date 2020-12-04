@@ -1,18 +1,19 @@
 {
   "name": "clientapp",
-  "version": "0.1.0",
+  "version": "0.4.1",
+  "private": true,
   "proxy": "http://localhost:5000",
   "homepage": "/starsky/",
-  "private": true,
+
   "dependencies": {
     "@reach/router": "^1.3.4",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.2.2",
+    "@testing-library/user-event": "^12.3.0",
     "@types/enzyme": "^3.10.8",
     "@types/jest": "^26.0.15",
     "@types/leaflet": "^1.5.19",
-    "@types/node": "^12.19.7",
+    "@types/node": "^12.19.8",
     "@types/reach__router": "^1.3.6",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
@@ -21,7 +22,7 @@
     "abortcontroller-polyfill": "^1.5.0",
     "enzyme": "^3.11.0",
     "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-prettier": "^3.2.0",
     "intersection-observer": "^0.11.0",
     "leaflet": "^1.7.1",
     "prettier": "^2.2.1",
@@ -60,10 +61,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 65,
-        "functions": 70,
+        "branches": 80,
+        "functions": 80,
         "lines": 80,
-        "statements": 75
+        "statements": 80
       }
     }
   },
@@ -71,11 +72,9 @@
     "extends": [
       "react-app",
       "react-app/jest",
-      "plugin:prettier/recommended"
+       "plugin:prettier/recommended"
     ],
-    "plugins": [
-      "prettier"
-    ],
+    "plugins": ["prettier"],
     "rules": {
       "prettier/prettier": [
         "error",
@@ -86,7 +85,7 @@
     }
   },
   "prettier": {
-    "trailingComma": "none",
+		"trailingComma": "none",
     "bracketSpacing": true,
     "semi": true,
     "singleQuote": false,
@@ -106,6 +105,6 @@
     ]
   },
   "devDependencies": {
-    "@storybook/react": "^6.1.9"
+    "@storybook/react": "^6.1.10"
   }
 }

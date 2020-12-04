@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
 import Preloader from "../components/atoms/preloader/preloader";
 import DetailViewGpx from "../components/organisms/detail-view-media/detail-view-gpx";
 import DetailViewMp4 from "../components/organisms/detail-view-media/detail-view-mp4";
 import DetailViewSidebar from "../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../contexts/detailview-context";
+import useGestures from "../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../hooks/use-keyboard-event";
 import useLocation from "../hooks/use-location";
 import {
@@ -78,8 +79,6 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowLeft/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      if (!relativeObjects) return;
-      if (!relativeObjects.prevFilePath) return;
       prev();
     },
     [relativeObjects]
@@ -90,8 +89,6 @@ const DetailView: React.FC<IDetailView> = () => {
     /ArrowRight/,
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
-      if (!relativeObjects) return;
-      if (!relativeObjects.nextFilePath) return;
       next();
     },
     [relativeObjects]
@@ -152,6 +149,7 @@ const DetailView: React.FC<IDetailView> = () => {
    */
   function next() {
     if (!relativeObjects) return;
+    if (!relativeObjects.nextFilePath) return;
     if (relativeObjects.nextFilePath === state.subPath) {
       // when changing next very fast it might skip a check
       new UpdateRelativeObject()
@@ -198,6 +196,7 @@ const DetailView: React.FC<IDetailView> = () => {
    */
   function prev() {
     if (!relativeObjects) return;
+    if (!relativeObjects.prevFilePath) return;
     if (relativeObjects.prevFilePath === state.subPath) {
       // when changing prev very fast it might skip a check
       new UpdateRelativeObject()
@@ -239,6 +238,17 @@ const DetailView: React.FC<IDetailView> = () => {
     });
   }
 
+  const mainRef = useRef<HTMLDivElement>(null);
+
+  useGestures(mainRef, {
+    onSwipeLeft: () => {
+      next();
+    },
+    onSwipeRight: () => {
+      prev();
+    }
+  });
+
   if (!state.fileIndexItem || !relativeObjects) {
     return <Preloader parent={"/"} isDetailMenu={true} isOverlay={true} />;
   }
@@ -274,6 +284,7 @@ const DetailView: React.FC<IDetailView> = () => {
         ) : null}
 
         <div
+          ref={mainRef}
           className={
             isError
               ? "main main--error main--" + state.fileIndexItem.imageFormat

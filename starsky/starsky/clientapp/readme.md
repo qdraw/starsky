@@ -213,10 +213,10 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
   ],
   "coverageThreshold": {
     "global": {
-      "branches": 65,
-      "functions": 70,
+      "branches": 80,
+      "functions": 80,
       "lines": 80,
-      "statements": 75
+      "statements": 80
     }
   }
 },
@@ -247,7 +247,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
     "semi": true,
     "singleQuote": false,
     "tabWidth": 2,
-    "useTabs": true
+    "useTabs": false
   },
 ```
 
