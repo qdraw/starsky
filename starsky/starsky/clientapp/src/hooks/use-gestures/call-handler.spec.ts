@@ -8,5 +8,12 @@ describe("callHandler", () => {
 
       expect(handlers.test).toBeCalled();
     });
+
+    it("should not call test function", () => {
+      let handlers = { test: jest.fn() } as any;
+      callHandler(undefined as any, true as any, handlers);
+
+      expect(handlers.test).toBeCalledTimes(0);
+    });
   });
 });
