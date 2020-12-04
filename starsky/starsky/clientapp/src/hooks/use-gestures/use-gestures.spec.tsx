@@ -16,9 +16,6 @@ function Rotate() {
   useGestures(image, {
     onPanMove: (event: any) => {
       setImageRotation(event.angleDeg);
-    },
-    onPanEnd: (event: any) => {
-      setImageRotation(1);
     }
   });
 
@@ -161,10 +158,16 @@ describe("useGestures", () => {
 
   describe("useGestures", () => {
     it("check if is called once", () => {
+      jest.useFakeTimers();
       var component = mount(<Rotate />);
 
       component.find("img").simulate("touchmove", exampleSingleTouches);
-      console.log(test);
+
+      jest.advanceTimersByTime(20);
+
+      // this does nothing
+
+      jest.useRealTimers();
     });
 
     const exampleSingleTouches = {
