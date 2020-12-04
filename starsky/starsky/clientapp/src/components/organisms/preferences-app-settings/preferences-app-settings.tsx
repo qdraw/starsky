@@ -17,8 +17,8 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
     "The AppSettings may only be modified by Administrators. These settings are applied for the entire application"
   );
   const MessageChangeNeedReSync = language.text(
-    "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren",
-    "You have changed this setting, now you need to perform a full sync"
+    "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren en daarnaast de app te herstarten",
+    "You have changed this setting, now you need to perform a full sync and also restart the app"
   );
 
   var permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");

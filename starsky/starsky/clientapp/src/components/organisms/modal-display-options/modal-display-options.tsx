@@ -23,12 +23,12 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     "Display options"
   );
   const MessageSwitchButtonCollectionsOn = language.text(
-    "Collecties aan",
-    "Collections on"
+    "Toon raw bestanden",
+    "Show raw files"
   );
   const MessageSwitchButtonCollectionsOff = language.text(
-    "Per bestand (uit)",
-    "Per file (off)"
+    "Verberg raw bestanden",
+    "Hide Raw files"
   );
   const MessageSwitchButtonIsSingleItemOn = language.text(
     "Alles inladen",

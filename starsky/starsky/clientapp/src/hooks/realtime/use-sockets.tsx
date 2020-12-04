@@ -87,8 +87,10 @@ const useSockets = (): IUseSockets => {
       console.log("[use-sockets] --end");
       ws.current.close();
     };
+
+    // When switching the feature toggle
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [localStorage.getItem("use-sockets")]);
 
   return {
     showSocketError
