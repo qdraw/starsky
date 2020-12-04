@@ -5,37 +5,10 @@ import {
   useRef,
   useState
 } from "react";
-
-interface IHandlers {
-  onPanStart?: Function;
-  onPanMove?: Function;
-  onSwipeLeft?: Function;
-  onSwipeRight?: Function;
-  onSwipeUp?: Function;
-  onSwipeDown?: Function;
-  onPanEnd?: Function;
-  onSwipeLeftEnd?: Function;
-  onSwipeRightEnd?: Function;
-  onSwipeUpEnd?: Function;
-  onSwipeDownEnd?: Function;
-  onPinchStart?: Function;
-  onPinchChanged?: Function;
-  onPinchEnd?: Function;
-}
-
-export class Pointer {
-  public x: number = 0;
-  public y: number = 0;
-
-  /**
-   * Point element
-   * @param {{clientX:number, clientY: number}} touch event touch object
-   */
-  constructor(touch: any) {
-    this.x = touch.clientX;
-    this.y = touch.clientY;
-  }
-}
+import { callHandler } from "./call-handler";
+import { ICurrentTouches } from "./ICurrentTouches.types";
+import { IHandlers } from "./IHandlers.types";
+import { Pointer } from "./pointer";
 
 const debounce = (func: any, wait: number) => {
   let timeout: any;
@@ -76,20 +49,6 @@ export const getAngleDeg = (p1: Pointer, p2: Pointer | ICurrentTouches) => {
   return (Math.atan2(p1.y - p2.y, p1.x - p2.x) * 180) / Math.PI;
 };
 
-interface ICurrentTouches {
-  preventDefault: any;
-  stopPropagation?: any;
-  pointers?: Pointer[];
-  delta: number;
-  scale?: number;
-  distance: number;
-  angleDeg: number;
-  deltaX?: number;
-  deltaY?: number;
-  x?: number;
-  y?: number;
-}
-
 export const getCurrentTouches = (
   originalEvent: globalThis.TouchEvent,
   touches: TouchList,
@@ -128,21 +87,6 @@ export const getCurrentTouches = (
     distance: firstTouch ? getDistance(pointer, firstTouch) : 0,
     angleDeg: prevTouch ? getAngleDeg(pointer, prevTouch) : 0
   };
-};
-
-export const callHandler = (
-  eventName: string,
-  event: ICurrentTouches,
-  handlers: IHandlers
-) => {
-  if (
-    eventName &&
-    handlers &&
-    (handlers as any)[eventName] &&
-    typeof (handlers as any)[eventName] === "function"
-  ) {
-    (handlers as any)[eventName](event);
-  }
 };
 
 /**
@@ -195,7 +139,7 @@ export function useGestures(
 
       console.log("event.touches");
 
-      console.log(event.touches);
+      console.log(event.touches.length);
 
       if (event.touches.length === 2) {
         callHandler("onPinchStart", currentTouches, handlers);

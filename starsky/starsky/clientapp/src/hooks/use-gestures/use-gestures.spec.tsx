@@ -1,10 +1,14 @@
-import { mount } from "enzyme";
+import { act } from "@testing-library/react";
+import { mount, ReactWrapper } from "enzyme";
 import React, { useRef, useState } from "react";
-import useGestures, {
+import { mountReactHook } from "../___tests___/test-hook";
+import * as callHandler from "./call-handler";
+import { Pointer } from "./pointer";
+import {
   getAngleDeg,
   getCurrentTouches,
   getDistance,
-  Pointer
+  useGestures
 } from "./use-gestures";
 
 function Rotate() {
@@ -157,8 +161,61 @@ describe("useGestures", () => {
     });
   });
 
-  it("check if is called once", () => {
-    var test = mount(<Rotate />);
-    console.log(test);
+  describe("useGestures", () => {
+    xit("check if is called once", () => {
+      var test = mount(<Rotate />);
+      console.log(test);
+    });
+
+    const exampleTouches = {
+      touches: [
+        {
+          clientX: 10,
+          clientY: 0
+        } as any
+      ]
+    };
+
+    it("touchstart", () => {
+      const callHandlerSpy = jest
+        .spyOn(callHandler, "callHandler")
+        .mockImplementationOnce(() => {});
+
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchstart", exampleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(callHandlerSpy).toBeCalled();
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
+
+    it("touchmove", () => {
+      const callHandlerSpy = jest
+        .spyOn(callHandler, "callHandler")
+        .mockImplementationOnce(() => {});
+
+      const demoElement = document.createElement("div");
+
+      var hook = mountReactHook(useGestures, [{ current: demoElement }]);
+
+      const event = new TouchEvent("touchmove", exampleTouches);
+
+      act(() => {
+        demoElement.dispatchEvent(event);
+      });
+
+      expect(callHandlerSpy).toBeCalled();
+
+      const component = (hook.componentMount as any) as ReactWrapper;
+      component.unmount();
+    });
   });
 });

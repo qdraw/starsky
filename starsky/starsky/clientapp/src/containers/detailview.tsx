@@ -5,7 +5,7 @@ import DetailViewGpx from "../components/organisms/detail-view-media/detail-view
 import DetailViewMp4 from "../components/organisms/detail-view-media/detail-view-mp4";
 import DetailViewSidebar from "../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../contexts/detailview-context";
-import useGestures from "../hooks/use-gestures";
+import useGestures from "../hooks/use-gestures/use-gestures";
 import useKeyboardEvent from "../hooks/use-keyboard-event";
 import useLocation from "../hooks/use-location";
 import {
