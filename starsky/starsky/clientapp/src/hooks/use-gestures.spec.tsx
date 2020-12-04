@@ -1,6 +1,11 @@
 import { mount } from "enzyme";
 import React, { useRef, useState } from "react";
-import useGestures, { getAngleDeg, getDistance, Pointer } from "./use-gestures";
+import useGestures, {
+  getAngleDeg,
+  getCurrentTouches,
+  getDistance,
+  Pointer
+} from "./use-gestures";
 
 function Rotate() {
   const [imageRotation, setImageRotation] = useState(0);
@@ -83,6 +88,72 @@ describe("useGestures", () => {
         new Pointer({ clientX: 12, clientY: 11 })
       );
       expect(p).toBe(180);
+    });
+  });
+
+  describe("getCurrentTouches", () => {
+    it("single touch event", () => {
+      const sourceEvent = {
+        originalEvent: jest.fn(),
+        stopPropagation: jest.fn()
+      };
+      const newTouches = [
+        {
+          clientX: 20,
+          clientY: 0
+        }
+      ];
+
+      const prevTouch = {
+        clientX: 10,
+        clientY: 0
+      };
+
+      const t = { current: { x: 1, y: 1 } };
+
+      var result = getCurrentTouches(
+        sourceEvent as any,
+        newTouches as any,
+        prevTouch as any,
+        t as any
+      );
+
+      expect(result.delta).toBe(20);
+      expect(result.x).toBe(20);
+    });
+
+    it("dual touch event", () => {
+      const sourceEvent = {
+        originalEvent: jest.fn(),
+        stopPropagation: jest.fn()
+      };
+      const newTouches = [
+        {
+          clientX: 20,
+          clientY: 0
+        },
+        {
+          clientX: 40,
+          clientY: 0
+        }
+      ];
+
+      const prevTouch = {
+        clientX: 10,
+        clientY: 0
+      };
+
+      const t = { current: { x: 1, y: 1 } };
+
+      var result = getCurrentTouches(
+        sourceEvent as any,
+        newTouches as any,
+        prevTouch as any,
+        t as any
+      );
+
+      expect(result.angleDeg).toBe(180);
+      expect(result.distance).toBe(20);
     });
   });
 
