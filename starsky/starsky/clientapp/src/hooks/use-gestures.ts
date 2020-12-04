@@ -130,6 +130,20 @@ export const getCurrentTouches = (
   };
 };
 
+export const callHandler = (
+  eventName: string,
+  event: ICurrentTouches,
+  handlers: IHandlers
+) => {
+  if (
+    eventName &&
+    (handlers as any)[eventName] &&
+    typeof (handlers as any)[eventName] === "function"
+  ) {
+    (handlers as any)[eventName](event);
+  }
+};
+
 /**
  * 
  * @param {Object} ref React ref object
@@ -168,16 +182,6 @@ export default function useGestures(
   useEffect(() => {
     const element = ref.current;
 
-    const callHandler = (eventName: string, event: ICurrentTouches) => {
-      if (
-        eventName &&
-        (handlers as any)[eventName] &&
-        typeof (handlers as any)[eventName] === "function"
-      ) {
-        (handlers as any)[eventName](event);
-      }
-    };
-
     const handleTouchStart = (event: globalThis.TouchEvent) => {
       const currentTouches = getCurrentTouches(
         event,
@@ -189,9 +193,9 @@ export default function useGestures(
       initialTouches.current = currentTouches;
 
       if (event.touches.length === 2) {
-        callHandler("onPinchStart", currentTouches);
+        callHandler("onPinchStart", currentTouches, handlers);
       } else {
-        callHandler("onPanStart", currentTouches);
+        callHandler("onPanStart", currentTouches, handlers);
       }
     };
 
@@ -205,11 +209,11 @@ export default function useGestures(
       setTouches(currentTouches);
 
       if (event.touches.length === 2) {
-        callHandler("onPinchChanged", currentTouches);
+        callHandler("onPinchChanged", currentTouches, handlers);
         return;
       }
 
-      callHandler("onPanMove", currentTouches);
+      callHandler("onPanMove", currentTouches, handlers);
 
       let eventName, theGesture;
 
@@ -249,7 +253,7 @@ export default function useGestures(
       if (eventName) {
         debounce(
           (eventName: string, touches: ICurrentTouches, theGesture: string) => {
-            callHandler(eventName, touches);
+            callHandler(eventName, touches, handlers);
             setGesture(theGesture);
           },
           100
@@ -266,16 +270,17 @@ export default function useGestures(
       );
       if (touches && touches.pointers) {
         if (touches.pointers.length === 2) {
-          callHandler("onPinchEnd", currentTouches);
+          callHandler("onPinchEnd", currentTouches, handlers);
         } else {
-          callHandler("onPanEnd", currentTouches);
+          callHandler("onPanEnd", currentTouches, handlers);
         }
       }
 
       if (gesture) {
         callHandler(
           `on${gesture.charAt(0).toUpperCase() + gesture.slice(1)}End`,
-          currentTouches
+          currentTouches,
+          handlers
         );
       }
     };
