@@ -193,6 +193,10 @@ export function useGestures(
       setTouches(currentTouches);
       initialTouches.current = currentTouches;
 
+      console.log("event.touches");
+
+      console.log(event.touches);
+
       if (event.touches.length === 2) {
         callHandler("onPinchStart", currentTouches, handlers);
       } else {
