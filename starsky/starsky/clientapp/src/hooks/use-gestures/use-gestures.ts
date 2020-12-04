@@ -1,11 +1,6 @@
-import {
-  MutableRefObject,
-  RefObject,
-  useEffect,
-  useRef,
-  useState
-} from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { callHandler } from "./call-handler";
+import { getCurrentTouches } from "./get-current-touches";
 import { ICurrentTouches } from "./ICurrentTouches.types";
 import { IHandlers } from "./IHandlers.types";
 import { Pointer } from "./pointer";
@@ -47,46 +42,6 @@ export const getAngleDeg = (p1: Pointer, p2: Pointer | ICurrentTouches) => {
     p2.y = 0;
   }
   return (Math.atan2(p1.y - p2.y, p1.x - p2.x) * 180) / Math.PI;
-};
-
-export const getCurrentTouches = (
-  originalEvent: globalThis.TouchEvent,
-  touches: TouchList,
-  prevTouch: ICurrentTouches | null,
-  initialTouches: MutableRefObject<ICurrentTouches>
-): ICurrentTouches => {
-  const firstTouch = initialTouches.current;
-
-  if (touches.length === 2) {
-    const pointer1 = new Pointer(touches[0]);
-    const pointer2 = new Pointer(touches[1]);
-
-    const distance = getDistance(pointer1, pointer2);
-
-    return {
-      preventDefault: originalEvent.preventDefault,
-      stopPropagation: originalEvent.stopPropagation,
-      pointers: [pointer1, pointer2],
-      delta: prevTouch ? distance - prevTouch.distance : 0,
-      scale: firstTouch ? distance / firstTouch.distance : 1,
-      distance,
-      angleDeg: getAngleDeg(pointer1, pointer2)
-    };
-  }
-
-  // When single touch
-  const pointer = new Pointer(touches[0]);
-
-  return {
-    preventDefault: originalEvent.preventDefault,
-    stopPropagation: originalEvent.stopPropagation,
-    ...pointer,
-    deltaX: prevTouch && prevTouch.x ? pointer.x - prevTouch.x : 0,
-    deltaY: prevTouch && prevTouch.y ? pointer.y - prevTouch.y : 0,
-    delta: prevTouch ? getDistance(pointer, prevTouch) : 0,
-    distance: firstTouch ? getDistance(pointer, firstTouch) : 0,
-    angleDeg: prevTouch ? getAngleDeg(pointer, prevTouch) : 0
-  };
 };
 
 /**
