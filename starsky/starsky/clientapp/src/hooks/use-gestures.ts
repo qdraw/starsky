@@ -168,7 +168,7 @@ export const callHandler = (
   minDelta: number
 }} options 
 */
-export default function useGestures(
+export function useGestures(
   ref: RefObject<HTMLElement>,
   handlers: IHandlers,
   options = {
@@ -297,3 +297,5 @@ export default function useGestures(
     // run any time
   });
 }
+
+export default useGestures;
