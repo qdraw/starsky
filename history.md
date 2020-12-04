@@ -53,6 +53,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
 - [x]   (Security) _Frond-end_  Upgrade ClientApp Typescript version to 4.1.2_
 - [x]   (Security) _Frond-end_  Upgrade ClientApp React version to 17.0.1_
+- [x]   (Added) _Front-end_ Add warning when Application fails for trash and search
+- [x]   (Added) _Front-end_ Add menu text & Rename Collection mode to Show raw files
 
 # version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
