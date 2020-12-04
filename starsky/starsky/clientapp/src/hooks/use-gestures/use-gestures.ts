@@ -1,19 +1,10 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import { callHandler } from "./call-handler";
+import { debounce } from "./debounce";
 import { getCurrentTouches } from "./get-current-touches";
 import { ICurrentTouches } from "./ICurrentTouches.types";
 import { IHandlers } from "./IHandlers.types";
 import { Pointer } from "./pointer";
-
-const debounce = (func: any, wait: number) => {
-  let timeout: any;
-  return function (...args: any) {
-    // @ts-ignore
-    const context = this;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
-  };
-};
 
 /**
  * Calc the distance
