@@ -160,8 +160,10 @@ describe("useGestures", () => {
   });
 
   describe("useGestures", () => {
-    xit("check if is called once", () => {
-      var test = mount(<Rotate />);
+    it("check if is called once", () => {
+      var component = mount(<Rotate />);
+
+      component.find("img").simulate("touchmove", exampleSingleTouches);
       console.log(test);
     });
 
@@ -313,8 +315,6 @@ describe("useGestures", () => {
 
       const event = new TouchEvent("touchmove", exampleSingleTouches);
 
-      console.log("onPanMo1111ve");
-
       act(() => {
         demoElement.dispatchEvent(event);
       });
@@ -459,8 +459,6 @@ describe("useGestures", () => {
     });
 
     it("touchend single onPinchEnd", () => {
-      console.log("--en");
-
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockImplementationOnce(() => {});
@@ -486,8 +484,6 @@ describe("useGestures", () => {
     });
 
     it("touchend double onPinchEnd", () => {
-      console.log("--en");
-
       const callHandlerSpy = jest
         .spyOn(callHandler, "callHandler")
         .mockImplementationOnce(() => {});
