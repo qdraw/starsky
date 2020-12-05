@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -19,7 +20,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
-			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
+			services.AddDbContext<ApplicationDbContext>(options => 
+				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -90,5 +92,30 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);
 		}
+		
+		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_SingleItem_Disposed()
+		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/disposed/single_item_disposed_1.jpg"),
+			});
+			
+			// get context
+			var serviceScopeFactory = CreateNewScope();
+			var scope = serviceScopeFactory.CreateScope();
+			var dbContextDisposed = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			
+			// Dispose here
+			await dbContextDisposed.DisposeAsync();
+			
+			var result = await new Query(dbContextDisposed,
+				new FakeMemoryCache(), new AppSettings(), serviceScopeFactory)
+				.GetObjectsByFilePathAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);
+		}
+		
 	}
 }
