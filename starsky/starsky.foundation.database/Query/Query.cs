@@ -229,7 +229,7 @@ namespace starsky.foundation.database.Query
 		/// <summary>
 		/// Remove fileHash from hash-list-cache
 		/// </summary>
-		/// <param name="fileHash">base32 filehash</param>
+		/// <param name="fileHash">base32 fileHash</param>
 	    public void ResetItemByHash(string fileHash)
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
