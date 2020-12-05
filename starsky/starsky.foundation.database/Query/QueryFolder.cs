@@ -96,13 +96,15 @@ namespace starsky.foundation.database.Query
             return (List<FileIndexItem>) objectFileFolders;
         }
 
-        private List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
+        internal List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
         {
 	        List<FileIndexItem> QueryItems(ApplicationDbContext context)
 	        {
-		        var queryItems = context.FileIndex.
-			        Where(p => p.ParentDirectory == subPath).
-			        OrderBy(p => p.FileName).ToList();
+		        var queryItems = context.FileIndex
+			        .Where(p => p.ParentDirectory == subPath)
+			        // remove duplicates from list
+			        .GroupBy(t => t.FileName).Select(g => g.First())
+			        .OrderBy(p => p.FileName).ToList();
 		        return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
 	        }
 
@@ -144,11 +146,12 @@ namespace starsky.foundation.database.Query
         {
             currentFolder = SubPathSlashRemove(currentFolder);
 
-            // We use breadcrums to get the parent folder
-            var parrentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
+            // We use breadcrumbs to get the parent folder
+            var parentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
             
-            var itemsInSubFolder = Queryable.Where<FileIndexItem>(_context.FileIndex, 
-		            p => p.ParentDirectory == parrentFolderPath)
+            // sort by alphabet
+            var itemsInSubFolder = _context.FileIndex.Where(
+		            p => p.ParentDirectory == parentFolderPath)
                 .OrderBy(p => p.FileName).ToList();
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);

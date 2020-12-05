@@ -28,6 +28,9 @@ using starskycore.Models;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.import.Services
 {
+	/// <summary>
+	/// Also known as ImportService
+	/// </summary>
 	[Service(typeof(IImport), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class Import : IImport
 	{

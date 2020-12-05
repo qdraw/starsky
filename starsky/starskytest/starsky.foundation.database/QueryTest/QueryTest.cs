@@ -422,7 +422,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var hiJpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi.jpg",
-                //FilePath = "/display/hi.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "123458465522",
                 ColorClass = ColorClassParser.Color.Winner // 1
@@ -431,7 +430,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
             var hi3JpgInput =  _query.AddItem(new FileIndexItem
             {
                 FileName = "hi3.jpg",
-                //FilePath = "/display/hi3.jpg",
                 ParentDirectory = "/display", // without slash
                 FileHash = "78539048765",
                 ColorClass = ColorClassParser.Color.Extras
@@ -440,7 +438,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
             _query.AddItem(new FileIndexItem
             {
                 FileName = "hi2.jpg",
-                //FilePath = "/display/hi2.jpg",
                 ParentDirectory = "/display",
                 FileHash = "98765432123456",
                 Tags = "!delete!"
@@ -473,7 +470,53 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
             Assert.AreEqual(releative2.NextFilePath,"/display/hi2.jpg");
             Assert.AreEqual(releative2.PrevFilePath,null);
+        }
+
+        [TestMethod]
+        [ExcludeFromCoverage]
+        public void QueryDisplayFileFolders_Duplicates_Test()
+        {
+	        var image0 =  _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "0.jpg",
+		        ParentDirectory = "/duplicates", 
+		        FileHash = "45782347832",
+		        ColorClass = ColorClassParser.Color.Winner // 1
+	        });
+	        
+	        var image1 =  _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "1.jpg",
+		        ParentDirectory = "/duplicates", 
+		        FileHash = "123458465522",
+		        ColorClass = ColorClassParser.Color.Winner // 1
+	        });
             
+	        var image1Duplicate =  _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "1.jpg",
+		        ParentDirectory = "/duplicates", 
+		        FileHash = "821847217",
+		        ColorClass = ColorClassParser.Color.Winner // 1
+	        });
+            
+	        var image2 = _query.AddItem(new FileIndexItem
+	        {
+		        FileName = "2.jpg",
+		        ParentDirectory = "/duplicates",
+		        FileHash = "98765432123456",
+	        });
+
+	        _query.AddRangeAsync(
+		        new List<FileIndexItem> {image0, image1, image1Duplicate, image2});
+
+
+	        var result = _query.QueryDisplayFileFolders("/duplicates");
+
+	        Assert.AreEqual(3,result.Count);
+	        
+	        Console.WriteLine(result.Count);
+
         }
 
         [TestMethod]
