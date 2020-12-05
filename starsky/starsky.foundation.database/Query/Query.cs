@@ -236,7 +236,7 @@ namespace starsky.foundation.database.Query
 		    
 			var queryCacheName = CachingDbName("hashList", fileHash);
 			
-			if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+			if ( _cache.TryGetValue(queryCacheName, out _) )
 			{
 				_cache.Remove(queryCacheName);
 			}
