@@ -102,7 +102,7 @@ namespace starsky.foundation.database.Query
 	        {
 		        var queryItems = context.FileIndex
 			        .Where(p => p.ParentDirectory == subPath)
-			        .OrderBy(p => p.FileName).ToList()	
+			        .OrderBy(p => p.FileName).AsEnumerable()	
 			        // remove duplicates from list
 			        .GroupBy(t => t.FileName).Select(g => g.First());
 		        return queryItems.OrderBy(p => p.FileName, StringComparer.InvariantCulture).ToList();
