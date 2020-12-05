@@ -396,7 +396,8 @@ namespace starsky.feature.import.Services
 			ImportSettingsModel importSettingsModel)
 		{
 			if ( !importSettingsModel.IndexMode ) return false;
-
+			if ( _appSettings.Verbose ) _console?.WriteLine("check for duplicates");
+			
 			var request = importIndexItems
 				.Where(p => p.Status == ImportStatus.Ok)
 				.Select(p => p.FilePath).ToList();
