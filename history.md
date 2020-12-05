@@ -57,6 +57,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Add menu text & Rename Collection mode to Show raw files
 - [x]   (Added) _Back-end_ When making new directory this broadcast it correctly using sockets
 - [x]   (Added) _Front-end_ Enable touch swipe right and left on detailView pages to go next/prev
+- [x]   (Fixed) _Back-end_ Import is now not adding duplicate content if UseDiskWatcher is faster to add items
 
 # version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
