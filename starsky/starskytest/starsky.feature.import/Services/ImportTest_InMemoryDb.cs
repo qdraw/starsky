@@ -163,7 +163,7 @@ namespace starskytest.starsky.feature.import.Services
 				});
 			Assert.AreEqual(1,result.Count);
 			
-			// Checking query result
+			// Checking query result (no duplicates anymore)
 			var queryResult = await _query.GetObjectsByFilePathAsync(new List<string>{expectedFilePath});
 			
 			Assert.IsNotNull(queryResult);

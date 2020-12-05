@@ -390,16 +390,20 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="importIndexItems">input list to check</param>
 		/// <param name="importSettingsModel"></param>
-		/// <returns>completed task</returns>
-		internal async Task RemoveDuplicates(
+		/// <returns>completed task false is not checked</returns>
+		internal async Task<bool> RemoveDuplicates(
 			IEnumerable<ImportIndexItem> importIndexItems,
 			ImportSettingsModel importSettingsModel)
 		{
-			if ( !importSettingsModel.IndexMode ) return;
-			var queryResult = await _query.GetObjectsByFilePathAsync(
-				importIndexItems.Where( p=> p.Status == ImportStatus.Ok)
-				.Select(p => p.FilePath).ToList());
+			if ( !importSettingsModel.IndexMode ) return false;
+
+			var request = importIndexItems
+				.Where(p => p.Status == ImportStatus.Ok)
+				.Select(p => p.FilePath).ToList();
+			if ( !request.Any() ) return false;
+			var queryResult = await _query.GetObjectsByFilePathAsync(request);
 			await new Duplicate(_query).RemoveDuplicateAsync(queryResult);
+			return true;
 		}
 
 		/// <summary>
