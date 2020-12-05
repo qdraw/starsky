@@ -178,7 +178,7 @@ namespace starsky.foundation.database.Query
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
-		
+
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>

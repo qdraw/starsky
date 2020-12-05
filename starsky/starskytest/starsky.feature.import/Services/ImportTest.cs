@@ -30,7 +30,7 @@ namespace starskytest.starsky.feature.import.Services
 		private readonly IConsole _console;
 
 		/// <summary>
-		/// Also known as ImportServiceTest
+		/// Also known as ImportServiceTest (Also check the InMemoryDb version)
 		/// </summary>
 		public ImportTest()
 		{
@@ -115,22 +115,6 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ColorClassParser.Color.Typical, result.FirstOrDefault().FileIndexItem.ColorClass);
 		}
 
-		[TestMethod]
-		public async Task Importer_EmptyDirectory()
-		{
-			var appSettings = new AppSettings{Verbose = true};
-			var storage = new FakeIStorage(new List<string>{"/"});
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings), null, _console);
-
-			var result = await importService.Importer(
-				new List<string> {"/"},
-				new ImportSettingsModel());
-
-			Assert.IsNotNull(result);
-			Assert.IsTrue(!result.Any());
-		}
-		
 		[TestMethod]
 		public async Task Preflight_SingleImage_DateGetByFileNameNoExif()
 		{
@@ -391,6 +375,22 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));			
+		}
+		
+		[TestMethod]
+		public async Task Importer_EmptyDirectory()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings), null, _console);
+
+			var result = await importService.Importer(
+				new List<string> {"/"},
+				new ImportSettingsModel());
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(!result.Any());
 		}
 		
 		[TestMethod]

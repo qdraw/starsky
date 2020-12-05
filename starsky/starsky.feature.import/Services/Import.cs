@@ -380,7 +380,26 @@ namespace starsky.feature.import.Services
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism);
 
-			return importIndexItemsIEnumerable.ToList();
+			var indexItemsList = importIndexItemsIEnumerable.ToList();
+			await RemoveDuplicates(indexItemsList, importSettings);
+			return indexItemsList;
+		}
+
+		/// <summary>
+		/// Sometimes the useDiskWatcher is two fast. Remove duplicates from database
+		/// </summary>
+		/// <param name="importIndexItems">input list to check</param>
+		/// <param name="importSettingsModel"></param>
+		/// <returns>completed task</returns>
+		internal async Task RemoveDuplicates(
+			IEnumerable<ImportIndexItem> importIndexItems,
+			ImportSettingsModel importSettingsModel)
+		{
+			if ( !importSettingsModel.IndexMode ) return;
+			var queryResult = await _query.GetObjectsByFilePathAsync(
+				importIndexItems.Where( p=> p.Status == ImportStatus.Ok)
+				.Select(p => p.FilePath).ToList());
+			await new Duplicate(_query).RemoveDuplicateAsync(queryResult);
 		}
 
 		/// <summary>

@@ -1,12 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.foundation.sync.Helpers
+namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
 	public class DuplicateTest

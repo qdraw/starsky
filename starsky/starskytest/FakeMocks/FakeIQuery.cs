@@ -106,6 +106,16 @@ namespace starskytest.FakeMocks
 			}
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var filePath in filePathList )
+			{
+				result.AddRange(_fakeContext.Where(p=> p.FilePath == filePath));
+			}
+			return Task.FromResult(result);
+		}
+
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
 			_fakeContext.Remove(updateStatusContent);
