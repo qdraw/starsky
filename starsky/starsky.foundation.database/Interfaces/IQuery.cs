@@ -53,7 +53,9 @@ namespace starsky.foundation.database.Interfaces
         
         FileIndexItem GetObjectByFilePath(string filePath);
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
-        
+
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
+
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 

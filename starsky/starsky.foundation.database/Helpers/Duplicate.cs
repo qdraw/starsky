@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 
-namespace starsky.foundation.sync.Helpers
+namespace starsky.foundation.database.Helpers
 {
 	public class Duplicate
 	{

@@ -178,7 +178,7 @@ namespace starsky.foundation.database.Query
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
-		
+
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>
@@ -229,14 +229,14 @@ namespace starsky.foundation.database.Query
 		/// <summary>
 		/// Remove fileHash from hash-list-cache
 		/// </summary>
-		/// <param name="fileHash">base32 filehash</param>
+		/// <param name="fileHash">base32 fileHash</param>
 	    public void ResetItemByHash(string fileHash)
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 		    
 			var queryCacheName = CachingDbName("hashList", fileHash);
 			
-			if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) )
+			if ( _cache.TryGetValue(queryCacheName, out _) )
 			{
 				_cache.Remove(queryCacheName);
 			}
