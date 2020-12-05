@@ -473,13 +473,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
         }
 
         [TestMethod]
-        [ExcludeFromCoverage]
         public void QueryDisplayFileFolders_Duplicates_Test()
         {
 	        var image0 =  _query.AddItem(new FileIndexItem
 	        {
 		        FileName = "0.jpg",
-		        ParentDirectory = "/duplicates", 
+		        ParentDirectory = "/duplicates_test", 
 		        FileHash = "45782347832",
 		        ColorClass = ColorClassParser.Color.Winner // 1
 	        });
@@ -487,7 +486,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var image1 =  _query.AddItem(new FileIndexItem
 	        {
 		        FileName = "1.jpg",
-		        ParentDirectory = "/duplicates", 
+		        ParentDirectory = "/duplicates_test", 
 		        FileHash = "123458465522",
 		        ColorClass = ColorClassParser.Color.Winner // 1
 	        });
@@ -495,7 +494,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var image1Duplicate =  _query.AddItem(new FileIndexItem
 	        {
 		        FileName = "1.jpg",
-		        ParentDirectory = "/duplicates", 
+		        ParentDirectory = "/duplicates_test", 
 		        FileHash = "821847217",
 		        ColorClass = ColorClassParser.Color.Winner // 1
 	        });
@@ -503,20 +502,20 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var image2 = _query.AddItem(new FileIndexItem
 	        {
 		        FileName = "2.jpg",
-		        ParentDirectory = "/duplicates",
+		        ParentDirectory = "/duplicates_test",
 		        FileHash = "98765432123456",
 	        });
 
 	        _query.AddRangeAsync(
 		        new List<FileIndexItem> {image0, image1, image1Duplicate, image2});
 
-
-	        var result = _query.QueryDisplayFileFolders("/duplicates");
+	        var result = _query.QueryDisplayFileFolders("/duplicates_test");
 
 	        Assert.AreEqual(3,result.Count);
-	        
-	        Console.WriteLine(result.Count);
 
+	        Assert.AreEqual(image0, result[0]);
+	        Assert.AreEqual(image1, result[1]);
+	        Assert.AreEqual(image2, result[2]);
         }
 
         [TestMethod]
