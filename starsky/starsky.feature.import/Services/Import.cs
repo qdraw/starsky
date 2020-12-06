@@ -441,7 +441,10 @@ namespace starsky.feature.import.Services
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
 				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
-			    importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
+			    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FileIndexItem.FilePath) )
+			    {
+				    importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
+			    }
 		    }
 
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
