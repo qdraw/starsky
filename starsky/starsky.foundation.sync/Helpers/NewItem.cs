@@ -23,24 +23,36 @@ namespace starsky.foundation.sync.Helpers
 		}
 		
 		/// <summary>
-		/// Returns only an object
+		/// Returns only an object (no db update)
 		/// </summary>
-		/// <param name="inputItem"></param>
+		/// <param name="inputItem">at least FilePath and ParentDirectory, fileHash is optional</param>
 		/// <returns></returns>
 		public async Task<FileIndexItem> NewFileItem(FileIndexItem inputItem)
 		{
-			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(inputItem.FilePath);
+			return await NewFileItem(inputItem.FilePath, inputItem.FileHash,
+				inputItem.ParentDirectory);
+		}
+
+		/// <summary>
+		/// Prepare an new item (no update in db)
+		/// </summary>
+		/// <param name="filePath">path of file</param>
+		/// <param name="fileHash">optional could be null</param>
+		/// <param name="parentDirectory">parent directory name</param>
+		/// <returns></returns>
+		public async Task<FileIndexItem> NewFileItem(string filePath, string fileHash, string parentDirectory)
+		{
+			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(filePath);
 			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
-				.GetImageFormat(_subPathStorage.ReadStream(inputItem.FilePath,50));
+				.GetImageFormat(_subPathStorage.ReadStream(filePath,50));
 
 			// future: read json sidecar
-			await SetFileHashStatus(inputItem, updatedDatabaseItem);
+			await SetFileHashStatus(filePath, fileHash, updatedDatabaseItem);
 			updatedDatabaseItem.SetAddToDatabase();
 			updatedDatabaseItem.SetLastEdited();
 			updatedDatabaseItem.IsDirectory = false;
-			updatedDatabaseItem.Size = _subPathStorage.Info(inputItem.FilePath).Size;
-
-			updatedDatabaseItem.ParentDirectory = inputItem.ParentDirectory;
+			updatedDatabaseItem.Size = _subPathStorage.Info(filePath).Size;
+			updatedDatabaseItem.ParentDirectory = parentDirectory;
 			return updatedDatabaseItem;
 		}
 
@@ -55,22 +67,23 @@ namespace starsky.foundation.sync.Helpers
 			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
 			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
-			await SetFileHashStatus(dbItem, dbItem);
+			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);
 			return dbItem;
 		}
 
 		/// <summary>
 		/// Set file hash when not exist
 		/// </summary>
-		/// <param name="fileIndexItem">contains filePath</param>
+		/// <param name="filePath">filePath</param>
+		/// <param name="fileHash"></param>
 		/// <param name="updatedDatabaseItem">new created object</param>
 		/// <returns></returns>
-		private async Task SetFileHashStatus(FileIndexItem fileIndexItem, FileIndexItem updatedDatabaseItem)
+		private async Task SetFileHashStatus(string filePath, string fileHash,  FileIndexItem updatedDatabaseItem)
 		{
 			updatedDatabaseItem.Status = FileIndexItem.ExifStatus.Ok;
-			if ( string.IsNullOrEmpty(updatedDatabaseItem.FileHash) )
+			if ( string.IsNullOrEmpty(fileHash) )
 			{
-				var (localHash, success) = await new FileHash(_subPathStorage).GetHashCodeAsync(fileIndexItem.FilePath);
+				var (localHash, success) = await new FileHash(_subPathStorage).GetHashCodeAsync(filePath);
 				updatedDatabaseItem.FileHash = localHash;
 				updatedDatabaseItem.Status = success
 					? FileIndexItem.ExifStatus.Ok

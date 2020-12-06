@@ -380,31 +380,7 @@ namespace starsky.feature.import.Services
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism);
 
-			var indexItemsList = importIndexItemsIEnumerable.ToList();
-			await RemoveDuplicates(indexItemsList, importSettings);
-			return indexItemsList;
-		}
-
-		/// <summary>
-		/// Sometimes the useDiskWatcher is two fast. Remove duplicates from database
-		/// </summary>
-		/// <param name="importIndexItems">input list to check</param>
-		/// <param name="importSettingsModel"></param>
-		/// <returns>completed task false is not checked</returns>
-		internal async Task<bool> RemoveDuplicates(
-			IEnumerable<ImportIndexItem> importIndexItems,
-			ImportSettingsModel importSettingsModel)
-		{
-			if ( !importSettingsModel.IndexMode ) return false;
-			if ( _appSettings.Verbose ) _console?.WriteLine("check for duplicates");
-			
-			var request = importIndexItems
-				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => p.FilePath).ToList();
-			if ( !request.Any() ) return false;
-			var queryResult = await _query.GetObjectsByFilePathAsync(request);
-			await new Duplicate(_query).RemoveDuplicateAsync(queryResult);
-			return true;
+			return importIndexItemsIEnumerable.ToList();
 		}
 
 		/// <summary>
@@ -419,6 +395,9 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
+			// Add item to database
+			await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
+			
 			// Copy
 			if ( _appSettings.Verbose ) Console.WriteLine("Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
@@ -441,10 +420,6 @@ namespace starsky.feature.import.Services
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
 				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
-			    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FileIndexItem.FilePath) )
-			    {
-				    importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
-			    }
 		    }
 
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
@@ -457,7 +432,7 @@ namespace starsky.feature.import.Services
 	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
             }
             if ( _appSettings.Verbose ) Console.Write("+");
-            return await AddToQueryAndImportDatabaseAsync(importIndexItem,importSettings);
+            return importIndexItem;
 		}
 
 		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,

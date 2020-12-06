@@ -15,11 +15,12 @@ using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
+using starsky.foundation.sync.Helpers;
 using starskycore.Models;
 
 namespace starsky.Controllers
@@ -31,23 +32,23 @@ namespace starsky.Controllers
 		private readonly IImport _import;
 		private readonly IStorage _iStorage; 
 		private readonly IStorage _iHostStorage;
-		private readonly ISync _iSync;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly NewItem _newItem;
 
-		public UploadController(IImport import, AppSettings appSettings, ISync sync, 
+		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
 			IWebSocketConnectionsService connectionsService)
 		{
 			_appSettings = appSettings;
-			_iSync = sync;
 			_import = import;
 			_query = query;
 			_selectorStorage = selectorStorage;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_connectionsService = connectionsService;
+			_newItem = new NewItem(_iHostStorage, new ReadMeta(_iHostStorage));
 		}
 
 		/// <summary>
@@ -89,7 +90,7 @@ namespace starsky.Controllers
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
-
+			
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
@@ -97,11 +98,12 @@ namespace starsky.Controllers
 				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
+				// Add item to db before write to fs
+				var item = await _newItem.NewFileItem(tempImportPaths[i], null, parentDirectory);
+				await _query.AddItemAsync(item);
+				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
-				
-				// Sync folder
-				_iSync.SyncFiles(subPath,false);
 				
 				 // clear directory cache
 				 _query.RemoveCacheParentItem(subPath);
