@@ -72,6 +72,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 18. `UseRealtime` Update the user interface realtime _default true_
 19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
 20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+21. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
 
 ### Appsettings.json example
 ```json
