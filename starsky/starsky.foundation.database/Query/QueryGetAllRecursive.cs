@@ -9,13 +9,12 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
+// QueryGetAllRecursiveAsync	
 namespace starsky.foundation.database.Query
 {
 	public partial class Query
 	{
-		// QueryGetAllRecursiveAsync	
 		
-			    
 		/// <summary>
 		/// Includes sub items in file
 		/// Used for Orphan Check
@@ -56,6 +55,11 @@ namespace starsky.foundation.database.Query
 			return await GetAllRecursiveAsync(new List<string> {subPath});
 		}
 		
+		/// <summary>
+		/// Includes sub Items
+		/// </summary>
+		/// <param name="filePathList">list of paths</param>
+		/// <returns>items from database</returns>
 		public async Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)

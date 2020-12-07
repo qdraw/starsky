@@ -730,6 +730,17 @@ namespace starsky.foundation.database.Models
 			current.Add(ext);
 			SidecarExtensions = string.Join("|", current);
 		}
+		
+		/// <summary>
+		/// Remove extensions without dot
+		/// </summary>
+		/// <param name="ext">ext without dot</param>
+		public void RemoveSidecarExtension(string ext)
+		{
+			var current = SidecarExtensionsList;
+			current.Remove(ext);
+			SidecarExtensions = string.Join("|", current);
+		}
 
 		
 		/// <summary>

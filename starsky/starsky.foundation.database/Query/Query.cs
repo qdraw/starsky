@@ -37,63 +37,6 @@ namespace starsky.foundation.database.Query
             _scopeFactory = scopeFactory;
         }
 
-        private IOrderedQueryable<FileIndexItem> GetAllFilesQuery(ApplicationDbContext context, string subPath)
-        {
-	        if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
-	        return context.FileIndex.Where
-			        (p => p.IsDirectory == false && p.ParentDirectory == subPath)
-		        .OrderBy(r => r.FileName);
-        }
-
-	    /// <summary>
-		/// Get a list of all files inside an folder (NOT recursive)
-		/// But this uses a database as source
-		/// </summary>
-		/// <param name="subPath">relative database path</param>
-		/// <returns>list of FileIndex-objects</returns>
-        public List<FileIndexItem> GetAllFiles(string subPath)
-        {
-            try
-            {
-	            return GetAllFilesQuery(_context,subPath).ToList();
-            }
-            catch ( ObjectDisposedException )
-            {
-	            return  GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToList();
-            }
-        }
-	    
-	    /// <summary>
-	    /// Get a list of all files inside an folder (NOT recursive)
-	    /// But this uses a database as source
-	    /// </summary>
-	    /// <param name="subPath">relative database path</param>
-	    /// <returns>list of FileIndex-objects</returns>
-	    public async Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
-	    {
-
-		    List<FileIndexItem> FormatOk(List<FileIndexItem> input)
-		    {
-			    return input.Select(p =>
-			    {
-				    if ( p != null )
-				    {
-					    p.Status = FileIndexItem.ExifStatus.Ok;
-				    }
-				    return p;
-			    }).ToList();
-		    }
-		    
-		    try
-		    {
-			    return FormatOk(await GetAllFilesQuery(_context, subPath).ToListAsync());
-		    }
-		    catch ( ObjectDisposedException )
-		    {
-			    return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync());
-		    }
-	    }
-
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>
