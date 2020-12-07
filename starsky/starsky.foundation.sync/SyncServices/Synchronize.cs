@@ -24,6 +24,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncRemove _syncRemove;
 		private readonly IConsole _console;
 		private readonly SyncFolder _syncFolder;
+		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
 		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
 		{
@@ -32,15 +33,17 @@ namespace starsky.foundation.sync.SyncServices
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
 			_syncRemove = new SyncRemove(appSettings, query);
 			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
+			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
 		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
 		{
-			if ( FilterCommonTempFiles.Filter(subPath) ) return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
-			
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
 			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+			
+			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
+				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
 			_console.WriteLine($"Sync {subPath}");
 			

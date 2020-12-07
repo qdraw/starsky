@@ -392,8 +392,10 @@ namespace starsky.foundation.platform.Models
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
-	    // fallback in constructor
-	    // use env variable: app__ReadOnlyFolders__0 - value
+	    /// <summary>
+	    /// fallback in constructor
+	    /// use env variable: app__ReadOnlyFolders__0 - value
+	    /// </summary>
         public List<string> ReadOnlyFolders { get; set; }
 
         /// <summary>
@@ -529,6 +531,12 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool CheckForUpdates { get; set; } = true;
 
+	    /// <summary>
+	    /// Ignore the directories when running sync
+	    /// use env variable: app__SyncIgnore__0 - value
+	    /// </summary>
+	    public List<string> SyncIgnore { get; set; } = new List<string>();
+	    
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------
