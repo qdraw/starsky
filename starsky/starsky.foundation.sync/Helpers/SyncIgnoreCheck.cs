@@ -17,8 +17,6 @@ namespace starsky.foundation.sync.Helpers
 		
 		public bool Filter(string subPath)
 		{
-			if ( _appSettings.SyncIgnore.Count == 0 ) return false;
-			
 			var isSynced = _appSettings.SyncIgnore.Any(subPath.StartsWith);
 			if ( isSynced && _appSettings.Verbose) _console.WriteLine($"sync ignored for: {subPath}");
 			return isSynced;

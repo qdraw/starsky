@@ -37,7 +37,6 @@ namespace starsky.feature.import.Services
 		private readonly IImportQuery _importQuery;
 		
 		// storage providers
-		private readonly ISelectorStorage _selectorStorage;
 		private readonly IStorage _filesystemStorage;
 		private readonly IStorage _subPathStorage;
 		private readonly IStorage _thumbnailStorage;
@@ -58,7 +57,6 @@ namespace starsky.feature.import.Services
 			IQuery query,
 			IConsole console)
 		{
-			_selectorStorage = selectorStorage;
 			_importQuery = importQuery;
 			
 			_filesystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

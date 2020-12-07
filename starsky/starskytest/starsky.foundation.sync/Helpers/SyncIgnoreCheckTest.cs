@@ -13,7 +13,7 @@ namespace starskytest.starsky.foundation.sync.Helpers
 		[TestMethod]
 		public void With_No_config()
 		{
-			var result = new SyncIgnoreCheck(new AppSettings(), new ConsoleWrapper()).Filter(
+			var result = new SyncIgnoreCheck(new AppSettings{ SyncIgnore = new List<string>()}, new ConsoleWrapper()).Filter(
 				"/test");
 			Assert.IsFalse(result);
 		}
