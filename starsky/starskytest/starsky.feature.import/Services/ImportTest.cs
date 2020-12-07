@@ -5,13 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Services;
-using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Models;
@@ -394,7 +393,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-		public async Task Importer_XmpChecked()
+		public async Task Importer_Xmp_WhenImportingAFileThatAlreadyHasAnXmpSidecarFile()
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var query = new FakeIQuery();
@@ -414,6 +413,88 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
 			// Apple is read from XMP
 			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_CheckIfSidecarExtensionsFilled()
+		{
+			// File already exist before importing
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(1, result[0].FileIndexItem.SidecarExtensionsList.Count);
+
+			var sidecarExtList = result[0].FileIndexItem.SidecarExtensionsList.ToList();
+			Assert.AreEqual("xmp",sidecarExtList[0]);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_NotOverWriteExistingFile()
+		{
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng").Replace(".dng",".xmp");
+
+			var stream = storage.ReadStream(expectedFilePath);
+
+			var streamLength = stream.Length;
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+			
+			Assert.AreEqual(CreateAnXmp.Bytes.Length,streamLength);
+			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
+		}
+		
+		[TestMethod]
+		public async Task Importer_XmpIsCreatedDuringImport()
+		{
+			// xmp is created during import
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng"},
+				new List<byte[]>{CreateAnPng.Bytes});
+
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+				"/test.dng").Replace(".dng",".xmp");
+
+			Assert.IsTrue(storage.ExistFile(expectedFilePath));
+			
+			var stream = storage.ReadStream(expectedFilePath);
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+
+			Assert.AreEqual(FakeExifTool.XmpInjection,toStringAsync);
 		}
 		
 		[TestMethod]

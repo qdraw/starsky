@@ -395,6 +395,16 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
+			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
+			
+			if ( xmpExistForThisFileType || (_appSettings.ExifToolImportXmpCreate 
+			                                 && ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)))
+			{
+				// When a xmp file already exist (only for raws)
+				// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
+				importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
+			}
+			
 			// Add item to database
 			await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
 			
@@ -404,24 +414,23 @@ namespace starsky.feature.import.Services
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
 			
-			// Support for include sidecar files
-		    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
-		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.SourceFullFilePath)  &&
-		         _filesystemStorage.ExistFile(xmpSourceFullFilePath))
+			// Copy the sidecar file
+		    if ( xmpExistForThisFileType)
 		    {
+			    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
 			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
 			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
 		    // From here on the item is exit in the storage folder
 		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate)
+		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
 		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
-				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
+		    // Run Exiftool to Update for example colorClass
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass);
 
@@ -434,6 +443,23 @@ namespace starsky.feature.import.Services
             if ( _appSettings.Verbose ) Console.Write("+");
             return importIndexItem;
 		}
+
+		/// <summary>
+		/// Support for include sidecar files
+		/// </summary>
+		/// <param name="importIndexItem">to get the SourceFullFilePath</param>
+		/// <returns>True when exist && current filetype is raw</returns>
+		private bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
+		{
+			// Support for include sidecar files
+			var xmpSourceFullFilePath =
+				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
+					.SourceFullFilePath);
+			return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
+				       .SourceFullFilePath) &&
+			       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+		}
+
 
 		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
@@ -468,7 +494,7 @@ namespace starsky.feature.import.Services
 
 			// Update the contents to the file the imported item
 			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
-			     colorClassTransformation == 0 ) return fileIndexItem;
+			     colorClassTransformation == -1 ) return fileIndexItem;
 			
 			if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
 
