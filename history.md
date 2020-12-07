@@ -59,6 +59,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Enable touch swipe right and left on detailView pages to go next/prev
 - [x]   (Fixed) _Back-end_ Import is now not adding duplicate content if UseDiskWatcher is faster to add items
 - [x]   (Fixed) _Back-end_ Add filter (AppSettings.SyncIgnore) for sync (starsky.foundation.sync) #73
+- [x]   (Added) _Back-end_ Update Sidecar field when running sync
 
 # version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
