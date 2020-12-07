@@ -240,10 +240,14 @@ namespace starsky.foundation.sync.SyncServices
 				_query.GetAllFilesAsync(parentPath)).Where(
 				p => p.ParentDirectory == parentPath &&
 				     p.FileCollectionName == fileNameWithoutExtension).ToList();
-
-			foreach ( var item in itemsInDirectories )
+			
+			var sidecarExt =
+				FilenamesHelper.GetFileExtensionWithoutDot(subPath);
+			
+			foreach ( var item in 
+				itemsInDirectories.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
 			{
-				item.AddSidecarExtension("xmp");
+				item.AddSidecarExtension(sidecarExt);
 				await _query.UpdateItemAsync(item);
 			}
 		}
