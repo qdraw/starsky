@@ -112,7 +112,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var iStorageFake = new FakeIStorage(new List<string>{"/level/deep/"},
 				new List<string>{"/level/deep/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
@@ -406,7 +406,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = sync.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
 		}
-		
-		
+
+		[TestMethod]
+		public async Task SingleFile_RemoveSidecarFile()
+		{
+			var iStorageFake = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes, new byte[0]});
+			
+			
+		}
 	}
 }
