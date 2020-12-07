@@ -534,8 +534,9 @@ namespace starsky.foundation.platform.Models
 	    /// <summary>
 	    /// Ignore the directories when running sync
 	    /// use env variable: app__SyncIgnore__0 - value
+	    /// Use always UNIX style
 	    /// </summary>
-	    public List<string> SyncIgnore { get; set; } = new List<string>();
+	    public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
 	    
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
