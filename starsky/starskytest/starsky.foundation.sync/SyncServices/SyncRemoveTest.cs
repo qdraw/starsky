@@ -8,6 +8,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncServices;
+using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
@@ -61,7 +62,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task SingleItem_Remove()
+		public async Task SingleItem_Folder_Remove()
 		{
 			var result= await new SyncRemove(_appSettings, 
 				_query).Remove("/folder_no_content");
@@ -69,7 +70,21 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
 			Assert.AreEqual("/folder_no_content", result[0].FilePath);
+			
+			var getResult = await _query.GetObjectByFilePathAsync("/folder_no_content");
+			Assert.IsNull(getResult);
 		}
 
+		
+		[TestMethod]
+		public async Task SingleFile_RemoveSidecarFile()
+		{
+			var iStorageFake = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes, new byte[0]});
+			
+			
+		}
+		
 	}
 }

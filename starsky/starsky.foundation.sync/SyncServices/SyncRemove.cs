@@ -31,33 +31,25 @@ namespace starsky.foundation.sync.SyncServices
 			_query = query;
 		}
 
+		/// <summary>
+		/// remove path from database
+		/// </summary>
+		/// <param name="subPath">subPath</param>
+		/// <returns></returns>
 		public async Task<List<FileIndexItem>> Remove(string subPath)
 		{
 			return await Remove(new List<string> {subPath});
 		}
 
+		/// <summary>
+		/// Remove list from database, Does not check if the file exist on disk
+		/// </summary>
+		/// <param name="subPaths">list of sub paths</param>
+		/// <returns>file with status</returns>
 		private async Task<List<FileIndexItem>> Remove(List<string> subPaths)
 		{
-			var toDeleteList = new List<FileIndexItem>();
-		
-			await subPaths
-				.ForEachAsync(
-					async subPath =>
-					{
-						var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
-						
-						var directItem = await query.GetObjectByFilePathAsync(subPath);
-						if ( directItem != null )
-						{
-							toDeleteList.Add(directItem);
-						}
-						
-						var item = await query.GetAllRecursiveAsync(subPath);
-						toDeleteList.AddRange(item);
-						return item;
-					},
-					_appSettings.MaxDegreesOfParallelism);
-
+			var toDeleteList = await _query.GetObjectsByFilePathAsync(subPaths);
+			
 			await toDeleteList
 				.ForEachAsync(async item =>
 				{
@@ -67,6 +59,7 @@ namespace starsky.foundation.sync.SyncServices
 					return item;
 				}, _appSettings.MaxDegreesOfParallelism);
 
+			// Add items that are not in the database
 			foreach ( var subPath in subPaths.Where(subPath => 
 				!toDeleteList.Exists(p => p.FilePath == subPath)) )
 			{

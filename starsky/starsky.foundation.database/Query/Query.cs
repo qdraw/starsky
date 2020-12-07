@@ -93,66 +93,6 @@ namespace starsky.foundation.database.Query
 			    return FormatOk(await GetAllFilesQuery(new InjectServiceScope(_scopeFactory).Context(),subPath).ToListAsync());
 		    }
 	    }
-	    
-	    /// <summary>
-	    /// Includes sub items in file
-	    /// Used for Orphan Check
-	    /// All files in
-	    /// </summary>
-	    /// <param name="subPath">local path</param>
-	    /// <returns>results</returns>
-        public List<FileIndexItem> GetAllRecursive(string subPath = "/")
-        {
-            subPath = PathHelper.RemoveLatestSlash(subPath);
-            
-            List<FileIndexItem> LocalQuery(ApplicationDbContext context)
-            {
-	            return context.FileIndex.Where
-			            (p => p.ParentDirectory.Contains(subPath) )
-		            .OrderBy(r => r.FileName).ToList();
-            }
-            
-            try
-            {
-	            return LocalQuery(_context);
-            }
-            catch ( ObjectDisposedException )
-            {
-	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
-            }
-        }
-	    
-	    /// <summary>
-	    /// Includes sub items in file
-	    /// Used for Orphan Check
-	    /// All files in
-	    /// </summary>
-	    /// <param name="subPath">local path</param>
-	    /// <returns>results</returns>
-	    public async Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
-	    {
-		    subPath = PathHelper.RemoveLatestSlash(subPath);
-            
-		    async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
-		    {
-			    return await context.FileIndex.Where
-					    (p => p.ParentDirectory.StartsWith(subPath) )
-				    .OrderBy(r => r.FileName).ToListAsync();
-		    }
-
-		    try
-		    {
-			    return await LocalQuery(_context);
-		    }
-		    catch ( ObjectDisposedException )
-		    {
-			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
-		    }
-		    catch ( InvalidOperationException )
-		    {
-			    return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
-		    }
-	    }
 
 		/// <summary>
 		/// Returns a database object file or folder

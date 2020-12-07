@@ -21,25 +21,10 @@ namespace starsky.foundation.database.Query
 				// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 				foreach ( var filePath in filePathList )
 				{
-					predicates.Add(x => x.FilePath.ToLower().Contains(filePath));
+					predicates.Add(x => x.FilePath == filePath);
 				}
 				
-				var predicate = PredicateBuilder.False<FileIndexItem>();
-				
-				for ( var i = 0; i < predicates.Count; i++ )
-				{
-					if ( i == 0 )
-					{
-
-						predicate = predicates[i];
-					}
-					else
-					{
-						var item = predicates[i - 1];
-						var item2 = predicates[i];
-						predicate =  item.Or(item2);
-					}
-				}
+				var predicate = PredicateBuilder.OrLoop(predicates);
 
 				return await context.FileIndex.Where(predicate).ToListAsync();
 			}

@@ -407,14 +407,5 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
 		}
 
-		[TestMethod]
-		public async Task SingleFile_RemoveSidecarFile()
-		{
-			var iStorageFake = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.dng","/test.xmp"},
-				new List<byte[]>{CreateAnPng.Bytes, new byte[0]});
-			
-			
-		}
 	}
 }

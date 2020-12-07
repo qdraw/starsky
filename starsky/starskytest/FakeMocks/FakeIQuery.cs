@@ -52,6 +52,16 @@ namespace starskytest.FakeMocks
 		{
 			return Task.FromResult(GetAllRecursive(subPath));
 		}
+		
+		public Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var subPath in filePathList )
+			{
+				result.AddRange(GetAllRecursive(subPath));
+			}
+			return Task.FromResult(result);
+		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
 			List<ColorClassParser.Color> colorClassActiveList = null,
