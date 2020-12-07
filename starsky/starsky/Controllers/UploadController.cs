@@ -99,7 +99,7 @@ namespace starsky.Controllers
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
 				// Add item to db before write to fs
-				var item = await _newItem.NewFileItem(tempImportPaths[i], null, parentDirectory);
+				var item = await _newItem.NewFileItem(tempImportPaths[i], null, parentDirectory, fileName);
 				await _query.AddItemAsync(item);
 				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
