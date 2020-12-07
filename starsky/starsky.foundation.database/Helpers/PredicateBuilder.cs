@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -52,6 +53,28 @@ namespace starsky.foundation.database.Helpers
 			var invokedExpr = Expression.Invoke (expr2, expr1.Parameters.Cast<Expression> ());
 			return Expression.Lambda<Func<T, bool>>
 				(Expression.AndAlso (expr1.Body, invokedExpr), expr1.Parameters);
+		}
+
+		public static Expression<System.Func<T,bool>> OrLoop<T>(List<Expression<Func<T,bool>>> predicates)
+		{
+			var predicate = False<T>();
+				
+			for ( var i = 0; i < predicates.Count; i++ )
+			{
+				if ( i == 0 )
+				{
+
+					predicate = predicates[i];
+				}
+				else
+				{
+					var item = predicates[i - 1];
+					var item2 = predicates[i];
+					predicate =  item.Or(item2);
+				}
+			}
+
+			return predicate;
 		}
 		
 		/// <summary>

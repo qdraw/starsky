@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -43,8 +44,12 @@ namespace starsky.foundation.sync.SyncServices
 				return await SingleFile(subPath);
 			}
 
+			// Route without database check
 			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 			
+			// Sidecar files are updated but ignored by the process
+			await UpdateSidecarFile(subPath);
+
 			var statusItem = CheckForStatusNotOk(subPath);
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
@@ -64,9 +69,15 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>updated item with status</returns>
 		internal async Task<FileIndexItem> SingleFile(string subPath)
 		{
+			// route with database check
 			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 
+			// Sidecar files are updated but ignored by the process
+			await UpdateSidecarFile(subPath);
+			
+			// ignore all the 'wrong' files
 			var statusItem = CheckForStatusNotOk(subPath);
+
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
 				return statusItem;
@@ -209,5 +220,36 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, long>(isTheSame, storageByteSize);
 		}
 
+		/// <summary>
+		/// Sidecar files don't have an own item, but there referenced by file items
+		/// in the method xmp files are added to the AddSidecarExtension list.
+		/// </summary>
+		/// <param name="subPath">sidecar item</param>
+		/// <returns>completed task</returns>
+		private async Task UpdateSidecarFile(string subPath)
+		{
+			if ( !ExtensionRolesHelper.IsExtensionSidecar(subPath) )
+			{
+				return;
+			}
+
+			var parentPath = FilenamesHelper.GetParentPath(subPath);
+			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(subPath);
+
+			var itemsInDirectories = (await 
+				_query.GetAllFilesAsync(parentPath)).Where(
+				p => p.ParentDirectory == parentPath &&
+				     p.FileCollectionName == fileNameWithoutExtension).ToList();
+			
+			var sidecarExt =
+				FilenamesHelper.GetFileExtensionWithoutDot(subPath);
+			
+			foreach ( var item in 
+				itemsInDirectories.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
+			{
+				item.AddSidecarExtension(sidecarExt);
+				await _query.UpdateItemAsync(item);
+			}
+		}
 	}
 }

@@ -66,10 +66,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				},
 				new List<byte[]>
 				{
-					FakeCreateAn.CreateAnImage.Bytes,
-					FakeCreateAn.CreateAnImageColorClass.Bytes,
-					FakeCreateAn.CreateAnImageNoExif.Bytes,
-					FakeCreateAn.CreateAnImage.Bytes
+					CreateAnImage.Bytes,
+					CreateAnImageColorClass.Bytes,
+					CreateAnImageNoExif.Bytes,
+					CreateAnImage.Bytes
 				});
 		}
 		
@@ -84,7 +84,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual("/not_found",result[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result[0].Status);
 		}
-
 
 		[TestMethod]
 		public async Task Folder_FolderWithNoContent()

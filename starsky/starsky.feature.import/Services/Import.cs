@@ -37,7 +37,6 @@ namespace starsky.feature.import.Services
 		private readonly IImportQuery _importQuery;
 		
 		// storage providers
-		private readonly ISelectorStorage _selectorStorage;
 		private readonly IStorage _filesystemStorage;
 		private readonly IStorage _subPathStorage;
 		private readonly IStorage _thumbnailStorage;
@@ -58,7 +57,6 @@ namespace starsky.feature.import.Services
 			IQuery query,
 			IConsole console)
 		{
-			_selectorStorage = selectorStorage;
 			_importQuery = importQuery;
 			
 			_filesystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
@@ -380,31 +378,7 @@ namespace starsky.feature.import.Services
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism);
 
-			var indexItemsList = importIndexItemsIEnumerable.ToList();
-			await RemoveDuplicates(indexItemsList, importSettings);
-			return indexItemsList;
-		}
-
-		/// <summary>
-		/// Sometimes the useDiskWatcher is two fast. Remove duplicates from database
-		/// </summary>
-		/// <param name="importIndexItems">input list to check</param>
-		/// <param name="importSettingsModel"></param>
-		/// <returns>completed task false is not checked</returns>
-		internal async Task<bool> RemoveDuplicates(
-			IEnumerable<ImportIndexItem> importIndexItems,
-			ImportSettingsModel importSettingsModel)
-		{
-			if ( !importSettingsModel.IndexMode ) return false;
-			if ( _appSettings.Verbose ) _console?.WriteLine("check for duplicates");
-			
-			var request = importIndexItems
-				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => p.FilePath).ToList();
-			if ( !request.Any() ) return false;
-			var queryResult = await _query.GetObjectsByFilePathAsync(request);
-			await new Duplicate(_query).RemoveDuplicateAsync(queryResult);
-			return true;
+			return importIndexItemsIEnumerable.ToList();
 		}
 
 		/// <summary>
@@ -419,31 +393,42 @@ namespace starsky.feature.import.Services
 		{
 			if ( importIndexItem.Status != ImportStatus.Ok ) return importIndexItem;
 
+			var xmpExistForThisFileType = ExistXmpSidecarForThisFileType(importIndexItem);
+			
+			if ( xmpExistForThisFileType || (_appSettings.ExifToolImportXmpCreate 
+			                                 && ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.FilePath)))
+			{
+				// When a xmp file already exist (only for raws)
+				// AND when this created afterwards with the ExifToolImportXmpCreate setting  (only for raws)
+				importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
+			}
+			
+			// Add item to database
+			await AddToQueryAndImportDatabaseAsync(importIndexItem, importSettings);
+			
 			// Copy
 			if ( _appSettings.Verbose ) Console.WriteLine("Next Action = Copy" +
 			                        $" {importIndexItem.SourceFullFilePath} {importIndexItem.FilePath}");
 			using (var sourceStream = _filesystemStorage.ReadStream(importIndexItem.SourceFullFilePath))
 				await _subPathStorage.WriteStreamAsync(sourceStream, importIndexItem.FilePath);
 			
-			// Support for include sidecar files
-		    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
-		    if ( ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem.SourceFullFilePath)  &&
-		         _filesystemStorage.ExistFile(xmpSourceFullFilePath))
+			// Copy the sidecar file
+		    if ( xmpExistForThisFileType)
 		    {
+			    var xmpSourceFullFilePath = ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.SourceFullFilePath);
 			    var destinationXmpFullPath =  ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem.FilePath);
 			    _filesystemStorage.FileCopy(xmpSourceFullFilePath, destinationXmpFullPath);
 		    }
 		    
 		    // From here on the item is exit in the storage folder
 		    // Creation of a sidecar xmp file
-		    if ( _appSettings.ExifToolImportXmpCreate)
+		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
 		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, 
-				    new ExifToolService(_selectorStorage,_appSettings), new ReadMeta(_subPathStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage));
 			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
-			    importIndexItem.FileIndexItem.AddSidecarExtension("xmp");
 		    }
 
+		    // Run Exiftool to Update for example colorClass
 		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
 			    importSettings.ColorClass);
 
@@ -454,8 +439,25 @@ namespace starsky.feature.import.Services
 	            _filesystemStorage.FileDelete(importIndexItem.SourceFullFilePath);
             }
             if ( _appSettings.Verbose ) Console.Write("+");
-            return await AddToQueryAndImportDatabaseAsync(importIndexItem,importSettings);
+            return importIndexItem;
 		}
+
+		/// <summary>
+		/// Support for include sidecar files
+		/// </summary>
+		/// <param name="importIndexItem">to get the SourceFullFilePath</param>
+		/// <returns>True when exist && current filetype is raw</returns>
+		private bool ExistXmpSidecarForThisFileType(ImportIndexItem importIndexItem)
+		{
+			// Support for include sidecar files
+			var xmpSourceFullFilePath =
+				ExtensionRolesHelper.ReplaceExtensionWithXmp(importIndexItem
+					.SourceFullFilePath);
+			return ExtensionRolesHelper.IsExtensionForceXmp(importIndexItem
+				       .SourceFullFilePath) &&
+			       _filesystemStorage.ExistFile(xmpSourceFullFilePath);
+		}
+
 
 		private async Task<ImportIndexItem> AddToQueryAndImportDatabaseAsync(ImportIndexItem importIndexItem,
 			ImportSettingsModel importSettings)
@@ -490,7 +492,7 @@ namespace starsky.feature.import.Services
 
 			// Update the contents to the file the imported item
 			if ( fileIndexItem.Description != MessageDateTimeBasedOnFilename &&
-			     colorClassTransformation == 0 ) return fileIndexItem;
+			     colorClassTransformation == -1 ) return fileIndexItem;
 			
 			if ( _appSettings.Verbose ) Console.WriteLine("Do a exifToolSync");
 

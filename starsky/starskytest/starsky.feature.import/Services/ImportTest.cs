@@ -5,13 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Services;
-using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Models;
@@ -394,7 +393,7 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-		public async Task Importer_XmpChecked()
+		public async Task Importer_Xmp_WhenImportingAFileThatAlreadyHasAnXmpSidecarFile()
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var query = new FakeIQuery();
@@ -414,6 +413,88 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
 			// Apple is read from XMP
 			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_CheckIfSidecarExtensionsFilled()
+		{
+			// File already exist before importing
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(1, result[0].FileIndexItem.SidecarExtensionsList.Count);
+
+			var sidecarExtList = result[0].FileIndexItem.SidecarExtensionsList.ToList();
+			Assert.AreEqual("xmp",sidecarExtList[0]);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_NotOverWriteExistingFile()
+		{
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng").Replace(".dng",".xmp");
+
+			var stream = storage.ReadStream(expectedFilePath);
+
+			var streamLength = stream.Length;
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+			
+			Assert.AreEqual(CreateAnXmp.Bytes.Length,streamLength);
+			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
+		}
+		
+		[TestMethod]
+		public async Task Importer_XmpIsCreatedDuringImport()
+		{
+			// xmp is created during import
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng"},
+				new List<byte[]>{CreateAnPng.Bytes});
+
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+				"/test.dng").Replace(".dng",".xmp");
+
+			Assert.IsTrue(storage.ExistFile(expectedFilePath));
+			
+			var stream = storage.ReadStream(expectedFilePath);
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+
+			Assert.AreEqual(FakeExifTool.XmpInjection,toStringAsync);
 		}
 		
 		[TestMethod]
@@ -676,67 +757,6 @@ namespace starskytest.starsky.feature.import.Services
 			var result = await importService.Importer(new ImportIndexItem {Status = ImportStatus.FileError},
 				new ImportSettingsModel());
 			Assert.AreEqual(ImportStatus.FileError, result.Status);
-		}
-
-		
-		[TestMethod]
-		public async Task Internal_RemoveDuplicates()
-		{
-			var appSettings = new AppSettings();
-			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg"),
-				new FileIndexItem("/test.jpg")
-			});
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings
-				, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings),fakeQuery, _console);
-
-			await importService.RemoveDuplicates(
-				new List<ImportIndexItem>
-				{
-					new ImportIndexItem
-					{
-						Status = ImportStatus.Ok,
-						FilePath = "/test.jpg",
-						FileIndexItem = new FileIndexItem("/test.jpg")
-					}
-				}, new ImportSettingsModel());
-
-			var getAll = await fakeQuery.GetAllFilesAsync("/");
-			
-			Assert.AreEqual(1, getAll.Count);
-			Assert.AreEqual("/test.jpg", getAll[0].FilePath);
-		}
-		
-		[TestMethod]
-		public async Task Internal_RemoveDuplicates_ShouldIgnore_Status()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings()
-				, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, new AppSettings()),null, _console);
-			// query is null!
-
-			var result = await importService.RemoveDuplicates(
-				new List<ImportIndexItem> {new ImportIndexItem()},
-				new ImportSettingsModel());
-			
-			Assert.IsFalse(result);
-		}
-		
-		[TestMethod]
-		public async Task Internal_RemoveDuplicates_Disabled()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings()
-				, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, new AppSettings()),null, _console);
-			// query is null!
-
-			var result = await importService.RemoveDuplicates(
-				new List<ImportIndexItem> {new ImportIndexItem()},
-				new ImportSettingsModel{ IndexMode = false});
-			
-			Assert.IsFalse(result);
 		}
 	}
 }

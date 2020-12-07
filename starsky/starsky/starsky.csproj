@@ -10,7 +10,8 @@
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
         <DebugType>Full</DebugType>
-        <!-- <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked> -->
+        <!-- due missing support of ts4.1-->
+        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

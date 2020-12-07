@@ -10,10 +10,13 @@ namespace starsky.foundation.database.Interfaces
     public interface IQuery
     {
         List<FileIndexItem> GetAllFiles(string subPath);
+        Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths);
         Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
         List<FileIndexItem> GetAllRecursive(string subPath = "/");
         Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
+
+        Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList);
         
         /// <summary>
         /// to do the query and return object

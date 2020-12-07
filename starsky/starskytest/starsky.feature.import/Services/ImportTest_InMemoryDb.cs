@@ -144,37 +144,6 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-		public async Task Importer_Duplicates_AddItem_ImportDb()
-		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
-				_appSettings, _importQuery,
-				new FakeExifTool(_iStorageFake, _appSettings),_query, _console);
-			
-			// Adding duplicate content!
-			var expectedFilePath = ImportTest.GetExpectedFilePath(_iStorageFake, new AppSettings
-			{
-				Structure = "/yyyy/MM/yyyy_MM_dd*/___yyyyMMdd_HHmmss.ext"
-			}, "/test.jpg");
-			await _query.AddItemAsync(new FileIndexItem(expectedFilePath));
-			
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel{
-					Structure = "/yyyy/MM/yyyy_MM_dd*/___yyyyMMdd_HHmmss.ext"
-				});
-			Assert.AreEqual(1,result.Count);
-			
-			// Checking query result (no duplicates anymore)
-			var queryResult = await _query.GetObjectsByFilePathAsync(new List<string>{expectedFilePath});
-			
-			Assert.IsNotNull(queryResult);
-			Assert.AreEqual(1, queryResult.Count);
-			Assert.AreEqual(expectedFilePath, queryResult[0].FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-			await _query.RemoveItemAsync(queryResult[0]);
-		}
-		
-		[TestMethod]
 		public async Task Importer_OverwriteColorClass()
 		{
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), _appSettings, new FakeIImportQuery(),

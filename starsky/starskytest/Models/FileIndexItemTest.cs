@@ -429,6 +429,15 @@ namespace starskytest.Models
 			// no duplicates please
 		    Assert.AreEqual(1, item.SidecarExtensionsList.Count);
 	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_Remove()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp"};
+		    item.RemoveSidecarExtension("xmp");
+		    
+		    Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+	    }
 
 	    [TestMethod]
 	    public void SetFilePath_Home()

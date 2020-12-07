@@ -59,7 +59,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 6.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
 7.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
 8.  `Verbose` - show more console logging  _(default false)_
-9. `WebFtp` - ftp path, this is used by starskyWebFtpCli
+9.  `WebFtp` - ftp path, this is used by starskyWebFtpCli
 10. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
 11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
@@ -72,6 +72,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 18. `UseRealtime` Update the user interface realtime _default true_
 19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
 20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+21. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
 
 ### Appsettings.json example
 ```json

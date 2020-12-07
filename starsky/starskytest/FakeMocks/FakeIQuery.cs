@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +35,16 @@ namespace starskytest.FakeMocks
 			return _fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
 		}
 
+		public Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var subPath in filePaths )
+			{
+				result.AddRange(GetAllFiles(subPath));
+			}
+			return Task.FromResult(result);
+		}
+
 		public Task<List<FileIndexItem>> GetAllFilesAsync(string subPath)
 		{
 			return Task.FromResult(GetAllFiles(subPath));
@@ -51,6 +60,16 @@ namespace starskytest.FakeMocks
 		public Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/")
 		{
 			return Task.FromResult(GetAllRecursive(subPath));
+		}
+		
+		public Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var subPath in filePathList )
+			{
+				result.AddRange(GetAllRecursive(subPath));
+			}
+			return Task.FromResult(result);
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(string subPath = "/", 
@@ -184,8 +203,11 @@ namespace starskytest.FakeMocks
 
 		public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
 		{
-			_fakeContext = _fakeContext.Where(p => p.FilePath == updateStatusContent.FilePath)
-				.Select(c => updateStatusContent).ToList();
+			var item = _fakeContext.FirstOrDefault(p =>
+				p.FilePath == updateStatusContent.FilePath);
+			if ( item == null ) return updateStatusContent;
+			var index = _fakeContext.IndexOf(item);
+			_fakeContext[index] = updateStatusContent;
 			return updateStatusContent;
 		}
 		

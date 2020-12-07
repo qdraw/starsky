@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,8 +87,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg"});
 
 			Assert.AreEqual(2, result.Count);
-			Assert.AreEqual("/multiple_item_1.jpg",result[0].FilePath);
-			Assert.AreEqual("/multiple_item_0.jpg",result[1].FilePath);
+			
+			var orderedResults = result.OrderBy(p => p.FileName).ToList();
+			Assert.AreEqual("/multiple_item_0.jpg", orderedResults[0].FilePath);
+			Assert.AreEqual("/multiple_item_1.jpg", orderedResults[1].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);

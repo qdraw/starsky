@@ -19,6 +19,44 @@
 
 ## Starsky Business Logic docs
 
+This is an overview of business logic 
+
+## Feature compare table
+
+| Feature                                                           | Present |
+|-------------------------------------------------------------------|---------|
+| Anywhere secure access                                            |    ✅   |
+| Native iOS and Android mobile apps                                |    ❌   | 
+| Mac OS and Windows Desktop app                                    |    ✅   | 
+| Access controls with permissions and roles                        |    ✴️   |
+| User generation by Command Line                                   |    ✅   |
+| Customized branded login page                                     |    ❌   |
+| Out-of-the-box access from the web  (when hosted)                 |    ✅   |
+| SaaS solution                                                     |    ❌   |
+| Multi tenant support                                              |    ❌   |
+| Bulk metadata upload via CSV                                      |    ❌   |
+| Bulk metadata edit via web interface                              |    ✅   |
+| Review, approve and publish uploads                               |    ❌   |
+| Batch or single file download                                     |    ✅   |
+| Download permissions based on role                                |    ❌   |
+| Request access to file form                                       |    ❌   |
+| Supports photos jpg, png, gif, tiff                               |    ✅   |
+| Supports video mp4 (H.264)                                        |    ✅   |
+| Supports audio                                                    |    ❌   |
+| Supports IPTC, EXIF and XMP metadata                              |    ✅   |
+| All major browsers supported (Chrome, Safari, Mozilla)            |    ✅   |
+| Internet Explorer support                                         |    ❌   |
+| In-line editing in fields                                         |    ✅   |
+| Localized platform English and Dutch                              |    ✅   |
+| Host the server version yourself using docker                     |    ✅   |
+| Host the server version yourself on a Windows/Mac/Linux           |    ✅   |
+
+
+| Icon | Meaning of icon       |
+|------|-----------------------|
+|  ✅  | fully implemented     |
+|  ✴️  | is partly implemented |
+|  ❌  | not implemented       |
 
 ## Project structure
 
