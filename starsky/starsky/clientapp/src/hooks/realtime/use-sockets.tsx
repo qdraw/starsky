@@ -47,6 +47,7 @@ const useSockets = (): IUseSockets => {
 
     // display notification
     setShowSocketError((prevCount) => {
+      // set it on null to hide the error message it until connection is picked up again
       if (prevCount == null) {
         return null;
       }
@@ -69,6 +70,7 @@ const useSockets = (): IUseSockets => {
       );
     } else {
       setCountRetry(0);
+      // to reset error message when its null
       setShowSocketError((prevCount) => {
         if (prevCount == null) {
           return false;
