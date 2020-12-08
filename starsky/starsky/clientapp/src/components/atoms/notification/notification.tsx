@@ -18,19 +18,15 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({
   callback
 }) => {
   const close = () => {
-    if (!notificationRef.current) return;
-
-    // clean only when the last one is closed
+    // remove the entire portal
     const portal = document.getElementById(PortalId);
-    if (portal && portal.querySelectorAll(".notification").length === 0) {
+    if (portal) {
       portal.remove();
     }
     if (callback) {
       callback();
     }
   };
-
-  const notificationRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <Portal>
