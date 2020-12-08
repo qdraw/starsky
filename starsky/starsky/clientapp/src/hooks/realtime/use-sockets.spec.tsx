@@ -1,6 +1,7 @@
 import { act } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import * as DifferenceInDate from "../../shared/date";
+import * as useInterval from "../use-interval";
 import { mountReactHook } from "../___tests___/test-hook";
 import useSockets, { IUseSockets } from "./use-sockets";
 import WebSocketService from "./websocket-service";
@@ -63,8 +64,6 @@ describe("useSockets", () => {
   });
 
   it("test retry when no response", () => {
-    console.log("test retry when no response");
-
     (window as any).appInsights = jest.fn();
     (window as any).appInsights.trackTrace = jest.fn();
 
@@ -96,6 +95,63 @@ describe("useSockets", () => {
       expect.any(Function)
     );
 
+    component.unmount();
+    jest.useRealTimers();
+  });
+
+  it("should retry with null setShowSocketError", () => {
+    const socketService = new FakeWebSocketService();
+
+    jest
+      .spyOn(DifferenceInDate, "DifferenceInDate")
+      .mockImplementationOnce(() => 600)
+      .mockImplementationOnce(() => 600);
+
+    jest
+      .spyOn(useInterval, "default")
+      .mockImplementationOnce((props) => {
+        props();
+      })
+      .mockImplementationOnce((props) => {
+        props();
+      })
+      .mockImplementationOnce(() => {});
+
+    const wsCurrent = jest
+      .spyOn(WsCurrentStart, "default")
+      .mockImplementationOnce(() => socketService)
+      .mockImplementationOnce(() => socketService);
+
+    mountComponent();
+
+    act(() => {
+      hook.setShowSocketError(null);
+    });
+
+    expect(wsCurrent).toBeCalled();
+    expect(wsCurrent).toBeCalledTimes(2);
+
+    expect(hook.showSocketError).toBeNull();
+
+    component.unmount();
+  });
+
+  it("should ignore when Client is disabled", () => {
+    jest.useFakeTimers();
+
+    var socketService = new FakeWebSocketService();
+
+    localStorage.setItem("use-sockets", "false");
+    const wsCurrent = jest
+      .spyOn(WsCurrentStart, "default")
+      .mockImplementationOnce(() => socketService);
+
+    mountComponent();
+
+    expect(wsCurrent).toBeCalledTimes(0);
+
+    localStorage.removeItem("use-sockets");
+    jest.spyOn(WsCurrentStart, "default").mockReset();
     component.unmount();
     jest.useRealTimers();
   });

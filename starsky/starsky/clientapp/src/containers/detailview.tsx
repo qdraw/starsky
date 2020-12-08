@@ -184,10 +184,7 @@ const DetailView: React.FC<IDetailView> = () => {
     }
 
     history.navigate(nextPath, { replace: true }).then(() => {
-      // when the re-render happens un-expected
-      if (window.location.search === history.location.search) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     });
   }
 
@@ -232,9 +229,8 @@ const DetailView: React.FC<IDetailView> = () => {
 
     history.navigate(prevPath, { replace: true }).then(() => {
       // when the re-render happens un-expected
-      if (window.location.search === history.location.search) {
-        setIsLoading(false);
-      }
+      // window.location.search === history.location.search
+      setIsLoading(false);
     });
   }
 

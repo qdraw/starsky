@@ -67,7 +67,8 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
       if (
         !responseObject ||
         !responseObject.data ||
-        !responseObject.data.length
+        !responseObject.data.length ||
+        responseObject.statusCode !== 200
       ) {
         if (suggest && suggest.length >= 1) setSuggest([]);
         return;
@@ -195,7 +196,11 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
             {suggest &&
               suggest.map((item, index) =>
                 index <= 8 ? (
-                  <li key={item} className="menu-item menu-item--results">
+                  <li
+                    key={item}
+                    data-key={item}
+                    className="menu-item menu-item--results"
+                  >
                     <button
                       onClick={() => navigate(item)}
                       className="search-icon"

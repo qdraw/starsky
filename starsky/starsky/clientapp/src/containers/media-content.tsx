@@ -28,7 +28,8 @@ const MediaContent: React.FC = () => {
   const detailView: IDetailView | undefined = usesFileList
     ? usesFileList.detailView
     : undefined;
-  const { showSocketError } = useSockets();
+
+  const { showSocketError, setShowSocketError } = useSockets();
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -46,7 +47,7 @@ const MediaContent: React.FC = () => {
     return (
       <>
         <br />
-        The application failed
+        The application has failed. Please reload it to try it again
       </>
     );
   }
@@ -54,7 +55,10 @@ const MediaContent: React.FC = () => {
   return (
     <div>
       {showSocketError ? (
-        <Notification type={NotificationType.default}>
+        <Notification
+          type={NotificationType.default}
+          callback={() => setShowSocketError(null)}
+        >
           {MessageConnectionRealtimeError}
         </Notification>
       ) : null}

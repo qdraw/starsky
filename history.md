@@ -60,6 +60,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Import is now not adding duplicate content if UseDiskWatcher is faster to add items
 - [x]   (Fixed) _Back-end_ Add filter (AppSettings.SyncIgnore) for sync (starsky.foundation.sync) #73
 - [x]   (Added) _Back-end_ Update Sidecar field when running sync
+- [x]   (Added) _Front-end_ Socket notification close causes app crash
+- [x]   (Added) _Front-end_ Swipe image set loading state forever
 
 # version 0.4.1 - 2020-11-27
 - [x]   (Fixed) _Back-end_ Extra security headers for browsers
