@@ -47,12 +47,12 @@ describe("ItemListView", () => {
 
       component.find(".icon--close").simulate("click");
 
-      // item is not removed from DOM
+      // entire portal is removed from DOM
 
       expect(callback).toBeCalled();
     });
 
-    it("Multiple notification dont remove the other one, test Callback test Ok close and remove element from DOM", () => {
+    it("Multiple notification it should remove them all", () => {
       mount(
         <>
           <Notification type={NotificationType.default} />
@@ -67,21 +67,11 @@ describe("ItemListView", () => {
       var closeElement = portalElement.querySelector(
         ".icon--close"
       ) as HTMLDivElement;
+
       closeElement.click();
 
-      // only danger should still exist
-      var length = portalElement.querySelectorAll(".notification").length;
-      expect(length).toBe(1);
-
-      // and then close danger
-      var closeElement2 = portalElement.querySelector(
-        ".icon--close"
-      ) as HTMLDivElement;
-      closeElement2.click();
-
-      // everything is close
-      var length2 = portalElement.querySelectorAll(".notification").length;
-      expect(length2).toBe(0);
+      var portalElement2 = document.getElementById(PortalId);
+      expect(portalElement2).toBeNull();
     });
   });
 });

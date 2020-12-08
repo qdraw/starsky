@@ -6,7 +6,7 @@ import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
 export interface IUseSockets {
   showSocketError: boolean | null;
-  setShowSocketError: Dispatch<SetStateAction<boolean>>;
+  setShowSocketError: Dispatch<SetStateAction<boolean | null>>;
 }
 
 /**
@@ -25,7 +25,7 @@ const useSockets = (): IUseSockets => {
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message
   // (dont update this field every render to avoid endless re-rendering)
-  const [showSocketError, setShowSocketError] = useState(false);
+  const [showSocketError, setShowSocketError] = useState<boolean | null>(false);
   // server side feature toggle to disable/enable client
   const isEnabled = useRef(true);
   // time the server has pinged me back (it should every 20 seconds)
@@ -34,26 +34,29 @@ const useSockets = (): IUseSockets => {
   // number of failures
   const [countRetry, setCountRetry] = useState(0);
 
-  const startDiffTime = 20000;
+  const startDiffTime = 30000;
   const [diffTimeInMs, setDiffTimeInMs] = useState(startDiffTime);
 
   useInterval(doIntervalCheck, startDiffTime);
 
   function doIntervalCheck() {
-    console.log(isEnabled, ws, countRetry);
+    console.log(isEnabled, ws, countRetry, showSocketError);
     if (!isEnabled.current || !ws.current || !ws.current.close) {
       return;
     }
 
     // display notification
-    setShowSocketError(countRetry >= 1);
+    setShowSocketError((prevCount) => {
+      if (prevCount == null) {
+        return null;
+      }
+      return countRetry >= 1;
+    });
 
     if (DifferenceInDate(keepAliveTime.getTime()) > diffTimeInMs / 60000) {
       console.log(`[use-sockets] --retry sockets ${diffTimeInMs / 60000}`);
 
       setSocketConnected(false);
-
-      setDiffTimeInMs((prev) => prev + 500);
       setCountRetry((prev) => prev + 1);
 
       ws.current.close();
@@ -66,6 +69,12 @@ const useSockets = (): IUseSockets => {
       );
     } else {
       setCountRetry(0);
+      setShowSocketError((prevCount) => {
+        if (prevCount == null) {
+          return false;
+        }
+        return prevCount;
+      });
       setDiffTimeInMs(startDiffTime);
     }
   }

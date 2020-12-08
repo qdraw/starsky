@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Notification, {
   NotificationType
 } from "../components/atoms/notification/notification";
@@ -29,13 +29,7 @@ const MediaContent: React.FC = () => {
     ? usesFileList.detailView
     : undefined;
 
-  const { showSocketError } = useSockets();
-  const [connectionNotification, setConnectNotification] = useState(false);
-
-  useEffect(() => {
-    if (showSocketError == null) return;
-    setConnectNotification(showSocketError);
-  }, [showSocketError]);
+  const { showSocketError, setShowSocketError } = useSockets();
 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -60,10 +54,10 @@ const MediaContent: React.FC = () => {
 
   return (
     <div>
-      {connectionNotification ? (
+      {showSocketError ? (
         <Notification
           type={NotificationType.default}
-          callback={() => setConnectNotification(false)}
+          callback={() => setShowSocketError(null)}
         >
           {MessageConnectionRealtimeError}
         </Notification>
