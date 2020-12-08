@@ -93,6 +93,7 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code> <
 <li><code>UseRealtime</code> Update the user interface realtime <em>default true</em></li>
 <li><code>UseDiskWatcher</code> Watch the disk for changes and update the database <em>default false (but will change)</em></li>
 <li><code>CheckForUpdates</code> Check if there are updates on github and notify the user <em>default true</em></li>
+<li><code>SyncIgnore</code> Ignore pattern to not include disk items while running sync, uses always unix style and startsWith <em>default list with: /lost+found</em></li>
 </ol>
 <h3 id="appsettingsjson-example">Appsettings.json example</h3>
 <pre><code class="json language-json">{
