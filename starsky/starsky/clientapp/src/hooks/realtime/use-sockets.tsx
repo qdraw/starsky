@@ -93,6 +93,8 @@ const useSockets = (): IUseSockets => {
       setKeepAliveTime,
       NewWebSocketService
     );
+
+    // when effect ends ->
     return () => {
       console.log("[use-sockets] --end");
       ws.current.close();
