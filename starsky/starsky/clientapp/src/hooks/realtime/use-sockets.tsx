@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { DifferenceInDate } from "../../shared/date";
 import useInterval from "../use-interval";
 import WebSocketService from "./websocket-service";
@@ -6,13 +6,7 @@ import WsCurrentStart, { NewWebSocketService } from "./ws-current-start";
 
 export interface IUseSockets {
   showSocketError: boolean | null;
-}
-
-function Telemetry(message: string) {
-  console.log(message);
-  if (!(window as any).appInsights) return;
-  var ai = (window as any).appInsights;
-  ai.trackTrace({ message });
+  setShowSocketError: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -26,36 +20,42 @@ function IsClientSideFeatureDisabled(): boolean {
  * Use Socket as react hook
  */
 const useSockets = (): IUseSockets => {
-  const ws = useRef({} as WebSocketService);
+  let ws = useRef({} as WebSocketService);
   // When the connection is lost
   const [socketConnected, setSocketConnected] = useState(false);
   // show a error message
+  // (dont update this field every render to avoid endless re-rendering)
   const [showSocketError, setShowSocketError] = useState(false);
   // server side feature toggle to disable/enable client
   const isEnabled = useRef(true);
-  // time the server has pinged me back
+  // time the server has pinged me back (it should every 20 seconds)
   const [keepAliveTime, setKeepAliveTime] = useState(new Date());
 
-  // useState does not update in a sync way
-  const countRetry = useRef(0);
+  // number of failures
+  const [countRetry, setCountRetry] = useState(0);
 
-  useInterval(doIntervalCheck, 30000);
+  const startDiffTime = 20000;
+  const [diffTimeInMs, setDiffTimeInMs] = useState(startDiffTime);
+
+  useInterval(doIntervalCheck, startDiffTime);
 
   function doIntervalCheck() {
     console.log(isEnabled, ws, countRetry);
-    if (
-      !isEnabled.current ||
-      !ws.current ||
-      !ws.current.close ||
-      countRetry.current === undefined
-    )
+    if (!isEnabled.current || !ws.current || !ws.current.close) {
       return;
-    setShowSocketError(countRetry.current >= 1);
+    }
 
-    if (DifferenceInDate(keepAliveTime.getTime()) > 0.5) {
-      Telemetry("[use-sockets] --retry sockets");
+    // display notification
+    setShowSocketError(countRetry >= 1);
+
+    if (DifferenceInDate(keepAliveTime.getTime()) > diffTimeInMs / 60000) {
+      console.log(`[use-sockets] --retry sockets ${diffTimeInMs / 60000}`);
+
       setSocketConnected(false);
-      countRetry.current++;
+
+      setDiffTimeInMs((prev) => prev + 500);
+      setCountRetry((prev) => prev + 1);
+
       ws.current.close();
       ws.current = WsCurrentStart(
         socketConnected,
@@ -65,7 +65,8 @@ const useSockets = (): IUseSockets => {
         NewWebSocketService
       );
     } else {
-      countRetry.current = 0;
+      setCountRetry(0);
+      setDiffTimeInMs(startDiffTime);
     }
   }
 
@@ -73,7 +74,7 @@ const useSockets = (): IUseSockets => {
     console.log(
       `[use-sockets] is disabled => ${IsClientSideFeatureDisabled()}`
     );
-    // check to be removed in future version
+    // option to disable in client side
     if (IsClientSideFeatureDisabled()) return;
 
     ws.current = WsCurrentStart(
@@ -93,7 +94,8 @@ const useSockets = (): IUseSockets => {
   }, [localStorage.getItem("use-sockets")]);
 
   return {
-    showSocketError
+    showSocketError,
+    setShowSocketError
   };
 };
 

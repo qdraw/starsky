@@ -23,6 +23,8 @@ describe("MediaContent", () => {
     jest.spyOn(HealthStatusError, "default").mockImplementationOnce(() => null);
 
     var result = mount(<MediaContent />);
-    expect(result.html()).toBe("<br>The application failed");
+    expect(result.html()).toBe(
+      "<br>The application has failed. Please reload it to try it again"
+    );
   });
 });
