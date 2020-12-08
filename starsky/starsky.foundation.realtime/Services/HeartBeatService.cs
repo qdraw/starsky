@@ -13,7 +13,7 @@ namespace starsky.foundation.realtime.Services
 	{
 		#region Fields
 
-		private const int SpeedInSeconds = 20;
+		private const int SpeedInSeconds = 30;
 		private const string InsertDateToken = "INSERT_DATE_TOKEN";
 		private const string SpeedInSecondsToken = "SPEED_TOKEN";
 		private const string HeartbeatMessage = "{ \"speed\": " + SpeedInSecondsToken + ",  \"time\": \"" + InsertDateToken + "\"} ";
