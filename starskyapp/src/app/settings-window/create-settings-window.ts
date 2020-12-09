@@ -3,8 +3,8 @@ import * as path from 'path';
 import { windowStateKeeper } from "../helpers/window-state-keeper";
 import { settingsWindows } from "./settings-windows.const";
 
-export const createSettingsWindow = () => {
-    const mainWindowStateKeeper = windowStateKeeper('settings');
+export const createSettingsWindow = async () => {
+    const mainWindowStateKeeper = await windowStateKeeper('settings');
 
     let newWindow = new BrowserWindow({ 
         x: mainWindowStateKeeper.x,

@@ -4,9 +4,9 @@ import * as path from 'path';
 import { mainWindows } from "./main-windows.const";
 import * as appConfig from 'electron-settings'
 
-function createMainWindow() {
+async function createMainWindow() {
     
-  const mainWindowStateKeeper = windowStateKeeper('main');
+  const mainWindowStateKeeper = await windowStateKeeper('main');
 
   let x = mainWindowStateKeeper.x;
   let y = mainWindowStateKeeper.y;
@@ -30,7 +30,7 @@ function createMainWindow() {
       enableRemoteModule: false,
       partition: 'persist:main',
       contextIsolation: true,
-      preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
+      // preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
     }
   });
 

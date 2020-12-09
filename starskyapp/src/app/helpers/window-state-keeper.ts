@@ -1,3 +1,4 @@
+import { BrowserWindow } from 'electron';
 import * as appConfig from 'electron-settings'
 
 interface IWindowsState {
@@ -8,17 +9,19 @@ interface IWindowsState {
     isMaximized: boolean
 }
 
-export function windowStateKeeper(windowName: string) {
+export async function windowStateKeeper(windowName: string) {
 
     let window : any;
     let windowState = {} as IWindowsState; 
 
-      function setBounds() {
-      // Restore from appConfig
-      if (appConfig.has(`windowState.${windowName}`)) {
-        windowState = appConfig.get(`windowState.${windowName}`) as any;
-        return;
-      }
+      async function setBounds() {
+        // Restore from appConfig
+        if (await appConfig.has(`windowState.${windowName}`)) {
+          const result = await appConfig.get(`windowState.${windowName}`);
+          windowState = result as unknown as IWindowsState;
+          return;
+        }
+
       // Default
       windowState = {
         x: undefined,
@@ -34,17 +37,19 @@ export function windowStateKeeper(windowName: string) {
         windowState = window.getBounds();
       }
       windowState.isMaximized = window.isMaximized();
+      console.log(windowState);
+      
       appConfig.set(`windowState.${windowName}`, windowState as any);
     }  
   
-    function track(win : any) {
+    function track(win : BrowserWindow) {
       window = win;
       ['resize', 'move', 'close'].forEach(event => {
-        win.on(event, saveState);
+        win.on(event as any, saveState);
       });
     } 
   
-    setBounds();  
+    await setBounds();  
      
      return({
       x: windowState.x,
