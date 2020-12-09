@@ -232,7 +232,7 @@ namespace starsky.Controllers
 
 				if ( !_appSettings.UseDiskWatcher )
 				{
-					new SyncSingleFile(_appSettings, _query, _iStorage,
+					await new SyncSingleFile(_appSettings, _query, _iStorage,
 						new ConsoleWrapper()).UpdateSidecarFile(subPath);
 				}
 				
