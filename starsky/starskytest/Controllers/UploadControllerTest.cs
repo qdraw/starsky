@@ -156,7 +156,7 @@ namespace starskytest.Controllers
 			var queryResult = _query.SingleItem(toPlaceSubPath);
 			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
 
-			_query.RemoveItem(queryResult.FileIndexItem);
+			await _query.RemoveItemAsync(queryResult.FileIndexItem);
 		}
 		
 		[TestMethod]
@@ -184,6 +184,48 @@ namespace starskytest.Controllers
 			
 			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
 			Assert.AreEqual(ColorClassParser.Color.Winner,queryResult.FileIndexItem.ColorClass);
+
+			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolder_DefaultFlow_ShouldNotOverWriteDatabase()
+		{
+			var controller = new UploadController(_import, _appSettings,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile(),
+			};
+
+			var toPlaceSubPath = "/duplicate_upload/yes01.jpg";
+			var toPlaceFolder = "/duplicate_upload";
+
+			// add to db 
+			await _query.AddItemAsync(new FileIndexItem(toPlaceSubPath));
+			
+			_iStorage.CreateDirectory(toPlaceFolder);
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			var actionResult = await controller.UploadToFolder() as JsonResult;
+			if ( actionResult == null ) throw new ArgumentNullException(nameof(actionResult),
+				"actionResult should not be null");
+			var list = actionResult.Value as List<ImportIndexItem>;
+			if ( list == null ) throw new ArgumentNullException(nameof(list),
+				"result should not be null");
+
+			Assert.AreEqual( ImportStatus.Ok, list[0].Status);
+
+			var fileSystemResult = _iStorage.ExistFile(toPlaceSubPath);
+			Assert.IsTrue(fileSystemResult);
+
+			var getAllFiles = await _query.GetAllFilesAsync(toPlaceFolder);
+
+			// Should not duplicate
+			Assert.AreEqual(1,getAllFiles.Count);
+			
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+			Assert.AreEqual("Sony",queryResult.FileIndexItem.Make);
 
 			await _query.RemoveItemAsync(queryResult.FileIndexItem);
 		}
