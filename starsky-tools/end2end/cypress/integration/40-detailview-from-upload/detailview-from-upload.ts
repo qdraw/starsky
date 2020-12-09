@@ -65,6 +65,8 @@ describe('DetailView (from upload)', () => {
       .url()
       .should('contain', fileName1)
 
+    cy.wait(300)
+
     cy.get('.nextprev.nextprev--next').first().click()
       .url()
       .should('contain', fileName3)
