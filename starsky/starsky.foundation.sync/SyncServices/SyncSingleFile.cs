@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -224,32 +225,48 @@ namespace starsky.foundation.sync.SyncServices
 		/// Sidecar files don't have an own item, but there referenced by file items
 		/// in the method xmp files are added to the AddSidecarExtension list.
 		/// </summary>
-		/// <param name="subPath">sidecar item</param>
+		/// <param name="xmpSubPath">sidecar item</param>
 		/// <returns>completed task</returns>
-		private async Task UpdateSidecarFile(string subPath)
+		public async Task UpdateSidecarFile(string xmpSubPath)
 		{
-			if ( !ExtensionRolesHelper.IsExtensionSidecar(subPath) )
+			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
 			{
 				return;
 			}
 
-			var parentPath = FilenamesHelper.GetParentPath(subPath);
-			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(subPath);
+			var parentPath = FilenamesHelper.GetParentPath(xmpSubPath);
+			var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(xmpSubPath);
 
-			var itemsInDirectories = (await 
+			var directoryWithFileIndexItems = (await 
 				_query.GetAllFilesAsync(parentPath)).Where(
 				p => p.ParentDirectory == parentPath &&
 				     p.FileCollectionName == fileNameWithoutExtension).ToList();
-			
+
+			await UpdateSidecarFile(xmpSubPath, directoryWithFileIndexItems);
+		}
+
+		/// <summary>
+		/// this updates the main database item for a sidecar file
+		/// </summary>
+		/// <param name="xmpSubPath">sidecar file</param>
+		/// <param name="directoryWithFileIndexItems">directory where the sidecar is located</param>
+		/// <returns>completed task</returns>
+		private async Task UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
+		{
+			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
+			{
+				return;
+			}
 			var sidecarExt =
-				FilenamesHelper.GetFileExtensionWithoutDot(subPath);
+				FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
 			
 			foreach ( var item in 
-				itemsInDirectories.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
+				directoryWithFileIndexItems.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
 			{
 				item.AddSidecarExtension(sidecarExt);
 				await _query.UpdateItemAsync(item);
 			}
 		}
+		
 	}
 }
