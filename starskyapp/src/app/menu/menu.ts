@@ -2,7 +2,11 @@
 // const createMainWindow = require('./main-window').createMainWindow
 // const createSettingsWindow = require('./settings-window').createSettingsWindow
 
-import { Menu } from "electron";
+import { app, BrowserWindow, Menu, shell } from "electron";
+import createMainWindow from "../main-window/create-main-window";
+import { mainWindows } from "../main-window/main-windows.const";
+import { createSettingsWindow } from "../settings-window/create-settings-window";
+import { settingsWindows } from "../settings-window/settings-windows.const";
 
 // const mainWindows = require('./main-window').mainWindows
 // const settingsWindows = require('./settings-window').settingsWindows
@@ -12,6 +16,7 @@ import { Menu } from "electron";
 
 function AppMenu() {
   const isMac = process.platform === 'darwin';
+  // @ts-ignore
   var menu = Menu.buildFromTemplate([
     ...(isMac ? [{
       label: app.name,
@@ -41,7 +46,7 @@ function AppMenu() {
           label: "Edit file in Editor",
           click: () => {
             var focusWindow = BrowserWindow.getFocusedWindow();
-            if (focusWindow) handleExitKeyPress(focusWindow);
+            // if (focusWindow) handleExitKeyPress(focusWindow);
           },
           accelerator: 'CmdOrCtrl+E'
         },
@@ -85,12 +90,12 @@ function AppMenu() {
             settingsWindows.forEach(window => {
               window.webContents.reload()
             });
-            editWindows.forEach(window => {
-              window.webContents.reload()
-            });
-            checkForUpdatesWindows.forEach(window => {
-              window.webContents.reload()
-            });
+            // editWindows.forEach(window => {
+            //   window.webContents.reload()
+            // });
+            // checkForUpdatesWindows.forEach(window => {
+            //   window.webContents.reload()
+            // });
           },
           accelerator: 'CmdOrCtrl+R'
         },

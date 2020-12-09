@@ -3,7 +3,7 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
-    "outDir": "jsdist",
+    "outDir": "build",
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*"]

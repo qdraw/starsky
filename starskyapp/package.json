@@ -2,20 +2,25 @@
   "name": "starsky",
   "version": "0.4.1",
   "description": "Starsky",
-  "main": "index.js",
+  "main": "build/app/startup/main.js",
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "npm run build && electron ./build/app/startup/main.js",
     "postinstall": "electron-builder install-app-deps",
-    "start": "electron .",
-    "dist": "electron-builder build",
-    "mac": "electron-builder build -m",
-    "windows": "electron-builder build -w",
-    "macwindows": "electron-builder build -mw"
+    "dist": "npm run build && electron-builder build",
+    "mac": "npm run build && electron-builder build -m",
+    "windows": "npm run build && electron-builder build -w",
+    "macwindows": "npm run build && electron-builder build -mw"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/electron-settings": "^3.1.2",
     "electron": "^10.1.5",
-    "electron-builder": "^22.9.1"
+    "electron-builder": "^22.9.1",
+    "typescript": "^4.1.2"
   },
   "dependencies": {
     "electron-settings": "3.2.0",
@@ -23,17 +28,21 @@
   },
   "build": {
     "extraResources": [
-      "include-starsky-${os}.zip"
+      "runtime-starsky-${os}/**"
     ],
-    "beforeBuild": "./scripts/beforeBuild.js",
+    "files": [
+      "build/**/*",
+      "package.json"
+    ],
+    "beforeBuild": "./build/setup/before-build.js",
     "appId": "nl.qdraw.starsky",
     "productName": "Starsky",
     "artifactName": "starsky-${os}-desktop.${ext}",
     "mac": {
-      "minimumSystemVersion": "10.10",
-      "icon": "media/baseline-searcher-detective-263238__512px.icns",
+      "minimumSystemVersion": "10.12",
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
-        "zip"
+        "dmg"
       ]
     },
     "linux": {
@@ -46,7 +55,7 @@
       "target": [
         "zip"
       ],
-      "icon": "media/baseline-searcher-detective-263238__256px.ico"
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
     }
   }
 }
