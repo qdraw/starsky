@@ -1,7 +1,12 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import createMainWindow from "../main-window/create-main-window";
+import AppMenu from "../menu/menu";
 
+
+app.allowRendererProcessReuse = true;
+
+AppMenu();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

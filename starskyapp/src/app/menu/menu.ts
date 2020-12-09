@@ -8,15 +8,9 @@ import { mainWindows } from "../main-window/main-windows.const";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
 import { settingsWindows } from "../settings-window/settings-windows.const";
 
-// const mainWindows = require('./main-window').mainWindows
-// const settingsWindows = require('./settings-window').settingsWindows
-// const editWindows = require('./edit-windows').editWindows
-// const handleExitKeyPress = require('./edit-keypress').handleExitKeyPress
-// const checkForUpdatesWindows = require('./check-for-updates').checkForUpdatesWindows
-
 function AppMenu() {
   const isMac = process.platform === 'darwin';
-  // @ts-ignore
+
   var menu = Menu.buildFromTemplate([
     ...(isMac ? [{
       label: app.name,
@@ -30,7 +24,7 @@ function AppMenu() {
         { role: 'unhide' },
         { type: 'separator' },
         { role: 'quit' }
-      ]
+      ] as any
     }] : []),
     {
       label: 'File',
@@ -50,7 +44,7 @@ function AppMenu() {
           },
           accelerator: 'CmdOrCtrl+E'
         },
-
+  
         isMac ? { role: 'close' } : { role: 'quit' },
       ]
     },
