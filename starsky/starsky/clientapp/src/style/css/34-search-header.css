@@ -1,12 +1,11 @@
-
 .search-header {
   height: 75px;
-  background-color: #455A64;
+  background-color: #455a64;
 }
 
 @media (prefers-color-scheme: dark) {
   .search-header {
-    background-color: #37474F;
+    background-color: #37474f;
   }
 }
 
@@ -15,7 +14,7 @@
 }
 
 .search-header .menu-item--half-extra > form {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .search-header .form-inline .form-control {
@@ -26,7 +25,7 @@
 
 .search-header .menu-item a.search-icon::before {
   background-color: white;
-  mask-image: url('../images/baseline-search-24px.svg');
+  mask-image: url("../images/baseline-search-24px.svg");
   mask-position: 0px 40%;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -35,7 +34,7 @@
   margin-right: 12px;
 }
 
-.search-header  .menu-item {
+.search-header .menu-item {
   list-style: none;
   z-index: 6;
   position: relative;
@@ -48,38 +47,38 @@
 .search-header .menu-item a {
   padding-left: 25px;
   height: 50px;
-  display : flex;
-  align-items : center;
+  display: flex;
+  align-items: center;
   width: 100%;
   vertical-align: middle;
   text-decoration: none;
-  color: #FFF;
+  color: #fff;
   background: none;
-  border:0px;
-  font:inherit;
+  border: 0px;
+  font: inherit;
   cursor: pointer;
   text-align: left;
 }
 
-.search-header  .blur .menu-item.menu-item--results {
-  display: none
+.search-header .blur .menu-item.menu-item--results {
+  display: none;
 }
 
 .search-header .menu-item button:focus {
-  background-color:#283593;
+  background-color: #283593;
 }
 
 /* odd */
-.search-header  .menu-item:nth-child(2n-1) {
-    background-color: #455A64;
+.search-header .menu-item:nth-child(2n-1) {
+  background-color: #455a64;
 }
 
 /* even */
-.search-header  .menu-item:nth-child(2n) {
-    background-color: #607D8B;
+.search-header .menu-item:nth-child(2n) {
+  background-color: #607d8b;
 }
 
 /* this is the search bar, and in dark mode the color is different */
-.search-header  .menu-item:first-child {
-    background-color: transparent;
+.search-header .menu-item:first-child {
+  background-color: transparent;
 }

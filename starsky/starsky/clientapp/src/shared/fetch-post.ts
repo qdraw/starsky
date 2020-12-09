@@ -1,9 +1,13 @@
-import { IConnectionDefault } from '../interfaces/IConnectionDefault';
+import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 
-const FetchPost = async (url: string, body: string | FormData, method: 'post' | 'delete' = 'post', headers: object = {}): Promise<IConnectionDefault> => {
-
+const FetchPost = async (
+  url: string,
+  body: string | FormData,
+  method: "post" | "delete" = "post",
+  headers: object = {}
+): Promise<IConnectionDefault> => {
   function getCookie(name: string): string {
-    var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
     if (match) return match[2];
     return "X-XSRF-TOKEN";
   }
@@ -13,14 +17,15 @@ const FetchPost = async (url: string, body: string | FormData, method: 'post' | 
     body,
     credentials: "include" as RequestCredentials,
     headers: {
-      'X-XSRF-TOKEN': getCookie("X-XSRF-TOKEN"),
-      'Accept': 'application/json',
+      "X-XSRF-TOKEN": getCookie("X-XSRF-TOKEN"),
+      Accept: "application/json",
       ...headers
-    },
-  }
+    }
+  };
 
   if (typeof body === "string") {
-    (settings.headers as any)['Content-type'] = 'application/x-www-form-urlencoded';
+    (settings.headers as any)["Content-type"] =
+      "application/x-www-form-urlencoded";
   }
 
   const res = await fetch(url, settings);

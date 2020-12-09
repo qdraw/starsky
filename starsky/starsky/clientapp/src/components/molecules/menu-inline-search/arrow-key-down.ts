@@ -1,8 +1,10 @@
-export default function ArrowKeyDown(event: React.KeyboardEvent<HTMLInputElement>,
+export default function ArrowKeyDown(
+  event: React.KeyboardEvent<HTMLInputElement>,
   keyDownIndex: number,
   setKeyDownIndex: React.Dispatch<React.SetStateAction<number>>,
-  inputFormControlReferenceCurrent: HTMLInputElement | null, suggest: string[]): void {
-
+  inputFormControlReferenceCurrent: HTMLInputElement | null,
+  suggest: string[]
+): void {
   if (event.key !== "ArrowDown" && event.key !== "ArrowUp") {
     setKeyDownIndex(-1);
     return;

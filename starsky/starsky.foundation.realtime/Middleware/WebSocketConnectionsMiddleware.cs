@@ -53,6 +53,7 @@ namespace starsky.foundation.realtime.Middleware
 						catch ( WebSocketException e )
 						{
 							// WebSocketException (0x80004005): The WebSocket is in an invalid state ('Aborted')
+							Console.WriteLine("Catch-ed WebSocketException: ");
 							Console.WriteLine(e);
 						}
 					};

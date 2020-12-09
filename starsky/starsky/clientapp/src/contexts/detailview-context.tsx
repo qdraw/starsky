@@ -1,13 +1,19 @@
-import React from 'react';
-import { IDetailView, IRelativeObjects, PageType } from '../interfaces/IDetailView';
-import { IExifStatus } from '../interfaces/IExifStatus';
-import { newIFileIndexItem, Orientation } from '../interfaces/IFileIndexItem';
-import { IUrl } from '../interfaces/IUrl';
-import { FileListCache } from '../shared/filelist-cache';
+import React from "react";
+import {
+  IDetailView,
+  IRelativeObjects,
+  PageType
+} from "../interfaces/IDetailView";
+import { IExifStatus } from "../interfaces/IExifStatus";
+import { newIFileIndexItem, Orientation } from "../interfaces/IFileIndexItem";
+import { IUrl } from "../interfaces/IUrl";
+import { FileListCache } from "../shared/filelist-cache";
 
-const DetailViewContext = React.createContext<IDetailViewContext>({} as IDetailViewContext)
+const DetailViewContext = React.createContext<IDetailViewContext>(
+  {} as IDetailViewContext
+);
 
-type ReactNodeProps = { children: React.ReactNode }
+type ReactNodeProps = { children: React.ReactNode };
 
 const initialState: IDetailView = {
   breadcrumb: [],
@@ -18,41 +24,49 @@ const initialState: IDetailView = {
   colorClassActiveList: [],
   isReadOnly: false,
   dateCache: Date.now()
-}
-
-export type DetailViewAction = {
-  type: 'append',
-  tags?: string
-} |
-{
-  type: 'remove',
-  tags?: string
-} |
-{
-  type: 'update',
-  tags?: string,
-  colorclass?: number,
-  description?: string,
-  title?: string,
-  fileHash?: string,
-  orientation?: Orientation,
-  status?: IExifStatus,
-  lastEdited?: string,
-  dateTime?: string,
-} |
-{
-  type: 'reset',
-  payload: IDetailView
 };
 
+export type DetailViewAction =
+  | {
+      type: "append";
+      tags?: string;
+    }
+  | {
+      type: "remove";
+      tags?: string;
+    }
+  | {
+      type: "update";
+      tags?: string;
+      colorclass?: number;
+      description?: string;
+      title?: string;
+      fileHash?: string;
+      orientation?: Orientation;
+      status?: IExifStatus;
+      lastEdited?: string;
+      dateTime?: string;
+    }
+  | {
+      type: "reset";
+      payload: IDetailView;
+    };
+
 export type IDetailViewContext = {
+  state: IDetailView;
+  dispatch: React.Dispatch<DetailViewAction>;
+};
+export function detailviewReducer(
   state: IDetailView,
-  dispatch: React.Dispatch<DetailViewAction>,
-}
-export function detailviewReducer(state: IDetailView, action: DetailViewAction): IDetailView {
+  action: DetailViewAction
+): IDetailView {
   switch (action.type) {
     case "remove":
-      if (action.tags && state.fileIndexItem.tags !== undefined) state.fileIndexItem.tags = state.fileIndexItem.tags.replace(action.tags, "");
+      if (action.tags && state.fileIndexItem.tags !== undefined)
+        state.fileIndexItem.tags = state.fileIndexItem.tags.replace(
+          action.tags,
+          ""
+        );
       // Need to update otherwise other events are not triggerd
       return updateCache({ ...state, lastUpdated: new Date() });
     case "append":
@@ -61,11 +75,23 @@ export function detailviewReducer(state: IDetailView, action: DetailViewAction):
       return updateCache({ ...state, lastUpdated: new Date() });
     case "update":
       /* eslint-disable-next-line no-redeclare */
-      let { tags, description, title, status, colorclass, fileHash, orientation, lastEdited, dateTime } = action;
+      let {
+        tags,
+        description,
+        title,
+        status,
+        colorclass,
+        fileHash,
+        orientation,
+        lastEdited,
+        dateTime
+      } = action;
       if (tags !== undefined) state.fileIndexItem.tags = tags;
-      if (description !== undefined) state.fileIndexItem.description = description;
+      if (description !== undefined)
+        state.fileIndexItem.description = description;
       if (title !== undefined) state.fileIndexItem.title = title;
-      if (colorclass !== undefined && colorclass !== -1) state.fileIndexItem.colorClass = colorclass;
+      if (colorclass !== undefined && colorclass !== -1)
+        state.fileIndexItem.colorClass = colorclass;
       if (status) state.fileIndexItem.status = status;
       if (fileHash) state.fileIndexItem.fileHash = fileHash;
       if (orientation) state.fileIndexItem.orientation = orientation;
@@ -87,7 +113,11 @@ function updateCache(stateLocal: IDetailView): IDetailView {
   if (!stateLocal.fileIndexItem) {
     return stateLocal;
   }
-  var urlObject = { f: stateLocal.subPath, colorClass: stateLocal.colorClassActiveList, collections: stateLocal.collections } as IUrl;
+  var urlObject = {
+    f: stateLocal.subPath,
+    colorClass: stateLocal.colorClassActiveList,
+    collections: stateLocal.collections
+  } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;
 }
@@ -99,12 +129,18 @@ function DetailViewContextProvider({ children }: ReactNodeProps) {
 
   // [B]
   return (
-    <DetailViewContext.Provider value={value1}>{children}</DetailViewContext.Provider>
+    <DetailViewContext.Provider value={value1}>
+      {children}
+    </DetailViewContext.Provider>
   );
 }
 
 let DetailViewContextConsumer = DetailViewContext.Consumer;
 
-export { DetailViewContext, DetailViewContextProvider, DetailViewContextConsumer };
+export {
+  DetailViewContext,
+  DetailViewContextProvider,
+  DetailViewContextConsumer
+};
 
 export const useDetailViewContext = () => React.useContext(DetailViewContext);

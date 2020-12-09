@@ -1,21 +1,27 @@
 
-<html>
-<title> There are errors</title>
 
-    <body>
-        <p>There are errors</p>
-        <button onclick="window.close()">Close Window</button>
-    </body>
-    <script>
-        setTimeout(()=>{
-            window.close();
-        }, 8000);
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8"/>
+    <title>There are errors</title>
+    <link rel="stylesheet" href="../media/css/01-base.css">
+    <link rel="stylesheet" href="../media/css/02-form.css">
+    <link rel="stylesheet" href="../media/css/03-button.css">
 
-        var error = new URLSearchParams(window.location.search).get("error");
-        if (error) {
-            document.querySelector("p").innerText = error;
-        }
+    <link rel="stylesheet" href="../media/css/20-content.css">
+    <link rel="stylesheet" href="../media/css/29-switch-button.css">
 
-        document.querySelector("button").focus();
-    </script>
+</head>
+<body>
+    <div class="content">
+        <div class="content--header error">
+            There are errors
+        </div>
+        <div class="content--text">
+            <button class="btn btn--default" id="autoclose" onclick="window.close()">Close Window</button>
+        </div>
+    </div>
+    <script type="text/javascript" src="../media/focus-button-autoclose.js"></script>
+</body>
 </html>

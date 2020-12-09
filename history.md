@@ -1,6 +1,23 @@
-[< readme](readme.md)
-
 # History Changelog
+## List of __[Starsky](readme.md)__ Projects
+ * [starsky (sln)](starsky/readme.md) _database photo index & import index project_
+    * [starsky](starsky/starsky/readme.md) _web api application / interface_
+      *  [clientapp](starsky/starsky/clientapp/readme.md) _react front-end application_
+    * [starskyImporterCli](starsky/starskyimportercli/readme.md)  _import command line interface_
+    * [starskyGeoCli](starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
+    * [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
+    * [starskyWebFtpCli](starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
+    * [starskyAdminCli](starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
+    * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
+    * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
+ * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
+ * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
+ * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * __[Changelog](history.md) Release notes and history__
+
+## Release notes of Starsky
 
 Semantic Versioning 2.0.0 is from version 0.1.6+
 
@@ -19,27 +36,58 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# Features todo (in random order)
-- [ ]   (Added) _Frond-end_  Search details show exact query behind modal
-- [ ]   (Added) _Front-end_ Zoom in picture
-- [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
-- [ ]   (Added) _Back-end_ Realtime Files API (issue #75) __not implemented__
+# version 0.4.3 _(Unreleased)_ - 2020-12-??
+- nothing yet
 
-# Importer, Epic (Work in Progress)
-- [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
-- [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
+# version 0.4.2 - 2020-12-09
+- [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
+- [x]   (Security) _Frond-end_  Upgrade ClientApp Typescript version to 4.1.2_
+- [x]   (Security) _Frond-end_  Upgrade ClientApp React version to 17.0.1_
+- [x]   (Added) _Front-end_ Add warning when Application fails for trash and search
+- [x]   (Added) _Front-end_ Add menu text & Rename Collection mode to Show raw files
+- [x]   (Added) _Back-end_ When making new directory this broadcast it correctly using sockets
+- [x]   (Added) _Front-end_ Enable touch swipe right and left on detailView pages to go next/prev
+- [x]   (Fixed) _Back-end_ Import is now not adding duplicate content if UseDiskWatcher is faster to add items
+- [x]   (Fixed) _Back-end_ Add filter (AppSettings.SyncIgnore) for sync (starsky.foundation.sync) #73
+- [x]   (Added) _Back-end_ Update Sidecar field when running sync
+- [x]   (Added) _Front-end_ Socket notification close causes app crash
+- [x]   (Added) _Front-end_ Swipe image set loading state forever
 
-# Folder and file movable, Epic (Work In Progress)
-- [ ]   (x) Move multiple files __not implemented__
+# version 0.4.1 - 2020-11-27
+- [x]   (Fixed) _Back-end_ Extra security headers for browsers
+- [x]   (Added) _Back-end_ Change fileHash behavior to have more timeout time
+- [x]   (Added) _Back-end_ add round for focalLength
+- [x]   (Added) _Back-end_ Realtime Files API (issue #75) behind _useDiskWatcher_ feature toggle
+- [x]   (Added) _Back-end_ New Sync service 'starsky.foundation.sync' behind new API
+- [x]   (Added) _Back-end_ Split Sync in starskysynchronizecli and starskythumbnailcli
+- [x]   (Deprecated) _Back-end_ Old Sync CLI, replaced by starskysynchronizecli (to be removed in future release)
+- [x]   (Added) _Back-end_ Notify realtime websockets when DiskWatcher detects changes
+- [x]   (Added) _Back-end_ Notify other users when a file or folder is moved #212
+- [x]   (Changed) _Back-end_ Importer does update the database when file copy happens #104
+- [x]   (Fixed) _Back-end_ Item exist but not in folder cache, it now add this item to cache #228
+- [x]   (Added) _Back-end_ Check if Exiftool exist before running the import CLI
 
-# version 0.4.0 _(Unreleased)_ -  2020-11-??
+# version 0.4.0 - 2020-11-14
 _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Changed) _App_ Add styling to settings UI in App
 - [x]   (Fixed) _Back-end_  Add extra catch to prevent sync issues when exif reading fails
-- [x]   (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be incompatable
+- [x]   (Deprecated) _Back-end_ Json Sidecar format is very likely to change in future releases and be incompatible
 - [x]   (Added) _App_ Add extra delay to check for updates to avoid issues when local
 - [x]   (Added) _App_ Add fix for selecting wrong domains to avoid an exception
-- [x]   (Fixed) _Back-end_ When switching very fast after update, info isn't updated until process is done
+- [x]   (Fixed) _Back-end_ When switching very fast after update, info isn't updated until process is done (this is fixed)
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.9 (using SDK 3.1.403)
+- [x]   (Fixed) _Front-end_ Clean Front-end cache when moving file/renaming file
+- [x]   (Fixed) _Front-end_ Change text when selecting an non existing filter combination
+- [x]   (Fixed) _Back-end_ Fix for dispose Errors in Query
+- [x]   (Fixed) _Back-end_ Allow upload to folder with files that are uppercase
+- [x]   (Fixed) _Back-end_ Database-item is now correct updated when you move an item to the root folder (/)
+- [x]   (Security) _App_ Update Electron to 10.1.5 (Node 12.16.x and Chromium 85.0.x)
+- [x]   (Added) _Back-end_ In the rename/move API When enable Collections, this files are also moved (file to folder)
+- [x]   (Added) _Back-end_ Xmp sidecar files are moved with gif/bmp/Raw/mp4 file types
+- [x]   (Added) _Back-end_ In the rename API When enable Collections, this files are also moved (file to deleted)
+- [x]   (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change. 
+                            if you update those could be gone. but you could set them again 
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
@@ -643,7 +691,7 @@ _Version number does not match SemVer_
 
 # version 0.1.4 - 2019-03-01
 - fix issue where login fails results in a error 500
-- http push headers update (add /api/info to push on detailview)
+- http push headers update (add /api/info to push on detailView)
 - Initial release of the `sync/rename` api (not implemented in the front-end)
 - Mark FilesHelper as deprecated, use IStorage now
 

@@ -24,9 +24,18 @@ namespace starsky.foundation.storage.Interfaces
 		/// ..etAllFilesInDirectory(subPath)
 		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 		/// </summary>
-		/// <param name="path">path relative to the database</param>
+		/// <param name="path">filePath</param>
 		/// <returns></returns>
 		IEnumerable<string> GetAllFilesInDirectory(string path);
+		
+		/// <summary>
+		/// Returns a list of Files in a directory (Recursive)
+		/// to filter use:
+		/// ..etAllFilesInDirectory(subPath)
+		///	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
+		/// </summary>
+		/// <param name="path">subPath, path relative to the database</param>
+		/// <returns>list of files</returns>
 		IEnumerable<string> GetAllFilesInDirectoryRecursive(string path);
 
 		/// <summary>

@@ -22,7 +22,7 @@ namespace starskytest.Models
 		    _iStorage = iStorage;
 	    }
 	    
-	    private const string xmpInjection = "<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 11.30\'>" +
+	    public const string XmpInjection = "<x:xmpmeta xmlns:x=\'adobe:ns:meta/\' x:xmptk=\'Image::ExifTool 11.30\'>" +
 	                                        "\n<rdf:RDF xmlns:rdf=\'http://www.w3.org/1999/02/22-rdf-syntax-ns#\'>\n" + 
 	                                        "\n <rdf:Description rdf:about=\'\'\n  xmlns:dc=\'http://purl.org/dc/elements/1.1/\'>\n  <dc:subject>\n " +
 	                                        "  <rdf:Bag>\n    " + "<rdf:li>test</rdf:li>\n   </rdf:Bag>\n  </dc:subject>\n </rdf:Description>\n\n" +
@@ -31,14 +31,14 @@ namespace starskytest.Models
 
 	    public Task<bool> WriteTagsAsync(string subPath, string command)
 		{
+			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 
 			if ( subPath.EndsWith(".xmp") )
 			{
-				var stream = new PlainTextFileHelper().StringToStream(xmpInjection);
+				var stream = new PlainTextFileHelper().StringToStream(XmpInjection);
 				_iStorage.WriteStream(stream, subPath);
 			}
 			
-			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 			
 			return Task.FromResult(true);
 	    }

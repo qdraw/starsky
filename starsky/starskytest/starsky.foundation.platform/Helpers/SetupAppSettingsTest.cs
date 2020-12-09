@@ -7,6 +7,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 
+[assembly: Parallelize(Workers = 1, Scope = ExecutionScope.MethodLevel)]
 namespace starskytest.starsky.foundation.platform.Helpers
 {
 	[TestClass]
@@ -23,7 +24,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void SetLocalAppData_ShouldRead()
 		{
 			var appDataFolderFullPath =
-				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "temp_settings");
+				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "setup_app_settings_test");
 			
 			_hostStorage.CreateDirectory(appDataFolderFullPath);
 			var path = Path.Combine(appDataFolderFullPath, "appsettings.json");
@@ -49,6 +50,8 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void SetLocalAppData_ShouldTakeDefault()
 		{
+			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
+			
 			var builder = SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
 			var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, builder);

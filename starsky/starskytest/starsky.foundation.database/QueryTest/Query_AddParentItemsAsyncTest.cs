@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
-			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(Query_AddParentItemsAsyncTest)));
+			services.AddDbContext<ApplicationDbContext>(options => 
+				options.UseInMemoryDatabase(nameof(Query_AddParentItemsAsyncTest)));
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -86,6 +88,27 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/").FilePath, "/");
 			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/test").FilePath, "/test");
 			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/test/test").FilePath, "/test/test");
+		}
+
+		[TestMethod]
+		public async Task AddParentItemsAsync_Home()
+		{
+			var dbContext = CreateNewScope().CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var query = new Query(dbContext);
+
+			await query.AddParentItemsAsync("/test/test/test");
+
+			var homeItem = dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/");
+			Assert.AreEqual(string.Empty, homeItem.ParentDirectory);
+			Assert.AreEqual("/", homeItem.FileName);
+
+			var test1 = dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/test");
+			Assert.AreEqual("/", test1.ParentDirectory);
+			Assert.AreEqual("test", test1.FileName);
+
+			var test2 = dbContext.FileIndex.FirstOrDefault(p => p.FilePath == "/test/test");
+			Assert.AreEqual("/test", test2.ParentDirectory);
+			Assert.AreEqual("test", test2.FileName);
 		}
 	}
 }

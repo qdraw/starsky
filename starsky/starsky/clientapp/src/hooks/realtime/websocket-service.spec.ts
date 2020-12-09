@@ -1,4 +1,4 @@
-import WebSocketService from './websocket-service';
+import WebSocketService from "./websocket-service";
 
 describe("WebSocketService", () => {
   describe("undefined context", () => {

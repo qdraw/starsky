@@ -9,17 +9,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-using starskycore.Interfaces;
+using starsky.foundation.sync.SyncServices;
 using starskycore.Models;
 
 namespace starsky.Controllers
@@ -31,17 +33,15 @@ namespace starsky.Controllers
 		private readonly IImport _import;
 		private readonly IStorage _iStorage; 
 		private readonly IStorage _iHostStorage;
-		private readonly ISync _iSync;
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IWebSocketConnectionsService _connectionsService;
 
-		public UploadController(IImport import, AppSettings appSettings, ISync sync, 
+		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
 			IWebSocketConnectionsService connectionsService)
 		{
 			_appSettings = appSettings;
-			_iSync = sync;
 			_import = import;
 			_query = query;
 			_selectorStorage = selectorStorage;
@@ -89,7 +89,7 @@ namespace starsky.Controllers
 			for ( var i = 0; i < fileIndexResultsList.Count; i++ )
 			{
 				if(fileIndexResultsList[i].Status != ImportStatus.Ok) continue;
-
+			
 				var tempFileStream = _iHostStorage.ReadStream(tempImportPaths[i]);
 				var fileName = Path.GetFileName(tempImportPaths[i]);
 
@@ -97,19 +97,19 @@ namespace starsky.Controllers
 				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
+				// to get the output in the result right
+				fileIndexResultsList[i].FileIndexItem.FileName = fileName;
+				fileIndexResultsList[i].FileIndexItem.ParentDirectory =  parentDirectory;
+				fileIndexResultsList[i].FilePath = subPath;
+				// Do sync action before writing it down
+				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
+				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				
-				_iSync.SyncFiles(subPath,false);
-				
 				 // clear directory cache
 				 _query.RemoveCacheParentItem(subPath);
-
-				 // to get the output in the result right
-				 fileIndexResultsList[i].FileIndexItem.FileName = fileName;
-				 fileIndexResultsList[i].FileIndexItem.ParentDirectory =  parentDirectory;
-				 fileIndexResultsList[i].FilePath = subPath;
-				 
+			 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
 
@@ -129,6 +129,39 @@ namespace starsky.Controllers
             
 	        return Json(fileIndexResultsList);
         }
+
+		/// <summary>
+		/// Perform database updates
+		/// </summary>
+		/// <param name="metaDataItem">to update to</param>
+		/// <returns>updated item</returns>
+		private async Task<FileIndexItem> SyncItem(FileIndexItem metaDataItem)
+		{
+			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath);
+			if ( itemFromDatabase == null )
+			{
+				AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
+				await _query.AddItemAsync(metaDataItem);
+				return metaDataItem;
+			}
+			
+			FileIndexCompareHelper.Compare(itemFromDatabase, metaDataItem);
+			AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
+
+			await _query.UpdateItemAsync(itemFromDatabase);
+			return itemFromDatabase;
+		}
+
+		private void AddOrRemoveXmpSidecarFileToDatabase(FileIndexItem metaDataItem)
+		{
+			if ( _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(metaDataItem
+				.FilePath))	 )
+			{
+				metaDataItem.AddSidecarExtension("xmp");
+				return;
+			}
+			metaDataItem.RemoveSidecarExtension("xmp");
+		}
 		
 		/// <summary>
 		/// Check if xml can be parsed
@@ -154,7 +187,7 @@ namespace starsky.Controllers
 		/// Upload sidecar file to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
 		/// Add header 'filename' when uploading direct without form
-		/// (ActionResult UploadToFolder)
+		/// (ActionResult UploadToFolderSidecarFile)
 		/// </summary>
 		/// <response code="200">done</response>
 		/// <response code="404">parent folder not found</response>
@@ -197,6 +230,12 @@ namespace starsky.Controllers
 				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
+				if ( !_appSettings.UseDiskWatcher )
+				{
+					await new SyncSingleFile(_appSettings, _query, _iStorage,
+						new ConsoleWrapper()).UpdateSidecarFile(subPath);
+				}
+				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				importedList.Add(subPath);

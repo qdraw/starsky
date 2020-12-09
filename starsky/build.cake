@@ -62,6 +62,8 @@ var publishProjectNames = new List<string>{
     "starskygeocli",
     "starskyimportercli",
     "starskysynccli",
+    "starskysynchronizecli",
+    "starskythumbnailcli",
     "starskywebftpcli",
     "starskywebhtmlcli",
     "starsky"
@@ -105,8 +107,10 @@ Task("TestEnv")
 Task("CleanNetCore")
     .Does(() =>
     {
+        /*
+        Issues with .NET 5
         Information("DotNetCoreClean for .");
-        DotNetCoreClean(".");
+        DotNetCoreClean("."); */
 
         foreach(var runtime in runtimes)
         {
@@ -187,6 +191,7 @@ Task("RestoreNetCore")
             {
               System.Console.WriteLine(genericName);
 
+                // https://cakebuild.net/api/Cake.Common.Tools.DotNetCore.Restore/DotNetCoreRestoreSettings/C6DB42EB
               DotNetCoreRestore(".",
                   new DotNetCoreRestoreSettings());
               continue;
@@ -554,6 +559,7 @@ Task("Zip")
     });
 
 // Start SonarQube, you must also end it
+// SonarStart
 Task("SonarBegin")
    .Does(() => {
         var key = EnvironmentVariable("STARSKY_SONAR_KEY");
@@ -615,6 +621,7 @@ Task("SonarBegin")
                   Arguments = new ProcessArgumentBuilder()
                       .Append($"sonarscanner")
                       .Append($"begin")
+                      /* .Append($"/d:sonar.verbose=true") */
                       .Append($"/d:sonar.host.url=\"{url}\"")
                       .Append($"/k:\"{key}\"")
                       .Append($"/n:\"Starsky\"")
@@ -624,8 +631,8 @@ Task("SonarBegin")
                       .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
                       .Append($"/d:sonar.cs.opencover.reportsPaths=\"{netCoreCoverageFile}\"")
                       .Append($"/d:sonar.typescript.lcov.reportPaths=\"{jestCoverageFile}\"")
-                      .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*\"")
-                      .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx\""),
+                      .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
+                      .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\""),
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 },
@@ -639,8 +646,11 @@ Task("SonarBegin")
             Information("sonarscanner: {0}", stdOutput);
         }
 
+        Information("exitCodeWithArgument: {0}", exitCodeWithArgument);
+
+
         // Throw exception if anything was written to the standard error.
-        if (redirectedErrorOutput.Any())
+        if (redirectedErrorOutput.Any() )
         {
             throw new Exception(
                 string.Format(
@@ -694,8 +704,17 @@ Task("SonarEnd")
         Information("sonarscanner: {0}", stdOutput);
     }
 
+    // This should output 0 as valid arguments supplied
+    Information("Exit code (exitCodeWithArgument): {0}", exitCodeWithArgument);
+
+    // Output process error. (only when not failing)
+    foreach(var stdError in redirectedErrorOutput)
+    {
+        Information("sonar error: {0}", stdError);
+    }
+
     // Throw exception if anything was written to the standard error.
-    if (redirectedErrorOutput.Any())
+    if (redirectedErrorOutput.Any() && exitCodeWithArgument != 0)
     {
         throw new Exception(
             string.Format(
@@ -703,8 +722,6 @@ Task("SonarEnd")
                 string.Join(", ", redirectedErrorOutput)));
     }
 
-    // This should output 0 as valid arguments supplied
-    Information("Exit code: {0}", exitCodeWithArgument);
   });
 
 Task("DocsGenerate")
@@ -744,6 +761,8 @@ Task("ProjectCheckNetCore")
     {
         /* Checks for valid Project GUIDs in csproj files */
         NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
+        /* List of nuget packages */
+        NpmRunScript("nuget-package-list", s => s.FromPath("../starsky-tools/build-tools/"));
   });
 
 // React app build steps

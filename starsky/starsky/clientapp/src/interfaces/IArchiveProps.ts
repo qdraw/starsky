@@ -1,5 +1,5 @@
-import { IRelativeObjects, PageType } from '../interfaces/IDetailView';
-import { IFileIndexItem } from '../interfaces/IFileIndexItem';
+import { IRelativeObjects, PageType } from "../interfaces/IDetailView";
+import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 
 export interface IArchiveProps {
   fileIndexItems: Array<IFileIndexItem>;

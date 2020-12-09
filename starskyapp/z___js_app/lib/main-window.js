@@ -66,7 +66,7 @@ exports.createMainWindow = () => {
     var csp = "default-src 'none'; img-src 'self' file://* https://www.openstreetmap.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org "
      + whitelistDomain + "; " +      "style-src file://* unsafe-inline https://www.openstreetmap.org " + whitelistDomain
       + "; script-src 'self' file://* https://az416426.vo.msecnd.net; " +
-      "connect-src 'self' https://dc.services.visualstudio.com " + whitelistDomain + "; " +
+      "connect-src 'self' https://dc.services.visualstudio.com/v2/track https://*.in.applicationinsights.azure.com//v2/track " + whitelistDomain + "; " +
       "font-src file://* " + whitelistDomain + "; media-src " + whitelistDomain + ";";
 
     if (!res.url.startsWith('devtools://') && !res.url.startsWith('http://localhost:3000/')  ) {

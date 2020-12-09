@@ -20,9 +20,9 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	[TestClass]
 	public class ExifToolDownloadTest
 	{
-		private IServiceScopeFactory _serviceScopeFactory;
-		private AppSettings _appSettings;
-		private IStorage _hostFileSystem;
+		private readonly IServiceScopeFactory _serviceScopeFactory;
+		private readonly AppSettings _appSettings;
+		private readonly IStorage _hostFileSystem;
 
 		/// <summary>
 		/// shasum -a 1 file.zip

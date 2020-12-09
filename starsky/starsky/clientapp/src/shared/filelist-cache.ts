@@ -1,16 +1,15 @@
-import { IArchive } from '../interfaces/IArchive';
-import { IDetailView, PageType } from '../interfaces/IDetailView';
-import { IUrl } from '../interfaces/IUrl';
-import { DifferenceInDate } from './date';
-import { URLPath } from './url-path';
+import { IArchive } from "../interfaces/IArchive";
+import { IDetailView, PageType } from "../interfaces/IDetailView";
+import { IUrl } from "../interfaces/IUrl";
+import { DifferenceInDate } from "./date";
+import { URLPath } from "./url-path";
 
 interface IGetAllTransferObject {
-  name: string,
-  item: IDetailView | IArchive
+  name: string;
+  item: IDetailView | IArchive;
 }
 
 export class FileListCache {
-
   private cachePrefix = "starsky;";
 
   private timeoutInMinutes = 3;
@@ -22,7 +21,6 @@ export class FileListCache {
     return value;
   }
 
-
   private SetDefaultUrlObjectValues(urlObject: IUrl): IUrl {
     if (!urlObject.f) urlObject.f = "/";
     if (urlObject.collections === undefined) urlObject.collections = true;
@@ -30,14 +28,20 @@ export class FileListCache {
     return urlObject;
   }
 
-  private CacheSetObjectWithoutParent(urlObject: IUrl, value: IArchive | IDetailView): any {
-    if (localStorage.getItem('clientCache') === 'false') return;
+  private CacheSetObjectWithoutParent(
+    urlObject: IUrl,
+    value: IArchive | IDetailView
+  ): any {
+    if (localStorage.getItem("clientCache") === "false") return;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
     value.dateCache = Date.now();
 
     try {
       // old versions of safari don't allow sessionStorage in private navigation
-      sessionStorage.setItem(this.CacheKeyGenerator(urlObject), JSON.stringify(value));
+      sessionStorage.setItem(
+        this.CacheKeyGenerator(urlObject),
+        JSON.stringify(value)
+      );
       return value;
     } catch (error) {
       console.error(error);
@@ -53,34 +57,49 @@ export class FileListCache {
     if (!value.pageType || value.pageType !== PageType.DetailView) {
       return;
     }
-    var detailview = value as IDetailView
+    var detailview = value as IDetailView;
     if (!detailview.fileIndexItem) {
       return;
     }
 
-    var parentItem = this.CacheGetObject({ ...urlObject, f: detailview.fileIndexItem.parentDirectory }) as IArchive;
+    var parentItem = this.CacheGetObject({
+      ...urlObject,
+      f: detailview.fileIndexItem.parentDirectory
+    }) as IArchive;
     if (!parentItem || parentItem.pageType !== PageType.Archive) {
       return;
     }
 
     parentItem.fileIndexItems.forEach((item, index) => {
       if (!urlObject.collections) {
-        if (item.fileName && item.fileName === detailview.fileIndexItem.fileName) {
+        if (
+          item.fileName &&
+          item.fileName === detailview.fileIndexItem.fileName
+        ) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }
       if (urlObject.collections) {
-        if (item.fileName && item.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)) {
+        if (
+          item.fileName &&
+          item.fileName.startsWith(detailview.fileIndexItem.fileCollectionName)
+        ) {
           parentItem.fileIndexItems[index] = detailview.fileIndexItem;
         }
       }
     });
-    this.CacheSetObjectWithoutParent({ ...urlObject, f: detailview.fileIndexItem.parentDirectory }, parentItem)
+    this.CacheSetObjectWithoutParent(
+      { ...urlObject, f: detailview.fileIndexItem.parentDirectory },
+      parentItem
+    );
   }
 
   public CacheKeyGenerator(urlObject: IUrl) {
-    return this.cachePrefix +
-      `c${urlObject.colorClass};l${urlObject.collections}` + urlObject.f;
+    return (
+      this.cachePrefix +
+      `c${urlObject.colorClass};l${urlObject.collections}` +
+      urlObject.f
+    );
   }
 
   public CacheSet(locationSearch: string, value: IArchive | IDetailView): any {
@@ -89,9 +108,9 @@ export class FileListCache {
   }
 
   /**
-  * GETTER of cache
-  * @param locationSearch where to look for
-  */
+   * GETTER of cache
+   * @param locationSearch where to look for
+   */
   public CacheGet(locationSearch: string): IArchive | IDetailView | null {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheGetObject(urlObject);
@@ -99,13 +118,15 @@ export class FileListCache {
 
   /**
    * GETTER of cache
-   * @param urlObject where to look for 
+   * @param urlObject where to look for
    */
   public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
-    if (localStorage.getItem('clientCache') === 'false') return null;
+    if (localStorage.getItem("clientCache") === "false") return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
 
-    var cache = this.ParseJson(sessionStorage.getItem(this.CacheKeyGenerator(urlObject)));
+    var cache = this.ParseJson(
+      sessionStorage.getItem(this.CacheKeyGenerator(urlObject))
+    );
     if (!cache) return null;
 
     if (DifferenceInDate(cache.dateCache) > this.timeoutInMinutes) {
@@ -124,7 +145,7 @@ export class FileListCache {
       list.push({
         name: itemName,
         item
-      })
+      });
     }
     return list;
   }
@@ -133,9 +154,9 @@ export class FileListCache {
    * And clean the old ones
    */
   public CacheCleanOld(): void {
-    this.GetAll().forEach(item => {
+    this.GetAll().forEach((item) => {
       if (DifferenceInDate(item.item.dateCache) > this.timeoutInMinutes) {
-        sessionStorage.removeItem(item.name)
+        sessionStorage.removeItem(item.name);
       }
     });
   }
@@ -144,8 +165,8 @@ export class FileListCache {
    * And clean All Items
    */
   public CacheCleanEverything(): void {
-    this.GetAll().forEach(item => {
-      sessionStorage.removeItem(item.name)
+    this.GetAll().forEach((item) => {
+      sessionStorage.removeItem(item.name);
     });
   }
 

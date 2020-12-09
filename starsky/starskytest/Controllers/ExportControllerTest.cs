@@ -40,7 +40,6 @@ namespace starskytest.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readmeta;
 
 		public ExportControllerTest()
 		{
@@ -59,9 +58,11 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();
 
-			// Fake the readmeta output
+			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
+			_bgTaskQueue = new BackgroundTaskQueue();
+			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 			// random config
@@ -93,7 +94,7 @@ namespace starskytest.Controllers
 			// inject fake exiftool
 			new FakeExifTool(new FakeIStorage(),_appSettings );
 
-			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			serviceProvider.GetRequiredService<IReadMeta>();
 			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
@@ -152,6 +153,7 @@ namespace starskytest.Controllers
 
 			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
 
+			if ( service == null ) throw new Exception("service should not be null");
 			await service.StartAsync(CancellationToken.None);
 
 			// the test
@@ -169,8 +171,10 @@ namespace starskytest.Controllers
 				FileHash = "file-hash",
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
+
+			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath};
 			
-			var export = new ExportService(fakeQuery,_appSettings,storageSelector, new FakeConsoleWrapper());
+			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeConsoleWrapper());
 			var controller = new ExportController(
 				backgroundQueue, storageSelector, export)
 			{
@@ -189,7 +193,7 @@ namespace starskytest.Controllers
 			await Task.Delay(150);
 
 			// Get from real fs in to fake memory
-			var sourceFullPath = Path.Join(_appSettings.TempFolder,zipHash) + ".zip";
+			var sourceFullPath = Path.Join(appSettings.TempFolder,zipHash) + ".zip";
 			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
 			var actionResult2zip = await controller.Status(zipHash,true) as JsonResult;

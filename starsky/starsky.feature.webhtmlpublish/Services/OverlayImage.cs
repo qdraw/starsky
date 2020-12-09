@@ -38,7 +38,8 @@ namespace starsky.feature.webhtmlpublish.Services
 			return result;
 		}
 	    
-        public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, AppSettingsPublishProfiles profile)
+        public string FilePathOverlayImage(string outputParentFullFilePathFolder, string sourceFilePath, 
+	        AppSettingsPublishProfiles profile)
         {
 			var result = PathHelper.AddBackslash(outputParentFullFilePathFolder) +
 								 FilePathOverlayImage(sourceFilePath, profile);
@@ -74,9 +75,11 @@ namespace starsky.feature.webhtmlpublish.Services
         /// <param name="outputFullFilePath">location where to store</param>
         /// <param name="profile">image profile that contains sizes</param>
         /// <exception cref="FileNotFoundException">source image not found</exception>
-	    public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile)
+	    public void ResizeOverlayImageLarge(string itemFilePath, 
+	        string outputFullFilePath, AppSettingsPublishProfiles profile)
 	    {
-		    if ( string.IsNullOrWhiteSpace(itemFilePath) ) throw new ArgumentNullException(nameof(itemFilePath));
+		    if ( string.IsNullOrWhiteSpace(itemFilePath) ) throw new 
+			    ArgumentNullException(nameof(itemFilePath));
 		    if ( !_iStorage.ExistFile(itemFilePath) ) throw new FileNotFoundException("subPath " + itemFilePath);
 
 		    if ( _hostFileSystem.ExistFile(outputFullFilePath)  ) return;

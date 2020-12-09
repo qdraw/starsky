@@ -1,23 +1,62 @@
 # Starsky Business Logic
 ## List of [Starsky](../../readme.md) Projects
- * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_    
     * __[Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) business logic libraries (netstandard 2.0)__
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../../history.md) _Release notes and history_
 
 ## Starsky Business Logic docs
 
+This is an overview of business logic 
+
+## Feature compare table
+
+| Feature                                                           | Present |
+|-------------------------------------------------------------------|---------|
+| Anywhere secure access                                            |    ✅   |
+| Native iOS and Android mobile apps                                |    ❌   | 
+| Mac OS and Windows Desktop app                                    |    ✅   | 
+| Access controls with permissions and roles                        |    ✴️   |
+| User generation by Command Line                                   |    ✅   |
+| Customized branded login page                                     |    ❌   |
+| Out-of-the-box access from the web  (when hosted)                 |    ✅   |
+| SaaS solution                                                     |    ❌   |
+| Multi tenant support                                              |    ❌   |
+| Bulk metadata upload via CSV                                      |    ❌   |
+| Bulk metadata edit via web interface                              |    ✅   |
+| Review, approve and publish uploads                               |    ❌   |
+| Batch or single file download                                     |    ✅   |
+| Download permissions based on role                                |    ❌   |
+| Request access to file form                                       |    ❌   |
+| Supports photos jpg, png, gif, tiff                               |    ✅   |
+| Supports video mp4 (H.264)                                        |    ✅   |
+| Supports audio                                                    |    ❌   |
+| Supports IPTC, EXIF and XMP metadata                              |    ✅   |
+| All major browsers supported (Chrome, Safari, Mozilla)            |    ✅   |
+| Internet Explorer support                                         |    ❌   |
+| In-line editing in fields                                         |    ✅   |
+| Localized platform English and Dutch                              |    ✅   |
+| Host the server version yourself using docker                     |    ✅   |
+| Host the server version yourself on a Windows/Mac/Linux           |    ✅   |
+
+
+| Icon | Meaning of icon       |
+|------|-----------------------|
+|  ✅  | fully implemented     |
+|  ✴️  | is partly implemented |
+|  ❌  | not implemented       |
 
 ## Project structure
 
@@ -27,7 +66,8 @@
 |   └── starskyadmincli
 |   └── starskygeocli
 |   └── starskyimportercli
-|   └── starskysynccli
+|   └── starskysynchronizecli
+|   └── starskythumbnailcli
 |   └── starskywebftpcli
 |   └── starskywebhtmlcli
 └── Feature
@@ -66,6 +106,8 @@
 |   |     WebSockets Middleware
 |   └── starsky.foundation.storage
 |   |     Filesystem abstractions
+|   └── starsky.foundation.sync
+|   |     Compare disk with database
 |   └── starsky.foundation.thumbnailgeneration
 |   |     Generate Thumbnails
 |   └── starsky.foundation.writemeta

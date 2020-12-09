@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -17,6 +18,7 @@ namespace starsky.foundation.database.Import
 	{
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly ApplicationDbContext _dbContext;
 
 		/// <summary>
 		/// Query Already imported Database
@@ -24,10 +26,21 @@ namespace starsky.foundation.database.Import
 		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
 		/// </summary>
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
-		public ImportQuery(IServiceScopeFactory scopeFactory)
+		/// <param name="dbContext"></param>
+		public ImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
+			_dbContext = dbContext;
 			_isConnection = TestConnection();
+		}
+		
+		/// <summary>
+		/// Get the database context
+		/// </summary>
+		/// <returns>database context</returns>
+		private ApplicationDbContext GetDbContext()
+		{
+			return _scopeFactory != null ? new InjectServiceScope(_scopeFactory).Context() : _dbContext;
 		}
 
 		/// <summary>
@@ -36,17 +49,14 @@ namespace starsky.foundation.database.Import
 		/// <returns>successful database connection</returns>
 		public bool TestConnection()
 		{
-			var dbContext = new InjectServiceScope(_scopeFactory).Context();
-			return !_isConnection ? dbContext.TestConnection() : _isConnection;
+			return !_isConnection ? GetDbContext().TestConnection() : _isConnection;
 		}
 
 		public virtual async Task<bool> IsHashInImportDbAsync(string fileHashCode)
 		{
-			var dbContext = new InjectServiceScope(_scopeFactory).Context();
-
 			if ( _isConnection )
 			{
-				var value = await dbContext.ImportIndex.CountAsync(p => 
+				var value = await GetDbContext().ImportIndex.CountAsync(p => 
 					p.FileHash == fileHashCode) != 0; 			// there is no any in ef core
 				return value;
 			}
@@ -63,8 +73,7 @@ namespace starsky.foundation.database.Import
 		/// <returns>fail or success</returns>
 		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
 		{
-			var dbContext = new InjectServiceScope(_scopeFactory).Context();
-
+			var dbContext = GetDbContext();
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
@@ -79,14 +88,13 @@ namespace starsky.foundation.database.Import
 		/// <returns>List of items</returns>
 		public List<ImportIndexItem> History()
 		{
-			var dbContext = new InjectServiceScope( _scopeFactory).Context();
-			return dbContext.ImportIndex.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
+			return GetDbContext().ImportIndex.Where(p => p.AddToDatabase >= DateTime.UtcNow.AddDays(-1)).ToList();
 			// for debug: p.AddToDatabase >= DateTime.UtcNow.AddDays(-2) && p.Id % 6 == 1
 		}
 
 		public virtual async Task<List<ImportIndexItem>> AddRangeAsync(List<ImportIndexItem> importIndexItemList)
 		{
-			var dbContext = new InjectServiceScope( _scopeFactory).Context();
+			var dbContext = GetDbContext();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
 			Console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
@@ -95,7 +103,7 @@ namespace starsky.foundation.database.Import
 
 		public List<ImportIndexItem> AddRange(List<ImportIndexItem> importIndexItemList)
 		{
-			var dbContext = new InjectServiceScope(_scopeFactory).Context();
+			var dbContext = GetDbContext();
 			dbContext.ImportIndex.AddRange(importIndexItemList);
 			dbContext.SaveChanges();
 			Console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up

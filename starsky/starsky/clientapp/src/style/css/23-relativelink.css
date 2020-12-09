@@ -1,6 +1,6 @@
 .relativelink {
   height: 50px;
-  background-color: #ECEFF1;
+  background-color: #eceff1;
   font-size: 14px;
   font-weight: 300;
 }
@@ -20,7 +20,7 @@
   text-decoration: none;
   padding-left: 20px;
   padding-right: 5px;
-  margin-top:7px;
+  margin-top: 7px;
   border: #979797 1px solid;
   border-radius: 5px;
   width: 120px;
@@ -29,8 +29,8 @@
 
 @media (prefers-color-scheme: dark) {
   .relativelink .nextprev a {
-      border: #fff 1px solid;
-      color: #fff;
+    border: #fff 1px solid;
+    color: #fff;
   }
 }
 
@@ -41,18 +41,17 @@
 }
 
 .relativelink .nextprev .prev {
-    float: left;
+  float: left;
 }
-
 
 @media screen and (max-width: 600px) {
-    .collapsed .relativelink{
-        display: none;
-    }
+  .collapsed .relativelink {
+    display: none;
+  }
 }
 @media screen and (max-width: 400px) {
-    .collapsed .relativelink .nextprev .next,
-    .collapsed .relativelink .nextprev .prev {
-        display: none;
-    }
+  .collapsed .relativelink .nextprev .next,
+  .collapsed .relativelink .nextprev .prev {
+    display: none;
+  }
 }

@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from "react";
 
 export interface IPreloaderProps {
   isOverlay: boolean;
@@ -7,18 +7,24 @@ export interface IPreloaderProps {
   parent?: string;
 }
 
-const Preloader: React.FunctionComponent<IPreloaderProps> = memo((props) => {
+const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
   return (
     <>
-      {
-        props.isOverlay ? <div className={props.isTransition === false ? "preloader preloader--overlay-no-transition" : "preloader preloader--overlay"}>
-          <div className="preloader preloader--icon">
-          </div>
-        </div> : <div className="preloader preloader--icon">
-          </div>
-      }
+      {props.isOverlay ? (
+        <div
+          className={
+            props.isTransition === false
+              ? "preloader preloader--overlay-no-transition"
+              : "preloader preloader--overlay"
+          }
+        >
+          <div className="preloader preloader--icon"></div>
+        </div>
+      ) : (
+        <div className="preloader preloader--icon"></div>
+      )}
     </>
   );
-});
+};
 
-export default Preloader
+export default Preloader;

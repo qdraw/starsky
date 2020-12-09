@@ -44,7 +44,8 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// <returns>The <see cref="SemVersion"/> object.</returns>
 		/// <exception cref="ArgumentNullException">The <paramref name="version"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentException">The <paramref name="version"/> has an invalid format.</exception>
-		/// <exception cref="OverflowException">The Major, Minor, or Patch versions are larger than <code>int.MaxValue</code>.</exception>
+		/// <exception cref="OverflowException">The Major, Minor, or Patch versions are larger than
+		/// <code>int.MaxValue</code>.</exception>
 		public static SemVersion Parse(string version)
 		{
 			var match = ParseEx.Match(version);
@@ -231,7 +232,8 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// </summary>
 		/// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <see langword="true"/> if the specified <see cref="object" /> is equal to this instance, otherwise <see langword="false"/>.
+		///   <see langword="true"/> if the specified <see cref="object" /> is equal to this instance,
+		/// otherwise <see langword="false"/>.
 		/// </returns>
 		/// <exception cref="InvalidCastException">The <paramref name="obj"/> is not a <see cref="SemVersion"/>.</exception>
 		public override bool Equals(object obj)
@@ -284,7 +286,8 @@ namespace starsky.foundation.platform.VersionHelpers
 		/// </summary>
 		/// <param name="versionA">The first version to compare.</param>
 		/// <param name="versionB">The second version to compare.</param>
-		/// <returns>A signed number indicating the relative values of <paramref name="versionA"/> and <paramref name="versionB"/>.</returns>
+		/// <returns>A signed number indicating the relative values of <paramref name="versionA"/>
+		/// and <paramref name="versionB"/>.</returns>
 		private static int Compare(SemVersion versionA, SemVersion versionB)
 		{
 			if ( ReferenceEquals(versionA, versionB) ) return 0;

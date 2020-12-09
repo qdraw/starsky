@@ -8,10 +8,7 @@
       "type": "node",
       "name": "vscode-jest-tests",
       "request": "launch",
-      "args": [
-        "test",
-        "--runInBand"
-      ],
+      "args": ["test", "--runInBand"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",

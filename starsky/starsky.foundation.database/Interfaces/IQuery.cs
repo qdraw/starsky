@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
@@ -9,10 +10,22 @@ namespace starsky.foundation.database.Interfaces
     public interface IQuery
     {
         List<FileIndexItem> GetAllFiles(string subPath);
+        Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths);
+        Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
-        List<FileIndexItem> GetAllRecursive(string subPath = "");
+        List<FileIndexItem> GetAllRecursive(string subPath = "/");
+        Task<List<FileIndexItem>> GetAllRecursiveAsync(string subPath = "/");
 
-        // to do the query and return object
+        Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList);
+        
+        /// <summary>
+        /// to do the query and return object
+        /// </summary>
+        /// <param name="subPath">subPath style</param>
+        /// <param name="colorClassActiveList">filter the colorClass</param>
+        /// <param name="enableCollections">enable to show only one file with a base name</param>
+        /// <param name="hideDeleted">files that are marked as trash</param>
+        /// <returns></returns>
         IEnumerable<FileIndexItem> DisplayFileFolders(
             string subPath = "/", 
             List<ColorClassParser.Color> colorClassActiveList = null,
@@ -43,8 +56,11 @@ namespace starsky.foundation.database.Interfaces
         
         FileIndexItem GetObjectByFilePath(string filePath);
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
-        
+
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
+
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
+        Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 
         /// <summary>
         /// Clear the directory name from the cache
@@ -65,14 +81,37 @@ namespace starsky.foundation.database.Interfaces
         FileIndexItem UpdateItem(FileIndexItem updateStatusContent);
         List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList);
 
+        Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
+        Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
+
         [Obsolete("use PathHelper.RemoveLatestSlash()")]
         string SubPathSlashRemove(string subPath = "/");
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+        
+        /// <summary>
+        /// Cache API within Query to update cached items
+        /// For DisplayFileFolders and SingleItem
+        /// </summary>
+        /// <param name="updateStatusContent">items to update</param>
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
 
+        /// <summary>
+        /// Add Sub Path Folder - Parent Folders
+        ///  root(/)
+        ///      /2017  *= index only this folder
+        ///      /2018
+        /// If you use the cmd: $ starskycli -s "/2017"
+        /// the folder '2017' it self is not added 
+        /// and all parent paths are not included
+        /// this class does add those parent folders
+        /// </summary>
+        /// <param name="subPath">subPath as input</param>
+        /// <returns>void</returns>
         Task AddParentItemsAsync(string subPath);
+        IQuery Clone( ApplicationDbContext applicationDbContext);
+        void Invoke(ApplicationDbContext applicationDbContext);
     }
 }

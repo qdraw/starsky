@@ -1,10 +1,9 @@
 export enum SupportedLanguages {
   nl = "nl" as any,
-  en = "en" as any,
+  en = "en" as any
 }
 
 export class Language {
-
   /**
    *
    */
@@ -20,7 +19,7 @@ export class Language {
   public text(nl: string, en: string): string {
     var selectedLanguageMap = new Map<number, string>([
       [SupportedLanguages.nl, nl],
-      [SupportedLanguages.en, en],
+      [SupportedLanguages.en, en]
     ]);
 
     var content = selectedLanguageMap.get(this.selectedLanguage);
@@ -35,9 +34,8 @@ export class Language {
    */
   public token(text: string, token: string[], dynamicValue: string[]): string {
     for (let index = 0; index < token.length; index++) {
-      text = text.replace(new RegExp(token[index]), dynamicValue[index])
+      text = text.replace(new RegExp(token[index]), dynamicValue[index]);
     }
     return text;
   }
-
 }

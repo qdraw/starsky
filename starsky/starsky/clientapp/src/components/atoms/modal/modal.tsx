@@ -1,9 +1,9 @@
-import 'core-js/features/dom-collections/for-each';
+import "core-js/features/dom-collections/for-each";
 import React from "react";
 import ReactDOM from "react-dom";
-import capturePosition from '../../../hooks/use-capture-position';
-import useGlobalSettings from '../../../hooks/use-global-settings';
-import { Language } from '../../../shared/language';
+import capturePosition from "../../../hooks/use-capture-position";
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import { Language } from "../../../shared/language";
 
 type ModalPropTypes = {
   children: React.ReactNode;
@@ -22,7 +22,6 @@ export default function Modal({
   handleExit,
   focusAfterExit
 }: ModalPropTypes): any {
-
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageCloseDialog = language.text("Sluiten", "Close");
@@ -99,22 +98,25 @@ export default function Modal({
   if (modal.current) {
     return ReactDOM.createPortal(
       <>
-        <div onClick={(event) => {
-          const target = event.target as HTMLElement;
-          if (target.className.indexOf("modal-bg--open") === -1) return;
-          handleExit()
-        }} className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}>
+        <div
+          onClick={(event) => {
+            const target = event.target as HTMLElement;
+            if (target.className.indexOf("modal-bg--open") === -1) return;
+            handleExit();
+          }}
+          className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}
+        >
           <div
-            className={`modal-content ${
-              isOpen ? " modal-content--show" : ""
-              }`}
+            className={`modal-content ${isOpen ? " modal-content--show" : ""}`}
           >
             <div className="modal-close-bar">
               <button
-                className={`modal-exit-button ${isOpen ? " modal-exit-button--showing" : ""}`}
+                className={`modal-exit-button ${
+                  isOpen ? " modal-exit-button--showing" : ""
+                }`}
                 ref={exitButton}
                 onClick={() => {
-                  handleExit()
+                  handleExit();
                 }}
               >
                 {MessageCloseDialog}

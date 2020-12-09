@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnPng
 	{
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64pngString = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc" +
 		                                                 "SJAAAG+mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAA" +
 		                                                 "PD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTX" +

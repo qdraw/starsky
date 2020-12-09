@@ -4,7 +4,12 @@ namespace starsky.foundation.platform.Helpers
 {
 	public static class FilenamesHelper
 	{
-				
+		
+		/// <summary>
+		/// Is the filename valid (WITHOUT parent path)
+		/// </summary>
+		/// <param name="filename">filename without path</param>
+		/// <returns>true when valid</returns>
 		public static bool IsValidFileName(string filename)
 		{
 			// use the same as in the front-end

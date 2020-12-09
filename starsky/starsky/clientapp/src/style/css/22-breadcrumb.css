@@ -1,7 +1,6 @@
-
 .breadcrumb {
   height: 50px;
-  background-color: #CFD8DC;
+  background-color: #cfd8dc;
   font-size: 16px;
   line-height: 1.6;
   padding-top: 12px;
@@ -15,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   .breadcrumb {
-    background-color: #37474F;
+    background-color: #37474f;
     color: #fff;
   }
   .breadcrumb a {
@@ -26,21 +25,21 @@
 @media (max-width: 400px) {
   .breadcrumb {
     height: 60px;
-    padding-top:16px;
+    padding-top: 16px;
   }
   .breadcrumb.breadcrumb--long {
-      padding-top:5px;
+    padding-top: 5px;
   }
 }
 
 @media screen and (max-width: 600px) {
-    .collapsed .breadcrumb span{
-        display: none;
-    }
+  .collapsed .breadcrumb span {
+    display: none;
+  }
 }
 
 @media screen and (max-width: 400px) {
-    .collapsed .breadcrumb{
-        display: none;
-    }
+  .collapsed .breadcrumb {
+    display: none;
+  }
 }

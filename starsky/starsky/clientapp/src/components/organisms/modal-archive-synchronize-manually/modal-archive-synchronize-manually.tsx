@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { ArchiveContext } from '../../../contexts/archive-context';
-import useGlobalSettings from '../../../hooks/use-global-settings';
-import useInterval from '../../../hooks/use-interval';
-import useLocation from '../../../hooks/use-location';
-import { IArchiveProps } from '../../../interfaces/IArchiveProps';
-import { CastToInterface } from '../../../shared/cast-to-interface';
-import FetchGet from '../../../shared/fetch-get';
-import FetchPost from '../../../shared/fetch-post';
-import { FileListCache } from '../../../shared/filelist-cache';
-import { Language } from '../../../shared/language';
-import { URLPath } from '../../../shared/url-path';
-import { UrlQuery } from '../../../shared/url-query';
-import Modal from '../../atoms/modal/modal';
-import Preloader from '../../atoms/preloader/preloader';
+import React, { useEffect, useState } from "react";
+import { ArchiveContext } from "../../../contexts/archive-context";
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import useInterval from "../../../hooks/use-interval";
+import useLocation from "../../../hooks/use-location";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import { CastToInterface } from "../../../shared/cast-to-interface";
+import FetchGet from "../../../shared/fetch-get";
+import FetchPost from "../../../shared/fetch-post";
+import { FileListCache } from "../../../shared/filelist-cache";
+import { Language } from "../../../shared/language";
+import { URLPath } from "../../../shared/url-path";
+import { UrlQuery } from "../../../shared/url-query";
+import Modal from "../../atoms/modal/modal";
+import Preloader from "../../atoms/preloader/preloader";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
@@ -20,21 +20,42 @@ interface IModalDisplayOptionsProps {
   parentFolder?: string;
 }
 
-const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOptionsProps> = (props) => {
-
+const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOptionsProps> = (
+  props
+) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageSynchronizeManually = language.text("Handmatig synchroniseren", "Synchronize manually");
-  const MessageForceSync = language.text("Handmatig synchroniseren van huidige map", "Synchronize current directory manually");
-  const MessageRemoveCache = language.text("Verwijder cache van huidige map", "Refresh cache of current directory");
-  const MessageGeoSync = language.text("Voeg geolocatie automatisch toe", "Automatically add geolocation");
-  const MessageGeoSyncExplainer = language.text("De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind " +
-    "en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd", "The location is derived from a gpx file located in " +
-  " the current folder and based on the location place names are appended to the images")
-  const MessageManualThumbnailSync = language.text("Thumbnail afbeeldingen generen", "Generate thumbnail images");
-  const MessageManualThumbnailSyncExplainer = language.text("Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties",
-    "This action generate on the background lots of thumbnail images, this does impact the performance");
+  const MessageSynchronizeManually = language.text(
+    "Handmatig synchroniseren",
+    "Synchronize manually"
+  );
+  const MessageForceSync = language.text(
+    "Handmatig synchroniseren van huidige map",
+    "Synchronize current directory manually"
+  );
+  const MessageRemoveCache = language.text(
+    "Verwijder cache van huidige map",
+    "Refresh cache of current directory"
+  );
+  const MessageGeoSync = language.text(
+    "Voeg geolocatie automatisch toe",
+    "Automatically add geolocation"
+  );
+  const MessageGeoSyncExplainer = language.text(
+    "De locatie wordt afgeleid van een gpx bestand die zich in de huidige map bevind " +
+      "en op basis van de locatie worden er plaatsnamen bij de afbeeldingen gevoegd",
+    "The location is derived from a gpx file located in " +
+      " the current folder and based on the location place names are appended to the images"
+  );
+  const MessageManualThumbnailSync = language.text(
+    "Thumbnail afbeeldingen generen",
+    "Generate thumbnail images"
+  );
+  const MessageManualThumbnailSyncExplainer = language.text(
+    "Deze actie genereert op de achtergrond veel miniatuurafbeeldingen, dit heeft invloed op de prestaties",
+    "This action generate on the background lots of thumbnail images, this does impact the performance"
+  );
 
   // preloading icon
   const [isLoading, setIsLoading] = useState(false);
@@ -43,12 +64,16 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
   let { dispatch } = React.useContext(ArchiveContext);
 
   // the default is true
-  const [collections, setCollections] = React.useState(new URLPath().StringToIUrl(history.location.search).collections !== false);
+  const [collections, setCollections] = React.useState(
+    new URLPath().StringToIUrl(history.location.search).collections !== false
+  );
 
   /** update when changing values and search */
   useEffect(() => {
-    setCollections(new URLPath().StringToIUrl(history.location.search).collections !== false);
-  }, [collections, history.location.search])
+    setCollections(
+      new URLPath().StringToIUrl(history.location.search).collections !== false
+    );
+  }, [collections, history.location.search]);
 
   /**
    * Remove Folder cache
@@ -57,14 +82,20 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     setIsLoading(true);
     new FileListCache().CacheCleanEverything();
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet(new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))).then((_) => {
+    FetchGet(
+      new UrlQuery().UrlRemoveCache(new URLPath().encodeURI(parentFolder))
+    ).then((_) => {
       setTimeout(() => {
-        var url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(history.location.search));
+        var url = new UrlQuery().UrlIndexServerApi(
+          new URLPath().StringToIUrl(history.location.search)
+        );
         FetchGet(url).then((connectionResult) => {
-          var removeCacheResult = new CastToInterface().MediaArchive(connectionResult.data);
+          var removeCacheResult = new CastToInterface().MediaArchive(
+            connectionResult.data
+          );
           var payload = removeCacheResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'force-reset', payload });
+            dispatch({ type: "force-reset", payload });
           }
           props.handleExit();
         });
@@ -79,14 +110,17 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((_) => {
-    });
+    FetchPost(
+      new UrlQuery().UrlGeoSync(),
+      bodyParams.toString()
+    ).then((_) => {});
   }
 
   function fetchGeoSyncStatus() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    FetchGet(new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))).then((anyData) => {
-
+    FetchGet(
+      new UrlQuery().UrlGeoStatus(new URLPath().encodeURI(parentFolder))
+    ).then((anyData) => {
       if (anyData.statusCode !== 200 || !anyData.data) {
         setGeoSyncPercentage(-1);
         return;
@@ -96,7 +130,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         setGeoSyncPercentage(0);
         return;
       }
-      setGeoSyncPercentage(anyData.data.current / anyData.data.total * 100);
+      setGeoSyncPercentage((anyData.data.current / anyData.data.total) * 100);
     });
   }
 
@@ -108,14 +142,18 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     new FileListCache().CacheCleanEverything();
 
     var urlSync = new UrlQuery().UrlSync(parentFolder);
-    FetchPost(urlSync, '').then((_) => {
+    FetchPost(urlSync, "").then((_) => {
       setTimeout(() => {
-        var url = new UrlQuery().UrlIndexServerApi(new URLPath().StringToIUrl(history.location.search));
+        var url = new UrlQuery().UrlIndexServerApi(
+          new URLPath().StringToIUrl(history.location.search)
+        );
         FetchGet(url).then((connectionResult) => {
-          var forceSyncResult = new CastToInterface().MediaArchive(connectionResult.data);
+          var forceSyncResult = new CastToInterface().MediaArchive(
+            connectionResult.data
+          );
           var payload = forceSyncResult.data as IArchiveProps;
           if (payload.fileIndexItems) {
-            dispatch({ type: 'force-reset', payload });
+            dispatch({ type: "force-reset", payload });
           }
           props.handleExit();
         });
@@ -129,7 +167,10 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     bodyParams.set("f", parentFolder);
     setIsLoading(true);
 
-    FetchPost(new UrlQuery().UrlThumbnailGeneration(), bodyParams.toString()).then((anyData) => {
+    FetchPost(
+      new UrlQuery().UrlThumbnailGeneration(),
+      bodyParams.toString()
+    ).then((anyData) => {
       setTimeout(() => {
         setIsLoading(false);
         props.handleExit();
@@ -137,26 +178,53 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     });
   }
 
-  return (<Modal
-    id="modal-archive-synchronize-manually"
-    isOpen={props.isOpen}
-    handleExit={() => {
-      props.handleExit()
-    }}>
-    {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
+  return (
+    <Modal
+      id="modal-archive-synchronize-manually"
+      isOpen={props.isOpen}
+      handleExit={() => {
+        props.handleExit();
+      }}
+    >
+      {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
 
-    <div className="modal content--subheader">{MessageSynchronizeManually}</div>
-    <div className="modal content--text">
-      <button className="btn btn--default" data-test="force-sync" onClick={() => forceSync()}>{MessageForceSync}</button>
-      <button className="btn btn--default" data-test="remove-cache" onClick={() => removeCache()}>{MessageRemoveCache}</button>
-      <button className="btn btn--info btn--percentage" data-test="geo-sync" onClick={() => geoSync()}>{MessageGeoSync} {geoSyncPercentage}%</button>
-      <p>{MessageGeoSyncExplainer}</p>
-      <button className="btn btn--info" data-test="thumbnail-generation" onClick={() => manualThumbnailSync()}>{MessageManualThumbnailSync}</button>
-      <p>
-        {MessageManualThumbnailSyncExplainer}
-      </p>
-    </div>
-  </Modal>)
-}
+      <div className="modal content--subheader">
+        {MessageSynchronizeManually}
+      </div>
+      <div className="modal content--text">
+        <button
+          className="btn btn--default"
+          data-test="force-sync"
+          onClick={() => forceSync()}
+        >
+          {MessageForceSync}
+        </button>
+        <button
+          className="btn btn--default"
+          data-test="remove-cache"
+          onClick={() => removeCache()}
+        >
+          {MessageRemoveCache}
+        </button>
+        <button
+          className="btn btn--info btn--percentage"
+          data-test="geo-sync"
+          onClick={() => geoSync()}
+        >
+          {MessageGeoSync} {geoSyncPercentage}%
+        </button>
+        <p>{MessageGeoSyncExplainer}</p>
+        <button
+          className="btn btn--info"
+          data-test="thumbnail-generation"
+          onClick={() => manualThumbnailSync()}
+        >
+          {MessageManualThumbnailSync}
+        </button>
+        <p>{MessageManualThumbnailSyncExplainer}</p>
+      </div>
+    </Modal>
+  );
+};
 
 export default ModalArchiveSynchronizeManually;

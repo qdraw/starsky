@@ -1,32 +1,43 @@
-import { mount } from 'enzyme';
-import React, { memo } from 'react';
-import useInterval from './use-interval';
+import { mount } from "enzyme";
+import React, { memo } from "react";
+import useInterval from "./use-interval";
 
 describe("useInterval", () => {
-
   interface UseIntervalComponentTestProps {
-    callback: Function,
-    timer: number
+    callback: Function;
+    timer: number;
   }
 
-  const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo((props) => {
-    useInterval(props.callback, props.timer);
-    return null;
-  });
+  const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo(
+    (props) => {
+      useInterval(props.callback, props.timer);
+      return <></>;
+    }
+  );
 
   it("check if is called once", (done) => {
     function callback() {
       done();
     }
-    mount(<UseIntervalComponentTest timer={0} callback={callback}/>);
+    mount(
+      <UseIntervalComponentTest timer={0} callback={callback}>
+        t
+      </UseIntervalComponentTest>
+    );
   });
 
-  it("check unmount component", () => {
-    var clearInterval = jest.spyOn(global, 'clearInterval').mockImplementationOnce(() => { });
+  it("check if setInterval is called", () => {
+    var clearIntervalSpy = jest
+      .spyOn(window, "setInterval")
+      .mockImplementationOnce(() => {
+        return {} as any;
+      });
 
-    var interval = mount(<UseIntervalComponentTest timer={10} callback={jest.fn()}/>);
-    interval.unmount();
+    var component = mount(
+      <UseIntervalComponentTest timer={10} callback={jest.fn()} />
+    );
+    component.unmount();
 
-    expect(clearInterval).toBeCalled();
+    expect(clearIntervalSpy).toBeCalled();
   });
 });

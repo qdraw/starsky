@@ -25,12 +25,16 @@ exports.handleExitKeyPress = (fromMainWindow) => {
 
         // when selecting a tiff image, the jpg will be picked 
         // the last one is always picked
-        var subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
 
+        var subPathLastColInList = ""
+        if (data.fileIndexItem && data.fileIndexItem.collectionPaths) {
+            subPathLastColInList = data.fileIndexItem.collectionPaths[data.fileIndexItem.collectionPaths.length-1];
+        }
 
         // get info of raw file and get xmp
         // needed app version 0.4 or newer
         if (   data 
+            && data.fileIndexItem
             && data.fileIndexItem.fileCollectionName
             && data.fileIndexItem.sidecarExtensionsList
             && data.fileIndexItem.sidecarExtensionsList[0]) {

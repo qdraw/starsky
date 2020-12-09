@@ -6,8 +6,8 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Interfaces;
-using starsky.foundation.thumbnailgeneration.Services;
 using starskycore.Interfaces;
 
 namespace starskycore.Services
@@ -28,21 +28,13 @@ namespace starskycore.Services
 			
 			new ArgsHelper().SetEnvironmentByArgs(args);
 
-			// Using both options
-			// -s = if subPath || -p is path
-			var subPath = new ArgsHelper(appSettings).IsSubPathOrPath(args) ? 
-				new ArgsHelper(appSettings).GetSubpathFormArgs(args) : 
-				new ArgsHelper(appSettings).GetPathFormArgs(args);
-            
-			// overwrite subPath with relative days
-			// use -g or --SubPathRelative to use it.
-			// envs are not supported
+			// This one is deprecated
+			var subPath = new ArgsHelper(appSettings).SubPathOrPathValue(args);
 			var getSubPathRelative = new ArgsHelper(appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				var dateTime = DateTime.Now.AddDays(( double ) getSubPathRelative);
 				subPath = new StructureService(selectorStorage.Get(SelectorStorage.StorageServices.SubPath), appSettings.Structure)
-					.ParseSubfolders(dateTime);
+					.ParseSubfolders(getSubPathRelative);
 			}
 
 			if (new ArgsHelper().GetIndexMode(args))

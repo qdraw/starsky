@@ -1,7 +1,6 @@
-import shallowEqual from './shallow-equal';
+import shallowEqual from "./shallow-equal";
 
 describe("shallowEqual", function () {
-
   beforeEach(() => {
     // isolated instances of shallowEqual for each test.
     jest.resetModules();
@@ -54,7 +53,6 @@ describe("shallowEqual", function () {
     );
   });
 
-
   it("should handle comparisons if `customizer` returns `undefined`", () => {
     const noop = () => void 0;
 
@@ -82,5 +80,4 @@ describe("shallowEqual", function () {
     expect(shallowEqual(["a"], ["a"], customizer)).toEqual(false);
     expect(shallowEqual({ "0": "a" }, { "0": "a" }, customizer)).toEqual(false);
   });
-
 });

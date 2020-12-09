@@ -279,6 +279,26 @@ namespace starskytest.Models
 	    }
 
 	    [TestMethod]
+	    public void LensModel_Defaults()
+	    {
+		    var item = new FileIndexItem{MakeModel = string.Empty};
+		    Assert.AreEqual(string.Empty,item.LensModel);
+	    }
+	    [TestMethod]
+	    public void LensModel_ShouldReplace()
+	    {
+		    var item = new FileIndexItem{MakeModel = "test|Canon|Canon Lens"};
+		    Assert.AreEqual("Lens",item.LensModel);
+	    }
+	    
+	    [TestMethod]
+	    public void LensModel_ShouldNotReplace()
+	    {
+		    var item = new FileIndexItem{MakeModel = "test||Canon Lens"};
+		    Assert.AreEqual("Canon Lens",item.LensModel);
+	    }
+	    
+	    [TestMethod]
 	    public void FileIndexItemTest_MakeModel_UsingFieldNull()
 	    {
 		    var item = new FileIndexItem{MakeModel = null};
@@ -408,6 +428,45 @@ namespace starskytest.Models
 		    Assert.AreEqual("xmp", item.SidecarExtensionsList.FirstOrDefault());
 			// no duplicates please
 		    Assert.AreEqual(1, item.SidecarExtensionsList.Count);
+	    }
+	    
+	    [TestMethod]
+	    public void SidecarExtensions_Remove()
+	    {
+		    var item = new FileIndexItem{SidecarExtensions = "xmp"};
+		    item.RemoveSidecarExtension("xmp");
+		    
+		    Assert.AreEqual(0, item.SidecarExtensionsList.Count);
+	    }
+
+	    [TestMethod]
+	    public void SetFilePath_Home()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/");
+		    
+		    Assert.AreEqual("/", item.FileName);
+		    Assert.AreEqual(string.Empty, item.ParentDirectory);
+		}
+	    
+	    [TestMethod]
+	    public void SetFilePath_testFile()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/test.jpg");
+		    
+		    Assert.AreEqual("test.jpg", item.FileName);
+		    Assert.AreEqual("/", item.ParentDirectory);
+	    }
+	    
+	    [TestMethod]
+	    public void SetFilePath_subFolderTestFile()
+	    {
+		    var item = new FileIndexItem();
+		    item.SetFilePath("/test/test.jpg");
+		    
+		    Assert.AreEqual("test.jpg", item.FileName);
+		    Assert.AreEqual("/test", item.ParentDirectory);
 	    }
 	    
 	    //        [TestMethod]

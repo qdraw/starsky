@@ -98,10 +98,17 @@ namespace starsky.foundation.realtime.Helpers
 				CloseStatus = await GetMessage(webSocketReceiveResult);
 				CloseStatusDescription = webSocketReceiveResult.CloseStatusDescription;
 			}
-			catch ( WebSocketException webSocketException ) when ( webSocketException.WebSocketErrorCode ==
-			                                         WebSocketError.ConnectionClosedPrematurely )
+			catch ( WebSocketException webSocketException ) when ( webSocketException
+					.WebSocketErrorCode ==
+				WebSocketError.ConnectionClosedPrematurely )
 			{
-				Console.WriteLine("connection ConnectionClosedPrematurely");
+				Console.WriteLine(
+					"connection ConnectionClosedPrematurely (exception is catch-ed) ");
+			}
+			catch ( OperationCanceledException )
+			{
+				// Happens when the application closes
+				Console.WriteLine("connection OperationCanceledException (exception is catch-ed)");
 			}
 		}
 

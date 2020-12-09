@@ -56,7 +56,7 @@ namespace starsky.foundation.database.Query
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            // reject emphy requests
+            // reject empty requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = FilenamesHelper.GetParentPath(singleItemDbPath);
 
@@ -81,7 +81,14 @@ namespace starsky.foundation.database.Query
             
             var currentFileIndexItem = fileIndexItemsList.FirstOrDefault(p => p.FileName == fileName);
 
-            if (currentFileIndexItem == null) return null;
+            // Could be not found or not in directory cache
+            if ( currentFileIndexItem == null )
+            {
+	            // retry
+	            currentFileIndexItem = GetObjectByFilePath(singleItemDbPath);
+	            if ( currentFileIndexItem == null ) return null;
+	           AddCacheItem(currentFileIndexItem);
+            }
 
             // To know when a file is deleted
             if ( currentFileIndexItem.Tags.Contains("!delete!") )

@@ -20,7 +20,8 @@ namespace starsky.feature.webftppublish.Helpers
 		private readonly IStorage _hostStorageProvider;
 		private readonly IFtpWebRequestFactory _webRequestFactory;
 
-		public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage, IConsole console, IFtpWebRequestFactory webRequestFactory)
+		public WebFtpCli(AppSettings appSettings, ISelectorStorage selectorStorage, IConsole console, 
+			IFtpWebRequestFactory webRequestFactory)
 		{
 			_appSettings = appSettings;
 			_console = console;

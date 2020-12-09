@@ -19,17 +19,17 @@
 
 .content--header,
 .content--subheader {
-  padding:15px;
+  padding: 15px;
   padding-left: 10px;
   min-height: 50px;
   line-height: 20px;
-  background-color: #CFD8DC;  
+  background-color: #cfd8dc;
 }
 
 @media screen and (max-height: 330px) {
-.content--header,
-.content--subheader {
-  font-size: 15px;
+  .content--header,
+  .content--subheader {
+    font-size: 15px;
   }
 }
 
@@ -39,16 +39,16 @@
 }
 
 .content--subheader {
-  background-color: #ECEFF1;  
+  background-color: #eceff1;
 }
 
 @media (prefers-color-scheme: dark) {
   .content--header {
-    background-color: #455A64;
+    background-color: #455a64;
     color: #fff;
   }
   .content--subheader {
-    background-color: #546E7A;
+    background-color: #546e7a;
     color: #fff;
   }
 }
@@ -59,13 +59,13 @@
 
 @media (prefers-color-scheme: dark) {
   .content--text > button {
-  color: #fff;
+    color: #fff;
   }
 }
 
 .content--text > button.box:hover,
 .content--text > a.box:hover {
-  background-color: #ECEFF1;
+  background-color: #eceff1;
   border-radius: 3px;
   cursor: pointer;
 }
@@ -89,7 +89,7 @@
   display: inline-block;
   margin-right: 10px;
   text-align: center;
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 
 .content--text .date-spacer {
@@ -97,11 +97,11 @@
   display: inline-block;
 }
 
-.content--text .date p{
+.content--text .date p {
   margin-bottom: 4px;
 }
 
-.content--text label, 
+.content--text label,
 .content--text .btn,
 .content--text h4 {
   margin-top: 10px;
@@ -121,7 +121,7 @@
 
 .content--header .btn,
 .content--text .btn {
-  margin-right:10px;
+  margin-right: 10px;
 }
 
 .content--text h4:first-child {
@@ -129,7 +129,7 @@
 }
 
 .content > .content--login-form {
-  margin-top:20px;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -151,33 +151,33 @@
 }
 
 .warning-box.warning-box--under-form {
-  margin-top:25px;
+  margin-top: 25px;
 }
 
 .content--text .warning-box:before,
 .content .warning-box:before,
 .content > form > .content--error-true:before {
-    content: "";
-    background-color: white;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    /* fixes for webkit */
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    height: 24px;
-    padding-left: 24px;
-    margin-right: 7px;
-    padding-top: 3px;
-    padding-bottom: 3px;
+  content: "";
+  background-color: white;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  /* fixes for webkit */
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  height: 24px;
+  padding-left: 24px;
+  margin-right: 7px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 
-    -webkit-mask-image: url("../images/baseline-error-24px.svg");
-    mask-image: url("../images/baseline-error-24px.svg");
+  -webkit-mask-image: url("../images/baseline-error-24px.svg");
+  mask-image: url("../images/baseline-error-24px.svg");
 }
 
 .content--text .warning-box.warning-box--optional,
 .content .warning-box.warning-box--optional,
 .content > form > .content--error-true.warning-box--optional {
-  background-color: #78909C;
+  background-color: #78909c;
 }
 
 .content > .content--login-form > button {
@@ -190,7 +190,7 @@
   font-weight: normal;
   color: #263238;
   position: relative;
-  top:-3px;
+  top: -3px;
 }
 
 @media screen and (max-width: 370px) {
@@ -218,17 +218,17 @@
 }
 
 .content > .content--login-form > .btn {
-  margin-right : 10px;
+  margin-right: 10px;
 }
 
 .content .legal-text-row {
   line-height: 1.3;
   margin-bottom: 15px;
 }
-.content .legal-text-row a{
+.content .legal-text-row a {
   text-decoration: underline;
 }
 
-.publish .warning-box{
+.publish .warning-box {
   margin-top: 4px;
 }

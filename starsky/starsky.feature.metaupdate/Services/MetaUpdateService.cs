@@ -12,7 +12,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.thumbnailgeneration.Services;
+using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
@@ -55,7 +55,8 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
 		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="fileIndexResultsList">items stored in the database</param>
-		/// <param name="inputModel">(only used when cache is disabled) This model is overwritten in the database and ExifTool</param>
+		/// <param name="inputModel">(only used when cache is disabled)
+		/// This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>

@@ -60,8 +60,10 @@ namespace starsky.foundation.platform.Helpers
 
 	            if ( propertyB.PropertyType == typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 	            {
-		            var oldListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) propertyInfoFromA.GetValue(sourceIndexItem, null);
-		            var newListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) propertyB.GetValue(updateObject, null);
+		            var oldListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) 
+			            propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newListPublishProfilesValue = ( Dictionary<string, List<AppSettingsPublishProfiles>> ) 
+			            propertyB.GetValue(updateObject, null);
 		            CompareListPublishProfiles(propertyB.Name, sourceIndexItem, oldListPublishProfilesValue,
 			            newListPublishProfilesValue, differenceList);
 	            }
@@ -77,7 +79,8 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldDatabaseTypeList">oldDatabaseTypeList to compare with newDatabaseTypeList</param>
 	    /// <param name="newDatabaseTypeList">newDatabaseTypeList to compare with oldDatabaseTypeList</param>
 	    /// <param name="differenceList">list of different values</param>
-	    private static void CompareDatabaseTypeList(string propertyName, AppSettings sourceIndexItem, AppSettings.DatabaseTypeList oldDatabaseTypeList, 
+	    private static void CompareDatabaseTypeList(string propertyName, AppSettings sourceIndexItem, 
+		    AppSettings.DatabaseTypeList oldDatabaseTypeList, 
 		    AppSettings.DatabaseTypeList newDatabaseTypeList, List<string> differenceList)
 	    {
 		    if (oldDatabaseTypeList == newDatabaseTypeList || newDatabaseTypeList == new AppSettings().DatabaseType) return;

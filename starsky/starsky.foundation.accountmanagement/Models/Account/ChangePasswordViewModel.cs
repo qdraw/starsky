@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+// ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Models.Account
 {
     public class ChangePasswordViewModel

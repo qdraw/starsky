@@ -47,7 +47,8 @@ namespace starsky.foundation.platform.Models
         }
 
         /// <summary>
-        /// @see: https://tomasherceg.com/blog/post/azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
+        /// @see: https://tomasherceg.com/blog/post/
+        /// azure-app-service-cannot-create-directories-and-write-to-filesystem-when-deployed-using-azure-devops
         /// </summary>
         private void CreateDefaultFolders()
         {
@@ -65,6 +66,8 @@ namespace starsky.foundation.platform.Models
 
         public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
 		    .Replace("starskyadmincli", "starsky")
+		    .Replace("starskysynchronizecli", "starsky")
+		    .Replace("starskythumbnailcli", "starsky")
 		    .Replace("starskysynccli", "starsky")
 		    .Replace("starsky.foundation.database", "starsky")
 		    .Replace("starskyImporterNetFrameworkCli", "starsky")
@@ -116,6 +119,10 @@ namespace starsky.foundation.platform.Models
 	        /// Admin CLI
 	        /// </summary>
 	        Admin = 6,
+	        /// <summary>
+	        /// Thumbnail Generator CLI
+	        /// </summary>
+	        Thumbnail = 7
         }
 		
 		/// <summary>
@@ -167,25 +174,27 @@ namespace starsky.foundation.platform.Models
             // Included slash dd the end of this file
             return PathHelper.AddSlash(input.Replace("{name}", GenerateSlug(name,true)));
         }
-        
+
         /// <summary>
         /// Generates a permalink slug for passed string
         /// </summary>
         /// <param name="phrase"></param>
         /// <param name="allowUnderScore">to allow underscores in slug</param>
+        /// <param name="toLowerCase">change output to lowerCase</param>
         /// <returns>clean slug string (ex. "some-cool-topic")</returns>
-        public string GenerateSlug(string phrase, bool allowUnderScore = false)
+        public string GenerateSlug(string phrase, bool allowUnderScore = false, bool toLowerCase = true)
         {
-            var s = phrase.ToLowerInvariant();
+	        var text = toLowerCase ? phrase.ToLowerInvariant() : phrase;
             
-            var matchNotRegexString = @"[^a-z0-9\s-]";
-            if(allowUnderScore) matchNotRegexString = @"[^a-z0-9\s-_]";     // allow underscores
+            var matchNotRegexString = @"[^a-zA-Z0-9\s-]";
+            if(allowUnderScore) matchNotRegexString = @"[^a-zA-Z0-9\s-_]";     // allow underscores
             
-            s = Regex.Replace(s,matchNotRegexString, "");                   // remove invalid characters
-            s = Regex.Replace(s, @"\s+", " ").Trim();                       // single space
-            s = s.Substring(0, s.Length <= 45 ? s.Length : 45).Trim();      // cut and trim
-            s = Regex.Replace(s, @"\s", "-");                               // insert hyphens
-            return s.ToLower();
+            text = Regex.Replace(text,matchNotRegexString, string.Empty);         
+            //						^^^ remove invalid characters
+            text = Regex.Replace(text, @"\s+", " ").Trim();                       // single space
+            text = text.Substring(0, text.Length <= 65 ? text.Length : 65).Trim();      // cut and trim
+            text = Regex.Replace(text, @"\s", "-");                               // insert hyphens
+            return text;
         }
         
 
@@ -383,8 +392,10 @@ namespace starsky.foundation.platform.Models
         // C# 6+ required for this
         public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
-	    // fallback in constructor
-	    // use env variable: app__ReadOnlyFolders__0 - value
+	    /// <summary>
+	    /// fallback in constructor
+	    /// use env variable: app__ReadOnlyFolders__0 - value
+	    /// </summary>
         public List<string> ReadOnlyFolders { get; set; }
 
         /// <summary>
@@ -465,15 +476,16 @@ namespace starsky.foundation.platform.Models
 	    /// </summary>
 	    public bool IsAccountRegisterOpen { get; set; } = false;
 
-	    /// <summary>
-	    /// When a new account is created, which Account Role is assigned 
-	    /// </summary>
+		/// <summary>
+		/// When a new account is created, which Account Role is assigned 
+		/// Defaults to User, but can also be Administrator
+		/// </summary>
 #if SYSTEM_TEXT_ENABLED
-	    [JsonConverter(typeof(JsonStringEnumConverter))]
+		[JsonConverter(typeof(JsonStringEnumConverter))]
 #else
-	    [JsonConverter(typeof(StringEnumConverter))]
+		[JsonConverter(typeof(StringEnumConverter))]
 #endif
-	    public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
+		public AccountRoles.AppAccountRoles AccountRegisterDefaultRole { get; set; } = AccountRoles.AppAccountRoles.User;
 	    
 	    /// <summary>
 	    /// Private storage for Application Insights InstrumentationKey
@@ -510,10 +522,22 @@ namespace starsky.foundation.platform.Models
 	    public bool UseRealtime { get; set; } = true;
 
 	    /// <summary>
+	    /// Watch the fileSystem for changes
+	    /// </summary>
+	    public bool UseDiskWatcher { get; set; } = false;
+	    
+	    /// <summary>
 	    /// Check if there are updates
 	    /// </summary>
 	    public bool CheckForUpdates { get; set; } = true;
 
+	    /// <summary>
+	    /// Ignore the directories when running sync
+	    /// use env variable: app__SyncIgnore__0 - value
+	    /// Use always UNIX style
+	    /// </summary>
+	    public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
+	    
 	    // -------------------------------------------------
 	    // ------------------- Modifiers -------------------
 	    // -------------------------------------------------
@@ -656,7 +680,8 @@ namespace starsky.foundation.platform.Models
         /// <param name="connectionString">SQLite</param>
         /// <param name="baseDirectoryProject">path</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or missing Data Source in connection string</exception>
+        /// <exception cref="ArgumentException">The 'DatabaseConnection' field is null or empty or
+        /// missing Data Source in connection string</exception>
         public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
         {
             if (DatabaseType == DatabaseTypeList.Mysql && string.IsNullOrWhiteSpace(connectionString)) 
@@ -678,7 +703,6 @@ namespace starsky.foundation.platform.Models
 
             var dataSource = "Data Source=" + baseDirectoryProject + 
                              Path.DirectorySeparatorChar+  databaseFileName;
-            if(Verbose) Console.WriteLine(dataSource);
             return dataSource;
         }
 

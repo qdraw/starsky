@@ -1,9 +1,14 @@
+using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
 namespace starskytest.FakeCreateAn
 {
 	public static class CreateAnImageColorClass
 	{
+		/// <summary>
+		/// @see: https://superuser.com/a/1467266 and 80 chars
+		/// </summary>
+		[SuppressMessage("ReSharper", "StringLiteralTypo")] 
 		private static readonly string Base64JpgString = "/9j/4AAQSkZJRgABAQABLAEsAAD/4QPORXhpZgAATU0AKgAAAAgACgEPAAIAAAAFAAAAhgEQAAIAAAAK"+
 		    "AAAAjAESAAMAAAABAAEAAAEaAAUAAAABAAAAlgEbAAUAAAABAAAAngEoAAMAAAABAAIAAAExAAIAAAAI"+
 		    "AAAApgEyAAIAAAAUAAAArodpAAQAAAABAAAAwoglAAQAAAABAAADQAAAAABTb255AABJTENFLTY2MDAA"+

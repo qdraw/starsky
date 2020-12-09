@@ -5,7 +5,7 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.foundation.database.Models
 {
 	/// <summary>
-	/// In Detailview there are values added for handeling Args  
+	/// In DetailView there are values added for handling Args  
 	/// </summary>
     public class RelativeObjects
     {

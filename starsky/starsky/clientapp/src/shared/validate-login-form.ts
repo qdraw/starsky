@@ -1,4 +1,3 @@
-
 /**
  * Handle form validation for the login form
  * false is no email or password
@@ -9,7 +8,7 @@
  */
 export const validateLoginForm = (
   email: string,
-  password: string,
+  password: string
 ): boolean | null => {
   // Check for undefined or empty input fields
   if (!email || !password) {

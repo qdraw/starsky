@@ -23,17 +23,26 @@ Check at least those files
  - [x] `starsky/starskyadmincli/starskyadmincli.csproj`
  - [x] `starsky/starskygeocli/starskygeocli.csproj`
  - [x] `starsky/starskyimportercli/starskyimportercli.csproj`
- - [x] `starsky/starskysynccli/starskysynccli.csproj`
+ - [x] `starsky/starskysynchronizecli/starskysynchronizecli.csproj`
+ - [x] `starsky/starskythumbnailcli/starskythumbnailcli.csproj`
  - [x] `starsky/starskytest/starskytest.csproj`
  - [x] `starsky/starskywebftpcli/starskywebftpcli.csproj`
  - [x] `starsky/starskywebhtmlcli/starskywebhtmlcli.csproj`
+
+## Marked as deprecated
+- [x] `starsky/starskysynccli/starskysynccli.csproj`
 
 ## Legacy project
  - [x] `starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj`
  - [x] `starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj`
 
+Might useful to force evaluate packages
+```
+dotnet restore --force-evaluate
+```
+
 
 ## Go to starsky root directory
 ```
 atom  starsky/starsky/starsky.csproj starsky/starskyadmincli/starskyadmincli.csproj starsky/starskygeocli/starskygeocli.csproj starsky/starskyimportercli/starskyimportercli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskysynccli/starskysynccli.csproj starsky/starskytest/starskytest.csproj starsky/starskywebftpcli/starskywebftpcli.csproj starsky/starskywebhtmlcli/starskywebhtmlcli.csproj starsky.netframework/starskyImporterNetFrameworkCli/starskyImporterNetFrameworkCli.csproj starsky.netframework/starskySyncNetFrameworkCli/starskySyncNetFrameworkCli.csproj
-``` 
+```

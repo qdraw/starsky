@@ -1,16 +1,18 @@
-import { IUseLocation } from '../hooks/use-location';
-import { URLPath } from './url-path';
+import { IUseLocation } from "../hooks/use-location";
+import { URLPath } from "./url-path";
 
 export class Sidebar {
-
-  private setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>> = () => { };
+  private setSidebar: React.Dispatch<
+    React.SetStateAction<boolean | undefined>
+  > = () => {};
   private history: IUseLocation;
   private sidebar: boolean | undefined;
 
-  constructor(sidebar: boolean | undefined,
+  constructor(
+    sidebar: boolean | undefined,
     setSidebar: React.Dispatch<React.SetStateAction<boolean | undefined>>,
-    history: IUseLocation) {
-
+    history: IUseLocation
+  ) {
     this.sidebar = sidebar;
     this.setSidebar = setSidebar;
     this.history = history;
@@ -24,6 +26,8 @@ export class Sidebar {
     urlObject.sidebar = !urlObject.sidebar;
 
     this.setSidebar(urlObject.details);
-    this.history.navigate(new URLPath().IUrlToString(urlObject), { replace: true })
+    this.history.navigate(new URLPath().IUrlToString(urlObject), {
+      replace: true
+    });
   }
 }

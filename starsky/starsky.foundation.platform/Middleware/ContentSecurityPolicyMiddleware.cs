@@ -17,7 +17,8 @@ namespace starsky.foundation.platform.Middleware
 		// IMyScopedService is injected into Invoke
 		public async Task Invoke(HttpContext httpContext)
 		{
-			// For Error pages (for example 404) this middleware will be executed double, so Adding a Header that already exist give an Error 500			
+			// For Error pages (for example 404) this middleware will be executed double,
+			// so Adding a Header that already exist give an Error 500			
 			if (string.IsNullOrEmpty(httpContext.Response.Headers["Content-Security-Policy"]) )
 			{
 				// CSP 2.0 nonce
@@ -33,8 +34,35 @@ namespace starsky.foundation.platform.Middleware
 					.Add("Content-Security-Policy",
 						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
 						$"https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
-						$"connect-src 'self' {socketUrl} https://dc.services.visualstudio.com; style-src 'self'; " +
-						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none' ");
+						$"connect-src 'self' {socketUrl} " +
+						$"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
+						$"style-src 'self'; " +
+						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; " +
+						$"form-action 'self'; object-src 'none' ");
+			}
+
+			if (string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )
+			{
+				httpContext.Response.Headers
+					.Add("Referrer-Policy", "no-referrer");
+			}
+			
+			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Frame-Options"]) )
+			{
+				httpContext.Response.Headers
+					.Add("X-Frame-Options", "DENY");
+			}
+			
+			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Xss-Protection"]) )
+			{
+				httpContext.Response.Headers
+					.Add("X-Xss-Protection", "1; mode=block");
+			}
+			
+			if (string.IsNullOrEmpty(httpContext.Response.Headers["X-Content-Type-Options"]) )
+			{
+				httpContext.Response.Headers
+					.Add("X-Content-Type-Options", "nosniff");
 			}
 				
 			await _next(httpContext);

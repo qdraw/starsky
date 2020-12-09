@@ -1,6 +1,4 @@
-
 class AspectRatio {
-
   /**
    * In mathematics, the greatest common divisor (gcd) of two or more integers,
    * which are not all zero, is the largest positive integer that divides each of the integers.
@@ -15,10 +13,8 @@ class AspectRatio {
     if (v === 0) return u;
 
     if (~u & 1)
-      if (v & 1)
-        return this.gcd(u >> 1, v);
-      else
-        return this.gcd(u >> 1, v >> 1) << 1;
+      if (v & 1) return this.gcd(u >> 1, v);
+      else return this.gcd(u >> 1, v >> 1) << 1;
 
     if (~v & 1) return this.gcd(u, v >> 1);
 
@@ -33,7 +29,11 @@ class AspectRatio {
    * @param height and the height
    * @param filter - ignore non values in output
    */
-  public ratio(width: number, height: number, filter: boolean = true): string | null {
+  public ratio(
+    width: number,
+    height: number,
+    filter: boolean = true
+  ): string | null {
     var r = this.gcd(width, height);
     var widthRatio = width / r;
     var heightRatio = height / r;
@@ -41,7 +41,6 @@ class AspectRatio {
     if (filter && widthRatio > 25) return null;
     return widthRatio + ":" + heightRatio;
   }
-
 }
 
 export default AspectRatio;

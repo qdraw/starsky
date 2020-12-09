@@ -6,20 +6,20 @@
         <ProjectGuid>{46588bf9-d745-460d-a22d-d8fdfc698809}</ProjectGuid>
         <DebugType>Full</DebugType>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
-        <Version>0.4.0</Version>
+        <Version>0.4.1</Version>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="3.1.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
-      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.8" />
-      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.8" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="3.1.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.1.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.9" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.9" />
+      <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.9" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.2" />
+      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.4" />
       <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     </ItemGroup>
 

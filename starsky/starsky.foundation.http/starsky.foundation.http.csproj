@@ -5,9 +5,9 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{60193d91-0d92-4fc2-b469-d7691cb0e986}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.0</Version>
+        <Version>0.4.1</Version>
     </PropertyGroup>
-
+    
     <ItemGroup>
       <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj" />
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />

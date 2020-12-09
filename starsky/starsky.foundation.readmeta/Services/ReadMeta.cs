@@ -123,13 +123,14 @@ namespace starsky.foundation.readmeta.Services
             
             // Try to catch a new object
             objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
-            _cache.Set(queryCacheName, objectExifToolModel, new TimeSpan(0,1,0));
+            _cache.Set(queryCacheName, objectExifToolModel, 
+	            new TimeSpan(0,1,0));
             return (FileIndexItem) objectExifToolModel;
         }
 
         
         /// <summary>
-        /// Update only for ReadMeta!
+        /// Update Cache only for ReadMeta!
         /// </summary>
         /// <param name="fullFilePath">can also be a subPath</param>
         /// <param name="objectExifToolModel">the item</param>
@@ -140,11 +141,12 @@ namespace starsky.foundation.readmeta.Services
             var toUpdateObject = objectExifToolModel.Clone();
             var queryCacheName = CachePrefix + fullFilePath;
             RemoveReadMetaCache(fullFilePath);
-            _cache.Set(queryCacheName, toUpdateObject, new TimeSpan(0,15,0));
+            _cache.Set(queryCacheName, toUpdateObject, 
+	            new TimeSpan(0,1,0));
         }
 
         /// <summary>
-        /// Update list of items in the cache
+        /// Update cache list of items in the cache
         /// assumes that subPath style is used
         /// </summary>
         /// <param name="objectExifToolModel">list of items to update</param>
@@ -157,7 +159,7 @@ namespace starsky.foundation.readmeta.Services
         }
 
         /// <summary>
-        /// only for ReadMeta!
+        /// only for ReadMeta! Cache
         /// Why removing, The Update command does not update the entire object.
         /// When you update tags, other tags will be null 
         /// </summary>

@@ -1,5 +1,5 @@
-import { IArchive } from './IArchive';
-import { IDetailView } from './IDetailView';
+import { IArchive } from "./IArchive";
+import { IDetailView } from "./IDetailView";
 
 /**
  * In plaats van een type met alleen strings defineren we hier een
@@ -7,8 +7,8 @@ import { IDetailView } from './IDetailView';
  */
 // let op, hij maakt hier stiekem een interface van ipv type
 export interface IMediaTypes {
-  DetailView: IDetailView,
-  Archive: IArchive,
+  DetailView: IDetailView;
+  Archive: IArchive;
 }
 
 export interface IMedia<T extends keyof IMediaTypes = keyof IMediaTypes> {

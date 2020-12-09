@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -55,14 +56,15 @@ namespace starsky.foundation.database.Models
         private string FilePathPrivate { get; set; } = string.Empty;
 
 		/// <summary>
-		/// Get a concatenated subpath style filepath to find the location
+		/// Get a concatenated subPath style filepath to find the location
 		/// </summary>
 		/// <value>
 		/// The file path.
 		/// </value>
 		[Column(Order = 2)]
 		[MaxLength(380)]
-        public string FilePath
+		[SuppressMessage("ReSharper", "ValueParameterNotUsed")]
+		public string FilePath
         {
             get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
             set
@@ -78,7 +80,8 @@ namespace starsky.foundation.database.Models
 		/// <param name="value">The value.</param>
 		public void SetFilePath(string value)
 		{
-			_parentDirectory = FilenamesHelper.GetParentPath(value);
+			// Home has no parentDirectory and filename slash
+			_parentDirectory = value == "/" ? null : FilenamesHelper.GetParentPath(value);
 	        
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
@@ -228,19 +231,45 @@ namespace starsky.foundation.database.Models
 		/// </summary>
 		public enum ExifStatus
         {
+	        /// <summary>
+	        /// Default (should update)
+	        /// </summary>
             Default,
+	        /// <summary>
+	        /// Writing is not supported
+	        /// </summary>
             ExifWriteNotSupported,
+            /// <summary>
+            /// This file is not in the database
+            /// </summary>
             NotFoundNotInIndex,
+            /// <summary>
+            /// Source is missing on disk
+            /// </summary>
             NotFoundSourceMissing,
-            NotFoundIsDir,
+            /// <summary>
+            /// The operation is not supported
+            /// </summary>
 	        OperationNotSupported,
 	        /// <summary>
 	        /// Directory is read only
 	        /// </summary>
             DirReadOnly,
+	        /// <summary>
+	        /// Not allowed to edit
+	        /// </summary>
             ReadOnly,
+	        /// <summary>
+	        /// Not allowed
+	        /// </summary>
             Unauthorized,
+            /// <summary>
+            /// Everything is Good
+            /// </summary>
             Ok,
+            /// <summary>
+            /// File is in trash
+            /// </summary>
             Deleted,
         }
 
@@ -548,7 +577,8 @@ namespace starsky.foundation.database.Models
             
             var currentOrentation = _orderRotation.FindIndex(i => i == Orientation);
             
-            if (currentOrentation >= 0 && currentOrentation+relativeRotation < _orderRotation.Count && currentOrentation+relativeRotation >= 0)
+            if (currentOrentation >= 0 && currentOrentation+relativeRotation < 
+	            _orderRotation.Count && currentOrentation+relativeRotation >= 0)
             {
                 return _orderRotation[currentOrentation + relativeRotation];
             }
@@ -698,6 +728,17 @@ namespace starsky.foundation.database.Models
 		{
 			var current = SidecarExtensionsList;
 			current.Add(ext);
+			SidecarExtensions = string.Join("|", current);
+		}
+		
+		/// <summary>
+		/// Remove extensions without dot
+		/// </summary>
+		/// <param name="ext">ext without dot</param>
+		public void RemoveSidecarExtension(string ext)
+		{
+			var current = SidecarExtensionsList;
+			current.Remove(ext);
 			SidecarExtensions = string.Join("|", current);
 		}
 
@@ -851,8 +892,10 @@ namespace starsky.foundation.database.Models
 		    {
 			    if ( string.IsNullOrEmpty(_makeModel) ) return string.Empty;
 			    var makeModelList = MakeModel.Split("|".ToCharArray());
-			    // ReSharper disable once ConvertIfStatementToReturnStatement
 			    if( makeModelList.Length != MakeModelFixedLength ) return string.Empty;
+			    // ReSharper disable once ConvertIfStatementToReturnStatement
+			    if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
+			    // It replaces the Camera Model in the lens
 			    return makeModelList[2].Replace(Model,string.Empty).Trim();
 		    }
 	    }

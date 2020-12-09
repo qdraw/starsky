@@ -27,7 +27,8 @@ namespace starsky.feature.health.HealthCheck
 		{
 			var assemblyDate = DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 			return Task.FromResult(assemblyDate.AddDays(-2) > DateTime.UtcNow ? 
-				HealthCheckResult.Unhealthy($"Current Date {assemblyDate.AddDays(-2)}>{DateTime.UtcNow} is earlier then the Assembly is build") : 
+				HealthCheckResult.Unhealthy($"Current Date {assemblyDate.AddDays(-2)}>" +
+				                            $"{DateTime.UtcNow} is earlier then the Assembly is build") : 
 				HealthCheckResult.Healthy("Current Date is after the Assembly is build :)"));
 		}
 

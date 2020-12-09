@@ -2,20 +2,25 @@
 
 # What is Starsky? (an introduction)
 
-Accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a web service.
-You could add how to add users, set up your archives, upload content, control metadata requirements, share content and more.
+Starsky is a free photo-management tool, which runs on your server or web-space. Installing is a matter of running the application. It acts as an accelerator to find and organize images driven by meta information. Browse and search images in your own cloud. Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a desktop application and web service.
+You could add how to add users, set up your archives, upload content, control metadata, share content and more.
 
-## Get more value
-Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database.  The goal is to have a application that store, organize, find, retrieve and share digital content. [Read more about how to get started](readme.md)
+## Accelerator for self-hosted photo-management
+Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database.  The goal is to have a application that store, organize, find, retrieve and share digital content.
+
+[Read more about how to get started](readme.md?classes=btn,btn-info)
 
 ## Demo app
-There is a online demo of the Starsky Application. 
-> Use the following credentials: username: `demo@qdraw.nl` and password: `demo@qdraw.nl`
-> 
-> Heroku quits the application after 30 minutes of inactivity. 
-Content changes in the demo environment are not stored. 
+There is a online demo of the Starsky Application.
+
+[See the online demo](https://starskydemo.herokuapp.com?classes=btn,btn-default)
+
 >
-> [Starsky Demo App Account](https://starskydemo.herokuapp.com)
+> Use the following credentials: username: `demo@qdraw.nl` and password: `demo@qdraw.nl`
+>
+> Heroku quits the application after 30 minutes of inactivity.
+Content changes in the demo environment are not stored.
+>
 
 # Main features
 

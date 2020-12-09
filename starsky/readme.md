@@ -1,20 +1,21 @@
 # General Starsky (sln) docs
 ## List of [Starsky](../readme.md) Projects
- * [inotify-settings](../inotify-settings/readme.md) _to setup auto indexing on linux_
  * __[starsky (sln)](../starsky/readme.md) database photo index & import index project__
     * [starsky](../starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines_
+ * [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../history.md) _Release notes and history_
 
 ## Build instructions for docker
 See the [Docker instructions](readme-docker-instructions.md) for more details about how to install
@@ -27,7 +28,7 @@ See the [Docker instructions](readme-docker-instructions.md) for more details ab
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2.  Get the `dotnet` 3.1.402 or newer SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2.  Get the `dotnet` 3.1.404 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 
 3. Make a build of all the projects and run the tests
 from the root folder of the repository
@@ -67,7 +68,7 @@ http://localhost:64556/account/register
 
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core 
+From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no ARMv6). We use NET Core
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following steps to setup:
 
 1.  Clone the repo on your x86/x64 machine

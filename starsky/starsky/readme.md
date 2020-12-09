@@ -1,20 +1,21 @@
 # Starsky Web API application
 ## List of [Starsky](../../readme.md) Projects
- * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * __[starsky](../../starsky/starsky/readme.md) web api application / interface__
       *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../../history.md) _Release notes and history_
 
 ## starsky/starsky docs
 
@@ -39,30 +40,39 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  Command line argumements in the Cli applications to set in-app environment variables
 
 ### Required settings to start
-1. There are __no__ settings required
+1. To start it is __not__ mandatory to adjust any settings.
+
 ### Recommend settings
 1.  `ThumbnailTempFolder` - For storing thumbnails (default: `./bin/Debug/netcoreapp3.1/thumbnailTempFolder`)
 2.  `StorageFolder` - For the main photo directory (default: `./bin/Debug/netcoreapp3.1/storageFolder`)
 3.  `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
 4.  `DatabaseConnection` - The connection-string to the database (default: `./bin/Debug/netcoreapp3.1/data.db`)
 5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
+
 ### Optional settings
 1.  `Structure` - The structure that will be used when you import files, has a default fallback.
 2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
 3.  `AddMemoryCache` - Enable caching _(default true)_
-4.  `IsAccountRegisterOpen`  - Keep registrations always open. 
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
-5.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
-6.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
-7.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
-8.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-9.  `Verbose` - show more console logging  _(default false)_
-10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
-11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
-12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
-13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+4.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+5.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
+6.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+7.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
+8.  `Verbose` - show more console logging  _(default false)_
+9.  `WebFtp` - ftp path, this is used by starskyWebFtpCli
+10. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
+11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
+12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
+13. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
 14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
-15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. This toggle is always disabled in debug/develop mode _(default false)_
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. 
+     This toggle is always disabled in debug/develop mode _(default false)_
+16. `Name` Name of the application, does not have much effect _(default Starsky)_
+17. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+18. `UseRealtime` Update the user interface realtime _default true_
+19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
+20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+21. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
 
 ### Appsettings.json example
 ```json
@@ -150,7 +160,76 @@ __All text (not number or date) driven search queries use a contain search__
 ### Rest API documentation
 Starsky has a Json restful API. Please read the documentation
 
-> Tip: Breaking changes are documentated in `./history.md`
+> Tip: Breaking changes are documented in `./history.md`
+
+
+| Path                               | Type  | Description                                                                |
+|------------------------------------|-------|----------------------------------------------------------------------------|
+| /api/account/status                | GET   | Check the account status of the login                                      |
+| /account/login                     | GET   | Login form page (HTML)                                                     |
+| /account/login                     | HEAD  | Login form page (HTML)                                                     |
+| /api/account/login                 | POST  | Login the current HttpContext in                                           |
+| /api/account/logout                | POST  | Logout the current HttpContext and redirect to login                       |
+| /account/logout                    | GET   | Logout the current HttpContext and redirect to login                       |
+| /api/account/change-secret         | POST  | Update password for current user                                           |
+| /api/account/register              | POST  | Create a new user (you need a AF-token first)                              |
+| /api/account/register/status       | GET   | Is the register form open                                                  |
+| /api/account/permissions           | GET   | List of current permissions                                                |
+| /api/allowed-types/mimetype/sync   | GET   | A (string) list of allowed MIME-types ExtensionSyncSupportedList           |
+| /api/allowed-types/mimetype/thumb  | GET   | A (string) list of allowed ExtensionThumbSupportedList MimeTypes           |
+| /api/allowed-types/thumb           | GET   | Check if IsExtensionThumbnailSupported                                     |
+| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
+| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
+| /api/env                           | HEAD  | Show the runtime settings (dont allow AllowAnonymous)                      |
+| /api/env                           | GET   | Show the runtime settings (dont allow AllowAnonymous)                      |
+| /api/env                           | POST  | Show the runtime settings (dont allow AllowAnonymous)                      |
+| /api/delete                        | DELETE| Remove files from the disk, but the file must contain the !delete! tag     |
+| /api/download-sidecar              | GET   | Download sidecar file for example image.xmp                                |
+| /api/download-photo                | GET   | Select manually the original or thumbnail                                  |
+| /error                             | GET   | Return Error page                                                          |
+| /api/export/create-zip             | POST  | Export source files to an zip archive                                      |
+| /api/export/zip/{f}.zip            | GET   | Get the exported zip, but first call 'createZip'use for example this url...|
+| /api/geo/status                    | GET   | Get Geo sync status                                                        |
+| /api/geo/sync                      | POST  | Reverse lookup for Geo Information and/or add Geo location based on a GP...|
+| /api/health                        | GET   | Check if the service has any known errors and return only a stringPublic...|
+| /api/health/details                | GET   | Check if the service has any known errorsFor Authorized Users only         |
+| /api/health/application-insights   | GET   | Add Application Insights script to user context                            |
+| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionuses x-api-v...|
+| /api/health/check-for-updates      | GET   | Check if Client/App version has a match with the API-version               |
+| /search                            | POST  | Redirect to search GET page (HTML)                                         |
+| /search                            | GET   | Search GET page (HTML)                                                     |
+| /trash                             | GET   | Trash page (HTML)                                                          |
+| /import                            | GET   | Import page (HTML)                                                         |
+| /preferences                       | GET   | Preferences page (HTML)                                                    |
+| /account/register                  | GET   | View the Register form (HTML)                                              |
+| /api/import                        | POST  | Import a file using the structure format                                   |
+| /api/import/thumbnail              | POST  | Upload thumbnail to ThumbnailTempFolderMake sure that the filename is co...|
+| /api/import/fromUrl                | POST  | Import file from web-url (only whitelisted domains) and import this file...|
+| /api/import/history                | GET   | Today's imported files                                                     |
+| /api/index                         | GET   | The database-view of a directory                                           |
+| /api/info                          | GET   | Get realtime (cached a few minutes) about the file                         |
+| /api/update                        | POST  | Update Exif and Rotation API                                               |
+| /api/replace                       | POST  | Search and Replace text in meta information                                |
+| /api/publish                       | GET   | Get all publish profilesTo see the entire config check appSettings         |
+| /api/publish/create                | POST  | Publish                                                                    |
+| /api/publish/exist                 | GET   | To give the user UI feedback when submitting the itemNameTrue is not to ...|
+| /redirect/sub-path-relative        | GET   | Redirect or view path to relative paths using the structure-config (see ...|
+| /api/search                        | GET   | Gets the list of search results (cached)                                   |
+| /api/search/relative-objects       | GET   | Get relative paths in a search queryDoes not cover multiple pages (so it...|
+| /api/search/trash                  | GET   | List of files with the tag: !delete!Caching is disabled on this api call   |
+| /api/search/remove-cache           | POST  | Clear search cache to show the correct results                             |
+| /api/suggest                       | GET   | Gets the list of search results (cached)                                   |
+| /api/suggest/all                   | GET   | Show all items in the search suggest cache                                 |
+| /api/suggest/inflate               | GET   | To fill the cache with the data (only if cache is not already filled)      |
+| /api/sync/mkdir                    | POST  | Make a directory (-p)                                                      |
+| /api/sync                          | POST  | Do a file sync in a background process                                     |
+| /api/sync/rename                   | POST  | Rename file/folder and update it in the database                           |
+| /api/synchronize                   | POST  | Experimental/Alpha API to sync data! Please use /api/sync                  |
+| /api/synchronize                   | GET   | Experimental/Alpha API to sync data! Please use /api/sync                  |
+| /api/thumbnail/{f}                 | GET   | Http Endpoint to get full size image or thumbnail                          |
+| /api/thumbnail-generation          | POST  | Create thumbnails for a folder in the background                           |
+| /api/upload                        | POST  | Upload to specific folder (does not check if already has been imported)U...|
+| /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|
 
 ### Swagger / OpenAPI
 Swagger is an open-source software framework backed by a large ecosystem 
@@ -191,3 +270,5 @@ There is also a check to make sure the database runs good
 
 #### Application Insights
 Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.
+
+

@@ -1,11 +1,12 @@
 {
   "name": "build-tools",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "",
   "main": "",
   "scripts": {
     "app-version-update": "node app-version-update.js",
-    "project-guid": "node project-guid.js"
+    "project-guid": "node project-guid.js",
+    "nuget-package-list": "node nuget-package-list.js"
   },
   "author": "",
   "license": "ISC"

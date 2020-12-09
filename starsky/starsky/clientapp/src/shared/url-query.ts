@@ -1,17 +1,19 @@
-import { IUrl, newIUrl } from '../interfaces/IUrl';
-import isDev from './is-dev';
-import { URLPath } from './url-path';
+import { IUrl, newIUrl } from "../interfaces/IUrl";
+import isDev from "./is-dev";
+import { URLPath } from "./url-path";
 
 export class UrlQuery {
-
-  public prefix: string = "/starsky"
+  public prefix: string = "/starsky";
 
   public UrlHomePage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? "/" : `${this.prefix}/`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? "/"
+      : `${this.prefix}/`;
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `${new URLPath().StartOnSlash(locationHash)}`
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `${new URLPath().StartOnSlash(locationHash)}`
       : `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`;
   }
 
@@ -36,31 +38,43 @@ export class UrlQuery {
    * @param t query
    */
   public UrlSearchPage(t: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/search?t=${t}` : `${this.prefix}/search?t=${t}`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/search?t=${t}`
+      : `${this.prefix}/search?t=${t}`;
   }
 
   /**
-  * Search path based on Location Hash
-  */
+   * Search path based on Location Hash
+   */
   public HashSearchPage(historyLocationHash: string): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/search${new URLPath().IUrlToString(url)}` : `${this.prefix}/search${new URLPath().IUrlToString(url)}`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/search${new URLPath().IUrlToString(url)}`
+      : `${this.prefix}/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/trash?t=!delete!` : `${this.prefix}/trash?t=!delete!`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/trash?t=!delete!`
+      : `${this.prefix}/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/import` : `${this.prefix}/import`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/import`
+      : `${this.prefix}/import`;
   }
 
   public UrlPreferencesPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/preferences` : `${this.prefix}/preferences`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/preferences`
+      : `${this.prefix}/preferences`;
   }
 
   public UrlLoginPage(): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/login` : `${this.prefix}/account/login`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/account/login`
+      : `${this.prefix}/account/login`;
   }
 
   public UrlLoginApi(): string {
@@ -68,7 +82,9 @@ export class UrlQuery {
   }
 
   public UrlLogoutPage(returnUrl: string): string {
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/account/logout?ReturnUrl=${returnUrl}` : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/account/logout?ReturnUrl=${returnUrl}`
+      : `${this.prefix}/account/logout?ReturnUrl=${returnUrl}`;
   }
 
   public UrlLogoutApi(): string {
@@ -77,7 +93,7 @@ export class UrlQuery {
 
   private urlReplacePath(input: string): string {
     let output = input.replace("#", "");
-    return output.replace(/\+/ig, "%2B");
+    return output.replace(/\+/gi, "%2B");
   }
 
   public UrlAccountRegisterApi(): string {
@@ -88,15 +104,26 @@ export class UrlQuery {
     return `${this.prefix}/account/register`;
   }
 
-  public UrlSearchRelativeApi = (f: string, t: string | undefined, pageNumber = 0): string => {
-    return `${this.prefix}/api/search/relative-objects?f=` + new URLPath().encodeURI(f) + "&t=" +
+  public UrlSearchRelativeApi = (
+    f: string,
+    t: string | undefined,
+    pageNumber = 0
+  ): string => {
+    return (
+      `${this.prefix}/api/search/relative-objects?f=` +
+      new URLPath().encodeURI(f) +
+      "&t=" +
       t +
-      "&p=" + pageNumber;
-  }
+      "&p=" +
+      pageNumber
+    );
+  };
 
   public UrlQuerySearchApi = (query: string, pageNumber = 0): string => {
-    return this.prefix + "/api/search?json=true&t=" + query + "&p=" + pageNumber;
-  }
+    return (
+      this.prefix + "/api/search?json=true&t=" + query + "&p=" + pageNumber
+    );
+  };
 
   public UrlSearchSuggestApi(query: string): string {
     return this.prefix + "/api/suggest/?t=" + query;
@@ -108,28 +135,33 @@ export class UrlQuery {
 
   public UrlSearchTrashApi = (pageNumber = 0): string => {
     return this.prefix + "/api/search/trash?p=" + pageNumber;
-  }
+  };
 
   public UrlAccountStatus = (): string => {
     return this.prefix + "/api/account/status";
-  }
+  };
 
   public UrlAccountRegisterStatus = (): string => {
     return this.prefix + "/api/account/register/status";
-  }
+  };
 
   public UrlAccountChangeSecret = (): string => {
     return this.prefix + "/api/account/change-secret";
-  }
+  };
 
   public UrlAccountPermissions = (): string => {
     return this.prefix + "/api/account/permissions";
-  }
+  };
 
   /**
    * Keep colorClass in URL
    */
-  public updateFilePathHash(historyLocationHash: string, toUpdateFilePath: string, clearTSearchQuery?: boolean, emthySelectQuery?: boolean): string {
+  public updateFilePathHash(
+    historyLocationHash: string,
+    toUpdateFilePath: string,
+    clearTSearchQuery?: boolean,
+    emthySelectQuery?: boolean
+  ): string {
     var url = new URLPath().StringToIUrl(historyLocationHash);
     url.f = toUpdateFilePath;
     // when browsing to a parent folder from a detailview item
@@ -141,7 +173,9 @@ export class UrlQuery {
     if (emthySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
-    return document.location.pathname.indexOf(this.prefix) === -1 ? `/${new URLPath().IUrlToString(url)}` : `${this.prefix}/${new URLPath().IUrlToString(url)}`;
+    return document.location.pathname.indexOf(this.prefix) === -1
+      ? `/${new URLPath().IUrlToString(url)}`
+      : `${this.prefix}/${new URLPath().IUrlToString(url)}`;
   }
 
   /**
@@ -165,21 +199,21 @@ export class UrlQuery {
       urlObject.details = requested.details;
     }
     return this.UrlIndexServerApi(urlObject);
-  }
+  };
 
   /**
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApi = (urlObject: IUrl): string => {
-    return this.prefix + "/api/index" + new URLPath().IUrlToString(urlObject)
-  }
+    return this.prefix + "/api/index" + new URLPath().IUrlToString(urlObject);
+  };
 
   /**
    * Get Direct api/index with IUrl
    */
   public UrlIndexServerApiPath = (path: string): string => {
-    return this.prefix + "/api/index?f=" + path
-  }
+    return this.prefix + "/api/index?f=" + path;
+  };
 
   /**
    * GET: Gets the realtime API
@@ -196,51 +230,75 @@ export class UrlQuery {
    */
   public UrlUpdateApi = (): string => {
     return this.prefix + "/api/update";
-  }
+  };
 
   /**
    * POST to this to search and replace meta information like: tags, descriptions and titles
    */
   public UrlReplaceApi = (): string => {
     return this.prefix + "/api/replace";
-  }
+  };
 
   /**
-  * DELETE to endpoint to remove file from database and disk
-  */
+   * DELETE to endpoint to remove file from database and disk
+   */
   public UrlDeleteApi = (): string => {
     return this.prefix + "/api/delete";
-  }
+  };
 
-  public UrlThumbnailImage = (fileHash: string, issingleitem: boolean): string => {
-    return this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=" + issingleitem.toString();
-  }
+  public UrlThumbnailImage = (
+    fileHash: string,
+    issingleitem: boolean
+  ): string => {
+    return (
+      this.prefix +
+      "/api/thumbnail/" +
+      fileHash +
+      ".jpg?issingleitem=" +
+      issingleitem.toString()
+    );
+  };
 
   public UrlThumbnailJsonApi = (fileHash: string): string => {
     return this.prefix + "/api/thumbnail/" + fileHash + "?json=true";
-  }
+  };
 
-  public UrlDownloadPhotoApi = (f: string, isThumbnail: boolean = true, cache: boolean = true): string => {
-    return this.prefix + "/api/download-photo?f=" + f + "&isThumbnail=" + isThumbnail + "&cache=" + cache
-  }
+  public UrlDownloadPhotoApi = (
+    f: string,
+    isThumbnail: boolean = true,
+    cache: boolean = true
+  ): string => {
+    return (
+      this.prefix +
+      "/api/download-photo?f=" +
+      f +
+      "&isThumbnail=" +
+      isThumbnail +
+      "&cache=" +
+      cache
+    );
+  };
 
   public UrlApiAppSettings = (): string => {
-    return this.prefix + "/api/env/"
-  }
+    return this.prefix + "/api/env/";
+  };
 
   /**
    * url create a zip
    */
   public UrlExportPostZipApi = (): string => {
-    return this.prefix + "/api/export/create-zip/"
-  }
+    return this.prefix + "/api/export/create-zip/";
+  };
 
   /**
    * export/zip/SR497519527.zip?json=true
    */
-  public UrlExportZipApi = (createZipId: string, json: boolean = true): string => {
+  public UrlExportZipApi = (
+    createZipId: string,
+    json: boolean = true
+  ): string => {
     return this.prefix + "/api/export/zip/" + createZipId + ".zip?json=" + json;
-  }
+  };
 
   /**
    * Url of Sync (no need to encode url)
@@ -277,15 +335,15 @@ export class UrlQuery {
   }
 
   public UrlHealthDetails(): string {
-    return `${this.prefix}/api/health/details`
+    return `${this.prefix}/api/health/details`;
   }
 
   public UrlHealthCheckForUpdates(): string {
-    return `${this.prefix}/api/health/check-for-updates`
+    return `${this.prefix}/api/health/check-for-updates`;
   }
 
   public UrlRemoveCache(parentFolder: string): string {
-    return this.prefix + "/api/remove-cache?json=true&f=" + parentFolder
+    return this.prefix + "/api/remove-cache?json=true&f=" + parentFolder;
   }
 
   public UrlGeoSync(): string {
@@ -318,9 +376,8 @@ export class UrlQuery {
 
     // Create React App is not supporting websockets. At least is isn't working
     if (isDev()) {
-      url = url.replace(":3000", ":5000")
+      url = url.replace(":3000", ":5000");
     }
     return url;
   }
-
-} 
+}

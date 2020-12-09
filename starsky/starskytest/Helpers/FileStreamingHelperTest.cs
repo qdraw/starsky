@@ -85,16 +85,17 @@ namespace starskytest.Helpers
         [TestMethod]
         public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_imagejpeg()
         {
-            var targetStream = new MemoryStream();
             var createAnImage = new CreateAnImage();
 
             FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
             _appSettings.TempFolder = createAnImage.BasePath;
 
             var streamSelector = new FakeSelectorStorage(new StorageHostFullPathFilesystem());
-            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", requestBody, _appSettings,streamSelector);
+            var formValueProvider = await FileStreamingHelper.StreamFile("image/jpeg", 
+	            requestBody, _appSettings,streamSelector);
+            
             Assert.AreNotEqual(null, formValueProvider.ToString());
-            requestBody.Dispose();
+            await requestBody.DisposeAsync();
             
             // Clean
             streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
@@ -156,6 +157,15 @@ namespace starskytest.Helpers
             var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
             Assert.AreEqual("2018-07-20-201452.jpg",result);    
         }
+        
+        [TestMethod]
+        public void FileStreamingHelper_HeaderFileName_Uppercase()
+        {
+	        var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
+	        httpContext.Request.Headers["filename"] = "UPPERCASE.jpg"; //Set header
+	        var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+	        Assert.AreEqual("UPPERCASE.jpg",result);    
+        }
 
         [TestMethod]
         public void FileStreamingHelper_HeaderFileName_base64StringTest()
@@ -165,6 +175,16 @@ namespace starskytest.Helpers
             var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
             Assert.AreEqual("2018-07-20-201452.jpg",result);    
         }
+        
+        [TestMethod]
+        public void FileStreamingHelper_HeaderFileName_base64StringTest_Uppercase()
+        {
+	        var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
+	        httpContext.Request.Headers["filename"] = "VVBQRVJDQVNFLkpQRw=="; //Set header
+	        var result = FileStreamingHelper.HeaderFileName(httpContext.Request,_appSettings);
+	        Assert.AreEqual("UPPERCASE.JPG",result);    
+        }
+        
         
 //        [TestMethod]
 //        public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()

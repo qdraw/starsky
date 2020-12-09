@@ -5,16 +5,21 @@ export interface IClipboardData {
 }
 
 export class ClipboardHelper {
-
   /**
    * Name of the sessionStorage
    */
-  private clipBoardName = 'starskyClipboardData';
+  private clipBoardName = "starskyClipboardData";
 
-  public Copy(tagsReference: React.RefObject<HTMLDivElement>,
+  public Copy(
+    tagsReference: React.RefObject<HTMLDivElement>,
     descriptionReference: React.RefObject<HTMLDivElement>,
-    titleReference: React.RefObject<HTMLDivElement>): boolean {
-    if (!tagsReference.current || !descriptionReference.current || !titleReference.current) {
+    titleReference: React.RefObject<HTMLDivElement>
+  ): boolean {
+    if (
+      !tagsReference.current ||
+      !descriptionReference.current ||
+      !titleReference.current
+    ) {
       return false;
     }
 
@@ -22,11 +27,14 @@ export class ClipboardHelper {
     var description = descriptionReference.current.innerText;
     var title = titleReference.current.innerText;
 
-    sessionStorage.setItem(this.clipBoardName, JSON.stringify({
-      tags,
-      description,
-      title
-    } as IClipboardData));
+    sessionStorage.setItem(
+      this.clipBoardName,
+      JSON.stringify({
+        tags,
+        description,
+        title
+      } as IClipboardData)
+    );
     return true;
   }
 
@@ -41,10 +49,16 @@ export class ClipboardHelper {
     return result as IClipboardData;
   }
 
-  public Paste(tagsReference: React.RefObject<HTMLDivElement>,
+  public Paste(
+    tagsReference: React.RefObject<HTMLDivElement>,
     descriptionReference: React.RefObject<HTMLDivElement>,
-    titleReference: React.RefObject<HTMLDivElement>): boolean {
-    if (!tagsReference.current || !descriptionReference.current || !titleReference.current) {
+    titleReference: React.RefObject<HTMLDivElement>
+  ): boolean {
+    if (
+      !tagsReference.current ||
+      !descriptionReference.current ||
+      !titleReference.current
+    ) {
       return false;
     }
     var readData = this.Read();
@@ -54,15 +68,15 @@ export class ClipboardHelper {
     }
     var tags = tagsReference.current;
     tags.innerText = readData.tags;
-    tags.dispatchEvent(new Event('blur'))
+    tags.dispatchEvent(new Event("blur"));
 
     var description = descriptionReference.current;
     description.innerText = readData.description;
-    description.dispatchEvent(new Event('blur'))
+    description.dispatchEvent(new Event("blur"));
 
     var title = titleReference.current;
     title.innerText = readData.title;
-    title.dispatchEvent(new Event('blur'))
+    title.dispatchEvent(new Event("blur"));
     return true;
   }
 }

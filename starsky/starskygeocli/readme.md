@@ -1,22 +1,23 @@
 # Starsky Geo Cli
 ## List of [Starsky](../../readme.md) Projects
- * [inotify-settings](../../inotify-settings/readme.md) _to setup auto indexing on linux_
  * [starsky (sln)](../../starsky/readme.md) _database photo index & import index project_
     * [starsky](../../starsky/starsky/readme.md) _web api application / interface_
       *  [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
-    * [starskySyncCli](../../starsky/starskysynccli/readme.md)  _database command line interface_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line interface_
     * __[starskyGeoCli](../../starsky/starskygeocli/readme.md)  gpx sync and reverse 'geo tagging'__
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
+    * [starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database_
+    * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
+ * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [Changelog](../../history.md) _Release notes and history_
 
-## starskyGeoSync docs
+## Geo Sync Options
 
 ### Introduction gpx tagging
 When your camera has no GPS support build in you can use your mobile phone to keep your track. This application can combine a list of your recent locations and when the photo has taken into a location. When you have a GPX track file and a photo you can know where it is taken. With various sport track apps support exporting gpx files.

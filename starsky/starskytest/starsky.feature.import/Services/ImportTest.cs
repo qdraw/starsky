@@ -5,13 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.import.Services;
-using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starskycore.Models;
@@ -30,7 +29,7 @@ namespace starskytest.starsky.feature.import.Services
 		private readonly IConsole _console;
 
 		/// <summary>
-		/// Also known as ImportServiceTest
+		/// Also known as ImportServiceTest (Also check the InMemoryDb version)
 		/// </summary>
 		public ImportTest()
 		{
@@ -57,7 +56,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_HappyFlow()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 
 			var result = await importService.Preflight(
@@ -76,7 +75,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_Ignore_ColorClassOverwrite()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 
 			var result = await importService.Preflight(
@@ -96,7 +95,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_ForceOverWrite_ColorClassOverwrite()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 
 			var result = await importService.Preflight(
@@ -116,22 +115,6 @@ namespace starskytest.starsky.feature.import.Services
 		}
 
 		[TestMethod]
-		public async Task Importer_EmptyDirectory()
-		{
-			var appSettings = new AppSettings{Verbose = true};
-			var storage = new FakeIStorage(new List<string>{"/"});
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(storage, appSettings), null, _console);
-
-			var result = await importService.Importer(
-				new List<string> {"/"},
-				new ImportSettingsModel());
-
-			Assert.IsNotNull(result);
-			Assert.IsTrue(!result.Any());
-		}
-		
-		[TestMethod]
 		public async Task Preflight_SingleImage_DateGetByFileNameNoExif()
 		{
 			var appSettings = new AppSettings();
@@ -140,7 +123,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/2020-04-27 11:07:00.jpg"},
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}
 			);
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 			
 			var result = await importService.Preflight(
@@ -165,7 +148,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{new byte[0]}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, 
-				new FakeIImportQuery(null),
+				new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 			
 			var result = await importService.Preflight(
@@ -184,12 +167,12 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.unknown"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes}
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings,
-				new FakeIImportQuery(null),
+				new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings), null, _console);
 
 			var result = await importService.Preflight(
@@ -239,7 +222,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_NonExist()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 			
 			var result = await importService.Preflight(new List<string> {"/non-exist.jpg"},
@@ -253,7 +236,7 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_NonExistDirectory()
 		{
 			var appSettings = new AppSettings();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 			
 			var result = await importService.Preflight(new List<string> {"/non-exist"},
@@ -269,7 +252,7 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings();
 			var importService = new Import(
 				new FakeSelectorStorage(_iStorageDirectoryRecursive), 
-				appSettings, new FakeIImportQuery(null),
+				appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null,  _console);
 			
 			var importIndexItems = await importService.Preflight(
@@ -304,7 +287,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, 
-			new FakeIImportQuery(null),
+			new FakeIImportQuery(),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null,  _console);
 			
 			var result = await importService.Preflight(new List<string> {"/test"},
@@ -348,7 +331,7 @@ namespace starskytest.starsky.feature.import.Services
 		/// <param name="inputFileFullPath">subPath style </param>
 		/// <param name="index">number</param>
 		/// <returns>expected result</returns>
-		private string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
+		public static string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
 			var fileIndexItem = new ReadMeta(storage).ReadExifAndXmpFromFile(inputFileFullPath);
 			var importIndexItem = new ImportIndexItem(appSettings)
@@ -372,24 +355,6 @@ namespace starskytest.starsky.feature.import.Services
 				index);
 			return result;
 		}
-
-		[TestMethod]
-		public async Task Importer_ToDefaultFolderStructure_default_HappyFlow()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query,_console);
-
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel());
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
-		}
 		
 		[TestMethod]
 		public async Task Importer_DeleteAfter()
@@ -399,9 +364,9 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"}, 
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImage.Bytes});
 			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console);
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -410,30 +375,25 @@ namespace starskytest.starsky.feature.import.Services
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));			
 		}
-
+		
 		[TestMethod]
-		public async Task Importer_Gpx()
+		public async Task Importer_EmptyDirectory()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var query = new FakeIQuery();
-			var storage = new FakeIStorage(
-				new List<string>{"/"}, 
-				new List<string>{"/test.gpx"},
-				new List<byte[]>{CreateAnGpx.Bytes});
-			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(storage, appSettings),query,_console);
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.gpx");
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings), null, _console);
 
-			var result = await importService.Importer(new List<string> {"/test.gpx"},
+			var result = await importService.Importer(
+				new List<string> {"/"},
 				new ImportSettingsModel());
-			
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
-			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);			
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(!result.Any());
 		}
 		
 		[TestMethod]
-		public async Task Importer_XmpChecked()
+		public async Task Importer_Xmp_WhenImportingAFileThatAlreadyHasAnXmpSidecarFile()
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var query = new FakeIQuery();
@@ -442,17 +402,99 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/test.dng","/test.xmp"},
 				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
 			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query,_console);
 			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng");
 
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
 			
-			Assert.AreEqual(expectedFilePath,query.GetObjectByFilePath(expectedFilePath).FilePath);
+			Assert.AreEqual(expectedFilePath, result[0].FileIndexItem.FilePath);
 			Assert.AreEqual(ImportStatus.Ok, result.FirstOrDefault().Status);
 			// Apple is read from XMP
 			Assert.AreEqual("Apple",result[0].FileIndexItem.Make);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_CheckIfSidecarExtensionsFilled()
+		{
+			// File already exist before importing
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(1, result[0].FileIndexItem.SidecarExtensionsList.Count);
+
+			var sidecarExtList = result[0].FileIndexItem.SidecarExtensionsList.ToList();
+			Assert.AreEqual("xmp",sidecarExtList[0]);
+		}
+		
+		[TestMethod]
+		public async Task Importer_Xmp_NotOverWriteExistingFile()
+		{
+			// WhenImportingAFileThatAlreadyHasAnXmpSidecarFile
+			var appSettings = new AppSettings{Verbose = true, ExifToolImportXmpCreate = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng","/test.xmp"},
+				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			var result = await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			Assert.AreEqual(1, result.Count);
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng").Replace(".dng",".xmp");
+
+			var stream = storage.ReadStream(expectedFilePath);
+
+			var streamLength = stream.Length;
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+			
+			Assert.AreEqual(CreateAnXmp.Bytes.Length,streamLength);
+			Assert.IsTrue(toStringAsync.Contains("<tiff:Make>Apple</tiff:Make>"));
+		}
+		
+		[TestMethod]
+		public async Task Importer_XmpIsCreatedDuringImport()
+		{
+			// xmp is created during import
+			var appSettings = new AppSettings{Verbose = true};
+			var query = new FakeIQuery();
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.dng"},
+				new List<byte[]>{CreateAnPng.Bytes});
+
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(storage, appSettings),query,_console);
+
+			await importService.Importer(new List<string> {"/test.dng"},
+				new ImportSettingsModel());
+			
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+				"/test.dng").Replace(".dng",".xmp");
+
+			Assert.IsTrue(storage.ExistFile(expectedFilePath));
+			
+			var stream = storage.ReadStream(expectedFilePath);
+			var toStringAsync = await new PlainTextFileHelper().StreamToStringAsync(stream);
+
+			Assert.AreEqual(FakeExifTool.XmpInjection,toStringAsync);
 		}
 		
 		[TestMethod]
@@ -463,7 +505,7 @@ namespace starskytest.starsky.feature.import.Services
 			var storage =new FakeIStorage();
 			// write source file
 			await storage.WriteStreamAsync(
-				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), "/test.jpg"
+				new MemoryStream(CreateAnImage.Bytes), "/test.jpg"
 			);
 			// write  /2018/04/2018_04_22/20180422_161454_test.jpg
 			var path = GetExpectedFilePath(storage, appSettings, "/test.jpg");
@@ -471,7 +513,7 @@ namespace starskytest.starsky.feature.import.Services
 				new MemoryStream(FakeCreateAn.CreateAnImage.Bytes), path
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
-				new FakeIImportQuery(null),
+				new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console)
 			{
 				MaxTryGetDestinationPath = 0
@@ -491,44 +533,20 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/", "/2018", "/2018/04","/2018/04/2018_04_22"}, 
 				new List<string>{"/test.jpg","/2018/04/2018_04_22/20180422_161454_test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, new byte[0]});
+				new List<byte[]>{CreateAnImage.Bytes, new byte[0]});
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
-				new FakeIImportQuery(null),
+				new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console);
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 			
-			Assert.AreEqual(ImportStatus.Ok,result.FirstOrDefault().Status);
+			Assert.AreEqual(ImportStatus.Ok,result[0].Status);
 
 			// get something like  /2018/04/2018_04_22/20180422_161454_test_1.jpg
 			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.jpg", 1);
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-		}
-
-		
-		[TestMethod]
-		public async Task Importer_OverwriteColorClass()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
-
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, appSettings, "/test.jpg");
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel{
-					ColorClass = 5
-				});
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			var queryResult = query.GetObjectByFilePath(expectedFilePath);
-			
-			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
-			Assert.AreEqual(ColorClassParser.Color.Typical,queryResult.ColorClass);
-
-			_iStorageFake.FileDelete(expectedFilePath);
+			Assert.AreEqual(expectedFilePath,result[0].FilePath);
 		}
 
 		[TestMethod]
@@ -536,7 +554,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings),query, _console);
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
@@ -544,34 +562,8 @@ namespace starskytest.starsky.feature.import.Services
 			
 			// AddToDatabase is Used by the importer History agent
 
-			Assert.IsTrue(result.FirstOrDefault().FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
-			Assert.IsTrue(result.FirstOrDefault().AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
-		}
-
-		[TestMethod]
-		public async Task Importer_OverwriteStructure_HappyFlow()
-		{
-			var appSettings = new AppSettings();
-			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
-			
-			var result = await importService.Importer(new List<string> {"/test.jpg"},
-				new ImportSettingsModel{
-					Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-				});
-			
-			var expectedFilePath = GetExpectedFilePath(_iStorageFake, new AppSettings
-			{
-				Structure = "/yyyy/MM/yyyy_MM_dd*/_yyyyMMdd_HHmmss.ext"
-			}, "/test.jpg");
-			
-			Assert.AreEqual(expectedFilePath,result.FirstOrDefault().FilePath);
-			var queryResult = query.GetObjectByFilePath(expectedFilePath);
-			
-			Assert.AreEqual(expectedFilePath,queryResult.FilePath);
-
-			_iStorageFake.FileDelete(expectedFilePath);
+			Assert.IsTrue(result[0].FileIndexItem.AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+			Assert.IsTrue(result[0].AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
 		}
 
 		[TestMethod]
@@ -580,7 +572,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, appSettings),query, _console);
 			
 			await importService.Importer(new List<string> {"/test.jpg"},
@@ -599,9 +591,9 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes}
 			);
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console);
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
@@ -621,16 +613,16 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes}
 			);
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console);
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 
 			// Home is created at first
-			Assert.IsNotNull(query.GetObjectByFilePath("/"));
+			Assert.IsNotNull(await query.GetObjectByFilePathAsync("/"));
 		}
 		
 		[TestMethod]
@@ -641,18 +633,18 @@ namespace starskytest.starsky.feature.import.Services
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes}
 			);
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
 				new FakeExifTool(storage, appSettings),query, _console);
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
 
 			// Home is not created in the loop
-			Assert.IsNotNull(query.GetObjectByFilePath("/2018"));
-			Assert.IsNotNull(query.GetObjectByFilePath("/2018/04"));
-			Assert.IsNotNull(query.GetObjectByFilePath("/2018/04/2018_04_22"));
+			Assert.IsNotNull(await query.GetObjectByFilePathAsync("/2018"));
+			Assert.IsNotNull(await query.GetObjectByFilePathAsync("/2018/04"));
+			Assert.IsNotNull(await query.GetObjectByFilePathAsync("/2018/04/2018_04_22"));
 		}
 
 		[TestMethod]
@@ -660,11 +652,11 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var query = new FakeIQuery();
-			var importQuery = new FakeIImportQuery(null);
+			var importQuery = new FakeIImportQuery();
 			var storage = new FakeIStorage(
 				new List<string>{"/"},
 				new List<string>{"/test.jpg"},
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes}
+				new List<byte[]>{CreateAnImage.Bytes}
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
@@ -674,12 +666,29 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			// remove it due we have one example
-			await importQuery.RemoveAsync(result.FirstOrDefault().FileHash);
+			await importQuery.RemoveAsync(result[0].FileHash);
 			
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
+		}
 
-			var items = storage.GetDirectories("/");
+		[TestMethod]
+		public async Task Importer_ShouldNotUpdateQuery_IndexModeFalse()
+		{
+			var appSettings = new AppSettings{Verbose = true};
+			var storage = new FakeIStorage(
+				new List<string>{"/"},
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{CreateAnImage.Bytes}
+			);
+			
+			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null,
+				new FakeExifTool(storage, appSettings),null, _console);
+
+			var result = await importService.Importer(new List<string> {"/test.jpg"},
+				new ImportSettingsModel {IndexMode = false});
+
+			Assert.AreEqual( ImportStatus.Ok, result[0].Status);
 		}
 
 		[TestMethod]
@@ -690,7 +699,7 @@ namespace starskytest.starsky.feature.import.Services
 				Structure = "/yyyy/yyyyMMdd_HHmmss_\\d.ext"
 			};
 			var query = new FakeIQuery();
-			var importQuery = new FakeIImportQuery(null);
+			var importQuery = new FakeIImportQuery();
 			var storage = new FakeIStorage(
 				new List<string>{"/","/0001","/2020"},
 				new List<string>{"/test.jpg","/0001/00010101_000000_d.png", 
@@ -742,13 +751,12 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task InternalImporter_IgnoreWrongInput()
 		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(), new FakeIImportQuery(null),
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(), new FakeIImportQuery(),
 				new FakeExifTool(_iStorageFake, new AppSettings()),new FakeIQuery(), _console);
 
 			var result = await importService.Importer(new ImportIndexItem {Status = ImportStatus.FileError},
 				new ImportSettingsModel());
 			Assert.AreEqual(ImportStatus.FileError, result.Status);
 		}
-
 	}
 }

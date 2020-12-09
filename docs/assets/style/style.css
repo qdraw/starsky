@@ -212,13 +212,21 @@ body {
 
 
 .container {
-    width: 960px;
+    width: 840px;
     margin: 0px auto 50px auto;
     margin-left: auto;
     margin-right: auto;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1500px) {
+	.container{
+		width: calc(97% - 340px);
+		margin-left: 340px;
+		margin-right: 10px;
+	}
+}
+
+@media (max-width: 860px) {
 	.container{
 		width: 97%;
 		margin-left: 10px;
@@ -336,9 +344,16 @@ table {
 }
 
 table tr {
-  background-color: #f8f8f8;
+  background-color: #ECEFF1;
   border: 1px solid #ddd;
   padding: .35em;
+}
+
+table tr:nth-child(even) {
+  background-color: #fff;
+}
+table thead tr{
+  background-color: #CFD8DC;
 }
 
 table th,
@@ -397,5 +412,84 @@ table th {
 
   table td:last-child {
     border-bottom: 0;
+  }
+}
+
+
+.btn {
+  margin-top: 3px;
+  text-decoration: none;
+    display: inline-block;
+    padding: 6px 10px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    font-family: inherit;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+  }
+
+.btn.btn-default {
+    color: #fff;
+    background-color: #263238;
+}
+
+.btn-info {
+    color: #263238;
+    background-color: #fff;
+    border: 1px solid #263238;
+}
+
+
+#list-of-__starskyreadmemd__-projects,
+#list-of-starskyreadmemd-projects {
+  padding-top: 5px;
+  padding-left: 5px;
+  background-color:#ECEFF1;
+  font-size: 20px;
+}
+
+#list-of-__starskyreadmemd__-projects + ul,
+#list-of-starskyreadmemd-projects + ul{
+  padding: 5px;
+  background-color:#ECEFF1;
+  border-bottom: 1px solid #90A4AE;
+}
+
+
+@media (min-width: 860px) {
+
+  #list-of-__starskyreadmemd__-projects,
+  #list-of-starskyreadmemd-projects,
+  #list-of-__starskyreadmemd__-projects + ul,
+  #list-of-starskyreadmemd-projects + ul {
+    position: fixed;
+    top: 90px;
+    left: 0px;
+    width: 320px;
+  }
+
+  #list-of-__starskyreadmemd__-projects,
+  #list-of-starskyreadmemd-projects  {
+    top: 35px;
+    border-bottom: 1px solid #90A4AE;
+    height: 40px;
+  }
+
+  #list-of-__starskyreadmemd__-projects + ul,
+  #list-of-starskyreadmemd-projects + ul {
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding-right: 10px;
   }
 }

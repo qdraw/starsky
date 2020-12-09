@@ -74,7 +74,8 @@ namespace starsky.feature.geolookup.Services
 		                                    $"'{subPath}' should be Unspecified", nameof(valueDateTime));
 	        }
 	        
-	        return TimeZoneInfo.ConvertTime(valueDateTime, _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
+	        return TimeZoneInfo.ConvertTime(valueDateTime, 
+		        _appSettings.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
         }
 
         public List<FileIndexItem> LoopFolder(List<FileIndexItem> metaFilesInDirectory)

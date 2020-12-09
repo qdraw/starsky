@@ -1,16 +1,18 @@
-import React, { useEffect } from 'react';
-import useGlobalSettings from '../../../hooks/use-global-settings';
-import { Language } from '../../../shared/language';
+import React, { useEffect } from "react";
+import useGlobalSettings from "../../../hooks/use-global-settings";
+import { Language } from "../../../shared/language";
 
 type MoreMenuPropTypes = {
   children?: React.ReactNode;
-  defaultEnableMenu?: boolean
-}
+  defaultEnableMenu?: boolean;
+};
 
 export const MoreMenuEventCloseConst = "CLOSE_MORE_MENU";
 
-const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children, defaultEnableMenu }) => {
-
+const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
+  children,
+  defaultEnableMenu
+}) => {
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const MessageMore = language.text("Meer", "More");
@@ -34,15 +36,22 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({ children, defaul
   });
 
   return (
-    <div className={!children ? "item item--more disabled" : "item item--more"} onClick={toggleMoreMenu}>
+    <div
+      className={!children ? "item item--more disabled" : "item item--more"}
+      onClick={toggleMoreMenu}
+    >
       <span>{MessageMore}</span>
-      <div onChange={offMoreMenu} onClick={toggleMoreMenu} className={enabledMenu ? "menu-context" : "menu-context menu-context--hide"}>
-        <ul className="menu-options">
-          {children}
-        </ul>
+      <div
+        onChange={offMoreMenu}
+        onClick={toggleMoreMenu}
+        className={
+          enabledMenu ? "menu-context" : "menu-context menu-context--hide"
+        }
+      >
+        <ul className="menu-options">{children}</ul>
       </div>
     </div>
   );
 };
 
-export default MoreMenu
+export default MoreMenu;
