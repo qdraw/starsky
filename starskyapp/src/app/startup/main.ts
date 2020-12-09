@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
+import { setupChildProcess } from "../child-process/setup-child-process";
 import createMainWindow from "../main-window/create-main-window";
 import AppMenu from "../menu/menu";
 
@@ -7,13 +8,14 @@ import AppMenu from "../menu/menu";
 app.allowRendererProcessReuse = true;
 
 AppMenu();
+setupChildProcess();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  console.log('-->');
-  
+  console.log('ready -->' );
+
   createMainWindow();
 
   app.on("activate", function () {
