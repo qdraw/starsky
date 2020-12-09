@@ -16,10 +16,12 @@ using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.SyncServices;
 using starskycore.Models;
 
 namespace starsky.Controllers
@@ -138,14 +140,27 @@ namespace starsky.Controllers
 			var itemFromDatabase = await _query.GetObjectByFilePathAsync(metaDataItem.FilePath);
 			if ( itemFromDatabase == null )
 			{
+				AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
 				await _query.AddItemAsync(metaDataItem);
 				return metaDataItem;
 			}
 			
 			FileIndexCompareHelper.Compare(itemFromDatabase, metaDataItem);
+			AddOrRemoveXmpSidecarFileToDatabase(metaDataItem);
 
 			await _query.UpdateItemAsync(itemFromDatabase);
 			return itemFromDatabase;
+		}
+
+		private void AddOrRemoveXmpSidecarFileToDatabase(FileIndexItem metaDataItem)
+		{
+			if ( _iStorage.ExistFile(ExtensionRolesHelper.ReplaceExtensionWithXmp(metaDataItem
+				.FilePath))	 )
+			{
+				metaDataItem.AddSidecarExtension("xmp");
+				return;
+			}
+			metaDataItem.RemoveSidecarExtension("xmp");
 		}
 		
 		/// <summary>
@@ -172,7 +187,7 @@ namespace starsky.Controllers
 		/// Upload sidecar file to specific folder (does not check if already has been imported)
 		/// Use the header 'to' to determine the location to where to upload
 		/// Add header 'filename' when uploading direct without form
-		/// (ActionResult UploadToFolder)
+		/// (ActionResult UploadToFolderSidecarFile)
 		/// </summary>
 		/// <response code="200">done</response>
 		/// <response code="404">parent folder not found</response>
@@ -215,6 +230,12 @@ namespace starsky.Controllers
 				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
+				if ( !_appSettings.UseDiskWatcher )
+				{
+					new SyncSingleFile(_appSettings, _query, _iStorage,
+						new ConsoleWrapper()).UpdateSidecarFile(subPath);
+				}
+				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				importedList.Add(subPath);

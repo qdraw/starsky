@@ -231,6 +231,33 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task UploadToFolder_SidecarListShouldBeUpdated()
+		{
+			var controller = new UploadController(_import, _appSettings,  
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithFile(),
+			};
+
+			var toPlaceSubPath = "/test_sidecar.dng";
+			var toPlaceXmp = "/test_sidecar.xmp";
+
+			await _iStorage.WriteStreamAsync(new MemoryStream(new byte[1]), toPlaceXmp);
+			
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			await controller.UploadToFolder();
+
+			var queryResult = _query.SingleItem(toPlaceSubPath);
+
+			var sidecarExtList = queryResult.FileIndexItem.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList.Count);
+			Assert.AreEqual("xmp",sidecarExtList[0]);
+
+			await _query.RemoveItemAsync(queryResult.FileIndexItem);
+		}
+		
+		[TestMethod]
 		public async Task UploadToFolder_NotFound()
 		{
 			var controller =
@@ -358,6 +385,31 @@ namespace starskytest.Controllers
 			var list = actionResult.Value as List<string>;
 
 			Assert.AreEqual(toPlaceSubPath, list.FirstOrDefault());
+		}
+		
+		[TestMethod]
+		public async Task UploadToFolderSidecarFile_UpdateMainItemWithSidecarRef()
+		{
+			// it should add a reference to the main item
+			var controller = new UploadController(_import, new AppSettings{UseDiskWatcher = false}, 
+				new FakeSelectorStorage(_iStorage), _query, new FakeIWebSocketConnectionsService())
+			{
+				ControllerContext = RequestWithSidecar(),
+			};
+
+			var dngSubPath = "/UploadToFolderSidecarFile.dng";
+			await _query.AddItemAsync(
+				new FileIndexItem(dngSubPath));
+			
+			var toPlaceSubPath = "/UploadToFolderSidecarFile.xmp";
+			controller.ControllerContext.HttpContext.Request.Headers["to"] = toPlaceSubPath; //Set header
+
+			await controller.UploadToFolderSidecarFile();
+
+			var queryResult = await _query.GetObjectByFilePathAsync(dngSubPath);
+			var sidecarExtList = queryResult.SidecarExtensionsList.ToList();
+			Assert.AreEqual(1,sidecarExtList.Count);
+			Assert.AreEqual("xmp",sidecarExtList[0]);
 		}
 				
 		[TestMethod]
