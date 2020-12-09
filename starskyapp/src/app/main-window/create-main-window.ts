@@ -3,8 +3,9 @@ import { windowStateKeeper } from "../helpers/window-state-keeper";
 import * as path from 'path';
 import { mainWindows } from "./main-windows.const";
 import * as appConfig from 'electron-settings'
+import RememberUrl from "../config/remember-url";
 
-async function createMainWindow() {
+async function createMainWindow(relativeUrl: string = null) {
     
   const mainWindowStateKeeper = await windowStateKeeper('main');
 
@@ -36,21 +37,9 @@ async function createMainWindow() {
 
   mainWindowStateKeeper.track(newWindow);
 
-  newWindow.loadFile('pages/reload-redirect.html', { query: {"remember-url" : ''}});
-
-//   // set Remember url
-//   var rememberUrl = "";
-//   if (appConfig && appConfig.has("remember-url")) {
-//     rememberUrl = appConfig.get("remember-url");
-//   }
-//   console.log('rememberUrl', rememberUrl);
-//   newWindow.loadFile('pages/reload-redirect.html', { query: {"remember-url" : rememberUrl}});
-//   newWindow.on('close',()=>{
-//     var url = new URL(newWindow.webContents.getURL()).search
-//     console.log(url);
-//     appConfig.set("remember-url",encodeURI(url));
-//   })
-//   // end remember url
+  const rememberUrl = await getRememberUrl(relativeUrl);
+  const reloadRedirectPage = path.join("..","..","client", "redirect", "reload-redirect.html")
+  newWindow.loadFile(reloadRedirectPage, { query: {"remember-url" : rememberUrl}});
 
   newWindow.webContents.session.webRequest.onHeadersReceived((res, callback) => {
 
@@ -130,6 +119,17 @@ async function createMainWindow() {
 
   mainWindows.add(newWindow);
   return newWindow;
+}
+
+async function getRememberUrl(relativeUrl: string | null) : Promise<string>{
+  if (relativeUrl !== null) {
+    return relativeUrl;
+  }
+
+  if (await appConfig.has(RememberUrl)) {
+    return (await appConfig.get(RememberUrl)).toString()
+  }
+  return "";
 }
 
 export default createMainWindow;

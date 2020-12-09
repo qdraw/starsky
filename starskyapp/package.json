@@ -4,7 +4,8 @@
   "description": "Starsky",
   "main": "build/app/startup/main.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy",
+    "copy": "node build/setup/html-copy.js",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "npm run build && electron ./build/app/startup/main.js",

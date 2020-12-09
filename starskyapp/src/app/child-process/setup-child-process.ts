@@ -19,13 +19,6 @@ export function setupChildProcess() {
       fs.mkdirSync(tempFolder)
   }
 
-  // when exiftool already exist
-  const exifToolPath = path.join(tempFolder,"exiftool-unix", "exiftool");
-  if (fs.existsSync(exifToolPath)) {
-    const fd = fs.openSync(exifToolPath, "r");
-    fs.fchmodSync(fd, 0o777);
-  }
-
   var appSettingsPath = path.join(electronCacheLocation(), "appsettings.json");
   var databaseConnection = "Data Source=" + path.join(electronCacheLocation(), "starsky.db") ;
   
