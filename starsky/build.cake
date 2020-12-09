@@ -621,7 +621,7 @@ Task("SonarBegin")
                   Arguments = new ProcessArgumentBuilder()
                       .Append($"sonarscanner")
                       .Append($"begin")
-                      .Append($"/d:sonar.verbose=true")
+                      /* .Append($"/d:sonar.verbose=true") */
                       .Append($"/d:sonar.host.url=\"{url}\"")
                       .Append($"/k:\"{key}\"")
                       .Append($"/n:\"Starsky\"")

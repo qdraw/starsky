@@ -36,19 +36,10 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
-# Features todo (in random order)
-- [ ]   (Added) _Frond-end_  Search details show exact query behind modal
-- [ ]   (Added) _Front-end_ Zoom in picture
-- [ ]   (Fixed) _Back-end_ XMP Rotation __not implemented__
+# version 0.4.3 _(Unreleased)_ - 2020-12-??
+- nothing yet
 
-# Importer, Epic (Work in Progress)
-- [ ]   (Added)  _Back-end_ Watcher for import __not implemented__
-- [ ]   (Added)  _Back-end_ Import backup (what todo with structure) __not implemented__
-
-# Folder and file movable, Epic (Work In Progress)
-- [ ]   (x) Move multiple files __not implemented__
-
-# version 0.4.2 _(Unreleased)_ - 2020-12-??
+# version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
 - [x]   (Security) _Frond-end_  Upgrade ClientApp Typescript version to 4.1.2_
