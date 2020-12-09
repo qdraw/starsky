@@ -48,7 +48,10 @@ node starsky-tools/build-tools/app-version-update.js
 # Folder and file movable, Epic (Work In Progress)
 - [ ]   (x) Move multiple files __not implemented__
 
-# version 0.4.2 _(Unreleased)_ - 2020-12-??
+# version 0.4.3 _(Unreleased)_ - 2020-12-??
+- nothing yet
+
+# version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
 - [x]   (Security) _Frond-end_  Upgrade ClientApp Typescript version to 4.1.2_
