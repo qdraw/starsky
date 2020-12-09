@@ -1,10 +1,9 @@
-import { RequestOptions } from 'http'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
-describe('Archive (from upload)', () => {
+describe('DetailView (from upload)', () => {
   beforeEach('Check some config settings and do them before each test', () => {
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
@@ -82,5 +81,42 @@ describe('Archive (from upload)', () => {
     cy.get('.nextprev.nextprev--prev').first().click()
       .url()
       .should('contain', fileName2)
+  })
+
+  it('update label data', () => {
+    if (!config.isEnabled) return
+    cy.visit(config.url + '/' + fileName1)
+
+    cy.get('.item.item--labels').click()
+
+    // sourceTags is secretly updated during the run
+    let sourceTags = ''
+
+    const tagFileSelector = "[data-name='tags']"
+    const appendText = ', test'
+
+    cy.get(tagFileSelector).then(elems => {
+      sourceTags = elems.text()
+      cy.log(sourceTags)
+    }).then(() => {
+      cy.get(tagFileSelector).type(appendText)
+      cy.get(tagFileSelector).blur()
+    }).then(() => {
+      sessionStorage.clear()
+      cy.reload()
+    }).then(() => {
+      cy.get(tagFileSelector).should('contain', 'test')
+      // sourceTags does now contain test? #wtf
+      cy.get(tagFileSelector).should('contain', sourceTags)
+    }).then(() => {
+      // and now we going back to the orginal state
+      cy.get(tagFileSelector).type('{backspace}'.repeat(appendText.length))
+      cy.get(tagFileSelector).blur()
+    }).then(() => {
+      sessionStorage.clear()
+      cy.reload()
+    }).then(() => {
+      cy.get(tagFileSelector).should('not.contain', 'test')
+    })
   })
 })
