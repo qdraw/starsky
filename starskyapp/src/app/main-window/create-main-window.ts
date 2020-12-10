@@ -3,7 +3,7 @@ import { windowStateKeeper } from "../helpers/window-state-keeper";
 import * as path from 'path';
 import { mainWindows } from "./main-windows.const";
 import * as appConfig from 'electron-settings'
-import RememberUrl from "../config/remember-url";
+import RememberUrl from "../config/remember-url.const";
 
 async function createMainWindow(relativeUrl: string = null) {
     
@@ -31,14 +31,14 @@ async function createMainWindow(relativeUrl: string = null) {
       enableRemoteModule: false,
       partition: 'persist:main',
       contextIsolation: true,
-      // preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
+      preload: path.join(__dirname, "..","..","preload","preload-main.js") // use a preload script
     }
   });
 
   mainWindowStateKeeper.track(newWindow);
 
   const rememberUrl = await getRememberUrl(relativeUrl);
-  const reloadRedirectPage = path.join("..","..","client", "redirect", "reload-redirect.html")
+  const reloadRedirectPage = path.join("..","..","client", "pages", "redirect", "reload-redirect.html")
   newWindow.loadFile(reloadRedirectPage, { query: {"remember-url" : rememberUrl}});
 
   newWindow.webContents.session.webRequest.onHeadersReceived((res, callback) => {
