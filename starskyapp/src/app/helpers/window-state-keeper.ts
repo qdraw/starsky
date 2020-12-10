@@ -37,8 +37,6 @@ export async function windowStateKeeper(windowName: string) {
         windowState = window.getBounds();
       }
       windowState.isMaximized = window.isMaximized();
-      console.log(windowState);
-      
       appConfig.set(`windowState.${windowName}`, windowState as any);
     }  
   

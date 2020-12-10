@@ -1,12 +1,16 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import { setupChildProcess } from "../child-process/setup-child-process";
+import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
 import AppMenu from "../menu/menu";
-
+import defaultAppSettings from "./app-settings";
 
 app.allowRendererProcessReuse = true;
 
+
+ipcBridge ();
+defaultAppSettings();
 AppMenu();
 setupChildProcess();
 

@@ -1,3 +1,4 @@
+import { LocationIsRemoteIpcKey } from "../../app/config/location-settings-ipc-keys.const";
 
 /**
  * no slash at end
@@ -59,9 +60,9 @@ function warmupScript(domainUrl : string, apiVersion: number, count: number, max
   }
   
   function warmupLocalOrRemote() {
-    (window as any).api.send("settings",null);
+    (window as any).api.send(LocationIsRemoteIpcKey,null);
   
-    (window as any).api.receive("settings", (data : any) => {
+    (window as any).api.receive(LocationIsRemoteIpcKey, (data : any) => {
       if (!data || !data.remote) {
         document.title += ` going to default`
         warmupScript('http://localhost:9609', data.apiVersion, 0, 300);
