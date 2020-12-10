@@ -9,8 +9,13 @@ function ipcBridge () {
     ipcMain.on(LocationIsRemoteIpcKey, async (event, args) => {
         var currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
 
-        console.log('-->', LocationIsRemoteIpcKey, currentSettings);
-        event.reply(LocationIsRemoteIpcKey, currentSettings)
+        let isLocationRemote = false;
+        if (currentSettings !== undefined) {
+            isLocationRemote = currentSettings.toString() === 'true';
+        }
+        console.log('-->', LocationIsRemoteIpcKey, isLocationRemote);
+
+        event.reply(LocationIsRemoteIpcKey, isLocationRemote)
     });
 
     ipcMain.on(AppVersionIpcKey, async (event, args) => {

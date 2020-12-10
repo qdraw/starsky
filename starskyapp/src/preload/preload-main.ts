@@ -16,6 +16,8 @@ contextBridge.exposeInMainWorld(
             }
         },
         receive: (channel: string, func: Function) => {
+            // ipcRenderer.on(channel, (event, ...args) => console.log(...args));
+            
             let validChannels = [LocationIsRemoteIpcKey, LocationUrlIpcKey, AppVersionIpcKey];
             if (validChannels.includes(channel)) {
                 // Deliberately strip event as it includes `sender` 

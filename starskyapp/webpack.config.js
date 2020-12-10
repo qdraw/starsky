@@ -4,11 +4,20 @@ module.exports = {
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    'reload-redirect': "./src/client/script/reload-redirect.ts"
+    'reload-redirect': "./src/client/script/reload-redirect.ts",
   },
   output: {
-    path: path.resolve("[name].js".replace("src","build")),
-    filename: "[name].js",
+    filename: (pathData) => {
+      switch (pathData.runtime) {
+        case 'reload-redirect':
+          return path.join('build', 'client', 'script', '[name].js');
+        case 'preload-main':
+          return path.join('build', 'preload', '[name].js');
+        default:
+          return '[name].js';
+        }
+    },
+    path: __dirname,
   },
   resolve: {
     // Add ".ts" and ".tsx" as resolvable extensions.

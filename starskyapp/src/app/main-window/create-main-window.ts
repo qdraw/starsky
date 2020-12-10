@@ -29,7 +29,7 @@ async function createMainWindow(relativeUrl: string = null) {
     webPreferences: {
       allowRunningInsecureContent: false,
       nodeIntegration: false,
-      sandbox: true,
+      sandbox: false,
       enableRemoteModule: false,
       partition: 'persist:main',
       contextIsolation: true,
