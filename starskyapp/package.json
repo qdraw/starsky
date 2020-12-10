@@ -5,7 +5,8 @@
   "main": "build/app/startup/main.js",
   "scripts": {
     "build": "tsc && npm run copy",
-    "copy": "node build/setup/html-copy.js",
+    "copy": "node build/setup/html-copy.js ",
+    "copy:dev": "tsc src/setup/html-copy --outDir build/setup && node build/setup/html-copy.js ",
     "watch": "tsc -w",
     "lint": "eslint -c .eslintrc --ext .ts ./src",
     "start": "npm run build && electron ./build/app/startup/main.js",
