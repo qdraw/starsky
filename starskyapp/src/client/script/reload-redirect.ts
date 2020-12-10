@@ -1,4 +1,10 @@
 import { LocationIsRemoteIpcKey } from "../../app/config/location-settings-ipc-keys.const";
+import { AppVersionIpcKey } from "../../app/config/app-version-ipc-key.const";
+import { IPreloadApi } from "../../preload/IPreloadApi";
+
+declare global {
+  var api: IPreloadApi;
+}
 
 /**
  * no slash at end
@@ -13,6 +19,8 @@ function warmupScript(domainUrl : string, apiVersion: number, count: number, max
     if (rememberUrl) {
       appendAfterDomainUrl = decodeURI(rememberUrl);
     }
+    console.log(domainUrl);
+    
   
     fetch(domainUrl + '/api/health')
       .then((response) => {
@@ -60,19 +68,29 @@ function warmupScript(domainUrl : string, apiVersion: number, count: number, max
   }
   
   function warmupLocalOrRemote() {
-    (window as any).api.send(LocationIsRemoteIpcKey,null);
+    
+    
+    window.api.send(AppVersionIpcKey, 1);
+    window.api.receive(LocationIsRemoteIpcKey, (data : any) => {
+      console.log(data);
+      
+    });
+
+    window.api.send(LocationIsRemoteIpcKey, null);
   
-    (window as any).api.receive(LocationIsRemoteIpcKey, (data : any) => {
-      if (!data || !data.remote) {
-        document.title += ` going to default`
-        warmupScript('http://localhost:9609', data.apiVersion, 0, 300);
-        return;
-      }
+    window.api.receive(LocationIsRemoteIpcKey, (data : any) => {
+      console.log(data);
+      
+      // if (!data || !data.remote) {
+      //   document.title += ` going to default`
+      //   warmupScript('http://localhost:9609', data.apiVersion, 0, 300);
+      //   return;
+      // }
   
-      if(data.remote && data.location) {
-        document.title += ` going to ${data.location}`
-        warmupScript(data.location, data.apiVersion ,0, 300)
-      }
+      // if(data.remote && data.location) {
+      //   document.title += ` going to ${data.location}`
+      //   warmupScript(data.location, data.apiVersion ,0, 300)
+      // }
     });
   }
   

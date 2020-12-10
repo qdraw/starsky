@@ -9,8 +9,10 @@
     "paths": {
       "*": ["node_modules/*"]
     },
+    "moduleResolution": "Node"
   },
   "include": [
-    "src/client/**/*"
+    "src/client/**/*",
+    "src/preload/**/*",
   ]
 }

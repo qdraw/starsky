@@ -7,7 +7,7 @@ module.exports = {
     'reload-redirect': "./src/client/script/reload-redirect.ts"
   },
   output: {
-    path: path.resolve(__dirname, 'build', 'client', 'script'),
+    path: path.resolve("[name].js".replace("src","build")),
     filename: "[name].js",
   },
   resolve: {

@@ -20,7 +20,6 @@ async function createMainWindow(relativeUrl: string = null) {
     y = currentWindowY + 10;
   }
 
-
   let newWindow = new BrowserWindow({
     x,
     y,
@@ -28,6 +27,9 @@ async function createMainWindow(relativeUrl: string = null) {
     height: mainWindowStateKeeper.height,
     show: false,
     webPreferences: {
+      allowRunningInsecureContent: false,
+      nodeIntegration: false,
+      sandbox: true,
       enableRemoteModule: false,
       partition: 'persist:main',
       contextIsolation: true,

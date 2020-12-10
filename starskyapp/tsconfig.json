@@ -12,7 +12,6 @@
   },
   "include": [
     "src/app/**/*",
-    "src/preload/**/*",
     "src/setup/**/*"
   ]
 }
