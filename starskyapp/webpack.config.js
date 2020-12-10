@@ -5,14 +5,14 @@ module.exports = {
   devtool: "inline-source-map",
   entry: {
     'reload-redirect': "./src/client/script/reload-redirect.ts",
+    'settings': "./src/client/script/settings.ts",
   },
   output: {
     filename: (pathData) => {
       switch (pathData.runtime) {
+        case 'settings':
         case 'reload-redirect':
           return path.join('build', 'client', 'script', '[name].js');
-        case 'preload-main':
-          return path.join('build', 'preload', '[name].js');
         default:
           return '[name].js';
         }

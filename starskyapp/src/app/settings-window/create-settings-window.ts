@@ -17,7 +17,7 @@ export const createSettingsWindow = async () => {
             enableRemoteModule: false,
             partition: 'persist:main',
             contextIsolation: true,
-            preload: path.join(__dirname, "remote-settings-preload.js") // use a preload script
+            preload: path.join(__dirname, "..","..","preload","preload-main.js") // use a preload script
         }
     });
 	
@@ -26,7 +26,8 @@ export const createSettingsWindow = async () => {
 
     mainWindowStateKeeper.track(newWindow);
 
-    newWindow.loadFile('pages/settings.html');
+    const settingsPage = path.join("..","..","client", "pages", "settings", "settings.html")
+    newWindow.loadFile(settingsPage);
 
     newWindow.once('ready-to-show', () => {
         newWindow.show();

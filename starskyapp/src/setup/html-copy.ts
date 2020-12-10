@@ -7,7 +7,7 @@ function htmlCopy() {
 
   console.log('-->');
   
-  copyContent(srcFolder,buildFolder,/(.html|.css|.svg)$/)
+  copyContent(srcFolder,buildFolder,/(.html|.css|.svg|.woff|.woff2)$/)
 }
 
 function copyContent(source: string, target: string, match: RegExp, toRelativeFolder: string = null) {
