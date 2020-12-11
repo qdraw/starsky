@@ -95,7 +95,8 @@
       }
     },
     "collectCoverageFrom": [
-      "src/**/*.{ts,tsx}"
+      "src/**/*.{ts,tsx}",
+      "!src/setup/**"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"

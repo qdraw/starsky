@@ -5,6 +5,7 @@ import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
 } from "../config/location-ipc-keys.const";
+import { mainWindows } from "../main-window/main-windows.const";
 import {
   AppVersionCallback,
   LocationIsRemoteCallback,
@@ -166,6 +167,8 @@ describe("ipc bridge", () => {
       });
       const event = { reply: jest.fn() } as any;
 
+      mainWindows.add({ close: jest.fn() } as any);
+
       await LocationUrlCallback(event, "https://google.com");
 
       expect(event.reply).toBeCalled();
@@ -174,6 +177,8 @@ describe("ipc bridge", () => {
         isValid: true,
         location: "https://google.com"
       });
+
+      mainWindows.clear();
     });
 
     it("update failed url", async () => {
@@ -225,13 +230,13 @@ describe("ipc bridge", () => {
       });
       const event = { reply: jest.fn() } as any;
 
-      await LocationUrlCallback(event, "https://__non_exiting_domain");
+      await LocationUrlCallback(event, "https://nonexitingdomain.com");
 
       expect(event.reply).toBeCalled();
       expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
-        location: "https://__non_exiting_domain"
+        location: "https://nonexitingdomain.com"
       });
     });
   });
