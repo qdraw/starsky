@@ -16,31 +16,11 @@ import { ipRegex, urlRegex } from "../config/url-regex";
 import { mainWindows } from "../main-window/main-windows.const";
 
 function ipcBridge() {
-  ipcMain.on(LocationIsRemoteIpcKey, async (event, args) => {
-    if (args !== undefined && args !== null) {
-      await appConfig.set(LocationIsRemoteSettingsKey, args);
-    }
+  ipcMain.on(LocationIsRemoteIpcKey, async (event, args) =>
+    LocationIsRemoteCallback(event, args)
+  );
 
-    const currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
-
-    let isLocationRemote = false;
-    if (currentSettings !== undefined && currentSettings !== null) {
-      isLocationRemote = currentSettings.toString() === "true";
-    }
-
-    console.log("-->", LocationIsRemoteIpcKey, isLocationRemote);
-
-    event.reply(LocationIsRemoteIpcKey, isLocationRemote);
-  });
-
-  ipcMain.on(AppVersionIpcKey, async (event, args) => {
-    const appVersion = app
-      .getVersion()
-      .match(new RegExp("^[0-9]+\\.[0-9]+", "ig"));
-
-    console.log("-->", AppVersionIpcKey, appVersion);
-    event.reply(AppVersionIpcKey, appVersion);
-  });
+  ipcMain.on(AppVersionIpcKey, async (event) => AppVersionCallback(event));
 
   ipcMain.on(LocationUrlIpcKey, async (event, args: string) => {
     // getting
@@ -208,6 +188,36 @@ function ipcBridge() {
 
     event.reply(UpdatePolicyIpcKey, args);
   });
+}
+
+export async function LocationIsRemoteCallback(
+  event: Electron.IpcMainEvent,
+  args: boolean
+) {
+  if (args !== undefined && args !== null) {
+    await appConfig.set(LocationIsRemoteSettingsKey, args);
+  }
+
+  const currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
+
+  let isLocationRemote = false;
+  if (currentSettings !== undefined && currentSettings !== null) {
+    isLocationRemote = currentSettings.toString() === "true";
+  }
+
+  console.log("-->", LocationIsRemoteIpcKey, isLocationRemote);
+  console.log(event);
+
+  event.reply(LocationIsRemoteIpcKey, isLocationRemote);
+}
+
+export async function AppVersionCallback(event: Electron.IpcMainEvent) {
+  const appVersion = app
+    .getVersion()
+    .match(new RegExp("^[0-9]+\\.[0-9]+", "ig"));
+
+  console.log("-->", AppVersionIpcKey, appVersion);
+  event.reply(AppVersionIpcKey, appVersion);
 }
 
 export default ipcBridge;
