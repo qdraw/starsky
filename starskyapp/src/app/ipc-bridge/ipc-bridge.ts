@@ -22,95 +22,9 @@ function ipcBridge() {
 
   ipcMain.on(AppVersionIpcKey, async (event) => AppVersionCallback(event));
 
-  ipcMain.on(LocationUrlIpcKey, async (event, args: string) => {
-    // getting
-    if (!args) {
-      const isRemote = (await appConfig.get(
-        LocationIsRemoteSettingsKey
-      )) as boolean;
-
-      const currentSettings = {
-        location: await appConfig.get(LocationUrlSettingsKey),
-        isValid: null,
-        isLocal: false
-      } as IlocationUrlSettings;
-
-      console.log(isRemote, currentSettings.location);
-
-      if (!isRemote || !currentSettings.location) {
-        event.reply(LocationUrlIpcKey, {
-          isValid: null,
-          isLocal: true,
-          location: "http://localhost:9609"
-        } as IlocationUrlSettings);
-        return;
-      }
-
-      event.reply(LocationUrlIpcKey, currentSettings);
-      return;
-    }
-
-    if (
-      args.match(urlRegex) ||
-      args.match(ipRegex) ||
-      args.startsWith("http://localhost:")
-    ) {
-      // to avoid errors
-      var locationUrl = args.replace(/\/$/, "");
-      const request = net.request({
-        url: locationUrl + "/api/health",
-        headers: {
-          Accept: "*/*"
-        }
-      } as any);
-
-      request.on("response", async (response) => {
-        console.log(
-          `HEADERS: ${JSON.stringify(response.headers)} - ${
-            response.statusCode
-          } - ${locationUrl + "/api/health"}`
-        );
-
-        const responseSettings = {
-          location: locationUrl,
-          isLocal: false
-        } as IlocationUrlSettings;
-
-        var locationOk =
-          response.statusCode == 200 || response.statusCode == 503;
-        if (locationOk) {
-          await appConfig.set(LocationUrlSettingsKey, locationUrl);
-        }
-
-        responseSettings.isValid = locationOk;
-
-        // to avoid that the session is opened
-        mainWindows.forEach((window) => {
-          window.close();
-        });
-
-        event.reply(LocationUrlIpcKey, responseSettings);
-      });
-
-      request.on("error", (e) => {
-        console.log(e);
-        event.reply(LocationUrlIpcKey, {
-          isValid: false,
-          isLocal: false,
-          location: args
-        } as IlocationUrlSettings);
-      });
-
-      request.end();
-      return;
-    }
-
-    event.reply(LocationUrlIpcKey, {
-      isValid: false,
-      isLocal: false,
-      location: args
-    } as IlocationUrlSettings);
-  });
+  ipcMain.on(LocationUrlIpcKey, async (event, args: string) =>
+    LocationUrlCallback(event, args)
+  );
 
   // ipcMain.on("settings_default_app", (event, args) => {
   //   if (args && args.reset) {
@@ -206,7 +120,6 @@ export async function LocationIsRemoteCallback(
   }
 
   console.log("-->", LocationIsRemoteIpcKey, isLocationRemote);
-  console.log(event);
 
   event.reply(LocationIsRemoteIpcKey, isLocationRemote);
 }
@@ -218,6 +131,98 @@ export async function AppVersionCallback(event: Electron.IpcMainEvent) {
 
   console.log("-->", AppVersionIpcKey, appVersion);
   event.reply(AppVersionIpcKey, appVersion);
+}
+
+export async function LocationUrlCallback(
+  event: Electron.IpcMainEvent,
+  args: string
+) {
+  // getting
+  if (!args) {
+    const isRemote = (await appConfig.get(
+      LocationIsRemoteSettingsKey
+    )) as boolean;
+
+    const currentSettings = {
+      location: await appConfig.get(LocationUrlSettingsKey),
+      isValid: null,
+      isLocal: false
+    } as IlocationUrlSettings;
+
+    console.log(isRemote, currentSettings.location);
+
+    if (!isRemote || !currentSettings.location) {
+      event.reply(LocationUrlIpcKey, {
+        isValid: null,
+        isLocal: true,
+        location: "http://localhost:9609"
+      } as IlocationUrlSettings);
+      return;
+    }
+
+    event.reply(LocationUrlIpcKey, currentSettings);
+    return;
+  }
+
+  if (
+    args.match(urlRegex) ||
+    args.match(ipRegex) ||
+    args.startsWith("http://localhost:")
+  ) {
+    // to avoid errors
+    var locationUrl = args.replace(/\/$/, "");
+    const request = net.request({
+      url: locationUrl + "/api/health",
+      headers: {
+        Accept: "*/*"
+      }
+    } as any);
+
+    request.on("response", async (response) => {
+      console.log(
+        `HEADERS: ${JSON.stringify(response.headers)} - ${
+          response.statusCode
+        } - ${locationUrl + "/api/health"}`
+      );
+
+      const responseSettings = {
+        location: locationUrl,
+        isLocal: false
+      } as IlocationUrlSettings;
+
+      var locationOk = response.statusCode == 200 || response.statusCode == 503;
+      if (locationOk) {
+        await appConfig.set(LocationUrlSettingsKey, locationUrl);
+      }
+
+      responseSettings.isValid = locationOk;
+
+      // to avoid that the session is opened
+      mainWindows.forEach((window) => {
+        window.close();
+      });
+
+      event.reply(LocationUrlIpcKey, responseSettings);
+    });
+
+    request.on("error", (e) => {
+      console.log(e);
+      event.reply(LocationUrlIpcKey, {
+        isValid: false,
+        isLocal: false,
+        location: args
+      } as IlocationUrlSettings);
+    });
+
+    request.end();
+    return;
+  }
+
+  event.reply(LocationUrlIpcKey, {
+    isValid: false,
+    isLocal: false,
+    location: args
+  } as IlocationUrlSettings);
 }
 
 export default ipcBridge;
