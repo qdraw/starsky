@@ -1,3 +1,4 @@
+import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
@@ -22,7 +23,6 @@ document
 window.api.send(LocationIsRemoteIpcKey, null);
 
 function changeRemoteToggle(isRemote: boolean) {
-  console.log(isRemote);
   window.api.send(LocationIsRemoteIpcKey, isRemote);
 }
 
@@ -41,6 +41,8 @@ window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
     switchLocal.checked = false;
     switchRemote.checked = true;
     remoteLocation.disabled = false;
+    // trigger again to show results
+    window.api.send(LocationUrlIpcKey, null);
   } else {
     switchLocal.checked = true;
     switchRemote.checked = false;
@@ -66,11 +68,20 @@ document
 
 window.api.send(LocationUrlIpcKey, null);
 
-window.api.receive(LocationUrlIpcKey, (location: string) => {
+window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
   const remoteLocation = document.querySelector(
     "#remote_location"
   ) as HTMLInputElement;
-  remoteLocation.value = location;
+
+  if (!result.isLocal) {
+    remoteLocation.value = result.location;
+  }
+
+  if (result && result.isValid !== undefined) {
+    document.querySelector("#locationOk").innerHTML = result.isValid
+      ? "Setting is saved"
+      : "FAIL setting is not valid and NOT saved";
+  }
 });
 
 // "location": document.querySelector("#remote_location").value
