@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# do not rename referenced in azure pipeline
+
 # reset rights if those are wrong
 /usr/bin/find . -type d -exec chmod 755 {} \;
 /usr/bin/find . -type f -exec chmod 644 {} \;

@@ -119,7 +119,7 @@ stages:
 
     - task: Bash@3
       enabled: true
-      displayName: 'Move to expected location (Mac)'
+      displayName: 'For Mac, move to expected location'
       inputs:
         targetType: 'inline'
         script: |
@@ -127,7 +127,7 @@ stages:
 
     - task: Bash@3
       enabled: true
-      displayName: 'Move to expected location (windows)'
+      displayName: 'For Windows, move to expected location'
       inputs:
         targetType: 'inline'
         script: |
@@ -143,11 +143,27 @@ stages:
 
     - task: Bash@3
       enabled: true
+      displayName: 'Restore permissions mac'
+      inputs:
+        targetType: 'inline'
+        script: |
+          bash $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
+
+    - task: Bash@3
+      enabled: true
       displayName: 'Unzip for windows'
       inputs:
         targetType: 'inline'
         script: |
           unzip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip -d $(Build.SourcesDirectory)/starsky/win7-x64
+    
+    - task: Bash@3
+      enabled: true
+      displayName: 'Restore permissions windows'
+      inputs:
+        targetType: 'inline'
+        script: |
+          bash $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
 
     - task: Npm@1
       displayName: 'Electron npm ci'
