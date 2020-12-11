@@ -44,7 +44,6 @@ jobs:
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
-
         
       - name: NpmDist
         working-directory: ./starskyapp
