@@ -62,7 +62,7 @@ stages:
       enabled: true
       inputs:
         filePath: 'starsky/build.sh'
-        arguments: '--Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
+        arguments: '--no-unit-tests --Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: win7-x86'
@@ -147,6 +147,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          chmod 777 $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
           bash $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
 
     - task: Bash@3
@@ -163,6 +164,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          chmod 777 $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
           bash $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
 
     - task: Npm@1
