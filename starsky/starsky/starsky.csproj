@@ -5,7 +5,7 @@
         <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.9</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.4.1</Version>
+        <Version>0.4.3</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
