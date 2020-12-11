@@ -9,32 +9,36 @@ import { createSettingsWindow } from "../settings-window/create-settings-window"
 import { settingsWindows } from "../settings-window/settings-windows.const";
 
 function AppMenu() {
-  const isMac = process.platform === 'darwin';
+  const isMac = process.platform === "darwin";
 
   var menu = Menu.buildFromTemplate([
-    ...(isMac ? [{
-      label: app.name,
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'services' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideothers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' }
-      ] as any
-    }] : []),
+    ...(isMac
+      ? [
+          {
+            label: app.name,
+            submenu: [
+              { role: "about" },
+              { type: "separator" },
+              { role: "services" },
+              { type: "separator" },
+              { role: "hide" },
+              { role: "hideothers" },
+              { role: "unhide" },
+              { type: "separator" },
+              { role: "quit" }
+            ] as any
+          }
+        ]
+      : []),
     {
-      label: 'File',
+      label: "File",
       submenu: [
         {
           label: "New Window",
           click: () => {
-            createMainWindow()
+            createMainWindow();
           },
-          accelerator: 'CmdOrCtrl+N'
+          accelerator: "CmdOrCtrl+N"
         },
         {
           label: "Edit file in Editor",
@@ -42,47 +46,51 @@ function AppMenu() {
             var focusWindow = BrowserWindow.getFocusedWindow();
             // if (focusWindow) handleExitKeyPress(focusWindow);
           },
-          accelerator: 'CmdOrCtrl+E'
+          accelerator: "CmdOrCtrl+E"
         },
-  
-        isMac ? { role: 'close' } : { role: 'quit' },
+
+        isMac ? { role: "close" } : { role: "quit" }
       ]
     },
     {
       label: "Edit",
       submenu: [
-          { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-          { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-          { type: "separator" },
-          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
-          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        {
+          label: "Select All",
+          accelerator: "CmdOrCtrl+A",
+          selector: "selectAll:"
+        }
       ]
     },
     {
-      label: 'Settings',
+      label: "Settings",
       submenu: [
         {
           label: "Settings",
           click: () => {
-            createSettingsWindow()
+            createSettingsWindow();
           },
-          accelerator: 'CmdOrCtrl+,'
-        },
+          accelerator: "CmdOrCtrl+,"
+        }
       ]
     },
     {
-      label: 'Develop',
+      label: "Develop",
       submenu: [
         {
           label: "Refresh",
           click: () => {
-            mainWindows.forEach(window => {
-              window.webContents.reload()
+            mainWindows.forEach((window) => {
+              window.webContents.reload();
             });
-            settingsWindows.forEach(window => {
-              window.webContents.reload()
+            settingsWindows.forEach((window) => {
+              window.webContents.reload();
             });
             // editWindows.forEach(window => {
             //   window.webContents.reload()
@@ -91,69 +99,70 @@ function AppMenu() {
             //   window.webContents.reload()
             // });
           },
-          accelerator: 'CmdOrCtrl+R'
+          accelerator: "CmdOrCtrl+R"
         },
         {
           label: "Dev Tools",
           click: () => {
             // only works on mac os
-            BrowserWindow.getAllWindows().forEach(window => {
-              window.webContents.openDevTools()
+            BrowserWindow.getAllWindows().forEach((window) => {
+              window.webContents.openDevTools();
             });
           },
-          accelerator: 'CmdOrCtrl+Alt+I'
+          accelerator: "CmdOrCtrl+Alt+I"
         },
         {
           label: "Open in browser",
           click: async () => {
-            await shell.openExternal(BrowserWindow.getFocusedWindow().webContents.getURL())
+            await shell.openExternal(
+              BrowserWindow.getFocusedWindow().webContents.getURL()
+            );
           }
-        },
+        }
       ]
     },
     {
-      label: 'View',
+      label: "View",
       submenu: [
-        { role: 'resetzoom' },
-        { role: 'zoomin' },
-        { role: 'zoomout' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' }
+        { role: "resetzoom" },
+        { role: "zoomin" },
+        { role: "zoomout" },
+        { type: "separator" },
+        { role: "togglefullscreen" }
       ]
     },
     {
-      label: 'Window',
+      label: "Window",
       submenu: [
-        { role: 'minimize' },
-        { role: 'zoom' },
-        ...(isMac ? [
-          { type: 'separator' },
-          { role: 'front' },
-        ] : [
-          { role: 'close' }
-        ])
+        { role: "minimize" },
+        { role: "zoom" },
+        ...(isMac
+          ? [{ type: "separator" }, { role: "front" }]
+          : [{ role: "close" }])
       ]
     },
     {
-      role: 'help',
+      role: "help",
       submenu: [
         {
-          label: 'Documentation website',
+          label: "Documentation website",
           click: async () => {
-            await shell.openExternal('https://qdraw.github.io/starsky/')
+            await shell.openExternal("https://qdraw.github.io/starsky/");
           }
         },
         {
-          label: 'Release overview',
+          label: "Release overview",
           // Referenced from HealthCheckForUpdates
           click: async () => {
-            await shell.openExternal('https://github.com/qdraw/starsky/releases/latest')
+            await shell.openExternal(
+              "https://github.com/qdraw/starsky/releases/latest"
+            );
           }
         }
       ]
     }
-  ])
-  Menu.setApplicationMenu(menu); 
+  ]);
+  Menu.setApplicationMenu(menu);
 }
 
-export default AppMenu
+export default AppMenu;

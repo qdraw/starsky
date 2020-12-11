@@ -1,15 +1,15 @@
 import { app, BrowserWindow } from "electron";
+import * as appConfig from "electron-settings";
 import { setupChildProcess } from "../child-process/setup-child-process";
+import { LocationUrlSettingsKey } from "../config/location-settings.const";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
 import AppMenu from "../menu/menu";
 import defaultAppSettings from "./app-settings";
-import * as appConfig from 'electron-settings'
-import { LocationUrlSettingsKey } from "../config/location-settings.const";
 
 app.allowRendererProcessReuse = true;
 
-ipcBridge ();
+ipcBridge();
 defaultAppSettings();
 AppMenu();
 setupChildProcess();
@@ -36,24 +36,28 @@ app.on("window-all-closed", () => {
 });
 
 // https://github.com/electron/electron/blob/master/docs/tutorial/security.md
-app.on('web-contents-created', (event, contents) => {
-  contents.on('will-navigate', async (event, navigationUrl) => {
-    const parsedUrl = new URL(navigationUrl)
+app.on("web-contents-created", (event, contents) => {
+  contents.on("will-navigate", async (event, navigationUrl) => {
+    const parsedUrl = new URL(navigationUrl);
 
     // for example the upgrade page
-    if (navigationUrl.startsWith('file://')) {
-      return;      
+    if (navigationUrl.startsWith("file://")) {
+      return;
     }
 
     // // to allow remote connections
     var currentSettings = await appConfig.get(LocationUrlSettingsKey);
-    if (currentSettings && currentSettings && currentSettings 
-      && parsedUrl.origin.startsWith(new URL(currentSettings.toString()).origin)) {
+    if (
+      currentSettings &&
+      currentSettings &&
+      currentSettings &&
+      parsedUrl.origin.startsWith(new URL(currentSettings.toString()).origin)
+    ) {
       return;
     }
-    
-    if (!parsedUrl.origin.startsWith('http://localhost:')) {
-      event.preventDefault()
+
+    if (!parsedUrl.origin.startsWith("http://localhost:")) {
+      event.preventDefault();
     }
-  })
-})
+  });
+});

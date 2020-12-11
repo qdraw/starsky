@@ -4,5 +4,18 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.codeActionsOnSave": {
+			"source.organizeImports": true,
+			"source.fixAll": true,
+			"source.fixAll.eslint": true
+		},
+		"editor.formatOnPaste": true,
+		"editor.tabSize": 2,
+		"editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+        "typescript.preferences.quoteStyle": "double",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+	}
 }

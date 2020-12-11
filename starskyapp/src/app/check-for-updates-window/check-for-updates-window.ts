@@ -1,16 +1,13 @@
-
-function createCheckForUpdatesWindow() {
-    
-}
+function createCheckForUpdatesWindow() {}
 
 export default createCheckForUpdatesWindow;
 
 // import * as appConfig from 'electron-settings'
 
 // /**
-//  * 
-//  * @param date 
-//  * @param now 
+//  *
+//  * @param date
+//  * @param now
 //  */
 // const DifferenceInDate = (date: number, now = new Date().valueOf()) => {
 //     return (now - date) / 60000;
@@ -22,7 +19,7 @@ export default createCheckForUpdatesWindow;
 // function SkipDisplayOfUpdate() {
 //     const localStorageItem = appConfig.get(CheckForUpdatesLocalStorageName);
 //     if (!localStorageItem) return false;
-  
+
 //     var getItem = parseInt(localStorageItem);
 //     if (isNaN(getItem)) return false;
 //     return DifferenceInDate(getItem) < 5760; // 4 days
@@ -44,7 +41,7 @@ export default createCheckForUpdatesWindow;
 
 //     setTimeout(()=>{
 //         doRequest(()=>{
-//             let newWindow = new BrowserWindow({ 
+//             let newWindow = new BrowserWindow({
 //                 x: mainWindowStateKeeper.x,
 //                 y: mainWindowStateKeeper.y,
 //                 width: 350,
@@ -57,14 +54,14 @@ export default createCheckForUpdatesWindow;
 //                     contextIsolation: true
 //                 }
 //             });
-            
+
 //             // hides the menu for windows
 //             newWindow.setMenu(null);
-        
+
 //             mainWindowStateKeeper.track(newWindow);
-        
+
 //             newWindow.loadFile('pages/check-for-updates-new-version.html');
-        
+
 //             newWindow.once('ready-to-show', () => {
 //                 newWindow.show();
 //             });
@@ -74,19 +71,18 @@ export default createCheckForUpdatesWindow;
 //                 appConfig.set(CheckForUpdatesLocalStorageName, Date.now().toString())
 //                 newWindow = null;
 //             });
-        
+
 //             checkForUpdatesWindows.add(newWindow);
 //         })
-        
+
 //     },5000)
 // };
-
 
 // function doRequest(callback) {
 //     var electronVersion = app.getVersion()
 //     const request = net.request({
 //         url: getBaseUrlFromSettings() +
-//          "/api/health/check-for-updates?currentVersion=" + electronVersion, 
+//          "/api/health/check-for-updates?currentVersion=" + electronVersion,
 //         headers: {
 //             "Accept" :	"*/*"
 //         }

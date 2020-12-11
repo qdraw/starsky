@@ -1,7 +1,11 @@
-import { LocationIsRemoteIpcKey, LocationUrlIpcKey } from "../../app/config/location-settings-ipc-keys.const";
 import { AppVersionIpcKey } from "../../app/config/app-version-ipc-key.const";
-import { IPreloadApi } from "../../preload/IPreloadApi";
+import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
+import {
+  LocationIsRemoteIpcKey,
+  LocationUrlIpcKey
+} from "../../app/config/location-settings-ipc-keys.const";
 import UrlQuery from "../../app/config/url-query";
+import { IPreloadApi } from "../../preload/IPreloadApi";
 
 declare global {
   var api: IPreloadApi;
@@ -9,43 +13,51 @@ declare global {
 
 /**
  * no slash at end
- * @param {*} domainUrl 
- * @param {*} count 
- * @param {*} maxCount 
+ * @param {*} domainUrl
+ * @param {*} count
+ * @param {*} maxCount
  */
-function warmupScript(domainUrl : string, count: number, maxCount: number, callback: Function) : void {
-
+function warmupScript(
+  domainUrl: string,
+  count: number,
+  maxCount: number,
+  callback: Function
+): void {
   fetch(domainUrl + new UrlQuery().HealthApi())
     .then((response) => {
       if (response.status === 200 || response.status === 503) {
-        response.text().then((text)=>{
+        response.text().then((text) => {
           callback(text.includes(new UrlQuery().HealthShouldContain()));
-        })
+        });
         return;
       }
       next();
-    }).catch((error) => {
-      console.log('error', error);
-      next()
-  });
+    })
+    .catch((error) => {
+      console.log("error", error);
+      next();
+    });
 
   function next() {
     if (count <= maxCount) {
-      count++
+      count++;
       setTimeout(() => {
-        warmupScript(domainUrl, count, maxCount, callback)
+        warmupScript(domainUrl, count, maxCount, callback);
       }, 200);
-    }
-    else {
-      console.log("no connection to the internal component, please restart the application");
+    } else {
+      console.log(
+        "no connection to the internal component, please restart the application"
+      );
       callback(false);
     }
   }
 }
 
-function redirecter(domainUrl : string) {
-  var appendAfterDomainUrl = ""
-  var rememberUrl = new URLSearchParams(window.location.search).get("remember-url");
+function redirecter(domainUrl: string) {
+  var appendAfterDomainUrl = "";
+  var rememberUrl = new URLSearchParams(window.location.search).get(
+    "remember-url"
+  );
   if (rememberUrl) {
     appendAfterDomainUrl = decodeURI(rememberUrl);
   }
@@ -54,81 +66,95 @@ function redirecter(domainUrl : string) {
   window.location.href = domainUrl + appendAfterDomainUrl;
 }
 
-function checkForUpdates(domainUrl : string, apiVersion: string) : Promise<void>{
+function checkForUpdates(domainUrl: string, apiVersion: string): Promise<void> {
   return new Promise(function (resolve, reject) {
+    fetch(domainUrl + new UrlQuery().HealthVersionApi(), {
+      method: "POST",
+      headers: {
+        "x-api-version": `${apiVersion}`
+      }
+    })
+      .then((versionResponse) => {
+        console.log(versionResponse);
 
-    fetch(domainUrl + new UrlQuery().HealthVersionApi(), { method: 'POST',  
-        headers: {
-          "x-api-version": `${apiVersion}`
+        if (versionResponse.status === 200) {
+          resolve();
+          return;
         }
-    }).then((versionResponse) => {
-      console.log(versionResponse);
-      
-      if (versionResponse.status === 200) {
-        resolve()
-        return;
-      }
 
-      if (versionResponse.status === 400 && document.querySelectorAll('.upgrade').length === 1) {
-        const upgradeElement = document.querySelector('.upgrade') as HTMLElement;
-        if (upgradeElement) {
-            upgradeElement.style.display = 'block';
-      }
-        
-      const preloaderElement = document.querySelector('.preloader') as HTMLElement;
-      if (preloaderElement) {
-            preloaderElement.style.display = 'none';
+        if (
+          versionResponse.status === 400 &&
+          document.querySelectorAll(".upgrade").length === 1
+        ) {
+          const upgradeElement = document.querySelector(
+            ".upgrade"
+          ) as HTMLElement;
+          if (upgradeElement) {
+            upgradeElement.style.display = "block";
+          }
+
+          const preloaderElement = document.querySelector(
+            ".preloader"
+          ) as HTMLElement;
+          if (preloaderElement) {
+            preloaderElement.style.display = "none";
+          }
+          return;
         }
-        return;
-      }
-      
-      alert(`#${versionResponse.status} - Version check failed, please try to restart the application`);
-      reject();
-    }).catch((error) => {
-      alert("no connection to version check, please restart the application");
-      reject();
-    });
+
+        alert(
+          `#${versionResponse.status} - Version check failed, please try to restart the application`
+        );
+        reject();
+      })
+      .catch((error) => {
+        alert("no connection to version check, please restart the application");
+        reject();
+      });
   });
 }
-  
+
 function warmupLocalOrRemote() {
   window.api.send(LocationIsRemoteIpcKey, null);
 
-  window.api.receive(LocationIsRemoteIpcKey, (isRemote : any) => {
+  // window.api.receive(LocationIsRemoteIpcKey, (isRemote : any) => {
 
-    window.api.send(AppVersionIpcKey, null);
+  window.api.send(AppVersionIpcKey, null);
 
-    window.api.receive(AppVersionIpcKey, (appVersion : any) => {
-      if (isRemote == false) {
-        document.title += ` going to default`
-        const defaultDomain = 'http://localhost:9609';
+  window.api.receive(AppVersionIpcKey, (appVersion: any) => {
+    // if (isRemote == false) {
+    //   document.title += ` going to default`
+    //   const defaultDomain = 'http://localhost:9609';
 
-        warmupScript(defaultDomain, 0, 300,()=>{
-          checkForUpdates(defaultDomain, appVersion)
-            .then(()=> redirecter(defaultDomain))
-            .catch(()=>{});
-        })
-        return;
-      }
+    //   warmupScript(defaultDomain, 0, 300,()=>{
+    //     checkForUpdates(defaultDomain, appVersion)
+    //       .then(()=> redirecter(defaultDomain))
+    //       .catch(()=>{});
+    //   })
+    //   return;
+    // }
 
-      window.api.send(LocationUrlIpcKey, null);
-      window.api.receive(LocationUrlIpcKey, (locationData : any) => {
-        document.title += ` going to ${locationData}`
-        warmupScript(locationData, 0, 300,(isOk: boolean)=>{
+    window.api.send(LocationUrlIpcKey, null);
+
+    window.api.receive(
+      LocationUrlIpcKey,
+      (locationData: IlocationUrlSettings) => {
+        document.title += ` going to ${locationData.location}`;
+        warmupScript(locationData.location, 0, 300, (isOk: boolean) => {
           if (isOk) {
-            checkForUpdates(locationData, appVersion)
-              .then(()=> redirecter(locationData))
-              .catch((e)=>{ 
+            checkForUpdates(locationData.location, appVersion)
+              .then(() => redirecter(locationData.location))
+              .catch((e) => {
                 console.log(e);
               });
             return;
           }
-          alert("The domain in te configuration is not valid")
-        })
-      });
-    });
+          alert("The domain in te configuration is not valid");
+        });
+      }
+    );
   });
+  // });
 }
 
 warmupLocalOrRemote();
-  

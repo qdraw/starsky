@@ -1,2 +1,1 @@
-
-export const settingsWindows = new Set<Electron.BrowserWindow>()
+export const settingsWindows = new Set<Electron.BrowserWindow>();

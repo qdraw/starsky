@@ -1,43 +1,50 @@
 import { BrowserWindow } from "electron";
-import * as path from 'path';
+import * as path from "path";
 import { windowStateKeeper } from "../helpers/window-state-keeper";
 import { settingsWindows } from "./settings-windows.const";
 
 export const createSettingsWindow = async () => {
-    const mainWindowStateKeeper = await windowStateKeeper('settings');
+  const mainWindowStateKeeper = await windowStateKeeper("settings");
 
-    let newWindow = new BrowserWindow({ 
-        x: mainWindowStateKeeper.x,
-        y: mainWindowStateKeeper.y,
-        width: 350,
-        height: 500,
-        show: true,
-        resizable: true,
-        webPreferences: {
-            enableRemoteModule: false,
-            partition: 'persist:main',
-            contextIsolation: true,
-            preload: path.join(__dirname, "..","..","preload","preload-main.js") // use a preload script
-        }
-    });
-	
-	// hides the menu for windows
-	newWindow.setMenu(null);
+  let newWindow = new BrowserWindow({
+    x: mainWindowStateKeeper.x,
+    y: mainWindowStateKeeper.y,
+    width: 350,
+    height: 500,
+    show: true,
+    resizable: true,
+    webPreferences: {
+      enableRemoteModule: false,
+      partition: "persist:main",
+      contextIsolation: true,
+      preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
+    }
+  });
 
-    mainWindowStateKeeper.track(newWindow);
+  // hides the menu for windows
+  newWindow.setMenu(null);
 
-    const settingsPage = path.join("..","..","client", "pages", "settings", "settings.html")
-    newWindow.loadFile(settingsPage);
+  mainWindowStateKeeper.track(newWindow);
 
-    newWindow.once('ready-to-show', () => {
-        newWindow.show();
-    });
+  const settingsPage = path.join(
+    "..",
+    "..",
+    "client",
+    "pages",
+    "settings",
+    "settings.html"
+  );
+  newWindow.loadFile(settingsPage);
 
-    newWindow.on('closed', () => {
-        settingsWindows.delete(newWindow);
-        newWindow = null;
-    });
+  newWindow.once("ready-to-show", () => {
+    newWindow.show();
+  });
 
-    settingsWindows.add(newWindow);
-    return newWindow;
+  newWindow.on("closed", () => {
+    settingsWindows.delete(newWindow);
+    newWindow = null;
+  });
+
+  settingsWindows.add(newWindow);
+  return newWindow;
 };
