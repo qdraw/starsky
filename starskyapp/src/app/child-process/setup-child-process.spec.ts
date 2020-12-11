@@ -1,5 +1,6 @@
 import * as spawn from "child_process";
 import { app } from "electron";
+import * as readline from "readline";
 import { setupChildProcess } from "./setup-child-process";
 
 jest.mock("electron", () => {
@@ -19,12 +20,12 @@ jest.mock("electron", () => {
 describe("setupChildProcess", () => {
   describe("setupChildProcess", () => {
     it("getting with null input", () => {
+      const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };
+      jest.spyOn(spawn, "spawn").mockImplementationOnce(() => spawnSpy as any);
+
       jest
-        .spyOn(spawn, "spawn")
-        .mockImplementationOnce(
-          () =>
-            ({ stdout: { on: jest.fn() }, stderr: { on: jest.fn() } } as any)
-        );
+        .spyOn(readline, "emitKeypressEvents")
+        .mockImplementationOnce(() => null);
 
       jest.spyOn(app, "on").mockImplementationOnce((event) => {
         console.log(event);
@@ -32,7 +33,12 @@ describe("setupChildProcess", () => {
         return null;
       });
       setupChildProcess();
-      //
+
+      expect(spawnSpy.stdout.on).toBeCalled();
+      expect(spawnSpy.stdout.on).toBeCalledWith("data", expect.anything());
+
+      expect(spawnSpy.stderr.on).toBeCalled();
+      expect(spawnSpy.stderr.on).toBeCalledWith("data", expect.anything());
     });
   });
 });
