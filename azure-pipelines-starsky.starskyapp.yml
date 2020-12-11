@@ -119,6 +119,7 @@ stages:
 
     - task: Bash@3
       enabled: true
+      displayName: 'Move to expected location (Mac)'
       inputs:
         targetType: 'inline'
         script: |
@@ -126,10 +127,27 @@ stages:
 
     - task: Bash@3
       enabled: true
+      displayName: 'Move to expected location (windows)'
       inputs:
         targetType: 'inline'
         script: |
           mv $(Build.SourcesDirectory)/win7-x64/starsky-win7-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Unzip for mac'
+      inputs:
+        targetType: 'inline'
+        script: |
+          unzip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip -d $(Build.SourcesDirectory)/starsky/osx.10.12-x64
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Unzip for windows'
+      inputs:
+        targetType: 'inline'
+        script: |
+          unzip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip -d $(Build.SourcesDirectory)/starsky/win7-x64
 
     - task: Npm@1
       displayName: 'Electron npm ci'
