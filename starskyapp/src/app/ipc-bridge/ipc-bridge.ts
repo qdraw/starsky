@@ -5,11 +5,13 @@ import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
-} from "../config/location-settings-ipc-keys.const";
+} from "../config/location-ipc-keys.const";
 import {
   LocationIsRemoteSettingsKey,
   LocationUrlSettingsKey
 } from "../config/location-settings.const";
+import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
+import { UpdatePolicySettings } from "../config/update-policy-settings.const";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { mainWindows } from "../main-window/main-windows.const";
 
@@ -49,7 +51,7 @@ function ipcBridge() {
 
       const currentSettings = {
         location: await appConfig.get(LocationUrlSettingsKey),
-        isValid: true,
+        isValid: null,
         isLocal: false
       } as IlocationUrlSettings;
 
@@ -57,7 +59,7 @@ function ipcBridge() {
 
       if (!isRemote || !currentSettings.location) {
         event.reply(LocationUrlIpcKey, {
-          isValid: true,
+          isValid: null,
           isLocal: true,
           location: "http://localhost:9609"
         } as IlocationUrlSettings);
@@ -128,6 +130,80 @@ function ipcBridge() {
       isLocal: false,
       location: args
     } as IlocationUrlSettings);
+  });
+
+  // ipcMain.on("settings_default_app", (event, args) => {
+  //   if (args && args.reset) {
+  //     appConfig.delete("settings_default_app");
+  //     event.reply("settings_default_app", "");
+  //     return;
+  //   }
+
+  //   if (args && args.showOpenDialog) {
+  //     var newOpenedWindow = new BrowserWindow();
+  //     var selected = dialog.showOpenDialog(newOpenedWindow, {
+  //       properties: ["openFile"]
+  //     });
+
+  //     selected
+  //       .then((data) => {
+  //         if (data.canceled) {
+  //           newOpenedWindow.close();
+  //           return;
+  //         }
+  //         appConfig.set("settings_default_app", data.filePaths[0]);
+  //         event.reply("settings_default_app", data.filePaths[0]);
+  //         newOpenedWindow.close();
+  //       })
+  //       .catch((e) => {
+  //         newOpenedWindow.close();
+  //       });
+  //   }
+
+  //   if (appConfig.has("settings_default_app")) {
+  //     var currentSettings = appConfig.get("settings_default_app");
+  //     event.reply("settings_default_app", currentSettings);
+  //   }
+  // });
+
+  // ipcMain.on("settings_update_policy", (event, args) => {
+  //   let currentSettings = true;
+
+  //   if (appConfig.has("settings_update_policy")) {
+  //     currentSettings = appConfig.get("settings_update_policy");
+  //   }
+
+  //   if (args === false || args === true) {
+  //     console.log("set arg --> ", args);
+  //     appConfig.set("settings_update_policy", args);
+  //     // reset check date for latest version
+  //     appConfig.delete(CheckForUpdatesLocalStorageName);
+
+  //     event.reply("settings_update_policy", args);
+  //     return;
+  //   }
+
+  //   event.reply("settings_update_policy", currentSettings);
+  // });
+
+  ipcMain.on(UpdatePolicyIpcKey, async (event, args) => {
+    let updatePolicy = true;
+
+    if (appConfig.has(UpdatePolicySettings)) {
+      updatePolicy = (await appConfig.get(UpdatePolicySettings)) as boolean;
+    }
+
+    if (args === false || args === true) {
+      console.log("set arg --> ", args);
+      appConfig.set(UpdatePolicySettings, args);
+      // reset check date for latest version
+      // appConfig.delete(CheckForUpdatesLocalStorageName);
+
+      event.reply(UpdatePolicySettings, args);
+      return;
+    }
+
+    event.reply(UpdatePolicySettings, updatePolicy);
   });
 }
 

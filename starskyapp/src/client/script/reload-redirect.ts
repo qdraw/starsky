@@ -3,7 +3,7 @@ import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
-} from "../../app/config/location-settings-ipc-keys.const";
+} from "../../app/config/location-ipc-keys.const";
 import UrlQuery from "../../app/config/url-query";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 
@@ -122,18 +122,6 @@ function warmupLocalOrRemote() {
   window.api.send(AppVersionIpcKey, null);
 
   window.api.receive(AppVersionIpcKey, (appVersion: any) => {
-    // if (isRemote == false) {
-    //   document.title += ` going to default`
-    //   const defaultDomain = 'http://localhost:9609';
-
-    //   warmupScript(defaultDomain, 0, 300,()=>{
-    //     checkForUpdates(defaultDomain, appVersion)
-    //       .then(()=> redirecter(defaultDomain))
-    //       .catch(()=>{});
-    //   })
-    //   return;
-    // }
-
     window.api.send(LocationUrlIpcKey, null);
 
     window.api.receive(

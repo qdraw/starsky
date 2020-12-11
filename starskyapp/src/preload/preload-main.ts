@@ -5,7 +5,8 @@ import { AppVersionIpcKey } from "../app/config/app-version-ipc-key.const";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
-} from "../app/config/location-settings-ipc-keys.const";
+} from "../app/config/location-ipc-keys.const";
+import { UpdatePolicyIpcKey } from "../app/config/update-policy-ipc-key.const";
 
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld("api", {
@@ -14,7 +15,8 @@ contextBridge.exposeInMainWorld("api", {
     let validChannels = [
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
-      AppVersionIpcKey
+      AppVersionIpcKey,
+      UpdatePolicyIpcKey
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
@@ -26,7 +28,8 @@ contextBridge.exposeInMainWorld("api", {
     let validChannels = [
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
-      AppVersionIpcKey
+      AppVersionIpcKey,
+      UpdatePolicyIpcKey
     ];
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`

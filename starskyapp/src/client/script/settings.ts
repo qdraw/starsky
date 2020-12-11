@@ -2,7 +2,8 @@ import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
-} from "../../app/config/location-settings-ipc-keys.const";
+} from "../../app/config/location-ipc-keys.const";
+import { UpdatePolicyIpcKey } from "../../app/config/update-policy-ipc-key.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 
 declare global {
@@ -50,7 +51,7 @@ window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
   }
 });
 
-/** t */
+/** Web location field */
 
 function changeRemoteLocation(location: string) {
   if (!location) {
@@ -77,29 +78,38 @@ window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
     remoteLocation.value = result.location;
   }
 
-  if (result && result.isValid !== undefined) {
+  if (result && result.isValid !== null) {
     document.querySelector("#locationOk").innerHTML = result.isValid
       ? "Setting is saved"
       : "FAIL setting is not valid and NOT saved";
   }
 });
 
-// "location": document.querySelector("#remote_location").value
+/** Default app field */
 
-// function changeRemoteLocation(location) {
-//     if (!location) {
-//         console.error('wrong location')
-//         return;
-//     }
-//     window.api.send("settings", {
-//         "remote": document.querySelector("#switch_remote").checked,
-//         "location": location
-//     });
-// }
+/** Check for updates */
 
-// document.querySelector('#remote_location').addEventListener('change', function() {
-//     changeRemoteLocation(this.value)
-// });
+document
+  .querySelector("#switch_update_policy_on")
+  .addEventListener("change", function () {
+    window.api.send(UpdatePolicyIpcKey, true);
+  });
+
+window.api.receive(UpdatePolicyIpcKey, (data: boolean) => {
+  if (!data) {
+    const switchUpdatePolicyOff = document.querySelector(
+      "#switch_update_policy_off"
+    ) as HTMLInputElement;
+    switchUpdatePolicyOff.checked = true;
+
+    const switchUpdatePolicyOn = document.querySelector(
+      "#switch_update_policy_on"
+    ) as HTMLInputElement;
+    switchUpdatePolicyOn.checked = null;
+  }
+});
+
+window.api.send("settings_update_policy", null);
 
 // document.querySelector("#file_selector").addEventListener('click', function() {
 //     window.api.send("settings_default_app", {
@@ -136,27 +146,3 @@ window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
 // });
 
 // window.api.send("settings_update_policy",null);
-
-// window.api.receive("settings", (data) => {
-//     console.log(data);
-
-//     if(data && data.remote !== undefined) {
-//         if (data.remote) {
-//             document.querySelector("#switch_local").checked = false;
-//             document.querySelector("#switch_remote").checked = true;
-//             document.querySelector("#remote_location").disabled = false;
-//         }
-//         else {
-//             document.querySelector("#switch_local").checked = true;
-//             document.querySelector("#switch_remote").checked = false;
-//             document.querySelector("#remote_location").disabled = true;
-//         }
-
-//         document.querySelector("#remote_location").value = data.location;
-//     }
-//     if(data && data.locationOk !== undefined) {
-//         document.querySelector("#locationOk").innerHTML = data.locationOk ? "OK" : "FAIL";
-//     }
-// });
-
-// window.api.send("settings",null);
