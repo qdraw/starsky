@@ -36,6 +36,7 @@ export function setupChildProcess() {
   });
 
   const appStarskyPath = childProcessPath();
+  fs.chmodSync(appStarskyPath, 0o755);
 
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),

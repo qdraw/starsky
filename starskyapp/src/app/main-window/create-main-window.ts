@@ -39,15 +39,11 @@ async function createMainWindow(relativeUrl: string = null) {
   mainWindowStateKeeper.track(newWindow);
 
   const rememberUrl = await getRememberUrl(relativeUrl);
-  const reloadRedirectPage = path.join(
-    "..",
-    "..",
-    "client",
-    "pages",
-    "redirect",
-    "reload-redirect.html"
-  );
-  newWindow.loadFile(reloadRedirectPage, {
+
+  const location = path.join(__dirname, "..", "..", 'client/pages/redirect/reload-redirect.html')
+  console.log('location ' + location);
+
+  newWindow.loadFile(location, {
     query: { "remember-url": rememberUrl }
   });
 

@@ -49,8 +49,9 @@
       "runtime-starsky-${os}/**"
     ],
     "files": [
-      "build/**/*",
-      "package.json"
+      "./build/pages/redirect/reload-redirect.html",
+      "./build/pages/settings/settings.html",
+      "./build/**/*"
     ],
     "beforeBuild": "./build/setup/before-build.js",
     "appId": "nl.qdraw.starsky",
@@ -60,7 +61,7 @@
       "minimumSystemVersion": "10.12",
       "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
-        "dmg"
+        "zip"
       ]
     },
     "linux": {
