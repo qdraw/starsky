@@ -27,6 +27,7 @@ export const createSettingsWindow = async () => {
   mainWindowStateKeeper.track(newWindow);
 
   const settingsPage = path.join(
+    __dirname,
     "..",
     "..",
     "client",

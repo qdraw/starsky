@@ -59,6 +59,9 @@
     "artifactName": "starsky-${os}-desktop.${ext}",
     "mac": {
       "minimumSystemVersion": "10.12",
+      "electronLanguages": [
+        "en"
+      ],
       "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
         "zip"
