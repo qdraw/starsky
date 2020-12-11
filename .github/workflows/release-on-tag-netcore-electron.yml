@@ -57,11 +57,16 @@ jobs:
           name: osx.10.12-x64
           path: ./starsky
 
+      - name: Unzip Mac OS bundle
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx.10.12-x64.zip -d osx.10.12-x64     
+        
       - name: List
         shell: bash
         working-directory: ./starsky
         run: ls -lah       
-
+        
       - name: NpmCi
         working-directory: ./starskyapp
         run: npm ci
@@ -89,6 +94,11 @@ jobs:
         with:
           name: win7-x64
           path: ./starsky
+
+      - name: Unzip Windows bundle
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-win7-x64.zip -d win7-x64    
 
       - name: List
         shell: bash
