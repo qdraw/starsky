@@ -3,6 +3,7 @@
 // const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 import { app, BrowserWindow, Menu, shell } from "electron";
+import { createCheckForUpdatesWindows } from "../check-for-updates-window/check-for-updates-window.const";
 import createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
@@ -92,12 +93,9 @@ function AppMenu() {
             settingsWindows.forEach((window) => {
               window.webContents.reload();
             });
-            // editWindows.forEach(window => {
-            //   window.webContents.reload()
-            // });
-            // checkForUpdatesWindows.forEach(window => {
-            //   window.webContents.reload()
-            // });
+            createCheckForUpdatesWindows.forEach((window) => {
+              window.webContents.reload();
+            });
           },
           accelerator: "CmdOrCtrl+R"
         },

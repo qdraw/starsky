@@ -49,6 +49,8 @@ window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
     switchRemote.checked = false;
     remoteLocation.disabled = true;
   }
+  switchLocal.disabled = false;
+  switchRemote.disabled = false;
 });
 
 /** Web location field */
@@ -95,21 +97,29 @@ document
     window.api.send(UpdatePolicyIpcKey, true);
   });
 
-window.api.receive(UpdatePolicyIpcKey, (data: boolean) => {
-  if (!data) {
-    const switchUpdatePolicyOff = document.querySelector(
-      "#switch_update_policy_off"
-    ) as HTMLInputElement;
-    switchUpdatePolicyOff.checked = true;
+document
+  .querySelector("#switch_update_policy_off")
+  .addEventListener("change", function () {
+    window.api.send(UpdatePolicyIpcKey, false);
+  });
 
-    const switchUpdatePolicyOn = document.querySelector(
-      "#switch_update_policy_on"
-    ) as HTMLInputElement;
-    switchUpdatePolicyOn.checked = null;
-  }
+window.api.receive(UpdatePolicyIpcKey, (updateResult: boolean) => {
+  console.log("updateResult", updateResult);
+
+  const switchUpdatePolicyOff = document.querySelector(
+    "#switch_update_policy_off"
+  ) as HTMLInputElement;
+  switchUpdatePolicyOff.checked = !updateResult;
+  switchUpdatePolicyOff.disabled = false;
+
+  const switchUpdatePolicyOn = document.querySelector(
+    "#switch_update_policy_on"
+  ) as HTMLInputElement;
+  switchUpdatePolicyOn.checked = updateResult;
+  switchUpdatePolicyOn.disabled = false;
 });
 
-window.api.send("settings_update_policy", null);
+window.api.send(UpdatePolicyIpcKey, null);
 
 // document.querySelector("#file_selector").addEventListener('click', function() {
 //     window.api.send("settings_default_app", {
@@ -128,21 +138,3 @@ window.api.send("settings_update_policy", null);
 // });
 
 // window.api.send("settings_default_app",null);
-
-// document.querySelector('#switch_update_policy_off').addEventListener('change', function() {
-//     window.api.send("settings_update_policy",false);
-
-// });
-
-// document.querySelector('#switch_update_policy_on').addEventListener('change', function() {
-//     window.api.send("settings_update_policy",true);
-// });
-
-// window.api.receive("settings_update_policy", (data) => {
-//     if (!data) {
-//         document.querySelector("#switch_update_policy_off").checked = true;
-//         document.querySelector("#switch_update_policy_on").checked = null;
-//     }
-// });
-
-// window.api.send("settings_update_policy",null);

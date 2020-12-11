@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import * as path from "path";
-import { windowStateKeeper } from "../helpers/window-state-keeper";
+import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { settingsWindows } from "./settings-windows.const";
 
 export const createSettingsWindow = async () => {

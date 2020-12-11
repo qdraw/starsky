@@ -2,7 +2,7 @@ import { BrowserWindow, Menu, MenuItem } from "electron";
 import * as appConfig from "electron-settings";
 import * as path from "path";
 import RememberUrl from "../config/remember-url-settings.const";
-import { windowStateKeeper } from "../helpers/window-state-keeper";
+import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { mainWindows } from "./main-windows.const";
 
 async function createMainWindow(relativeUrl: string = null) {

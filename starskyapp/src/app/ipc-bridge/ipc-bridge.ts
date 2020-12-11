@@ -187,23 +187,26 @@ function ipcBridge() {
   // });
 
   ipcMain.on(UpdatePolicyIpcKey, async (event, args) => {
-    let updatePolicy = true;
-
-    if (appConfig.has(UpdatePolicySettings)) {
-      updatePolicy = (await appConfig.get(UpdatePolicySettings)) as boolean;
-    }
-
-    if (args === false || args === true) {
-      console.log("set arg --> ", args);
-      appConfig.set(UpdatePolicySettings, args);
-      // reset check date for latest version
-      // appConfig.delete(CheckForUpdatesLocalStorageName);
-
-      event.reply(UpdatePolicySettings, args);
+    if (args === null || args === undefined) {
+      if (appConfig.has(UpdatePolicySettings)) {
+        const updatePolicy = (await appConfig.get(
+          UpdatePolicySettings
+        )) as boolean;
+        if (updatePolicy !== null || updatePolicy !== undefined) {
+          event.reply(UpdatePolicyIpcKey, updatePolicy);
+          return;
+        }
+      }
+      event.reply(UpdatePolicyIpcKey, true);
       return;
     }
 
-    event.reply(UpdatePolicySettings, updatePolicy);
+    console.log("set arg --> ", args);
+    appConfig.set(UpdatePolicySettings, args);
+    // reset check date for latest version
+    // appConfig.delete(CheckForUpdatesLocalStorageName);
+
+    event.reply(UpdatePolicyIpcKey, args);
   });
 }
 
