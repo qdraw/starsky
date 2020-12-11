@@ -46,11 +46,9 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 			
 			// When running deploy scripts rights might reset (only for unix)
-			if ( isWindows || await RunChmodOnExifToolUnixExe() ) return true;
+			if ( isWindows) return true;
 
-			// do a retry
-			await Task.Delay(100); // instead of Thread.Sleep
-			return await RunChmodOnExifToolUnixExe() ? true : throw new Win32Exception("Failed to create chmod 755 on exiftool");
+			return await RunChmodOnExifToolUnixExe();
 		}
 
 		internal async Task<bool> StartDownloadForUnix()
@@ -111,21 +109,21 @@ namespace starsky.foundation.writemeta.Helpers
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.Verbose ) Console.WriteLine("ExeExifToolUnixFullFilePath "+ ExeExifToolUnixFullFilePath());
+			if ( _appSettings.Verbose ) Console.WriteLine($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
+			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
-			try
+			
+			if (! _hostFileSystemStorage.ExistFile("/bin/chmod") )
 			{
-				var result = await Command.Run("chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
-				if ( result.Success ) return true;
-				await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+				Console.WriteLine("WARNING: /bin/chmod does not exist");
+				return true;
 			}
-			catch (Win32Exception e)
-			{
-				// this fails sometimes when running in startup' No such file or directory' but the file does exist
-				Console.WriteLine(e);
-				return false;
-			}
+			
+			// command.run does not care about the $PATH
+			var result = await Command.Run("/bin/chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
+			if ( result.Success ) return true;
+			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
 			return false;
 		}
 
