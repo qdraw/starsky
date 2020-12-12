@@ -3,9 +3,13 @@ import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
 } from "../../app/config/location-ipc-keys.const";
+import { IPreloadApi } from "../../preload/IPreloadApi";
 import * as checkForUpdates from "./check-for-updates";
 import { warmupLocalOrRemote } from "./reload-warmup-local-or-remote";
 import * as warmupScript from "./reload-warmup-script";
+declare global {
+  var api: IPreloadApi;
+}
 
 describe("reload redirect", () => {
   describe("warmupLocalOrRemote", () => {
@@ -29,6 +33,10 @@ describe("reload redirect", () => {
           }
         }
       );
+    });
+
+    beforeEach(() => {
+      (window as any).api = {};
     });
 
     afterEach(() => {
@@ -67,6 +75,7 @@ describe("reload redirect", () => {
           return;
         });
 
+      // @ts-ignore
       window.api = {
         send: jest.fn(),
         receive: (_, func) => {

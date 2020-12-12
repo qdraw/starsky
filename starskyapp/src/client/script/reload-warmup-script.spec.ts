@@ -1,4 +1,8 @@
+import { IPreloadApi } from "../../preload/IPreloadApi";
 import { warmupScript } from "./reload-warmup-script";
+declare global {
+  var api: IPreloadApi;
+}
 
 describe("reload redirect", () => {
   function mockFetch(status: number) {
