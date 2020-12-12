@@ -7,9 +7,12 @@ interface IWindowsState {
   width: number;
   height: number;
   isMaximized: boolean;
+  track?: (win: BrowserWindow) => void;
 }
 
-export async function windowStateKeeper(windowName: string) {
+export async function windowStateKeeper(
+  windowName: string
+): Promise<IWindowsState> {
   let window: any;
   let windowState = {} as IWindowsState;
 
