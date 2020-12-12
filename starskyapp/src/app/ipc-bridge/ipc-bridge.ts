@@ -26,6 +26,10 @@ function ipcBridge() {
     LocationUrlCallback(event, args)
   );
 
+  ipcMain.on(UpdatePolicyIpcKey, async (event, args) =>
+    UpdatePolicyCallback(event, args)
+  );
+
   // ipcMain.on("settings_default_app", (event, args) => {
   //   if (args && args.reset) {
   //     appConfig.delete("settings_default_app");
@@ -79,36 +83,6 @@ function ipcBridge() {
 
   //   event.reply("settings_update_policy", currentSettings);
   // });
-
-  ipcMain.on(UpdatePolicyIpcKey, async (event, args) =>
-    UpdatePolicyCallback(event, args)
-  );
-}
-
-export async function UpdatePolicyCallback(
-  event: Electron.IpcMainEvent,
-  args: boolean
-) {
-  if (args === null || args === undefined) {
-    if (appConfig.has(UpdatePolicySettings)) {
-      const updatePolicy = (await appConfig.get(
-        UpdatePolicySettings
-      )) as boolean;
-      if (updatePolicy !== null || updatePolicy !== undefined) {
-        event.reply(UpdatePolicyIpcKey, updatePolicy);
-        return;
-      }
-    }
-    event.reply(UpdatePolicyIpcKey, true);
-    return;
-  }
-
-  console.log("set arg --> ", args);
-  appConfig.set(UpdatePolicySettings, args);
-  // reset check date for latest version
-  // appConfig.delete(CheckForUpdatesLocalStorageName);
-
-  event.reply(UpdatePolicyIpcKey, args);
 }
 
 export async function LocationIsRemoteCallback(
@@ -230,6 +204,32 @@ export async function LocationUrlCallback(
     isLocal: false,
     location: args
   } as IlocationUrlSettings);
+}
+
+export async function UpdatePolicyCallback(
+  event: Electron.IpcMainEvent,
+  args: boolean
+) {
+  if (args === null || args === undefined) {
+    if (appConfig.has(UpdatePolicySettings)) {
+      const updatePolicy = (await appConfig.get(
+        UpdatePolicySettings
+      )) as boolean;
+      if (updatePolicy !== null || updatePolicy !== undefined) {
+        event.reply(UpdatePolicyIpcKey, updatePolicy);
+        return;
+      }
+    }
+    event.reply(UpdatePolicyIpcKey, true);
+    return;
+  }
+
+  console.log("set arg --> ", args);
+  appConfig.set(UpdatePolicySettings, args);
+  // reset check date for latest version
+  // appConfig.delete(CheckForUpdatesLocalStorageName);
+
+  event.reply(UpdatePolicyIpcKey, args);
 }
 
 export default ipcBridge;

@@ -5,11 +5,13 @@ import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
 } from "../config/location-ipc-keys.const";
+import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
   AppVersionCallback,
   LocationIsRemoteCallback,
-  LocationUrlCallback
+  LocationUrlCallback,
+  UpdatePolicyCallback
 } from "./ipc-bridge";
 
 jest.mock("electron", () => {
@@ -239,6 +241,53 @@ describe("ipc bridge", () => {
         isValid: false,
         location: "https://nonexitingdomain.com"
       });
+    });
+  });
+
+  describe("UpdatePolicyCallback", () => {
+    it("getting with null input", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(null);
+      });
+      await UpdatePolicyCallback(event, null);
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, null);
+    });
+
+    it("set to true", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+
+      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
+
+      await UpdatePolicyCallback(event, true);
+
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, true);
+    });
+
+    it("set to false", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(false);
+      });
+
+      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
+
+      await UpdatePolicyCallback(event, false);
+
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, false);
     });
   });
 });
