@@ -4,7 +4,7 @@ import {
   LocationUrlIpcKey
 } from "../../app/config/location-ipc-keys.const";
 import * as checkForUpdates from "./check-for-updates";
-import { warmupLocalOrRemote } from "./reload-redirect";
+import { warmupLocalOrRemote } from "./reload-warmup-local-or-remote";
 import * as warmupScript from "./reload-warmup-script";
 
 describe("reload redirect", () => {
