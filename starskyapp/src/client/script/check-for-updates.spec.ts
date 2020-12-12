@@ -7,6 +7,7 @@ describe("reload redirect", () => {
     });
     window.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
   }
+
   function mockFetchReject() {
     const mockFetchPromise = Promise.reject();
     window.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
