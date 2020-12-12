@@ -9,7 +9,8 @@
     "dist": "electron-builder build",
     "mac": "electron-builder build -m",
     "windows": "electron-builder build -w",
-    "macwindows": "electron-builder build -mw"
+    "macwindows": "electron-builder build -mw",
+    "test:ci": "echo no tests yet"
   },
   "author": "",
   "license": "ISC",
