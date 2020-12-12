@@ -3,11 +3,8 @@
 // const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 import { app, BrowserWindow, Menu, shell } from "electron";
-import { createCheckForUpdatesWindows } from "../check-for-updates-window/check-for-updates-window.const";
 import createMainWindow from "../main-window/create-main-window";
-import { mainWindows } from "../main-window/main-windows.const";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
-import { settingsWindows } from "../settings-window/settings-windows.const";
 
 function AppMenu() {
   const isMac = process.platform === "darwin";
@@ -87,15 +84,19 @@ function AppMenu() {
         {
           label: "Refresh",
           click: () => {
-            mainWindows.forEach((window) => {
+            BrowserWindow.getAllWindows().forEach((window) => {
               window.webContents.reload();
             });
-            settingsWindows.forEach((window) => {
-              window.webContents.reload();
-            });
-            createCheckForUpdatesWindows.forEach((window) => {
-              window.webContents.reload();
-            });
+
+            // mainWindows.forEach((window) => {
+            //   window.webContents.reload();
+            // });
+            // settingsWindows.forEach((window) => {
+            //   window.webContents.reload();
+            // });
+            // createCheckForUpdatesWindows.forEach((window) => {
+            //   window.webContents.reload();
+            // });
           },
           accelerator: "CmdOrCtrl+R"
         },

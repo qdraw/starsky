@@ -8,8 +8,7 @@ import {
 } from "../app/config/location-ipc-keys.const";
 import { UpdatePolicyIpcKey } from "../app/config/update-policy-ipc-key.const";
 
-// the ipcRenderer without exposing the entire object
-contextBridge.exposeInMainWorld("api", {
+export const exposeBrigde = {
   send: (channel: string, data: any) => {
     // whitelist channels
     let validChannels = [
@@ -23,8 +22,6 @@ contextBridge.exposeInMainWorld("api", {
     }
   },
   receive: (channel: string, func: Function) => {
-    // ipcRenderer.on(channel, (event, ...args) => console.log(...args));
-
     let validChannels = [
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
@@ -36,4 +33,7 @@ contextBridge.exposeInMainWorld("api", {
       ipcRenderer.on(channel, (event, ...args) => func(...args));
     }
   }
-});
+};
+
+// the ipcRenderer without exposing the entire object
+contextBridge.exposeInMainWorld("api", exposeBrigde);
