@@ -6,6 +6,7 @@ describe("reload redirect", () => {
       .spyOn(warmupLocalOrRemote, "warmupLocalOrRemote")
       .mockImplementationOnce(() => {});
 
+    // when change also update webpack and html
     require("./reload-redirect");
 
     expect(checkSpy).toBeCalled();

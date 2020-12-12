@@ -80,28 +80,35 @@ function ipcBridge() {
   //   event.reply("settings_update_policy", currentSettings);
   // });
 
-  ipcMain.on(UpdatePolicyIpcKey, async (event, args) => {
-    if (args === null || args === undefined) {
-      if (appConfig.has(UpdatePolicySettings)) {
-        const updatePolicy = (await appConfig.get(
-          UpdatePolicySettings
-        )) as boolean;
-        if (updatePolicy !== null || updatePolicy !== undefined) {
-          event.reply(UpdatePolicyIpcKey, updatePolicy);
-          return;
-        }
+  ipcMain.on(UpdatePolicyIpcKey, async (event, args) =>
+    UpdatePolicyCallback(event, args)
+  );
+}
+
+export async function UpdatePolicyCallback(
+  event: Electron.IpcMainEvent,
+  args: boolean
+) {
+  if (args === null || args === undefined) {
+    if (appConfig.has(UpdatePolicySettings)) {
+      const updatePolicy = (await appConfig.get(
+        UpdatePolicySettings
+      )) as boolean;
+      if (updatePolicy !== null || updatePolicy !== undefined) {
+        event.reply(UpdatePolicyIpcKey, updatePolicy);
+        return;
       }
-      event.reply(UpdatePolicyIpcKey, true);
-      return;
     }
+    event.reply(UpdatePolicyIpcKey, true);
+    return;
+  }
 
-    console.log("set arg --> ", args);
-    appConfig.set(UpdatePolicySettings, args);
-    // reset check date for latest version
-    // appConfig.delete(CheckForUpdatesLocalStorageName);
+  console.log("set arg --> ", args);
+  appConfig.set(UpdatePolicySettings, args);
+  // reset check date for latest version
+  // appConfig.delete(CheckForUpdatesLocalStorageName);
 
-    event.reply(UpdatePolicyIpcKey, args);
-  });
+  event.reply(UpdatePolicyIpcKey, args);
 }
 
 export async function LocationIsRemoteCallback(
