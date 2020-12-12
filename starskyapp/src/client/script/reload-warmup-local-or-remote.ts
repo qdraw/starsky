@@ -4,16 +4,22 @@ import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
 } from "../../app/config/location-ipc-keys.const";
+import { IPreloadApi } from "../../preload/IPreloadApi";
 import { checkForUpdates } from "./check-for-updates";
 import { warmupScript } from "./reload-warmup-script";
+declare global {
+  var api: IPreloadApi;
+}
 
 function redirecter(domainUrl: string) {
   var appendAfterDomainUrl = "";
   var rememberUrl = new URLSearchParams(window.location.search).get(
     "remember-url"
   );
-  if (rememberUrl) {
-    appendAfterDomainUrl = decodeURI(rememberUrl);
+  const regex = new RegExp("(/[A-Z]+)+", "i");
+  if (rememberUrl && rememberUrl.match(regex)) {
+    console.log(rememberUrl.match(regex)[0]);
+    appendAfterDomainUrl = decodeURI(rememberUrl.match(regex)[0]);
   }
 
   console.log(domainUrl + appendAfterDomainUrl);
