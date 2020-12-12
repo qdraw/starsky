@@ -36,6 +36,7 @@ export function checkForUpdates(
           if (preloaderElement) {
             preloaderElement.style.display = "none";
           }
+          resolve();
           return;
         }
 
