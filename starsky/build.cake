@@ -33,6 +33,7 @@ if(branchName.StartsWith("refs/heads/")) {
   branchName  = branchName.Replace("refs/heads/","");
 }
 var noSonar = HasArgument("no-sonar") || HasArgument("nosonar");
+/* use as '--no-unit-test' (without quotes) */
 var noUnitTest = HasArgument("no-unit-test") || HasArgument("nounittest") || HasArgument("nounittests") || HasArgument("no-unit-tests");
 
 /* to get a list with the generic item */
