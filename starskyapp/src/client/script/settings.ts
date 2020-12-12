@@ -1,125 +1,21 @@
-import { IlocationUrlSettings } from "../../app/config/IlocationUrlSettings";
-import {
-  LocationIsRemoteIpcKey,
-  LocationUrlIpcKey
-} from "../../app/config/location-ipc-keys.const";
-import { UpdatePolicyIpcKey } from "../../app/config/update-policy-ipc-key.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
+import { settingsCheckForUpdatesToggle } from "./settings-check-for-updates-toggle";
+import { settingsRemoteLocalToggle } from "./settings-remote-local-toggle";
+import { settingsRemoteLocationField } from "./settings-remote-location-field";
 
 declare global {
   var api: IPreloadApi;
 }
 
-/** Switch remote local */
-document.querySelector("#switch_local").addEventListener("change", function () {
-  changeRemoteToggle(false);
-});
-
-document
-  .querySelector("#switch_remote")
-  .addEventListener("change", function () {
-    changeRemoteToggle(true);
-  });
-
-window.api.send(LocationIsRemoteIpcKey, null);
-
-function changeRemoteToggle(isRemote: boolean) {
-  window.api.send(LocationIsRemoteIpcKey, isRemote);
-}
-
-window.api.receive(LocationIsRemoteIpcKey, (isRemote: boolean) => {
-  const switchLocal = document.querySelector(
-    "#switch_local"
-  ) as HTMLInputElement;
-  const switchRemote = document.querySelector(
-    "#switch_remote"
-  ) as HTMLInputElement;
-  const remoteLocation = document.querySelector(
-    "#remote_location"
-  ) as HTMLInputElement;
-
-  if (isRemote) {
-    switchLocal.checked = false;
-    switchRemote.checked = true;
-    remoteLocation.disabled = false;
-    // trigger again to show results
-    window.api.send(LocationUrlIpcKey, null);
-  } else {
-    switchLocal.checked = true;
-    switchRemote.checked = false;
-    remoteLocation.disabled = true;
-  }
-  switchLocal.disabled = false;
-  switchRemote.disabled = false;
-});
+settingsRemoteLocalToggle();
 
 /** Web location field */
-
-function changeRemoteLocation(location: string) {
-  if (!location) {
-    console.error("wrong location");
-    return;
-  }
-  window.api.send(LocationUrlIpcKey, location);
-}
-
-document
-  .querySelector("#remote_location")
-  .addEventListener("change", function () {
-    changeRemoteLocation(this.value);
-  });
-
-window.api.send(LocationUrlIpcKey, null);
-
-window.api.receive(LocationUrlIpcKey, (result: IlocationUrlSettings) => {
-  const remoteLocation = document.querySelector(
-    "#remote_location"
-  ) as HTMLInputElement;
-
-  if (!result.isLocal) {
-    remoteLocation.value = result.location;
-  }
-
-  if (result && result.isValid !== null) {
-    document.querySelector("#locationOk").innerHTML = result.isValid
-      ? "Setting is saved"
-      : "FAIL setting is not valid and NOT saved";
-  }
-});
+settingsRemoteLocationField();
 
 /** Default app field */
 
 /** Check for updates */
-
-document
-  .querySelector("#switch_update_policy_on")
-  .addEventListener("change", function () {
-    window.api.send(UpdatePolicyIpcKey, true);
-  });
-
-document
-  .querySelector("#switch_update_policy_off")
-  .addEventListener("change", function () {
-    window.api.send(UpdatePolicyIpcKey, false);
-  });
-
-window.api.receive(UpdatePolicyIpcKey, (updateResult: boolean) => {
-  console.log("updateResult", updateResult);
-
-  const switchUpdatePolicyOff = document.querySelector(
-    "#switch_update_policy_off"
-  ) as HTMLInputElement;
-  switchUpdatePolicyOff.checked = !updateResult;
-  switchUpdatePolicyOff.disabled = false;
-
-  const switchUpdatePolicyOn = document.querySelector(
-    "#switch_update_policy_on"
-  ) as HTMLInputElement;
-  switchUpdatePolicyOn.checked = updateResult;
-  switchUpdatePolicyOn.disabled = false;
-});
-
-window.api.send(UpdatePolicyIpcKey, null);
+settingsCheckForUpdatesToggle();
 
 // document.querySelector("#file_selector").addEventListener('click', function() {
 //     window.api.send("settings_default_app", {
