@@ -1,2 +1,4 @@
 dist/
-include*zip
+build/
+runtime-starsky*
+coverage
