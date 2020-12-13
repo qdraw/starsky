@@ -1,11 +1,14 @@
 import * as appConfig from "electron-settings";
 
-function defaultAppSettings() {
+function defaultAppSettings(): string {
   appConfig.configure({
     prettify: true,
     fileName: "starksy-app-settings.json"
   });
-  console.log(appConfig.file());
+
+  const appPath = appConfig.file();
+  console.log(appPath);
+  return appPath;
 }
 
 export default defaultAppSettings;
