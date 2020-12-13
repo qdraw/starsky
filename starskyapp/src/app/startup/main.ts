@@ -35,7 +35,7 @@ app.on("window-all-closed", () => {
 });
 
 // https://github.com/electron/electron/blob/master/docs/tutorial/security.md
-app.on("web-contents-created", (event, contents) => {
+app.on("web-contents-created", (_, contents) => {
   contents.on("will-navigate", async (event, navigationUrl) => {
     await willNavigateSecurity(event, navigationUrl);
   });
