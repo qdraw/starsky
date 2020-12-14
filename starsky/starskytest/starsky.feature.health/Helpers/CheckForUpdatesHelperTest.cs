@@ -102,8 +102,38 @@ namespace starskytest.starsky.feature.health.Helpers
 			}, "0.2");
 			
 			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
+			Assert.AreEqual("0.1.0",results.Value);
 		}
 		
+		[TestMethod]
+		public void Parse_CurrentVersionIsNewer_Multiple()
+		{
+			var results = new CheckForUpdates(null, 
+				new AppSettings(),null).Parse(new List<ReleaseModel>
+			{
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v0.1.5"
+				},
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v0.1"
+				},
+				new ReleaseModel
+				{
+					Draft = false,
+					PreRelease = false,
+					TagName = "v0.0.1"
+				}
+			}, "0.2");
+			
+			Assert.AreEqual(UpdateStatus.CurrentVersionIsLatest,results.Key);
+			Assert.AreEqual("0.1.5",results.Value);
+		}
 		
 		[TestMethod]
 		public void Parse_CurrentVersionIsOlder()
@@ -120,6 +150,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			}, "0.8");
 			
 			Assert.AreEqual(UpdateStatus.NeedToUpdate,results.Key);
+			Assert.AreEqual("0.9.0",results.Value);
 		}
 		
 		[TestMethod]

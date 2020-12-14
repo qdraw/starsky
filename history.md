@@ -37,7 +37,7 @@ node starsky-tools/build-tools/app-version-update.js
 ```
 
 # version 0.4.3 _(Unreleased)_ - 2020-12-??
-- nothing yet
+- [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
