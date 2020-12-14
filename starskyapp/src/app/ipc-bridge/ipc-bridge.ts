@@ -1,6 +1,7 @@
 import { app, ipcMain, net } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
+import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import {
   LocationIsRemoteIpcKey,
@@ -120,28 +121,7 @@ export async function LocationUrlCallback(
 ) {
   // getting
   if (!args) {
-    const isRemote = (await appConfig.get(
-      LocationIsRemoteSettingsKey
-    )) as boolean;
-
-    const currentSettings = {
-      location: await appConfig.get(LocationUrlSettingsKey),
-      isValid: null,
-      isLocal: false
-    } as IlocationUrlSettings;
-
-    console.log(isRemote, currentSettings.location);
-
-    if (!isRemote || !currentSettings.location) {
-      event.reply(LocationUrlIpcKey, {
-        isValid: null,
-        isLocal: true,
-        location: "http://localhost:9609"
-      } as IlocationUrlSettings);
-      return;
-    }
-
-    event.reply(LocationUrlIpcKey, currentSettings);
+    event.reply(LocationUrlIpcKey, await GetBaseUrlFromSettings());
     return;
   }
 

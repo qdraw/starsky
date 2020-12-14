@@ -1,9 +1,11 @@
 import * as appConfig from "electron-settings";
 import { DifferenceInDate } from "../../shared/date";
+import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import {
   LastCheckedDateSettings,
   UpdatePolicySettings
 } from "../config/update-policy-settings.const";
+import { GetNetRequest } from "./get-net-request";
 
 /**
  * Skip display of message
@@ -31,8 +33,13 @@ async function createCheckForUpdatesContainerWindow() {
   setTimeout(() => {}, 5000);
 }
 
-function createCheckForUpdatesWindow() {
-  // 202
+async function createCheckForUpdatesWindow() {
+  const url = (await GetBaseUrlFromSettings()).location;
+  try {
+    const result = await GetNetRequest(url);
+    if (result.statusCode === 202) {
+    }
+  } catch (error) {}
 }
 
 export default createCheckForUpdatesContainerWindow;

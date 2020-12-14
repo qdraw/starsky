@@ -6,7 +6,7 @@ export interface IGetNetRequestResponse {
   statusCode: number;
 }
 
-function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
+export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
   return new Promise(function (resolve, reject) {
     const request = net.request({
       url,
