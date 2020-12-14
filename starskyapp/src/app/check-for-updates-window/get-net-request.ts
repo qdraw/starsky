@@ -23,18 +23,22 @@ export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
         body += chunk.toString();
       });
       response.on("end", () => {
+        console.log("--end");
+
         try {
           resolve({
             data: JSON.parse(body),
             statusCode: response.statusCode
           });
         } catch (error) {
+          console.log(error);
           reject({ error, statusCode: response.statusCode });
         }
       });
     });
 
     request.on("error", (error) => {
+      console.log(error);
       reject({ error: error, statusCode: 999 });
     });
 

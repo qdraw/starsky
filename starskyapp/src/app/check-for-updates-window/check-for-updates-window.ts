@@ -1,10 +1,12 @@
 import * as appConfig from "electron-settings";
 import { DifferenceInDate } from "../../shared/date";
+import { GetAppVersion } from "../config/get-app-version";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import {
   LastCheckedDateSettings,
   UpdatePolicySettings
 } from "../config/update-policy-settings.const";
+import UrlQuery from "../config/url-query";
 import { GetNetRequest } from "./get-net-request";
 
 /**
@@ -27,19 +29,44 @@ export async function isPolicyEnabled(): Promise<boolean> {
 }
 
 async function createCheckForUpdatesContainerWindow() {
+  const test = await isPolicyEnabled();
+  const t2 = await SkipDisplayOfUpdate();
+
   if ((await isPolicyEnabled()) || (await SkipDisplayOfUpdate())) {
     return;
   }
-  setTimeout(() => {}, 5000);
+  console.log(test, t2);
+
+  setTimeout(
+    () =>
+      shouldItUpdate()
+        .then((shouldItUpdate) => {
+          console.log(shouldItUpdate);
+        })
+        .catch(() => {}),
+    5000
+  );
 }
 
-async function createCheckForUpdatesWindow() {
-  const url = (await GetBaseUrlFromSettings()).location;
-  try {
-    const result = await GetNetRequest(url);
-    if (result.statusCode === 202) {
+async function shouldItUpdate(): Promise<boolean> {
+  return new Promise(async function (resolve, reject) {
+    let url = (await GetBaseUrlFromSettings()).location;
+    url += new UrlQuery().HealthCheckForUpdates(GetAppVersion());
+    console.log(url);
+
+    try {
+      const result = await GetNetRequest(url);
+      console.log(result);
+
+      if (result.statusCode !== 202) {
+        resolve(false);
+        return;
+      }
+      resolve(true);
+    } catch (error) {
+      reject();
     }
-  } catch (error) {}
+  });
 }
 
 export default createCheckForUpdatesContainerWindow;

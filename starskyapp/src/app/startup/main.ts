@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from "electron";
+import createCheckForUpdatesContainerWindow from "../check-for-updates-window/check-for-updates-window";
 import { setupChildProcess } from "../child-process/setup-child-process";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
@@ -17,7 +18,7 @@ setupChildProcess();
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  createMainWindow();
+  createMainWindow().then(createCheckForUpdatesContainerWindow);
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
