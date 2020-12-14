@@ -51,7 +51,7 @@ const useSockets = (): IUseSockets => {
       if (prevCount == null) {
         return null;
       }
-      return countRetry >= 1;
+      return countRetry >= 2;
     });
 
     if (DifferenceInDate(keepAliveTime.getTime()) > diffTimeInMs / 60000) {
