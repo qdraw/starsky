@@ -71,7 +71,8 @@ namespace starsky.feature.health.UpdateCheck.Services
 		// ReSharper disable once MemberCanBeMadeStatic.Global
 		internal KeyValuePair<UpdateStatus, string> Parse(IEnumerable<ReleaseModel> releaseModelList, string currentVersion )
 		{
-			var tagName = releaseModelList.LastOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
+			var orderedReleaseModelList = releaseModelList.OrderByDescending(p => p.TagName);
+			var tagName = orderedReleaseModelList.FirstOrDefault(p => !p.Draft && !p.PreRelease)?.TagName;
 			if ( string.IsNullOrWhiteSpace(tagName) || !tagName.StartsWith("v") )
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.NoReleasesFound,string.Empty);
 
