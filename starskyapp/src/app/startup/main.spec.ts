@@ -57,7 +57,7 @@ describe("main", () => {
   it("should create main window", () => {
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
-      .mockImplementationOnce(() => null as any);
+      .mockImplementationOnce(() => Promise.resolve() as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
@@ -70,8 +70,8 @@ describe("main", () => {
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockReset()
-      .mockImplementationOnce(() => null as any)
-      .mockImplementationOnce(() => null as any);
+      .mockImplementationOnce(() => Promise.resolve() as any)
+      .mockImplementationOnce(() => Promise.resolve() as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       if (name === "activate") {
@@ -92,7 +92,7 @@ describe("main", () => {
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockReset()
-      .mockImplementationOnce(() => null as any);
+      .mockImplementationOnce(() => Promise.resolve() as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       if (name === "activate") {

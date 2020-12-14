@@ -23,8 +23,6 @@ export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
         body += chunk.toString();
       });
       response.on("end", () => {
-        console.log("--end");
-
         try {
           resolve({
             data: JSON.parse(body),
