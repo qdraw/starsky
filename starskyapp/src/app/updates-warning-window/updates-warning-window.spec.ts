@@ -42,16 +42,17 @@ jest.mock("electron", () => {
 describe("create main window", () => {
   describe("checkForUpdatesWindow", () => {
     it("should call browserWindow", async () => {
-      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
-        return Promise.resolve();
-      });
-
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
       const browserWindowSpy = jest
         .spyOn(BrowserWindow, "BrowserWindow")
         .mockImplementationOnce(() => mockBrowserWindow as any);
+
+      jest
+        .spyOn(appConfig, "set")
+        .mockImplementationOnce(() => Promise.resolve())
+        .mockImplementationOnce(() => Promise.resolve());
 
       await checkForUpdatesWindow();
 
