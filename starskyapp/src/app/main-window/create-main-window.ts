@@ -1,6 +1,7 @@
 import { BrowserWindow } from "electron";
 import * as appConfig from "electron-settings";
 import * as path from "path";
+import { GetAppVersion } from "../config/get-app-version";
 import RememberUrl from "../config/remember-url-settings.const";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
@@ -32,6 +33,10 @@ async function createMainWindow(relativeUrl: string = null) {
       preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
     }
   });
+
+  // Add Starsky as user agent also in develop mode
+  newWindow.webContents.userAgent =
+    newWindow.webContents.userAgent + " starsky/" + GetAppVersion();
 
   mainWindowStateKeeper.track(newWindow);
 

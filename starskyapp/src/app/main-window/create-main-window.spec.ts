@@ -14,6 +14,9 @@ jest.mock("electron", () => {
     BrowserWindow: () => {
       return {
         loadFile: jest.fn(),
+        webContents: {
+          userAgent: "test"
+        },
         once: (_: string, func: Function) => {
           return func();
         },

@@ -6,10 +6,14 @@ export interface IGetNetRequestResponse {
   statusCode: number;
 }
 
-export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
+export function GetNetRequest(
+  url: string,
+  session: Electron.Session = null
+): Promise<IGetNetRequestResponse> {
   return new Promise(function (resolve, reject) {
     const request = net.request({
       url,
+      session,
       headers: {
         Accept: "*/*"
       }

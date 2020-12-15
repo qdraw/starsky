@@ -3,6 +3,7 @@
 // const createSettingsWindow = require('./settings-window').createSettingsWindow
 
 import { app, BrowserWindow, Menu, shell } from "electron";
+import { EditFile } from "../edit-file/edit-file";
 import createMainWindow from "../main-window/create-main-window";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
 
@@ -42,7 +43,7 @@ function AppMenu() {
           label: "Edit file in Editor",
           click: () => {
             var focusWindow = BrowserWindow.getFocusedWindow();
-            // if (focusWindow) handleExitKeyPress(focusWindow);
+            if (focusWindow) EditFile(focusWindow);
           },
           accelerator: "CmdOrCtrl+E"
         },
@@ -87,16 +88,6 @@ function AppMenu() {
             BrowserWindow.getAllWindows().forEach((window) => {
               window.webContents.reload();
             });
-
-            // mainWindows.forEach((window) => {
-            //   window.webContents.reload();
-            // });
-            // settingsWindows.forEach((window) => {
-            //   window.webContents.reload();
-            // });
-            // createCheckForUpdatesWindows.forEach((window) => {
-            //   window.webContents.reload();
-            // });
           },
           accelerator: "CmdOrCtrl+R"
         },
