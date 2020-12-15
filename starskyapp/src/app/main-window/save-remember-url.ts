@@ -6,11 +6,18 @@ export async function saveRememberUrl(newWindow: BrowserWindow) {
   const url = new URL(newWindow.webContents.getURL()).search;
   const currentObject = (await appConfig.get(RememberUrl)) as any;
 
-  const newObject = {
+  const newlyAddedObject = {
     [newWindow.id]: url
   };
 
-  await appConfig.set(RememberUrl, { ...currentObject, ...newObject });
+  // new users
+  if (!currentObject) {
+    await appConfig.set(RememberUrl, newlyAddedObject);
+    return;
+  }
+
+  const combinedObject = { ...currentObject, ...newlyAddedObject };
+  await appConfig.set(RememberUrl, combinedObject);
 }
 
 export async function removeRememberUrl(newWindow: BrowserWindow) {
