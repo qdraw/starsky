@@ -54,11 +54,18 @@ describe("create main window", () => {
     });
   });
   describe("createCheckForUpdatesContainerWindow", () => {
-    it("should call browserWindow", async () => {
-      jest.useFakeTimers();
+    it("should call browserWindow", (done) => {
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
+
+      jest
+        .spyOn(shouldItUpdate, "isPolicyDisabled")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "SkipDisplayOfUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
 
       jest
         .spyOn(shouldItUpdate, "shouldItUpdate")
@@ -69,11 +76,48 @@ describe("create main window", () => {
         .mockReset()
         .mockImplementationOnce(() => mockBrowserWindow as any);
 
-      await createCheckForUpdatesContainerWindow();
-      jest.advanceTimersByTime(1200);
+      createCheckForUpdatesContainerWindow(1)
+        .then(() => {
+          expect(browserWindowSpy).toBeCalled();
+          done();
+        })
+        .catch((e) => {
+          console.log(e);
+          throw e;
+        });
+    });
+    it("should not call browserWindow", (done) => {
+      jest
+        .spyOn(windowStateKeeper, "windowStateKeeper")
+        .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
 
-      expect(browserWindowSpy).toBeCalled();
-      jest.useRealTimers();
+      jest
+        .spyOn(shouldItUpdate, "isPolicyDisabled")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "SkipDisplayOfUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "shouldItUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      const browserWindowSpy = jest
+        .spyOn(BrowserWindow, "BrowserWindow")
+        .mockReset()
+        .mockImplementationOnce(() => mockBrowserWindow as any);
+
+      createCheckForUpdatesContainerWindow(1)
+        .then(() => {
+          expect(browserWindowSpy).toBeCalledTimes(0);
+
+          done();
+        })
+        .catch((e) => {
+          console.log(e);
+          throw e;
+        });
     });
   });
 });

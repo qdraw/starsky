@@ -12,29 +12,34 @@ import { updatesWarningWindows } from "./updates-warning-windows.const";
 
 import path = require("path");
 
-async function createCheckForUpdatesContainerWindow() {
-  const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
-  console.log(policy);
+async function createCheckForUpdatesContainerWindow(
+  intervalSpeed = 1000
+): Promise<boolean> {
+  return new Promise(async function (resolve, reject) {
+    const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
+    console.log(policy);
 
-  if (policy) {
-    return;
-  }
+    if (policy) {
+      reject("disabled");
+      return;
+    }
 
-  setTimeout(
-    () =>
-      shouldItUpdate()
-        .then((shouldItUpdate) => {
-          console.log("shouldItUpdate", shouldItUpdate);
-
-          if (shouldItUpdate) {
-            checkForUpdatesWindow();
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        }),
-    1000
-  );
+    setTimeout(
+      () =>
+        shouldItUpdate()
+          .then(async (shouldItUpdate) => {
+            if (shouldItUpdate) {
+              await checkForUpdatesWindow();
+            }
+            resolve(shouldItUpdate);
+          })
+          .catch((error) => {
+            console.log(error);
+            reject(error);
+          }),
+      intervalSpeed
+    );
+  });
 }
 
 export async function checkForUpdatesWindow() {

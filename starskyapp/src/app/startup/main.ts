@@ -18,7 +18,9 @@ setupChildProcess();
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-  createMainWindow().then(createCheckForUpdatesContainerWindow);
+  createMainWindow().then(() => {
+    createCheckForUpdatesContainerWindow().catch(() => {});
+  });
   app.on("activate", function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

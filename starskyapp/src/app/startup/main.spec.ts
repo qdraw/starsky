@@ -34,7 +34,7 @@ describe("main", () => {
   beforeAll(() => {
     jest
       .spyOn(updatesWarningWindow, "default")
-      .mockImplementationOnce(() => null);
+      .mockImplementationOnce(() => Promise.resolve(true));
     jest.spyOn(ipcBridge, "default").mockImplementationOnce(() => {});
     jest
       .spyOn(defaultAppSettings, "default")
@@ -61,7 +61,7 @@ describe("main", () => {
   it("should create main window", () => {
     jest
       .spyOn(updatesWarningWindow, "default")
-      .mockImplementationOnce(() => null);
+      .mockImplementationOnce(() => Promise.resolve(true));
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -76,7 +76,7 @@ describe("main", () => {
   it("when activate and there a no windows it should create one", () => {
     jest
       .spyOn(updatesWarningWindow, "default")
-      .mockImplementationOnce(() => null);
+      .mockImplementationOnce(() => Promise.resolve(true));
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockReset()
