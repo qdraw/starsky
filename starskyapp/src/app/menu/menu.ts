@@ -35,7 +35,7 @@ function AppMenu() {
         {
           label: "New Window",
           click: () => {
-            createMainWindow();
+            createMainWindow("?f=/");
           },
           accelerator: "CmdOrCtrl+N"
         },

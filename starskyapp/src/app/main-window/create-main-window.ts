@@ -1,21 +1,19 @@
 import { BrowserWindow } from "electron";
-import * as appConfig from "electron-settings";
 import * as path from "path";
 import { GetAppVersion } from "../config/get-app-version";
-import RememberUrl from "../config/remember-url-settings.const";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
 import { mainWindows } from "./main-windows.const";
 import { onHeaderReceived } from "./on-headers-received";
-import { saveRememberUrl } from "./save-remember-url";
+import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
-async function createMainWindow(relativeUrl: string = null) {
+async function createMainWindow(openSpecificUrl: string, offset: number = 0) {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
   let { x, y } = getNewFocusedWindow(
-    mainWindowStateKeeper.x,
-    mainWindowStateKeeper.y
+    mainWindowStateKeeper.x + offset,
+    mainWindowStateKeeper.y + offset
   );
 
   let newWindow = new BrowserWindow({
@@ -41,8 +39,6 @@ async function createMainWindow(relativeUrl: string = null) {
 
   mainWindowStateKeeper.track(newWindow);
 
-  const rememberUrl = await getRememberUrl(relativeUrl);
-
   const location = path.join(
     __dirname,
     "..",
@@ -51,7 +47,7 @@ async function createMainWindow(relativeUrl: string = null) {
   );
 
   newWindow.loadFile(location, {
-    query: { "remember-url": rememberUrl }
+    query: { "remember-url": openSpecificUrl }
   });
 
   spellCheck(newWindow);
@@ -61,10 +57,22 @@ async function createMainWindow(relativeUrl: string = null) {
     newWindow.show();
   });
 
+  // normal navigations
   newWindow.webContents.on("did-navigate", () => {
     saveRememberUrl(newWindow);
   });
 
+  // hash navigations
+  newWindow.webContents.on("did-navigate-in-page", () => {
+    saveRememberUrl(newWindow);
+  });
+
+  // Emitted when the window is going to be closed
+  newWindow.on("close", () => {
+    removeRememberUrl(newWindow);
+  });
+
+  /* when its already closed */
   newWindow.on("closed", () => {
     mainWindows.delete(newWindow);
     newWindow = null;
@@ -72,17 +80,6 @@ async function createMainWindow(relativeUrl: string = null) {
 
   mainWindows.add(newWindow);
   return newWindow;
-}
-
-async function getRememberUrl(relativeUrl: string | null): Promise<string> {
-  if (relativeUrl !== null) {
-    return relativeUrl;
-  }
-
-  if (await appConfig.has(RememberUrl)) {
-    return (await appConfig.get(RememberUrl)).toString();
-  }
-  return "";
 }
 
 export default createMainWindow;

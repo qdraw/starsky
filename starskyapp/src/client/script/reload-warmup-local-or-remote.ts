@@ -16,13 +16,13 @@ function redirecter(domainUrl: string) {
   var rememberUrl = new URLSearchParams(window.location.search).get(
     "remember-url"
   );
-  const regex = new RegExp("(/[A-Z]+)+", "i");
+
+  // https://stackoverflow.com/a/31431911
+  const regex = new RegExp("^[^/]+/[^/].*$|^/[^/].*$", "gmi");
   if (rememberUrl && rememberUrl.match(regex)) {
     console.log(rememberUrl.match(regex)[0]);
     appendAfterDomainUrl = decodeURI(rememberUrl.match(regex)[0]);
   }
-
-  console.log(domainUrl + appendAfterDomainUrl);
   window.location.assign(domainUrl + appendAfterDomainUrl);
 }
 
@@ -36,7 +36,7 @@ export function warmupLocalOrRemote() {
     window.api.receive(
       LocationUrlIpcKey,
       (locationData: IlocationUrlSettings) => {
-        document.title += ` going to ${locationData.location}`;
+        document.title += ` going to ${locationData?.location}`;
         warmupScript(locationData.location, 0, 300, (isOk: boolean) => {
           if (isOk) {
             checkForUpdates(locationData.location, appVersion)

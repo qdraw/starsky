@@ -58,7 +58,7 @@ describe("create main window", () => {
       .spyOn(saveRememberUrl, "saveRememberUrl")
       .mockImplementationOnce(() => null);
 
-    const result = await createMainWindow();
+    const result = await createMainWindow("////");
     expect(result).not.toBeUndefined();
   });
 });

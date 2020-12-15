@@ -85,8 +85,6 @@ export async function LocationIsRemoteCallback(
     isLocationRemote = currentSettings.toString() === "true";
   }
 
-  console.log("-->", LocationIsRemoteIpcKey, isLocationRemote);
-
   event.reply(LocationIsRemoteIpcKey, isLocationRemote);
 }
 
@@ -95,7 +93,6 @@ export async function AppVersionCallback(event: Electron.IpcMainEvent) {
     .getVersion()
     .match(new RegExp("^[0-9]+\\.[0-9]+", "ig"));
 
-  console.log("-->", AppVersionIpcKey, appVersion);
   event.reply(AppVersionIpcKey, appVersion);
 }
 
@@ -181,7 +178,6 @@ export async function UpdatePolicyCallback(
     return;
   }
 
-  console.log("set arg --> ", args);
   appConfig.set(UpdatePolicySettings, args);
   // reset check date for latest version
   // appConfig.delete(CheckForUpdatesLocalStorageName);
