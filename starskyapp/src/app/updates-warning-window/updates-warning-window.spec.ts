@@ -40,7 +40,7 @@ jest.mock("electron", () => {
 
 describe("create main window", () => {
   describe("checkForUpdatesWindow", () => {
-    xit("should call browserWindow", async () => {
+    it("should call browserWindow", async () => {
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
@@ -111,13 +111,95 @@ describe("create main window", () => {
       createCheckForUpdatesContainerWindow(1)
         .then(() => {
           expect(browserWindowSpy).toBeCalledTimes(0);
-
           done();
         })
         .catch((e) => {
           console.log(e);
           throw e;
         });
+    });
+
+    it("should reject when feature toggle is disabled", (done) => {
+      jest
+        .spyOn(windowStateKeeper, "windowStateKeeper")
+        .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
+
+      jest
+        .spyOn(shouldItUpdate, "isPolicyDisabled")
+        .mockImplementationOnce(() => Promise.resolve(true));
+
+      jest
+        .spyOn(shouldItUpdate, "SkipDisplayOfUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "shouldItUpdate")
+        .mockImplementationOnce(() => Promise.resolve(true));
+
+      jest.spyOn(BrowserWindow, "BrowserWindow").mockReset();
+
+      const browserWindowSpy = jest
+        .spyOn(BrowserWindow, "BrowserWindow")
+        .mockImplementationOnce(() => mockBrowserWindow as any);
+
+      createCheckForUpdatesContainerWindow(1)
+        .then(() => {
+          // it should never call this 0>
+          expect(true).toBeFalsy();
+        })
+        .catch((e) => {
+          expect(browserWindowSpy).toBeCalledTimes(0);
+          done();
+        });
+    });
+
+    it("should reject when shouldItUpdate fails", (done) => {
+      jest
+        .spyOn(windowStateKeeper, "windowStateKeeper")
+        .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
+
+      jest
+        .spyOn(shouldItUpdate, "isPolicyDisabled")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "SkipDisplayOfUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest.spyOn(shouldItUpdate, "shouldItUpdate").mockReset();
+
+      jest
+        .spyOn(shouldItUpdate, "shouldItUpdate")
+        .mockImplementationOnce(() => Promise.reject(true));
+
+      jest.spyOn(BrowserWindow, "BrowserWindow").mockReset();
+
+      const browserWindowSpy = jest
+        .spyOn(BrowserWindow, "BrowserWindow")
+        .mockImplementationOnce(() => mockBrowserWindow as any);
+
+      createCheckForUpdatesContainerWindow(1)
+        .then((e) => {
+          // it should never call this 0>
+          expect(true).toBeFalsy();
+        })
+        .catch((e) => {
+          expect(browserWindowSpy).toBeCalledTimes(0);
+          done();
+        });
+    });
+
+    it("should not be undefined", () => {
+      jest
+        .spyOn(shouldItUpdate, "isPolicyDisabled")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      jest
+        .spyOn(shouldItUpdate, "SkipDisplayOfUpdate")
+        .mockImplementationOnce(() => Promise.resolve(false));
+
+      const result = createCheckForUpdatesContainerWindow();
+      expect(result).not.toBeUndefined();
     });
   });
 });
