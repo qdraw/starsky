@@ -42,6 +42,10 @@ describe("restore main window", () => {
       .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
 
+    jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+      return Promise.resolve();
+    });
+
     await restoreMainWindow();
 
     expect(createMainWindowSpy).toBeCalled();
@@ -51,6 +55,10 @@ describe("restore main window", () => {
   it("restore one window", async () => {
     jest.spyOn(appConfig, "has").mockImplementationOnce(() => {
       return Promise.resolve(true);
+    });
+
+    jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+      return Promise.resolve();
     });
 
     jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
@@ -74,6 +82,10 @@ describe("restore main window", () => {
 
     jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
       return Promise.resolve({ 0: "url_get0", 1: "url_get1" });
+    });
+
+    jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+      return Promise.resolve();
     });
 
     const createMainWindowSpy = jest
