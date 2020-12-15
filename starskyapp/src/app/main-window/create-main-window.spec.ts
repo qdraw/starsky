@@ -14,6 +14,7 @@ jest.mock("electron", () => {
     },
     BrowserWindow: () => {
       return {
+        id: 99,
         loadFile: jest.fn(),
         webContents: {
           userAgent: "test",
@@ -57,6 +58,7 @@ describe("create main window", () => {
     jest.spyOn(spellCheck, "spellCheck").mockImplementationOnce(() => null);
     jest
       .spyOn(saveRememberUrl, "saveRememberUrl")
+      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => null);
 
     const result = await createMainWindow("////");

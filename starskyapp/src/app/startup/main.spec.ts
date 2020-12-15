@@ -22,6 +22,7 @@ jest.mock("electron", () => {
       on: () => "en"
     },
     BrowserWindow: {
+      id: 801,
       getAllWindows: () => [] as any[]
     }
   };
