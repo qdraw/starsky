@@ -1,4 +1,5 @@
 import * as appConfig from "electron-settings";
+import RememberUrl from "../config/remember-url-settings.const";
 import { saveRememberUrl } from "./save-remember-url";
 
 jest.mock("electron", () => {
@@ -45,6 +46,7 @@ describe("save remember url", () => {
       });
 
     await saveRememberUrl({
+      id: 1,
       webContents: {
         getURL: () => {
           return "https://google.com/?f=t";
@@ -54,6 +56,6 @@ describe("save remember url", () => {
 
     //
     expect(appSettingsSetSpy).toBeCalled();
-    expect(appSettingsSetSpy).toBeCalledWith("?f=/", 0);
+    expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, { "1": "?f=t" });
   });
 });
