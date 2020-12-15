@@ -164,7 +164,15 @@ describe("ipc bridge", () => {
           on: (name: any, fun: Function) => {
             if (name === "response") {
               fun({
-                headers: { test: true },
+                on: (param: any, func: Function) => {
+                  if (param === "data") {
+                    func("{}");
+                    return;
+                  }
+                  func();
+                  console.log(param);
+                },
+                headers: {},
                 statusCode: 200
               });
             }
@@ -172,13 +180,16 @@ describe("ipc bridge", () => {
           end: jest.fn()
         } as any;
       });
+
       const event = { reply: jest.fn() } as any;
 
       mainWindows.add({ close: jest.fn() } as any);
 
+      console.log("update valid url");
+
       await LocationUrlCallback(event, "https://google.com");
 
-      console.log("----- > >  > ");
+      console.log("update valid url ----- <<<<<< ");
 
       expect(event.reply).toBeCalled();
       expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
@@ -201,8 +212,16 @@ describe("ipc bridge", () => {
           on: (name: any, fun: Function) => {
             if (name === "response") {
               fun({
-                headers: { test: true },
-                statusCode: 900
+                on: (param: any, func: Function) => {
+                  if (param === "data") {
+                    func("{}");
+                    return;
+                  }
+                  func();
+                  console.log(param);
+                },
+                headers: {},
+                statusCode: 500
               });
             }
           },
