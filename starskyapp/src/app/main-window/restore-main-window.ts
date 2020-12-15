@@ -2,7 +2,7 @@ import * as appConfig from "electron-settings";
 import RememberUrl from "../config/remember-url-settings.const";
 import createMainWindow from "./create-main-window";
 
-export async function restoreMainWindow() {
+export async function restoreMainWindow(): Promise<void> {
   const rememberUrls = await getRememberUrl();
 
   console.log("rememberUrls");
@@ -10,7 +10,7 @@ export async function restoreMainWindow() {
 
   for (var key of Object.keys(rememberUrls)) {
     const index = Number(key);
-    createMainWindow(rememberUrls[key], index * 20);
+    await createMainWindow(rememberUrls[key], index * 20);
   }
 }
 

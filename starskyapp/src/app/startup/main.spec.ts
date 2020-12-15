@@ -2,6 +2,7 @@ import { app, BrowserWindow } from "electron";
 import * as setupChildProcess from "../child-process/setup-child-process";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
 import * as createMainWindow from "../main-window/create-main-window";
+import * as restoreMainWindow from "../main-window/restore-main-window";
 import * as AppMenu from "../menu/menu";
 import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
 import * as defaultAppSettings from "./app-settings";
@@ -60,8 +61,8 @@ describe("main", () => {
 
   it("should create main window", () => {
     jest
-      .spyOn(updatesWarningWindow, "default")
-      .mockImplementationOnce(() => Promise.resolve(true));
+      .spyOn(restoreMainWindow, "restoreMainWindow")
+      .mockImplementationOnce(() => Promise.resolve());
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -78,7 +79,7 @@ describe("main", () => {
       .spyOn(updatesWarningWindow, "default")
       .mockImplementationOnce(() => Promise.resolve(true));
     const createMainWindowSpy = jest
-      .spyOn(createMainWindow, "default")
+      .spyOn(updatesWarningWindow, "default")
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any)
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -100,7 +101,7 @@ describe("main", () => {
       .mockImplementation(() => ["t"] as any);
 
     const createMainWindowSpy = jest
-      .spyOn(createMainWindow, "default")
+      .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
 
