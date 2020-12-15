@@ -1,4 +1,7 @@
-import { DefaultImageApplicationIpcKey } from "../../app/config/default-image-application-settings-ipc-key.const";
+import {
+  DefaultImageApplicationIpcKey,
+  IDefaultImageApplicationProps
+} from "../../app/config/default-image-application-settings-ipc-key.const";
 import { IPreloadApi } from "../../preload/IPreloadApi";
 import {
   defaultImageApplicationFileSelector,
@@ -16,7 +19,7 @@ export function settingsDefaultImageApplicationSelect() {
     .addEventListener("click", function () {
       window.api.send(DefaultImageApplicationIpcKey, {
         showOpenDialog: true
-      });
+      } as IDefaultImageApplicationProps);
     });
 
   document
@@ -24,11 +27,17 @@ export function settingsDefaultImageApplicationSelect() {
     .addEventListener("click", function () {
       window.api.send(DefaultImageApplicationIpcKey, {
         reset: true
-      });
+      } as IDefaultImageApplicationProps);
     });
 
-  window.api.receive(DefaultImageApplicationIpcKey, (data: string) => {
-    document.querySelector(defaultImageApplicationResult).innerHTML = data;
+  window.api.receive(DefaultImageApplicationIpcKey, (data: string | false) => {
+    if (data) {
+      document.querySelector(defaultImageApplicationResult).innerHTML = data;
+    }
+    if (data === false || data === undefined) {
+      document.querySelector(defaultImageApplicationResult).innerHTML =
+        "Defined by system";
+    }
   });
 
   window.api.send(DefaultImageApplicationIpcKey, null);

@@ -1,7 +1,11 @@
 import { app, ipcMain } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
-import { DefaultImageApplicationIpcKey } from "../config/default-image-application-settings-ipc-key.const";
+import DefaultImageApplicationSetting from "../config/default-image-application-settings";
+import {
+  DefaultImageApplicationIpcKey,
+  IDefaultImageApplicationProps
+} from "../config/default-image-application-settings-ipc-key.const";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import {
@@ -16,6 +20,7 @@ import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import { UpdatePolicySettings } from "../config/update-policy-settings.const";
 import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
+import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 
@@ -37,62 +42,32 @@ function ipcBridge() {
   );
 
   ipcMain.on(DefaultImageApplicationIpcKey, async (event, args) =>
-    UpdatePolicyCallback(event, args)
+    DefaultImageApplicationCallback(event, args)
   );
+}
 
-  // ipcMain.on("settings_default_app", (event, args) => {
-  //   if (args && args.reset) {
-  //     appConfig.delete("settings_default_app");
-  //     event.reply("settings_default_app", "");
-  //     return;
-  //   }
+export async function DefaultImageApplicationCallback(
+  event: Electron.IpcMainEvent,
+  args: IDefaultImageApplicationProps
+) {
+  if (!args) {
+    const currentSettings = await appConfig.get(DefaultImageApplicationSetting);
+    event.reply(DefaultImageApplicationIpcKey, currentSettings);
+    return;
+  }
+  if (args.reset) {
+    await appConfig.unset(DefaultImageApplicationSetting);
+    event.reply(DefaultImageApplicationIpcKey, false);
+    return;
+  }
 
-  //   if (args && args.showOpenDialog) {
-  //     var newOpenedWindow = new BrowserWindow();
-  //     var selected = dialog.showOpenDialog(newOpenedWindow, {
-  //       properties: ["openFile"]
-  //     });
-
-  //     selected
-  //       .then((data) => {
-  //         if (data.canceled) {
-  //           newOpenedWindow.close();
-  //           return;
-  //         }
-  //         appConfig.set("settings_default_app", data.filePaths[0]);
-  //         event.reply("settings_default_app", data.filePaths[0]);
-  //         newOpenedWindow.close();
-  //       })
-  //       .catch((e) => {
-  //         newOpenedWindow.close();
-  //       });
-  //   }
-
-  //   if (appConfig.has("settings_default_app")) {
-  //     var currentSettings = appConfig.get("settings_default_app");
-  //     event.reply("settings_default_app", currentSettings);
-  //   }
-  // });
-
-  // ipcMain.on("settings_update_policy", (event, args) => {
-  //   let currentSettings = true;
-
-  //   if (appConfig.has("settings_update_policy")) {
-  //     currentSettings = appConfig.get("settings_update_policy");
-  //   }
-
-  //   if (args === false || args === true) {
-  //     console.log("set arg --> ", args);
-  //     appConfig.set("settings_update_policy", args);
-  //     // reset check date for latest version
-  //     appConfig.delete(CheckForUpdatesLocalStorageName);
-
-  //     event.reply("settings_update_policy", args);
-  //     return;
-  //   }
-
-  //   event.reply("settings_update_policy", currentSettings);
-  // });
+  if (args.showOpenDialog) {
+    try {
+      const result = await fileSelectorWindow();
+      await appConfig.set(DefaultImageApplicationSetting, result[0]);
+      event.reply(DefaultImageApplicationIpcKey, result[0]);
+    } catch (error) {}
+  }
 }
 
 export async function LocationIsRemoteCallback(
