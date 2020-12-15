@@ -23,6 +23,18 @@ export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
         body += chunk.toString();
       });
       response.on("end", () => {
+        if (
+          response.headers &&
+          response.headers["content-type"] &&
+          response.headers["content-type"] === "text/plain"
+        ) {
+          resolve({
+            data: body,
+            statusCode: response.statusCode
+          });
+          return;
+        }
+
         try {
           resolve({
             data: JSON.parse(body),
