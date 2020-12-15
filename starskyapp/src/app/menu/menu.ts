@@ -42,7 +42,7 @@ function AppMenu() {
         {
           label: "Edit file in Editor",
           click: () => {
-            var focusWindow = BrowserWindow.getFocusedWindow();
+            const focusWindow = BrowserWindow.getFocusedWindow();
             if (focusWindow) EditFile(focusWindow);
           },
           accelerator: "CmdOrCtrl+E"

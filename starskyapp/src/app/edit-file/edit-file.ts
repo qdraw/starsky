@@ -8,16 +8,19 @@ import {
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
   const url =
-    GetBaseUrlFromSettings() +
+    (await GetBaseUrlFromSettings()).location +
     new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
+  console.log(url);
+
   try {
     const result = await GetNetRequest(url, fromMainWindow.webContents.session);
 
-    if (filterResult(result)) {
-      console.log("true");
+    if (!filterResult(result)) {
+      return;
     }
   } catch (error) {}
 }
+
 function filterResult(result: IGetNetRequestResponse) {
   return (
     !result.data ||

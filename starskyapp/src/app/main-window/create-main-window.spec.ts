@@ -2,6 +2,7 @@ import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import createMainWindow from "./create-main-window";
 import * as getNewFocusedWindow from "./get-new-focused-window";
 import * as onHeaderReceived from "./on-headers-received";
+import * as saveRememberUrl from "./save-remember-url";
 import * as spellCheck from "./spellcheck";
 jest.mock("electron", () => {
   return {
@@ -15,7 +16,10 @@ jest.mock("electron", () => {
       return {
         loadFile: jest.fn(),
         webContents: {
-          userAgent: "test"
+          userAgent: "test",
+          on: (_: string, func: Function) => {
+            return func();
+          }
         },
         once: (_: string, func: Function) => {
           return func();
@@ -50,6 +54,9 @@ describe("create main window", () => {
       .spyOn(onHeaderReceived, "onHeaderReceived")
       .mockImplementationOnce(() => null);
     jest.spyOn(spellCheck, "spellCheck").mockImplementationOnce(() => null);
+    jest
+      .spyOn(saveRememberUrl, "saveRememberUrl")
+      .mockImplementationOnce(() => null);
 
     const result = await createMainWindow();
     expect(result).not.toBeUndefined();

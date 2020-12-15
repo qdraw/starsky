@@ -1,4 +1,4 @@
 import { isPackaged } from "../os-info/is-packaged";
 
-const RememberUrl = `rememberUrl:${isPackaged()}`;
+const RememberUrl = `REMEMBER_URL:${isPackaged()}`;
 export default RememberUrl;

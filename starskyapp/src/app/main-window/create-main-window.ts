@@ -7,6 +7,7 @@ import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import { getNewFocusedWindow } from "./get-new-focused-window";
 import { mainWindows } from "./main-windows.const";
 import { onHeaderReceived } from "./on-headers-received";
+import { saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
 async function createMainWindow(relativeUrl: string = null) {
@@ -58,6 +59,10 @@ async function createMainWindow(relativeUrl: string = null) {
 
   newWindow.once("ready-to-show", () => {
     newWindow.show();
+  });
+
+  newWindow.webContents.on("did-navigate", () => {
+    saveRememberUrl(newWindow);
   });
 
   newWindow.on("closed", () => {
