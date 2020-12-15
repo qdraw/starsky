@@ -60,29 +60,35 @@ describe("main", () => {
   });
 
   it("should create main window", () => {
-    jest
+    const restoreMainWindowSpy = jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
-      .mockImplementationOnce(() => Promise.resolve());
-    const createMainWindowSpy = jest
-      .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
     });
     onState.ready();
-    expect(createMainWindowSpy).toBeCalled();
+    expect(restoreMainWindowSpy).toBeCalled();
   });
 
   it("when activate and there a no windows it should create one", () => {
     jest
       .spyOn(updatesWarningWindow, "default")
       .mockImplementationOnce(() => Promise.resolve(true));
-    const createMainWindowSpy = jest
-      .spyOn(updatesWarningWindow, "default")
+
+    const restoreMainWindowSpy = jest
+      .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockReset()
-      .mockImplementationOnce(() => Promise.resolve() as any)
       .mockImplementationOnce(() => Promise.resolve() as any);
+
+    const createMainWindowSpy = jest
+      .spyOn(createMainWindow, "default")
+      .mockReset()
+      .mockImplementationOnce(() => Promise.resolve() as any);
+
+    jest
+      .spyOn(BrowserWindow, "getAllWindows")
+      .mockImplementation(() => [] as any);
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       if (name === "activate") {
@@ -90,9 +96,14 @@ describe("main", () => {
       }
       return null;
     });
+
     onState.ready();
+
+    expect(restoreMainWindowSpy).toBeCalled();
+    expect(restoreMainWindowSpy).toBeCalledTimes(1);
+
     expect(createMainWindowSpy).toBeCalled();
-    expect(createMainWindowSpy).toBeCalledTimes(2);
+    expect(createMainWindowSpy).toBeCalledTimes(1);
   });
 
   it("when activate and there windows it not should create one", () => {
@@ -100,7 +111,7 @@ describe("main", () => {
       .spyOn(BrowserWindow, "getAllWindows")
       .mockImplementation(() => ["t"] as any);
 
-    const createMainWindowSpy = jest
+    const restoreMainWindowSpy = jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -113,8 +124,8 @@ describe("main", () => {
     });
     onState.ready();
 
-    expect(createMainWindowSpy).toBeCalled();
-    expect(createMainWindowSpy).toBeCalledTimes(1);
+    expect(restoreMainWindowSpy).toBeCalled();
+    expect(restoreMainWindowSpy).toBeCalledTimes(1);
   });
 
   describe("platform", () => {
