@@ -26,7 +26,7 @@ export async function fileSelectorWindow(): Promise<string[]> {
       .then((data) => {
         if (data.canceled) {
           newOpenedWindow.close();
-          reject();
+          reject("canceled");
           return;
         }
         resolve(data.filePaths);
@@ -34,7 +34,7 @@ export async function fileSelectorWindow(): Promise<string[]> {
       })
       .catch((e) => {
         newOpenedWindow.close();
-        reject();
+        reject(e);
       });
   });
 }
