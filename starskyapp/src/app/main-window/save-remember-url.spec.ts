@@ -25,7 +25,7 @@ describe("save remember url", () => {
       } as any);
 
       expect(appSettingsSetSpy).toBeCalled();
-      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, { "1": "?f=t" });
+      expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, { "1": "/?f=t" });
     });
 
     it("should merge ", async () => {
@@ -52,7 +52,7 @@ describe("save remember url", () => {
       expect(appSettingsSetSpy).toBeCalled();
       expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {
         "0": "test",
-        "1": "?f=t"
+        "1": "/?f=t"
       });
     });
   });
