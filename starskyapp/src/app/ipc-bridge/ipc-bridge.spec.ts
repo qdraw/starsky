@@ -1,14 +1,17 @@
 import { net } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
+import { DefaultImageApplicationIpcKey } from "../config/default-image-application-settings-ipc-key.const";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
 } from "../config/location-ipc-keys.const";
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
+import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
   AppVersionCallback,
+  DefaultImageApplicationCallback,
   LocationIsRemoteCallback,
   LocationUrlCallback,
   UpdatePolicyCallback
@@ -314,6 +317,87 @@ describe("ipc bridge", () => {
 
       expect(event.reply).toBeCalled();
       expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, false);
+    });
+  });
+
+  describe("DefaultImageApplicationCallback", () => {
+    it("getting with null input", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockReset();
+      jest
+        .spyOn(appConfig, "get")
+        .mockImplementationOnce(() => Promise.resolve(null));
+      await DefaultImageApplicationCallback(event, null);
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(DefaultImageApplicationIpcKey, null);
+    });
+
+    it("set reset", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+
+      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
+
+      await DefaultImageApplicationCallback(event, { reset: true });
+
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(DefaultImageApplicationIpcKey, false);
+    });
+
+    it("should give successfull showOpenDialog", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+
+      jest
+        .spyOn(fileSelectorWindow, "fileSelectorWindow")
+        .mockImplementationOnce(() =>
+          Promise.resolve(["result_from_fileSelectorWindow"])
+        );
+
+      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
+
+      await DefaultImageApplicationCallback(event, { showOpenDialog: true });
+
+      expect(event.reply).toBeCalled();
+      expect(event.reply).toBeCalledWith(
+        DefaultImageApplicationIpcKey,
+        "result_from_fileSelectorWindow"
+      );
+    });
+
+    it("should ignore failing showOpenDialog", async () => {
+      const event = { reply: jest.fn() } as any;
+
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+
+      jest
+        .spyOn(fileSelectorWindow, "fileSelectorWindow")
+        .mockImplementationOnce(() =>
+          Promise.reject(["result_from_fileSelectorWindow"])
+        );
+
+      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
+        return Promise.resolve();
+      });
+
+      await DefaultImageApplicationCallback(event, {
+        showOpenDialog: true
+      });
+
+      expect(event.reply).toBeCalledTimes(0);
     });
   });
 });
