@@ -2,6 +2,7 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 import { AppVersionIpcKey } from "../app/config/app-version-ipc-key.const";
+import { DefaultImageApplicationIpcKey } from "../app/config/default-image-application-settings-ipc-key.const";
 import {
   LocationIsRemoteIpcKey,
   LocationUrlIpcKey
@@ -15,7 +16,8 @@ export const exposeBrigde = {
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
       AppVersionIpcKey,
-      UpdatePolicyIpcKey
+      UpdatePolicyIpcKey,
+      DefaultImageApplicationIpcKey
     ];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
@@ -26,11 +28,12 @@ export const exposeBrigde = {
       LocationIsRemoteIpcKey,
       LocationUrlIpcKey,
       AppVersionIpcKey,
-      UpdatePolicyIpcKey
+      UpdatePolicyIpcKey,
+      DefaultImageApplicationIpcKey
     ];
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`
-      ipcRenderer.on(channel, (event, ...args) => func(...args));
+      ipcRenderer.on(channel, (_, ...args) => func(...args));
     }
   }
 };

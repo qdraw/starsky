@@ -1,6 +1,7 @@
 import { app, ipcMain } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
+import { DefaultImageApplicationIpcKey } from "../config/default-image-application-settings-ipc-key.const";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import { IlocationUrlSettings } from "../config/IlocationUrlSettings";
 import {
@@ -19,6 +20,8 @@ import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 
 function ipcBridge() {
+  // When adding a new key also update preload-main.ts
+
   ipcMain.on(LocationIsRemoteIpcKey, async (event, args) =>
     LocationIsRemoteCallback(event, args)
   );
@@ -30,6 +33,10 @@ function ipcBridge() {
   );
 
   ipcMain.on(UpdatePolicyIpcKey, async (event, args) =>
+    UpdatePolicyCallback(event, args)
+  );
+
+  ipcMain.on(DefaultImageApplicationIpcKey, async (event, args) =>
     UpdatePolicyCallback(event, args)
   );
 
