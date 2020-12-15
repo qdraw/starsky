@@ -8,9 +8,9 @@ import {
   UpdatePolicySettings
 } from "../config/update-policy-settings.const";
 import UrlQuery from "../config/url-query";
+import { GetNetRequest } from "../net-request/get-net-request";
 import { isPackaged } from "../os-info/is-packaged";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
-import { GetNetRequest } from "./get-net-request";
 import { updatesWarningWindows } from "./updates-warning-windows.const";
 import path = require("path");
 
