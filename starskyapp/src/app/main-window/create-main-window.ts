@@ -43,7 +43,6 @@ async function createMainWindow(relativeUrl: string = null) {
     "..",
     "client/pages/redirect/reload-redirect.html"
   );
-  console.log("location " + location);
 
   newWindow.loadFile(location, {
     query: { "remember-url": rememberUrl }

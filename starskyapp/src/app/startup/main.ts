@@ -1,9 +1,9 @@
 import { app, BrowserWindow } from "electron";
-import createCheckForUpdatesContainerWindow from "../check-for-updates-window/check-for-updates-window";
 import { setupChildProcess } from "../child-process/setup-child-process";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
 import AppMenu from "../menu/menu";
+import createCheckForUpdatesContainerWindow from "../updates-warning-window/updates-warning-window";
 import defaultAppSettings from "./app-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
 

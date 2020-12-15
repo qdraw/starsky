@@ -5,9 +5,9 @@ import { UpdatePolicyIpcKey } from "./update-policy-ipc-key.const";
  */
 export const UpdatePolicySettings = `${UpdatePolicyIpcKey}:${isPackaged()}`;
 
-const LastCheckedDate = `UPDATE_POLICY_LAST_CHECKED_DATE`;
+const UpdatePolicyLastCheckedDate = `UPDATE_POLICY_LAST_CHECKED_DATE`;
 
 /**
  * When is it checked for the last time
  */
-export const LastCheckedDateSettings = `${LastCheckedDate}:${isPackaged()}`;
+export const UpdatePolicyLastCheckedDateSettings = `${UpdatePolicyLastCheckedDate}:${isPackaged()}`;

@@ -6,10 +6,12 @@ module.exports = {
   entry: {
     'reload-redirect': "./src/client/script/reload-redirect.ts",
     'settings': "./src/client/script/settings.ts",
+    'focus-button-autoclose': "./src/client/script/focus-button-autoclose.ts"
   },
   output: {
     filename: (pathData) => {
       switch (pathData.runtime) {
+        case 'focus-button-autoclose':
         case 'settings':
         case 'reload-redirect':
           return path.join('build', 'client', 'script', '[name].js');
