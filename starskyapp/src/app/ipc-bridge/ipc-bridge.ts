@@ -1,4 +1,4 @@
-import { app, ipcMain, net } from "electron";
+import { app, ipcMain } from "electron";
 import * as appConfig from "electron-settings";
 import { AppVersionIpcKey } from "../config/app-version-ipc-key.const";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
@@ -13,8 +13,10 @@ import {
 } from "../config/location-settings.const";
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import { UpdatePolicySettings } from "../config/update-policy-settings.const";
+import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { mainWindows } from "../main-window/main-windows.const";
+import { GetNetRequest } from "../net-request/get-net-request";
 
 function ipcBridge() {
   ipcMain.on(LocationIsRemoteIpcKey, async (event, args) =>
@@ -132,29 +134,27 @@ export async function LocationUrlCallback(
   ) {
     // to avoid errors
     var locationUrl = args.replace(/\/$/, "");
-    const request = net.request({
-      url: locationUrl + "/api/health",
-      headers: {
-        Accept: "*/*"
-      }
-    } as any);
 
-    request.on("response", async (response) => {
-      console.log(
-        `HEADERS: ${JSON.stringify(response.headers)} - ${
-          response.statusCode
-        } - ${locationUrl + "/api/health"}`
+    try {
+      const response = await GetNetRequest(
+        locationUrl + new UrlQuery().HealthApi()
       );
-
       const responseSettings = {
         location: locationUrl,
         isLocal: false
       } as IlocationUrlSettings;
 
+      console.log("response >");
+
+      console.log(response);
+
       var locationOk = response.statusCode == 200 || response.statusCode == 503;
       if (locationOk) {
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
       }
+
+      console.log("locationOk >");
+      console.log(locationOk);
 
       responseSettings.isValid = locationOk;
 
@@ -164,18 +164,13 @@ export async function LocationUrlCallback(
       });
 
       event.reply(LocationUrlIpcKey, responseSettings);
-    });
-
-    request.on("error", (e) => {
-      console.log(e);
+    } catch (error) {
       event.reply(LocationUrlIpcKey, {
         isValid: false,
         isLocal: false,
         location: args
       } as IlocationUrlSettings);
-    });
-
-    request.end();
+    }
     return;
   }
 

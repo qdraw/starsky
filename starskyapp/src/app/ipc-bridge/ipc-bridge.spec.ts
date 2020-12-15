@@ -150,11 +150,15 @@ describe("ipc bridge", () => {
     });
 
     it("update valid url", async () => {
-      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
-        return Promise.resolve();
-      });
+      jest
+        .spyOn(appConfig, "set")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
 
       jest.spyOn(net, "request").mockImplementationOnce((t) => {
+        console.log("valid url ");
         console.log(t);
         return {
           on: (name: any, fun: Function) => {
@@ -173,6 +177,8 @@ describe("ipc bridge", () => {
       mainWindows.add({ close: jest.fn() } as any);
 
       await LocationUrlCallback(event, "https://google.com");
+
+      console.log("----- > >  > ");
 
       expect(event.reply).toBeCalled();
       expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
@@ -213,6 +219,7 @@ describe("ipc bridge", () => {
         isValid: false,
         location: "https://fail.com"
       });
+      console.log("--end fail.com");
     });
 
     it("non valid domain", async () => {

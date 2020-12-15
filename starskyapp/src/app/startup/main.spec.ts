@@ -3,6 +3,7 @@ import * as setupChildProcess from "../child-process/setup-child-process";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as AppMenu from "../menu/menu";
+import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
 import * as defaultAppSettings from "./app-settings";
 import * as willNavigateSecurity from "./will-navigate-security";
 
@@ -31,6 +32,9 @@ describe("main", () => {
   let setupChildProcessSpy: any = jest.fn();
 
   beforeAll(() => {
+    jest
+      .spyOn(updatesWarningWindow, "default")
+      .mockImplementationOnce(() => null);
     jest.spyOn(ipcBridge, "default").mockImplementationOnce(() => {});
     jest
       .spyOn(defaultAppSettings, "default")
@@ -55,6 +59,9 @@ describe("main", () => {
   });
 
   it("should create main window", () => {
+    jest
+      .spyOn(updatesWarningWindow, "default")
+      .mockImplementationOnce(() => null);
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
@@ -67,6 +74,9 @@ describe("main", () => {
   });
 
   it("when activate and there a no windows it should create one", () => {
+    jest
+      .spyOn(updatesWarningWindow, "default")
+      .mockImplementationOnce(() => null);
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
       .mockReset()
