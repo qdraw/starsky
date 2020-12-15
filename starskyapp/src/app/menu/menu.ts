@@ -85,7 +85,6 @@ function AppMenu() {
           label: "Refresh",
           click: () => {
             BrowserWindow.getAllWindows().forEach((window) => {
-              console.log(window);
               window.webContents.reload();
             });
 

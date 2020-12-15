@@ -34,10 +34,6 @@ export async function isPolicyEnabled(): Promise<boolean> {
 }
 
 async function createCheckForUpdatesContainerWindow() {
-  const test = await isPolicyEnabled();
-  const t2 = await SkipDisplayOfUpdate();
-  console.log(test, t2);
-
   if ((await isPolicyEnabled()) || (await SkipDisplayOfUpdate())) {
     return;
   }
