@@ -1,10 +1,30 @@
-import * as appConfig from "electron-settings";
-import * as GetNetRequest from "../net-request/get-net-request";
-import {
-  isPolicyDisabled,
-  shouldItUpdate,
-  SkipDisplayOfUpdate
+import * as BrowserWindow from "electron";
+import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
+import * as shouldItUpdate from "./should-it-update";
+import createCheckForUpdatesContainerWindow, {
+  checkForUpdatesWindow
 } from "./updates-warning-window";
+
+const mockBrowserWindow = {
+  loadFile: jest.fn(),
+  once: (_: string, func: Function) => {
+    return func();
+  },
+  show: jest.fn(),
+  on: (_: string, func: Function) => {
+    return func();
+  },
+  setMenu: jest.fn()
+};
+
+const mockWindowStateKeeper = {
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1,
+  isMaximized: false,
+  track: jest.fn()
+};
 
 jest.mock("electron", () => {
   return {
@@ -14,103 +34,46 @@ jest.mock("electron", () => {
       getLocale: () => "en",
       on: () => "en"
     },
-    BrowserWindow: () => {
-      return {
-        loadFile: jest.fn(),
-        once: (_: string, func: Function) => {
-          return func();
-        },
-        show: jest.fn(),
-        on: (_: string, func: Function) => {
-          return func();
-        }
-      };
-    }
+    BrowserWindow: () => mockBrowserWindow
   };
 });
 
 describe("create main window", () => {
-  describe("SkipDisplayOfUpdate", () => {
-    it("should skip 1 second ago checked, it should be ignored", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve(Date.now().toString());
-      });
-      const result = await SkipDisplayOfUpdate();
-      expect(result).toBeTruthy();
-    });
-    it("not exist, so it should re-check", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve(null);
-      });
-      const result = await SkipDisplayOfUpdate();
-      expect(result).toBeFalsy();
-    });
+  describe("checkForUpdatesWindow", () => {
+    xit("should call browserWindow", async () => {
+      jest
+        .spyOn(windowStateKeeper, "windowStateKeeper")
+        .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
+      const browserWindowSpy = jest
+        .spyOn(BrowserWindow, "BrowserWindow")
+        .mockImplementationOnce(() => mockBrowserWindow as any);
 
-    it("has invalid config stored, so it should re-check", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve("NaN");
-      });
-      const result = await SkipDisplayOfUpdate();
-      expect(result).toBeFalsy();
-    });
+      await checkForUpdatesWindow();
 
-    it("long time ago, so it should re-check", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve("150000");
-      });
-      const result = await SkipDisplayOfUpdate();
-      expect(result).toBeFalsy();
+      expect(browserWindowSpy).toBeCalled();
     });
   });
-  describe("isPolicyEnabled", () => {
-    it("is disabled", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve(false);
-      });
-      const result = await isPolicyDisabled();
-      expect(result).toBeTruthy();
-      console.log(result);
-    });
-
-    it("is not disabled", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve(true);
-      });
-      const result = await isPolicyDisabled();
-      expect(result).toBeFalsy();
-      console.log(result);
-    });
-  });
-  describe("shouldItUpdate", () => {
-    it("202 is update needed", async () => {
+  describe("createCheckForUpdatesContainerWindow", () => {
+    it("should call browserWindow", async () => {
+      jest.useFakeTimers();
       jest
-        .spyOn(GetNetRequest, "GetNetRequest")
-        .mockImplementationOnce(() => Promise.resolve({ statusCode: 202 }));
+        .spyOn(windowStateKeeper, "windowStateKeeper")
+        .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));
 
-      const result = await shouldItUpdate();
-      expect(result).toBeTruthy();
-    });
-    it("200 is latest version", async () => {
       jest
-        .spyOn(GetNetRequest, "GetNetRequest")
-        .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
+        .spyOn(shouldItUpdate, "shouldItUpdate")
+        .mockImplementationOnce(() => Promise.resolve(true));
 
-      const result = await shouldItUpdate();
-      expect(result).toBeFalsy();
-    });
-    it("no connection", async (done) => {
-      jest
-        .spyOn(GetNetRequest, "GetNetRequest")
-        .mockImplementationOnce(() => Promise.reject());
+      const browserWindowSpy = jest
+        .spyOn(BrowserWindow, "BrowserWindow")
+        .mockReset()
+        .mockImplementationOnce(() => mockBrowserWindow as any);
 
-      shouldItUpdate()
-        .catch((result) => {
-          expect(result).toBeUndefined();
-          done();
-        })
-        .then(() => {
-          new Error("should return catch");
-        });
+      await createCheckForUpdatesContainerWindow();
+      jest.advanceTimersByTime(1200);
+
+      expect(browserWindowSpy).toBeCalled();
+      jest.useRealTimers();
     });
   });
 });
