@@ -17,8 +17,6 @@ async function createCheckForUpdatesContainerWindow(
 ): Promise<boolean> {
   return new Promise(async function (resolve, reject) {
     const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
-    console.log(policy);
-
     if (policy) {
       reject("disabled");
       return;

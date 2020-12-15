@@ -42,7 +42,7 @@ export function GetNetRequest(url: string): Promise<IGetNetRequestResponse> {
           });
         } catch (error) {
           console.log(error);
-          reject({ error, statusCode: response.statusCode });
+          reject({ error: error.toString(), statusCode: response.statusCode });
         }
       });
     });
