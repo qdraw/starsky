@@ -69,7 +69,7 @@ describe("save remember url", () => {
           return Promise.resolve(undefined);
         });
 
-      await removeRememberUrl({ id: 0 } as any);
+      await removeRememberUrl(0);
       expect(appSettingsSetSpy).toBeCalled();
       expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {});
     });
@@ -86,7 +86,7 @@ describe("save remember url", () => {
           return Promise.resolve(undefined);
         });
 
-      await removeRememberUrl({ id: 0 } as any);
+      await removeRememberUrl(0);
       expect(appSettingsSetSpy).toBeCalled();
       expect(appSettingsSetSpy).toBeCalledWith(RememberUrl, {});
     });

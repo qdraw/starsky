@@ -8,12 +8,15 @@ import { onHeaderReceived } from "./on-headers-received";
 import { removeRememberUrl, saveRememberUrl } from "./save-remember-url";
 import { spellCheck } from "./spellcheck";
 
-async function createMainWindow(openSpecificUrl: string, offset: number = 0) {
+async function createMainWindow(
+  openSpecificUrl: string,
+  offset: number = 0
+): Promise<BrowserWindow> {
   const mainWindowStateKeeper = await windowStateKeeper("main");
 
   let { x, y } = getNewFocusedWindow(
-    mainWindowStateKeeper.x + offset,
-    mainWindowStateKeeper.y + offset
+    mainWindowStateKeeper.x - offset,
+    mainWindowStateKeeper.y - offset
   );
 
   let newWindow = new BrowserWindow({
@@ -59,17 +62,19 @@ async function createMainWindow(openSpecificUrl: string, offset: number = 0) {
 
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
+    console.log("-- did-navigate", newWindow.id);
     saveRememberUrl(newWindow);
   });
 
   // hash navigations
   newWindow.webContents.on("did-navigate-in-page", () => {
+    console.log("--did-navigate-in-page", newWindow.id);
     saveRememberUrl(newWindow);
   });
 
   // Emitted when the window is going to be closed
   newWindow.on("close", () => {
-    removeRememberUrl(newWindow);
+    removeRememberUrl(newWindow.id);
   });
 
   /* when its already closed */

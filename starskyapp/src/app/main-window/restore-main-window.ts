@@ -5,14 +5,30 @@ import createMainWindow from "./create-main-window";
 export async function restoreMainWindow(): Promise<void> {
   const rememberUrls = await getRememberUrl();
 
-  console.log("rememberUrls");
-  console.log(rememberUrls);
+  // remove the config and set it when the new windows open, so the id's are matching
+  await appConfig.set(RememberUrl, {});
 
-  for (var key of Object.keys(rememberUrls)) {
-    const index = Number(key);
-    await createMainWindow(rememberUrls[key], index * 20);
+  let i = 0;
+  for (let key of Object.keys(rememberUrls)) {
+    (await createMainWindow(rememberUrls[key], i * 20)).id;
+    i++;
   }
 }
+
+// function reGenerateRememberUrlObject(rememberUrls: any) {
+//   let newRememberUrlObject: any = {};
+
+//   let i = 0;
+//   for (let key of Object.keys(rememberUrls)) {
+//     console.log(rememberUrls[key]);
+
+//     if (rememberUrls[key]) {
+//       newRememberUrlObject[i] = rememberUrls[key];
+//       i++;
+//     }
+//   }
+//   return newRememberUrlObject;
+// }
 
 async function getRememberUrl(): Promise<any> {
   if (await appConfig.has(RememberUrl)) {
