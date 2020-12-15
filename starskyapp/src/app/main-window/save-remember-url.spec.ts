@@ -12,12 +12,13 @@ jest.mock("electron", () => {
     BrowserWindow: () => {
       return {
         loadFile: jest.fn(),
+        id: 0,
         webContents: {
           userAgent: "test",
           on: (_: string, func: Function) => {
             return func();
           },
-          getURL: jest.fn()
+          getURL: () => {}
         },
         once: (_: string, func: Function) => {
           return func();
@@ -51,6 +52,7 @@ describe("save remember url", () => {
       }
     } as any);
 
+    //
     expect(appSettingsSetSpy).toBeCalled();
     expect(appSettingsSetSpy).toBeCalledWith("?f=/", 0);
   });

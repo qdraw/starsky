@@ -19,7 +19,8 @@ jest.mock("electron", () => {
           userAgent: "test",
           on: (_: string, func: Function) => {
             return func();
-          }
+          },
+          getURL: () => "https://test.com/?f="
         },
         once: (_: string, func: Function) => {
           return func();

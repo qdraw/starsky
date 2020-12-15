@@ -12,9 +12,12 @@ export async function saveRememberUrl(newWindow: BrowserWindow) {
 
   // new users
   if (!currentObject) {
+    console.log("--> new ");
+
     await appConfig.set(RememberUrl, newlyAddedObject);
     return;
   }
+  console.log("--> merge ");
 
   const combinedObject = { ...currentObject, ...newlyAddedObject };
   await appConfig.set(RememberUrl, combinedObject);
