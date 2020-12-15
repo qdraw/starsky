@@ -1,5 +1,10 @@
 import * as appConfig from "electron-settings";
-import { isPolicyEnabled, SkipDisplayOfUpdate } from "./updates-warning-window";
+import * as GetNetRequest from "../net-request/get-net-request";
+import {
+  isPolicyDisabled,
+  shouldItUpdate,
+  SkipDisplayOfUpdate
+} from "./updates-warning-window";
 
 jest.mock("electron", () => {
   return {
@@ -58,21 +63,54 @@ describe("create main window", () => {
     });
   });
   describe("isPolicyEnabled", () => {
-    it("disabled", async () => {
+    it("is disabled", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve("false");
+        return Promise.resolve(false);
       });
-      const result = await isPolicyEnabled();
+      const result = await isPolicyDisabled();
+      expect(result).toBeTruthy();
+      console.log(result);
+    });
+
+    it("is not disabled", async () => {
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+      const result = await isPolicyDisabled();
       expect(result).toBeFalsy();
       console.log(result);
     });
-    it("disabled", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve("true");
-      });
-      const result = await isPolicyEnabled();
+  });
+  describe("shouldItUpdate", () => {
+    it("202 is update needed", async () => {
+      jest
+        .spyOn(GetNetRequest, "GetNetRequest")
+        .mockImplementationOnce(() => Promise.resolve({ statusCode: 202 }));
+
+      const result = await shouldItUpdate();
+      expect(result).toBeTruthy();
+    });
+    it("200 is latest version", async () => {
+      jest
+        .spyOn(GetNetRequest, "GetNetRequest")
+        .mockImplementationOnce(() => Promise.resolve({ statusCode: 200 }));
+
+      const result = await shouldItUpdate();
       expect(result).toBeFalsy();
-      console.log(result);
+    });
+    it("no connection", async (done) => {
+      jest
+        .spyOn(GetNetRequest, "GetNetRequest")
+        .mockImplementationOnce(() => Promise.reject());
+
+      shouldItUpdate()
+        .catch((result) => {
+          expect(result).toBeUndefined();
+          done();
+        })
+        .then(() => {
+          new Error("should return catch");
+        });
     });
   });
 });

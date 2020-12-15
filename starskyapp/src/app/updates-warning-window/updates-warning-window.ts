@@ -28,13 +28,17 @@ export async function SkipDisplayOfUpdate(): Promise<boolean> {
   return DifferenceInDate(getItem) < 5760; // 4 days
 }
 
-export async function isPolicyEnabled(): Promise<boolean> {
-  const item = (await appConfig.get(UpdatePolicySettings)) as string;
-  return item === "true";
+/**
+ * true is disabled
+ */
+export async function isPolicyDisabled(): Promise<boolean> {
+  const item = (await appConfig.get(UpdatePolicySettings)) as boolean;
+  return item !== true;
 }
 
 async function createCheckForUpdatesContainerWindow() {
-  if ((await isPolicyEnabled()) || (await SkipDisplayOfUpdate())) {
+  const policy = (await isPolicyDisabled()) || (await SkipDisplayOfUpdate());
+  if (policy) {
     return;
   }
 
@@ -54,7 +58,7 @@ async function createCheckForUpdatesContainerWindow() {
 /**
  * true when need to update
  */
-async function shouldItUpdate(): Promise<boolean> {
+export async function shouldItUpdate(): Promise<boolean> {
   return new Promise(async function (resolve, reject) {
     let url = (await GetBaseUrlFromSettings()).location;
     url += new UrlQuery().HealthCheckForUpdates(GetAppVersion());
@@ -75,7 +79,7 @@ async function shouldItUpdate(): Promise<boolean> {
   });
 }
 
-async function checkForUpdatesWindow() {
+export async function checkForUpdatesWindow() {
   const mainWindowStateKeeper = await windowStateKeeper("updates-warning");
 
   let newWindow = new BrowserWindow({
