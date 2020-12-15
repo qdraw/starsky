@@ -55,12 +55,39 @@ describe("save remember url", () => {
         "1": "/?f=t"
       });
     });
+
+    it("should ignore file://", async () => {
+      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
+        return Promise.resolve(undefined);
+      });
+
+      const appSettingsSetSpy = jest
+        .spyOn(appConfig, "set")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve(undefined);
+        });
+
+      await saveRememberUrl({
+        id: 1,
+        webContents: {
+          getURL: () => {
+            return "file://";
+          }
+        }
+      } as any);
+
+      expect(appSettingsSetSpy).toBeCalledTimes(0);
+    });
   });
   describe("removeRememberUrl", () => {
     it("should remove it from list", async () => {
-      jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
-        return Promise.resolve({ 0: "test" });
-      });
+      jest
+        .spyOn(appConfig, "get")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve({ 0: "test" });
+        });
 
       const appSettingsSetSpy = jest
         .spyOn(appConfig, "set")
