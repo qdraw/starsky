@@ -5,8 +5,6 @@ function htmlCopy() {
   const srcFolder = path.join(__dirname, "..", "..", "src");
   const buildFolder = path.join(__dirname, "..", "..", "build");
 
-  console.log("-->");
-
   copyContent(srcFolder, buildFolder, /(.html|.css|.svg|.woff|.woff2)$/);
 }
 
@@ -39,7 +37,6 @@ function copyContent(
     }
     if (match.test(curSource)) {
       const targetFile = path.join(targetFolder, path.basename(curSource));
-      console.log(targetFile);
       fs.copyFileSync(curSource, targetFile);
     }
   }

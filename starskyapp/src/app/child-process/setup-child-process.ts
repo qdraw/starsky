@@ -25,7 +25,7 @@ export function setupChildProcess() {
   var databaseConnection =
     "Data Source=" + path.join(electronCacheLocation(), "starsky.db");
 
-  console.log({
+  const env = {
     ASPNETCORE_URLS: "http://localhost:9609",
     app__thumbnailTempFolder: thumbnailTempFolder,
     app__tempFolder: tempFolder,
@@ -33,7 +33,10 @@ export function setupChildProcess() {
     app__databaseConnection: databaseConnection,
     app__AccountRegisterDefaultRole: "Administrator",
     app__Verbose: !isPackaged() ? "true" : "false"
-  });
+  };
+
+  console.log("env settings ->");
+  console.log(env);
 
   const appStarskyPath = childProcessPath();
   fs.chmodSync(appStarskyPath, 0o755);
@@ -41,15 +44,7 @@ export function setupChildProcess() {
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
     detached: true,
-    env: {
-      ASPNETCORE_URLS: "http://localhost:9609",
-      app__thumbnailTempFolder: thumbnailTempFolder,
-      app__tempFolder: tempFolder,
-      app__appSettingsPath: appSettingsPath,
-      app__databaseConnection: databaseConnection,
-      app__AccountRegisterDefaultRole: "Administrator",
-      app__Verbose: !isPackaged() ? "true" : "false"
-    }
+    env
   });
 
   starskyChild.stdout.on("data", function (data) {

@@ -7,7 +7,7 @@ function defaultAppSettings(): string {
   });
 
   const appPath = appConfig.file();
-  console.log(appPath);
+  console.log("app-settings path :> \n" + appPath);
   return appPath;
 }
 
