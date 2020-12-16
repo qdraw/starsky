@@ -135,6 +135,18 @@ namespace starskytest.Controllers
 			var noVersion = controller.Version() as ObjectResult;
 			Assert.AreEqual(202, noVersion.StatusCode);
 		}
+		
+		[TestMethod]
+		public void Version_Version_AsParam_older()
+		{
+			var controller = new HealthController(null, new FakeTelemetryService(), 
+				new ApplicationInsightsJsHelper(null,null))
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var noVersion = controller.Version("0.1") as ObjectResult;
+			Assert.AreEqual(202, noVersion.StatusCode);
+		}
 
 		[TestMethod]
 		public void Version_Version_beta1_isBefore()
