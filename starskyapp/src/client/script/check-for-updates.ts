@@ -5,7 +5,7 @@ export function checkForUpdates(
   apiVersion: string
 ): Promise<void> {
   return new Promise(function (resolve, reject) {
-    fetch(domainUrl + new UrlQuery().HealthVersionApi(), {
+    fetch(domainUrl + new UrlQuery().HealthVersionApi(apiVersion), {
       method: "POST",
       headers: {
         "x-api-version": `${apiVersion}`

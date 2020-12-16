@@ -5,8 +5,8 @@ export default class UrlQuery {
   public HealthShouldContain(): string {
     return "Health";
   }
-  public HealthVersionApi(): string {
-    return "/api/health/version";
+  public HealthVersionApi(version: string): string {
+    return `/api/health/version?version=${version}`;
   }
 
   public HealthCheckForUpdates(version: string) {
