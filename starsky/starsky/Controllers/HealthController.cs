@@ -137,26 +137,36 @@ namespace starsky.Controllers
 
 		/// <summary>
 		/// Check if Client/App version has a match with the API-version
-		/// uses x-api-version header
+		/// the parameter 'version' is checked first, and if missing the x-api-version header is used
 		/// </summary>
 		/// <returns>status</returns>
 		/// <response code="200">Ok</response>
 		/// <response code="202">Version mismatch</response>
 		/// <response code="400">Missing x-api-version header OR bad formatted version in header</response>
 		[HttpPost("/api/health/version")]
-		public IActionResult Version()
+		public IActionResult Version(string version = null)
 		{
-			if ( Request.Headers.All(p => p.Key != ApiVersionHeaderName) 
-			     || string.IsNullOrWhiteSpace(Request.Headers[ApiVersionHeaderName])  )
+			if ( string.IsNullOrEmpty(version) )
+			{
+				var headerVersion =
+					Request.Headers.FirstOrDefault(p =>
+						p.Key == ApiVersionHeaderName).Value;
+				if (!string.IsNullOrEmpty(headerVersion))
+				{
+					version = headerVersion;
+				}
+			}
+
+			if ( string.IsNullOrEmpty(version))
 			{
 				return BadRequest("Missing version data");
 			}
 
 			try
 			{
-				if ( SemVersion.Parse(Request.Headers[ApiVersionHeaderName]) >= SemVersion.Parse(MinimumVersion) )
+				if ( SemVersion.Parse(version) >= SemVersion.Parse(MinimumVersion) )
 				{
-					return Ok(Request.Headers[ApiVersionHeaderName]);
+					return Ok(version);
 				}
 				return StatusCode(StatusCodes.Status202Accepted,
 					$"please upgrade to {MinimumVersion} or newer");
@@ -164,7 +174,7 @@ namespace starsky.Controllers
 			catch ( ArgumentException )
 			{
 				return StatusCode(StatusCodes.Status400BadRequest,
-					$"Parsing failed {Request.Headers[ApiVersionHeaderName].ToString()}");
+					$"Parsing failed {version}");
 			}
 		}
 	}
