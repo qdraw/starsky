@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import * as setupChildProcess from "../child-process/setup-child-process";
+import * as MakeTempPath from "../config/temp-path";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as restoreMainWindow from "../main-window/restore-main-window";
@@ -45,6 +46,9 @@ describe("main", () => {
     setupChildProcessSpy = jest
       .spyOn(setupChildProcess, "setupChildProcess")
       .mockImplementationOnce(() => {});
+    jest
+      .spyOn(MakeTempPath, "MakeTempPath")
+      .mockImplementationOnce(() => "test");
 
     // this excuted only once
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {

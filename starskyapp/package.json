@@ -42,6 +42,7 @@
     "useTabs": false
   },
   "dependencies": {
+    "chokidar": "^3.4.3",
     "electron-settings": "4.0.2"
   },
   "build": {

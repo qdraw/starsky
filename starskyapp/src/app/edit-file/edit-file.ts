@@ -6,6 +6,10 @@ import {
   GetNetRequest,
   IGetNetRequestResponse
 } from "../net-request/get-net-request";
+import {
+  createParentFolders,
+  GetParentDiskPath
+} from "./create-parent-folders";
 import path = require("path");
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
@@ -22,27 +26,35 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     }
     console.log("-- it ok");
 
-    getXmpFile(result, fromMainWindow.webContents.session);
-    // download xmp file
-    // doDownloadRequest(
-    //   fromMainWindow,
-    //   "download-sidecar",
-    //   parentFullFilePathHelper(sidecarFile),
-    //   sidecarFile
-    // );
+    await createParentFolders(result.data.fileIndexItem.parentDirectory);
+    await downloadXmpFile(result, fromMainWindow.webContents.session);
   } catch (error) {}
 }
 
-function getXmpFile(result: IGetNetRequestResponse, session: Electron.Session) {
+async function downloadXmpFile(
+  result: IGetNetRequestResponse,
+  session: Electron.Session
+) {
   const ext = result.data.fileIndexItem.sidecarExtensionsList[0];
-  const sidecarFile = path.join(
-    result.data.fileIndexItem.parentDirectory,
+
+  const sidecarFileOnDisk = path.join(
+    await GetParentDiskPath(result.data.fileIndexItem.parentDirectory),
     result.data.fileIndexItem.fileCollectionName + "." + ext
   );
-  downloadNetRequest(
-    `/starsky/api/download-sidecar?isThumbnail=false&f=${result.data.fileIndexItem.filePath}`,
+
+  const sideCarSubPath =
+    result.data.fileIndexItem.parentDirectory +
+    "/" +
+    result.data.fileIndexItem.fileCollectionName +
+    "." +
+    ext;
+
+  await downloadNetRequest(
+    `${
+      (await GetBaseUrlFromSettings()).location
+    }/starsky/api/download-sidecar?isThumbnail=false&f=${sideCarSubPath}`,
     session,
-    `/tmp/${sidecarFile}`
+    sidecarFileOnDisk
   );
 }
 

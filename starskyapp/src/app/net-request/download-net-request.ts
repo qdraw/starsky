@@ -7,6 +7,10 @@ export function downloadNetRequest(
   toPath: string
 ) {
   return new Promise(function (resolve, reject) {
+    if (url.startsWith("[object Promise]")) {
+      throw new Error("please await promise first");
+    }
+
     var file = fs.createWriteStream(toPath);
 
     const request = net.request({
