@@ -60,10 +60,40 @@ describe("get net request", () => {
                     return;
                   }
                   func();
-                  console.log(param);
                 },
                 headers: {
                   "content-type": "text/plain"
+                },
+                statusCode: 200
+              });
+            }
+          },
+          end: jest.fn()
+        } as any;
+      });
+
+      const result = await GetNetRequest("");
+      expect(result.data).toStrictEqual("Healthy");
+      expect(result.statusCode).toBe(200);
+    });
+
+    it("should give status code and plain text with charset utf 8 content", async () => {
+      jest.spyOn(net, "request").mockImplementationOnce((t) => {
+        console.log("valid url ");
+        console.log(t);
+        return {
+          on: (name: any, fun: Function) => {
+            if (name === "response") {
+              fun({
+                on: (param: any, func: Function) => {
+                  if (param === "data") {
+                    func("Healthy");
+                    return;
+                  }
+                  func();
+                },
+                headers: {
+                  "content-type": "text/plain; charset=utf-8"
                 },
                 statusCode: 200
               });
