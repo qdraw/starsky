@@ -13,6 +13,7 @@ export function GetNetRequest(
   return new Promise(function (resolve, reject) {
     const request = net.request({
       url,
+      useSessionCookies: session !== null,
       session,
       headers: {
         Accept: "*/*"
@@ -35,7 +36,7 @@ export function GetNetRequest(
           resolve({
             data: body,
             statusCode: response.statusCode
-          });
+          } as IGetNetRequestResponse);
           return;
         }
 
@@ -43,10 +44,13 @@ export function GetNetRequest(
           resolve({
             data: JSON.parse(body),
             statusCode: response.statusCode
-          });
+          } as IGetNetRequestResponse);
         } catch (error) {
           console.log(error);
-          reject({ error: error.toString(), statusCode: response.statusCode });
+          reject({
+            error: error.toString(),
+            statusCode: response.statusCode
+          } as IGetNetRequestResponse);
         }
       });
     });

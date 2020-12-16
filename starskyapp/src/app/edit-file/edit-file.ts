@@ -5,6 +5,7 @@ import {
   GetNetRequest,
   IGetNetRequestResponse
 } from "../net-request/get-net-request";
+import path = require("path");
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
   const url =
@@ -18,16 +19,36 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     if (!filterResult(result)) {
       return;
     }
+    console.log("-- it ok");
+
+    // download xmp file
+    // doDownloadRequest(
+    //   fromMainWindow,
+    //   "download-sidecar",
+    //   parentFullFilePathHelper(sidecarFile),
+    //   sidecarFile
+    // );
   } catch (error) {}
+}
+
+function getXmpFile(result: IGetNetRequestResponse) {
+  const ext = result.data.fileIndexItem.sidecarExtensionsList[0];
+  const sidecarFile = path.join(
+    result.data.fileIndexItem.parentDirectory,
+    result.data.fileIndexItem.fileCollectionName + "." + ext
+  );
 }
 
 function filterResult(result: IGetNetRequestResponse) {
   return (
-    !result.data ||
-    !result.data.fileIndexItem ||
-    !result.data.fileIndexItem.status ||
-    result.data.fileIndexItem.status === "Ok" ||
-    result.data.fileIndexItem.status === "Default"
+    result.statusCode === 200 &&
+    result.data &&
+    result.data.fileIndexItem &&
+    result.data.fileIndexItem.status &&
+    result.data.fileIndexItem.collectionPaths &&
+    result.data.fileIndexItem.sidecarExtensionsList &&
+    (result.data.fileIndexItem.status === "Ok" ||
+      result.data.fileIndexItem.status === "Default")
   );
 }
 
