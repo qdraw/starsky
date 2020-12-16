@@ -24,6 +24,11 @@ function getSamplePhotos {
   curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_134303_DSC00279_e.jpg --output $STORAGE_FOLDER"/vsm/20190530_134303_DSC00279_e.jpg"
   curl https://media.qdraw.nl/download/starsky-sample-photos/20190530_142906_DSC00373_e.jpg --output $STORAGE_FOLDER"/vsm/20190530_142906_DSC00373_e.jpg"
 
+  mkdir -p $STORAGE_FOLDER/den-bosch
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20201213_151447_DSC00249.jpg --output $STORAGE_FOLDER"/den-bosch/20201213_151447_DSC00249.jpg"
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20201213_151447_DSC00249.arw --output $STORAGE_FOLDER"/den-bosch/20201213_151447_DSC00249.arw"
+  curl https://media.qdraw.nl/download/starsky-sample-photos/20201213_151447_DSC00249.xmp --output $STORAGE_FOLDER"/den-bosch/20201213_151447_DSC00249.xmp"
+
   mkdir -p $STORAGE_FOLDER/vernant
   curl https://media.qdraw.nl/log/vernant-in-de-franse-alpen-2020/1000/20200823_102002_dsc03419_e_kl1k.jpg --output $STORAGE_FOLDER"/vernant/20200823_102002_dsc03419_e_kl1k.jpg"
   curl https://media.qdraw.nl/log/vernant-in-de-franse-alpen-2020/1000/20200823_102313_dsc03422_e_kl1k.jpg --output $STORAGE_FOLDER"/vernant/20200823_102313_dsc03422_e_kl1k.jpg"
@@ -61,10 +66,8 @@ function getSamplePhotos {
   curl https://media.qdraw.nl/log/gers-in-de-franse-alpen-2020/1000/20200822_163409_dsc03308_e_kl1k.jpg --output $STORAGE_FOLDER"/gers/20200822_163409_dsc03308_e_kl1k.jpg"
   curl https://media.qdraw.nl/log/gers-in-de-franse-alpen-2020/1000/20200822_164141_dsc03321_e_kl1k.jpg --output $STORAGE_FOLDER"/gers/20200822_164141_dsc03321_e_kl1k.jpg"
 
-  starskysynccli=($(find $SOURCE_DIR -type f -name "starskysynccli.csproj"))
-  dotnet run --project ${starskysynccli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -s /vsm
-  dotnet run --project ${starskysynccli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -s /vernant
-  dotnet run --project ${starskysynccli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -s /gers
+  starskysynchronizecli=($(find $SOURCE_DIR -type f -name "starskysynchronizecli.csproj"))
+  dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -v
 }
 
 function start_pushd {
