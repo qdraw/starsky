@@ -1,6 +1,7 @@
 import { BrowserWindow } from "electron";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
+import { downloadNetRequest } from "../net-request/download-net-request";
 import {
   GetNetRequest,
   IGetNetRequestResponse
@@ -21,6 +22,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     }
     console.log("-- it ok");
 
+    getXmpFile(result, fromMainWindow.webContents.session);
     // download xmp file
     // doDownloadRequest(
     //   fromMainWindow,
@@ -31,11 +33,16 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   } catch (error) {}
 }
 
-function getXmpFile(result: IGetNetRequestResponse) {
+function getXmpFile(result: IGetNetRequestResponse, session: Electron.Session) {
   const ext = result.data.fileIndexItem.sidecarExtensionsList[0];
   const sidecarFile = path.join(
     result.data.fileIndexItem.parentDirectory,
     result.data.fileIndexItem.fileCollectionName + "." + ext
+  );
+  downloadNetRequest(
+    `/starsky/api/download-sidecar?isThumbnail=false&f=${result.data.fileIndexItem.filePath}`,
+    session,
+    `/tmp/${sidecarFile}`
   );
 }
 
