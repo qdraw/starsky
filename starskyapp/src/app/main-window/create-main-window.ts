@@ -62,13 +62,11 @@ async function createMainWindow(
 
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
-    console.log("-- did-navigate", newWindow.id);
     saveRememberUrl(newWindow);
   });
 
   // hash navigations
   newWindow.webContents.on("did-navigate-in-page", () => {
-    console.log("--did-navigate-in-page", newWindow.id);
     saveRememberUrl(newWindow);
   });
 

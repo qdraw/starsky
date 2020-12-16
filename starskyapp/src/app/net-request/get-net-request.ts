@@ -31,7 +31,7 @@ export function GetNetRequest(
         if (
           response.headers &&
           response.headers["content-type"] &&
-          response.headers["content-type"] === "text/plain"
+          response.headers["content-type"].toString().startsWith("text/plain")
         ) {
           resolve({
             data: body,

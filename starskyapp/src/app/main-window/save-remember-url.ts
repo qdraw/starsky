@@ -23,8 +23,6 @@ export async function saveRememberUrl(newWindow: BrowserWindow) {
   }
 
   const combinedObject = { ...currentObject, ...newlyAddedObject };
-  console.log("--> merge ", combinedObject);
-
   await appConfig.set(RememberUrl, combinedObject);
 }
 
