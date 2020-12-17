@@ -1,15 +1,15 @@
 import { BrowserWindow } from "electron";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
-import { downloadNetRequest } from "../net-request/download-net-request";
+import { createErrorWindow } from "../error-window/create-error-window";
 import {
   GetNetRequest,
   IGetNetRequestResponse
 } from "../net-request/get-net-request";
-import {
-  createParentFolders,
-  GetParentDiskPath
-} from "./create-parent-folders";
+import { createParentFolders } from "./create-parent-folders";
+import { downloadBinary } from "./download-binary";
+import { downloadXmpFile } from "./download-xmp-file";
+import { openPath } from "./open-path";
 import path = require("path");
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
@@ -18,44 +18,36 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
   console.log(url);
 
+  let result = undefined;
   try {
-    const result = await GetNetRequest(url, fromMainWindow.webContents.session);
+    result = await GetNetRequest(url, fromMainWindow.webContents.session);
+  } catch (error) {
+    console.log("error");
+    console.log(error);
+    return;
+  }
 
-    if (!filterResult(result)) {
-      return;
-    }
-    console.log("-- it ok");
+  if (!filterResult(result)) {
+    return;
+  }
 
-    await createParentFolders(result.data.fileIndexItem.parentDirectory);
-    await downloadXmpFile(result, fromMainWindow.webContents.session);
-  } catch (error) {}
-}
-
-async function downloadXmpFile(
-  result: IGetNetRequestResponse,
-  session: Electron.Session
-) {
-  const ext = result.data.fileIndexItem.sidecarExtensionsList[0];
-
-  const sidecarFileOnDisk = path.join(
-    await GetParentDiskPath(result.data.fileIndexItem.parentDirectory),
-    result.data.fileIndexItem.fileCollectionName + "." + ext
+  await createParentFolders(result.data.fileIndexItem.parentDirectory);
+  await downloadXmpFile(
+    result.data.fileIndexItem,
+    fromMainWindow.webContents.session
+  );
+  const filePathOnDisk = await downloadBinary(
+    result.data.fileIndexItem,
+    fromMainWindow.webContents.session
   );
 
-  const sideCarSubPath =
-    result.data.fileIndexItem.parentDirectory +
-    "/" +
-    result.data.fileIndexItem.fileCollectionName +
-    "." +
-    ext;
-
-  await downloadNetRequest(
-    `${
-      (await GetBaseUrlFromSettings()).location
-    }/starsky/api/download-sidecar?isThumbnail=false&f=${sideCarSubPath}`,
-    session,
-    sidecarFileOnDisk
-  );
+  try {
+    await openPath(filePathOnDisk);
+  } catch (error) {
+    createErrorWindow(error);
+    console.log("error");
+    console.log(error);
+  }
 }
 
 function filterResult(result: IGetNetRequestResponse) {

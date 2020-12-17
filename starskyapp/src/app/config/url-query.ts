@@ -16,4 +16,12 @@ export default class UrlQuery {
   public Index(filePath: string) {
     return "/starsky/api/index?f=" + filePath;
   }
+
+  public DownloadSidecarFile(sideCarSubPath: string) {
+    return `/starsky/api/download-sidecar?f=${sideCarSubPath}`;
+  }
+
+  public DownloadPhoto(subPath: string) {
+    return `/starsky/api/download-photo?isThumbnail=false&f=${subPath}`;
+  }
 }

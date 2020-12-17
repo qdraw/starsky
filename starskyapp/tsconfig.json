@@ -11,5 +11,10 @@
     },
     "resolveJsonModule": true
   },
-  "include": ["src/app/**/*", "src/setup/**/*", "src/preload/**/*"]
+  "include": [
+    "src/app/**/*",
+    "src/setup/**/*",
+    "src/preload/**/*",
+    "src/shared/**/*"
+  ]
 }
