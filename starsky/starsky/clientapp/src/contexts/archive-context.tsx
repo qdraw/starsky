@@ -186,20 +186,25 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       return updateCache(state);
   }
 }
-
+/**
+ * filter colorclass input
+ * @param state contains current filter active
+ * @param actionAdd item to add
+ */
 function filterColorClassBeforeAdding(
   state: IArchiveProps,
   actionAdd: IFileIndexItem[]
 ) {
-  // filter colorclass input
-  if (state.colorClassActiveList.length >= 1) {
-    actionAdd = actionAdd.filter((value: IFileIndexItem) => {
-      return (
-        value.colorClass &&
-        state.colorClassActiveList.indexOf(value.colorClass) >= 1
-      );
-    });
+  if (!state.colorClassActiveList || state.colorClassActiveList.length <= 0) {
+    return actionAdd;
   }
+
+  actionAdd = actionAdd.filter((value: IFileIndexItem) => {
+    return (
+      value.colorClass &&
+      state.colorClassActiveList.indexOf(value.colorClass) >= 1
+    );
+  });
   return actionAdd;
 }
 
