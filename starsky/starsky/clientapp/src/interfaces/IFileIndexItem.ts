@@ -43,6 +43,8 @@ export interface IFileIndexItem {
   imageWidth: number;
   imageHeight: number;
   size?: number;
+  sidecarExtensionsList?: string[];
+  collectionPaths?: string[];
 }
 
 export enum ImageFormat {
