@@ -6,7 +6,8 @@
   "scripts": {
     "app-version-update": "node app-version-update.js",
     "project-guid": "node project-guid.js",
-    "nuget-package-list": "node nuget-package-list.js"
+    "nuget-package-list": "node nuget-package-list.js",
+    "release-version-check": "node release-version-check.js"
   },
   "author": "",
   "license": "ISC"
