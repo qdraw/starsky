@@ -15,7 +15,7 @@ function releaseVersionCheck() {
   }
 
   // ADO https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  if (process.env["Build.SourceBranch"] && process.env["Build.SourceBranch"].startsWith('refs/heads/release/v' ) {
+  if (process.env["Build.SourceBranch"] && process.env["Build.SourceBranch"].startsWith('refs/heads/release/v')) {
     console.log('=> release branches should not start with a v');
     process.exit(1);
   }
@@ -28,7 +28,7 @@ function releaseVersionCheck() {
 
 releaseVersionCheck();
 
-runChildUpdate(refChildVersion) {
+function runChildUpdate(refChildVersion) {
   const appVersionSpawn = spawn('node', [path.join(__dirname, 'app-version-update.js'), refChildVersion]);
   appVersionSpawn.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
