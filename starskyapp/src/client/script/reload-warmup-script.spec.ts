@@ -36,6 +36,7 @@ describe("reload redirect", () => {
     mockFetch(500);
 
     warmupScript("", 0, 0, (result: boolean) => {
+      console.log(result);
       expect(result).toBeFalsy();
       done();
     });
