@@ -14,15 +14,23 @@ function releaseVersionCheck() {
     }
   }
 
+  if (process.env.BUILD_SOURCEBRANCH) {
+    console.log(process.env.BUILD_SOURCEBRANCH);
+  }
+
   // ADO https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
   if (process.env.BUILD_SOURCEBRANCH && process.env.BUILD_SOURCEBRANCH.startsWith('refs/heads/release/v')) {
     console.log('=> release branches should not start with a v');
     process.exit(1);
   }
 
-  // export BUILD_SOURCEBRANCH=refs/heads/master
-  if (process.env.BUILD_SOURCEBRANCH) {
-    console.log(process.env.BUILD_SOURCEBRANCH);
+  // export BUILD_SOURCEBRANCH=refs/heads/release/0.4.2
+  if (process.env.BUILD_SOURCEBRANCH && process.env.BUILD_SOURCEBRANCH.startsWith('refs/heads/release/') {
+    const refVersion = process.env.GITHUB_REF.replace('refs/heads/release/',"")
+    if (refVersion !== packageJson.version) {
+      runChildUpdate(refVersion);
+      return;
+    }
   }
 }
 
