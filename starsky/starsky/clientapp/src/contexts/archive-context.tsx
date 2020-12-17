@@ -148,37 +148,59 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         )
       });
     case "add":
-      var filterOkCondition = (value: IFileIndexItem) => {
+      const filterOkCondition = (value: IFileIndexItem) => {
         return (
           value.status === IExifStatus.Ok ||
           value.status === IExifStatus.Default
         );
       };
-      var concatenatedFileIndexItems = [
-        ...Array.from(action.add),
+
+      const actionAdd = filterColorClassBeforeAdding(state, action.add);
+
+      let concatenatedFileIndexItems = [
+        ...Array.from(actionAdd),
         ...state.fileIndexItems
       ];
 
-      var toSortOnParm = state.collections ? "fileCollectionName" : "filePath";
+      const toSortOnParm = state.collections
+        ? "fileCollectionName"
+        : "filePath";
       concatenatedFileIndexItems = new ArrayHelper().UniqueResults(
         concatenatedFileIndexItems,
         toSortOnParm
       );
 
       // order by this to match c# AND not supported in jest
-      try {
-        var fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
-          a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
-        );
-      } catch (error) {
-        fileIndexItems = concatenatedFileIndexItems;
-      }
+      let fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
+        a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
+      );
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
       UpdateColorClassUsageActiveListLoop(state);
       return updateCache(state);
   }
+}
+/**
+ * filter colorclass input
+ * @param state contains current filter active
+ * @param actionAdd item to add
+ */
+function filterColorClassBeforeAdding(
+  state: IArchiveProps,
+  actionAdd: IFileIndexItem[]
+) {
+  if (!state.colorClassActiveList) {
+    return actionAdd;
+  }
+
+  actionAdd = actionAdd.filter((value: IFileIndexItem) => {
+    return (
+      value.colorClass &&
+      state.colorClassActiveList.indexOf(value.colorClass) >= 1
+    );
+  });
+  return actionAdd;
 }
 
 /**

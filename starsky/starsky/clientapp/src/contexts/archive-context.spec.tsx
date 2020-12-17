@@ -339,6 +339,28 @@ describe("ArchiveContext", () => {
     ]);
   });
 
+  it("add -- try to add item outside filter", () => {
+    // current state
+    var state = {
+      fileIndexItems: [],
+      colorClassActiveList: [2, 4]
+    };
+
+    // to add this
+    var add = [
+      {
+        fileName: "__20180101170001.jpg",
+        filePath: "/__starsky/01-dif/__20180101170001.jpg",
+        status: IExifStatus.Ok,
+        colorClass: 1
+      }
+    ];
+    var action = { type: "add", add } as any;
+    var result = archiveReducer(state as any, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
   it("add -- duplicate", () => {
     // current state
     var state = {
