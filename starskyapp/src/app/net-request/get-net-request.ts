@@ -22,7 +22,7 @@ export function GetNetRequest(
 
     let body = "";
     request.on("response", (response) => {
-      console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
+      // console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
 
       response.on("data", (chunk) => {
         body += chunk.toString();

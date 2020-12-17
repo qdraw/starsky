@@ -13,7 +13,6 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   const url =
     (await GetBaseUrlFromSettings()).location +
     new UrlQuery().Index(getFilePathFromWindow(fromMainWindow));
-  console.log(url);
 
   let result = undefined;
   try {

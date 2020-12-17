@@ -22,11 +22,11 @@ export function downloadNetRequest(
     request.setHeader("Accept", "/*");
 
     request.on("response", (response) => {
-      console.log(
-        `${url} statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(
-          response.headers
-        )}`
-      );
+      // console.log(
+      //   `${url} statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(
+      //     response.headers
+      //   )}`
+      // );
 
       if (response.statusCode !== 200) {
         console.log(response.statusCode);

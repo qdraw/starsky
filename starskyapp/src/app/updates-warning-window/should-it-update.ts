@@ -38,11 +38,9 @@ export async function shouldItUpdate(): Promise<boolean> {
   return new Promise(async function (resolve, reject) {
     let url = (await GetBaseUrlFromSettings()).location;
     url += new UrlQuery().HealthCheckForUpdates(GetAppVersion());
-    console.log(url);
 
     try {
       const result = await GetNetRequest(url);
-      console.log(result);
 
       if (result.statusCode !== 202) {
         resolve(false);

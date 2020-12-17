@@ -1,6 +1,7 @@
 import * as chokidar from "chokidar";
 import { createParentFolders } from "../edit-file/create-parent-folders";
 import { GetParentDiskPath } from "../edit-file/get-parent-disk-path";
+import { ActionWhenFileIsChanged } from "./action-when-file-is-changed";
 import { FileWatcherObjects } from "./file-watcher.const";
 
 export async function SetupFileWatcher() {
@@ -21,7 +22,7 @@ export async function SetupFileWatcher() {
       alwaysStat: true
     })
     .on("change", (path, stats) => {
-      console.log(path, stats);
+      ActionWhenFileIsChanged(path, stats);
     });
 
   FileWatcherObjects.add([watch, tempPathIncludingBaseUrl]);
