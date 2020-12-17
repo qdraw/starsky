@@ -3,6 +3,9 @@ const packageJson = require('./package.json');
 const { spawn } = require('child_process');
 const path = require('path');
 
+/**
+ check by envs
+**/
 function releaseVersionCheck() {
 
   // export GITHUB_REF=refs/tags/v0.3.0
