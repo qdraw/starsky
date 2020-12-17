@@ -38,6 +38,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.3 _(Unreleased)_ - 2020-12-??
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
+- [x]   (Changed) _App_ Rewrite of desktop application
+- [x]   (Changed) _App_ Desktop settings  app-settings is changed to "starksy-app-settings.json"
+- [x]   (Changed) _Back-end_ Allow version parameter for "/api/health/version"
 
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 

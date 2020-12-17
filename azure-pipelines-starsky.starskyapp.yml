@@ -62,7 +62,7 @@ stages:
       enabled: true
       inputs:
         filePath: 'starsky/build.sh'
-        arguments: '--Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
+        arguments: '--no-unit-tests --Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: win7-x86'
@@ -119,6 +119,7 @@ stages:
 
     - task: Bash@3
       enabled: true
+      displayName: 'For Mac, move to expected location'
       inputs:
         targetType: 'inline'
         script: |
@@ -126,10 +127,45 @@ stages:
 
     - task: Bash@3
       enabled: true
+      displayName: 'For Windows, move to expected location'
       inputs:
         targetType: 'inline'
         script: |
           mv $(Build.SourcesDirectory)/win7-x64/starsky-win7-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Unzip for mac'
+      inputs:
+        targetType: 'inline'
+        script: |
+          unzip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip -d $(Build.SourcesDirectory)/starsky/osx.10.12-x64
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Restore permissions mac'
+      inputs:
+        targetType: 'inline'
+        script: |
+          chmod 777 $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
+          bash $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'Unzip for windows'
+      inputs:
+        targetType: 'inline'
+        script: |
+          unzip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip -d $(Build.SourcesDirectory)/starsky/win7-x64
+    
+    - task: Bash@3
+      enabled: true
+      displayName: 'Restore permissions windows'
+      inputs:
+        targetType: 'inline'
+        script: |
+          chmod 777 $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
+          bash $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
 
     - task: Npm@1
       displayName: 'Electron npm ci'

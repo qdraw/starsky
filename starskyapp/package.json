@@ -2,37 +2,68 @@
   "name": "starsky",
   "version": "0.4.1",
   "description": "Starsky",
-  "main": "index.js",
+  "main": "build/app/startup/main.js",
   "scripts": {
+    "webpack": "webpack",
+    "build": "tsc && webpack && npm run copy",
+    "copy": "node build/setup/html-copy.js ",
+    "copy:dev": "tsc src/setup/html-copy --outDir build/setup && node build/setup/html-copy.js ",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "npm run build && electron ./build/app/startup/main.js",
     "postinstall": "electron-builder install-app-deps",
-    "start": "electron .",
-    "dist": "electron-builder build",
-    "mac": "electron-builder build -m",
-    "windows": "electron-builder build -w",
-    "macwindows": "electron-builder build -mw",
-    "test:ci": "echo no tests yet"
+    "dist": "npm run build && electron-builder build",
+    "mac": "npm run build && electron-builder build -m",
+    "windows": "npm run build && electron-builder build -w",
+    "macwindows": "npm run build && electron-builder build -mw",
+    "test": "jest --watch",
+    "test:ci": "jest  --watchAll=false --coverage --reporters=default 2>&1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^10.1.5",
-    "electron-builder": "^22.9.1"
+    "@types/jest": "^26.0.19",
+    "@types/node": "^14.14.12",
+    "electron": "^11.0.4",
+    "electron-builder": "^22.9.1",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.4.4",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.1.2",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0"
+  },
+  "prettier": {
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "useTabs": false
   },
   "dependencies": {
-    "electron-settings": "3.2.0",
-    "extract-zip": "^2.0.1"
+    "chokidar": "^3.4.3",
+    "electron-settings": "4.0.2"
   },
   "build": {
     "extraResources": [
-      "include-starsky-${os}.zip"
+      "runtime-starsky-${os}/**"
     ],
-    "beforeBuild": "./scripts/beforeBuild.js",
+    "files": [
+      "./build/pages/redirect/reload-redirect.html",
+      "./build/pages/settings/settings.html",
+      "./build/**/*"
+    ],
+    "beforeBuild": "./build/setup/before-build.js",
     "appId": "nl.qdraw.starsky",
     "productName": "Starsky",
     "artifactName": "starsky-${os}-desktop.${ext}",
     "mac": {
-      "minimumSystemVersion": "10.10",
-      "icon": "media/baseline-searcher-detective-263238__512px.icns",
+      "minimumSystemVersion": "10.12",
+      "electronLanguages": [
+        "en"
+      ],
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
         "zip"
       ]
@@ -47,7 +78,43 @@
       "target": [
         "zip"
       ],
-      "icon": "media/baseline-searcher-detective-263238__256px.ico"
+      "icon": "src/setup/icons/baseline-searcher-detective-263238__256px.ico"
+    }
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/*.(test|spec).(ts|tsx)"
+    ],
+    "globals": {
+      "ts-jest": {
+        "babelConfig": true,
+        "tsconfig": "tsconfig.json"
+      }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/setup/**"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "text-summary"
+    ],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/mocks.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/mocks.js"
     }
   }
 }

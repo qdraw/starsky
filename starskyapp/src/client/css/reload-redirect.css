@@ -1,0 +1,33 @@
+
+.preloader.preloader--overlay, .preloader.preloader--overlay-no-transition {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(96,125,139,.7);
+    z-index: 410;
+}
+
+.preloader.preloader--icon {
+  position: fixed;
+  left: calc( 50% - 50px );
+  top: calc( 50% - 50px );
+  display: block;
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  /* 607D8B */
+  mask-image: url('../images/preloader-fancy.svg');
+  -webkit-mask-image: url('../images/preloader-fancy.svg');
+
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  z-index: 410;
+  /* background-image:url('../images/preloader-fancy.svg');
+  background-size: contain; */
+}
+
+.upgrade {
+  display: none;
+}
