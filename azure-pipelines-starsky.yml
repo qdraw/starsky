@@ -84,6 +84,8 @@ steps:
 - task: PowerShell@2
   displayName: 'Cake Client'
   enabled: true
+  env:
+    BUILD_SOURCEBRANCH: $(Build.SourceBranch)
   inputs:
     filePath: 'starsky\build.ps1'
     arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
@@ -92,6 +94,8 @@ steps:
 
 - task: PowerShell@2
   displayName: 'Cake SonarBuildTest'
+  env:
+    BUILD_SOURCEBRANCH: $(Build.SourceBranch)
   inputs:
     filePath: 'starsky\build.ps1'
     arguments: '-runtime="linux-arm,linux-arm64" -target="SonarBuildTest" -branch="$(Build.SourceBranch)"'
