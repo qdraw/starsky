@@ -2,6 +2,7 @@ import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import createMainWindow from "./create-main-window";
 import * as getNewFocusedWindow from "./get-new-focused-window";
 import * as onHeaderReceived from "./on-headers-received";
+import * as removeRememberUrl from "./save-remember-url";
 import * as saveRememberUrl from "./save-remember-url";
 import * as spellCheck from "./spellcheck";
 jest.mock("electron", () => {
@@ -56,6 +57,11 @@ describe("create main window", () => {
       .spyOn(onHeaderReceived, "onHeaderReceived")
       .mockImplementationOnce(() => null);
     jest.spyOn(spellCheck, "spellCheck").mockImplementationOnce(() => null);
+
+    jest
+      .spyOn(removeRememberUrl, "removeRememberUrl")
+      .mockImplementationOnce(() => null);
+
     jest
       .spyOn(saveRememberUrl, "saveRememberUrl")
       .mockImplementationOnce(() => null)
