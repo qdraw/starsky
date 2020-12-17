@@ -170,15 +170,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         toSortOnParm
       );
 
-      let fileIndexItems = [];
       // order by this to match c# AND not supported in jest
-      try {
-        fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
-          a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
-        );
-      } catch (error) {
-        fileIndexItems = concatenatedFileIndexItems;
-      }
+      let fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
+        a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
+      );
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
@@ -195,7 +190,7 @@ function filterColorClassBeforeAdding(
   state: IArchiveProps,
   actionAdd: IFileIndexItem[]
 ) {
-  if (!state.colorClassActiveList || state.colorClassActiveList.length <= 0) {
+  if (!state.colorClassActiveList) {
     return actionAdd;
   }
 
