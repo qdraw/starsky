@@ -26,7 +26,7 @@ function releaseVersionCheck() {
 
   // export BUILD_SOURCEBRANCH=refs/heads/release/0.4.2
   if (process.env.BUILD_SOURCEBRANCH && process.env.BUILD_SOURCEBRANCH.startsWith('refs/heads/release/')) {
-    const refVersion = process.env.GITHUB_REF.replace('refs/heads/release/',"")
+    const refVersion = process.env.BUILD_SOURCEBRANCH.replace('refs/heads/release/',"")
     if (refVersion !== packageJson.version) {
       runChildUpdate(refVersion);
       return;
