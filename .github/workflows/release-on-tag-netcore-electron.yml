@@ -62,6 +62,16 @@ jobs:
         working-directory: ./starsky
         run: unzip starsky-osx.10.12-x64.zip -d osx.10.12-x64     
         
+      - name: Restore rights pm2-restore-x-rights.sh 
+        shell: bash
+        working-directory: ./starsky/osx.10.12-x64
+        run: chmod 777 pm2-restore-x-rights.sh 
+        
+      - name: run pm2-restore-x-rights.sh 
+        shell: bash
+        working-directory: ./starsky/osx.10.12-x64
+        run: bash pm2-restore-x-rights.sh 
+                
       - name: List
         shell: bash
         working-directory: ./starsky
