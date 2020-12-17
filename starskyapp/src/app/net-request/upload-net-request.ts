@@ -8,6 +8,9 @@ export function uploadNetRequest(
   session: Session
 ): Promise<void> {
   return new Promise(function (resolve, reject) {
+    if (url.startsWith("[object ")) {
+      throw new Error("please await promise first");
+    }
     console.log("> run upload " + url);
 
     const request = net.request({
@@ -26,9 +29,9 @@ export function uploadNetRequest(
     request.on("response", (response) => {
       if (response.statusCode !== 200)
         console.log(
-          `HEADERS: ${JSON.stringify(response.headers)} - ${toSubPath} -  ${
-            response.statusCode
-          }`
+          `upload: ${response.statusCode} HEADERS: ${JSON.stringify(
+            response.headers
+          )} - ${toSubPath} `
         );
 
       if (response.statusCode !== 200) return;
@@ -53,6 +56,9 @@ export function uploadNetRequest(
       request.end();
       request.on("finish", () => {
         console.log("--finish doUploadRequest");
+        fs.promises.stat(fullFilePath).then((stat) => {
+          fs.promises.writeFile(fullFilePath + ".info", stat.size.toString());
+        });
         resolve();
       });
       request.on("error", (err) => {

@@ -7,7 +7,7 @@ export function downloadNetRequest(
   toPath: string
 ) {
   return new Promise(function (resolve, reject) {
-    if (url.startsWith("[object Promise]")) {
+    if (url.startsWith("[object ")) {
       throw new Error("please await promise first");
     }
 
@@ -34,6 +34,11 @@ export function downloadNetRequest(
         return;
       }
 
+      fs.promises.writeFile(
+        toPath + ".info",
+        response.headers["content-length"].toString()
+      );
+
       // @ts-ignore
       response.pipe(file);
 
@@ -44,11 +49,11 @@ export function downloadNetRequest(
 
       file.on("finish", function () {
         fs.promises.stat(toPath).then(async (stats) => {
-          await fs.promises.writeFile(toPath + ".info", stats.size.toString());
           if (response.headers["content-length"] === stats.size.toString()) {
             resolve(toPath);
             return;
           }
+          fs.promises.unlink(toPath + ".info");
           reject("byte size doesnt match");
         });
       });
