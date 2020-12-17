@@ -131,6 +131,8 @@ export async function LocationUrlCallback(
       var locationOk = response.statusCode == 200 || response.statusCode == 503;
       if (locationOk) {
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
+        // so you can save change the location
+        await SetupFileWatcher();
       }
 
       console.log("locationOk >");
@@ -142,9 +144,6 @@ export async function LocationUrlCallback(
       mainWindows.forEach((window) => {
         window.close();
       });
-
-      // so you can save change the location
-      await SetupFileWatcher();
 
       event.reply(LocationUrlIpcKey, responseSettings);
     } catch (error) {
