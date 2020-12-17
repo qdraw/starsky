@@ -2,13 +2,11 @@ import { BrowserWindow } from "electron";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
-import {
-  GetNetRequest,
-  IGetNetRequestResponse
-} from "../net-request/get-net-request";
+import { GetNetRequest } from "../net-request/get-net-request";
 import { createParentFolders } from "./create-parent-folders";
 import { downloadBinary } from "./download-binary";
 import { downloadXmpFile } from "./download-xmp-file";
+import { IsDetailViewResult } from "./is-detail-view-result";
 import { openPath } from "./open-path";
 import path = require("path");
 
@@ -27,7 +25,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     return;
   }
 
-  if (!filterResult(result)) {
+  if (!IsDetailViewResult(result)) {
     return;
   }
 
@@ -48,19 +46,6 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     console.log("error");
     console.log(error);
   }
-}
-
-function filterResult(result: IGetNetRequestResponse) {
-  return (
-    result.statusCode === 200 &&
-    result.data &&
-    result.data.fileIndexItem &&
-    result.data.fileIndexItem.status &&
-    result.data.fileIndexItem.collectionPaths &&
-    result.data.fileIndexItem.sidecarExtensionsList &&
-    (result.data.fileIndexItem.status === "Ok" ||
-      result.data.fileIndexItem.status === "Default")
-  );
 }
 
 function getFilePathFromWindow(fromMainWindow: BrowserWindow): string {
