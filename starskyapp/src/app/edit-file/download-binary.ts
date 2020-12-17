@@ -4,7 +4,7 @@ import { IFileIndexItem } from "../../shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { downloadNetRequest } from "../net-request/download-net-request";
-import { GetParentDiskPath } from "./create-parent-folders";
+import { GetParentDiskPath } from "./get-parent-disk-path";
 
 export async function downloadBinary(
   fileIndexItem: IFileIndexItem,
