@@ -7,7 +7,14 @@ const { resolve, join } = require('path');
 const { readdir, readFile, writeFile } = require('fs').promises;
 const {getFiles} = require('./lib/get-files-directory');
 const { prefixPath } = require('./lib/prefix-path.const.js');
+
 var newVersion = "0.4.3";
+
+const argv = process.argv.slice(2)
+if (argv && argv.length === 1) {
+  newVersion = argv[0];
+}
+
 
 function checkNewVersion() {
   var versionRegexChecker = new RegExp("^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-]+)?$", "g")
