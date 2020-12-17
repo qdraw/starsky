@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { setupChildProcess } from "../child-process/setup-child-process";
 import { MakeTempPath } from "../config/temp-path";
+import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
 import createMainWindow from "../main-window/create-main-window";
 import { restoreMainWindow } from "../main-window/restore-main-window";
@@ -16,6 +17,7 @@ defaultAppSettings();
 AppMenu();
 setupChildProcess();
 MakeTempPath();
+SetupFileWatcher();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

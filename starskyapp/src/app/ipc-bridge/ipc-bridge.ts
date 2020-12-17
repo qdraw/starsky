@@ -21,6 +21,7 @@ import { UpdatePolicySettings } from "../config/update-policy-settings.const";
 import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
+import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 
@@ -141,6 +142,9 @@ export async function LocationUrlCallback(
       mainWindows.forEach((window) => {
         window.close();
       });
+
+      // so you can save change the location
+      await SetupFileWatcher();
 
       event.reply(LocationUrlIpcKey, responseSettings);
     } catch (error) {

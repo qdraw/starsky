@@ -8,7 +8,6 @@ import { downloadBinary } from "./download-binary";
 import { downloadXmpFile } from "./download-xmp-file";
 import { IsDetailViewResult } from "./is-detail-view-result";
 import { openPath } from "./open-path";
-import path = require("path");
 
 export async function EditFile(fromMainWindow: BrowserWindow) {
   const url =
@@ -30,6 +29,7 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   }
 
   await createParentFolders(result.data.fileIndexItem.parentDirectory);
+
   await downloadXmpFile(
     result.data.fileIndexItem,
     fromMainWindow.webContents.session

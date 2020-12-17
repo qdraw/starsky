@@ -8,6 +8,7 @@ import {
 } from "../config/location-ipc-keys.const";
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
+import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
   AppVersionCallback,
@@ -159,6 +160,10 @@ describe("ipc bridge", () => {
         .mockImplementationOnce(() => {
           return Promise.resolve();
         });
+
+      jest
+        .spyOn(SetupFileWatcher, "SetupFileWatcher")
+        .mockImplementationOnce(() => Promise.resolve());
 
       jest.spyOn(net, "request").mockImplementationOnce((t) => {
         console.log("valid url ");
