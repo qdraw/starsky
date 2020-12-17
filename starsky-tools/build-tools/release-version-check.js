@@ -31,7 +31,7 @@ releaseVersionCheck();
 function runChildUpdate(refChildVersion) {
   const appVersionSpawn = spawn('node', [path.join(__dirname, 'app-version-update.js'), refChildVersion]);
   appVersionSpawn.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
+    console.log(data);
   });
 
   appVersionSpawn.stderr.on('data', (data) => {
