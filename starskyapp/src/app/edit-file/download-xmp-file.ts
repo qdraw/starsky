@@ -1,4 +1,4 @@
-import path = require("path");
+import * as path from "path";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";

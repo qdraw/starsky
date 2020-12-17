@@ -43,7 +43,8 @@ export function downloadNetRequest(
       });
 
       file.on("finish", function () {
-        fs.promises.stat(toPath).then((stats) => {
+        fs.promises.stat(toPath).then(async (stats) => {
+          await fs.promises.writeFile(toPath + ".info", stats.size.toString());
           if (response.headers["content-length"] === stats.size.toString()) {
             resolve(toPath);
             return;

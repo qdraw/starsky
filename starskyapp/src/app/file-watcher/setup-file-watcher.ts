@@ -14,7 +14,8 @@ export async function SetupFileWatcher() {
     .watch(tempPathIncludingBaseUrl, {
       persistent: true,
       interval: 600,
-      binaryInterval: 1200
+      binaryInterval: 1200,
+      alwaysStat: true
     })
     .on("change", (path, stats) => {
       console.log(path, stats);

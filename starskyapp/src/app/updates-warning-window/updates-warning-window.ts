@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
 import * as appConfig from "electron-settings";
+import * as path from "path";
 import { UpdatePolicyLastCheckedDateSettings } from "../config/update-policy-settings.const";
 import { isPackaged } from "../os-info/is-packaged";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
@@ -9,8 +10,6 @@ import {
   SkipDisplayOfUpdate
 } from "./should-it-update";
 import { updatesWarningWindows } from "./updates-warning-windows.const";
-
-import path = require("path");
 
 async function createCheckForUpdatesContainerWindow(
   intervalSpeed = 1000

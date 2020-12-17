@@ -1,7 +1,3 @@
-// const {app, Menu, shell , BrowserWindow } = require('electron')
-// const createMainWindow = require('./main-window').createMainWindow
-// const createSettingsWindow = require('./settings-window').createSettingsWindow
-
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { EditFile } from "../edit-file/edit-file";
 import createMainWindow from "../main-window/create-main-window";
