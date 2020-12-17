@@ -15,14 +15,14 @@ function releaseVersionCheck() {
   }
 
   // ADO https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
-  if (process.env["Build.SourceBranch"] && process.env["Build.SourceBranch"].startsWith('refs/heads/release/v')) {
+  if (process.env.BUILD_SOURCEBRANCH && process.env.BUILD_SOURCEBRANCH.startsWith('refs/heads/release/v')) {
     console.log('=> release branches should not start with a v');
     process.exit(1);
   }
 
-  // export Build.SourceBranch=refs/heads/master
-  if (process.env["Build.SourceBranch"]) {
-    console.log(process.env["Build.SourceBranch"]);
+  // export BUILD_SOURCEBRANCH=refs/heads/master
+  if (process.env.BUILD_SOURCEBRANCH) {
+    console.log(process.env.BUILD_SOURCEBRANCH);
   }
 }
 

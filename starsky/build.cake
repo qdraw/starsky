@@ -771,6 +771,7 @@ Task("ProjectCheckNetCore")
 
 // React app build steps
 Task("Client")
+  .IsDependentOn("ProjectCheckNetCore")
   .IsDependentOn("TestEnv")
   .IsDependentOn("ClientRestore")
   .IsDependentOn("ClientBuild")
