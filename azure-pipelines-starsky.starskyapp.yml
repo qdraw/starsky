@@ -60,6 +60,8 @@ stages:
     - task: Bash@3
       displayName: 'Cake'
       enabled: true
+      env:
+        BUILD_SOURCEBRANCH: $(Build.SourceBranch)
       inputs:
         filePath: 'starsky/build.sh'
         arguments: '--no-unit-tests --Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
@@ -89,7 +91,8 @@ stages:
         ArtifactName: 'generic-netcore'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: coverage.report zip'
+      displayName: '[disabled] Publish Artifact: coverage.report zip'
+      enabled: false
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
         ArtifactName: coverage.report

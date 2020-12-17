@@ -760,6 +760,9 @@ Task("DocsGenerate")
 Task("ProjectCheckNetCore")
     .Does(() =>
     {
+        // check branch names on CI
+        NpmRunScript("release-version-check", s => s.FromPath("../starsky-tools/build-tools/"));
+
         /* Checks for valid Project GUIDs in csproj files */
         NpmRunScript("project-guid", s => s.FromPath("../starsky-tools/build-tools/"));
         /* List of nuget packages */
@@ -768,6 +771,7 @@ Task("ProjectCheckNetCore")
 
 // React app build steps
 Task("Client")
+  .IsDependentOn("ProjectCheckNetCore")
   .IsDependentOn("TestEnv")
   .IsDependentOn("ClientRestore")
   .IsDependentOn("ClientBuild")
