@@ -123,7 +123,12 @@ function AppMenu() {
         { role: "minimize" },
         { role: "zoom" },
         ...(isMac
-          ? [{ type: "separator" }, { role: "front" }]
+          ? [
+              { type: "separator" },
+              { role: "front" },
+              { type: "separator" },
+              { role: "window" }
+            ]
           : [{ role: "close" }])
       ]
     },

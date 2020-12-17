@@ -1,7 +1,7 @@
 import { Menu, shell } from "electron";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as createSettingsWindow from "../settings-window/create-settings-window";
-import AppMenu from "./menu";
+import AppMenu from "./app-menu";
 
 let menuStorage: any;
 jest.mock("electron", () => {

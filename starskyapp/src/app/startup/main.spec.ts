@@ -5,7 +5,8 @@ import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as restoreMainWindow from "../main-window/restore-main-window";
-import * as AppMenu from "../menu/menu";
+import * as AppMenu from "../menu/app-menu";
+import * as DockMenu from "../menu/dock-menu";
 import * as updatesWarningWindow from "../updates-warning-window/updates-warning-window";
 import * as defaultAppSettings from "./app-settings";
 import * as willNavigateSecurity from "./will-navigate-security";
@@ -44,6 +45,8 @@ describe("main", () => {
       .spyOn(defaultAppSettings, "default")
       .mockImplementationOnce(() => "test");
     jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
+    jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
+
     setupChildProcessSpy = jest
       .spyOn(setupChildProcess, "setupChildProcess")
       .mockImplementationOnce(() => {});
