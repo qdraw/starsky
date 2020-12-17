@@ -10,6 +10,7 @@ const { prefixPath } = require('./lib/prefix-path.const.js');
 
 var newVersion = "0.4.3";
 
+// allow version as single argument
 const argv = process.argv.slice(2)
 if (argv && argv.length === 1) {
   newVersion = argv[0];
