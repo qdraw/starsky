@@ -1,7 +1,7 @@
 import { spawn } from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
-import * as getPort from "get-port";
+import * as getFreePort from "get-port";
 import * as path from "path";
 import * as readline from "readline";
 import { isPackaged } from "../os-info/is-packaged";
@@ -28,7 +28,7 @@ export async function setupChildProcess() {
   var databaseConnection =
     "Data Source=" + path.join(electronCacheLocation(), "starsky.db");
 
-  appPort = await getPort();
+  appPort = await getFreePort();
 
   const env = {
     ASPNETCORE_URLS: `http://localhost:${appPort}`,
