@@ -54,10 +54,20 @@ export async function setupChildProcess() {
 
   starskyChild.stdout.on("data", function (data) {
     console.log(data.toString());
+    fs.appendFile(
+      path.join(tempFolder, "child.log"),
+      data.toString(),
+      function (err) {}
+    );
   });
 
   starskyChild.stderr.on("data", function (data) {
-    console.log("stderr: " + data.toString());
+    console.log();
+    fs.appendFile(
+      path.join(tempFolder, "child.log"),
+      "stderr: " + data.toString(),
+      function (err) {}
+    );
   });
 
   readline.emitKeypressEvents(process.stdin);
