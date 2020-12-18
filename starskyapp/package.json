@@ -43,7 +43,8 @@
   },
   "dependencies": {
     "chokidar": "^3.4.3",
-    "electron-settings": "4.0.2"
+    "electron-settings": "4.0.2",
+    "get-port": "^5.1.1"
   },
   "build": {
     "extraResources": [

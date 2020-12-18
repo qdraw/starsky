@@ -47,7 +47,7 @@ describe("main", () => {
 
     setupChildProcessSpy = jest
       .spyOn(setupChildProcess, "setupChildProcess")
-      .mockImplementationOnce(() => {});
+      .mockImplementationOnce(() => Promise.resolve());
     jest
       .spyOn(MakeTempPath, "MakeTempPath")
       .mockImplementationOnce(() => "test");

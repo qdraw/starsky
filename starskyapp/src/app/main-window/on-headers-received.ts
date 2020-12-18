@@ -5,6 +5,7 @@ export function onHeaderReceived(newWindow: BrowserWindow) {
     (res, callback) => {
       // var currentSettings = appConfig.get("remote_settings_" + isPackaged());
       // var localhost = "http://localhost:9609 "; // with space on end
+      // ${appPort}
 
       // let whitelistDomain = localhost;
       // if (currentSettings && currentSettings.location) {
