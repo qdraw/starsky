@@ -120,7 +120,7 @@ function AppMenu() {
       ]
     },
     {
-      label: "Develop",
+      label: IsDutch() ? "Ontwikkelaar" : "Develop",
       submenu: [
         {
           label: "Refresh",
@@ -152,19 +152,34 @@ function AppMenu() {
       ]
     },
     {
-      label: "View",
+      label: IsDutch() ? "Beeld" : "View",
       submenu: [
-        { role: "resetzoom" },
-        { role: "zoomin" },
-        { role: "zoomout" },
+        {
+          label: IsDutch() ? "Werkelijke grootte" : "Actual Size",
+          role: "resetzoom"
+        },
+        {
+          label: IsDutch() ? "Inzoomen" : "Zoom In",
+          role: "zoomin"
+        },
+        {
+          label: IsDutch() ? "Uitzoomen" : "Zoom Out",
+          role: "zoomout"
+        },
         { type: "separator" },
-        { role: "togglefullscreen" }
+        {
+          label: IsDutch() ? "Schermvullende weergave" : "Toggle Full Screen",
+          role: "togglefullscreen"
+        }
       ]
     },
     {
-      label: "Window",
+      label: IsDutch() ? "Venster" : "Window",
       submenu: [
-        { role: "minimize" },
+        {
+          label: IsDutch() ? "Minimaliseren" : "Minimize",
+          role: "minimize"
+        },
         { role: "zoom" },
         ...(isMac
           ? [

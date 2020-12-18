@@ -44,7 +44,6 @@ describe("main", () => {
     jest
       .spyOn(defaultAppSettings, "default")
       .mockImplementationOnce(() => "test");
-    jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
     setupChildProcessSpy = jest
       .spyOn(setupChildProcess, "setupChildProcess")
@@ -75,6 +74,7 @@ describe("main", () => {
       .spyOn(restoreMainWindow, "restoreMainWindow")
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
+    jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       return null;
@@ -93,6 +93,7 @@ describe("main", () => {
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve() as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
+    jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
     const createMainWindowSpy = jest
       .spyOn(createMainWindow, "default")
@@ -124,6 +125,7 @@ describe("main", () => {
       .spyOn(BrowserWindow, "getAllWindows")
       .mockImplementation(() => ["t"] as any);
     jest.spyOn(DockMenu, "default").mockImplementationOnce(() => {});
+    jest.spyOn(AppMenu, "default").mockImplementationOnce(() => {});
 
     const restoreMainWindowSpy = jest
       .spyOn(restoreMainWindow, "restoreMainWindow")
