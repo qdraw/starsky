@@ -21,7 +21,7 @@ jest.mock("electron", () => {
 
 describe("setupChildProcess", () => {
   describe("setupChildProcess", () => {
-    it("getting with null input", () => {
+    it("getting with null input", async () => {
       const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };
       jest.spyOn(spawn, "spawn").mockImplementationOnce(() => spawnSpy as any);
       jest
@@ -30,7 +30,7 @@ describe("setupChildProcess", () => {
         .mockImplementationOnce(() => false);
 
       jest.spyOn(getPort, "makeRange").mockImplementationOnce(() => {
-        return null;
+        return Promise.resolve(0) as any;
       });
 
       const mkdirSpy = jest
@@ -47,7 +47,7 @@ describe("setupChildProcess", () => {
 
         return null;
       });
-      setupChildProcess();
+      await setupChildProcess();
 
       expect(mkdirSpy).toBeCalled();
       expect(mkdirSpy).toBeCalledTimes(2);
