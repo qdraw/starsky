@@ -16,8 +16,11 @@ export async function restoreMainWindow(): Promise<void> {
 }
 
 async function getRememberUrl(): Promise<any> {
+  const fallbackConfig = { 0: "?f=/" };
   if (await appConfig.has(RememberUrl)) {
-    return (await appConfig.get(RememberUrl)) as object;
+    const getConfig = (await appConfig.get(RememberUrl)) as object;
+    if (Object.keys(getConfig).length >= 1) getConfig;
+    return fallbackConfig;
   }
-  return { 0: "?f=/" };
+  return fallbackConfig;
 }
