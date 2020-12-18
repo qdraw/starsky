@@ -61,7 +61,8 @@
     "mac": {
       "minimumSystemVersion": "10.12",
       "electronLanguages": [
-        "en"
+        "en",
+        "nl"
       ],
       "icon": "src/setup/icons/baseline-searcher-detective-263238__512px.icns",
       "target": [
