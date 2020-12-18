@@ -62,7 +62,7 @@ export async function setupChildProcess() {
   });
 
   starskyChild.stderr.on("data", function (data) {
-    console.log();
+    console.log("stderr: " + data.toString());
     fs.appendFile(
       path.join(tempFolder, "child.log"),
       "stderr: " + data.toString(),
