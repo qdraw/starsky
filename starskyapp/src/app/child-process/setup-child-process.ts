@@ -8,7 +8,7 @@ import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
 
-export let appPort: number = 0;
+export let appPort: number = 9609;
 
 export async function setupChildProcess() {
   var thumbnailTempFolder = path.join(

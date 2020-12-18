@@ -1,6 +1,7 @@
 import * as spawn from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
+import * as getPort from "get-port";
 import * as readline from "readline";
 import { setupChildProcess } from "./setup-child-process";
 
@@ -27,6 +28,11 @@ describe("setupChildProcess", () => {
         .spyOn(fs, "existsSync")
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false);
+
+      jest.spyOn(getPort, "makeRange").mockImplementationOnce(() => {
+        return null;
+      });
+
       const mkdirSpy = jest
         .spyOn(fs, "mkdirSync")
         .mockImplementationOnce(() => null)
