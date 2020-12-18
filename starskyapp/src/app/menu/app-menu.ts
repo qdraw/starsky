@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { EditFile } from "../edit-file/edit-file";
+import { IsDutch } from "../i18n/i18n";
 import createMainWindow from "../main-window/create-main-window";
 import { createSettingsWindow } from "../settings-window/create-settings-window";
 
@@ -12,31 +13,46 @@ function AppMenu() {
           {
             label: app.name,
             submenu: [
-              { role: "about" },
+              {
+                label: IsDutch() ? "Over Starsky" : "About Starsky",
+                role: "about"
+              },
               { type: "separator" },
               { role: "services" },
               { type: "separator" },
-              { role: "hide" },
-              { role: "hideothers" },
-              { role: "unhide" },
+              {
+                label: IsDutch() ? "Verberg Starsky" : "Hide Starsky",
+                role: "hide"
+              },
+              {
+                label: IsDutch() ? "Verberg andere" : "Hide Others",
+                role: "hideothers"
+              },
+              {
+                label: IsDutch() ? "Toon alles" : "Show All",
+                role: "unhide"
+              },
               { type: "separator" },
-              { role: "quit" }
+              {
+                label: IsDutch() ? "Starsky afsluiten" : "Quit Starsky",
+                role: "quit"
+              }
             ] as any
           }
         ]
       : []),
     {
-      label: "File",
+      label: IsDutch() ? "Bestand" : "File",
       submenu: [
         {
-          label: "New Window",
+          label: IsDutch() ? "Nieuw venster" : "New Window",
           click: () => {
             createMainWindow("?f=/");
           },
           accelerator: "CmdOrCtrl+N"
         },
         {
-          label: "Edit file in Editor",
+          label: IsDutch() ? "Bewerk bestand in editor" : "Edit file in Editor",
           click: () => {
             const focusWindow = BrowserWindow.getFocusedWindow();
             if (focusWindow) EditFile(focusWindow);
@@ -44,30 +60,58 @@ function AppMenu() {
           accelerator: "CmdOrCtrl+E"
         },
 
-        isMac ? { role: "close" } : { role: "quit" }
+        isMac
+          ? {
+              label: IsDutch() ? "Venster sluiten" : "Close Window",
+              role: "close"
+            }
+          : {
+              label: IsDutch() ? "App sluiten" : "Close App",
+              role: "quit"
+            }
       ]
     },
     {
-      label: "Edit",
+      label: IsDutch() ? "Bewerken" : "Edit",
       submenu: [
-        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
-        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
-        { type: "separator" },
-        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
-        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
-        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
         {
-          label: "Select All",
+          label: IsDutch() ? "Ongedaan maken" : "Undo",
+          accelerator: "CmdOrCtrl+Z",
+          selector: "undo:"
+        },
+        {
+          label: IsDutch() ? "Opnieuw uitvoeren" : "Redo",
+          accelerator: "Shift+CmdOrCtrl+Z",
+          selector: "redo:"
+        },
+        { type: "separator" },
+        {
+          label: IsDutch() ? "Knippen" : "Cut",
+          accelerator: "CmdOrCtrl+X",
+          selector: "cut:"
+        },
+        {
+          label: IsDutch() ? "Kopiëren" : "Copy",
+          accelerator: "CmdOrCtrl+C",
+          selector: "copy:"
+        },
+        {
+          label: IsDutch() ? "Plakken" : "Paste",
+          accelerator: "CmdOrCtrl+V",
+          selector: "paste:"
+        },
+        {
+          label: IsDutch() ? "Alles selecteren" : "Select All",
           accelerator: "CmdOrCtrl+A",
           selector: "selectAll:"
         }
       ]
     },
     {
-      label: "Settings",
+      label: IsDutch() ? "Instellingen" : "Settings",
       submenu: [
         {
-          label: "Settings",
+          label: IsDutch() ? "Instellingen" : "Settings",
           click: () => {
             createSettingsWindow();
           },

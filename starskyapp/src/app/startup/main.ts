@@ -15,7 +15,6 @@ app.allowRendererProcessReuse = true;
 
 ipcBridge();
 defaultAppSettings();
-AppMenu();
 setupChildProcess();
 MakeTempPath();
 SetupFileWatcher();
@@ -24,6 +23,7 @@ SetupFileWatcher();
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
+  AppMenu();
   DockMenu();
   restoreMainWindow().then(() => {
     createCheckForUpdatesContainerWindow().catch(() => {});
