@@ -9,8 +9,19 @@ export async function restoreMainWindow(): Promise<void> {
   console.log(rememberUrls);
 
   // remove the config and set it when the new windows open, so the id's are matching
-  await appConfig.set(RememberUrl, {});
 
+  try {
+    await appConfig.set(RememberUrl, {});
+  } catch (error) {
+    setTimeout(async () => {
+      await appConfig.set(RememberUrl, {});
+      runCreateWindow(rememberUrls);
+    }, 10);
+  }
+  runCreateWindow(rememberUrls);
+}
+
+async function runCreateWindow(rememberUrls: any) {
   let i = 0;
   for (let key of Object.keys(rememberUrls)) {
     await createMainWindow(rememberUrls[key], i * 20);
