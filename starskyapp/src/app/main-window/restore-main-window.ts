@@ -5,6 +5,9 @@ import createMainWindow from "./create-main-window";
 export async function restoreMainWindow(): Promise<void> {
   const rememberUrls = await getRememberUrl();
 
+  console.log("rememberUrls");
+  console.log(rememberUrls);
+
   // remove the config and set it when the new windows open, so the id's are matching
   await appConfig.set(RememberUrl, {});
 
@@ -19,6 +22,8 @@ async function getRememberUrl(): Promise<any> {
   const fallbackConfig = { 0: "?f=/" };
   if (await appConfig.has(RememberUrl)) {
     const getConfig = (await appConfig.get(RememberUrl)) as object;
+    console.log("count -->", Object.keys(getConfig).length);
+
     if (Object.keys(getConfig).length >= 1) getConfig;
     return fallbackConfig;
   }
