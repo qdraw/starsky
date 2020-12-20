@@ -69,6 +69,8 @@ describe("restore main window", () => {
       .spyOn(createMainWindow, "default")
       .mockImplementationOnce(() => Promise.resolve() as any);
 
+    console.log("---!");
+
     await restoreMainWindow();
 
     expect(createMainWindowSpy).toBeCalled();

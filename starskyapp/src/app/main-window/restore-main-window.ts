@@ -28,14 +28,8 @@ async function getRememberUrl(): Promise<any> {
   const fallbackConfig = { 0: "?f=/" };
   if (await appConfig.has(RememberUrl)) {
     const getConfig = (await appConfig.get(RememberUrl)) as object;
-    console.log("count -->", Object.keys(getConfig).length);
-
-    if (Object.keys(getConfig).length >= 1) getConfig;
-    console.log("--fallback1");
-
+    if (Object.keys(getConfig).length >= 1) return getConfig;
     return fallbackConfig;
   }
-  console.log("--fallback2");
-
   return fallbackConfig;
 }
