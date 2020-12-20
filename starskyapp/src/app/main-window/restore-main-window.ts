@@ -12,12 +12,7 @@ export async function restoreMainWindow(): Promise<void> {
 
   try {
     await appConfig.set(RememberUrl, {});
-  } catch (error) {
-    setTimeout(async () => {
-      await appConfig.set(RememberUrl, {});
-      runCreateWindow(rememberUrls);
-    }, 10);
-  }
+  } catch (error) {}
   runCreateWindow(rememberUrls);
 }
 
@@ -36,7 +31,11 @@ async function getRememberUrl(): Promise<any> {
     console.log("count -->", Object.keys(getConfig).length);
 
     if (Object.keys(getConfig).length >= 1) getConfig;
+    console.log("--fallback1");
+
     return fallbackConfig;
   }
+  console.log("--fallback2");
+
   return fallbackConfig;
 }
