@@ -134,18 +134,18 @@ export async function LocationUrlCallback(
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
         // so you can save change the location
         await SetupFileWatcher();
+
+        // to avoid that the session is opened
+        mainWindows.forEach((window) => {
+          window.close();
+        });
+        createMainWindow("");
       }
 
       console.log("locationOk >");
       console.log(locationOk);
 
       responseSettings.isValid = locationOk;
-
-      // to avoid that the session is opened
-      mainWindows.forEach((window) => {
-        window.close();
-      });
-      createMainWindow("");
 
       event.reply(LocationUrlIpcKey, responseSettings);
     } catch (error) {
