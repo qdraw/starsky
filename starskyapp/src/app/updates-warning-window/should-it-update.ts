@@ -24,11 +24,11 @@ export async function SkipDisplayOfUpdate(): Promise<boolean> {
 }
 
 /**
- * true is disabled
+ * result true means disabled
  */
 export async function isPolicyDisabled(): Promise<boolean> {
   const item = (await appConfig.get(UpdatePolicySettings)) as boolean;
-  return item !== true;
+  return item === false;
 }
 
 /**

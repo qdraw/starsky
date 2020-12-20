@@ -35,7 +35,7 @@ jest.mock("electron", () => {
 
 describe("ipc bridge", () => {
   describe("LocationIsRemoteCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (LocationIsRemoteCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
@@ -284,7 +284,7 @@ describe("ipc bridge", () => {
   });
 
   describe("UpdatePolicyCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (UpdatePolicyCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
@@ -292,7 +292,7 @@ describe("ipc bridge", () => {
       });
       await UpdatePolicyCallback(event, null);
       expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, null);
+      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, true);
     });
 
     it("set to true", async () => {
@@ -331,7 +331,7 @@ describe("ipc bridge", () => {
   });
 
   describe("DefaultImageApplicationCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (DefaultImageApplicationCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockReset();

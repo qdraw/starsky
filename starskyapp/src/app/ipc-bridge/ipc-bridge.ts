@@ -174,7 +174,8 @@ export async function UpdatePolicyCallback(
       const updatePolicy = (await appConfig.get(
         UpdatePolicySettings
       )) as boolean;
-      if (updatePolicy !== null || updatePolicy !== undefined) {
+
+      if (updatePolicy !== null && updatePolicy !== undefined) {
         event.reply(UpdatePolicyIpcKey, updatePolicy);
         return;
       }
