@@ -22,6 +22,7 @@ import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
+import createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 
@@ -144,6 +145,7 @@ export async function LocationUrlCallback(
       mainWindows.forEach((window) => {
         window.close();
       });
+      createMainWindow("");
 
       event.reply(LocationUrlIpcKey, responseSettings);
     } catch (error) {
