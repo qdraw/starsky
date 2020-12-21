@@ -121,7 +121,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public async Task Folder_Duplicate()
+		public async Task Folder_DuplicateChildItems()
 		{
 			var storage =  new FakeIStorage(
 				new List<string>
