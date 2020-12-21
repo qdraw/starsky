@@ -56,7 +56,8 @@ namespace starsky.Controllers
 		{
 			AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
 			
-			var json = JsonSerializer.Serialize(_appSettings, new JsonSerializerOptions
+			// should not forget app: prefix
+			var json = JsonSerializer.Serialize(new { app = _appSettings }, new JsonSerializerOptions
 			{
 				WriteIndented = true, 
 				Converters =
@@ -70,6 +71,7 @@ namespace starsky.Controllers
 			await _hostStorage.WriteStreamAsync(
 				new PlainTextFileHelper().StringToStream(jsonOutput),
 				_appSettings.AppSettingsPath);
+			
 			return Env();
 		}
 	}

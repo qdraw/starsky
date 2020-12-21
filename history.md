@@ -43,6 +43,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Allow version parameter for "/api/health/version"
 - [x]   (Fixed) _Front-end_  Use real-time update Color class outside selection #252
 - [x]   (Added) _App_ Add Dutch translation to menu's
+- [x]   (Fixed) _Back-end_ When saving StorageFolder from Preferences its now saved in the right format
+- [x]   (Fixed) _Back-end_ Files that are not in the index should not be listed in the cache
 
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 

@@ -25,8 +25,7 @@ namespace starsky.foundation.platform.Models
 
             // Cache for thumbs
             ThumbnailTempFolder = Path.Combine(BaseDirectoryProject, "thumbnailTempFolder");
-			// Main Storage for source files (default)
-            StorageFolder = Path.Combine(BaseDirectoryProject, "storageFolder");
+
             // Temp folder, should be cleaned
             TempFolder = Path.Combine(BaseDirectoryProject, "temp");
 
@@ -139,13 +138,22 @@ namespace starsky.foundation.platform.Models
 		public DateTime AppVersionBuildDateTime => DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly());
 
 		// Can be used in the cli session to select files out of the file database system
-        private string _storageFolder; // in old versions: basePath 
+        private string _storageFolder;
+        
+        /// <summary>
+        /// Main Storage provider on disk
+        /// </summary>
         public string StorageFolder
         {
-            get { return _storageFolder; }
+	        get
+	        {
+		        // ReSharper disable once ArrangeAccessorOwnerBody
+		        return string.IsNullOrEmpty(_storageFolder) ? Path.Combine(BaseDirectoryProject, "storageFolder") : _storageFolder;
+	        }
             set
             {
-                _storageFolder = PathHelper.AddBackslash(value);
+	            // ReSharper disable once ArrangeAccessorOwnerBody
+	            _storageFolder = PathHelper.AddBackslash(value);
             }
         }
 

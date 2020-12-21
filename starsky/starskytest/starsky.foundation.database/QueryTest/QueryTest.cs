@@ -1086,5 +1086,26 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		    var itemItShouldBeNull = await dbContext2.FileIndex.FirstOrDefaultAsync(p => p.FilePath == "/test44.jpg");
 		    Assert.IsNull(itemItShouldBeNull);
 	    }
+
+	    [TestMethod]
+	    public void RemoveCacheItem_ShouldKeepOne()
+	    {
+		    var dirPath = "/__cache__remove_test";
+		    var demoItems =
+			    new List<FileIndexItem>
+			    {
+				    new FileIndexItem(dirPath+ "/01.jpg"),
+				    new FileIndexItem(dirPath+ "/02.jpg"),
+				    new FileIndexItem(dirPath+ "/03.jpg")
+			    };
+		    
+		    _query.AddCacheParentItem(dirPath,demoItems);
+		    
+		    _query.RemoveCacheItem(new List<FileIndexItem>{demoItems[0], demoItems[1]});
+
+		    var result = _query.DisplayFileFolders(dirPath).ToList();
+		    Assert.AreEqual(1,result.Count);
+		    Assert.AreEqual(dirPath+ "/03.jpg",result[0].FilePath);
+	    }
     }
 }

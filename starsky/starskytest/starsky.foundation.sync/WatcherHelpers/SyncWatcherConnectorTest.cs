@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,6 +106,45 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg").FileIndexItem.Tags);
+		}
+		
+		[TestMethod]
+		public void Sync_CheckInput_CheckIfCacheIsUpdated_ButIgnoreNotInIndexFile()
+		{
+			var sync = new FakeISynchronize(new List<FileIndexItem>
+			{
+				//    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = > source is missing
+				new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
+			});
+			var websockets = new FakeIWebSocketConnectionsService();
+			var appSettings = new AppSettings();
+			
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
+
+			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+			var options = builderDb.Options;
+			var context = new ApplicationDbContext(options);
+
+			var query = new Query(context, memoryCache);
+				
+			query.AddCacheParentItem("/", 
+				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					IsDirectory = false, 
+					Tags = "This should not be the tags",
+					ParentDirectory = "/"
+				}});
+			
+			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
+			syncWatcherConnector.Sync(
+				new Tuple<string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test.jpg"), WatcherChangeTypes.Changed));
+			
+			Assert.AreEqual(0, query.DisplayFileFolders().Count());
 		}
 
 		[TestMethod]
