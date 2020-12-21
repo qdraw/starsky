@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -278,6 +279,58 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(1, results.Count);
 			Assert.AreEqual("/test.jpg", results[0]);
+		}
+		
+				
+		[TestMethod]
+		public async Task Folder_DuplicateFolders_Implicit()
+		{
+			await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder"){IsDirectory = true});
+			// yes this is duplicate
+			await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder"){IsDirectory = true});
+
+			var storage =
+				new FakeIStorage(new List<string> {"/", "/DuplicateFolder"});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			
+			await syncFolder.Folder("/");
+
+			var allFolders = _query.GetAllFolders();
+			if ( allFolders == null )
+			{
+				throw new NullReferenceException(
+					"all folder should not be null");
+			}
+			
+			Assert.AreEqual("/", allFolders.FirstOrDefault(p => p.FilePath == "/")?.FilePath);
+			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
+		}
+		
+		[TestMethod]
+		public async Task Folder_DuplicateFolders_Direct()
+		{
+			await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder"){IsDirectory = true});
+			// yes this is duplicate
+			await _query.AddItemAsync(new FileIndexItem("/DuplicateFolder"){IsDirectory = true});
+
+			var storage =
+				new FakeIStorage(new List<string> {"/", "/DuplicateFolder"});
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			
+			await syncFolder.Folder("/DuplicateFolder");
+
+			var allFolders = _query.GetAllFolders();
+			if ( allFolders == null )
+			{
+				throw new NullReferenceException(
+					"all folder should not be null");
+			}
+			
+			Assert.AreEqual("/", allFolders.FirstOrDefault(p => p.FilePath == "/")?.FilePath);
+			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
+
 		}
 	}
 }

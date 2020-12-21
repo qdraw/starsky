@@ -53,6 +53,11 @@ namespace starsky.foundation.sync.SyncServices
 				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
 			}
+
+			// // remove the duplicates from a large list of folders
+			var folderList = await _query.GetObjectsByFilePathAsync(subPaths);
+			await _duplicate.RemoveDuplicateAsync(folderList);
+				
 			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
 		}

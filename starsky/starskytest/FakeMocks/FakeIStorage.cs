@@ -195,7 +195,8 @@ namespace starskytest.FakeMocks
 
 		public IEnumerable<string> GetDirectoryRecursive(string subPath)
 		{
-			subPath = PathHelper.RemoveLatestSlash(subPath);
+			if ( subPath != "/" ) subPath = PathHelper.RemoveLatestSlash(subPath);
+			
 			if ( !ExistFolder(subPath) )
 			{
 				return new List<string>();

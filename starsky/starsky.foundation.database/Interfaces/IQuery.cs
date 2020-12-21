@@ -10,7 +10,21 @@ namespace starsky.foundation.database.Interfaces
     public interface IQuery
     {
         List<FileIndexItem> GetAllFiles(string subPath);
+        
+        /// <summary>
+        /// Get a list of all files inside an folder (NOT recursive)
+        /// But this uses a database as source
+        /// </summary>
+        /// <param name="filePaths">relative database path</param>
+        /// <returns>list of FileIndex-objects</returns>
         Task<List<FileIndexItem>> GetAllFilesAsync(List<string> filePaths);
+        
+        /// <summary>
+        /// Get a list of all files inside an folder (NOT recursive)
+        /// But this uses a database as source
+        /// </summary>
+        /// <param name="subPath">relative database path</param>
+        /// <returns>list of FileIndex-objects</returns>
         Task<List<FileIndexItem>> GetAllFilesAsync(string subPath);
         
         List<FileIndexItem> GetAllRecursive(string subPath = "/");
