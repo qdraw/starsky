@@ -56,6 +56,7 @@ namespace starsky.Controllers
 		{
 			AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
 			
+			// should not forget app: prefix
 			var json = JsonSerializer.Serialize(new { app = _appSettings }, new JsonSerializerOptions
 			{
 				WriteIndented = true, 
