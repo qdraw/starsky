@@ -36,6 +36,12 @@ To update all child projects to have the same version run the following script
 node starsky-tools/build-tools/app-version-update.js
 ```
 
+# Expected breaking changes in a future release:
+
+- enable UseDiskWatcher as default
+- remove old starskysynccli
+- change default option in thumbnailer cli to scan directories to enabled
+
 # version 0.4.3 _(Unreleased)_ - 2020-12-??
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 - [x]   (Changed) _App_ Rewrite of desktop application
