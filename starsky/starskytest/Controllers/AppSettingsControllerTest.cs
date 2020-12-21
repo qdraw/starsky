@@ -70,7 +70,7 @@ namespace starskytest.Controllers
 				storage.ReadStream(appSettings.AppSettingsPath));
 			
 			Assert.IsTrue(jsonContent.Contains("app\": {"));
-			Assert.IsTrue(jsonContent.Contains("\"StorageFolder\": \"test,"));
+			Assert.IsTrue(jsonContent.Contains("\"StorageFolder\": \""));
 		}
 	}
 }
