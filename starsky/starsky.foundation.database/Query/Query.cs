@@ -414,6 +414,22 @@ namespace starsky.foundation.database.Query
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
         }
+
+        /// <summary>
+        /// Cache Only! Private api within Query to remove cached items
+        /// This Does remove a SINGLE item from the cache NOT from the database
+        /// </summary>
+        /// <param name="updateStatusContent"></param>
+        public void RemoveCacheItem(List<FileIndexItem> updateStatusContent)
+        {
+	        if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+
+	        foreach ( var item in updateStatusContent.ToList() )
+	        {
+		        RemoveCacheItem(item);
+	        }
+        }
+        
         
         /// <summary>
         /// Cache Only! Private api within Query to remove cached items
@@ -432,10 +448,12 @@ namespace starsky.foundation.database.Query
             
             var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
                         // Order by filename
-            displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+            displayFileFolders = displayFileFolders
+	            .Where(p => p.FilePath != updateStatusContent.FilePath)
+	            .OrderBy(p => p.FileName).ToList();
             
             _cache.Remove(queryCacheName);
-            // generate list agian
+            // generate list again
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 

@@ -250,6 +250,10 @@ namespace starskytest.FakeMocks
 			Console.WriteLine("CacheUpdateItem is called");
 		}
 
+		public void RemoveCacheItem(List<FileIndexItem> updateStatusContent)
+		{
+		}
+
 		public async Task AddParentItemsAsync(string subPath)
 		{
 			var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);

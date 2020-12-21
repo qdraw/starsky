@@ -97,6 +97,12 @@ namespace starsky.foundation.database.Interfaces
         /// </summary>
         /// <param name="updateStatusContent">items to update</param>
         void CacheUpdateItem(List<FileIndexItem> updateStatusContent);
+        
+        /// <summary>
+        /// And remove content from cache
+        /// </summary>
+        /// <param name="updateStatusContent"></param>
+        void RemoveCacheItem(List<FileIndexItem> updateStatusContent);
 
         /// <summary>
         /// Add Sub Path Folder - Parent Folders

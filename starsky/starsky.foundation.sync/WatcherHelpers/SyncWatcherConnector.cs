@@ -54,7 +54,12 @@ namespace starsky.foundation.sync.WatcherHelpers
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// And update the query Cache
-			_query.CacheUpdateItem(filtered);
+			_query.CacheUpdateItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.Ok ||
+				p.Status == FileIndexItem.ExifStatus.Deleted).ToList());
+			
+			// remove files that are not in the index from cache
+			_query.RemoveCacheItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
+				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
 			
 			return syncData;
 		}
