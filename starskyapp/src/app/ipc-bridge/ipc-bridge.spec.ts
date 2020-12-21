@@ -9,6 +9,7 @@ import {
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
 import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
+import * as createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
   AppVersionCallback,
@@ -34,7 +35,7 @@ jest.mock("electron", () => {
 
 describe("ipc bridge", () => {
   describe("LocationIsRemoteCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (LocationIsRemoteCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
@@ -162,6 +163,10 @@ describe("ipc bridge", () => {
         });
 
       jest
+        .spyOn(createMainWindow, "default")
+        .mockImplementationOnce(() => null);
+
+      jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
         .mockImplementationOnce(() => Promise.resolve());
 
@@ -279,7 +284,7 @@ describe("ipc bridge", () => {
   });
 
   describe("UpdatePolicyCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (UpdatePolicyCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
@@ -287,7 +292,7 @@ describe("ipc bridge", () => {
       });
       await UpdatePolicyCallback(event, null);
       expect(event.reply).toBeCalled();
-      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, null);
+      expect(event.reply).toBeCalledWith(UpdatePolicyIpcKey, true);
     });
 
     it("set to true", async () => {
@@ -326,7 +331,7 @@ describe("ipc bridge", () => {
   });
 
   describe("DefaultImageApplicationCallback", () => {
-    it("getting with null input", async () => {
+    it("getting with null input (DefaultImageApplicationCallback)", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockReset();
@@ -338,7 +343,7 @@ describe("ipc bridge", () => {
       expect(event.reply).toBeCalledWith(DefaultImageApplicationIpcKey, null);
     });
 
-    it("set reset", async () => {
+    it("set reset of DefaultImageApplicationCallback", async () => {
       const event = { reply: jest.fn() } as any;
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {

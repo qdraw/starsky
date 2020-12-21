@@ -1,13 +1,16 @@
 import { spawn } from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
+import * as getFreePort from "get-port";
 import * as path from "path";
 import * as readline from "readline";
 import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
 
-export function setupChildProcess() {
+export let appPort: number = 9609;
+
+export async function setupChildProcess() {
   var thumbnailTempFolder = path.join(
     electronCacheLocation(),
     "thumbnailTempFolder"
@@ -25,8 +28,10 @@ export function setupChildProcess() {
   var databaseConnection =
     "Data Source=" + path.join(electronCacheLocation(), "starsky.db");
 
+  appPort = await getFreePort();
+
   const env = {
-    ASPNETCORE_URLS: "http://localhost:9609",
+    ASPNETCORE_URLS: `http://localhost:${appPort}`,
     app__thumbnailTempFolder: thumbnailTempFolder,
     app__tempFolder: tempFolder,
     app__appSettingsPath: appSettingsPath,
@@ -49,10 +54,20 @@ export function setupChildProcess() {
 
   starskyChild.stdout.on("data", function (data) {
     console.log(data.toString());
+    fs.appendFile(
+      path.join(tempFolder, "child.log"),
+      data.toString(),
+      function (err) {}
+    );
   });
 
   starskyChild.stderr.on("data", function (data) {
     console.log("stderr: " + data.toString());
+    fs.appendFile(
+      path.join(tempFolder, "child.log"),
+      "stderr: " + data.toString(),
+      function (err) {}
+    );
   });
 
   readline.emitKeypressEvents(process.stdin);

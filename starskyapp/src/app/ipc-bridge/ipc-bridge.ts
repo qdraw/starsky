@@ -22,6 +22,7 @@ import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
+import createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
 
@@ -133,17 +134,18 @@ export async function LocationUrlCallback(
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
         // so you can save change the location
         await SetupFileWatcher();
+
+        // to avoid that the session is opened
+        mainWindows.forEach((window) => {
+          window.close();
+        });
+        createMainWindow("");
       }
 
       console.log("locationOk >");
       console.log(locationOk);
 
       responseSettings.isValid = locationOk;
-
-      // to avoid that the session is opened
-      mainWindows.forEach((window) => {
-        window.close();
-      });
 
       event.reply(LocationUrlIpcKey, responseSettings);
     } catch (error) {
@@ -172,7 +174,8 @@ export async function UpdatePolicyCallback(
       const updatePolicy = (await appConfig.get(
         UpdatePolicySettings
       )) as boolean;
-      if (updatePolicy !== null || updatePolicy !== undefined) {
+
+      if (updatePolicy !== null && updatePolicy !== undefined) {
         event.reply(UpdatePolicyIpcKey, updatePolicy);
         return;
       }

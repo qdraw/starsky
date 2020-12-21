@@ -1,4 +1,5 @@
 import * as appConfig from "electron-settings";
+import { appPort } from "../child-process/setup-child-process";
 import { IlocationUrlSettings } from "./IlocationUrlSettings";
 import {
   LocationIsRemoteSettingsKey,
@@ -20,7 +21,7 @@ export async function GetBaseUrlFromSettings(): Promise<IlocationUrlSettings> {
     return {
       isValid: null,
       isLocal: true,
-      location: "http://localhost:9609"
+      location: `http://localhost:${appPort}`
     } as IlocationUrlSettings;
   }
   return currentSettings;

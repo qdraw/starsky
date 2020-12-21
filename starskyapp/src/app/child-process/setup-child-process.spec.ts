@@ -1,6 +1,7 @@
 import * as spawn from "child_process";
 import { app } from "electron";
 import * as fs from "fs";
+import * as getPort from "get-port";
 import * as readline from "readline";
 import { setupChildProcess } from "./setup-child-process";
 
@@ -20,13 +21,18 @@ jest.mock("electron", () => {
 
 describe("setupChildProcess", () => {
   describe("setupChildProcess", () => {
-    it("getting with null input", () => {
+    it("getting with null input", async () => {
       const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };
       jest.spyOn(spawn, "spawn").mockImplementationOnce(() => spawnSpy as any);
       jest
         .spyOn(fs, "existsSync")
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false);
+
+      jest.spyOn(getPort, "makeRange").mockImplementationOnce(() => {
+        return Promise.resolve(0) as any;
+      });
+
       const mkdirSpy = jest
         .spyOn(fs, "mkdirSync")
         .mockImplementationOnce(() => null)
@@ -41,7 +47,7 @@ describe("setupChildProcess", () => {
 
         return null;
       });
-      setupChildProcess();
+      await setupChildProcess();
 
       expect(mkdirSpy).toBeCalled();
       expect(mkdirSpy).toBeCalledTimes(2);
