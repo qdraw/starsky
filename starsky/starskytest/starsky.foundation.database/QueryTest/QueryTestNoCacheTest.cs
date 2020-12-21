@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -41,6 +42,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	    public void Query_IsCacheEnabled_False()
 	    {
 		    Assert.AreEqual(false, _query.IsCacheEnabled());
+	    }
+	    
+	    [TestMethod]
+	    public void RemoveCacheItem_Disabled()
+	    {
+		    _query.RemoveCacheItem(new List<FileIndexItem>());
+		    // it should not crash
 	    }
 	    
     }
