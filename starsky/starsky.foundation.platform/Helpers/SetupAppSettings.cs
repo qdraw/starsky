@@ -31,7 +31,7 @@ namespace starsky.foundation.platform.Helpers
 			// to remove spaces and other signs, check help to get your name
 			var appSettingsMachine =
 				$"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
-			
+
 			builder
 				.SetBasePath(appSettings.BaseDirectoryProject)
 				.AddJsonFile("appsettings.patch.json",true)
@@ -79,13 +79,11 @@ namespace starsky.foundation.platform.Helpers
 			
 			if ( appSettingsPath == null || !File.Exists(appSettingsPath))
 			{
+				// defaults to appsettings.patch.json
 				return builder;
 			}
-			
-			builder
-				.SetBasePath(Directory.GetParent(appSettingsPath).FullName)
-				.AddJsonFile("appsettings.json");
-			
+
+			builder.AddJsonFile(appSettingsPath, false, true);
 			return builder;
 		}
 	}

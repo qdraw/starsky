@@ -12,6 +12,7 @@
         <DebugType>Full</DebugType>
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+        <SynchReleaseVersion>false</SynchReleaseVersion>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
