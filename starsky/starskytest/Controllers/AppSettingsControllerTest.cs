@@ -68,6 +68,8 @@ namespace starskytest.Controllers
 
 			var jsonContent= await new PlainTextFileHelper().StreamToStringAsync(
 				storage.ReadStream(appSettings.AppSettingsPath));
+
+			Console.WriteLine(jsonContent);
 			
 			Assert.IsTrue(jsonContent.Contains("app\": {"));
 			Assert.IsTrue(jsonContent.Contains("\"StorageFolder\": \""));
