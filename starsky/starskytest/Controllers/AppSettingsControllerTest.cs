@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -50,7 +51,7 @@ namespace starskytest.Controllers
 			var storageProvider = new FakeSelectorStorage();
 			var appSettings = new AppSettings
 			{
-				AppSettingsPath = "/temp/appsettings.json"
+				AppSettingsPath = $"{Path.DirectorySeparatorChar}temp{Path.DirectorySeparatorChar}appsettings.json"
 			};
 			var controller = new AppSettingsController(appSettings, storageProvider);
 			await controller.UpdateAppSettings(
