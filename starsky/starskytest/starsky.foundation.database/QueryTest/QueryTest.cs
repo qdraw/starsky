@@ -392,6 +392,24 @@ namespace starskytest.starsky.foundation.database.QueryTest
         }
 
         [TestMethod]
+        public void QueryFolder_NextPrevDuplicates()
+        {
+	        var folder01 =  _query.AddItem(new FileIndexItem("/test_duplicate_01"){IsDirectory = true});
+	        var folder02 =  _query.AddItem(new FileIndexItem("/test_duplicate_02"){IsDirectory = true});
+	        var folder02duplicate =  _query.AddItem(new FileIndexItem("/test_duplicate_02"){IsDirectory = true});
+	        var folder03 =  _query.AddItem(new FileIndexItem("/test_duplicate_03"){IsDirectory = true});
+
+	        var result = _query.GetNextPrevInFolder("/test_duplicate_02");
+			Assert.AreEqual("/test_duplicate_01",result.PrevFilePath);
+			Assert.AreEqual("/test_duplicate_03",result.PrevFilePath);
+
+			_query.RemoveItem(folder01);
+			_query.RemoveItem(folder02);
+			_query.RemoveItem(folder02duplicate);
+			_query.RemoveItem(folder03);
+        }
+
+        [TestMethod]
         public void QueryDisplayFileFolders_Duplicates_Test()
         {
 	        var image0 =  _query.AddItem(new FileIndexItem

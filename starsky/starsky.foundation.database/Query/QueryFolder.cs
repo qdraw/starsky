@@ -125,7 +125,11 @@ namespace starsky.foundation.database.Query
 	        }
         }
         
-        // Hide Deleted items in folder
+        /// <summary>
+        /// Hide Deleted items in folder
+        /// </summary>
+        /// <param name="queryItems">list of items</param>
+        /// <returns>list without deleted items</returns>
         private IEnumerable<FileIndexItem> HideDeletedFileFolderList(List<FileIndexItem> queryItems){
             // temp feature to hide deleted items
             var displayItems = new List<FileIndexItem>();
@@ -139,12 +143,17 @@ namespace starsky.foundation.database.Query
             return displayItems;
             // temp feature to hide deleted items
         }
-        
-        // Show previous en next items in the folder view.
-        // There is equivalent class for prev next in the display view
+
+        /// <summary>
+        /// Show previous en next items in the folder view.
+        /// There is equivalent class for prev next in the display view
+        /// </summary>
+        /// <param name="currentFolder">subPath style</param>
+        /// <returns>relative object</returns>
         public RelativeObjects GetNextPrevInFolder(string currentFolder)
         {
-            currentFolder = SubPathSlashRemove(currentFolder);
+	        if ( currentFolder != "/" )
+		        PathHelper.RemoveLatestSlash(currentFolder);
 
             // We use breadcrumbs to get the parent folder
             var parentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
@@ -152,14 +161,15 @@ namespace starsky.foundation.database.Query
             // sort by alphabet
             var itemsInSubFolder = _context.FileIndex.Where(
 		            p => p.ParentDirectory == parentFolderPath)
-                .OrderBy(p => p.FileName).ToList();
+                .OrderBy(p => p.FileName).ToList()
+                .GroupBy(i => i.FilePath).Select(g => g.First()).ToList();
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);
 
             var relativeObject = new RelativeObjects();
             if (photoIndexOfSubFolder != itemsInSubFolder.Count - 1 && currentFolder != "/")
             {
-                // currentFolder != "/" >= on the home folder you will automaticly go to a subfolder
+                // currentFolder != "/" >= on the home folder you will automatically go to a subfolder
                 relativeObject.NextFilePath = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FilePath;
                 relativeObject.NextHash = itemsInSubFolder[photoIndexOfSubFolder + 1]?.FileHash;
             }
