@@ -33,7 +33,7 @@ namespace starskytest.starskySyncCli
         
         [ExcludeFromCoverage]
         [TestMethod]
-        public void StarskyCliSubPathOneImage()
+        public void StarskyCliTest_StarskyCliSubPathOneImage()
         {
             var newImage = new CreateAnImage();
             var args = new List<string> {
