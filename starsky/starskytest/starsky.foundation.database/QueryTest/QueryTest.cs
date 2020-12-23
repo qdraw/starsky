@@ -401,7 +401,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        var result = _query.GetNextPrevInFolder("/test_duplicate_02");
 			Assert.AreEqual("/test_duplicate_01",result.PrevFilePath);
-			Assert.AreEqual("/test_duplicate_03",result.PrevFilePath);
+			Assert.AreEqual("/test_duplicate_03",result.NextFilePath);
 
 			_query.RemoveItem(folder01);
 			_query.RemoveItem(folder02);
