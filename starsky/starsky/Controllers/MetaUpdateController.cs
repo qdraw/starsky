@@ -131,9 +131,13 @@ namespace starsky.Controllers
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
 				}
-				
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkList,
-					DefaultJsonSerializer.CamelCase), token);
+
+				if ( resultsOkList.Any() )
+				{
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkList,
+						DefaultJsonSerializer.CamelCase), token);
+				}
+
 			});
 					
 			// When all items are not found
