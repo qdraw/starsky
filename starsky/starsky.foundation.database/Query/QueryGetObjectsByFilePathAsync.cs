@@ -16,17 +16,7 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
-				var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
-
-				// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-				foreach ( var filePath in filePathList )
-				{
-					predicates.Add(x => x.FilePath == filePath);
-				}
-				
-				var predicate = PredicateBuilder.OrLoop(predicates);
-
-				return await context.FileIndex.Where(predicate).ToListAsync();
+				return await context.FileIndex.Where(p => filePathList.Contains(p.FilePath)).ToListAsync();
 			}
 
 			try

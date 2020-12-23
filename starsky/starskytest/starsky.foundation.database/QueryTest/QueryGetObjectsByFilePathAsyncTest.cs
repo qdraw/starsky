@@ -79,18 +79,49 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
 			{
+				new FileIndexItem("/multiple_item"), // <= should never match this one
 				new FileIndexItem("/multiple_item_0.jpg"),
-				new FileIndexItem("/multiple_item_1.jpg")
+				new FileIndexItem("/multiple_item_1.jpg"),
+				new FileIndexItem("/multiple_item_2.jpg"),
+				new FileIndexItem("/multiple_item_3.jpg")
+
 			});
 			
 			var result = await _query.GetObjectsByFilePathAsync(
-				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg"});
+				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
+					"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
 
-			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual(4, result.Count);
 			
 			var orderedResults = result.OrderBy(p => p.FileName).ToList();
 			Assert.AreEqual("/multiple_item_0.jpg", orderedResults[0].FilePath);
 			Assert.AreEqual("/multiple_item_1.jpg", orderedResults[1].FilePath);
+			Assert.AreEqual("/multiple_item_2.jpg", orderedResults[2].FilePath);
+
+			await _query.RemoveItemAsync(result[0]);
+			await _query.RemoveItemAsync(result[1]);
+			await _query.RemoveItemAsync(result[2]);
+			await _query.RemoveItemAsync(result[3]);
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/multiple_item"));
+		}
+		
+		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_TwoItems()
+		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/two_item_0.jpg"),
+				new FileIndexItem("/two_item_1.jpg")
+			});
+			
+			var result = await _query.GetObjectsByFilePathAsync(
+				new List<string> {"/two_item_0.jpg", "/two_item_1.jpg"});
+
+			Assert.AreEqual(2, result.Count);
+			
+			var orderedResults = result.OrderBy(p => p.FileName).ToList();
+			Assert.AreEqual("/two_item_0.jpg", orderedResults[0].FilePath);
+			Assert.AreEqual("/two_item_1.jpg", orderedResults[1].FilePath);
 
 			await _query.RemoveItemAsync(result[0]);
 			await _query.RemoveItemAsync(result[1]);
