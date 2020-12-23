@@ -30,7 +30,7 @@ namespace starskytest.starskySynchronizeCli
         }
         
         [TestMethod]
-        public void StarskyCliSubPathOneImage()
+        public void SynchronizeCli_StarskyCliSubPathOneImage()
         {
             var newImage = new CreateAnImage();
             var args = new List<string> {

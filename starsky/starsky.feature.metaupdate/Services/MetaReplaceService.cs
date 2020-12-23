@@ -32,7 +32,7 @@ namespace starsky.feature.metaupdate.Services
 		{
 			_query = query;
 			_appSettings = appSettings;
-			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_statusCodeHelper = new StatusCodesHelper(_appSettings);
 		}
 

@@ -52,6 +52,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ When saving StorageFolder from Preferences its now saved in the right format
 - [x]   (Fixed) _Back-end_ Files that are not in the index should not be listed in the cache
 - [x]   (Security) _App_ node-notifier from 8.0.0 to 8.0.1 #258
+- [x]   (Fixed) _Back-end_ Add check for duplicate folders in the database in synchronize
 
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 

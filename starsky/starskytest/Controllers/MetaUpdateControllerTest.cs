@@ -177,7 +177,7 @@ namespace starskytest.Controllers
 
 	        Assert.AreEqual(404,notFoundResult.StatusCode);
 
-	        _query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+	        await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
         }
 
         [TestMethod]
@@ -241,6 +241,54 @@ namespace starskytest.Controllers
 	        Assert.AreEqual("7", fileModel.FirstOrDefault()?.Tags);
 
 	        _query.RemoveItem(item);
+        }
+
+        [TestMethod]
+        public async Task UpdateAsync_ShouldTriggerBackgroundService()
+        {
+	        var fakeFakeIWebSocketConnectionsService =
+		        new FakeIWebSocketConnectionsService();
+	        var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
+		        new FakeIMetaReplaceService(), new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+
+	        await controller.UpdateAsync(new FileIndexItem(), "/test09.jpg",
+		        true);
+
+	        Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+        }
+        
+        [TestMethod]
+        public void Replace_ShouldTriggerBackgroundService_Ok()
+        {
+	        var fakeFakeIWebSocketConnectionsService =
+		        new FakeIWebSocketConnectionsService();
+	        var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
+		        new FakeIMetaReplaceService(new List<FileIndexItem>{new FileIndexItem("/test09.jpg")
+		        {
+			        Status = FileIndexItem.ExifStatus.Ok
+		        }}), 
+		        new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+
+	        controller.Replace("/test09.jpg", "tags", "test", "");
+
+	        Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+        }
+        
+        [TestMethod]
+        public void Replace_ShouldTriggerBackgroundService_Fail()
+        {
+	        var fakeFakeIWebSocketConnectionsService =
+		        new FakeIWebSocketConnectionsService();
+	        var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
+		        new FakeIMetaReplaceService(new List<FileIndexItem>{new FileIndexItem("/test09.jpg")
+		        {
+			        Status = FileIndexItem.ExifStatus.OperationNotSupported
+		        }}), 
+		        new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+
+	        controller.Replace("/test09.jpg", "tags", "test", "");
+
+	        Assert.AreEqual(0, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
         }
 	}
 }

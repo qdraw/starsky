@@ -75,7 +75,7 @@ namespace starsky.foundation.database.Query
 				
 				var predicate = PredicateBuilder.OrLoop(predicates);
 					
-				return await context.FileIndex.Where(predicate).OrderBy(r => r.FileName).ToListAsync();
+				return await context.FileIndex.Where(predicate).OrderBy(r => r.FilePath).ToListAsync();
 			}
 
 			try

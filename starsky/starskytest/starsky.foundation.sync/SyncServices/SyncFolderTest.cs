@@ -332,5 +332,44 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
 
 		}
+		
+		[TestMethod]
+		public async Task Folder_ShouldIgnore()
+		{
+			var storage =  new FakeIStorage(
+				new List<string>
+				{
+					"/", 
+					"/test_ignore",
+					"/test_ignore/ignore"
+				}, 
+				new List<string>
+				{
+					"/test_ignore/ignore/test1.jpg"
+				},
+				new List<byte[]>
+				{
+					CreateAnImage.Bytes,
+					CreateAnImageColorClass.Bytes,
+					CreateAnImageNoExif.Bytes,
+				});
+			
+			var appSettings = new AppSettings{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
+				Verbose = true,
+				SyncIgnore = new List<string>{"/test_ignore/ignore"}
+			};
+			
+			var syncFolder = new SyncFolder(appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+			var result = await syncFolder.Folder("/test_ignore");
+			
+			Assert.AreEqual("/test_ignore/ignore/test1.jpg",result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,result[0].Status);
+
+			var files = await _query.GetAllFilesAsync("/test_ignore");
+
+			Assert.AreEqual(0,files.Count);
+		}
 	}
 }
