@@ -37,7 +37,8 @@ namespace starsky.foundation.database.Query
             bool enableCollections = true,
             bool hideDeleted = true)
         {
-            subPath = SubPathSlashRemove(subPath);
+            if ( subPath != "/" ) PathHelper.RemoveLatestSlash(subPath);
+            
             var fileIndexItems = CacheQueryDisplayFileFolders(subPath);
             
             return DisplayFileFolders(fileIndexItems, 
@@ -161,7 +162,7 @@ namespace starsky.foundation.database.Query
             // sort by alphabet
             var itemsInSubFolder = _context.FileIndex.Where(
 		            p => p.ParentDirectory == parentFolderPath)
-                .OrderBy(p => p.FileName).ToList()
+                .OrderBy(p => p.FileName).AsEnumerable()
                 .GroupBy(i => i.FilePath).Select(g => g.First()).ToList();
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);
