@@ -576,7 +576,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+	        var query = new Query(dbContext,_memoryCache, 
 		        new AppSettings{Verbose = true}, serviceScope);
 	        
 	        var item = new FileIndexItem("/test/010101.jpg");
@@ -595,6 +595,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        query.RemoveItem(getItem);
         }
+ 
 
         [TestMethod]
         public void Query_GetObjectByFilePath_home()
@@ -603,7 +604,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
+	        var query = new Query(dbContext,_memoryCache, 
 		        new AppSettings{Verbose = true}, serviceScope);
 	        query.AddItem(new FileIndexItem("/"));
 	        

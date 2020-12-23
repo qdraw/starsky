@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -270,22 +270,62 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
-	        //  Update te last edited time manual
-	        updateStatusContent.SetLastEdited();
+	        void LocalQuery(ApplicationDbContext context)
+	        {
+		        //  Update te last edited time manual
+		        updateStatusContent.SetLastEdited();
+		        context.Attach(updateStatusContent).State = EntityState.Modified;
+				context.SaveChanges();
+		        context.Attach(updateStatusContent).State = EntityState.Detached;
+	        }
+	        
 	        try
 	        {
-				_context.Attach(updateStatusContent).State = EntityState.Modified;
-	            _context.SaveChanges();
-	            _context.Attach(updateStatusContent).State = EntityState.Detached;
+		        LocalQuery(_context);
 	        }
             catch ( ObjectDisposedException e)
             {
-	            RetrySaveChanges(updateStatusContent, e);
+	            var context = new InjectServiceScope(_scopeFactory).Context();
+	            LocalQuery(context);
             }
+	        catch (DbUpdateConcurrencyException ex)
+	        {
+		        foreach (var entry in ex.Entries)
+		        {
+			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
+				        entry.GetDatabaseValues(), entry.Metadata.Name, 
+				        entry.OriginalValues.SetValues);
+		        }
+	        }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
+        }
+        
+        internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
+
+        internal void SolveConcurrencyException(object entryEntity, 
+	        PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
+	        OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
+        {
+	        if (entryEntity is FileIndexItem)
+	        {
+		        foreach (var property in proposedValues.Properties)
+		        {
+			        var proposedValue = proposedValues[property];
+			        proposedValues[property] = proposedValue;
+		        }
+
+		        // Refresh original values to bypass next concurrency check
+		        entryOriginalValuesSetValues(databaseValues);
+	        }
+	        else
+	        {
+		        throw new NotSupportedException(
+			        "Don't know how to handle concurrency conflicts for "
+			        + entryMetadataName);
+	        }
         }
         
         /// <summary>
@@ -296,56 +336,35 @@ namespace starsky.foundation.database.Query
         /// <returns>the same list, and updated in the database</returns>
         public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
         {
-	        void CatchLoop(Exception e)
+	        void LocalQuery(ApplicationDbContext context)
 	        {
 		        foreach ( var item in updateStatusContentList )
 		        {
 			        item.SetLastEdited();
-			        RetrySaveChanges(item, e);
+			        context.Attach(item).State = EntityState.Modified;
 		        }
+		        context.SaveChanges();
 	        }
 
 	        try
 	        {
-		        foreach (var item in updateStatusContentList)
-		        {
-			        //  Update te last edited time manual
-			        item.SetLastEdited();
-			        // Set state to edit mode
-			        _context.Attach(item).State = EntityState.Modified;
-		        }
-		        _context.SaveChanges();
+		        LocalQuery(_context);
 	        }
 	        catch (ObjectDisposedException e)
 	        {
-		        CatchLoop(e);
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalQuery(context);
 	        }
 	        catch (InvalidOperationException e)
 	        {
-		        CatchLoop(e);
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalQuery(context);
 	        }
 
 	        CacheUpdateItem(updateStatusContentList);
 	        return updateStatusContentList;
         }
         
-        /// <summary>
-        /// Retry when an Exception has occured
-        /// </summary>
-        /// <param name="updateStatusContent"></param>
-        /// <param name="e">Exception</param>
-        private void RetrySaveChanges(FileIndexItem updateStatusContent, Exception e)
-        {
-	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
-	        // https://go.microsoft.com/fwlink/?linkid=2097913
-	        Thread.Sleep(10);
-	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
-	        var context = new InjectServiceScope(_scopeFactory).Context();
-	        context.Attach(updateStatusContent).State = EntityState.Modified;
-	        context.SaveChanges();
-	        context.Attach(updateStatusContent).State = EntityState.Detached; 
-        }
-
 	    internal bool IsCacheEnabled()
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
