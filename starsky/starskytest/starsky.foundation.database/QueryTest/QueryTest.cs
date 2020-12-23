@@ -450,9 +450,13 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        Assert.AreEqual(3,result.Count);
 
-	        Assert.AreEqual(image0, result[0]);
-	        Assert.AreEqual(image1, result[1]);
-	        Assert.AreEqual(image2, result[2]);
+	        Assert.AreEqual(image0.FilePath, result[0].FilePath);
+	        Assert.AreEqual(image1.FilePath, result[1].FilePath);
+	        Assert.AreEqual(image2.FilePath, result[2].FilePath);
+			// and check fileHash	        
+			Assert.AreEqual(image0.FileHash, result[0].FileHash);
+			Assert.AreEqual(image1.FileHash, result[1].FileHash);
+			Assert.AreEqual(image2.FileHash, result[2].FileHash);
         }
 
         [TestMethod]
