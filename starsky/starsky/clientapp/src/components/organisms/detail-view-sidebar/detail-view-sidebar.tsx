@@ -7,6 +7,7 @@ import useLocation from "../../../hooks/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
+import { AsciiNull } from "../../../shared/ascii-null";
 import AspectRatio from "../../../shared/aspect-ratio";
 import BytesFormat from "../../../shared/bytes-format";
 import { CastToInterface } from "../../../shared/cast-to-interface";
@@ -164,14 +165,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       if (!name) return;
 
-      // allow emthy requests
-      var nullChar = "\0";
-      if (!value) value = nullChar;
+      // allow empty requests
+      if (!value) value = AsciiNull();
 
       // compare
       var fileIndexObject: any = fileIndexItem;
 
-      if (!fileIndexObject[name] === undefined) return; //to update emthy start to first fill
+      if (!fileIndexObject[name] === undefined) return; //to update empty start to first fill
 
       var currentString: string = fileIndexObject[name];
       if (value === currentString) return;
@@ -182,7 +182,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       var bodyParams = new URLPath()
         .ObjectToSearchParams(updateObject)
         .toString()
-        .replace(/%00/gi, nullChar);
+        .replace(/%00/gi, AsciiNull());
 
       FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
         if (item.statusCode !== 200 || !item.data) return;

@@ -111,7 +111,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
               state.fileIndexItems[index].description += description;
             if (title) state.fileIndexItems[index].title += title;
           } else {
-            if (tags) state.fileIndexItems[index].tags = tags;
+            if (tags !== undefined) state.fileIndexItems[index].tags = tags;
             if (description)
               state.fileIndexItems[index].description = description;
             if (title) state.fileIndexItems[index].title = title;
