@@ -42,7 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 
-# version 0.4.3 _(Unreleased)_ - 2020-12-??
+# version 0.4.4 _(Unreleased)_ - 2020-12-??
+- nothing yet
+
+# version 0.4.3 - 2020-12-23
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 - [x]   (Changed) _App_ Rewrite of desktop application
 - [x]   (Changed) _App_ Desktop settings  app-settings is changed to "starksy-app-settings.json"
