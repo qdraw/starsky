@@ -55,6 +55,12 @@ namespace starsky.foundation.database.Helpers
 				(Expression.AndAlso (expr1.Body, invokedExpr), expr1.Parameters);
 		}
 
+		/// <summary>
+		/// @see: web.archive.org/web/http://blogs.msdn.com/b/meek/archive/2008/05/02/linq-to-entities-combining-predicates.aspx
+		/// </summary>
+		/// <param name="predicates"></param>
+		/// <typeparam name="T"></typeparam>
+		/// <returns></returns>
 		public static Expression<System.Func<T,bool>> OrLoop<T>(List<Expression<Func<T,bool>>> predicates)
 		{
 			var predicate = False<T>();
