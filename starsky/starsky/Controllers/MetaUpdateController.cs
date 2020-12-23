@@ -64,10 +64,10 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var updated = _metaUpdateService
+				var updatedList = _metaUpdateService
 					.Update(changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated, 
+				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
 					DefaultJsonSerializer.CamelCase), token);
 			});
 			
@@ -127,10 +127,10 @@ namespace starsky.Controllers
 						}
 					};
 					
-					var updated = _metaUpdateService
+					var updatedList = _metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
-					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updated,
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList,
 						DefaultJsonSerializer.CamelCase), token);
 				}
 			});
