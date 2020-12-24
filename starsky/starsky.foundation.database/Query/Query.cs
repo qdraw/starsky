@@ -653,11 +653,13 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
-	        catch ( DbUpdateConcurrencyException )
+	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        if ( _context.FileIndex.FirstOrDefault(p => p.FilePath == updateStatusContent.FilePath) != null )
+		        foreach (var entry in concurrencyException.Entries)
 		        {
-			        LocalQuery(_context);
+			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
+				        entry.GetDatabaseValues(), entry.Metadata.Name, 
+				        entry.OriginalValues.SetValues);
 		        }
 	        }
 
