@@ -636,19 +636,25 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
         public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
         {
+	        void LocalQuery(ApplicationDbContext context)
+	        {
+		        context.Attach(updateStatusContent).State = EntityState.Deleted;
+		        context.FileIndex.Remove(updateStatusContent);
+		        context.SaveChanges();
+		        context.Attach(updateStatusContent).State = EntityState.Detached;
+	        }
+	        
 	        try
 	        {
-		        _context.FileIndex.Remove(updateStatusContent);
-		        _context.SaveChanges();
+		        LocalQuery(_context);
 	        }
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        context.FileIndex.Remove(updateStatusContent);
-		        context.SaveChanges();
+		        LocalQuery(context);
 	        }
 
-			// remove parent directory cache
+	        // remove parent directory cache
 			RemoveCacheItem(updateStatusContent);
 
 			// remove getFileHash Cache
