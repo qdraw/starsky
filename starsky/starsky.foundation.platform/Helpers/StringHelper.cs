@@ -7,10 +7,7 @@ namespace starsky.foundation.platform.Helpers
 			return (newStringValue == "\\0" || newStringValue == "\\\\0") ? string.Empty : newStringValue;
 		}
 
-		public static string AsciiNullChar()
-		{
-			return "\\\\0";
-		}
+		public static readonly string AsciiNullChar = "\\\\0";
 		
 	}
 }

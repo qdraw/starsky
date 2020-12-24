@@ -283,14 +283,14 @@ namespace starsky.foundation.database.Query
 	        {
 		        LocalQuery(_context);
 	        }
-            catch ( ObjectDisposedException e)
+            catch ( ObjectDisposedException)
             {
 	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            LocalQuery(context);
             }
-	        catch (DbUpdateConcurrencyException ex)
+	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        foreach (var entry in ex.Entries)
+		        foreach (var entry in concurrencyException.Entries)
 		        {
 			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
 				        entry.GetDatabaseValues(), entry.Metadata.Name, 
@@ -301,6 +301,43 @@ namespace starsky.foundation.database.Query
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
+        }
+        
+        /// <summary>
+        /// Update a list of items in the index
+        /// Used for the API/update endpoint
+        /// </summary>
+        /// <param name="updateStatusContentList">list of items to be updated</param>
+        /// <returns>the same list, and updated in the database</returns>
+        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
+        {
+	        void LocalQuery(ApplicationDbContext context)
+	        {
+		        foreach ( var item in updateStatusContentList )
+		        {
+			        item.SetLastEdited();
+			        context.Attach(item).State = EntityState.Modified;
+		        }
+		        context.SaveChanges();
+	        }
+
+	        try
+	        {
+		        LocalQuery(_context);
+	        }
+	        catch (ObjectDisposedException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalQuery(context);
+	        }
+	        catch (InvalidOperationException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalQuery(context);
+	        }
+
+	        CacheUpdateItem(updateStatusContentList);
+	        return updateStatusContentList;
         }
         
         internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
@@ -326,43 +363,6 @@ namespace starsky.foundation.database.Query
 			        "Don't know how to handle concurrency conflicts for "
 			        + entryMetadataName);
 	        }
-        }
-        
-        /// <summary>
-        /// Update a list of items in the index
-        /// Used for the API/update endpoint
-        /// </summary>
-        /// <param name="updateStatusContentList">list of items to be updated</param>
-        /// <returns>the same list, and updated in the database</returns>
-        public List<FileIndexItem> UpdateItem(List<FileIndexItem> updateStatusContentList)
-        {
-	        void LocalQuery(ApplicationDbContext context)
-	        {
-		        foreach ( var item in updateStatusContentList )
-		        {
-			        item.SetLastEdited();
-			        context.Attach(item).State = EntityState.Modified;
-		        }
-		        context.SaveChanges();
-	        }
-
-	        try
-	        {
-		        LocalQuery(_context);
-	        }
-	        catch (ObjectDisposedException e)
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
-	        }
-	        catch (InvalidOperationException e)
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
-	        }
-
-	        CacheUpdateItem(updateStatusContentList);
-	        return updateStatusContentList;
         }
         
 	    internal bool IsCacheEnabled()

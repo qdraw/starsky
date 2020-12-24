@@ -30,7 +30,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		[TestMethod]
 		public void AsciiNullChar()
 		{
-			var result =StringHelper.AsciiNullChar();
+			var result = StringHelper.AsciiNullChar;
 			Assert.IsTrue(result.Contains("\\"));
 		}
 	}
