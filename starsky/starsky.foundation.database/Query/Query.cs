@@ -643,7 +643,7 @@ namespace starsky.foundation.database.Query
 		        context.SaveChanges();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
 	        }
-	        
+
 	        try
 	        {
 		        LocalQuery(_context);
@@ -652,6 +652,15 @@ namespace starsky.foundation.database.Query
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
+	        }
+	        catch (DbUpdateConcurrencyException concurrencyException)
+	        {
+		        foreach (var entry in concurrencyException.Entries)
+		        {
+			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
+				        entry.GetDatabaseValues(), entry.Metadata.Name, 
+				        entry.OriginalValues.SetValues);
+		        }
 	        }
 
 	        // remove parent directory cache
