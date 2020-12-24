@@ -157,16 +157,22 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void GeoBackgroundTaskT()
+		public void GeoBackgroundTask_IsCalled()
 		{
-			var storage = new FakeIStorage();
+			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
 			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
+
+			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
+			var geoReverseLookup = new FakeIGeoReverseLookup();
 			
-			controller.GeoBackgroundTask()
+			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
+				geoReverseLookup, new FakeIGeoLocationWrite() );
+
+			Assert.AreEqual(1, geoReverseLookup.Count);
 		}
 	}
 }
