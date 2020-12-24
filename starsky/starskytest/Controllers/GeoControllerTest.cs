@@ -12,6 +12,7 @@ using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starskycore.Services;
@@ -154,6 +155,70 @@ namespace starskytest.Controllers
 			
 			var status = controller.Status("/StatusCheck_CachedItemNotExist") as NotFoundObjectResult;
 			Assert.AreEqual(404,status.StatusCode);
+		}
+
+		[TestMethod]
+		public void GeoBackgroundTask_IsCalled()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"});
+			var storageSelector = new FakeSelectorStorage(storage);
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
+			var geoReverseLookup = new FakeIGeoReverseLookup();
+			
+			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
+				geoReverseLookup, new FakeIGeoLocationWrite() );
+
+			Assert.AreEqual(1, geoReverseLookup.Count);
+		}
+		
+		[TestMethod]
+		public void GeoBackgroundTask_WithResults_IsCalled()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"2QOYZWMPACZAJ2MABGMOZ6CCPY"});
+			var storageSelector = new FakeSelectorStorage(storage);
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
+			var geoReverseLookup = new FakeIGeoReverseLookup(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+				{
+					FileHash = "2QOYZWMPACZAJ2MABGMOZ6CCPY"
+				}
+			});
+			
+			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
+				geoReverseLookup, new FakeIGeoLocationWrite() );
+
+			Assert.AreEqual(1, geoReverseLookup.Count);
+			Assert.AreEqual(1, fakeIGeoIndexGpx.Count);
+		}
+		
+		[TestMethod]
+		public void GeoBackgroundTask_IsNotCalled()
+		{
+			var storage = new FakeIStorage(); // <= main folder not found
+			var storageSelector = new FakeSelectorStorage(storage);
+			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+
+			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
+			var geoReverseLookup = new FakeIGeoReverseLookup();
+			
+			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
+				geoReverseLookup, new FakeIGeoLocationWrite() );
+
+			Assert.AreEqual(0, geoReverseLookup.Count);
 		}
 	}
 }

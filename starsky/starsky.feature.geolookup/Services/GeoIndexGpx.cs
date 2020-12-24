@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -14,7 +15,7 @@ using starsky.foundation.storage.Interfaces;
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.geolookup.Services
 {
-    public class GeoIndexGpx
+    public class GeoIndexGpx : IGeoIndexGpx
     {
 	    private readonly AppSettings _appSettings;
 	    private readonly ReadMetaGpx _readMetaGpx;

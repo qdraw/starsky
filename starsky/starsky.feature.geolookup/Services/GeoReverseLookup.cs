@@ -15,7 +15,7 @@ using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services
 {
-    public class GeoReverseLookup
+    public class GeoReverseLookup : IGeoReverseLookup
     {
         private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
