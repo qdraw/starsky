@@ -288,6 +288,11 @@ namespace starsky.foundation.database.Query
 	            var context = new InjectServiceScope(_scopeFactory).Context();
 	            LocalQuery(context);
             }
+	        catch (InvalidOperationException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalQuery(context);
+	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        foreach (var entry in concurrencyException.Entries)

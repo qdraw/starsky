@@ -595,7 +595,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 	        query.RemoveItem(getItem);
         }
- 
 
         [TestMethod]
         public void Query_GetObjectByFilePath_home()
