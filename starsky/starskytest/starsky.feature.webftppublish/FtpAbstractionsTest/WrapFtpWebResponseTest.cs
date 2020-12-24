@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,13 +11,7 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 	[TestClass]
 	public class WrapFtpWebResponseTest
 	{
-		private class MyClass : IDisposable
-		{
-			public void Dispose()
-			{
-			}
-		}
-		
+
 		[TestMethod]
 		public void WrapFtpWebResponse1_Dispose()
 		{
@@ -56,11 +49,10 @@ namespace starskytest.starsky.feature.webftppublish.FtpAbstractionsTest
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(System.NullReferenceException))]
 		public void GetResponseStream()
 		{
-			new WrapFtpWebResponse(null).GetResponseStream();
-			// NullReferenceException
+			var responseStreamResult =new WrapFtpWebResponse(null).GetResponseStream();
+			Assert.AreEqual(Stream.Null, responseStreamResult);
 		}
 	}
 }

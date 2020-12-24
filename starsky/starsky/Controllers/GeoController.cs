@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
@@ -94,53 +95,70 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				if ( !_iStorage.ExistFolder(f) ) return;
-				// use relative to StorageFolder
-				var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
-					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-				var fileIndexList = _readMeta
-					.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
-			
-				var toMetaFilesUpdate = new List<FileIndexItem>();
-				if ( index )
-				{
-					toMetaFilesUpdate =
-						new GeoIndexGpx(_appSettings, _iStorage, _cache)
-							.LoopFolder(fileIndexList);
-					
-					if ( _appSettings.Verbose ) Console.Write("¬");
-					
-					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage)
-						.LoopFolder(toMetaFilesUpdate, false);
-					
-				}
-
-				fileIndexList =
-					new GeoReverseLookup(_appSettings, new GeoFileDownload(_appSettings), _cache)
-						.LoopFolderLookup(fileIndexList, overwriteLocationNames);
-				
-				if ( fileIndexList.Count >= 1 )
-				{
-					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage).LoopFolder(
-						fileIndexList, true);
-				}
-
-				// Loop though all options
-				fileIndexList.AddRange(toMetaFilesUpdate);
-
-				// update thumbs to avoid unnecessary re-generation
-				foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
-					.ToList() )
-				{
-					var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
-					_thumbnailStorage.FileMove(item.FileHash, newThumb);
-					if ( _appSettings.Verbose )
-						Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);
-				}
+				GeoBackgroundTask(
+					new GeoIndexGpx(_appSettings, _iStorage, _cache),
+					new GeoReverseLookup(_appSettings, new GeoFileDownload(_appSettings), _cache), 
+					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage),
+					f, index,
+					overwriteLocationNames);
 			});
 			
 			return Json("event fired");
+		}
+
+		internal List<FileIndexItem> GeoBackgroundTask(
+			IGeoIndexGpx geoIndexGpx,
+			IGeoReverseLookup geoReverseLookup,
+			IGeoLocationWrite geoLocationWrite,
+			string f = "/",
+			bool index = true,
+			bool overwriteLocationNames = false)
+		{
+			if ( !_iStorage.ExistFolder(f) ) return new List<FileIndexItem>();
+			// use relative to StorageFolder
+			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
+				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+
+			var fileIndexList = _readMeta
+				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
+			
+			var toMetaFilesUpdate = new List<FileIndexItem>();
+			if ( index )
+			{
+				toMetaFilesUpdate =
+					geoIndexGpx
+						.LoopFolder(fileIndexList);
+					
+				if ( _appSettings.Verbose ) Console.Write("¬");
+					
+				geoLocationWrite
+					.LoopFolder(toMetaFilesUpdate, false);
+			}
+
+			fileIndexList =
+				geoReverseLookup
+					.LoopFolderLookup(fileIndexList, overwriteLocationNames);
+				
+			if ( fileIndexList.Count >= 1 )
+			{
+				geoLocationWrite.LoopFolder(
+					fileIndexList, true);
+			}
+
+			// Loop though all options
+			fileIndexList.AddRange(toMetaFilesUpdate);
+
+			// update thumbs to avoid unnecessary re-generation
+			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
+				.ToList() )
+			{
+				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
+				_thumbnailStorage.FileMove(item.FileHash, newThumb);
+				if ( _appSettings.Verbose )
+					Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);
+			}
+
+			return fileIndexList;
 		}
 	}
 }

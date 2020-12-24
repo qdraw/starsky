@@ -10,7 +10,7 @@ using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper
 
 namespace starsky.foundation.writemeta.Services
 {
-    public class GeoLocationWrite
+    public class GeoLocationWrite : IGeoLocationWrite
     {
         private readonly IExifTool _exifTool;
         private readonly AppSettings _appSettings;
