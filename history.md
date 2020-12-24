@@ -42,7 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 
-# version 0.4.3 _(Unreleased)_ - 2020-12-??
+# version 0.4.4 _(Unreleased)_ - 2020-12-??
+- nothing yet
+
+# version 0.4.3 - 2020-12-24
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 - [x]   (Changed) _App_ Rewrite of desktop application
 - [x]   (Changed) _App_ Desktop settings  app-settings is changed to "starksy-app-settings.json"
@@ -53,6 +56,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Files that are not in the index should not be listed in the cache
 - [x]   (Security) _App_ node-notifier from 8.0.0 to 8.0.1 #258
 - [x]   (Fixed) _Back-end_ Add check for duplicate folders in the database in synchronize
+- [x]   (Fixed) _Back-end_ Handling errors for ConcurrencyException when saving #175
 
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 

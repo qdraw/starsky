@@ -26,5 +26,12 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var result = StringHelper.AsciiNullReplacer("\\\\0test");
 			Assert.AreEqual("\\\\0test",result);
 		}
+
+		[TestMethod]
+		public void AsciiNullChar()
+		{
+			var result = StringHelper.AsciiNullChar;
+			Assert.IsTrue(result.Contains("\\"));
+		}
 	}
 }

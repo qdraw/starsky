@@ -9,7 +9,6 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
-using starskycore.Services;
 using starskytest.FakeMocks;
 
 namespace starskytest.Services
@@ -62,6 +61,16 @@ namespace starskytest.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
 			_query.RemoveItem(item1);
+		}
+
+		[TestMethod]
+		public void SearchAndReplace_Nothing()
+		{
+			var result = _metaReplace.SearchAndReplace(
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}},
+				"tags", "test", string.Empty);
+
+			Assert.AreEqual(string.Empty,result[0].Tags);
 		}
 
 		[TestMethod]

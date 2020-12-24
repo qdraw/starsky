@@ -127,12 +127,17 @@ namespace starsky.Controllers
 						}
 					};
 					
-					var updatedList = _metaUpdateService
+					_metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
-					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList,
+				}
+
+				if ( resultsOkList.Any() )
+				{
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkList,
 						DefaultJsonSerializer.CamelCase), token);
 				}
+
 			});
 					
 			// When all items are not found
