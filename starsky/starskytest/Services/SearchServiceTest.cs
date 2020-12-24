@@ -181,6 +181,13 @@ namespace starskytest.Services
 	    }
 	    
 	    [TestMethod]
+	    public void SearchService_RemoveCache_Disabled_AppSettings_Test()
+	    {
+		    var search = new SearchService(_dbContext,_memoryCache, new AppSettings{AddMemoryCache = false}); 
+		    Assert.AreEqual(null,search.RemoveCache("test"));
+	    }
+	    
+	    [TestMethod]
 	    public void SearchService_RemoveCache_NoCachedItem_Test()
 	    {
 		    var search = new SearchService(_dbContext,_memoryCache);

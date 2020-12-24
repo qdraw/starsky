@@ -57,7 +57,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _App_ node-notifier from 8.0.0 to 8.0.1 #258
 - [x]   (Fixed) _Back-end_ Add check for duplicate folders in the database in synchronize
 - [x]   (Fixed) _Back-end_ Handling errors for ConcurrencyException when saving #175
-
+- [x]   (Fixed) _Back-end_ Handling errors on: DbUpdateConcurrencyException on RemoveItem #261
+  
 # version 0.4.2 - 2020-12-09
 - [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
