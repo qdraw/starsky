@@ -30,7 +30,7 @@ namespace starsky.feature.webftppublish.FtpAbstractions.Helpers
 
 		public Stream GetResponseStream()
 		{
-			return _response.GetResponseStream();
+			return _response == null ? Stream.Null : _response.GetResponseStream();
 		}
 	}
 }
