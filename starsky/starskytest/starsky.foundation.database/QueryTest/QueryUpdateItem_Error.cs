@@ -17,7 +17,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryUpdateItemError
 	{
-		private static bool IsCalled { get; set; }
+		private static bool IsCalledDbUpdateConcurrency { get; set; }
 
 		private class UpdateEntryUpdateConcurrency : IUpdateEntry
 		{
@@ -73,7 +73,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		
 			public EntityEntry ToEntityEntry()
 			{
-				IsCalled = true;
+				IsCalledDbUpdateConcurrency = true;
 				throw new DbUpdateConcurrencyException();
 				// System.NullReferenceException: Object reference not set to an instance of an object.
 			}
@@ -107,7 +107,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
 			fakeQuery.UpdateItem(new FileIndexItem());
 			
-			Assert.IsTrue(IsCalled);
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
 		
 		private class FakePropertyValues : PropertyValues
@@ -162,7 +162,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			}
 		}
 
-		public bool IsWritten2 { get; set; }
+		public bool IsWrittenConcurrencyException { get; set; }
 
 		[TestMethod]
 		public void SolveConcurrencyException_should_callDelegate()
@@ -175,14 +175,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			fakeQuery.SolveConcurrencyException(new FileIndexItem(),
 				new FakePropertyValues(null), new FakePropertyValues(null),
-				"", values => IsWritten2 = true);
+				"", values => IsWrittenConcurrencyException = true);
 			
-			Assert.IsTrue(IsCalled);
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(NotSupportedException))]
-		public void Query_UpdateItem_DbUpdateConcurrencyException22()
+		public void Query_UpdateItem_NotSupportedException()
 		{
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
@@ -192,7 +192,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			fakeQuery.SolveConcurrencyException(null,
 				new FakePropertyValues(null), new FakePropertyValues(null),
-				"", values => IsWritten2 = true);
+				"", values => IsWrittenConcurrencyException = true);
 			// expect error
 		}
 		
