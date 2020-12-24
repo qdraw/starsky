@@ -100,7 +100,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
+			var controller = new GeoController(_exifTool, _appSettings, new FakeIBackgroundTaskQueue(), new FakeSelectorStorage(istorage))
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
