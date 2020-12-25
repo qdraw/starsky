@@ -8,12 +8,14 @@ Build pipelines need to be updated
  - [x] `.github/workflows/starsky-dotnetcore-windows.yml `
  - [x] `.github/workflows/starsky-sonarqube-clientapp-netcore.yml`
  - [x] `.github/workflows/starsky-codecov-clientapp-netcore.yml`
+ - [x] `.github/workflows/release-on-tag-netcore-electron.yml`
  - [x] `azure-pipelines-starsky.yml`
  - [x] `azure-pipelines-starsky.starskyapp.yml`
 
 Docs in `starsky (sln)`
  - [x] `starsky/starsky/readme.md`
 
+## Docker
 Docker only needs to be updated when a major version is upgraded
 
 ## Update Runtime version
