@@ -276,5 +276,5 @@ jobs:
         uses: bryannice/gitactions-slack-notification@master
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_TITLE: 'Release is ready'
-          SLACK_MESSAGE: 'The release is ready'
+          SLACK_TITLE: 'Release ${{ github.ref }} is ready'
+          SLACK_MESSAGE: 'The release is ready https://github.com/qdraw/starsky/releases/edit/${{ github.ref }}'
