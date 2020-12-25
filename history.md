@@ -41,6 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 - enable UseDiskWatcher as default
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
+- remove newtonsoft.json references
 
 # version 0.4.4 _(Unreleased)_ - 2020-12-??
 - nothing yet
