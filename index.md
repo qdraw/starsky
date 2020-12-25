@@ -43,7 +43,7 @@ The application includes security controls ensuring relevant people have access 
 Export smaller images and generation of templates is one of the features
 
 ## Starsky on Mac OS
-![Starsky App on Mac OS](starsky/docs/starsky-mac-v025-home-nl.jpg)
+![Starsky App on Mac OS](starsky/docs/starsky-mac-v043-home-nl.jpg)
 
 # Open Source project
 Starsky is an open source project that can be used for free. Free as in Speech.

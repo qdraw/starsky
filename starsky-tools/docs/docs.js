@@ -45,7 +45,7 @@ var filePathList = [
 var blobPathList = [
 	"starsky/starsky/pm2-new-instance.sh",
 	"azure-pipelines-starsky.yml",
-	"starsky/docs/starsky-mac-v025-home-nl.jpg",
+	"starsky/docs/starsky-mac-v043-home-nl.jpg",
 	"starskyapp/docs-assets/starskyapp-versions.jpg",
 	"starskyapp/docs-assets/starskyapp-remote-options-v040.jpg",
 	"starskyapp/docs-assets/starskyapp-mac-gatekeeper.jpg"
