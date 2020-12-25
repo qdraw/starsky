@@ -47,7 +47,8 @@ var blobPathList = [
 	"azure-pipelines-starsky.yml",
 	"starsky/docs/starsky-mac-v025-home-nl.jpg",
 	"starskyapp/docs-assets/starskyapp-versions.jpg",
-	"starskyapp/docs-assets/starskyapp-remote-options-v040.jpg"
+	"starskyapp/docs-assets/starskyapp-remote-options-v040.jpg",
+	"starskyapp/docs-assets/starskyapp-mac-gatekeeper.jpg"
 ];
 
 // create dirs
