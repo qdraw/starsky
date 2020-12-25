@@ -124,9 +124,6 @@ namespace starsky.feature.metaupdate.Services
 			{
 				detailView.FileIndexItem.FilePath           
 			};
-
-			// Do a database sync + cache sync
-			_query.UpdateItem(detailView.FileIndexItem);
 			
 			// do rotation on thumbs
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
@@ -157,6 +154,9 @@ namespace starsky.feature.metaupdate.Services
 				// Update the hash in the database
 				detailView.FileIndexItem.FileHash = newFileHash;
 			}
+			
+			// Do a database sync + cache sync
+			_query.UpdateItem(detailView.FileIndexItem);
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
