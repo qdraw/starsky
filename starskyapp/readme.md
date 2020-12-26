@@ -75,11 +75,6 @@ OS X:
 
 The following steps are needed to compile the desktop application
 
-## Install Node packages
-```
-npm ci
-```
-
 ## Building Starsky as dependency first
 
 ### For Windows
@@ -103,6 +98,17 @@ _When running bash_
 For Mac OS there is a bundle created: `starsky/starsky-osx.10.12-x64.zip` and this is coppied to the desktop application
 
 ## Build Electron
+
+Go the source folder of the application
+
+```
+cd starskyapp
+```
+
+## Install Node packages
+```
+npm ci
+```
 
 ### For Windows
 
