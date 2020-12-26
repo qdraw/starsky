@@ -87,7 +87,7 @@ _When running bash_
 ../starsky/build.sh --Runtime=win7-x64
 ```
 
-For Windows there is a bundle created: `starsky/starsky-win7-x64.zip` and this is coppied to the desktop application
+For Windows there is a folder created: `starsky/win7-x64` and this is coppied to the desktop application
 
 ### For Mac OS
 
@@ -96,7 +96,7 @@ _When running bash_
 ../starsky/build.sh --Runtime=osx.10.12-x64
 ```
 
-For Mac OS there is a bundle created: `starsky/starsky-osx.10.12-x64.zip` and this is coppied to the desktop application
+For Mac OS there is a folder created: `starsky/osx.10.12-x64` and this is coppied to the desktop application
 
 ## Build Electron
 
