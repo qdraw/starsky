@@ -103,7 +103,7 @@ Go the source folder of the application
 cd starskyapp
 ```
 
-## Install Node packages
+### Install Node packages
 ```
 npm ci
 ```
@@ -123,3 +123,6 @@ _When running bash_
 ```bash
 npm run mac
 ```
+
+### See `dist` folder
+You will find the final result in the `dist` folder
