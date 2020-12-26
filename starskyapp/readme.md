@@ -27,9 +27,6 @@ There are binaries available through  [Github Releases](https://github.com/qdraw
 ### Mac OS 10.12 or newer
 - Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-mac-desktop.zip`
 
-The following versions are available:
-![Starsky App versions](docs-assets/starskyapp-versions.jpg)
-
 The application bundle can run without installer
 
 ### Gatekeeper
