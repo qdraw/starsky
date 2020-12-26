@@ -19,6 +19,7 @@ trigger:
       - starsky-tools/*
       - starsky.netframework/*
       - /*.md
+      - starskyapp/*.md
 
 # specific path build
 pr:
