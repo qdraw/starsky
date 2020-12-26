@@ -1,4 +1,4 @@
-name: StarskyApp Electron (Fake)
+name: StarskyApp Electron (Missing .NET dependency)
 
 on:
   push:
