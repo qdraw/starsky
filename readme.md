@@ -62,6 +62,11 @@ _See `./azure-pipelines-starsky.yml` for details_
 ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
 ![Starsky ClientApp (React)](https://github.com/qdraw/starsky/workflows/Starsky%20ClientApp%20(React)/badge.svg)
 
+#### App on Windows and Mac OS
+
+![StarskyApp Electron (Missing .NET dependency)](https://github.com/qdraw/starsky/workflows/StarskyApp%20Electron%20(Missing%20.NET%20dependency)/badge.svg)
+
+
 _See `./.github/workflows` for details_
 
 ### End2End tests on public demo environment
