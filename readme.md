@@ -42,7 +42,7 @@ To reverse geo code location information in images use the UI or the [Geo CLI](s
 
 To publish files generate markup and images with a logo use the [Web Html CLI](starsky/starskywebhtmlcli/readme.md). This publish web images to a content package. And when this is done you could copy a content package to a ftp service.
 
-All these projects are separately compiled using the build script and using the same `appsettings` configuration.
+All these projects are separately compiled using the build script and using the same application settings (`appsettings`) configuration.
 
 ## Build status
 
