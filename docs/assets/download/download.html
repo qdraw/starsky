@@ -38,8 +38,7 @@
 
     <p>
       <noscript>
-        Please enable javascript before downloading
-
+        <strong>Please enable javascript before downloading</strong> <br />
       </noscript>
     <a href="#" id="browser_download_url" class="btn btn-default">Download</a>
 
@@ -55,7 +54,7 @@
     <p id="mac_sys_requirements">
       Mac OS 10.12 or newer (Intel)<br /><br />
       <strong>
-      Since we don't have certificates from Apple, users are warned.</strong> <br />
+        Mac OS users are warned since we don't have certificates from Apple</strong> <br />
     </p>
 
     <p>
@@ -63,7 +62,6 @@
     </p>
     <p>
       <a href="https://github.com/qdraw/starsky/releases/latest/">Download other versions</a>
-
     </p>
 
 
@@ -101,7 +99,7 @@ fetch("https://api.github.com/repos/qdraw/starsky/releases").then((result)=>{
       if (detectOS() === "Windows") {
         if (document.querySelector("#browser_download_url")) {
           document.querySelector("#browser_download_url").href = windowsItem.browser_download_url;
-          document.querySelector("#browser_download_url").innerHTML = "Download Windows version"
+          document.querySelector("#browser_download_url").innerHTML = "Download App for Windows "+ firstItem.tag_name
         }
         if (document.querySelector("#mac_sys_requirements")) {
           document.querySelector("#mac_sys_requirements").style.display = "none"
@@ -110,7 +108,7 @@ fetch("https://api.github.com/repos/qdraw/starsky/releases").then((result)=>{
       else if (detectOS() === "Macintosh") {
         if (document.querySelector("#browser_download_url")) {
           document.querySelector("#browser_download_url").href = macItem.browser_download_url;
-          document.querySelector("#browser_download_url").innerHTML = "Download Mac " + firstItem.tag_name
+          document.querySelector("#browser_download_url").innerHTML = "Download App for Mac " + firstItem.tag_name
         }
         if (document.querySelector("#win_sys_requirements")) {
           document.querySelector("#win_sys_requirements").style.display = "none"
@@ -119,12 +117,13 @@ fetch("https://api.github.com/repos/qdraw/starsky/releases").then((result)=>{
       else {
         if (document.querySelector("#browser_download_url")) {
           document.querySelector("#browser_download_url").href = macItem.browser_download_url;
-          document.querySelector("#browser_download_url").innerHTML = "Download Mac " + firstItem.tag_name
+          document.querySelector("#browser_download_url").innerHTML = "Download App for Mac " + firstItem.tag_name
         }
         if (document.querySelector("#browser_download_url_alt")) {
+          document.querySelector("#browser_download_url_alt").style.marginTop = "10px";
           document.querySelector("#browser_download_url_alt").style.display = "inline-block";
           document.querySelector("#browser_download_url_alt").href = windowsItem.browser_download_url;
-          document.querySelector("#browser_download_url_alt").innerHTML = "Download Windows version " + firstItem.tag_name
+          document.querySelector("#browser_download_url_alt").innerHTML = "Download App for Windows " + firstItem.tag_name
         }
       }
     });
