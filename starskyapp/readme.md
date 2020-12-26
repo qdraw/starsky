@@ -37,6 +37,7 @@ The application bundle can run without installer
 Since we don't have certificates from Apple, users are warned. If you don't trust it, the code is public and its instructions for building it
 
 When you see the following warning:
+
 ![Starsky GateKeeper warning](docs-assets/starskyapp-mac-gatekeeper.jpg)
 
  Open app without Gatekeeper
