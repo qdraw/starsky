@@ -29,7 +29,7 @@ There are binaries available through  [Github Releases](https://github.com/qdraw
 
 The application bundle can run without installer
 
-### Gatekeeper
+#### Gatekeeper
 
 Since we don't have certificates from Apple, users are warned. If you don't trust it, the code is public and its instructions for building it
 
