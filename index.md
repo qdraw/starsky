@@ -24,14 +24,17 @@ Content changes in the demo environment are not stored.
 
 # Main features
 
-## Server
+## Shared server
 To run in connected mode and collaborate use the server version. There are [install instructions for the server](starsky/readme.md) available.
 
-## Desktop app
-There is an Desktop available in Alpha status. This app runs the server application local. There are [install instructions for the desktop app](starskyapp/readme.md) available.
+## Desktop app as standalone or server client
+The app can be used standalone or server client. This app runs the server application local. 
 
-## Indexing
-A primary function of a DAM system is to make assets easily available to its users by providing a searchable index that supports retrieval of assets by their content and/or metadata. The cataloging function is usually part of the ingestion process for new assets. Read more about
+[Download and install instructions for the StarskyApp](starskyapp/readme.md?classes=btn,btn-info)
+
+
+## Indexing and finding stuff back
+A primary function of a DAM system is to make assets easily available to its users by providing a searchable index that supports retrieval of assets by their content and/or metadata. The cataloging function is usually part of the ingestion process for new assets.
 
 ## Creation
 Applications implement digital asset management by importing media types
@@ -41,6 +44,9 @@ The application includes security controls ensuring relevant people have access 
 
 ## Workflow
 Export smaller images and generation of templates is one of the features
+
+## Prepare for publication and add a watermark
+Before I publish an item on my blog or social media, I do an automatic publication action. This places a watermark in the images. By means of configuration it is also possible that html is generated with meta information also attached so that search engines can find this content faster.
 
 ## Starsky on Mac OS
 ![Starsky App on Mac OS](starsky/docs/starsky-mac-v043-home-nl.jpg)

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Download Desktop app</title>
+    <link rel="stylesheet" href="../../assets/style/style.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+
+  </head>
+  <body>
+
+
+    <!-- File is manualy maintained -->
+
+
+
+    <header class="docs-header">
+  <div class="wrapper">
+    <div class="detective"></div> <a href="../../index.html" class="name">Starsky Docs</a>
+  </div>
+</header>
+<div id="app">
+  <div class="container">
+  <div class="entry-content">
+    <div class="breadcrumb">
+      <a href="../../index.html">home</a> » download</div>
+
+      <h1>Download Desktop App</h1>
+      <img src="../../starsky/docs/starsky-mac-v043-home-nl.jpg" style="float:right" width="70%" />
+
+    <p>
+      Starsky is a free photo-management tool. It acts as an accelerator to find and organize images driven by meta information.
+    </p>
+
+    <p>
+    &nbsp;
+    </p>
+
+    <p>
+      <noscript>
+        Please enable javascript before downloading
+
+      </noscript>
+    <a href="#" id="browser_download_url" class="btn btn-default">Download</a>
+
+    <a href="#" id="browser_download_url_alt" style="display:none" class="btn btn-info">Download</a>
+    </p>
+    <p>
+    &nbsp;
+    </p>
+    <p id="win_sys_requirements">
+      Windows 7 x64 or newer <br />
+    </p>
+
+    <p id="mac_sys_requirements">
+      Mac OS 10.12 or newer (Intel)<br />
+    </p>
+
+    <p>
+    &nbsp;
+    </p>
+    <p>
+      <a href="https://github.com/qdraw/starsky/releases/latest/">Download other versions</a>
+
+    </p>
+
+
+    <p>
+    &nbsp;
+    </p>
+
+    <div class="legal-text-row">By downloading you agree to <a href="https://starskydemo.herokuapp.com/legal/toc.en.html" data-test="toc">Starsky's Conditions of Use</a>.
+       Please see our  <a href="https://starskydemo.herokuapp.com/legal/privacy-policy.en.html" data-test="privacy">Privacy</a> Notice and our
+       <a href="https://starskydemo.herokuapp.com/legal/privacy-policy.en.html#cookie">Cookies Notice </a>   </div>
+
+
+  </div>
+
+</div>
+
+
+
+
+<script>
+
+fetch("https://api.github.com/repos/qdraw/starsky/releases").then((result)=>{
+  console.log(result.ok);
+  if (result.ok) {
+    result.json().then((json) =>{
+
+      const firstItem = json.find(item => !item.prerelease );
+      if (document.querySelector("#latest_version")) {
+        document.querySelector("#latest_version").innerHTML = firstItem.tag_name
+      }
+
+      const windowsItem = firstItem.assets.find(item => item.name === "starsky-win-desktop.zip");
+      const macItem = firstItem.assets.find(item => item.name === "starsky-mac-desktop.zip");
+
+      if (detectOS() === "Windows") {
+        if (document.querySelector("#browser_download_url")) {
+          document.querySelector("#browser_download_url").href = windowsItem.browser_download_url;
+          document.querySelector("#browser_download_url").innerHTML = "Download Windows version"
+        }
+        if (document.querySelector("#mac_sys_requirements")) {
+          document.querySelector("#mac_sys_requirements").style.display = "none"
+        }
+      }
+      else if (detectOS() === "Macintosh") {
+        if (document.querySelector("#browser_download_url")) {
+          document.querySelector("#browser_download_url").href = macItem.browser_download_url;
+          document.querySelector("#browser_download_url").innerHTML = "Download Mac " + firstItem.tag_name
+        }
+        if (document.querySelector("#win_sys_requirements")) {
+          document.querySelector("#win_sys_requirements").style.display = "none"
+        }
+      }
+      else {
+        if (document.querySelector("#browser_download_url")) {
+          document.querySelector("#browser_download_url").href = macItem.browser_download_url;
+          document.querySelector("#browser_download_url").innerHTML = "Download Mac " + firstItem.tag_name
+        }
+        if (document.querySelector("#browser_download_url_alt")) {
+          document.querySelector("#browser_download_url_alt").style.display = "inline-block";
+          document.querySelector("#browser_download_url_alt").href = windowsItem.browser_download_url;
+          document.querySelector("#browser_download_url_alt").innerHTML = "Download Windows version " + firstItem.tag_name
+        }
+      }
+    });
+  }
+})
+
+function detectOS() {
+  var OSName = "Unknown OS";
+  if (navigator.userAgent.indexOf("Win") != -1) OSName = "Windows";
+  if (navigator.userAgent.indexOf("Mac") != -1) OSName = "Macintosh";
+  if (navigator.userAgent.indexOf("Linux") != -1) OSName = "Linux";
+  if (navigator.userAgent.indexOf("Android") != -1) OSName = "Android";
+  if (navigator.userAgent.indexOf("like Mac") != -1) OSName = "iOS";
+  return OSName;
+}
+    </script>
+  </body>
+</html>

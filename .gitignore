@@ -345,6 +345,7 @@ starsky-tools/docs/*.html
 starsky-tools/docs/*/*.html
 starsky-tools/docs/*/*/*.html
 starsky-tools/docs/*/*/*/*.html
+!starsky-tools/docs/assets/*/*.html
 starsky-tools/docs/*.jpg
 starsky-tools/docs/*/*.jpg
 starsky-tools/docs/*/*/*.jpg
