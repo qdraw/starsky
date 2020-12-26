@@ -77,23 +77,27 @@ The following steps are needed to compile the desktop application
 
 ### For Windows
 
-We assume that you run on a 64 bits windows version
+_We assume that you run on a 64 bits Windows version_
 
 _When running bash_
+
 ```bash
 ../starsky/build.sh --Runtime=win7-x64
 ```
 
-For Windows there is a folder created: `starsky/win7-x64` and this is coppied to the desktop application
+For Windows there is a folder created: `starsky/win7-x64` and this is copied to the desktop application
 
 ### For Mac OS
 
+_We assume that you run it on an Intel powered Mac_
+
 _When running bash_
+
 ```bash
 ../starsky/build.sh --Runtime=osx.10.12-x64
 ```
 
-For Mac OS there is a folder created: `starsky/osx.10.12-x64` and this is coppied to the desktop application
+For Mac OS there is a folder created: `starsky/osx.10.12-x64` and this is copied to the desktop application
 
 ## Build Electron
 
@@ -110,7 +114,7 @@ npm ci
 
 ### For Windows
 
-We assume that you run on a 64 bits windows version
+We assume that you run on a 64 bits Windows version
 
 _When running bash_
 ```bash
