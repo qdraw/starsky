@@ -14,7 +14,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## starsky/starsky docs
@@ -27,7 +27,7 @@ The command line arguments are shortcuts to set an in-app environment variable.
 
 ### The order of reading settings
 You could use machine specific configuration files: appsettings.{machinename}.json _(and replace {machinename} with your computer name in lowercase)_
-1.  You can use `appsettings.json` inside the application folder to set base settings. 
+1.  You can use `appsettings.json` inside the application folder to set base settings.
     The order of this files is used to get the values from the appsettings
     -    `/bin/Debug/netcoreapp3.1/appsettings.patch.json`
     -    `/bin/Debug/netcoreapp3.1/appsettings.computername.patch.json`
@@ -35,7 +35,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
     -    `/bin/Debug/netcoreapp3.1/appsettings.computername.json`
 
 2.  Use Environment variables to overwrite those base settings
-   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder` 
+   For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
    ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
 3.  Command line argumements in the Cli applications to set in-app environment variables
 
@@ -65,7 +65,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 13. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
 14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
-15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production. 
+15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
      This toggle is always disabled in debug/develop mode _(default false)_
 16. `Name` Name of the application, does not have much effect _(default Starsky)_
 17. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
@@ -100,7 +100,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 3.  When using Windows please double escape (`\\`) system path's
 
 ### Warmup script
-The default behavior of .NET is to load everything first. 
+The default behavior of .NET is to load everything first.
 To be sure that the application is warm before someone arrives, please check `tools/starsky-warmup.sh`.
 
 ### Search Docs
@@ -232,8 +232,8 @@ Starsky has a Json restful API. Please read the documentation
 | /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|
 
 ### Swagger / OpenAPI
-Swagger is an open-source software framework backed by a large ecosystem 
-of tools that helps developers design, build, document, and consume RESTful Web services. 
+Swagger is an open-source software framework backed by a large ecosystem
+of tools that helps developers design, build, document, and consume RESTful Web services.
 There is an swagger definition. You could enable this by setting the following values:
 
 By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or use the following environment variable:
@@ -251,9 +251,9 @@ http://localhost:5000/swagger
 When the UI starts there is an Health API check to make sure that some important components works good
 
 #### Disk Space errors
-- __Storage_StorageFolder__ There is not enough disk space available on the storage folder location 
-- __Storage_ThumbnailTempFolder__ There is not enough disk space available on the thumbnails folder location 
-- __Storage_TempFolder__ There is not enough disk space available on the temp folder location 
+- __Storage_StorageFolder__ There is not enough disk space available on the storage folder location
+- __Storage_ThumbnailTempFolder__ There is not enough disk space available on the thumbnails folder location
+- __Storage_TempFolder__ There is not enough disk space available on the temp folder location
 
 #### Folder or file not exist errors
 - __Exist_StorageFolder__ The Storage Folder does not exist, please create it first.
@@ -270,5 +270,3 @@ There is also a check to make sure the database runs good
 
 #### Application Insights
 Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.
-
-

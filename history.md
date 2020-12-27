@@ -14,7 +14,7 @@
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](starskyapp/readme.md) _Desktop Application_
  * __[Changelog](history.md) Release notes and history__
 
 ## Release notes of Starsky
@@ -59,9 +59,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Add check for duplicate folders in the database in synchronize
 - [x]   (Fixed) _Back-end_ Handling errors for ConcurrencyException when saving #175
 - [x]   (Fixed) _Back-end_ Handling errors on: DbUpdateConcurrencyException on RemoveItem #261
-  
+
 # version 0.4.2 - 2020-12-09
-- [x]   (Changed) _Docs_ Update docs and remove old projects from docs 
+- [x]   (Changed) _Docs_ Update docs and remove old projects from docs
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.1 2020-11-23)_
 - [x]   (Security) _Frond-end_  Upgrade ClientApp Typescript version to 4.1.2
 - [x]   (Security) _Frond-end_  Upgrade ClientApp React version to 17.0.1
@@ -107,8 +107,8 @@ _Please check the breaking changes of 0.4.0-beta.0 and 0.4.0-beta.1_
 - [x]   (Added) _Back-end_ In the rename/move API When enable Collections, this files are also moved (file to folder)
 - [x]   (Added) _Back-end_ Xmp sidecar files are moved with gif/bmp/Raw/mp4 file types
 - [x]   (Added) _Back-end_ In the rename API When enable Collections, this files are also moved (file to deleted)
-- [x]   (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change. 
-                            if you update those could be gone. but you could set them again 
+- [x]   (Deprecated) _App_ The current app-settings (so only the default app/remote location) are going to change.
+                            if you update those could be gone. but you could set them again
 
 # version 0.4.0-beta.2 - 2020-11-04
 - [x]   (Changed) _Front-end_ Enable sockets client side option by default
@@ -134,7 +134,7 @@ _First release on Github Releases_
 - [x]   (Added) _Back-end_ Add Lens Info as field within MakeModel (exif read / xmp read / exiftool write)
 - [x]   (Added) _Back-end_ Update Exif Height/ Width when writing XMP files
 - [x]   (Added) _Front-end_ Hide large aspect ratios, so show 4:3 but hide 120:450
-- [x]   (Added) _App_ Use separate config vars when in non-package mode and production 
+- [x]   (Added) _App_ Use separate config vars when in non-package mode and production
 - [x]   (Added) _Back-end_ Logout page is working again
 
 # version 0.4.0-beta.0 - 2020-10-19

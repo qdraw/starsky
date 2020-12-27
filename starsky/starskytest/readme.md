@@ -14,7 +14,7 @@
     * __[starskyTest](../../starsky/starskytest/readme.md)  mstest unit tests__
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## starsky/starskyTest docs
@@ -58,5 +58,4 @@ C:\Users\VssAdministrator\.nuget\packages\microsoft.testplatform.testhost\16.2.0
 ```
 
 ### Coverlet.MSBuild
-To measure how much code is tested by this automatically script we have included this library. 
-
+To measure how much code is tested by this automatically script we have included this library.

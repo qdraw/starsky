@@ -14,20 +14,20 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## Starsky Business Logic docs
 
-This is an overview of business logic 
+This is an overview of business logic
 
 ## Feature compare table
 
 | Feature                                                           | Present |
 |-------------------------------------------------------------------|---------|
 | Anywhere secure access                                            |    ✅   |
-| Native iOS and Android mobile apps                                |    ❌   | 
-| Mac OS and Windows Desktop app                                    |    ✅   | 
+| Native iOS and Android mobile apps                                |    ❌   |
+| Mac OS and Windows Desktop app                                    |    ✅   |
 | Access controls with permissions and roles                        |    ✴️   |
 | User generation by Command Line                                   |    ✅   |
 | Customized branded login page                                     |    ❌   |
@@ -89,7 +89,7 @@ This is an overview of business logic
 |   └── starsky.feature.webhtmlpublish
 |         Generate html content with photos.
 └── Foundation
-|   |       Modules in the Foundation layer are conceptually abstract and do not contain presentation in the form of renderings or views 
+|   |       Modules in the Foundation layer are conceptually abstract and do not contain presentation in the form of renderings or views
 |   └── starsky.foundation.accountmanagement
 |   |     Abstraction layer of User Mangement
 |   └── starsky.foundation.database

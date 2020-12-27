@@ -14,7 +14,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## Options for the Admin CLI
@@ -36,8 +36,8 @@ What is the username/email?
 ```
 
 ```
-Do you want to 
-2. remove account 
+Do you want to
+2. remove account
 3. Toggle User Role
 ```
 

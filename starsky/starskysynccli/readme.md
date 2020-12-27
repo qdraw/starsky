@@ -13,7 +13,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
 
 ## starskysynccli docs
 _Deprecated and replaced by `starskysynchronizecli`_

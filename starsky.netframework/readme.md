@@ -14,7 +14,7 @@
     * [starskyTest](../starsky/starskytest/readme.md)  _mstest unit tests_
  * __[starsky.netframework](../starsky.netframework/readme.md) Client for older machines (deprecated)__
  * [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../history.md) _Release notes and history_
 
 ## Starsky Client for older machines

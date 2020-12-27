@@ -14,7 +14,7 @@
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
  * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
- * [starskyapp](../../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+ * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## starskyWebHtmlCli docs
@@ -95,7 +95,7 @@ In ContentType `jpeg` this used to add text after the current filename
 
 When using ContentType `jpeg` there are child folders created with this name.
 In the example there are 'sub folders' created with names 1000 and 500.
-In ContentType `moveSourceFiles` this is the folder to move the file to. 
+In ContentType `moveSourceFiles` this is the folder to move the file to.
 The only exception is when using it from the WebUI, then move means copy
 
 
