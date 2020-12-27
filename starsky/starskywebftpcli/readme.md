@@ -19,7 +19,7 @@
 
 ## starskyWebFtpCli docs
 
-Run the `starskyWebHtmlCli` first, to create a 'content package'
+Copy a content package to a ftp server. Run the `starskyWebHtmlCli` first, to create a 'content package'
 A 'content package' is a folder with static html files and resized images.
 
 ### AppSettings
