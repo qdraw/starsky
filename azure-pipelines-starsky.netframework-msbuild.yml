@@ -33,9 +33,6 @@ pr:
 
 steps:
 
-- task: NuGetToolInstaller@0
-  displayName: 'Use NuGet 4.3.0'
-
 - bash: |
    ls
    pwd
