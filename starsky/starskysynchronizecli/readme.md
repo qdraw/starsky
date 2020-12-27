@@ -8,7 +8,7 @@
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a content package_
     * [starskyWebFtpCli](../../starsky/starskywebftpcli/readme.md)  _copy a content package to a ftp service_
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
-    * __[starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  _check if disk changes are updated in the database__
+    * __[starskySynchronizeCli](../../starsky/starskysynchronizecli/readme.md)  check if disk changes are updated in the database__
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
