@@ -19,7 +19,9 @@
 
 ## Usage instructions
 
-There are binaries available through  [Github Releases](https://github.com/qdraw/starsky/releases/latest/)
+There are binaries available
+
+[Download App](https://qdraw.github.io/starsky/assets/download/download.html?classes=btn,btn-default)
 
 ### Windows 7 and newer
 - Go to [Github Releases](https://github.com/qdraw/starsky/releases/latest/) and click on `starsky-win-desktop.zip`
