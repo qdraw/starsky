@@ -15,7 +15,9 @@ trigger:
     - starskyapp/*
     - starsky-tools/*
     - starsky.netframework/*
-    - /*.md
+    - starsky/readme.md
+    - starsky/starsky/readme.md
+    - starsky/starsky/clientapp/readme.md
 
 pr:
   branches:
