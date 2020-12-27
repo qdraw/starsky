@@ -86,7 +86,7 @@ _Using bash_
 ./build.sh --runtime="linux-arm"
 ```
 
-_Using powershell_
+_Using Powershell_
 ```powershell
 powershell -File build.ps1 -ScriptArgs '-runtime="linux-arm"'
 ```
@@ -188,7 +188,7 @@ The scripts that are used to create a full build. (Linux has `libunwind8` and `g
 
 The Cake script provide options to build for specific runtimes.
 
-### To build for Mac OS
+### To build server app for Mac OS
 
 _Using bash_
 ```sh
@@ -199,7 +199,7 @@ _Using powershell_
 ```powershell
 powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
 ```
-### To build for 64 bits Windows
+### To build server app for 64 bits Windows
 
 _Using bash_
 ```sh
