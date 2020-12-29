@@ -40,7 +40,6 @@ const useSockets = (): IUseSockets => {
   useInterval(doIntervalCheck, startDiffTime);
 
   function doIntervalCheck() {
-    console.log(isEnabled, ws, countRetry, showSocketError);
     if (!isEnabled.current || !ws.current || !ws.current.close) {
       return;
     }
