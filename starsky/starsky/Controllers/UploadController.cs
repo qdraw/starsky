@@ -115,10 +115,9 @@ namespace starsky.Controllers
 			}
 
 			Console.WriteLine("Uploaded: ");
-			foreach ( var item in fileIndexResultsList
-				.Where(p => p.Status == ImportStatus.Ok) )
+			foreach ( var item in fileIndexResultsList)
 			{
-				Console.WriteLine(item.FilePath);
+				Console.WriteLine($"{item.Status} {item.FilePath} {item?.FileIndexItem?.FilePath}");
 			}
 
 			// send all uploads as list
