@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -111,6 +112,13 @@ namespace starsky.Controllers
 				 _query.RemoveCacheParentItem(subPath);
 			 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
+			}
+
+			Console.WriteLine("Uploaded: ");
+			foreach ( var item in fileIndexResultsList
+				.Where(p => p.Status == ImportStatus.Ok) )
+			{
+				Console.WriteLine(item.FilePath);
 			}
 
 			// send all uploads as list
