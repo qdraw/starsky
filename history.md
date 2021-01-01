@@ -43,8 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.4 _(Unreleased)_ - 2020-12-??
-- nothing yet
+# version 0.4.4 _(Unreleased)_ - 2021-01-??
+- [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
+- [x]   (Fixed) _Front-end_ When updating tags in sidebar and refresh afterwards its now not the old value anymore
+- [x]   (Fixed) _App_ Starting from another user in Mac OS should work now
 
 # version 0.4.3 - 2020-12-24
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
