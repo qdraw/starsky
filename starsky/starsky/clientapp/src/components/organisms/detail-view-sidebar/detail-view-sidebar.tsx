@@ -193,6 +193,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         setFileIndexItem(currentItem);
         dispatch({ type: "update", ...currentItem });
         ClearSearchCache(history.location.search);
+        new FileListCache().CacheSet(history.location.search, {
+          ...state,
+          fileIndexItem: currentItem
+        });
       });
     }
 
@@ -310,6 +314,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           </FormControl>
         </div>
         <div className="content--header">
+          {/* Info & Title */}
           {MessageInfoName} &amp; {MessageTitleName}
         </div>
         <div className="content--text">

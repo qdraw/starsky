@@ -44,7 +44,10 @@ export async function setupChildProcess() {
   console.log(env);
 
   const appStarskyPath = childProcessPath();
-  fs.chmodSync(appStarskyPath, 0o755);
+  try {
+    fs.chmodSync(appStarskyPath, 0o755);
+  } catch (error) {
+  }
 
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),

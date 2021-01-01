@@ -17,5 +17,8 @@
     "editor.formatOnSave": true,
         "typescript.preferences.quoteStyle": "double",
         "typescript.updateImportsOnFileMove.enabled": "always",
+        "cSpell.words": [
+          "Starsky"
+        ],
 	}
 }
