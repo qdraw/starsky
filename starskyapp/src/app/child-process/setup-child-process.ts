@@ -43,8 +43,9 @@ export async function setupChildProcess() {
   console.log("env settings ->");
   console.log(env);
 
+  // when having multiple users its 775
   const appStarskyPath = childProcessPath();
-  fs.chmodSync(appStarskyPath, 0o755);
+  fs.chmodSync(appStarskyPath, 0o775);
 
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
