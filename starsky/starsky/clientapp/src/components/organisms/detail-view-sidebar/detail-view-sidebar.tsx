@@ -164,6 +164,12 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       let name = event.currentTarget.dataset["name"];
 
       if (!name) return;
+      if (!value) value = AsciiNull();
+      updateChange(value, name);
+    }
+
+    function updateChange(value: string, name: string) {
+      if (!name) return;
 
       // allow empty requests
       if (!value) value = AsciiNull();
@@ -243,11 +249,8 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        const paste = new ClipboardHelper().Paste(
-          tagsReference,
-          descriptionReference,
-          titleReference
-        );
+        const paste = new ClipboardHelper().Paste(updateChange);
+
         if (!paste) return;
         setCopyPasteAction(MessagePasteLabels);
       },
