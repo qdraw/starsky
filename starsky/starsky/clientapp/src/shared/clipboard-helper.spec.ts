@@ -72,9 +72,11 @@ describe("ClipboardHelper", () => {
 
       expect(callback).toBeCalled();
 
-      expect(callback).toHaveBeenNthCalledWith(1, "A", "tags");
-      expect(callback).toHaveBeenNthCalledWith(2, "B", "description");
-      expect(callback).toHaveBeenNthCalledWith(3, "C", "title");
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        ["tags", "A"],
+        ["description", "B"],
+        ["title", "C"]
+      ]);
     });
   });
 });
