@@ -66,14 +66,15 @@ describe("ClipboardHelper", () => {
         refGenerator("C")
       );
 
-      var pasteA = refGenerator("1");
-      var pasteB = refGenerator("2");
-      var pasteC = refGenerator("3");
-      clipboardHelper.Paste(pasteA, pasteB, pasteC);
+      const result = clipboardHelper.Paste(callback);
 
-      expect(pasteA.current.innerText).toBe("A");
-      expect(pasteB.current.innerText).toBe("B");
-      expect(pasteC.current.innerText).toBe("C");
+      expect(result).toBeTruthy();
+
+      expect(callback).toBeCalled();
+
+      expect(callback).toHaveBeenNthCalledWith(1, "A", "tags");
+      expect(callback).toHaveBeenNthCalledWith(2, "B", "description");
+      expect(callback).toHaveBeenNthCalledWith(3, "C", "title");
     });
   });
 });
