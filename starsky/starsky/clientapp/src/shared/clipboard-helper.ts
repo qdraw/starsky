@@ -53,7 +53,7 @@ export class ClipboardHelper {
    * Paste values in callback
    * @param updateChange callback function
    */
-  public Paste(updateChange: (value: string, name: string) => void): boolean {
+  public Paste(updateChange: (items: [string, string][]) => void): boolean {
     if (!updateChange) {
       return false;
     }
@@ -63,9 +63,11 @@ export class ClipboardHelper {
       return false;
     }
 
-    updateChange(readData.tags, "tags");
-    updateChange(readData.description, "description");
-    updateChange(readData.title, "title");
+    updateChange([
+      ["tags", readData.tags],
+      ["description", readData.description],
+      ["title", readData.title]
+    ]);
 
     return true;
   }

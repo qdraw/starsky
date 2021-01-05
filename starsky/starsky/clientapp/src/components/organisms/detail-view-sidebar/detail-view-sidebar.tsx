@@ -1,5 +1,6 @@
 import { Link } from "@reach/router";
 import React, { memo, useEffect, useRef } from "react";
+import { DetailViewAction } from "../../../contexts/detailview-context";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard-event";
@@ -18,7 +19,6 @@ import {
   parseRelativeDate,
   parseTime
 } from "../../../shared/date";
-import FetchPost from "../../../shared/fetch-post";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
@@ -29,12 +29,13 @@ import FormControl from "../../atoms/form-control/form-control";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
 import ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
+import { UpdateChange } from "./update-change";
 
 interface IDetailViewSidebarProps {
   filePath: string;
   status: IExifStatus;
   state: IDetailView;
-  dispatch: any;
+  dispatch: React.Dispatch<DetailViewAction>;
 }
 
 const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo(
@@ -165,45 +166,13 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
       if (!name) return;
       if (!value) value = AsciiNull();
-      updateChange(value, name);
-    }
-
-    function updateChange(value: string, name: string) {
-      if (!name) return;
-
-      // allow empty requests
-      if (!value) value = AsciiNull();
-
-      // compare
-      var fileIndexObject: any = fileIndexItem;
-
-      if (!fileIndexObject[name] === undefined) return; //to update empty start to first fill
-
-      var currentString: string = fileIndexObject[name];
-      if (value === currentString) return;
-
-      var updateObject: any = { f: fileIndexItem.filePath };
-      updateObject[name] = value.trim();
-
-      var bodyParams = new URLPath()
-        .ObjectToSearchParams(updateObject)
-        .toString()
-        .replace(/%00/gi, AsciiNull());
-
-      FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
-        if (item.statusCode !== 200 || !item.data) return;
-
-        var currentItem = item.data[0] as IFileIndexItem;
-        currentItem.lastEdited = new Date().toISOString();
-
-        setFileIndexItem(currentItem);
-        dispatch({ type: "update", ...currentItem });
-        ClearSearchCache(history.location.search);
-        new FileListCache().CacheSet(history.location.search, {
-          ...state,
-          fileIndexItem: currentItem
-        });
-      });
+      new UpdateChange(
+        fileIndexItem,
+        setFileIndexItem,
+        dispatch,
+        history,
+        state
+      ).Update([[name, value]]);
     }
 
     const descriptionReference = useRef<HTMLDivElement>(null);
@@ -249,7 +218,19 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       (event: KeyboardEvent) => {
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
-        const paste = new ClipboardHelper().Paste(updateChange);
+
+        console.log(fileIndexItem);
+
+        const updateChange = new UpdateChange(
+          fileIndexItem,
+          setFileIndexItem,
+          dispatch,
+          history,
+          state
+        );
+        console.log(updateChange);
+
+        const paste = new ClipboardHelper().Paste(updateChange.Update);
 
         if (!paste) return;
         setCopyPasteAction(MessagePasteLabels);
