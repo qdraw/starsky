@@ -63,6 +63,8 @@ export class UpdateChange {
 
     console.log(bodyParams);
 
+    if (bodyParams === "") return;
+
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
       if (item.statusCode !== 200 || !item.data) return;
 
