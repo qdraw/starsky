@@ -48,7 +48,7 @@ export class UpdateChange {
       // compare
       const fileIndexObject: any = this.fileIndexItem;
 
-      if (!fileIndexObject[name] === undefined) return; //to update empty start to first fill
+      if (!fileIndexObject[name] === undefined) continue; //to update empty start to first fill
 
       const currentString: string = fileIndexObject[name];
       if (value === currentString) continue;
