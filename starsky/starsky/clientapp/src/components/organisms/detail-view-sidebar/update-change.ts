@@ -61,6 +61,8 @@ export class UpdateChange {
       .toString()
       .replace(/%00/gi, AsciiNull());
 
+    console.log(bodyParams);
+
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
       if (item.statusCode !== 200 || !item.data) return;
 
