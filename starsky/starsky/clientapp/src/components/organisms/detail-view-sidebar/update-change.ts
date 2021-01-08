@@ -25,15 +25,12 @@ export class UpdateChange {
     history: IUseLocation,
     state: IDetailView
   ) {
-    console.log("--ctor");
-
     this.fileIndexItem = fileIndexItem;
     this.setFileIndexItem = setFileIndexItem;
     this.dispatch = dispatch;
     this.history = history;
     this.state = state;
 
-    console.log(this);
     this.Update = this.Update.bind(this);
   }
 
