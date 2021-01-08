@@ -49,16 +49,12 @@ export class ClipboardHelper {
     return result as IClipboardData;
   }
 
-  public Paste(
-    tagsReference: React.RefObject<HTMLDivElement>,
-    descriptionReference: React.RefObject<HTMLDivElement>,
-    titleReference: React.RefObject<HTMLDivElement>
-  ): boolean {
-    if (
-      !tagsReference.current ||
-      !descriptionReference.current ||
-      !titleReference.current
-    ) {
+  /**
+   * Paste values in callback
+   * @param updateChange callback function
+   */
+  public Paste(updateChange: (items: [string, string][]) => void): boolean {
+    if (!updateChange) {
       return false;
     }
     var readData = this.Read();
@@ -66,17 +62,13 @@ export class ClipboardHelper {
     if (!readData) {
       return false;
     }
-    var tags = tagsReference.current;
-    tags.innerText = readData.tags;
-    tags.dispatchEvent(new Event("blur"));
 
-    var description = descriptionReference.current;
-    description.innerText = readData.description;
-    description.dispatchEvent(new Event("blur"));
+    updateChange([
+      ["tags", readData.tags],
+      ["description", readData.description],
+      ["title", readData.title]
+    ]);
 
-    var title = titleReference.current;
-    title.innerText = readData.title;
-    title.dispatchEvent(new Event("blur"));
     return true;
   }
 }

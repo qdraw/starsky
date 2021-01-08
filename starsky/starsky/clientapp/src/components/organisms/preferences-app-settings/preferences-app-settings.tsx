@@ -27,7 +27,13 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
 
   useEffect(() => {
     function permissions(): boolean {
-      if (!permissionsData || !permissionsData.data) return false;
+      if (
+        !permissionsData ||
+        !permissionsData.data ||
+        permissionsData.statusCode !== 200
+      )
+        return false;
+
       return permissionsData.data.includes("AppSettingsWrite");
     }
     setIsEnabled(permissions());

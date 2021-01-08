@@ -48,34 +48,35 @@ describe("ClipboardHelper", () => {
 
   describe("Paste", () => {
     it("non valid ref", () => {
-      var ref = createRef<HTMLDivElement>();
-      expect(clipboardHelper.Paste(ref, ref, ref)).toBeFalsy();
+      expect(clipboardHelper.Paste(null as any)).toBeFalsy();
     });
 
     it("No clipboard data", () => {
-      var copyResult = clipboardHelper.Paste(
-        refGenerator("1"),
-        refGenerator("2"),
-        refGenerator("3")
-      );
+      const callback = jest.fn();
+      var copyResult = clipboardHelper.Paste(callback);
       expect(copyResult).toBeFalsy();
     });
 
     it("Copy and Paste", () => {
+      const callback = jest.fn();
+
       clipboardHelper.Copy(
         refGenerator("A"),
         refGenerator("B"),
         refGenerator("C")
       );
 
-      var pasteA = refGenerator("1");
-      var pasteB = refGenerator("2");
-      var pasteC = refGenerator("3");
-      clipboardHelper.Paste(pasteA, pasteB, pasteC);
+      const result = clipboardHelper.Paste(callback);
 
-      expect(pasteA.current.innerText).toBe("A");
-      expect(pasteB.current.innerText).toBe("B");
-      expect(pasteC.current.innerText).toBe("C");
+      expect(result).toBeTruthy();
+
+      expect(callback).toBeCalled();
+
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        ["tags", "A"],
+        ["description", "B"],
+        ["title", "C"]
+      ]);
     });
   });
 });
