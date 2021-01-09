@@ -77,6 +77,8 @@ export async function LocationIsRemoteCallback(
   args: boolean
 ) {
   if (args !== undefined && args !== null) {
+    await SetupFileWatcher();
+    closeAndCreateNewWindow();
     await appConfig.set(LocationIsRemoteSettingsKey, args);
   }
 
@@ -134,12 +136,7 @@ export async function LocationUrlCallback(
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
         // so you can save change the location
         await SetupFileWatcher();
-
-        // to avoid that the session is opened
-        mainWindows.forEach((window) => {
-          window.close();
-        });
-        createMainWindow("");
+        closeAndCreateNewWindow();
       }
 
       console.log("locationOk >");
@@ -163,6 +160,16 @@ export async function LocationUrlCallback(
     isLocal: false,
     location: args
   } as IlocationUrlSettings);
+}
+
+/**
+ * to avoid that the session is opened
+ */
+function closeAndCreateNewWindow() {
+  mainWindows.forEach((window) => {
+    window.close();
+  });
+  createMainWindow("");
 }
 
 export async function UpdatePolicyCallback(

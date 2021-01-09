@@ -15,10 +15,10 @@
 		"editor.detectIndentation": false,
     "editor.insertSpaces": true,
     "editor.formatOnSave": true,
-        "typescript.preferences.quoteStyle": "double",
-        "typescript.updateImportsOnFileMove.enabled": "always",
-        "cSpell.words": [
-          "Starsky"
-        ],
+    "typescript.preferences.quoteStyle": "double",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "cSpell.words": [
+      "Starsky"
+    ],
 	}
 }

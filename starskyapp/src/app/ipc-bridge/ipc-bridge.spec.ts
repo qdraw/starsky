@@ -57,6 +57,14 @@ describe("ipc bridge", () => {
         return Promise.resolve();
       });
 
+      jest
+        .spyOn(createMainWindow, "default")
+        .mockImplementationOnce(() => null);
+
+      jest
+        .spyOn(SetupFileWatcher, "SetupFileWatcher")
+        .mockImplementationOnce(() => Promise.resolve());
+
       await LocationIsRemoteCallback(event, true);
 
       expect(event.reply).toBeCalled();
@@ -65,6 +73,14 @@ describe("ipc bridge", () => {
 
     it("set to false", async () => {
       const event = { reply: jest.fn() } as any;
+
+      jest
+        .spyOn(createMainWindow, "default")
+        .mockImplementationOnce(() => null);
+
+      jest
+        .spyOn(SetupFileWatcher, "SetupFileWatcher")
+        .mockImplementationOnce(() => Promise.resolve());
 
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {
         return Promise.resolve(false);
