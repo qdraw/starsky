@@ -14,6 +14,11 @@ export class FileListCache {
 
   private timeoutInMinutes = 3;
 
+  /**
+   * Set entire list of for a folder
+   * @param urlObject params of url
+   * @param value object with data
+   */
   public CacheSetObject(urlObject: IUrl, value: IArchive | IDetailView): any {
     this.CacheSetObjectWithoutParent(urlObject, value);
     this.CacheCleanOld();
@@ -135,6 +140,9 @@ export class FileListCache {
     return cache;
   }
 
+  /**
+   * Get all items from Session Storage
+   */
   private GetAll(): IGetAllTransferObject[] {
     var list = [];
     for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
@@ -170,6 +178,10 @@ export class FileListCache {
     });
   }
 
+  /**
+   * Parse Json from string
+   * @param cacheString input
+   */
   public ParseJson(cacheString: string | null): IArchive | IDetailView | null {
     if (!cacheString) return null;
     var cacheData: any = {};
