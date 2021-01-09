@@ -14,6 +14,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import DocumentTitle from "../shared/document-title";
+import { FileListCache } from "../shared/filelist-cache";
 import { URLPath } from "../shared/url-path";
 
 /**
@@ -108,6 +109,8 @@ function updateArchiveFromEvent(
     const pushMessage = pushMessagesEvent[index];
     // only update the state of the current view
     if (parentLocationPath !== pushMessage.parentDirectory) {
+      // we choose to remove everything to avoid display errors
+      new FileListCache().CacheCleanEverything();
       continue;
     }
     toAddedFiles.push(pushMessage);
