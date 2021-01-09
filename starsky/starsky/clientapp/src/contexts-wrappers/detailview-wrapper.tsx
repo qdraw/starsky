@@ -9,6 +9,7 @@ import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IDetailView } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import DocumentTitle from "../shared/document-title";
+import { FileListCache } from "../shared/filelist-cache";
 import { URLPath } from "../shared/url-path";
 
 /**
@@ -82,6 +83,8 @@ function updateDetailViewFromEvent(
     const pushMessage = pushMessages[index];
     // only update the state of the current view
     if (locationPath !== pushMessage.filePath) {
+      // we choose to remove everything to avoid display errors
+      new FileListCache().CacheCleanEverything();
       continue;
     }
     dispatch({
