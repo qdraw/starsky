@@ -53,13 +53,20 @@ describe("ipc bridge", () => {
         return Promise.resolve(true);
       });
 
-      jest.spyOn(appConfig, "set").mockImplementationOnce(() => {
-        return Promise.resolve();
-      });
+      jest
+        .spyOn(appConfig, "set")
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        })
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => null);
+        .mockImplementationOnce(() =>
+          Promise.resolve({ once: jest.fn() } as any)
+        );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -75,8 +82,17 @@ describe("ipc bridge", () => {
       const event = { reply: jest.fn() } as any;
 
       jest
+        .spyOn(appConfig, "set")
+        .mockReset()
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
+
+      jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => null);
+        .mockImplementationOnce(() =>
+          Promise.resolve({ once: jest.fn() } as any)
+        );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
@@ -176,11 +192,16 @@ describe("ipc bridge", () => {
         .mockReset()
         .mockImplementationOnce(() => {
           return Promise.resolve();
+        })
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
         });
 
       jest
         .spyOn(createMainWindow, "default")
-        .mockImplementationOnce(() => null);
+        .mockImplementationOnce(() =>
+          Promise.resolve({ once: jest.fn() } as any)
+        );
 
       jest
         .spyOn(SetupFileWatcher, "SetupFileWatcher")
