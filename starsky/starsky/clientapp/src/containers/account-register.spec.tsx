@@ -97,6 +97,52 @@ describe("AccountRegister", () => {
     container.unmount();
   });
 
+  it("allowed get 202 from api, it should hide sign in instead button", async () => {
+    // use ==> import * as FetchGet from '../shared/fetch-get';
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 202,
+        data: null
+      } as IConnectionDefault
+    );
+
+    var fetchGetSpy = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    // need to await here
+    var container = mount(<></>);
+    await act(async () => {
+      container = await mount(<AccountRegister />);
+    });
+
+    expect(
+      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
+        .disabled
+    ).toBeFalsy();
+    expect(
+      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
+        .disabled
+    ).toBeFalsy();
+    expect(
+      (container
+        .find('[name="confirm-password"]')
+        .getDOMNode() as HTMLInputElement).disabled
+    ).toBeFalsy();
+
+    container.update();
+
+    const signInInstead = container.find('[data-test="sign-in-instead"]');
+
+    expect(signInInstead.html()).toBeTruthy();
+
+    expect(signInInstead.hasClass("disabled")).toBeTruthy();
+
+    expect(fetchGetSpy).toBeCalled();
+
+    container.unmount();
+  });
+
   it("submit no content", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
     const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
