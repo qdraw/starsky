@@ -248,6 +248,7 @@ namespace starsky.Controllers
         /// </summary>
         /// <returns></returns>
         /// <response code="200">Account Register page is open</response>
+        /// <response code="202">open, but you are the first user</response>
         /// <response code="403">Account Register page is closed</response>
         [HttpGet("/api/account/register/status")]
         [ProducesResponseType(typeof(string),200)]
@@ -255,6 +256,7 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public IActionResult RegisterStatus()
         {
+	        if ( !_userManager.AllUsers().Any() ) Response.StatusCode = 202;
 	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");

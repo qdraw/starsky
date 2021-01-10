@@ -483,6 +483,7 @@ namespace starskytest.Controllers
 
 	        var actionResult = controller.RegisterStatus() as JsonResult;
             
+	        Assert.AreEqual(202,controller.Response.StatusCode);
 	        Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
         }
         
@@ -496,8 +497,24 @@ namespace starskytest.Controllers
 		        };
 
 	        var actionResult = controller.RegisterStatus() as JsonResult;
-            
+	   
+	        Assert.AreEqual(403,controller.Response.StatusCode);
 	        Assert.AreEqual("Account Register page is closed", actionResult.Value as string);
+        }
+        
+        [TestMethod]
+        public void AccountController_RegisterStatus_ActiveUsers_AppSettingOpen()
+        {
+	        var controller =
+		        new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = true}, _antiForgery, _selectorStorage)
+		        {
+			        ControllerContext = {HttpContext = new DefaultHttpContext()}
+		        };
+
+	        var actionResult = controller.RegisterStatus() as JsonResult;
+	   
+	        Assert.AreEqual(200,controller.Response.StatusCode);
+	        Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
         }
         
         [TestMethod]
