@@ -46,7 +46,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.4.5 _(Unreleased)_ - 2021-01-??
 - nothing yet
 
-# version 0.4.4 - 2021-01-09
+# version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
 - [x]   (Fixed) _Front-end_ When updating tags in sidebar and refresh afterwards its now not the old value anymore
 - [x]   (Fixed) _App_ Starting from another user in Mac OS should work now
