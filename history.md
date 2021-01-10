@@ -54,7 +54,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Front-end_ update websocket data for other items outside view when receiving data bug - issue #265
 - [x]   (Fixed) _App_ when changing from local to remote it should open new window - issue #271
 - [x]   (Fixed) _App_ when changing from local to remote it should add watcher be updated - issue #271
-
+- [x]   (Fixed) _Front-end_ hide 'sign in instead' button on register page when there are no users yet
+  
 # version 0.4.3 - 2020-12-24
 - [x]   (Fixed) _Back-end_ the latest version isn't checked right, it takes the oldest version to compare with
 - [x]   (Changed) _App_ Rewrite of desktop application
