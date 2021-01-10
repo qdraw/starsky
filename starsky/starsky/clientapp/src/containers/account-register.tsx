@@ -128,12 +128,19 @@ const AccountRegister: FunctionComponent = () => {
     history.navigate(new UrlQuery().UrlLoginPage(), { replace: true });
   };
 
+  const [displaySignInInstead, setDisplaySignInInstead] = React.useState(true);
+
   // readonly mode
   const [isFormEnabled, setFormEnabled] = React.useState(true);
   useEffect(() => {
     FetchGet(new UrlQuery().UrlAccountRegisterStatus()).then((response) => {
       setFormEnabled(response.statusCode !== 403);
-      if (response.statusCode === 403) setError(MessageRegistrationTurnedOff);
+      if (response.statusCode === 403) {
+        setError(MessageRegistrationTurnedOff);
+      }
+      if (response.statusCode === 202) {
+        setDisplaySignInInstead(false);
+      }
     });
   }, [MessageRegistrationTurnedOff, history.location.search]);
 
@@ -211,9 +218,22 @@ const AccountRegister: FunctionComponent = () => {
           >
             {loading ? "Loading..." : MessageCreateNewAccount}
           </ButtonStyled>
-          <a className="alternative" href={new UrlQuery().UrlLoginPage()}>
-            {MessageSignInInstead}
-          </a>
+          {displaySignInInstead ? (
+            <a
+              data-test="sign-in-instead"
+              className="alternative btn"
+              href={new UrlQuery().UrlLoginPage()}
+            >
+              {MessageSignInInstead}
+            </a>
+          ) : (
+            <div
+              data-test="sign-in-instead"
+              className="alternative btn disabled"
+            >
+              {MessageSignInInstead}
+            </div>
+          )}
         </form>
       </div>
     </>
