@@ -51,7 +51,7 @@ jobs:
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: slack-notification
+          name: starsky-tools-slack-notification
           path: ./starsky-tools/slack-notification      
 
   build_mac:
@@ -284,15 +284,15 @@ jobs:
       - name: Download slack-notification as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: slack-notification
-          path: ./slack-notification
+          name: starsky-tools-slack-notification
+          path: ./starsky-tools-slack-notification
 
       - name: Run Slack Notification
-        working-directory: ./slack-notification
+        working-directory: ./starsky-tools-slack-notification
         run: ls
 
       - name: Run Slack Notification
-        working-directory: ./slack-notification
+        working-directory: ./starsky-tools-slack-notification
         run: node slack-notification
         env:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
