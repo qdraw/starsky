@@ -275,3 +275,10 @@ jobs:
         id: get_tag_name
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
+      - name: Run Slack Notification
+        working-directory: ./starsky-tools/slack-notification
+        run: node slack-notification
+        env:
+           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+           SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
+           SLACK_MESSAGE: 'The release is ready https://github.com/qdraw/starsky/releases/edit/${{ steps.get_tag_name.outputs.VERSION }}'
