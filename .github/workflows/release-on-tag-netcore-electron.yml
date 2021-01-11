@@ -277,6 +277,10 @@ jobs:
 
       - name: Run Slack Notification
         working-directory: ./starsky-tools/slack-notification
+        run: ls
+
+      - name: Run Slack Notification
+        working-directory: ./starsky-tools/slack-notification
         run: node slack-notification
         env:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
