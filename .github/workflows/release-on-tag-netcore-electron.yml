@@ -285,14 +285,14 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: slack-notification
-          path: ./starsky-tools
+          path: ./slack-notification
 
       - name: Run Slack Notification
-        working-directory: ./starsky-tools/slack-notification
+        working-directory: ./slack-notification
         run: ls
 
       - name: Run Slack Notification
-        working-directory: ./starsky-tools/slack-notification
+        working-directory: ./slack-notification
         run: node slack-notification
         env:
            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
