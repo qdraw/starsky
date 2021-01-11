@@ -47,6 +47,12 @@ jobs:
         with:
           name: osx.10.12-x64
           path: ./starsky/starsky-osx.10.12-x64.zip         
+  
+      - name: Upload slack-notification as build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: slack-notification
+          path: ./starsky-tools/slack-notification      
 
   build_mac:
     name: Update Mac Desktop app
@@ -274,6 +280,12 @@ jobs:
       - name: Get tag name (needed for slack)
         id: get_tag_name
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Download slack-notification as build artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: slack-notification
+          path: ./starsky-tools
 
       - name: Run Slack Notification
         working-directory: ./starsky-tools/slack-notification
