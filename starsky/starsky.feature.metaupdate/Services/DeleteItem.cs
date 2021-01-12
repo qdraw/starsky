@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -84,19 +85,20 @@ namespace starsky.feature.metaupdate.Services
 				}
 				
 				collectionAndInsideDirectoryList.AddRange(detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath));
-				if ( !detailView.IsDirectory ) continue;
 				
-				foreach ( var itemInDirectory in _query.DisplayFileFolders(detailView.SubPath) )
-				{
-					collectionAndInsideDirectoryList.AddRange(detailView.GetCollectionSubPathList(itemInDirectory,
-						collections, itemInDirectory.FilePath));
-				}
+				// For deleting content of an entire directory
+				if ( detailView.FileIndexItem.IsDirectory != true ) continue;
+
+				// when deleting a folder the collections setting does nothing
+				collectionAndInsideDirectoryList.AddRange(
+					_query.GetAllFiles(detailView.FileIndexItem.FilePath).Select(itemInDirectory => itemInDirectory.FilePath)
+				);
 			}
 
 			foreach ( var collectionSubPath in collectionAndInsideDirectoryList )
 			{
 				var detailViewItem = _query.SingleItem(collectionSubPath, 
-					null, collections, false);
+					null, false, false);
                     
 				// return a Ok, which means the file is deleted
 				detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
