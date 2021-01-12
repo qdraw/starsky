@@ -657,8 +657,11 @@ namespace starsky.foundation.database.Query
 	        {
 		        LocalQuery(_context);
 	        }
-	        catch ( ObjectDisposedException )
+	        catch ( ObjectDisposedException disposedException)
 	        {
+		        Console.WriteLine("catch-ed disposedException:");
+		        Console.WriteLine(disposedException);
+		        
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
