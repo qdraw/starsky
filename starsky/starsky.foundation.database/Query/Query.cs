@@ -638,6 +638,15 @@ namespace starsky.foundation.database.Query
         {
 	        void LocalQuery(ApplicationDbContext context)
 	        {
+		        // Detach first https://stackoverflow.com/a/42475617
+		        var local = context.Set<FileIndexItem>()
+			        .Local
+			        .FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
+		        if (local != null)
+		        {
+			        context.Entry(local).State = EntityState.Detached;
+		        }
+		        
 		        context.Attach(updateStatusContent).State = EntityState.Deleted;
 		        context.FileIndex.Remove(updateStatusContent);
 		        context.SaveChanges();
