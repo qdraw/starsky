@@ -30,78 +30,91 @@ namespace starsky.feature.metaupdate.Services
 		
 		public List<FileIndexItem> Delete(string f, bool collections)
 		{
-			 var inputFilePaths = PathHelper.SplitInputFilePaths(f);
-            // the result list
-            var fileIndexResultsList = new List<FileIndexItem>();
-     
-            foreach (var subPath in inputFilePaths)
-            {
-                var detailView = _query.SingleItem(subPath, null, collections, false);
-                
-                if ( detailView?.FileIndexItem == null )
-                {
-	                _statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
-		                FileIndexItem.ExifStatus.NotFoundNotInIndex,
-		                fileIndexResultsList);
-	                continue;
-                }
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+            
+			// the result list
+			var fileIndexResultsList = new List<FileIndexItem>();
+			var collectionAndInsideDirectoryList = new List<string>();
+			
+			foreach ( var subPath in inputFilePaths )
+			{
+				var detailView =
+					_query.SingleItem(subPath, null, collections, false);
 
-                if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == 
-                     FolderOrFileModel.FolderOrFileTypeList.Deleted)
-                {
-	                _statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
-		                FileIndexItem.ExifStatus.NotFoundSourceMissing,
-		                fileIndexResultsList);
-	                continue; 
-                }
+				if ( detailView?.FileIndexItem == null )
+				{
+					_statusCodeHelper.ReturnExifStatusError(
+						new FileIndexItem(subPath),
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+					continue;
+				}
 
-                // Dir is readonly / don't delete
-                if ( _statusCodeHelper.IsReadOnlyStatus(detailView) 
-                     == FileIndexItem.ExifStatus.ReadOnly)
-                {
-	                _statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
-		                FileIndexItem.ExifStatus.ReadOnly,
-		                fileIndexResultsList);
-	                continue; 
-                }
+				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem
+					     .FilePath) ==
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					_statusCodeHelper.ReturnExifStatusError(
+						detailView.FileIndexItem,
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
+						fileIndexResultsList);
+					continue;
+				}
+
+				// Dir is readonly / don't delete
+				if ( _statusCodeHelper.IsReadOnlyStatus(detailView)
+				     == FileIndexItem.ExifStatus.ReadOnly )
+				{
+					_statusCodeHelper.ReturnExifStatusError(
+						detailView.FileIndexItem,
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+					continue;
+				}
+
+				// Status should be deleted before you can delete the item
+				if ( _statusCodeHelper.IsDeletedStatus(detailView)
+				     != FileIndexItem.ExifStatus.Deleted )
+				{
+					_statusCodeHelper.ReturnExifStatusError(
+						detailView.FileIndexItem,
+						FileIndexItem.ExifStatus.OperationNotSupported,
+						fileIndexResultsList);
+					continue;
+				}
 				
-                // Status should be deleted before you can delete the item
-                if ( _statusCodeHelper.IsDeletedStatus(detailView) 
-                     != FileIndexItem.ExifStatus.Deleted)
-                {
-	                _statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
-		                FileIndexItem.ExifStatus.OperationNotSupported,
-		                fileIndexResultsList);
-	                continue;
-                }
+				collectionAndInsideDirectoryList.AddRange(detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath));
+				if ( !detailView.IsDirectory ) continue;
+				
+				foreach ( var itemInDirectory in _query.DisplayFileFolders(detailView.SubPath) )
+				{
+					collectionAndInsideDirectoryList.AddRange(detailView.GetCollectionSubPathList(itemInDirectory,
+						collections, itemInDirectory.FilePath));
+				}
+			}
 
-                var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
-     
-                // display the to delete items
-                for (int i = 0; i < collectionSubPathList.Count; i++)
-                {
-                    var collectionSubPath = collectionSubPathList[i];
-                    var detailViewItem = _query.SingleItem(collectionSubPath, 
-	                    null, collections, false);
+			foreach ( var collectionSubPath in collectionAndInsideDirectoryList )
+			{
+				var detailViewItem = _query.SingleItem(collectionSubPath, 
+					null, collections, false);
                     
-	                // return a Ok, which means the file is deleted
-	                detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				// return a Ok, which means the file is deleted
+				detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
      
-					// remove thumbnail from disk
-					_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash);
+				// remove thumbnail from disk
+				_thumbnailStorage.FileDelete(detailViewItem.FileIndexItem.FileHash);
      
-                    fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
+				fileIndexResultsList.Add(detailViewItem.FileIndexItem.Clone());
 	                
-                    // remove item from db
-                    _query.RemoveItem(detailViewItem.FileIndexItem);
+				// remove item from db
+				_query.RemoveItem(detailViewItem.FileIndexItem);
 
-                    RemoveXmpSideCarFile(detailViewItem);
-	                RemoveJsonSideCarFile(detailViewItem);
-	                RemoveFileOrFolderFromDisk(detailViewItem);
-                }
-            }
+				RemoveXmpSideCarFile(detailViewItem);
+				RemoveJsonSideCarFile(detailViewItem);
+				RemoveFileOrFolderFromDisk(detailViewItem);
+			}
 
-            return fileIndexResultsList;
+			return fileIndexResultsList;
 		}
 
 		private void RemoveXmpSideCarFile(DetailView detailViewItem)

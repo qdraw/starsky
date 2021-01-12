@@ -66,7 +66,7 @@ namespace starsky.feature.metaupdate.Services
 					continue; 
 				}
 
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
+				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
 					var collectionsDetailView = _query.SingleItem(collectionSubPath, 

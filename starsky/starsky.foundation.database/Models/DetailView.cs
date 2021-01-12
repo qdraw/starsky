@@ -38,14 +38,14 @@ namespace starsky.foundation.database.Models
 	    /// If collections is enabled return list of subPaths
 	    /// Does NOT Fill the collection list
 	    /// </summary>
-	    /// <param name="detailView">the base fileIndexItem</param>
+	    /// <param name="fileIndexItem">the base fileIndexItem</param>
 	    /// <param name="collections">bool, to enable</param>
-	    /// <param name="subPath">the file orginal requested in subpath style</param>
+	    /// <param name="subPath">the file original requested in subPath style</param>
 	    /// <returns></returns>
-	    public List<string> GetCollectionSubPathList(DetailView detailView, bool collections, string subPath)
+	    public List<string> GetCollectionSubPathList(FileIndexItem fileIndexItem, bool collections, string subPath)
 	    {
 		    // Paths that are used
-		    var collectionSubPathList = detailView.FileIndexItem.CollectionPaths;
+		    var collectionSubPathList = fileIndexItem.CollectionPaths;
 		    // when not running in collections mode only update one file
 		    if (!collections) collectionSubPathList = new List<string> {subPath};
 		    return collectionSubPathList;
