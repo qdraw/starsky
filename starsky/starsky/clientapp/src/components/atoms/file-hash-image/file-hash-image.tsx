@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
+import useKeyboardEvent from "../../../hooks/use-keyboard-event";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch-get";
+import { Keyboard } from "../../../shared/keyboard";
 import { UrlQuery } from "../../../shared/url-query";
 
 export interface IFileHashImageProps {
@@ -40,6 +42,21 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     })();
   }, [props.fileHash, props.orientation]);
 
+  const [imageUrl, setImageUrl] = React.useState(
+    new UrlQuery().UrlThumbnailImage(props.fileHash, true)
+  );
+
+  // short key to toggle sidemenu
+  useKeyboardEvent(
+    /^(z)$/,
+    (event: KeyboardEvent) => {
+      if (new Keyboard().isInForm(event)) return;
+      console.log("z");
+      // setImageUrl("");
+    },
+    [props.fileHash]
+  );
+
   return (
     <>
       <img
@@ -59,7 +76,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
           props.setError(true);
           props.setIsLoading(false);
         }}
-        src={new UrlQuery().UrlThumbnailImage(props.fileHash, true)}
+        src={imageUrl}
       />
     </>
   );
