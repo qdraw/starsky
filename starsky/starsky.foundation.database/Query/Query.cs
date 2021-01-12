@@ -670,6 +670,9 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
+		        Console.WriteLine("concurrencyException catch-ed:");
+		        Console.WriteLine(concurrencyException);
+
 		        foreach (var entry in concurrencyException.Entries)
 		        {
 			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
