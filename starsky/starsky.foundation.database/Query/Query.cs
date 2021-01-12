@@ -360,7 +360,10 @@ namespace starsky.foundation.database.Query
 		        }
 
 		        // Refresh original values to bypass next concurrency check
-		        entryOriginalValuesSetValues(databaseValues);
+		        if ( databaseValues != null )
+		        {
+			        entryOriginalValuesSetValues(databaseValues);
+		        }
 	        }
 	        else
 	        {
