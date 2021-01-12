@@ -360,7 +360,10 @@ namespace starsky.foundation.database.Query
 		        }
 
 		        // Refresh original values to bypass next concurrency check
-		        entryOriginalValuesSetValues(databaseValues);
+		        if ( databaseValues != null )
+		        {
+			        entryOriginalValuesSetValues(databaseValues);
+		        }
 	        }
 	        else
 	        {
@@ -638,6 +641,15 @@ namespace starsky.foundation.database.Query
         {
 	        void LocalQuery(ApplicationDbContext context)
 	        {
+		        // Detach first https://stackoverflow.com/a/42475617
+		        var local = context.Set<FileIndexItem>()
+			        .Local
+			        .FirstOrDefault(entry => entry.Id.Equals(updateStatusContent.Id));
+		        if (local != null)
+		        {
+			        context.Entry(local).State = EntityState.Detached;
+		        }
+		        
 		        context.Attach(updateStatusContent).State = EntityState.Deleted;
 		        context.FileIndex.Remove(updateStatusContent);
 		        context.SaveChanges();
@@ -648,8 +660,11 @@ namespace starsky.foundation.database.Query
 	        {
 		        LocalQuery(_context);
 	        }
-	        catch ( ObjectDisposedException )
+	        catch ( ObjectDisposedException disposedException)
 	        {
+		        Console.WriteLine("catch-ed disposedException:");
+		        Console.WriteLine(disposedException);
+		        
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }

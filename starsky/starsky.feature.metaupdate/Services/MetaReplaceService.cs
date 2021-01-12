@@ -102,7 +102,7 @@ namespace starsky.feature.metaupdate.Services
 				}
 				
 				// Now Add Collection based images
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
+				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 				foreach ( var item in collectionSubPathList )
 				{
 					var itemDetailView = _query.SingleItem(item, null, 

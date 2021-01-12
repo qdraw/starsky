@@ -44,7 +44,7 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.5 _(Unreleased)_ - 2021-01-??
-- nothing yet
+- [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug #188
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8

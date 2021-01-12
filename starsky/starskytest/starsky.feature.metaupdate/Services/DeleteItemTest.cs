@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -144,6 +145,58 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test"));
 			Assert.IsFalse(storage.ExistFolder("/test"));
+		}
+
+		[TestMethod]
+		public void Delete_DirectoryWithChildItems_CollectionsOn()
+		{
+			var storage = new FakeIStorage(new List<string> {"/test","/"},
+				new List<string> {"/test/image.jpg", "/test/image.dng"},
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes,
+					FakeCreateAn.CreateAnImage.Bytes});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var fakeQuery =
+				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
+						{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
+					new FileIndexItem("/test/image.dng")});
+			
+			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
+			var result = deleteItem.Delete("/test", true);
+
+			Assert.AreEqual(3, result.Count);
+			Assert.AreEqual("/test", result[0].FilePath);
+			Assert.AreEqual("/test/image.jpg", result[1].FilePath);
+			Assert.AreEqual("/test/image.dng", result[2].FilePath);
+
+			Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
+			Assert.AreEqual(0, fakeQuery.GetAllRecursive("/").Count);
+		}
+		
+		[TestMethod]
+		public void Delete_DirectoryWithChildItems_CollectionsOff()
+		{
+			var storage = new FakeIStorage(new List<string> {"/test","/"},
+				new List<string> {"/test/image.jpg", "/test/image.dng"},
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes,
+					FakeCreateAn.CreateAnImage.Bytes});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var fakeQuery =
+				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
+					{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
+					new FileIndexItem("/test/image.dng")});
+			
+			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
+			var result = deleteItem.Delete("/test", false);
+
+			Assert.AreEqual(3, result.Count);
+			Assert.AreEqual("/test", result[0].FilePath);
+			Assert.AreEqual("/test/image.jpg", result[1].FilePath);
+			Assert.AreEqual("/test/image.dng", result[2].FilePath);
+
+			Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
+			Assert.AreEqual(0, fakeQuery.GetAllRecursive("/").Count);
 		}
 	}
 }

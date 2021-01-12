@@ -693,7 +693,7 @@ namespace starsky.foundation.database.Models
 		/// To show location of files with the same Filename without extension
 		/// </summary>
 		/// <value>
-		/// The collection paths, relative to the database (subpath style)
+		/// The collection paths, relative to the database (subPath style)
 		/// </value>
 		[NotMapped]
         public List<string> CollectionPaths { get; set; } = new List<string>();

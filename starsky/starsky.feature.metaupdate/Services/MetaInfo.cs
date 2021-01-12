@@ -74,7 +74,7 @@ namespace starsky.feature.metaupdate.Services
 				// when everything is checked, it should be good
 				if ( statusResults == FileIndexItem.ExifStatus.Default ) statusResults = FileIndexItem.ExifStatus.Ok;
 
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView, collections, subPath);
+				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
         
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
