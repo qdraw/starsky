@@ -25,7 +25,8 @@ namespace starsky.Controllers
 		}
 		
         /// <summary>
-        /// Http Endpoint to get full size image or thumbnail
+        /// Get thumbnail with fallback to original source image.
+        /// Return source image when IsExtensionThumbnailSupported is true
         /// </summary>
         /// <param name="f">one single file</param>
         /// <param name="isSingleItem">true = load original</param>
@@ -33,13 +34,13 @@ namespace starsky.Controllers
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="404">item not found on disk</response>
-        /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
+        /// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
         /// <response code="209">"Thumbnail is not ready yet"</response>
         /// <response code="401">User unauthorized</response>
         [HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
         [ProducesResponseType(404)] // not found
-        [ProducesResponseType(409)] // raw
+        [ProducesResponseType(210)] // raw
         [ProducesResponseType(209)] // "Thumbnail is not ready yet"
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
@@ -59,7 +60,7 @@ namespace starsky.Controllers
 	        
 	        // Restrict the fileHash to letters and digits only
 	        // I/O function calls should not be vulnerable to path injection attacks
-	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9@_-]+$") )
 	        {
 		        return BadRequest();
 	        }
@@ -119,7 +120,7 @@ namespace starsky.Controllers
 		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
 		        return File(fs1, MimeHelper.GetMimeType(fileExt));
 	        }
-	        Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
+	        Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
 	        return Json("Thumbnail is not supported; for example you try to view a raw file");
 
 	        // When you have duplicate files and one of them is removed and there is no thumbnail

@@ -45,6 +45,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.5 _(Unreleased)_ - 2021-01-??
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug #188
+- [x]   (Changed) _Back-end_ "/api/thumbnail/{f}" status 409 is changed to status 210
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
