@@ -103,7 +103,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Thumbnail_NonExistingFile_API_Test()
 		{
-			var controller = new ThumbnailController(_query,new FakeSelectorStorage());;
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
@@ -209,6 +210,8 @@ namespace starskytest.Controllers
             var storage = ArrangeStorage();
             
             var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            
             var actionResult = await controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -220,6 +223,7 @@ namespace starskytest.Controllers
 		{
 			var storage = ArrangeStorage();
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
