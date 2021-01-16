@@ -156,6 +156,11 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       };
 
       const actionAdd = filterColorClassBeforeAdding(state, action.add);
+      // when adding items outside current colorclass filter
+      if (actionAdd.length === 0) {
+        new FileListCache().CacheCleanEverything();
+        return state;
+      }
 
       let concatenatedFileIndexItems = [
         ...Array.from(actionAdd),
