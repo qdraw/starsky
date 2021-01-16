@@ -190,7 +190,7 @@ function filterColorClassBeforeAdding(
   state: IArchiveProps,
   actionAdd: IFileIndexItem[]
 ) {
-  if (!state.colorClassActiveList) {
+  if (!state.colorClassActiveList || state.colorClassActiveList.length === 0) {
     return actionAdd;
   }
 
