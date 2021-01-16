@@ -77,15 +77,15 @@ namespace starsky.foundation.sync.SyncServices
 						_subPathStorage, _console).SingleFile(subPathInFiles, 
 						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
 					
-					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
+					if ( dbItem.FirstOrDefault()?.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{
 						await new SyncRemove(_appSettings, _setupDatabaseTypes, query)
 							.Remove(subPathInFiles);
 						_console.Write("≠");
-						return dbItem;
+						return dbItem.FirstOrDefault();
 					}
 					_console.Write("•");
-					return dbItem;
+					return dbItem.FirstOrDefault();
 				}, _appSettings.MaxDegreesOfParallelism);
 			return result == null ? new List<FileIndexItem>() : result.ToList();
 		}
