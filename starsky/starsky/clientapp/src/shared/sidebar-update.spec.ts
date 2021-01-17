@@ -76,6 +76,15 @@ describe("url-path", () => {
       );
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
+
+    it("send emthy string", () => {
+      var result = sidebarUpdate.CastToISideBarUpdate(
+        "replace-title",
+        "",
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual({});
+    });
   });
   describe("IsFormUsed", () => {
     it("no input", () => {

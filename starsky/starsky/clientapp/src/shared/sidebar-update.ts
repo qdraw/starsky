@@ -13,7 +13,10 @@ export class SidebarUpdate {
     updateSidebar: ISidebarUpdate
   ): ISidebarUpdate => {
     if (!fieldName) return updateSidebar;
-    if (!fieldValue) return updateSidebar;
+    if (!fieldValue) {
+      delete (updateSidebar as any)[fieldName];
+      return updateSidebar;
+    }
 
     fieldValue = fieldValue.replace(/\n/g, "");
     switch (fieldName.toLowerCase()) {
@@ -46,12 +49,15 @@ export class SidebarUpdate {
       | React.KeyboardEvent<HTMLDivElement>,
     update: ISidebarUpdate
   ): ISidebarUpdate | null => {
-    if (!event.currentTarget.textContent) return null;
-    let fieldValue = event.currentTarget.textContent.trim();
+    let fieldValue = event.currentTarget.textContent
+      ? event.currentTarget.textContent.trim()
+      : "";
     let fieldName = event.currentTarget.dataset["name"];
+    console.log(fieldName, fieldValue);
 
     if (!fieldName) return null;
-    if (!fieldValue) return null;
+
+    // if (!fieldValue) return null;
 
     return new SidebarUpdate().CastToISideBarUpdate(
       fieldName,
