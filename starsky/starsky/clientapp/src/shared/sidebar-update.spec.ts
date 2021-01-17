@@ -104,6 +104,38 @@ describe("url-path", () => {
       expect(result).toStrictEqual({});
     });
   });
+  describe("Change", () => {
+    it("no field name should return null", () => {
+      var result = sidebarUpdate.Change(
+        { currentTarget: { textContent: null, dataset: {} } } as any,
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual(null);
+    });
+
+    it("no text should return emthy object", () => {
+      var result = sidebarUpdate.Change(
+        {
+          currentTarget: { textContent: null, dataset: { name: "test" } }
+        } as any,
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual({});
+    });
+
+    it("has text and tag name", () => {
+      var result = sidebarUpdate.Change(
+        {
+          currentTarget: { textContent: "test", dataset: { name: "tags" } }
+        } as any,
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual({
+        tags: "test"
+      });
+    });
+  });
+
   describe("IsFormUsed", () => {
     it("no input", () => {
       var input = {} as ISidebarUpdate;
