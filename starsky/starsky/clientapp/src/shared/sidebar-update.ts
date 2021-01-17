@@ -53,11 +53,8 @@ export class SidebarUpdate {
       ? event.currentTarget.textContent.trim()
       : "";
     let fieldName = event.currentTarget.dataset["name"];
-    console.log(fieldName, fieldValue);
 
     if (!fieldName) return null;
-
-    // if (!fieldValue) return null;
 
     return new SidebarUpdate().CastToISideBarUpdate(
       fieldName,
