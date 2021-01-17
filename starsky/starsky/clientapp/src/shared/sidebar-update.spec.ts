@@ -77,9 +77,27 @@ describe("url-path", () => {
       expect(result).toStrictEqual({ replaceTitle: "test" });
     });
 
-    it("send emthy string", () => {
+    it("send emthy string replace-title", () => {
       var result = sidebarUpdate.CastToISideBarUpdate(
         "replace-title",
+        "",
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual({});
+    });
+
+    it("send emthy string tags", () => {
+      var result = sidebarUpdate.CastToISideBarUpdate(
+        "tags",
+        "",
+        {} as ISidebarUpdate
+      );
+      expect(result).toStrictEqual({});
+    });
+
+    it("send emthy string non existing tag", () => {
+      var result = sidebarUpdate.CastToISideBarUpdate(
+        "testung",
         "",
         {} as ISidebarUpdate
       );
