@@ -107,7 +107,7 @@ function updateArchiveFromEvent(
   var toAddedFiles = [];
   for (let index = 0; index < pushMessagesEvent.length; index++) {
     const pushMessage = pushMessagesEvent[index];
-    // only update the state of the current view
+    // only update in current directory view
     if (parentLocationPath !== pushMessage.parentDirectory) {
       // we choose to remove everything to avoid display errors
       new FileListCache().CacheCleanEverything();
