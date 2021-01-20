@@ -52,7 +52,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     (event: KeyboardEvent) => {
       if (new Keyboard().isInForm(event)) return;
       console.log("z");
-      // setImageUrl("");
+      setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1));
     },
     [props.fileHash]
   );
