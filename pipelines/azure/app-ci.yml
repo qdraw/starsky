@@ -46,7 +46,6 @@ stages:
     steps:
     - template: /_setup/azure-pipeline/jobs/use_dotnet_version.yml
 
-
     - task: DotNetCoreCLI@2
       displayName: 'dotnet tool restore'
       inputs:

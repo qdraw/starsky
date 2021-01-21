@@ -33,7 +33,8 @@ namespace starskytest.starsky.foundation.platform.Extensions
             // expect TimeoutException
         }
 		
-		[TestMethod]
+		// [TestMethod]
+		// disabled
 		[Timeout(5000)]
 		public async Task TimeoutAfter_CheckIfSuccess()
 		{
