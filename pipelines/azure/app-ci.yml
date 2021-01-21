@@ -47,16 +47,16 @@ stages:
     steps:
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
-    - template: /pipelines/azure/steps/build_server.yml
-      parameters:
-        vstest: false
-        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
-
     - template: /pipelines/azure/steps/build_clientapp.yml
       parameters:
         jest: false
         runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
         npmConfigCache: $(npm_config_cache)
+
+    - template: /pipelines/azure/steps/build_server.yml
+      parameters:
+        vstest: false
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
