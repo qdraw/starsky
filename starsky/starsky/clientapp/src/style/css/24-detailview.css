@@ -97,6 +97,34 @@
   }
 }
 
+.detailview .image--default.zoom-1 {
+  transform: scale(1.2) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-2 {
+  transform: scale(1.4) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-3 {
+  transform: scale(1.6) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-4 {
+  transform: scale(1.8) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-5 {
+  transform: scale(2) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-6 {
+  transform: scale(2.2) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-7 {
+  transform: scale(2.4) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-8 {
+  transform: scale(2.6) translate(-50%, -50%);
+}
+.detailview .image--default.zoom-8 {
+  transform: scale(2.8) translate(-50%, -50%);
+}
+
 .detailview .main .nextprev:focus {
   box-shadow: 0px 0px 0px #fff;
 }
