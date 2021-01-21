@@ -55,6 +55,8 @@ steps:
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
 
+  - template: /pipelines/azure/steps/build_zip_bundle.yml
+
   - task: PublishPipelineArtifact@1
     enabled: true
     displayName: Publish linux-arm Artifact

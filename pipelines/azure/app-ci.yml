@@ -46,21 +46,19 @@ stages:
     steps:
     - template: /_setup/azure-pipeline/jobs/use_dotnet_version.yml
 
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet tool restore'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+    - template: /pipelines/azure/steps/build_server.yml
+      parameters:
+        vstest: false
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
-    - task: Bash@3
-      displayName: 'Cake'
-      enabled: true
-      env:
-        BUILD_SOURCEBRANCH: $(Build.SourceBranch)
-      inputs:
-        filePath: 'starsky/build.sh'
-        arguments: '--no-unit-tests --Target=default -runtime="win7-x64,win7-x86,osx.10.12-x64"'
+    - template: /pipelines/azure/steps/build_clientapp.yml
+      parameters:
+        jest: false
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
+
+    - template: /pipelines/azure/steps/build_zip_bundle.yml
+      parameters:
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: win7-x86'
@@ -86,12 +84,6 @@ stages:
         PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
         ArtifactName: 'generic-netcore'
 
-    - task: PublishBuildArtifacts@1
-      displayName: '[disabled] Publish Artifact: coverage.report zip'
-      enabled: false
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-        ArtifactName: coverage.report
 
 - stage: buildelectron
   displayName: 'Build Electron'
