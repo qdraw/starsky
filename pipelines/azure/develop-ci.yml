@@ -45,15 +45,15 @@ pr:
     - starsky.netframework/*
 
 steps:
-  - template: /_setup/azure-pipeline/jobs/use_dotnet_version.yml
+  - template: /_setup/azure-pipeline/steps/use_dotnet_version.yml
 
-  - template: /_setup/azure-pipeline/jobs/use_jdk11_powershell.yml
+  - template: /_setup/azure-pipeline/steps/use_jdk11_powershell.yml
 
-  - template: /_setup/azure-pipeline/jobs/build_server.yml
+  - template: /_setup/azure-pipeline/steps/build_server.yml
     parameters:
       test: true
 
-  - template: /_setup/azure-pipeline/jobs/build_clientapp.yml
+  - template: /_setup/azure-pipeline/steps/build_clientapp.yml
 
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
