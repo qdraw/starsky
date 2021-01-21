@@ -2,6 +2,7 @@ parameters:
   sonarqube: true
   vstest: true
   runtimeArg: '-runtime="linux-arm,linux-arm64"'
+  nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
 
@@ -17,7 +18,7 @@ steps:
       key: 'nuget | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/nuget-packages-list.json'
       restoreKeys: |
         nuget | "$(Agent.OS)"
-      path: $(NUGET_PACKAGES)
+      path: ${{ parameters.nugetPackages }}
     displayName: Cache NuGet packages
 
   - task: PowerShell@2

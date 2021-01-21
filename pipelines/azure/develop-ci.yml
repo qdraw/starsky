@@ -54,6 +54,7 @@ steps:
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
       vstest: true
+      nugetPackages: $(NUGET_PACKAGES)
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
 
