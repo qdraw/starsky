@@ -7,10 +7,8 @@ variables:
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
   sonarqube: true
 
-  # vmImage: ubuntu-20.04
-
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-20.04
   demands:
   - msbuild
   - java
@@ -48,8 +46,6 @@ pr:
 
 steps:
   - template: /pipelines/azure/steps/use_dotnet_version.yml
-
-  # - template: /pipelines/azure/steps/use_jdk11_powershell.yml
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
