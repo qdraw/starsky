@@ -44,7 +44,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - template: /_setup/azure-pipeline/jobs/use_dotnet_version.yml
+    - template: /pipelines/azure/steps/use_dotnet_version.yml
 
     - template: /pipelines/azure/steps/build_server.yml
       parameters:
