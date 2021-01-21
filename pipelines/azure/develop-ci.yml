@@ -53,11 +53,7 @@ steps:
 
   - template: /pipelines/azure/steps/build_clientapp.yml
 
-  - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage from $(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+  - template: /pipelines/azure/steps/coverage_report_merge.yml
 
   - task: PublishPipelineArtifact@1
     enabled: true

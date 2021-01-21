@@ -59,10 +59,10 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
   - task: PowerShell@2
-    displayName: 'Cake CoverageDocs'
+    displayName: 'Cake DocsGenerate'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} -target="CoverageDocs"'
+      arguments: '${{ parameters.runtimeArg }} -target="DocsGenerate"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
