@@ -9,7 +9,7 @@ steps:
 
   - task: Cache@2
     inputs:
-      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)\**\starskyapp\package-lock.json'
+      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/**/starskyapp/package-lock.json'
       restoreKeys: |
         npm | "$(Agent.OS)"
       path: $(npm_config_cache)
@@ -21,7 +21,7 @@ steps:
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
-      filePath: 'starsky\build.ps1'
+      filePath: 'starsky/build.ps1'
       arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)\starsky\'
