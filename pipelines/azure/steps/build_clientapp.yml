@@ -1,0 +1,27 @@
+steps:
+
+  - task: DotNetCoreCLI@2
+    displayName: '[Cake] dotnet tool restore'
+    inputs:
+      command: custom
+      custom: tool
+      arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)\**\starskyapp\package-lock.json'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: $(npm_config_cache)
+    displayName: Cache npm
+
+  - task: PowerShell@2
+    displayName: 'Cake Client'
+    enabled: true
+    env:
+      BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+    inputs:
+      filePath: 'starsky\build.ps1'
+      arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)\starsky\'

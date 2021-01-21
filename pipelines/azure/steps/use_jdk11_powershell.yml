@@ -1,0 +1,8 @@
+steps:
+  - task: PowerShell@2
+    displayName: "Use JDK11 by default (needed for sonarqube on windows)"
+    inputs:
+      targetType: 'inline'
+      script: |
+        $jdkPath = $env:JAVA_HOME_11_X64
+        Write-Host "##vso[task.setvariable variable=JAVA_HOME]$jdkPath"
