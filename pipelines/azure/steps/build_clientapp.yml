@@ -1,6 +1,7 @@
 parameters:
   runtimeArg: '-runtime="linux-arm,linux-arm64"'
   jest: true
+  npmConfigCache: "~"
 
 steps:
   - task: DotNetCoreCLI@2
@@ -15,7 +16,7 @@ steps:
       key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/**/starskyapp/package-lock.json'
       restoreKeys: |
         npm | "$(Agent.OS)"
-      path: $(npm_config_cache)
+      path: ${{ parameters.npmConfigCache }}
     displayName: Cache npm
 
   - task: PowerShell@2

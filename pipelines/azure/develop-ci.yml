@@ -52,6 +52,8 @@ steps:
       vstest: true
 
   - template: /pipelines/azure/steps/build_clientapp.yml
+    parameters:
+        npmConfigCache: $(npm_config_cache)
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
 

@@ -3,6 +3,7 @@ variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   NUGET_XMLDOC_MODE: skip
   CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
 
 trigger:
   branches:
@@ -55,6 +56,7 @@ stages:
       parameters:
         jest: false
         runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
+        npmConfigCache: $(npm_config_cache)
 
     - template: /pipelines/azure/steps/build_zip_bundle.yml
       parameters:
