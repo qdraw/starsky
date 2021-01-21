@@ -1,0 +1,42 @@
+# Build shared .NET Core Application to run wihin IIS
+# For the full suite please check the other pipelines
+
+trigger:
+  branches:
+    include:
+    - master
+    exclude:
+    - release/*
+    - feature/*
+  paths:
+    include:
+    - starsky/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky.netframework/*
+    - starsky/readme.md
+    - starsky/starsky/readme.md
+    - starsky/starsky/clientapp/readme.md
+    - /*.md
+
+pr:
+  branches:
+    exclude:
+    - master
+
+    
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- template: /pipelines/azure/steps/build_clientapp.yml
+
+- template: /pipelines/azure/steps/build_server_generic.yml
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky/generic-site'
+    ArtifactName: 'generic-site'
+    publishLocation: 'Container'

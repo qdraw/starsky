@@ -61,24 +61,24 @@ steps:
     enabled: true
     displayName: Publish linux-arm Artifact
     inputs:
-      targetPath: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm.zip'
+      targetPath: '$(Build.SourcesDirectory)/starsky/starsky-linux-arm.zip'
       artifact: 'linux-arm'
       publishLocation: "pipeline"
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: linux-arm64'
     inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-linux-arm64.zip'
+      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-linux-arm64.zip'
       ArtifactName: 'linux-arm64'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: generic-netcore'
     inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\starsky\starsky-generic-netcore.zip'
+      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
       ArtifactName: 'generic-netcore'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: coverage.report zip'
     inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-report.zip'
+      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest\coverage-report.zip'
       ArtifactName: coverage.report
