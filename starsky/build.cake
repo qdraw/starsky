@@ -15,9 +15,6 @@ Raspberry Pi: 'linux-arm'
 Windows 32 bits: 'win7-x86'
 */
 
-// Get Git info
-#addin nuget:?package=Cake.Git&version=0.22.0
-
 // For NPM
 #addin "Cake.Npm&version=0.17.0"
 
@@ -598,12 +595,31 @@ Task("SonarBegin")
 
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
-        var gitBranch = GitBranchCurrent(parent);
+        // var gitBranch = GitBranchCurrent(parent);
 
-        // allow to overwrite the branch name
-        if (branchName == "" && gitBranch.FriendlyName != "(no branch)") {
-          branchName = gitBranch.FriendlyName; // fallback as (no branch)
+        IEnumerable<string> gitStandardOutput;
+        IEnumerable<string> gitErrorOutput;
+        var gitExitCodeWithArgument =
+            StartProcess(
+                "git",
+                new ProcessSettings {
+                  Arguments = new ProcessArgumentBuilder()
+                      .Append($"branch"),
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WorkingDirectory = parent
+                },
+                out gitStandardOutput,
+                out gitErrorOutput
+            );
+
+        if(gitStandardOutput.Count() == 1) {
+          // allow to overwrite the branch name
+          if (branchName == "" && gitStandardOutput.ToList()[0] != "(no branch)") {
+            branchName = gitStandardOutput.ToList()[0]; // fallback as (no branch)
+          }
         }
+
         // replace default value to master
         if (branchName == "(no branch)" || branchName == "") {
           branchName = "master";
