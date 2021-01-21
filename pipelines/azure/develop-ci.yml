@@ -7,8 +7,10 @@ variables:
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
   sonarqube: true
 
+  # vmImage: ubuntu-20.04
+
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: ubuntu-latest
   demands:
   - msbuild
   - java
