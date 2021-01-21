@@ -47,7 +47,7 @@ pr:
 steps:
   - template: /pipelines/azure/steps/use_dotnet_version.yml
 
-  - template: /pipelines/azure/steps/use_jdk11_powershell.yml
+  # - template: /pipelines/azure/steps/use_jdk11_powershell.yml
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
