@@ -1,8 +1,8 @@
 parameters:
   runtimeArg: '-runtime="linux-arm,linux-arm64"'
+  jest: true
 
 steps:
-
   - task: DotNetCoreCLI@2
     displayName: '[Cake] dotnet tool restore'
     inputs:
@@ -19,12 +19,23 @@ steps:
     displayName: Cache npm
 
   - task: PowerShell@2
-    displayName: 'Cake Client'
-    enabled: true
+    displayName: 'Cake Client [with tests]'
+    condition: and(succeeded(), eq('${{ parameters.jest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: 'starsky/build.ps1'
       arguments: '${{ parameters.runtimeArg }} -target="Client"'
       pwsh: true
-      workingDirectory: '$(Build.SourcesDirectory)\starsky\'
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
+  - task: PowerShell@2
+    displayName: 'Cake Client [--no-unit-tests]'
+    condition: and(succeeded(), eq('${{ parameters.jest }}', true) )
+    env:
+      BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+    inputs:
+      filePath: 'starsky/build.ps1'
+      arguments: '${{ parameters.runtimeArg }}  --no-unit-tests -target="Client"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
