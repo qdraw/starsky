@@ -1,3 +1,8 @@
+parameters:
+  sonarqube: true
+  vstest: true
+  runtimeArg: '-runtime="linux-arm,linux-arm64"'
+
 steps:
 
   - task: DotNetCoreCLI@2
@@ -16,12 +21,24 @@ steps:
     displayName: Cache NuGet packages
 
   - task: PowerShell@2
-    displayName: 'Cake SonarBuildTest'
+    displayName: 'Cake SonarBuildTest (with tests) '
+    condition: and(succeeded(), eq('${{ parameters.vstest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="SonarBuildTest" -branch="$(Build.SourceBranch)"'
+      arguments: '${{ parameters.runtimeArg }} -target="SonarBuildTest" -branch="$(Build.SourceBranch)"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
+  - task: PowerShell@2
+    displayName: 'Cake SonarBuildTest --no-unit-tests'
+    condition: and(succeeded(), ne('${{ parameters.vstest }}', true) )
+    env:
+      BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+    inputs:
+      filePath: 'starsky/build.ps1'
+      arguments: '${{ parameters.runtimeArg }} --no-unit-tests -target="SonarBuildTest" -branch="$(Build.SourceBranch)"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -29,7 +46,7 @@ steps:
     displayName: 'Cake BuildNetCoreRuntimeSpecific'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="BuildNetCoreRuntimeSpecific"'
+      arguments: '${{ parameters.runtimeArg }} -target="BuildNetCoreRuntimeSpecific"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -37,7 +54,7 @@ steps:
     displayName: 'Cake PublishWeb'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="PublishWeb"'
+      arguments: '${{ parameters.runtimeArg }} -target="PublishWeb"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -45,7 +62,7 @@ steps:
     displayName: 'Cake CoverageDocs'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="CoverageDocs"'
+      arguments: '${{ parameters.runtimeArg }} -target="CoverageDocs"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -53,6 +70,6 @@ steps:
     displayName: 'Cake Zip'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="Zip"'
+      arguments: '${{ parameters.runtimeArg }} -target="Zip"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'

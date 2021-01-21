@@ -1,3 +1,6 @@
+parameters:
+  runtimeArg: '-runtime="linux-arm,linux-arm64"'
+
 steps:
 
   - task: DotNetCoreCLI@2
@@ -22,6 +25,6 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '-runtime="linux-arm,linux-arm64" -target="Client"'
+      arguments: '${{ parameters.runtimeArg }} -target="Client"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)\starsky\'

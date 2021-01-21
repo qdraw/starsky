@@ -8,7 +8,7 @@ variables:
   sonarqube: true
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-20.04
   demands:
   - msbuild
   - java
@@ -51,7 +51,7 @@ steps:
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
-      test: true
+      vstest: true
 
   - template: /pipelines/azure/steps/build_clientapp.yml
 
