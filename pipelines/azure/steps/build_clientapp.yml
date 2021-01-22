@@ -32,7 +32,7 @@ steps:
 
   - task: PowerShell@2
     displayName: 'Cake Client [--no-unit-tests]'
-    condition: and(succeeded(), eq('${{ parameters.jest }}', true) )
+    condition: and(succeeded(), ne('${{ parameters.jest }}', true) )
     env:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
