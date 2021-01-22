@@ -35,7 +35,7 @@ steps:
   parameters:
     jest: false
 
-- template: /pipelines/azure/steps/build_server_generic.yml
+- template: /pipelines/azure/steps/build_server_shared_runtime.yml
 
 - task: PublishBuildArtifacts@1
   inputs:

@@ -1,7 +1,7 @@
 parameters:
   runtimeArg: '-runtime="linux-arm,linux-arm64"'
   jest: true
-  npmConfigCache: "~"
+  npmConfigCache: $(Pipeline.Workspace)/.npm
 
 steps:
   - task: DotNetCoreCLI@2

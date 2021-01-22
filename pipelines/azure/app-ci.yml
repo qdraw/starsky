@@ -64,30 +64,17 @@ stages:
       parameters:
         runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: win7-x86'
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x86.zip'
-        ArtifactName: 'win7-x86'
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: win7-x64'
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip'
-        ArtifactName: 'win7-x64'
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: osx.10.12-x64'
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip'
-        ArtifactName: 'osx.10.12-x64'
-
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: generic-netcore'
-      inputs:
-        PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
-        ArtifactName: 'generic-netcore'
-
+    - template: /pipelines/azure/steps/publish_artifacts.yml
+        parameters:
+          publish: 
+            - key: osx.10.12-x64
+              value: '/starsky/starsky-osx.10.12-x64.zip' 
+            - key: generic-netcore
+              value: '/starsky/starsky-generic-netcore.zip'
+            - key: win7-x86
+              value: '/starsky/starsky-win7-x86.zip'
+            - key: win7-x64
+              value: '/starsky/starsky-win7-x64.zip'
 
 - stage: buildelectron
   displayName: 'Build Electron'
@@ -112,69 +99,7 @@ stages:
         artifactName: 'osx.10.12-x64'
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - task: Bash@3
-      enabled: true
-      displayName: 'For Mac, move to expected location'
-      inputs:
-        targetType: 'inline'
-        script: |
-          mv $(Build.SourcesDirectory)/osx.10.12-x64/starsky-osx.10.12-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
-
-    - task: Bash@3
-      enabled: true
-      displayName: 'For Windows, move to expected location'
-      inputs:
-        targetType: 'inline'
-        script: |
-          mv $(Build.SourcesDirectory)/win7-x64/starsky-win7-x64.zip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip
-
-    - task: Bash@3
-      enabled: true
-      displayName: 'Unzip for mac'
-      inputs:
-        targetType: 'inline'
-        script: |
-          unzip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip -d $(Build.SourcesDirectory)/starsky/osx.10.12-x64
-
-    - task: Bash@3
-      enabled: true
-      displayName: 'Restore permissions mac'
-      inputs:
-        targetType: 'inline'
-        script: |
-          chmod 777 $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
-          bash $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
-
-    - task: Bash@3
-      enabled: true
-      displayName: 'Unzip for windows'
-      inputs:
-        targetType: 'inline'
-        script: |
-          unzip $(Build.SourcesDirectory)/starsky/starsky-win7-x64.zip -d $(Build.SourcesDirectory)/starsky/win7-x64
-    
-    - task: Bash@3
-      enabled: true
-      displayName: 'Restore permissions windows'
-      inputs:
-        targetType: 'inline'
-        script: |
-          chmod 777 $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
-          bash $(Build.SourcesDirectory)/starsky/win7-x64/pm2-restore-x-rights.sh
-
-    - task: Npm@1
-      displayName: 'Electron npm ci'
-      enabled: true
-      inputs:
-        command: 'ci'
-        workingDir: '$(Build.SourcesDirectory)/starskyapp'
-
-    - task: Npm@1
-      displayName: 'Electron run macwindows'
-      inputs:
-        command: 'custom'
-        workingDir: '$(Build.SourcesDirectory)/starskyapp'
-        customCommand: 'run macwindows'
+    - template: /pipelines/azure/steps/electron_build.yml
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: starsky-win-desktop'

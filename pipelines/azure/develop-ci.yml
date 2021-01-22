@@ -49,7 +49,7 @@ steps:
 
   - template: /pipelines/azure/steps/build_clientapp.yml
     parameters:
-        npmConfigCache: $(npm_config_cache)
+      npmConfigCache: $(npm_config_cache)
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
@@ -60,28 +60,14 @@ steps:
 
   - template: /pipelines/azure/steps/build_zip_bundle.yml
 
-  - task: PublishPipelineArtifact@1
-    enabled: true
-    displayName: Publish linux-arm Artifact
-    inputs:
-      targetPath: '$(Build.SourcesDirectory)/starsky/starsky-linux-arm.zip'
-      artifact: 'linux-arm'
-      publishLocation: "pipeline"
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: linux-arm64'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-linux-arm64.zip'
-      ArtifactName: 'linux-arm64'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: generic-netcore'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky-generic-netcore.zip'
-      ArtifactName: 'generic-netcore'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: coverage.report zip'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-      ArtifactName: coverage.report
+  - template: /pipelines/azure/steps/publish_artifacts.yml
+      parameters:
+        publish: 
+          - key: linux-arm64
+            value: '/starsky/starsky-linux-arm64.zip' 
+          - key: linux-arm
+            value: '/starsky/starsky-linux-arm.zip' 
+          - key: generic-netcore
+            value: '/starsky/starsky-generic-netcore.zip'
+          - key: coverage-report
+            value: '/starsky/starskytest/coverage-report.zip'
