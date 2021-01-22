@@ -44,7 +44,7 @@ stages:
   - job: buildnetcore
     displayName: 'Build .NET Core'
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-20.04'
     steps:
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
