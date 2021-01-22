@@ -65,16 +65,16 @@ stages:
         runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
 
     - template: /pipelines/azure/steps/publish_artifacts.yml
-        parameters:
-          publish: 
-            - key: osx.10.12-x64
-              value: '/starsky/starsky-osx.10.12-x64.zip' 
-            - key: generic-netcore
-              value: '/starsky/starsky-generic-netcore.zip'
-            - key: win7-x86
-              value: '/starsky/starsky-win7-x86.zip'
-            - key: win7-x64
-              value: '/starsky/starsky-win7-x64.zip'
+      parameters:
+        publish: 
+          - key: osx.10.12-x64
+            value: '/starsky/starsky-osx.10.12-x64.zip' 
+          - key: generic-netcore
+            value: '/starsky/starsky-generic-netcore.zip'
+          - key: win7-x86
+            value: '/starsky/starsky-win7-x86.zip'
+          - key: win7-x64
+            value: '/starsky/starsky-win7-x64.zip'
 
 - stage: buildelectron
   displayName: 'Build Electron'
