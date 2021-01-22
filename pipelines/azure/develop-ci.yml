@@ -61,13 +61,13 @@ steps:
   - template: /pipelines/azure/steps/build_zip_bundle.yml
 
   - template: /pipelines/azure/steps/publish_artifacts.yml
-      parameters:
-        publish: 
-          - key: linux-arm64
-            value: '/starsky/starsky-linux-arm64.zip' 
-          - key: linux-arm
-            value: '/starsky/starsky-linux-arm.zip' 
-          - key: generic-netcore
-            value: '/starsky/starsky-generic-netcore.zip'
-          - key: coverage-report
-            value: '/starsky/starskytest/coverage-report.zip'
+    parameters:
+      publish: 
+        - key: linux-arm64
+          value: '/starsky/starsky-linux-arm64.zip' 
+        - key: linux-arm
+          value: '/starsky/starsky-linux-arm.zip' 
+        - key: generic-netcore
+          value: '/starsky/starsky-generic-netcore.zip'
+        - key: coverage-report
+          value: '/starsky/starskytest/coverage-report.zip'
