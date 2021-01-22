@@ -17,7 +17,7 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
   - task: PublishCodeCoverageResults@1
-    displayName: 'Publish code coverage from $(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+    displayName: 'Publish code coverage from $(Build.SourcesDirectory)/starsky/starskytest/coverage-merge-cobertura.xml'
     inputs:
       codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.SourcesDirectory)\starsky\starskytest\coverage-merge-cobertura.xml'
+      summaryFileLocation: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-merge-cobertura.xml'
