@@ -83,5 +83,5 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: coverage.report zip'
     inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest\coverage-report.zip'
+      PathtoPublish: '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
       ArtifactName: coverage.report
