@@ -1,5 +1,7 @@
 steps:
 
+  - template: /pipelines/azure/steps/cache_nuget_packages.yml
+
   - task: DotNetCoreCLI@2
     displayName: 'Net Core - Build Generic Site'
     enabled: true

@@ -13,13 +13,7 @@ steps:
       custom: tool
       arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
 
-  - task: Cache@2
-    inputs:
-      key: 'nuget | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/nuget-packages-list.json'
-      restoreKeys: |
-        nuget | "$(Agent.OS)"
-      path: ${{ parameters.nugetPackages }}
-    displayName: Cache NuGet packages
+  - template: /pipelines/azure/steps/cache_nuget_packages.yml
 
   - task: PowerShell@2
     displayName: 'Cake SonarBuildTest (with tests) '
