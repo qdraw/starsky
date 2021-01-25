@@ -1,0 +1,73 @@
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NUGET_XMLDOC_MODE: skip
+  CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  sonarqube: true
+
+pool:
+  vmImage: ubuntu-20.04
+  demands:
+  - msbuild
+  - java
+
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - feature/*
+  paths:
+      include:
+      - starsky/*
+      exclude:
+      - starskyapp/*
+      - starsky-tools/*
+      - starsky.netframework/*
+      - starsky/readme.md
+      - starsky/starsky/readme.md
+      - starsky/starsky/clientapp/readme.md
+
+# specific path build
+pr:
+  branches:
+    exclude:
+    - master
+  paths:
+    include:
+    - starsky/*
+    exclude:
+    - starskyapp/*
+    - starsky-tools/*
+    - starsky.netframework/*
+
+steps:
+  - template: /pipelines/azure/steps/use_dotnet_version.yml
+
+  - template: /pipelines/azure/steps/build_clientapp.yml
+    parameters:
+      npmConfigCache: $(npm_config_cache)
+
+  - template: /pipelines/azure/steps/build_server.yml
+    parameters:
+      vstest: true
+      nugetPackages: $(NUGET_PACKAGES)
+
+  - template: /pipelines/azure/steps/coverage_report_merge.yml
+
+  - template: /pipelines/azure/steps/build_zip_bundle.yml
+
+  - template: /pipelines/azure/steps/publish_artifacts.yml
+    parameters:
+      publish: 
+        - key: linux-arm64
+          value: '/starsky/starsky-linux-arm64.zip' 
+        - key: linux-arm
+          value: '/starsky/starsky-linux-arm.zip' 
+        - key: generic-netcore
+          value: '/starsky/starsky-generic-netcore.zip'
+        - key: coverage-report
+          value: '/starsky/starskytest/coverage-report.zip'
