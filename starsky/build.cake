@@ -595,35 +595,24 @@ Task("SonarBegin")
 
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
-        // var gitBranch = GitBranchCurrent(parent);
 
         IEnumerable<string> gitStandardOutput;
-        IEnumerable<string> gitErrorOutput;
-        var gitExitCodeWithArgument =
-            StartProcess(
-                "git",
-                new ProcessSettings {
-                  Arguments = new ProcessArgumentBuilder()
-                      .Append($"branch"),
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    WorkingDirectory = parent
-                },
-                out gitStandardOutput,
-                out gitErrorOutput
-            );
+         var gitExitCodeWithArgument =
+             StartProcess(
+                 "git",
+                 new ProcessSettings {
+                     Arguments = "branch --show-current",
+                     RedirectStandardOutput = true,
+                     WorkingDirectory = parent
+                 },
+                 out gitStandardOutput
+             );
+        var gitBranchName = gitStandardOutput.LastOrDefault();
 
-        Information("count (git): {0}", gitStandardOutput.Count());
-        foreach(var stdOutput in gitStandardOutput)
-        {
-            Information("git: {0}", stdOutput);
-        }
-
-        if(gitStandardOutput.Count() == 1) {
+        if( !string.IsNullOrEmpty(gitBranchName) ){
           // allow to overwrite the branch name
-          Information("branchName # {0}", branchName);
-          if (branchName == "" && gitStandardOutput.ToList()[0] != "(no branch)") {
-            branchName = gitStandardOutput.ToList()[0]; // fallback as (no branch)
+          if (branchName == "" && gitBranchName != "(no branch)") {
+            branchName = gitBranchName; // fallback as (no branch)
           }
         }
 
