@@ -613,6 +613,7 @@ Task("SonarBegin")
                 out gitErrorOutput
             );
 
+        Information("count (git): {0}", gitStandardOutput.Count());
         foreach(var stdOutput in gitStandardOutput)
         {
             Information("git: {0}", stdOutput);
