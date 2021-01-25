@@ -621,7 +621,7 @@ Task("SonarBegin")
 
         if(gitStandardOutput.Count() == 1) {
           // allow to overwrite the branch name
-          Information("branchName # {0}", branchName)
+          Information("branchName # {0}", branchName);
           if (branchName == "" && gitStandardOutput.ToList()[0] != "(no branch)") {
             branchName = gitStandardOutput.ToList()[0]; // fallback as (no branch)
           }
