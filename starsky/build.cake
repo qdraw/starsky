@@ -610,7 +610,7 @@ Task("SonarBegin")
         var gitBranchName = gitStandardOutput.LastOrDefault();
 
         // allow to overwrite the branch name
-        if (branchName == "" && !string.IsNullOrEmpty(gitBranchName) {
+        if (branchName == "" && !string.IsNullOrEmpty(gitBranchName)) {
           branchName = gitBranchName; // fallback as (no branch)
         }
 
