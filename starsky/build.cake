@@ -613,6 +613,11 @@ Task("SonarBegin")
                 out gitErrorOutput
             );
 
+        foreach(var stdOutput in gitStandardOutput)
+        {
+            Information("git: {0}", stdOutput);
+        }
+
         if(gitStandardOutput.Count() == 1) {
           // allow to overwrite the branch name
           if (branchName == "" && gitStandardOutput.ToList()[0] != "(no branch)") {

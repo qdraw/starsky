@@ -13,7 +13,7 @@ steps:
 
   - task: Cache@2
     inputs:
-      key: 'npm | clientapp | "$(Agent.OS)" | $(Build.SourcesDirectory)/**/clientapp/package-lock.json'
+      key: 'npm | clientapp | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/starsky/clientapp/package-lock.json'
       restoreKeys: |
         npm | clientapp | "$(Agent.OS)"
       path: ${{ parameters.npmConfigCache }}
