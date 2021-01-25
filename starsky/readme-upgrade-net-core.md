@@ -9,8 +9,7 @@ Build pipelines need to be updated
  - [x] `.github/workflows/starsky-sonarqube-clientapp-netcore.yml`
  - [x] `.github/workflows/starsky-codecov-clientapp-netcore.yml`
  - [x] `.github/workflows/release-on-tag-netcore-electron.yml`
- - [x] `azure-pipelines-starsky.yml`
- - [x] `azure-pipelines-starsky.starskyapp.yml`
+ - [x] `pipelines/steps/use_dotnet_version.yml`
 
 Docs in `starsky (sln)`
  - [x] `starsky/starsky/readme.md`
