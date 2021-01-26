@@ -3,6 +3,7 @@ import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch-get";
 import { UrlQuery } from "../../../shared/url-query";
+import PanAndZoomImage from "./pan-and-zoom-image";
 
 export interface IFileHashImageProps {
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,41 +45,20 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     new UrlQuery().UrlThumbnailImage(props.fileHash, true)
   );
 
-  const [zoomFactor, setZoomFactor] = React.useState(1);
-  function listenScrollEvent(event: React.UIEvent<HTMLImageElement, UIEvent>) {
-    setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1));
-
-    setZoomFactor((prev) => {
-      const result = prev + Math.floor((event as any).deltaY * -1);
-
-      if (result >= 8) return 8;
-      return result >= 0 ? result : 0;
-    });
-  }
+  useEffect(() => {
+    setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+  }, [props.fileHash]);
 
   return (
-    <>
-      <img
-        onWheel={listenScrollEvent}
-        alt={props.tags}
-        className={`image--default ${translateRotation} zoom-${zoomFactor}`}
-        onLoad={() => {
-          if (!props.setError || !props.setIsLoading) {
-            return;
-          }
-          props.setError(false);
-          props.setIsLoading(false);
-        }}
-        onError={() => {
-          if (!props.setError || !props.setIsLoading) {
-            return;
-          }
-          props.setError(true);
-          props.setIsLoading(false);
-        }}
-        src={imageUrl}
-      />
-    </>
+    <PanAndZoomImage
+      setError={props.setError}
+      setIsLoading={props.setIsLoading}
+      translateRotation={translateRotation}
+      onWheelCallback={() =>
+        setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1))
+      }
+      src={imageUrl}
+    />
   );
 };
 
