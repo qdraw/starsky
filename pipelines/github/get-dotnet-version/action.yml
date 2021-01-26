@@ -1,10 +1,10 @@
 outputs:
   v:
     description: "Version"
-    value: 3.1.404 
+    value: "3.1.404"
 runs:
   using: "composite"
   steps:
     - id: test
-      run: echo "::set-output name=version::$(echo 3.1.404)"
+      run: echo "::set-output name=version::$(echo nothing)"
       shell: bash
