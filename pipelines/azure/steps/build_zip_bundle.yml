@@ -1,0 +1,12 @@
+parameters:
+  runtimeArg: '-runtime="linux-arm,linux-arm64"'
+
+steps:
+
+  - task: PowerShell@2
+    displayName: 'Cake Zip'
+    inputs:
+      filePath: 'starsky/build.ps1'
+      arguments: '${{ parameters.runtimeArg }} -target="Zip"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'

@@ -1,0 +1,42 @@
+parameters:
+  runtimeArg: '-runtime="linux-arm,linux-arm64"'
+  jest: true
+  npmConfigCache: $(Pipeline.Workspace)/.npm
+
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: '[Cake] dotnet tool restore'
+    inputs:
+      command: custom
+      custom: tool
+      arguments: 'restore --tool-manifest starsky/.config/dotnet-tools.json'
+
+  - task: Cache@2
+    inputs:
+      key: 'npm | clientapp | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/starsky/clientapp/package-lock.json'
+      restoreKeys: |
+        npm | clientapp | "$(Agent.OS)"
+      path: ${{ parameters.npmConfigCache }}
+    displayName: Cache npm
+
+  - task: PowerShell@2
+    displayName: 'Cake Client [with tests]'
+    condition: and(succeeded(), eq('${{ parameters.jest }}', true) )
+    env:
+      BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+    inputs:
+      filePath: 'starsky/build.ps1'
+      arguments: '${{ parameters.runtimeArg }} -target="Client"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
+  - task: PowerShell@2
+    displayName: 'Cake Client [--no-unit-tests]'
+    condition: and(succeeded(), ne('${{ parameters.jest }}', true) )
+    env:
+      BUILD_SOURCEBRANCH: $(Build.SourceBranch)
+    inputs:
+      filePath: 'starsky/build.ps1'
+      arguments: '${{ parameters.runtimeArg }}  --no-unit-tests -target="Client"'
+      pwsh: true
+      workingDirectory: '$(Build.SourcesDirectory)/starsky/'

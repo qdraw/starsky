@@ -1,0 +1,114 @@
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  NUGET_XMLDOC_MODE: skip
+  CI: true
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+    exclude:
+    - feature/*
+  paths:
+      include:
+      - starskyapp/*
+      exclude:
+      - starsky/*
+      - starsky-tools/*
+      - starsky.netframework/*
+      - /*.md
+      - starskyapp/*.md
+      - starskyapp/readme.md
+
+# specific path build
+pr:
+  branches:
+    exclude:
+    - master
+  paths:
+    include:
+    - starskyapp/*
+    exclude:
+    - starsky/*
+    - starsky-tools/*
+    - starsky.netframework/*
+
+stages:
+- stage: buildnetcore
+  displayName: 'Build .NET Core'
+  jobs:
+  - job: buildnetcore
+    displayName: 'Build .NET Core'
+    pool:
+      vmImage: 'ubuntu-20.04'
+    steps:
+    - template: /pipelines/azure/steps/use_dotnet_version.yml
+
+    - template: /pipelines/azure/steps/build_clientapp.yml
+      parameters:
+        jest: false
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
+        npmConfigCache: $(npm_config_cache)
+
+    - template: /pipelines/azure/steps/build_server.yml
+      parameters:
+        vstest: false
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
+        nugetPackages: $(NUGET_PACKAGES)
+
+    - template: /pipelines/azure/steps/build_zip_bundle.yml
+      parameters:
+        runtimeArg: '-runtime="win7-x64,win7-x86,osx.10.12-x64"'
+
+    - template: /pipelines/azure/steps/publish_artifacts.yml
+      parameters:
+        publish: 
+          - key: osx.10.12-x64
+            value: '/starsky/starsky-osx.10.12-x64.zip' 
+          - key: generic-netcore
+            value: '/starsky/starsky-generic-netcore.zip'
+          - key: win7-x86
+            value: '/starsky/starsky-win7-x86.zip'
+          - key: win7-x64
+            value: '/starsky/starsky-win7-x64.zip'
+
+- stage: buildelectron
+  displayName: 'Build Electron'
+  jobs:
+  - job: build
+    displayName: 'Build Electron'
+    pool:
+      vmImage: 'ubuntu-latest'
+    container: electronuserland/builder:wine
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'win7-x64'
+        downloadPath: '$(Build.SourcesDirectory)'
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'osx.10.12-x64'
+        downloadPath: '$(Build.SourcesDirectory)'
+
+    - template: /pipelines/azure/steps/electron_build.yml
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starsky-win-desktop'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-win-desktop.zip'
+        ArtifactName: 'starsky-win-desktop'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: starsky-mac-desktop'
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)/starskyapp/dist/starsky-mac-desktop.zip'
+        ArtifactName: 'starsky-mac-desktop'

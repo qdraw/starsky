@@ -46,10 +46,10 @@ All these projects are separately compiled using the build script and using the 
 
 ## Build status
 
-### Windows 2019 with VS2019
+### Azure pipeline
 [![Build Status](https://qdraw.visualstudio.com/starsky/_apis/build/status/azure-pipelines-starsky?branchName=master)](https://qdraw.visualstudio.com/starsky/_build/latest?definitionId=17&branchName=master)
 
-_See `./azure-pipelines-starsky.yml` for details_
+_See `./pipelines/azure` for details_
 
 ### Github Actions 
 
