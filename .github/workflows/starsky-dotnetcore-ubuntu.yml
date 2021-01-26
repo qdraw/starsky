@@ -23,7 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       
-    - uses: ./pipelines/github/get-dotnet-version
+    - uses: ./pipelines/github/steps/get-dotnet-version
       id: get_dotnet_version
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
