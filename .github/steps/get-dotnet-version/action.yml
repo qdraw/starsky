@@ -1,0 +1,5 @@
+name: 'Get dotnet version'
+outputs:
+  v: 
+    description: "version"
+    value: 3.1.404
