@@ -1,5 +1,10 @@
-name: 'Get dotnet version'
 outputs:
-  v: 
-    description: "version"
+  v:
+    description: "Version"
     value: 3.1.404 
+runs:
+  using: "composite"
+  steps:
+    - id: test
+      run: echo "::set-output name=version::$(echo 3.1.404)"
+      shell: bash
