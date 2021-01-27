@@ -5,14 +5,18 @@ import Modal from "./modal";
 describe("Modal", () => {
   it("renders", () => {
     shallow(
-      <Modal id="test2-modal" isOpen={true} handleExit={() => {}}></Modal>
+      <Modal id="test2-modal" isOpen={true} handleExit={() => {}}>
+        &nbsp;
+      </Modal>
     );
   });
 
   describe("Close Modal", () => {
     var handleExit = jest.fn();
     var element = mount(
-      <Modal id="test-modal" isOpen={true} handleExit={handleExit}></Modal>
+      <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
+        &nbsp;
+      </Modal>
     );
 
     it("modal-exit-button", () => {
@@ -33,7 +37,9 @@ describe("Modal", () => {
     var handleExit = jest.fn();
     mount(
       <div>
-        <Modal id="test-modal" isOpen={false} handleExit={handleExit}></Modal>
+        <Modal id="test-modal" isOpen={false} handleExit={handleExit}>
+          &nbsp;
+        </Modal>
         <div className="root" />
       </div>
     );

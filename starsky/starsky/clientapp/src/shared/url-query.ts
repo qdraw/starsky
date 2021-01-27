@@ -259,6 +259,15 @@ export class UrlQuery {
     );
   };
 
+  /**
+   * /api/thumbnail/zoom/{f}@{z}
+   * @param f filehash
+   * @param z zoomfactor
+   */
+  public UrlThumbnailZoom = (f: string, z: number): string => {
+    return `/api/thumbnail/zoom/${f}@${z}`;
+  };
+
   public UrlThumbnailJsonApi = (fileHash: string): string => {
     return this.prefix + "/api/thumbnail/" + fileHash + "?json=true";
   };

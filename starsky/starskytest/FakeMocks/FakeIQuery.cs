@@ -162,7 +162,7 @@ namespace starskytest.FakeMocks
 
 		public string GetSubPathByHash(string fileHash)
 		{
-			throw new System.NotImplementedException();
+			return _fakeContext.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
 		}
 
 		public void ResetItemByHash(string fileHash)

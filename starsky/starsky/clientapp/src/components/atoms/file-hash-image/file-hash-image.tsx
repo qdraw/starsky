@@ -3,6 +3,7 @@ import { Orientation } from "../../../interfaces/IFileIndexItem";
 import DetectAutomaticRotation from "../../../shared/detect-automatic-rotation";
 import FetchGet from "../../../shared/fetch-get";
 import { UrlQuery } from "../../../shared/url-query";
+import PanAndZoomImage from "./pan-and-zoom-image";
 
 export interface IFileHashImageProps {
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,28 +41,24 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
     })();
   }, [props.fileHash, props.orientation]);
 
+  const [imageUrl, setImageUrl] = React.useState(
+    new UrlQuery().UrlThumbnailImage(props.fileHash, true)
+  );
+
+  useEffect(() => {
+    setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+  }, [props.fileHash]);
+
   return (
-    <>
-      <img
-        alt={props.tags}
-        className={"image--default " + translateRotation}
-        onLoad={() => {
-          if (!props.setError || !props.setIsLoading) {
-            return;
-          }
-          props.setError(false);
-          props.setIsLoading(false);
-        }}
-        onError={() => {
-          if (!props.setError || !props.setIsLoading) {
-            return;
-          }
-          props.setError(true);
-          props.setIsLoading(false);
-        }}
-        src={new UrlQuery().UrlThumbnailImage(props.fileHash, true)}
-      />
-    </>
+    <PanAndZoomImage
+      setError={props.setError}
+      setIsLoading={props.setIsLoading}
+      translateRotation={translateRotation}
+      onWheelCallback={() =>
+        setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1))
+      }
+      src={imageUrl}
+    />
   );
 };
 

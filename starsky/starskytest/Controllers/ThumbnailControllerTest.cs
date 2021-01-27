@@ -62,10 +62,10 @@ namespace starskytest.Controllers
 		private IStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
-			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg"};
+			var inputSubPaths = new List<string>{"/test.jpg","/test2.jpg", "/test.dng"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{CreateAnImage.Bytes,CreateAnImage.Bytes});
+					new List<byte[]>{CreateAnImage.Bytes,CreateAnImage.Bytes,CreateAnImage.Bytes});
 			return storage;
 		}
 		
@@ -103,7 +103,8 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Thumbnail_NonExistingFile_API_Test()
 		{
-			var controller = new ThumbnailController(_query,new FakeSelectorStorage());;
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
@@ -161,6 +162,23 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task Thumbnail_IgnoreRawFile()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(new FakeIQuery(
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.dng"){ FileHash = "hash1"}
+				}),storageSelector);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			await controller.Thumbnail("hash1", true);
+			
+			Assert.AreEqual(210,controller.Response.StatusCode);
+		}
+		
+		[TestMethod]
 		public async Task Thumbnail_ShowOriginalImage_API_Test()
 		{
 			var createAnImage = InsertSearchData();
@@ -209,6 +227,8 @@ namespace starskytest.Controllers
             var storage = ArrangeStorage();
             
             var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+            
             var actionResult = await controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
             var thumbnailAnswer = actionResult.StatusCode;
             Assert.AreEqual(404,thumbnailAnswer);
@@ -220,9 +240,69 @@ namespace starskytest.Controllers
 		{
 			var storage = ArrangeStorage();
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
+		}
+		
+				
+		[TestMethod]
+		public async Task ByZoomFactor_NonExistingFile_API_Test()
+		{
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = await controller.ByZoomFactor("404filehash", 1) as NotFoundObjectResult;
+			var thumbnailAnswer = actionResult.StatusCode;
+			Assert.AreEqual(404,thumbnailAnswer);
+		}
+
+		[TestMethod]
+		public async Task ByZoomFactor_InputBadRequest()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(_query,storageSelector);;
+			var actionResult = await controller.ByZoomFactor("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task ByZoomFactor_IgnoreRawFile()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(new FakeIQuery(
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.dng"){ FileHash = "hash1"}
+				}),storageSelector);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			await controller.ByZoomFactor("hash1");
+			
+			Assert.AreEqual(210,controller.Response.StatusCode);
+		}
+		
+		
+		[TestMethod]
+		public async Task ByZoomFactor_ShowOriginalImage_API_Test()
+		{
+			var createAnImage = InsertSearchData();
+			var storage = ArrangeStorage();
+
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = await controller.ByZoomFactor(createAnImage.FileHash, 1) as FileStreamResult;
+			var thumbnailAnswer = actionResult.ContentType;
+			
+			controller.Response.Headers.TryGetValue("x-filename", out var value ); 
+			Assert.AreEqual("test.jpg", value.ToString());
+			
+			Assert.AreEqual("image/jpeg",thumbnailAnswer);
+			
+			actionResult.FileStream.Dispose(); // for windows
 		}
 	}
 }

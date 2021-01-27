@@ -25,21 +25,26 @@ namespace starsky.Controllers
 		}
 		
         /// <summary>
-        /// Http Endpoint to get full size image or thumbnail
+        /// Get thumbnail with fallback to original source image.
+        /// Return source image when IsExtensionThumbnailSupported is true
         /// </summary>
         /// <param name="f">one single file</param>
         /// <param name="isSingleItem">true = load original</param>
         /// <param name="json">text as output</param>
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
+        /// <response code="204">thumbnail is corrupt</response>
+        /// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
         /// <response code="404">item not found on disk</response>
-        /// <response code="409">Conflict, you did try get for example a thumbnail of a raw file</response>
+        /// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
         /// <response code="209">"Thumbnail is not ready yet"</response>
         /// <response code="401">User unauthorized</response>
         [HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
+        [ProducesResponseType(204)] // thumbnail is corrupt
+		[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
-        [ProducesResponseType(409)] // raw
+        [ProducesResponseType(210)] // raw
         [ProducesResponseType(209)] // "Thumbnail is not ready yet"
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
@@ -87,7 +92,11 @@ namespace starsky.Controllers
             
             // Cached view of item
             var sourcePath = _query.GetSubPathByHash(f);
-            if (sourcePath == null) return NotFound("not in index");
+            if ( sourcePath == null )
+            {
+	            SetExpiresResponseHeadersToZero();
+	            return NotFound("not in index");
+            }
             
 	        // Need to check again for recently moved files
 	        if (!_iStorage.ExistFile(sourcePath))
@@ -96,6 +105,7 @@ namespace starsky.Controllers
 		        _query.ResetItemByHash(f);
 		        // query database again
 		        sourcePath = _query.GetSubPathByHash(f);
+		        SetExpiresResponseHeadersToZero();
 		        if (sourcePath == null) return NotFound("not in index");
 	        }
 
@@ -119,13 +129,59 @@ namespace starsky.Controllers
 		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
 		        return File(fs1, MimeHelper.GetMimeType(fileExt));
 	        }
-	        Response.StatusCode = 409; // A conflict, that the thumb is not generated yet
+	        
+	        Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
 	        return Json("Thumbnail is not supported; for example you try to view a raw file");
-
-	        // When you have duplicate files and one of them is removed and there is no thumbnail
-            // generated yet you might get an false error
         }
-        
+
+        /// <summary>
+        /// Get zoomed in image by fileHash.
+        /// At the moment this is the source image
+        /// </summary>
+        /// <param name="f">one single file</param>
+        /// <param name="z">zoom factor? </param>
+        /// <returns>Image</returns>
+        /// <response code="200">returns content of the file or when json is true, "OK"</response>
+        /// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
+        /// <response code="404">item not found on disk</response>
+        /// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
+        /// <response code="401">User unauthorized</response>
+        [HttpGet("/api/thumbnail/zoom/{f}@{z}")]
+        [ProducesResponseType(200)] // file
+        [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
+        [ProducesResponseType(404)] // not found
+        [ProducesResponseType(210)] // raw
+        public async Task<IActionResult> ByZoomFactor(
+	        string f,
+	        int z = 0)
+        {
+	        // For serving jpeg files
+	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
+	        
+	        // Restrict the fileHash to letters and digits only
+	        // I/O function calls should not be vulnerable to path injection attacks
+	        if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+	        {
+		        return BadRequest();
+	        }
+	        
+	        // Cached view of item
+	        var sourcePath = _query.GetSubPathByHash(f);
+	        if (sourcePath == null) return NotFound("not in index");
+	        
+	        if (ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath))
+	        {
+		        var fs1 = _iStorage.ReadStream(sourcePath);
+
+		        var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
+		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
+		        return File(fs1, MimeHelper.GetMimeType(fileExt));
+	        }
+	        
+	        Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
+	        return Json("Thumbnail is not supported; for example you try to view a raw file");
+        }
+
         /// <summary>
         /// Force Http context to no browser cache
         /// </summary>
