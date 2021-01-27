@@ -228,5 +228,27 @@ namespace starskytest.Controllers
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
 		}
+		
+				
+		[TestMethod]
+		public async Task ByZoomFactor_NonExistingFile_API_Test()
+		{
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = await controller.ByZoomFactor("404filehash", 1) as NotFoundObjectResult;
+			var thumbnailAnswer = actionResult.StatusCode;
+			Assert.AreEqual(404,thumbnailAnswer);
+		}
+
+		[TestMethod]
+		public async Task ByZoomFactor_InputBadRequest()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(_query,storageSelector);;
+			var actionResult = await controller.ByZoomFactor("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
+		
 	}
 }
