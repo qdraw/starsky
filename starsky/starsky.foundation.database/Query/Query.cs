@@ -535,11 +535,16 @@ namespace starsky.foundation.database.Query
 		        _context.FileIndex.Add(updateStatusContent);
 		        _context.SaveChanges();
 	        }
-	        catch (ObjectDisposedException)
+	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.FileIndex.Add(updateStatusContent);
 		        context.SaveChanges();
+	        }
+	        catch ( DbUpdateConcurrencyException e)
+	        {
+		        Console.WriteLine("AddItem catch-ed DbUpdateConcurrencyException");
+		        Console.WriteLine(e);
 	        }
             
             AddCacheItem(updateStatusContent);
