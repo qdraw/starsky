@@ -114,6 +114,43 @@ describe("FileHashImage", () => {
     component.unmount();
   });
 
+  it("should ignore when DetectAutomaticRotation is true", async () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 200
+      } as IConnectionDefault
+    );
+
+    let detectRotationSpy = jest
+      .spyOn(DetectAutomaticRotation, "default")
+      .mockImplementationOnce(() => {
+        return Promise.resolve(true);
+      });
+
+    var spyGet = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    // need to await here
+    var component = mount(<></>);
+    await act(async () => {
+      component = await mount(
+        <FileHashImage
+          isError={false}
+          fileHash="hash"
+          orientation={Orientation.Horizontal}
+        />
+      );
+    });
+
+    await expect(detectRotationSpy).toBeCalled();
+
+    expect(spyGet).toBeCalledTimes(0);
+
+    spyGet.mockReset();
+    component.unmount();
+  });
+
   it("should replace source image when event is returned", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
