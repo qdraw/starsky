@@ -19,6 +19,14 @@ steps:
       path: ${{ parameters.npmConfigCache }}
     displayName: Cache npm ${{ parameters.npmConfigCache }}
 
+    - task: Bash@3
+      enabled: true
+      displayName: 'show npm cache'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -lah ${{ parameters.npmConfigCache }}
+
   - task: PowerShell@2
     displayName: 'Cake Client [with tests]'
     condition: and(succeeded(), eq('${{ parameters.jest }}', true) )
@@ -40,3 +48,12 @@ steps:
       arguments: '${{ parameters.runtimeArg }}  --no-unit-tests -target="Client"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
+
+
+    - task: Bash@3
+      enabled: true
+      displayName: 'show clientapp folder'
+      inputs:
+        targetType: 'inline'
+        script: |
+          ls -lah '$(Build.SourcesDirectory)/starsky/starsky/clientapp/build/static/css'
