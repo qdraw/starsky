@@ -9,6 +9,7 @@ import * as DetectAutomaticRotation from "../../../shared/detect-automatic-rotat
 import * as FetchGet from "../../../shared/fetch-get";
 import { UrlQuery } from "../../../shared/url-query";
 import FileHashImage from "./file-hash-image";
+import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
   it("renders", () => {
@@ -111,5 +112,47 @@ describe("FileHashImage", () => {
     expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
     component.unmount();
+  });
+
+  it("should replace source image when event is returned", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onWheelCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
+
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(component.find("img").prop("src")).toBe(
+      new UrlQuery().UrlThumbnailZoom("hash", 1)
+    );
   });
 });
