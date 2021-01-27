@@ -1,9 +1,11 @@
-steps:
+parameters:
+  nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
+steps:
   - task: Cache@2
     inputs:
-      key: 'nuget | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/nuget-packages-list.json'
+      key: 'nuget | starsky | "$(Agent.OS)" | $(Build.SourcesDirectory)/starsky/nuget-packages-list.json'
       restoreKeys: |
-        nuget | "$(Agent.OS)"
+        nuget | starsky | "$(Agent.OS)"
       path: ${{ parameters.nugetPackages }}
-    displayName: Cache NuGet packages
+    displayName: Cache NuGet packages ${{ parameters.nugetPackages }}
