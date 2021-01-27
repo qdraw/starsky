@@ -49,11 +49,3 @@ steps:
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
-
-  - task: Bash@3
-    enabled: true
-    displayName: 'show clientapp folder'
-    inputs:
-      targetType: 'inline'
-      script: |
-        ls -lah '$(Build.SourcesDirectory)/starsky/starsky/clientapp/build/static/css'
