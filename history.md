@@ -44,11 +44,12 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.5 _(Unreleased)_ - 2021-01-??
-- [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug #188
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x]   (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
 - [x]   (Fixed) _Front-end_ Archive when added tag/description is cleared is still send _issue #279_
 - [x]   (Changed) _Back-end_ "/api/thumbnail/{f}" status 409 is changed to status 210
+- [x]   (Added) _Front-end_  Zoom in detailView _issue #242_
+- [x]   (Fixed) _Back-end_  Delete large number of files gives exception _issue #281_
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
