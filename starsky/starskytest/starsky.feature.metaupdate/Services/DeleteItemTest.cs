@@ -86,6 +86,39 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.IsFalse(storage.ExistFile("/test.jpg"));
 		}
 		
+		
+		[TestMethod]
+		public void Delete_IsFileRemoved_WithCollection()
+		{
+			var storage = new FakeIStorage(new List<string> {"/", "/dir"},
+				new List<string> {"/dir/test.jpg"},
+				new List<byte[]> {FakeCreateAn.CreateAnImage.Bytes});
+			var selectorStorage = new FakeSelectorStorage(storage);
+
+			var fakeQuery =
+				new FakeIQuery(new List<FileIndexItem> {
+					new FileIndexItem("/dir") {IsDirectory = true, Tags = "!delete!" },
+
+					new FileIndexItem("/dir/test.jpg") {Tags = "!delete!" },
+					new FileIndexItem("/dir/test.dng") {Tags = "!delete!" }}
+				);
+			
+			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
+			var result = deleteItem.Delete("/dir/test.jpg", true);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
+				result.FirstOrDefault().Status);
+			
+			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test.jpg"));
+			Assert.IsFalse(storage.ExistFile("/test.jpg"));
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
+				result[1].Status);
+			
+			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test.dng"));
+			Assert.IsFalse(storage.ExistFile("/test.dng"));
+		}
+		
 		[TestMethod]
 		public void Delete_IsJsonSideCarFileRemoved()
 		{

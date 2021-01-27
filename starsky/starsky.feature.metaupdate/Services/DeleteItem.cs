@@ -95,11 +95,15 @@ namespace starsky.feature.metaupdate.Services
 				);
 			}
 
-			foreach ( var collectionSubPath in collectionAndInsideDirectoryList )
+			// collectionAndInsideDirectoryList should not have duplicate items
+			foreach ( var collectionSubPath in new HashSet<string>(collectionAndInsideDirectoryList) )
 			{
 				var detailViewItem = _query.SingleItem(collectionSubPath, 
 					null, false, false);
-                    
+				
+				// null only happens when some other process also delete this item
+				if ( detailViewItem == null ) continue;
+				
 				// return a Ok, which means the file is deleted
 				detailViewItem.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
      

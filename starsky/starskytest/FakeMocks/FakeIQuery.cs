@@ -98,6 +98,14 @@ namespace starskytest.FakeMocks
 			if ( fileIndexItem == null ) return null;
 			fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
+			if ( enableCollections )
+			{
+				fileIndexItem.CollectionPaths.AddRange(
+					_fakeContext.Where(
+						p => p.FileCollectionName == fileIndexItem.FileCollectionName)
+						.Select(p => p.FilePath)
+					);
+			}
 			return new DetailView {FileIndexItem = fileIndexItem,};
 		}
 
