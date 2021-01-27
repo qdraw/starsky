@@ -8,4 +8,4 @@ steps:
       restoreKeys: |
         nuget | starsky | "$(Agent.OS)"
       path: ${{ parameters.nugetPackages }}
-    displayName: Cache NuGet packages ${{ parameters.nugetPackages }}
+    displayName: Cache NuGet packages
