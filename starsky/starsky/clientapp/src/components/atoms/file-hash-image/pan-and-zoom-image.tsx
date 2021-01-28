@@ -16,13 +16,21 @@ export interface IPanAndZoomImage {
 const PanAndZoomImage = ({ src, ...props }: IPanAndZoomImage) => {
   const [isPanning, setPanning] = useState(false);
   const [image, setImage] = useState({ width: 0, height: 0 });
-  const [position, setPosition] = useState({
+
+  const defaultPosition = {
     oldX: 0,
     oldY: 0,
     x: 0,
     y: 0,
     z: 1
-  });
+  };
+  const [position, setPosition] = useState(defaultPosition);
+
+  useEffect(() => {
+    setPosition(defaultPosition);
+    // use Memo gives issues elsewhere
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [src]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -103,7 +111,11 @@ const PanAndZoomImage = ({ src, ...props }: IPanAndZoomImage) => {
 
   return (
     <div
-      className="pan-zoom-image-container"
+      className={
+        !isPanning
+          ? "pan-zoom-image-container grab"
+          : "pan-zoom-image-container is-panning"
+      }
       ref={containerRef}
       onMouseDown={onMouseDown}
       onWheel={onWheel}
