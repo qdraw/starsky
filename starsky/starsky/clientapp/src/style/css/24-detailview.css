@@ -50,8 +50,10 @@
 }
 
 .pan-zoom-image--image.Horizontal {
-  transform: translate(-50%, calc(50vh - 25px - 50%));
+  position: relative;
+  transform: translate(-50%, -50%);
   margin-left: 50%;
+  top: 50%;
 }
 
 .detailview .image--default.Rotate180 {
