@@ -136,9 +136,12 @@ export async function LocationUrlCallback(
       var locationOk = response.statusCode == 200 || response.statusCode == 503;
       if (locationOk) {
         await appConfig.set(LocationUrlSettingsKey, locationUrl);
+
         // so you can save change the location
         await SetupFileWatcher();
-        await closeAndCreateNewWindow();
+        setTimeout(async () => {
+          await closeAndCreateNewWindow();
+        }, 100);
       }
 
       console.log("locationOk >");

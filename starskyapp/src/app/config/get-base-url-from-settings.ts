@@ -7,9 +7,10 @@ import {
 } from "./location-settings.const";
 
 export async function GetBaseUrlFromSettings(): Promise<IlocationUrlSettings> {
-  const isRemote = (await appConfig.get(
+  const isRemoteString = (await appConfig.get(
     LocationIsRemoteSettingsKey
-  )) as boolean;
+  )) as string;
+  const isRemote = isRemoteString !== "false";
 
   const currentSettings = {
     location: await appConfig.get(LocationUrlSettingsKey),
@@ -17,12 +18,18 @@ export async function GetBaseUrlFromSettings(): Promise<IlocationUrlSettings> {
     isLocal: false
   } as IlocationUrlSettings;
 
-  if (!isRemote || !currentSettings.location) {
-    return {
-      isValid: null,
-      isLocal: true,
-      location: `http://localhost:${appPort}`
-    } as IlocationUrlSettings;
+  const defaultLocalLocation = {
+    isValid: null,
+    isLocal: true,
+    location: `http://localhost:${appPort}`
+  } as IlocationUrlSettings;
+
+  if (isRemote === false) {
+    return defaultLocalLocation;
   }
+  if (!currentSettings.location) {
+    return defaultLocalLocation;
+  }
+
   return currentSettings;
 }
