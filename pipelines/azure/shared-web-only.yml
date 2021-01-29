@@ -6,6 +6,7 @@ variables:
   NUGET_XMLDOC_MODE: skip
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
 trigger:
   branches:
