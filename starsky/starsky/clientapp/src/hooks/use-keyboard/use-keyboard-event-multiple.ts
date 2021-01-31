@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 /**
  * returns
  */
-export default function useKeyboardEventMultiple() {
+export default function useKeyboardEventMultiple(dependencies: any = []) {
   const [keysPressed, setKeyPressed] = useState(new Set(new Array<string>()));
 
   function downHandler({ key }: KeyboardEvent) {
@@ -25,7 +25,7 @@ export default function useKeyboardEventMultiple() {
 
     // Empty array ensures that effect is only run on mount and unmount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [...dependencies]);
 
   return keysPressed;
 }
