@@ -1,6 +1,21 @@
 import "core-js/features/string/match"; // event.key.match
 import { useEffect } from "react";
 
+/**
+ * Use one key at the time. The regex is an or-statement
+ * ```
+ * useKeyboardEvent(
+      /^([ti])$/,
+      (event: KeyboardEvent) => {
+        // when pressing t or i
+      },
+      [deps]
+    );
+    ```
+ * @param regex - the or statement
+ * @param callback - function that is called
+ * @param dependencies - deps array 
+ */
 function useKeyboardEvent(
   regex: RegExp,
   callback: Function,

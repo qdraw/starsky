@@ -2,7 +2,7 @@ import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { DetailViewContext } from "../../../contexts/detailview-context";
-import * as useKeyboardEvent from "../../../hooks/use-keyboard-event";
+import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import {
   IConnectionDefault,
   newIConnectionDefault

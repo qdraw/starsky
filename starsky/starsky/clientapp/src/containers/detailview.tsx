@@ -6,7 +6,7 @@ import DetailViewMp4 from "../components/organisms/detail-view-media/detail-view
 import DetailViewSidebar from "../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../contexts/detailview-context";
 import useGestures from "../hooks/use-gestures/use-gestures";
-import useKeyboardEvent from "../hooks/use-keyboard-event";
+import useKeyboardEvent from "../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../hooks/use-location";
 import {
   IDetailView,
