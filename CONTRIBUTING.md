@@ -17,7 +17,9 @@
 
 * Ensure the PR description clearly describes the problem and solution. Include the relevant issue number if applicable.
 
-* Before submitting, please use the template
+* Make sure that the [Pull Request template](PULL_REQUEST_TEMPLATE.md) is followed
+
+* Use Github Issues to discuss choices and try to keep the pull request as small as possible. Small PRs are easier to check. 
 
 #### **Did you fix whitespace, format code, or make a purely cosmetic patch?**
 
@@ -29,7 +31,7 @@ Changes that are cosmetic in nature and do not add anything substantial to the s
 
 #### **Do you have questions about the source code?**
 
-* We currently don't have a place, you can [contact](https://qdraw.nl/contact.html) me.
+* We currently don't have a special place for this, you can [contact](https://qdraw.nl/contact.html) me.
 
 #### **Do you want to contribute to the Starsky documentation?**
 
