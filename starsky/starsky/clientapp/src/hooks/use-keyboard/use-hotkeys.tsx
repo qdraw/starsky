@@ -1,5 +1,6 @@
 import "core-js/features/string/match"; // event.key.match
 import { useEffect } from "react";
+import { Keyboard } from "../../shared/keyboard";
 
 export interface IHotkeysKeyboardEvent {
   key: string;
@@ -25,11 +26,13 @@ export interface IHotkeysKeyboardEvent {
  */
 function useHotKeys(
   predefined: IHotkeysKeyboardEvent = { key: "" },
-  callback: Function,
+  callback: (event: KeyboardEvent) => void,
   dependencies: any = []
 ) {
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
+      if (new Keyboard().isInForm(event)) return;
+
       if (!predefined || !predefined.key) {
         return;
       }

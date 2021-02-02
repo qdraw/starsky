@@ -3,6 +3,7 @@ import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
+import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
 import {
   IConnectionDefault,
@@ -421,6 +422,15 @@ describe("MenuArchive", () => {
       component.unmount();
 
       globalHistory.navigate("/");
+    });
+
+    it("more and click on select all", () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
+        return { key: "a", ctrlKey: true };
+      });
+      var component = mount(<MenuArchive />);
     });
 
     it("more and click on select all", () => {
