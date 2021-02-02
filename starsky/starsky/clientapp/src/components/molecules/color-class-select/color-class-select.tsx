@@ -1,7 +1,7 @@
 import "core-js/modules/es.array.find";
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useKeyboardEvent from "../../../hooks/use-keyboard-event";
+import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { CastToInterface } from "../../../shared/cast-to-interface";
 import FetchPost from "../../../shared/fetch-post";

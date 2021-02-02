@@ -4,6 +4,7 @@ import {
   defaultStateFallback
 } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { FileListCache } from "../../../shared/filelist-cache";
@@ -69,6 +70,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     new Select(select, setSelect, state, history).undoSelection();
   var removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
+
+  // Command + A for mac os
+  useHotKeys({ key: "a", metaKey: true }, allSelection, []);
+  // Ctrl + A for windows
+  useHotKeys({ key: "a", ctrlKey: true }, allSelection, []);
 
   /* only update when the state is changed */
   const [isReadOnly, setReadOnly] = React.useState(state.isReadOnly);

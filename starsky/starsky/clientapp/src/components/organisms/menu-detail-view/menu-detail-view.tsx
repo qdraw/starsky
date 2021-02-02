@@ -2,7 +2,7 @@ import { Link } from "@reach/router";
 import React, { useEffect, useState } from "react";
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useKeyboardEvent from "../../../hooks/use-keyboard-event";
+import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

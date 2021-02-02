@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ArchiveContext } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useKeyboardEvent from "../../../hooks/use-keyboard-event";
+import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import useLocation from "../../../hooks/use-location";
 import { PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";

@@ -31,7 +31,7 @@ export const mountReactHook = (hook: any, args: any[]) => {
     return children(hook(...args));
   };
   const componentHook = {};
-  let componentMount;
+  let componentMount = mount(<></>);
 
   act(() => {
     componentMount = mount(
