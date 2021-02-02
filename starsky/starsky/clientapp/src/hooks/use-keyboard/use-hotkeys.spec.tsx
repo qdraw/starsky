@@ -4,9 +4,25 @@ import useHotKeys, { IHotkeysKeyboardEvent } from "./use-hotkeys";
 
 describe("useHotKeys", () => {
   describe("should ignore", () => {
-    it("missing input", () => {
+    it("missing input as empty object", () => {
       const callback = jest.fn();
       const test = mountReactHook(useHotKeys, [{}, callback]);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "q",
+        altKey: true
+      });
+      window.dispatchEvent(event);
+
+      expect(callback).toBeCalledTimes(0);
+      test.componentMount.unmount();
+    });
+
+    it("missing input as undefined", () => {
+      const callback = jest.fn();
+      const test = mountReactHook(useHotKeys, [undefined, callback]);
 
       const event = new KeyboardEvent("keydown", {
         bubbles: true,

@@ -10,10 +10,13 @@ export interface IHotkeysKeyboardEvent {
   shiftKey?: boolean;
 }
 /**
- * Use one key at the time. The regex is an or-statement
+ * Use key with alt, ctrl, command or shift key
  * ```
- * useKeyboardEvent(
-      /^([ti])$/,
+ *  useHotKeys(
+      {
+        key: "q",
+        altKey: true
+      },
       (event: KeyboardEvent) => {
         // when pressing t or i
       },
