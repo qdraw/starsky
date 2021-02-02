@@ -427,15 +427,6 @@ describe("MenuArchive", () => {
     it("more and click on select all", () => {
       jest.spyOn(React, "useContext").mockReset();
 
-      jest.spyOn(useHotKeys, "default").mockImplementationOnce(() => {
-        return { key: "a", ctrlKey: true };
-      });
-      var component = mount(<MenuArchive />);
-    });
-
-    it("more and click on select all", () => {
-      jest.spyOn(React, "useContext").mockReset();
-
       var state = {
         subPath: "/",
         fileIndexItems: [
@@ -450,18 +441,13 @@ describe("MenuArchive", () => {
 
       jest
         .spyOn(React, "useContext")
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        })
-        .mockImplementationOnce(() => {
-          return contextValues;
-        });
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -552,6 +538,42 @@ describe("MenuArchive", () => {
         globalHistory.navigate("/");
         component.unmount();
       });
+    });
+
+    it("keyboard ctrl a and command a", () => {
+      jest.spyOn(React, "useContext").mockReset();
+
+      const useHotkeysSpy = jest
+        .spyOn(useHotKeys, "default")
+        .mockImplementationOnce(() => {
+          return { key: "a", ctrlKey: true };
+        });
+
+      var state = {
+        subPath: "/",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      var contextValues = { state, dispatch: jest.fn() };
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      var component = mount(<MenuArchive />);
+
+      expect(useHotkeysSpy).toBeCalled();
+      expect(useHotkeysSpy).toBeCalledTimes(2);
+
+      component.unmount();
     });
 
     it("menu click MessageMoveToTrash", async () => {
