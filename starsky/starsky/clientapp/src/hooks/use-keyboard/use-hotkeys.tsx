@@ -44,7 +44,7 @@ function useHotKeys(
         altKey: eventAltKey,
         ctrlKey: eventCtrlKey,
         metaKey: eventMetaKey,
-        shiftKey: eventShifKey
+        shiftKey: eventShiftKey
       } = event;
 
       const {
@@ -60,7 +60,7 @@ function useHotKeys(
         eventAltKey === preDefinedAltKey &&
         eventCtrlKey === preDefinedCtrlKey &&
         eventMetaKey === preDefinedMetaKey &&
-        eventShifKey === preDefinedShiftKey
+        eventShiftKey === preDefinedShiftKey
       ) {
         callback(event);
       }
