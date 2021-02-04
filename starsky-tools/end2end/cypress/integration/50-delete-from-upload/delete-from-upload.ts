@@ -36,6 +36,8 @@ describe('DetailView (from upload)', () => {
     cy.get('.item.item--select').click()
     cy.get('.item.item--more').click()
 
+    cy.get('[data-test=select-all]').click()
+
     // cy.get(flow.content)
     // cy.get('.folder > div').should(($lis) => {
     //   expect($lis).to.have.length(3)
