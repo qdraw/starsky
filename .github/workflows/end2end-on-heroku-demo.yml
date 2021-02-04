@@ -2,6 +2,10 @@ name: end2end on heroku-demo
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ master ]
+    paths:
+    - 'starsky/starsky-tools/end2end/**'
 
 jobs:
   test:
@@ -28,7 +32,6 @@ jobs:
       with:
         name: cypress-screenshots
         path: starsky-tools/end2end/cypress/screenshots
-        
 
     - name: Upload videos (always)
       uses: actions/upload-artifact@v2
