@@ -178,7 +178,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                 </li>
               ) : null}
               {select.length !== state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => allSelection()}>
+                <li
+                  className="menu-option"
+                  data-test="select-all"
+                  onClick={() => allSelection()}
+                >
                   {MessageSelectAll}
                 </li>
               ) : null}

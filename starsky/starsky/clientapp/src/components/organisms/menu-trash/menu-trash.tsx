@@ -233,7 +233,11 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
             <MoreMenu>
-              <li className="menu-option" onClick={() => allSelection()}>
+              <li
+                className="menu-option"
+                data-test="select-all"
+                onClick={() => allSelection()}
+              >
                 {MessageSelectAll}
               </li>
             </MoreMenu>
@@ -248,7 +252,11 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
                 </li>
               ) : null}
               {select.length !== state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => allSelection()}>
+                <li
+                  className="menu-option"
+                  data-test="select-all"
+                  onClick={() => allSelection()}
+                >
                   {MessageSelectAll}
                 </li>
               ) : null}

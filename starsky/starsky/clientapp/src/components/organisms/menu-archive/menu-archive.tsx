@@ -323,7 +323,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 </li>
               ) : null}
               {select.length !== state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => allSelection()}>
+                <li
+                  className="menu-option"
+                  data-test="select-all"
+                  onClick={() => allSelection()}
+                >
                   {MessageSelectAll}
                 </li>
               ) : null}
