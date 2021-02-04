@@ -62,7 +62,7 @@ describe("archive-sidebar-selection-list", () => {
       const component = shallow(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
-      var allSelectionButton = component.find('[data-test="allSelection"]');
+      var allSelectionButton = component.find('[data-test="select-all"]');
 
       var spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
 
