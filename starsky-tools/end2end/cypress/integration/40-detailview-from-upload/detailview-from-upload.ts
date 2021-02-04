@@ -1,3 +1,4 @@
+import { uploadFileName1 } from 'integration/10-upload-to-folder/upload-filename1'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
@@ -29,6 +30,10 @@ describe('DetailView (from upload)', () => {
   const fileName2 = '20200822_111408.jpg'
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
+
+  it('uploadFileName1 (to make sure the config is right)', () => {
+    uploadFileName1(config.url, fileName1, false)
+  })
 
   it('Check if folder is there and if files are in folder', () => {
     if (!config.isEnabled) return

@@ -27,7 +27,7 @@ describe('Delete file from upload', () => {
   })
   const fileName1 = '20200822_111408.jpg'
 
-  it('uploadFileName1 (to make sure te config is right)', () => {
+  it('uploadFileName1 (to make sure the config is right)', () => {
     uploadFileName1(config.url, fileName1, false)
   })
 
