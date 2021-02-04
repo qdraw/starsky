@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-    - 'starsky/starsky-tools/end2end/**'
+    - 'starsky-tools/end2end/**'
 
 jobs:
   test:
