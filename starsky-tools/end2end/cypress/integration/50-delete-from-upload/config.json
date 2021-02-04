@@ -1,0 +1,16 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "trash": "/trash",
+        "urlApi": "/api/index/?f=/starsky-end2end-test"
+      },
+      "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "trash": "/trash",
+        "urlApi": "/api/index/?f=/starsky-end2end-test"
+      }
+    }
+}
