@@ -38,6 +38,17 @@ pool:
 
 steps:
 
+- task: Bash@3
+  enabled: true
+  displayName: 'debug'
+  inputs:
+    targetType: 'inline'
+    script: |
+      ls $(Build.SourcesDirectory)/
+      ls $(Build.SourcesDirectory)/starsky/
+      ls $(Build.SourcesDirectory)/starsky/starsky-tools
+      ls $(Build.SourcesDirectory)/starsky/starsky/generic-site
+
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
     jest: false
