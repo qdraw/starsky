@@ -17,11 +17,15 @@ describe('Delete file from upload', () => {
     cy.sendAuthenticationHeader()
   })
 
-  const fileName1 = '20200822_111408.jpg'
+  const fileName2 = '20200822_111408.jpg'
+  const fileName1 = '20200822_112430.jpg'
+  const fileName3 = '20200822_134151.jpg'
 
   it('uploadFileName1 (to make sure the config is right)', () => {
     checkIfExistAndCreate(config)
     uploadFileName1(config.url, fileName1, false)
+    uploadFileName1(config.url, fileName2, false)
+    uploadFileName1(config.url, fileName3, false)
   })
 
   it('remove first on to trash and undo afterwards', () => {

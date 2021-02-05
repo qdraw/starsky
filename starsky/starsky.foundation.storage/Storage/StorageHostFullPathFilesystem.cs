@@ -288,14 +288,22 @@ namespace starsky.foundation.storage.Storage
 		public async Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
-			using (var fileStream = new FileStream(path, FileMode.Create, 
-				FileAccess.Write, FileShare.Read, 4096, 
-				FileOptions.Asynchronous | FileOptions.SequentialScan))
+			try
 			{
-				await stream.CopyToAsync(fileStream);
+				using (var fileStream = new FileStream(path, FileMode.Create, 
+					FileAccess.Write, FileShare.Read, 4096, 
+					FileOptions.Asynchronous | FileOptions.SequentialScan))
+				{
+					await stream.CopyToAsync(fileStream);
+				}
+				stream.Dispose();
+				return true;
 			}
-			stream.Dispose();
-			return true;
+			catch ( IOException exception)
+			{
+				Console.WriteLine("catch-ed IOException: " + exception);
+				return false;
+			}
 		}
 
 		/// <summary>

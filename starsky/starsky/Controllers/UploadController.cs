@@ -103,12 +103,19 @@ namespace starsky.Controllers
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
 				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
+
+				if ( await _iStorage.WriteStreamAsync(tempFileStream, subPath) )
+				{
+					// success
+					await tempFileStream.DisposeAsync();
+				}
+				else // false
+				{
+					fileIndexResultsList[i].Status = ImportStatus.FileError;
+				}
 				
-				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
-				await tempFileStream.DisposeAsync();
-				
-				 // clear directory cache
-				 _query.RemoveCacheParentItem(subPath);
+				// clear directory cache
+				_query.RemoveCacheParentItem(subPath);
 			 
 				_iHostStorage.FileDelete(tempImportPaths[i]);
 			}
