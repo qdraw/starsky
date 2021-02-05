@@ -44,7 +44,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      ls $(Build.SourcesDirectory)/starsky-tools
+      ls $(Build.SourcesDirectory)/starsky-tools/end2end
 
 - template: /pipelines/azure/steps/publish_artifacts.yml
   parameters:
