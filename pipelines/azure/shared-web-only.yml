@@ -50,4 +50,4 @@ steps:
       - key: generic-site
         value: '/starsky/starsky/generic-site' 
       - key: starksy-tools-end2end
-        value: '/starksy-tools/end2end' 
+        value: '/starsky/starksy-tools/end2end' 
