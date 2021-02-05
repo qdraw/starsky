@@ -14,6 +14,16 @@
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
         <SynchReleaseVersion>false</SynchReleaseVersion>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- https://www.ttmind.com/techpost/how-to-reduce-the-size-of-published-files-of-aspnet-core-pro-->
+        <!--disable Quick JIT is enabled and creates fully optimized code -->
+        <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+        <!--disable TC completely, use this MSBuild property-->
+        <TieredCompilation>false</TieredCompilation>
+        <!--Ready To Run-->
+        <PublishReadyToRun>true</PublishReadyToRun>
+    </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
