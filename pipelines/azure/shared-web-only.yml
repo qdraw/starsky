@@ -44,10 +44,13 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      ls $(Build.SourcesDirectory)/
-      ls $(Build.SourcesDirectory)/starsky/
-      ls $(Build.SourcesDirectory)/starsky/starsky-tools
-      ls $(Build.SourcesDirectory)/starsky/starsky/generic-site
+      ls $(Build.SourcesDirectory)/starsky-tools
+
+- template: /pipelines/azure/steps/publish_artifacts.yml
+  parameters:
+    publish: 
+      - key: starksy-tools-end2end
+        value: '/starksy-tools/end2end' 
 
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
@@ -61,4 +64,4 @@ steps:
       - key: generic-site
         value: '/starsky/starsky/generic-site' 
       - key: starksy-tools-end2end
-        value: '/starsky/starksy-tools/end2end' 
+        value: '/starksy-tools/end2end' 
