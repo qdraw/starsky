@@ -1,4 +1,5 @@
 import { uploadFileName1 } from 'integration/10-upload-to-folder/upload-filename1'
+import { checkIfExistAndCreate } from 'integration/helpers/create-directory-helper'
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 const config = configFile[envFolder][envName]
@@ -14,20 +15,12 @@ describe('Delete file from upload', () => {
     cy.resetStorage()
 
     cy.sendAuthenticationHeader()
-
-    // check if folder /starsky-end2end-test is here
-    cy.request({
-      url: config.urlApi,
-      failOnStatusCode: true,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    })
   })
+
   const fileName1 = '20200822_111408.jpg'
 
   it('uploadFileName1 (to make sure the config is right)', () => {
+    checkIfExistAndCreate(config)
     uploadFileName1(config.url, fileName1, false)
   })
 

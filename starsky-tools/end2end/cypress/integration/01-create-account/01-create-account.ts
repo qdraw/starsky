@@ -6,7 +6,10 @@ const config = configFile[envFolder][envName]
 describe('Create Account', () => {
   beforeEach('Check some config settings and do them before each test', () => {
     // Check if test is enabled for current environment
-    if (!config.isEnabled) return false
+    if (!config.isEnabled) {
+      cy.log('not enabled for this env')
+      return false
+    }
 
     // Reset storage before every new test
     cy.resetStorage()

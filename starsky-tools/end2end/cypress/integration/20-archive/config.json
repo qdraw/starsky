@@ -7,6 +7,10 @@
       "heroku-demo" : {
         "isEnabled": true,
         "url": "/?f=/"
+      },
+      "no-create-account" : {
+        "isEnabled": true,
+        "url": "/?f=/"
       }
     }
   }

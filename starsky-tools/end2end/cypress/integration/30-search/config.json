@@ -4,9 +4,13 @@
         "isEnabled": true,
         "url": "/search",
         "urlSearchJpg": "/search?t=-imageformat:jpg"
-
       },
       "heroku-demo" : {
+        "isEnabled": true,
+        "url": "/search",
+        "urlSearchJpg": "/search?t=-imageformat:jpg"
+      },
+      "no-create-account" : {
         "isEnabled": true,
         "url": "/search",
         "urlSearchJpg": "/search?t=-imageformat:jpg"

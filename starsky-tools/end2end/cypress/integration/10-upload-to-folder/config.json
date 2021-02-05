@@ -17,6 +17,15 @@
         "mkdirPath": "/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
         "successUrl" : "/?f=/"
+      },
+      "no-create-account" : {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "mkdirApi": "/api/sync/mkdir",
+        "mkdirName": "starsky-end2end-test",
+        "mkdirPath": "/starsky-end2end-test",
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "successUrl" : "/?f=/"
       }
     }
   }
