@@ -46,7 +46,7 @@ describe('Delete file from upload', () => {
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] button').click()
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click()
 
     cy.get('.item.item--more').click()
     cy.get('[data-test=restore-from-trash]').click()
@@ -80,7 +80,7 @@ describe('Delete file from upload', () => {
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test/20200822_111408.jpg"] button').click()
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click()
 
     cy.get('.item.item--more').click()
     cy.get('[data-test=delete]').click()

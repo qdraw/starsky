@@ -239,8 +239,16 @@ namespace starsky.foundation.storage.Storage
 		public bool FileDelete(string path)
 		{
 			if ( !File.Exists(path) ) return false;
-			File.Delete(path);
-			return true;
+			try
+			{
+				File.Delete(path);
+				return true;
+			}
+			catch ( IOException e )
+			{
+				Console.WriteLine("[Delete] catch-ed IO exception " + e);
+				return false;
+			}
 		}
 
 		public bool WriteStream(Stream stream, string path)

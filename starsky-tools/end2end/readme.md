@@ -42,3 +42,8 @@ Run headless
 ```
 npm run e2e:env
 ```
+
+Run for example starsky on any input
+```
+.\starsky.exe --urls "http://*:5100;https://*:5101"
+```
