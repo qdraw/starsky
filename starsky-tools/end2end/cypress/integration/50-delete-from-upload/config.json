@@ -9,6 +9,7 @@
         "mkdirApi": "/api/sync/mkdir",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
       },
       "heroku-demo" : {
@@ -20,6 +21,7 @@
         "mkdirApi": "/api/sync/mkdir",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
       },
       "no-create-account" : {
@@ -31,6 +33,7 @@
         "mkdirApi": "/api/sync/mkdir",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0"
       }
     }

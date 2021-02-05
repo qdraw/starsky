@@ -46,6 +46,8 @@ describe('Delete folder from upload', () => {
       expect($lis).to.have.class('warning-box')
     })
 
+    cy.request('POST', config.searchClearCache)
+
     // and its gone in the api
     cy.request(config.checkIfDirExistApi, {
       failOnStatusCode: false,
