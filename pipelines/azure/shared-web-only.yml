@@ -37,6 +37,17 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- checkout: self
+  clean: true
+  fetchDepth: 1
+
+- task: Bash@3
+  enabled: true
+  displayName: 'debug'
+  inputs:
+    targetType: 'inline'
+    script: |
+      ls $(Build.SourcesDirectory)/starsky-tools/end2end
 
 - template: /pipelines/azure/steps/publish_artifacts_containers.yml
   parameters:
