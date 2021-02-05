@@ -21,8 +21,6 @@
         <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
-        <!--Ready To Run-->
-        <PublishReadyToRun>true</PublishReadyToRun>
     </PropertyGroup>
     
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
