@@ -31,7 +31,6 @@ pr:
   branches:
     exclude:
     - master
-
     
 pool:
   vmImage: 'ubuntu-latest'
@@ -41,13 +40,11 @@ steps:
   clean: true
   fetchDepth: 1
 
-- task: Bash@3
-  enabled: true
-  displayName: 'debug'
-  inputs:
-    targetType: 'inline'
-    script: |
-      ls $(Build.SourcesDirectory)/starsky-tools/end2end
+- template: /pipelines/azure/steps/build_clientapp.yml
+  parameters:
+    jest: false
+
+- template: /pipelines/azure/steps/build_server_shared_runtime.yml
 
 - task: PublishBuildArtifacts@1
   inputs:
@@ -55,16 +52,8 @@ steps:
     ArtifactName: 'starsky-tools-end2end'
     publishLocation: 'Container'
 
-- template: /pipelines/azure/steps/build_clientapp.yml
-  parameters:
-    jest: false
-
-- template: /pipelines/azure/steps/build_server_shared_runtime.yml
-
-- template: /pipelines/azure/steps/publish_artifacts_containers.yml
-  parameters:
-    publish: 
-      - key: generic-site
-        value: '/starsky/starsky/generic-site' 
-      - key: starksy-tools-end2end
-        value: '/starksy-tools/end2end' 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site' 
+    ArtifactName: 'generic-site'
+    publishLocation: 'Container'
