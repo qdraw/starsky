@@ -235,7 +235,8 @@ Task("BuildNetCoreGeneric")
         var dotnetBuildSettings = new DotNetCoreBuildSettings()
         {
             Configuration = configuration,
-            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
+            // /p:DebugType=None is no pdb files
+            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore").Append("/p:DebugType=None"),
         };
 
         foreach(var runtime in runtimes)
@@ -520,11 +521,12 @@ Task("PublishWeb")
             {
                 var distDirectory = Directory($"./{runtime}");
 
+                // CopyOutputSymbolsToPublishDirectory is no pdb files
                 var dotnetPublishSettings = new DotNetCorePublishSettings()
                 {
                     Configuration = configuration,
                     OutputDirectory = distDirectory, // <= first to generic
-                    ArgumentCustomization = args => args.Append("--no-restore --no-build --force"),
+                    ArgumentCustomization = args => args.Append("--no-restore --no-build --force").Append("/p:CopyOutputSymbolsToPublishDirectory=false"),
                 };
 
                 if(runtime != genericName) {
