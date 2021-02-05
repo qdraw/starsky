@@ -38,15 +38,7 @@ pool:
 
 steps:
 
-- task: Bash@3
-  enabled: true
-  displayName: 'debug'
-  inputs:
-    targetType: 'inline'
-    script: |
-      ls $(Build.SourcesDirectory)/starsky-tools/end2end
-
-- template: /pipelines/azure/steps/publish_artifacts.yml
+- template: /pipelines/azure/steps/publish_artifacts_containers.yml
   parameters:
     publish: 
       - key: starksy-tools-end2end
@@ -58,7 +50,7 @@ steps:
 
 - template: /pipelines/azure/steps/build_server_shared_runtime.yml
 
-- template: /pipelines/azure/steps/publish_artifacts.yml
+- template: /pipelines/azure/steps/publish_artifacts_containers.yml
   parameters:
     publish: 
       - key: generic-site

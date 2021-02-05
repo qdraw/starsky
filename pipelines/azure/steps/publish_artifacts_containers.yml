@@ -1,0 +1,16 @@
+parameters:
+  publish: 
+    - key: starksy-tools-end2end
+      value: '/starksy-tools/end2end'
+
+steps:
+
+  - ${{ each item in parameters.publish }}:
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Folder Artifact: ${{ item.key }} '
+      inputs:
+        PathtoPublish: '$(Build.SourcesDirectory)${{ item.value }}'
+        ArtifactName: ${{ item.key }}
+        publishLocation: 'Container'
+
