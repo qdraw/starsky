@@ -49,11 +49,11 @@ steps:
     script: |
       ls $(Build.SourcesDirectory)/starsky-tools/end2end
 
-- template: /pipelines/azure/steps/publish_artifacts_containers.yml
-  parameters:
-    publish: 
-      - key: starksy-tools-end2end
-        value: '/starksy-tools/end2end' 
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)/starsky-tools/end2end'
+    ArtifactName: 'starsky-tools-end2end'
+    publishLocation: 'Container'
 
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
