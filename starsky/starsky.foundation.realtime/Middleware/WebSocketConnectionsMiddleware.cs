@@ -52,6 +52,7 @@ namespace starsky.foundation.realtime.Middleware
 						}
 						catch (WebSocketException)
 						{
+							// if the client is closing the socket the wrong way
 						}
 					};
 
