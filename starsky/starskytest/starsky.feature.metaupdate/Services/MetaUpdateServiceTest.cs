@@ -104,7 +104,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				null)
+				new FakeIWebLogger())
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -154,7 +154,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, 
 					new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(), null)
+					new FakeMetaPreflight(), new FakeIWebLogger())
 				.Update(null,fileIndexResultsList, toUpdateItem, false,false,0);
 			// Second one is null
 
@@ -217,7 +217,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			new MetaUpdateService(_queryWithoutCache, _exifTool, readMetaWithNoCache, new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(),   
-					null)
+					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			// db
@@ -249,7 +249,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				null)
+					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
@@ -267,7 +267,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 			
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					null)
+					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
 			// expect exception

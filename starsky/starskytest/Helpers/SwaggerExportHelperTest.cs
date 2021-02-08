@@ -63,7 +63,7 @@ namespace starskytest.Helpers
 		public void Add03AppExport_disabled_AddSwagger()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false};
-			var swagger = new SwaggerExportHelper(null, null);
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
 			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 			
 			Assert.IsFalse(result);
@@ -73,7 +73,7 @@ namespace starskytest.Helpers
 		public void Add03AppExport_disabled_AddSwaggerExport()
 		{
 			var appSettings = new AppSettings {AddSwagger = false, AddSwaggerExport = true};
-			var swagger = new SwaggerExportHelper(null, null);
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
 			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 			
 			Assert.IsFalse(result);
