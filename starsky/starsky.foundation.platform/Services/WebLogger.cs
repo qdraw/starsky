@@ -5,15 +5,15 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.platform.Services
 {
-	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Scoped)]
+	[Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class WebLogger : IWebLogger
 	{
 		private readonly ILogger _logger;
 		private readonly IConsole _console;
 
-		public WebLogger(IConsole console, ILoggerFactory logger = null)
+		public WebLogger(ILoggerFactory logger = null)
 		{
-			_console = console;
+			_console = new ConsoleWrapper();
 			_logger = logger?.CreateLogger("app");
 		}
 
