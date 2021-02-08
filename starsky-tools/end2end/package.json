@@ -6,7 +6,8 @@
     "start:env": "cypress open",
     "open:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
     "e2e:heroku-demo": "cypress run --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
-    "e2e:env": "cypress run"
+    "e2e:env": "cypress run",
+    "e2e:env:record": "cypress run --record"
   },
   "dependencies": {},
   "devDependencies": {
