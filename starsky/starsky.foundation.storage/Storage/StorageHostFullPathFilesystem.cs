@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -12,6 +13,12 @@ namespace starsky.foundation.storage.Storage
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class StorageHostFullPathFilesystem : IStorage
 	{
+		private readonly IWebLogger _logger;
+
+		public StorageHostFullPathFilesystem(IWebLogger logger = null)
+		{
+			_logger = logger;
+		}
 
 		/// <summary>
 		/// Get the storage info
@@ -52,12 +59,14 @@ namespace starsky.foundation.storage.Storage
 			{
 				Directory.Delete(path, true);
 			}
-			catch (IOException) 
+			catch (IOException exception) 
 			{
+				_logger.LogInformation(exception, "[FolderDelete] catch-ed IOException");
 				Directory.Delete(path, true);
 			}
-			catch (UnauthorizedAccessException)
+			catch (UnauthorizedAccessException exception)
 			{
+				_logger.LogInformation(exception, "[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
 			return true;
@@ -77,7 +86,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				Console.WriteLine($"catch-ed UnauthorizedAccessException{e.Message}");
+				_logger.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
 				return new string[]{};
 			}
 
@@ -135,7 +144,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					Console.WriteLine("Catch-ed UnauthorizedAccessException => " + e.Message);
+					_logger.LogError("Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
 			return folderList.OrderBy(p => p);
@@ -161,7 +170,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( FileNotFoundException e)
 			{
-				Console.WriteLine(e);
+				_logger.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
 			return fileStream;
@@ -185,7 +194,7 @@ namespace starsky.foundation.storage.Storage
 		}
 
 		/// <summary>
-		/// is the subpath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
+		/// is the subPath a folder or file, or deleted (FolderOrFileModel.FolderOrFileTypeList.Deleted)
 		/// </summary>
 		/// <param name="path">fullFilePath</param>
 		/// <returns>is file, folder or deleted</returns>
@@ -246,7 +255,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException e )
 			{
-				Console.WriteLine("[Delete] catch-ed IO exception " + e);
+				_logger.LogError(e, "[Delete] catch-ed IO exception");
 				return false;
 			}
 		}
@@ -309,7 +318,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException exception)
 			{
-				Console.WriteLine("catch-ed IOException: " + exception);
+				_logger.LogError(exception, "catch-ed IOException: ");
 				return false;
 			}
 		}
@@ -321,17 +330,17 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
         {
-            List<string> findlist = new List<string>();
+            List<string> findList = new List<string>();
 
             /* I begin a recursion, following the order:
              * - Insert all the files in the current directory with the recursion
              * - Insert all subdirectories in the list and re-begin the recursion from there until the end
              */
-            RecurseFind( path, findlist );
+            RecurseFind( path, findList );
 
             // Add filter for file types
             var imageFilesList = new List<string>();
-            foreach (var file in findlist)
+            foreach (var file in findList)
             {
 	            imageFilesList.Add(file);
             }
