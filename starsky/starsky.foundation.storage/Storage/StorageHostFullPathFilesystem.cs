@@ -61,12 +61,12 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch (IOException exception) 
 			{
-				_logger.LogInformation(exception, "[FolderDelete] catch-ed IOException");
+				_logger?.LogInformation(exception, "[FolderDelete] catch-ed IOException");
 				Directory.Delete(path, true);
 			}
 			catch (UnauthorizedAccessException exception)
 			{
-				_logger.LogInformation(exception, "[FolderDelete] catch-ed UnauthorizedAccessException");
+				_logger?.LogInformation(exception, "[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
 			return true;
@@ -86,7 +86,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				_logger.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
+				_logger?.LogError(e, "[GetAllFilesInDirectory] catch-ed UnauthorizedAccessException");
 				return new string[]{};
 			}
 
@@ -144,7 +144,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					_logger.LogError("Catch-ed UnauthorizedAccessException => " + e.Message);
+					_logger?.LogError("Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
 			return folderList.OrderBy(p => p);
@@ -170,7 +170,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( FileNotFoundException e)
 			{
-				_logger.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
+				_logger?.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
 			return fileStream;
@@ -255,7 +255,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException e )
 			{
-				_logger.LogError(e, "[Delete] catch-ed IO exception");
+				_logger?.LogError(e, "[Delete] catch-ed IO exception");
 				return false;
 			}
 		}
@@ -318,7 +318,7 @@ namespace starsky.foundation.storage.Storage
 			}
 			catch ( IOException exception)
 			{
-				_logger.LogError(exception, "catch-ed IOException: ");
+				_logger?.LogError(exception, "catch-ed IOException: ");
 				return false;
 			}
 		}
