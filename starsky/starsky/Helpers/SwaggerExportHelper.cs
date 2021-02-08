@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -19,10 +20,12 @@ namespace starsky.Helpers
 	public class SwaggerExportHelper : BackgroundService
 	{
 		private readonly IServiceScopeFactory _serviceScopeFactory;
-		
-		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory)
+		private readonly IWebLogger _logger;
+
+		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
 		{
 			_serviceScopeFactory = serviceScopeFactory;
+			_logger = logger;
 		}
 		
 		/// <summary>
@@ -74,7 +77,7 @@ namespace starsky.Helpers
 			storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
 				swaggerJsonFullPath);
 
-			if ( appSettings.Verbose ) Console.WriteLine($"app__addSwaggerExport {swaggerJsonFullPath}");
+			_logger.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");
 			return true;
 		}
 
