@@ -77,7 +77,7 @@ namespace starsky.Helpers
 			storage.WriteStream(new PlainTextFileHelper().StringToStream(swaggerJsonText),
 				swaggerJsonFullPath);
 
-			_logger.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");
+			_logger?.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");
 			return true;
 		}
 

@@ -11,6 +11,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -24,15 +25,18 @@ namespace starskycore.Services
         private readonly ApplicationDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly AppSettings _appSettings;
+        private readonly IWebLogger _logger;
 
         public SearchService(
             ApplicationDbContext context, 
             IMemoryCache memoryCache = null,
-            AppSettings appSettings = null)
+            AppSettings appSettings = null,
+            IWebLogger logger = null)
         {
             _context = context;
             _cache = memoryCache;
             _appSettings = appSettings;
+            _logger = logger;
         }
 
 	    /// <summary>
@@ -250,7 +254,7 @@ namespace starskycore.Services
 			    // Need to have the type registered in FileIndexPropList
 		    }
 		    
-		    Console.WriteLine($"search --> {model.SearchQuery}");
+		    _logger.LogInformation($"search --> {model.SearchQuery}");
 
 		    var predicate = PredicateBuilder.False<FileIndexItem>();
 		    for ( int i = 0; i < predicates.Count; i++ )
@@ -278,8 +282,6 @@ namespace starskycore.Services
 
 		    model.FileIndexItems = sourceList.Where(predicate).ToList();
 		    
-		    Console.WriteLine("search <--");
-
 		    return model;
 	    }
 
