@@ -69,8 +69,17 @@ namespace starsky.feature.metaupdate.Services
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
-					var collectionsDetailView = _query.SingleItem(collectionSubPath, 
-						null, collections, false);
+					// only for performance reasons
+					DetailView collectionsDetailView;
+					if ( collectionSubPath != subPath)
+					{
+						collectionsDetailView = _query.SingleItem(collectionSubPath, 
+							null, collections, false);
+					}
+					else
+					{
+						collectionsDetailView = detailView;
+					}
 					
 					CompareAllLabelsAndRotation(changedFileIndexItemName,
 								collectionsDetailView, inputModel, append, rotateClock);
