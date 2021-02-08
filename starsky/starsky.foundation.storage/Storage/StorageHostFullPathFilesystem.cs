@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -248,16 +249,12 @@ namespace starsky.foundation.storage.Storage
 		public bool FileDelete(string path)
 		{
 			if ( !File.Exists(path) ) return false;
-			try
+			bool LocalRun()
 			{
 				File.Delete(path);
 				return true;
 			}
-			catch ( IOException e )
-			{
-				_logger?.LogError(e, "[Delete] catch-ed IO exception");
-				return false;
-			}
+			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
 		}
 
 		public bool WriteStream(Stream stream, string path)
@@ -305,7 +302,8 @@ namespace starsky.foundation.storage.Storage
 		public async Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
 			if ( !stream.CanRead ) return false;
-			try
+
+			async Task<bool> LocalRun()
 			{
 				using (var fileStream = new FileStream(path, FileMode.Create, 
 					FileAccess.Write, FileShare.Read, 4096, 
@@ -316,11 +314,8 @@ namespace starsky.foundation.storage.Storage
 				stream.Dispose();
 				return true;
 			}
-			catch ( IOException exception)
-			{
-				_logger?.LogError(exception, "catch-ed IOException: ");
-				return false;
-			}
+
+			return await RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
 		}
 
 		/// <summary>
