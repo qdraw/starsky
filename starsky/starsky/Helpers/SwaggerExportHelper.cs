@@ -22,7 +22,7 @@ namespace starsky.Helpers
 		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IWebLogger _logger;
 
-		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
+		public SwaggerExportHelper(IServiceScopeFactory serviceScopeFactory, IWebLogger logger = null)
 		{
 			_serviceScopeFactory = serviceScopeFactory;
 			_logger = logger;
