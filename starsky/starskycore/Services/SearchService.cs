@@ -254,7 +254,7 @@ namespace starskycore.Services
 			    // Need to have the type registered in FileIndexPropList
 		    }
 		    
-		    _logger.LogInformation($"search --> {model.SearchQuery}");
+		    _logger?.LogInformation($"search --> {model.SearchQuery}");
 
 		    var predicate = PredicateBuilder.False<FileIndexItem>();
 		    for ( int i = 0; i < predicates.Count; i++ )
