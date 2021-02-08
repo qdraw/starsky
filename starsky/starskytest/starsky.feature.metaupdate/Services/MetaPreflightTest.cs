@@ -58,6 +58,53 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			_readMeta = new ReadMeta(_iStorageFake,_appSettings,_memoryCache);
 		}
 		
+				
+		[TestMethod]
+		public void Preflight_Collections_Enabled()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg"),
+					new FileIndexItem("/test.dng"),
+				}), 
+				new AppSettings(), new FakeSelectorStorage(
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/test.jpg", "/test.dng"}, 
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes})));
+			
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("/test.jpg"), 
+				new[] {"/test.jpg"}, true, true, 0);
+
+			Assert.AreEqual(2, result.fileIndexResultsList.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				result.fileIndexResultsList[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				result.fileIndexResultsList[1].Status);
+		}
+		
+		[TestMethod]
+		public void Preflight_Collections_Disabled()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg"),
+					new FileIndexItem("/test.dng"),
+				}), 
+				new AppSettings(), new FakeSelectorStorage(
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/test.jpg", "/test.dng"}, 
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes})));
+			
+			var result = metaPreflight.Preflight(
+				new FileIndexItem("/test.jpg"), 
+				new[] {"/test.jpg"}, true, false, 0);
+
+			Assert.AreEqual(1, result.fileIndexResultsList.Count);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				result.fileIndexResultsList[0].Status);
+		}
+		
 		[TestMethod]
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
@@ -138,7 +185,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 
 		[TestMethod]
-		public void NotFoundNotInIndex()
+		public void Preflight_NotFoundNotInIndex()
 		{
 			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), 
 				new FakeSelectorStorage());
@@ -151,7 +198,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		public void ReadOnly()
+		public void Preflight_ReadOnly()
 		{
 			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
 				{
@@ -172,7 +219,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		public void Deleted()
+		public void Preflight_Deleted()
 		{
 			var metaPreflight = new MetaPreflight(new FakeIQuery(new List<FileIndexItem>
 				{
