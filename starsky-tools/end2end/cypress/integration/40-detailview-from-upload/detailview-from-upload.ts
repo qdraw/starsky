@@ -31,7 +31,9 @@ describe('DetailView (from upload)', () => {
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
 
-  it('[DetailView] uploadFileName1 (to make sure the config is right)', () => {
+  it('[DetailView] uploadFileName1 (to make sure the config is right)', {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
     uploadFileName1(config.url, fileName1, false)
   })
 
