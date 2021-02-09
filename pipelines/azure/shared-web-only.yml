@@ -45,6 +45,8 @@ steps:
     jest: false
 
 - template: /pipelines/azure/steps/build_server_shared_runtime.yml
+  parameters:
+    nugetPackages: $(NUGET_PACKAGES)
 
 - task: PublishBuildArtifacts@1
   inputs:

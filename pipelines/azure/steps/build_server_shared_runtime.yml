@@ -1,6 +1,11 @@
+parameters:
+  nugetPackages: $(Pipeline.Workspace)/.nuget/packages
+
 steps:
 
   - template: /pipelines/azure/steps/cache_nuget_packages.yml
+    parameters:
+      nugetPackages: ${{ parameters.nugetPackages }}
 
   - task: DotNetCoreCLI@2
     displayName: 'Net Core - Build Generic Site'
