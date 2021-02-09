@@ -11,9 +11,6 @@ export function uploadFileName1 (url: string, fileName1: string, check = true) {
 
   cy.wait(1000)
 
-  if (!check) {
-    return
-  }
   cy.get('[data-test=upload-files] li').should(($lis) => {
     expect($lis).to.have.length(1)
     expect($lis.eq(0)).to.contain(fileName1)

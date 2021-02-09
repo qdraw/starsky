@@ -63,7 +63,7 @@ namespace starsky.foundation.http.Streaming
             if (!MultipartRequestHelper.IsMultipartContentType(contentType))
             {
                 if (contentType != "image/jpeg" && contentType != "application/octet-stream") 
-                    throw new FileLoadException($"Expected a multipart request, but got {contentType}");
+                    throw new FileLoadException($"Expected a multipart request, but got {contentType}; add the header 'content-type' ");
 
                 var fullFilePath = Path.Combine(appSettings.TempFolder, headerFileName);
                 // Write to disk
