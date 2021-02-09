@@ -261,19 +261,25 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !stream.CanRead ) return false;
 
-			stream.Seek(0, SeekOrigin.Begin);
-			
-			using (var fileStream = new FileStream(path, 
-				FileMode.Create, 
-				FileAccess.Write,FileShare.ReadWrite,
-				4096, 
-				FileOptions.Asynchronous))
+			bool LocalRun()
 			{
-				stream.CopyTo(fileStream);
-			}
+				stream.Seek(0, SeekOrigin.Begin);
+			
+				using (var fileStream = new FileStream(path, 
+					FileMode.Create, 
+					FileAccess.Write,FileShare.ReadWrite,
+					4096, 
+					FileOptions.Asynchronous))
+				{
+					stream.CopyTo(fileStream);
+					fileStream.Dispose();
+				}
 
-			stream.Dispose();
-			return true;
+				stream.Dispose();
+				return true;
+			}
+						
+			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
 		}
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)
@@ -316,7 +322,7 @@ namespace starsky.foundation.storage.Storage
 				return true;
 			}
 
-			return await RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
+			return await RetryHelper.DoAsync(LocalRun, TimeSpan.FromSeconds(1));
 		}
 
 		/// <summary>
