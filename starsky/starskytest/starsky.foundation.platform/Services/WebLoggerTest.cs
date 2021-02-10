@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.platform.Services
 {
@@ -68,6 +69,15 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Error,	logLevel);
 		}
+				
+		[TestMethod]
+		public void Error_string_ConsoleFallback()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			new WebLogger(null, fakeConsole).LogError("message");
+			
+			Assert.AreEqual("message",fakeConsole.WrittenLines[0]);
+		}
 		
 		[TestMethod]
 		public void Error_Exception_ShouldPassFakeLogger()
@@ -83,6 +93,16 @@ namespace starskytest.starsky.foundation.platform.Services
 		}
 		
 		[TestMethod]
+		public void Error_Exception_ConsoleFallback()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			var expectedException = new Exception("some thing bad happens");
+			new WebLogger(null, fakeConsole).LogError(expectedException, "message");
+			
+			Assert.AreEqual("some thing bad happens message",fakeConsole.WrittenLines[0]);
+		}
+		
+		[TestMethod]
 		public void Information_string_ShouldPassFakeLogger()
 		{
 			var factory = new FakeILoggerFactory();
@@ -92,6 +112,15 @@ namespace starskytest.starsky.foundation.platform.Services
 
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Information,	logLevel);
+		}
+						
+		[TestMethod]
+		public void Information_string_ConsoleFallback()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			new WebLogger(null, fakeConsole).LogInformation("message");
+			
+			Assert.AreEqual("message",fakeConsole.WrittenLines[0]);
 		}
 		
 		[TestMethod]
@@ -105,6 +134,16 @@ namespace starskytest.starsky.foundation.platform.Services
 
 			Assert.AreEqual(expectedException.Message,error);
 			Assert.AreEqual(LogLevel.Information,	logLevel);
+		}
+
+		[TestMethod]
+		public void Information_Exception_ConsoleFallback()
+		{
+			var fakeConsole = new FakeConsoleWrapper();
+			var expectedException = new Exception("some thing bad happens");
+			new WebLogger(null, fakeConsole).LogInformation(expectedException, "message");
+			
+			Assert.AreEqual("some thing bad happens message",fakeConsole.WrittenLines[0]);
 		}
 	}
 }

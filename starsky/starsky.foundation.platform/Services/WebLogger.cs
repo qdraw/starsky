@@ -11,9 +11,10 @@ namespace starsky.foundation.platform.Services
 		private readonly ILogger _logger;
 		private readonly IConsole _console;
 
-		public WebLogger(ILoggerFactory logger = null)
+		public WebLogger(ILoggerFactory logger = null, IConsole consoleFallback = null)
 		{
 			_console = new ConsoleWrapper();
+			if ( consoleFallback != null ) _console = consoleFallback;
 			_logger = logger?.CreateLogger("app");
 		}
 
@@ -32,7 +33,7 @@ namespace starsky.foundation.platform.Services
 		{
 			if ( _logger == null )
 			{
-				_console.WriteLine(message);
+				_console.WriteLine($"{exception.Message} {message}");
 				return;
 			}
 			_logger.LogInformation(exception, message, args);
@@ -52,7 +53,7 @@ namespace starsky.foundation.platform.Services
 		{
 			if ( _logger == null )
 			{
-				_console.WriteLine(message);
+				_console.WriteLine($"{exception.Message} {message}");
 				return;
 			}
 			_logger.LogError(exception, message,args);
