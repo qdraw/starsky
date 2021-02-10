@@ -78,6 +78,16 @@ namespace starskytest.Helpers
 			
 			Assert.IsFalse(result);
 		}
+		
+		[TestMethod]
+		public void Add03AppExport_disabled_noLogger_AddSwaggerExport()
+		{
+			// only difference is fallback of logger
+			var appSettings = new AppSettings {AddSwagger = false, AddSwaggerExport = true};
+			var swagger = new SwaggerExportHelper(null);
+			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
+			Assert.IsFalse(result);
+		}
 
 		[TestMethod]
 		public void ExecuteAsync_ShouldWrite()
