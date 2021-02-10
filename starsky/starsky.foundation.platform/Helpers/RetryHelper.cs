@@ -11,6 +11,15 @@ namespace starsky.foundation.platform.Helpers
 	/// </summary>
 	public static class RetryHelper
 	{
+		/// <summary>
+		/// Retry when Exception happens for sync
+		/// </summary>
+		/// <param name="action">function</param>
+		/// <param name="retryInterval">Delay in timespan</param>
+		/// <param name="maxAttemptCount">number of tries, must be more that 0</param>
+		/// <typeparam name="T">The function</typeparam>
+		/// <returns>value of function</returns>
+		/// <exception cref="ArgumentOutOfRangeException">when lower or eq than 0</exception>
 		public static T Do<T>(
 			Func<T> action,
 			TimeSpan retryInterval,
@@ -39,6 +48,15 @@ namespace starsky.foundation.platform.Helpers
 			throw new AggregateException(exceptions);
 		}
 		
+		/// <summary>
+		/// Retry when Exception happens with the async await pattern
+		/// </summary>
+		/// <param name="operation">Async function</param>
+		/// <param name="delay">Delay in timespan</param>
+		/// <param name="maxAttemptCount">number of tries, must be more that 0</param>
+		/// <typeparam name="T">The async function</typeparam>
+		/// <returns>value of function</returns>
+		/// <exception cref="ArgumentOutOfRangeException">when lower or eq than 0</exception>
 		public static Task<T> DoAsync<T>(
 			  Func<Task<T>> operation, TimeSpan delay, int maxAttemptCount = 3 )
 		{
