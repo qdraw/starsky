@@ -44,7 +44,19 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var result = RetryHelper.Do(Test, TimeSpan.Zero);
 			Assert.IsTrue(result);
 		}
-		
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		public void RetryFail_expect_ArgumentOutOfRangeException()
+		{
+			bool Test()
+			{
+				return true;
+			}
+			// should not be negative
+			RetryHelper.Do(Test, TimeSpan.Zero, 0);
+		}
+
 		[TestMethod]
 		public async Task Async_RetrySucceed()
 		{
@@ -84,6 +96,20 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			
 			var result = await RetryHelper.DoAsync(Test, TimeSpan.Zero);
 			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		public async Task Async_RetryFail_expect_ArgumentOutOfRangeException()
+		{
+#pragma warning disable 1998
+			async Task<bool> Test()
+#pragma warning restore 1998
+			{
+				return true;
+			}
+			// should not be negative
+			await RetryHelper.DoAsync(Test, TimeSpan.Zero, 0);
 		}
 	}
 }

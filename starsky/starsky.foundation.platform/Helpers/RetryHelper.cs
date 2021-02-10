@@ -16,6 +16,9 @@ namespace starsky.foundation.platform.Helpers
 			TimeSpan retryInterval,
 			int maxAttemptCount = 3)
 		{
+			if (maxAttemptCount <= 0) 
+				throw new ArgumentOutOfRangeException(nameof(maxAttemptCount));
+			
 			var exceptions = new List<Exception>();
 
 			for (int attempted = 0; attempted < maxAttemptCount; attempted++)
@@ -36,12 +39,18 @@ namespace starsky.foundation.platform.Helpers
 			throw new AggregateException(exceptions);
 		}
 		
-		public static async Task<T> DoAsync<T>(
+		public static Task<T> DoAsync<T>(
 			  Func<Task<T>> operation, TimeSpan delay, int maxAttemptCount = 3 )
 		{
 			if (maxAttemptCount <= 0) 
 				throw new ArgumentOutOfRangeException(nameof(maxAttemptCount));
 
+			return DoAsyncWorker(operation, delay, maxAttemptCount);
+		}
+
+		private static async Task<T> DoAsyncWorker<T>(
+			Func<Task<T>> operation, TimeSpan delay, int maxAttemptCount = 3)
+		{
 			var exceptions = new List<Exception>();
 			for ( int attempted = 0; attempted < maxAttemptCount; attempted++ )
 			{
