@@ -35,7 +35,7 @@ namespace starskytest.Services
             builder.UseInMemoryDatabase("searchService");
             var options = builder.Options;
             _dbContext = new ApplicationDbContext(options);
-            _search = new SearchService(_dbContext);
+            _search = new SearchService(_dbContext,null,null, new FakeIWebLogger());
             _query = new Query(_dbContext,_memoryCache);
         }
 	    
