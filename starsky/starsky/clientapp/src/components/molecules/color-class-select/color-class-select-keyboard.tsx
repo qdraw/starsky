@@ -27,8 +27,6 @@ const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
 
-    console.log("---> e");
-
     new ColorClassUpdateSingle(
       props.isEnabled,
       setIsLoading,
