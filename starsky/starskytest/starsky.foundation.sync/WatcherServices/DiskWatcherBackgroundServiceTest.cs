@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var diskWatcher = new FakeDiskWatcher();
 			var appSettings = new AppSettings{UseDiskWatcher = true};
-			new DiskWatcherBackgroundService(diskWatcher,appSettings).StartAsync(CancellationToken
+			new DiskWatcherBackgroundService(diskWatcher,appSettings, new FakeIWebLogger()).StartAsync(CancellationToken
 				.None);
 			Assert.AreEqual(appSettings.StorageFolder, diskWatcher.AddedItems.FirstOrDefault());
 		}
@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var diskWatcher = new FakeDiskWatcher();
 			var appSettings = new AppSettings{UseDiskWatcher = false};
-			new DiskWatcherBackgroundService(diskWatcher,appSettings).StartAsync(CancellationToken
+			new DiskWatcherBackgroundService(diskWatcher,appSettings, new FakeIWebLogger()).StartAsync(CancellationToken
 				.None);
 			Assert.AreEqual(0, diskWatcher.AddedItems.Count);
 		}
