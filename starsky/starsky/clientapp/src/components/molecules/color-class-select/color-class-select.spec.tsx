@@ -11,6 +11,7 @@ import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "./color-class-select";
+import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelect", () => {
   it("renders", () => {
@@ -177,18 +178,13 @@ describe("ColorClassSelect", () => {
     fetchPostSpy.mockReset();
   });
 
-  it("Should change value when onChange was called", async () => {
-    // spy on fetch
-    // use this import => import * as FetchPost from '../shared/fetch-post';
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
-        statusCode: 200,
-        data: [{ status: IExifStatus.Ok }] as IFileIndexItem[]
-      }
-    );
-    var fetchPostSpy = jest
-      .spyOn(FetchPost, "default")
-      .mockImplementationOnce(() => mockIConnectionDefault);
+  it("when error is it should able to close the warning box", async () => {
+    const colorClassUpdateSingleSpy = jest
+      .spyOn(ColorClassUpdateSingle, "ColorClassUpdateSingle")
+      .mockImplementationOnce((p1, p2, p3, p4, setIsError) => {
+        setIsError("true");
+        return { Update: jest.fn() } as any;
+      });
 
     const component = mount(
       <ColorClassSelect
@@ -196,37 +192,25 @@ describe("ColorClassSelect", () => {
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
-        onToggle={(value) => {}}
+        onToggle={() => {}}
       />
     );
 
-    var event = new KeyboardEvent("keydown", {
-      bubbles: true,
-      cancelable: true,
-      key: "5",
-      shiftKey: true
-    });
-
-    // need to await this
+    // need to await this click
     await act(async () => {
-      await window.dispatchEvent(event);
+      await component.find("button.colorclass--2").simulate("click");
     });
 
-    // expect
-    expect(fetchPostSpy).toHaveBeenCalledTimes(1);
-    expect(fetchPostSpy).toHaveBeenCalledWith(
-      new UrlQuery().prefix + "/api/update",
-      "f=%2Ftest1&colorclass=5&collections=true"
-    );
+    expect(colorClassUpdateSingleSpy).toBeCalled();
 
     component.update();
-    expect(component.exists("button.colorclass--5.active")).toBeTruthy();
 
-    // clean
-    act(() => {
-      component.unmount();
-    });
+    expect(component.exists(".notification")).toBeTruthy();
 
-    fetchPostSpy.mockReset();
+    component.find(".icon--close").simulate("click");
+
+    expect(component.exists(".notification")).toBeFalsy();
+
+    await component.unmount();
   });
 });
