@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -11,10 +12,9 @@ namespace starsky.foundation.platform.Services
 		private readonly ILogger _logger;
 		private readonly IConsole _console;
 
-		public WebLogger(ILoggerFactory logger = null, IConsole consoleFallback = null)
+		public WebLogger(ILoggerFactory logger = null, IServiceScopeFactory scopeFactory = null)
 		{
-			_console = new ConsoleWrapper();
-			if ( consoleFallback != null ) _console = consoleFallback;
+			_console = scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>();
 			_logger = logger?.CreateLogger("app");
 		}
 
@@ -48,7 +48,6 @@ namespace starsky.foundation.platform.Services
 			}
 			_logger.LogError(message,args);
 		}
-
 		public void LogError(Exception exception, string message, params object[] args)
 		{
 			if ( _logger == null )
@@ -58,6 +57,5 @@ namespace starsky.foundation.platform.Services
 			}
 			_logger.LogError(exception, message,args);
 		}
-		
 	}
 }
