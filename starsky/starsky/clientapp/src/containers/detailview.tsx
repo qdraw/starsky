@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
 import Preloader from "../components/atoms/preloader/preloader";
+import ColorClassSelectKeyboard from "../components/molecules/color-class-select/color-class-select-keyboard";
 import DetailViewGpx from "../components/organisms/detail-view-media/detail-view-gpx";
 import DetailViewMp4 from "../components/organisms/detail-view-media/detail-view-mp4";
 import DetailViewSidebar from "../components/organisms/detail-view-sidebar/detail-view-sidebar";
@@ -262,6 +263,14 @@ const DetailView: React.FC<IDetailView> = () => {
         ) : (
           ""
         )}
+
+        <ColorClassSelectKeyboard
+          currentColorClass={state.fileIndexItem.colorClass}
+          collections={state.collections === true}
+          isEnabled={true}
+          filePath={state.fileIndexItem.filePath}
+          onToggle={() => {}}
+        />
 
         {isDetails && state.fileIndexItem.status ? (
           <DetailViewSidebar

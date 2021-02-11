@@ -1,18 +1,13 @@
 import "core-js/modules/es.array.find";
 import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
-import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
-import { IExifStatus } from "../../../interfaces/IExifStatus";
-import { CastToInterface } from "../../../shared/cast-to-interface";
-import FetchPost from "../../../shared/fetch-post";
-import { Keyboard } from "../../../shared/keyboard";
 import { Language } from "../../../shared/language";
-import { UrlQuery } from "../../../shared/url-query";
 import Notification, {
   NotificationType
 } from "../../atoms/notification/notification";
 import Portal from "../../atoms/portal/portal";
 import Preloader from "../../atoms/preloader/preloader";
+import { ColorClassUpdateSingle } from "./color-class-update-single";
 
 export interface IColorClassSelectProps {
   currentColorClass?: number;
@@ -45,13 +40,6 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
     language.text("Grijs", "Grey")
   ];
 
-  const MessageErrorReadOnly = new Language(settings.language).text(
-    "Eén of meerdere bestanden zijn alleen lezen. " +
-      "Alleen de bestanden met schrijfrechten zijn geupdate.",
-    "One or more files are read only. " +
-      "Only the files with write permissions have been updated."
-  );
-
   const [currentColorClass, setCurrentColorClass] = React.useState(
     props.currentColorClass
   );
@@ -64,49 +52,6 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
   // for showing a notification
   const [isError, setIsError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  /**
-   * Used for Updating Colorclasses
-   * @param colorClass value to update
-   */
-  var handleColorClassUpdate = (colorClass: number) => {
-    if (!props.isEnabled) return;
-
-    setIsLoading(true);
-    var updateApiUrl = new UrlQuery().UrlUpdateApi();
-
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("f", props.filePath);
-    bodyParams.append("colorclass", colorClass.toString());
-    bodyParams.append("collections", props.collections.toString());
-
-    FetchPost(updateApiUrl, bodyParams.toString()).then((anyData) => {
-      var result = new CastToInterface().InfoFileIndexArray(anyData.data);
-      setIsLoading(false);
-      if (
-        !result ||
-        result.find((item) => {
-          return item.status === IExifStatus.ReadOnly;
-        })
-      ) {
-        setIsError(MessageErrorReadOnly);
-        return;
-      }
-      setCurrentColorClass(colorClass);
-      props.onToggle(colorClass);
-    });
-
-    if (!props.clearAfter) return;
-
-    setTimeout(function () {
-      setCurrentColorClass(undefined);
-    }, 1000);
-  };
-
-  useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
-    if (new Keyboard().isInForm(event)) return;
-    handleColorClassUpdate(Number(event.key));
-  });
 
   return (
     <>
@@ -134,7 +79,17 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
           <button
             key={index}
             onClick={() => {
-              handleColorClassUpdate(index);
+              new ColorClassUpdateSingle(
+                props.isEnabled,
+                setIsLoading,
+                props.filePath,
+                props.collections,
+                setIsError,
+                settings,
+                setCurrentColorClass,
+                props.onToggle,
+                props.clearAfter
+              ).Update(index);
             }}
             className={
               currentColorClass === index
