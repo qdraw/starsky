@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import { Keyboard } from "../../../shared/keyboard";
+import { Language } from "../../../shared/language";
 import Notification, {
   NotificationType
 } from "../../atoms/notification/notification";
@@ -24,6 +25,11 @@ const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> 
     setIsDone("");
   }, [props.filePath]);
 
+  const MessageColorClassIsUpdated = new Language(settings.language).text(
+    "Colorclass is bijgewerkt",
+    "Colorclass is updated"
+  );
+
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
 
@@ -35,7 +41,7 @@ const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> 
       setIsError,
       settings,
       () => {
-        setIsDone("Colorclass is updated");
+        setIsDone(MessageColorClassIsUpdated);
       },
       props.onToggle,
       props.clearAfter
