@@ -17,9 +17,10 @@ describe('Upload to folder', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Check if folder is there & create', () => {
+  it('Upload to folder - Check if folder is there & create', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
+    cy.wait(1000)
   })
 
   const fileName2 = '20200822_111408.jpg'

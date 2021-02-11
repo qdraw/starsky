@@ -14,6 +14,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
@@ -36,10 +37,11 @@ namespace starsky.Controllers
 		private readonly IQuery _query;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IWebLogger _logger;
 
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
-			IWebSocketConnectionsService connectionsService)
+			IWebSocketConnectionsService connectionsService, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_import = import;
@@ -48,6 +50,7 @@ namespace starsky.Controllers
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_connectionsService = connectionsService;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -103,14 +106,17 @@ namespace starsky.Controllers
 				fileIndexResultsList[i].FilePath = subPath;
 				// Do sync action before writing it down
 				fileIndexResultsList[i].FileIndexItem = await SyncItem(fileIndexResultsList[i].FileIndexItem);
-				
-				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
+
+				var writeStatus =
+					await _iStorage.WriteStreamAsync(tempFileStream, subPath);
+				_logger.LogInformation($"write {tempFileStream} is {writeStatus}");
 				await tempFileStream.DisposeAsync();
 				
-				 // clear directory cache
-				 _query.RemoveCacheParentItem(subPath);
+				// clear directory cache
+				_query.RemoveCacheParentItem(subPath);
 			 
-				_iHostStorage.FileDelete(tempImportPaths[i]);
+				var deleteStatus = _iHostStorage.FileDelete(tempImportPaths[i]);
+				_logger.LogInformation($"delete {tempFileStream} is {deleteStatus}");
 			}
 
 			// send all uploads as list

@@ -43,7 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.5 _(Unreleased)_ - 2021-01-??
+# version 0.4.5 _(Unreleased)_ - 2021-02-??
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x]   (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
 - [x]   (Fixed) _Front-end_ Archive when added tag/description is cleared is still send _issue #279_
@@ -51,6 +51,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_  Zoom in detailView _issue #242_
 - [x]   (Fixed) _Back-end_  Delete large number of files gives exception _issue #281_
 - [x]   (Added) _Front-end_  Keyboard accelerator Command / Ctrl A _issue #247_
+- [x]   (Added) _Back-end_  add logger (Microsoft.Extensions.Logging.Abstractions)
+- [x]   (Added) _Back-end_  RetryHelper for IOExceptions using Windows OS
+- [x]   (Changed) _Back-end_ Change default logging settings in appsettings.json to have less Information
+- [x]   (Changed) _Back-end_ Disable TieredCompilationQuickJit and TieredCompilation are disabled for optimization
+- [x]   (Changed) _Back-end_ performance update for metaPreflight, reduced a cache call. Helpful for large folders
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8

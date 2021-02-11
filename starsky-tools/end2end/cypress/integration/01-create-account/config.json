@@ -11,6 +11,9 @@
         "url": "/account/register",
         "urlStatusApi": "/starsky/api/account/register/status",
         "successUrl" : "account/login"
+      },
+      "no-create-account" : {
+        "isEnabled": false
       }
     }
   }

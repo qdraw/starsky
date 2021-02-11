@@ -100,9 +100,10 @@ namespace starskytest.FakeMocks
 			fileIndexItem.CollectionPaths = new List<string>{singleItemDbPath};
 			if ( enableCollections )
 			{
+				fileIndexItem.CollectionPaths = new List<string>();
 				fileIndexItem.CollectionPaths.AddRange(
 					_fakeContext.Where(
-						p => p.FileCollectionName == fileIndexItem.FileCollectionName)
+							p => p.FileCollectionName == fileIndexItem.FileCollectionName)
 						.Select(p => p.FilePath)
 					);
 			}

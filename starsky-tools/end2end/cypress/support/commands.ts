@@ -1,4 +1,3 @@
-
 // Get current environment folder
 export const envFolder = Cypress.env().configFolder ? Cypress.env().configFolder : 'starsky'
 
@@ -120,3 +119,18 @@ function hexStringToByte (str) {
 }
 
 Cypress.Commands.add('uploadFile', uploadFile)
+
+// // API upload
+// declare global {
+//   namespace Cypress {
+//     interface Chainable {
+//       fileRequest: typeof fileRequest;
+//     }
+//   }
+// }
+
+// function fileRequest (filePath: string, requestOptions: any) {
+//   const data = new FormData()
+// }
+
+// Cypress.Commands.add('fileRequest', fileRequest)

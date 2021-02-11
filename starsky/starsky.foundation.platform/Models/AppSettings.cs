@@ -152,8 +152,9 @@ namespace starsky.foundation.platform.Models
 	        }
             set
             {
+	            var storageFolder = ReplaceEnvironmentVariable(value);
 	            // ReSharper disable once ArrangeAccessorOwnerBody
-	            _storageFolder = PathHelper.AddBackslash(value);
+	            _storageFolder = PathHelper.AddBackslash(storageFolder);
             }
         }
 

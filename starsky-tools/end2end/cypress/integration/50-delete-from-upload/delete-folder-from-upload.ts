@@ -16,6 +16,15 @@ describe('Delete folder from upload', () => {
 
     cy.sendAuthenticationHeader()
 
+    // clean trash
+    cy.request({
+      failOnStatusCode: false,
+      method: 'DELETE',
+      url: '/starsky/api/delete',
+      qs: {
+        f: '/starsky-end2end-test'
+      }
+    })
     // check if folder /starsky-end2end-test is here
     checkIfExistAndCreate(config)
   })
@@ -30,7 +39,7 @@ describe('Delete folder from upload', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=trash]').click()
 
-    cy.wait(1000)
+    cy.wait(2000)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
@@ -41,11 +50,10 @@ describe('Delete folder from upload', () => {
 
     cy.get('.modal .btn.btn--default').click()
 
-    // nothing in trash
-    cy.get('.folder > div').should(($lis) => {
-      expect($lis).to.have.class('warning-box')
-    })
+    // // item should be in the trash
+    cy.get('[data-filepath="/starsky-end2end-test"] button').should('not.exist')
 
+    cy.request('POST', config.searchClearCache)
     // and its gone in the api
     cy.request(config.checkIfDirExistApi, {
       failOnStatusCode: false,

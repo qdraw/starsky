@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace starsky
 {
@@ -18,6 +19,11 @@ namespace starsky
 					options.Limits.MaxRequestLineSize = 65536; //64Kb
 					// AddServerHeader removes the header: Server: Kestrel
 					options.AddServerHeader = false;
+				})
+				.ConfigureLogging(logging =>
+				{
+					logging.ClearProviders();
+					logging.AddConsole();
 				})
 				.UseStartup<Startup>();
 	

@@ -17,6 +17,7 @@ function createDirectory (config) {
 }
 
 export function checkIfExistAndCreate (config) {
+  cy.request('POST', config.searchClearCache)
   cy.request(config.checkIfDirExistApi, {
     failOnStatusCode: false,
     method: 'GET',

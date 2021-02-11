@@ -50,11 +50,9 @@ namespace starsky.foundation.realtime.Middleware
 						{
 							await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
 						}
-						catch ( WebSocketException e )
+						catch (WebSocketException)
 						{
-							// WebSocketException (0x80004005): The WebSocket is in an invalid state ('Aborted')
-							Console.WriteLine("Catch-ed WebSocketException: ");
-							Console.WriteLine(e);
+							// if the client is closing the socket the wrong way
 						}
 					};
 

@@ -39,8 +39,6 @@ function useHotKeys(
       if (!predefined || !predefined.key) {
         return;
       }
-      event.preventDefault();
-      console.log(event);
 
       const {
         key: eventKey,
@@ -65,6 +63,7 @@ function useHotKeys(
         eventMetaKey === preDefinedMetaKey &&
         eventShiftKey === preDefinedShiftKey
       ) {
+        event.preventDefault();
         callback(event);
       }
     };

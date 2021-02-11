@@ -129,7 +129,7 @@ namespace starskytest.Controllers
 	        
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
-		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
+		        selectorStorage, metaPreflight, new FakeIWebLogger());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
 		        new FakeIWebSocketConnectionsService());
@@ -161,7 +161,7 @@ namespace starskytest.Controllers
 
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
-		        selectorStorage, metaPreflight, new FakeConsoleWrapper());
+		        selectorStorage, metaPreflight, new FakeIWebLogger());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
@@ -193,7 +193,7 @@ namespace starskytest.Controllers
 
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
-		        metaPreflight, new FakeConsoleWrapper());
+		        metaPreflight, new FakeIWebLogger());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
@@ -226,7 +226,7 @@ namespace starskytest.Controllers
 	        
 	        var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
 	        var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
-		        metaPreflight, new FakeConsoleWrapper());
+		        metaPreflight, new FakeIWebLogger());
 	        var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
 		        new FakeIWebSocketConnectionsService());

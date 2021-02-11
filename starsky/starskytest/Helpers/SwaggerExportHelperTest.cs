@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -63,21 +64,31 @@ namespace starskytest.Helpers
 		public void Add03AppExport_disabled_AddSwagger()
 		{
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false};
-			var swagger = new SwaggerExportHelper(null);
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
 			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 			
 			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void Add03AppExport_null_ArgumentException()
+		{
+			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = true};
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 		}
 		
 		[TestMethod]
 		public void Add03AppExport_disabled_AddSwaggerExport()
 		{
 			var appSettings = new AppSettings {AddSwagger = false, AddSwaggerExport = true};
-			var swagger = new SwaggerExportHelper(null);
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
 			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 			
 			Assert.IsFalse(result);
 		}
+
 
 		[TestMethod]
 		public void ExecuteAsync_ShouldWrite()

@@ -38,6 +38,7 @@
   "Microsoft.Extensions.Configuration.Binder 3.1.9",
   "Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.9",
   "Microsoft.Extensions.Configuration.Json 3.1.9",
+  "Microsoft.Extensions.Logging.Abstractions 3.1.9",
   "System.Buffers 4.5.1",
   "System.Threading.Tasks.Dataflow 4.11.1",
   "TimeZoneConverter 3.3.0",

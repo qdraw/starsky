@@ -45,7 +45,12 @@ stages:
     displayName: 'Build .NET Core'
     pool:
       vmImage: 'ubuntu-20.04'
+
     steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
     - template: /pipelines/azure/steps/build_clientapp.yml

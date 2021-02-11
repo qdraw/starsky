@@ -28,7 +28,7 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
-		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 		private readonly ITelemetryService _telemetryService;
 
 		public MetaUpdateService(
@@ -37,7 +37,7 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IConsole console, ITelemetryService telemetryService = null)
+			IWebLogger logger, ITelemetryService telemetryService = null)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -45,7 +45,7 @@ namespace starsky.feature.metaupdate.Services
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
-			_console = console;
+			_logger = logger;
 			_telemetryService = telemetryService;
 		}
 
@@ -134,7 +134,7 @@ namespace starsky.feature.metaupdate.Services
 				// Do an Exif Sync for all files, including thumbnails
 				var exifResult = exifTool.Update(detailView.FileIndexItem, 
 					exifUpdateFilePaths, comparedNamesList);
-				_console.WriteLine($"UpdateWriteDiskDatabase: {exifResult}");
+				_logger?.LogInformation($"UpdateWriteDiskDatabase: {exifResult}");
 			}
 			else
 			{

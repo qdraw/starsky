@@ -69,8 +69,8 @@ namespace starsky.feature.metaupdate.Services
 				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
-					var collectionsDetailView = _query.SingleItem(collectionSubPath, 
-						null, collections, false);
+					var collectionsDetailView = GetCollectionsDetailView(collectionSubPath, 
+						subPath, collections, detailView);
 					
 					CompareAllLabelsAndRotation(changedFileIndexItemName,
 								collectionsDetailView, inputModel, append, rotateClock);
@@ -94,6 +94,22 @@ namespace starsky.feature.metaupdate.Services
 				}
 			}
 			return (fileIndexResultsList, changedFileIndexItemName);
+		}
+
+		private DetailView GetCollectionsDetailView(string collectionSubPath, string subPath, bool collections, DetailView detailView)
+		{
+			// only for performance reasons
+			DetailView collectionsDetailView;
+			if ( collectionSubPath != subPath)
+			{
+				collectionsDetailView = _query.SingleItem(collectionSubPath, 
+					null, collections, false);
+			}
+			else
+			{
+				collectionsDetailView = detailView;
+			}
+			return collectionsDetailView;
 		}
 
 		/// <summary>

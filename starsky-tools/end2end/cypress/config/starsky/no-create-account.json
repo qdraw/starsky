@@ -1,0 +1,8 @@
+{
+    "baseUrl": "http://localhost:5000",
+    "env": {
+      "name": "no-create-account",
+      "AUTH_USER": "demo@qdraw.nl",
+      "AUTH_PASS": "demo@qdraw.nl"
+    }
+  }

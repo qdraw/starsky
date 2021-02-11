@@ -22,7 +22,7 @@ describe('Create Rename Dir', () => {
     cy.sendAuthenticationHeader()
   })
 
-  it('Check if folder is there & create', () => {
+  it('Create Rename Dir - Check if folder is there & create', () => {
     if (!config.isEnabled) return
     checkIfExistAndCreate(config)
   })

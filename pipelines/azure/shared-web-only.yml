@@ -31,21 +31,31 @@ pr:
   branches:
     exclude:
     - master
-
     
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- checkout: self
+  clean: true
+  fetchDepth: 1
 
 - template: /pipelines/azure/steps/build_clientapp.yml
   parameters:
     jest: false
 
 - template: /pipelines/azure/steps/build_server_shared_runtime.yml
+  parameters:
+    nugetPackages: $(NUGET_PACKAGES)
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky/starsky/generic-site'
+    PathtoPublish: '$(Build.SourcesDirectory)/starsky-tools/end2end'
+    ArtifactName: 'starsky-tools-end2end'
+    publishLocation: 'Container'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site' 
     ArtifactName: 'generic-site'
     publishLocation: 'Container'

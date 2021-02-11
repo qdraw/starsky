@@ -13,6 +13,13 @@
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test"
+      },
+      "no-create-account": {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "mkdirName": "starsky-end2end-test",
+        "mkdirPath": "/starsky-end2end-test",
+        "urlMkdir": "/api/index/?f=/starsky-end2end-test"
       }
     }
   }
