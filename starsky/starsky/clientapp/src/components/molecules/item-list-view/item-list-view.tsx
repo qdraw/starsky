@@ -6,6 +6,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
+import FlatListItemBox from "../../atoms/flat-list-item-box/flat-list-item-box";
 import ListImageBox from "../list-image-box/list-image-box";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 
@@ -59,7 +60,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   if (!items) return <div className="folder">no content</div>;
 
   return (
-    <div className="folder" ref={folderRef}>
+    <div className="folder flatlist" ref={folderRef}>
       {props.pageType !== PageType.Loading ? (
         items.length === 0 ? (
           props.colorClassUsage.length >= 1 ? (
@@ -71,20 +72,27 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           )
         ) : null
       ) : null}
-      {items.map((item) => (
-        <ListImageBox
-          item={item}
-          key={item.fileName + item.lastEdited + item.colorClass}
-          onSelectionCallback={(f) =>
-            ShiftSelectionHelper(
-              history,
-              new URLPath().getSelect(history.location.search),
-              f,
-              items
-            )
-          }
-        />
-      ))}
+      {items.map((item) =>
+        true ? (
+          <FlatListItemBox
+            item={item}
+            key={item.fileName + item.lastEdited + item.colorClass}
+          />
+        ) : (
+          <ListImageBox
+            item={item}
+            key={item.fileName + item.lastEdited + item.colorClass}
+            onSelectionCallback={(f) =>
+              ShiftSelectionHelper(
+                history,
+                new URLPath().getSelect(history.location.search),
+                f,
+                items
+              )
+            }
+          />
+        )
+      )}
     </div>
   );
 });

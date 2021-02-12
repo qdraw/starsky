@@ -1,0 +1,20 @@
+.flatlistitem {
+  width: 100%;
+}
+
+.flatlistitem .name,
+.flatlistitem .lastedited,
+.flatlistitem .size,
+.flatlistitem .imageformat {
+  display: inline-block;
+}
+
+.flatlistitem .name {
+  width: 30%;
+}
+
+.flatlistitem .lastedited,
+.flatlistitem .size,
+.flatlistitem .imageformat {
+  width: 20%;
+}
