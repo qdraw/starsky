@@ -2,8 +2,6 @@ name: end2end on heroku-demo
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ master ]
 
 jobs:
   test:
