@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, new ConsoleWrapper());
 			var result = await sync.SingleFile("/non_exist.ext");
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 		}
 		
 		[TestMethod]
@@ -52,7 +52,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				storage, new ConsoleWrapper());
 			var result = await sync.SingleFile("/corrupt.jpg");
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 		}
 		
 		[TestMethod]
@@ -84,7 +84,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var result = await sync.SingleFile("/status_deleted.jpg");
 			
-			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result[0].Status);
 		}
 	
 		[TestMethod]
@@ -291,7 +291,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				_iStorageFake, new ConsoleWrapper());
 			var result = await sync.SingleFile("/status_deleted.jpg",item);  // % % % % Enter item here % % % % % 
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result[0].Status);
 		}
 		
 		[TestMethod]
@@ -369,6 +369,33 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			Assert.AreEqual(1,fileIndexItem.SidecarExtensionsList.Count);
 			Assert.AreEqual("xmp",fileIndexItem.SidecarExtensionsList.ToList()[0]);
+		}
+		
+		[TestMethod]
+		public async Task SingleFile_WhenSidecarIsChangedItUpdatesDatabase()
+		{
+			// It should update the Sidecar field when a sidecar file is add to the directory
+			var storage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.dng", "/test.xmp"}, new List<byte[]>{
+					CreateAnImageNoExif.Bytes,
+					CreateAnXmp.Bytes});
+			
+			var (fileHash, _) = await new FileHash(storage).GetHashCodeAsync("/test.jpg");
+
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = fileHash, // < right file hash
+				Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
+				_iStorageFake, new ConsoleWrapper());
+			await sync.SingleFile("/test.xmp",item);
+			
+			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
+			Assert.AreEqual(ColorClassParser.Color.Extras,fileIndexItem.ColorClass);
+
 		}
 		
 		[TestMethod]

@@ -54,7 +54,7 @@ namespace starsky.foundation.sync.SyncServices
 					return await _syncFolder.Folder(subPath);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var item = await _syncSingleFile.SingleFile(subPath);
-					return new List<FileIndexItem>{item};
+					return item;
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					return await _syncRemove.Remove(subPath);
 				default:

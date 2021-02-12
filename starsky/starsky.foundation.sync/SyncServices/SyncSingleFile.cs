@@ -37,7 +37,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="subPath">path</param>
 		/// <param name="dbItem">current item, can be null</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath, FileIndexItem dbItem)
+		internal async Task<List<FileIndexItem>> SingleFile(string subPath, FileIndexItem dbItem)
 		{
 			// when item does not exist in db
 			if ( dbItem == null )
@@ -49,18 +49,22 @@ namespace starsky.foundation.sync.SyncServices
 			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 			
 			// Sidecar files are updated but ignored by the process
-			await UpdateSidecarFile(subPath);
-
+			var sidecarItems = await SidecarCompareAndUpdate(subPath);
+			if ( sidecarItems.Any() && sidecarItems.All(p => p.Status == FileIndexItem.ExifStatus.Ok) )
+			{
+				return sidecarItems;
+			}
+			
 			var statusItem = CheckForStatusNotOk(subPath);
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				return statusItem;
+				return new List<FileIndexItem>{statusItem};
 			}
 			
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( isSame ) return new List<FileIndexItem>{updatedDbItem};
 
-			return await UpdateItem(dbItem, dbItem.Size, subPath);
+			return new List<FileIndexItem>{await UpdateItem(dbItem, dbItem.Size, subPath)};
 		}
 
 		/// <summary>
@@ -68,33 +72,37 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="subPath">path</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath)
+		internal async Task<List<FileIndexItem>> SingleFile(string subPath)
 		{
 			// route with database check
 			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
 
 			// Sidecar files are updated but ignored by the process
-			await UpdateSidecarFile(subPath);
+			var sidecarItems = await SidecarCompareAndUpdate(subPath);
+			if ( sidecarItems.Any() && sidecarItems.All(p => p.Status == FileIndexItem.ExifStatus.Ok) )
+			{
+				return sidecarItems;
+			}
 			
 			// ignore all the 'wrong' files
 			var statusItem = CheckForStatusNotOk(subPath);
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				return statusItem;
+				return new List<FileIndexItem>{statusItem};
 			}
 
 			var dbItem =  await _query.GetObjectByFilePathAsync(subPath);
 			// // // when item does not exist in Database
 			if ( dbItem == null )
 			{
-				return await NewItem(statusItem, subPath);
+				return new List<FileIndexItem>{await NewItem(statusItem, subPath)};
 			}
 
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( isSame ) return new List<FileIndexItem>{updatedDbItem};
 
-			return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+			return new List<FileIndexItem>{await UpdateItem(dbItem, updatedDbItem.Size, subPath)};
 		}
 
 		/// <summary>
@@ -221,17 +229,29 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, long>(isTheSame, storageByteSize);
 		}
 
+		internal async Task<List<FileIndexItem>> SidecarCompareAndUpdate(string xmpSubPath)
+		{
+			var referencedItems = await UpdateSidecarField(xmpSubPath);
+			foreach ( var referencedItem in referencedItems )
+			{
+				await _newItem.PrepareUpdateFileItem(referencedItem,
+					referencedItem.Size);
+				referencedItem.Status = FileIndexItem.ExifStatus.Ok;
+			}
+			return referencedItems;
+		}
+
 		/// <summary>
 		/// Sidecar files don't have an own item, but there referenced by file items
 		/// in the method xmp files are added to the AddSidecarExtension list.
 		/// </summary>
 		/// <param name="xmpSubPath">sidecar item</param>
 		/// <returns>completed task</returns>
-		public async Task UpdateSidecarFile(string xmpSubPath)
+		public async Task<List<FileIndexItem>> UpdateSidecarField(string xmpSubPath)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
 			{
-				return;
+				return new List<FileIndexItem>();
 			}
 
 			var parentPath = FilenamesHelper.GetParentPath(xmpSubPath);
@@ -242,7 +262,7 @@ namespace starsky.foundation.sync.SyncServices
 				p => p.ParentDirectory == parentPath &&
 				     p.FileCollectionName == fileNameWithoutExtension).ToList();
 
-			await UpdateSidecarFile(xmpSubPath, directoryWithFileIndexItems);
+			return await UpdateSidecarField(xmpSubPath, directoryWithFileIndexItems);
 		}
 
 		/// <summary>
@@ -251,21 +271,24 @@ namespace starsky.foundation.sync.SyncServices
 		/// <param name="xmpSubPath">sidecar file</param>
 		/// <param name="directoryWithFileIndexItems">directory where the sidecar is located</param>
 		/// <returns>completed task</returns>
-		private async Task UpdateSidecarFile(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
+		private async Task<List<FileIndexItem>> UpdateSidecarField(string xmpSubPath, List<FileIndexItem> directoryWithFileIndexItems)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionSidecar(xmpSubPath) )
 			{
-				return;
+				return new List<FileIndexItem>();
 			}
 			var sidecarExt =
 				FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
+
+			var referencedItems = directoryWithFileIndexItems.Where(item =>
+				!item.SidecarExtensionsList.Contains(sidecarExt)).ToList();
 			
-			foreach ( var item in 
-				directoryWithFileIndexItems.Where(item => !item.SidecarExtensionsList.Contains(sidecarExt)) )
+			foreach ( var item in referencedItems )
 			{
 				item.AddSidecarExtension(sidecarExt);
 				await _query.UpdateItemAsync(item);
 			}
+			return referencedItems;
 		}
 		
 	}
