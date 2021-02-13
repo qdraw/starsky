@@ -73,7 +73,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
         ) : null
       ) : null}
       {items.map((item) =>
-        true ? (
+        !true ? (
           <FlatListItemBox
             item={item}
             key={item.fileName + item.lastEdited + item.colorClass}
