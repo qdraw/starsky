@@ -56,6 +56,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Change default logging settings in appsettings.json to have less Information
 - [x]   (Changed) _Back-end_ Disable TieredCompilationQuickJit and TieredCompilation are disabled for optimization
 - [x]   (Changed) _Back-end_ performance update for metaPreflight, reduced a cache call. Helpful for large folders
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.2 2021-02-03)_
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
