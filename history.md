@@ -43,7 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.5 _(Unreleased)_ - 2021-02-??
+# version 0.4.6 _(Unreleased)_ - 2021-02-??
+- nothing yet
+
+# version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x]   (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
 - [x]   (Fixed) _Front-end_ Archive when added tag/description is cleared is still send _issue #279_
