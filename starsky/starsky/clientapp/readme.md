@@ -144,6 +144,7 @@ npm install --save intersection-observer
 npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
+npm install --save @types/storybook__react
 npm install --save enzyme
 npm install --save @types/enzyme
 npm install --save-dev @storybook/react
@@ -152,6 +153,9 @@ npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
 ```
+
+> Note:
+> `@types/storybook__react`is deprecated but needed to build devDependencies
 
 Remove this package
 
