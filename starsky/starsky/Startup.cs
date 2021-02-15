@@ -210,7 +210,7 @@ namespace starsky
         /// </summary>
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
 	        app.UseResponseCompression();
 
@@ -251,7 +251,7 @@ namespace starsky
 	        });
     
 	        // Use in wwwroot in build directory; the default option assumes Current Directory
-	        if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
+	        if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "wwwroot")) )
 	        {
 		        app.UseStaticFiles(new StaticFileOptions
 		        {
@@ -261,7 +261,7 @@ namespace starsky
 		        });
 	        }
 			
-			if ( Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")) )
+			if ( _appSettings != null && Directory.Exists(Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build", "static")) )
 			{
 				app.UseStaticFiles(new StaticFileOptions
 					{
@@ -283,7 +283,7 @@ namespace starsky
 			});
 			
 			app.UseWebSockets();
-			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings.UseRealtime);
+			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
 
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
         }
