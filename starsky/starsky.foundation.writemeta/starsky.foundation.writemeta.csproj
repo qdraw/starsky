@@ -5,13 +5,13 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{bc265f9e-e0f1-46da-9c40-0babe44de9ee}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.5</Version>
+        <Version>0.4.6</Version>
     </PropertyGroup>
     
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.9" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.12" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-      <PackageReference Include="MedallionShell" Version="1.6.1" />
+      <PackageReference Include="MedallionShell" Version="1.6.2" />
     </ItemGroup>
 
     <ItemGroup>

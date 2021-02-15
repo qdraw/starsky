@@ -43,7 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.5 _(Unreleased)_ - 2021-02-??
+# version 0.4.6 _(Unreleased)_ - 2021-02-??
+- nothing yet
+
+# version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
 - [x]   (Fixed) _Front-end_ Displaying files in realtime works now _issue #275_
 - [x]   (Fixed) _Front-end_ Archive when added tag/description is cleared is still send _issue #279_
@@ -56,6 +59,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Change default logging settings in appsettings.json to have less Information
 - [x]   (Changed) _Back-end_ Disable TieredCompilationQuickJit and TieredCompilation are disabled for optimization
 - [x]   (Changed) _Back-end_ performance update for metaPreflight, reduced a cache call. Helpful for large folders
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.2 2021-02-03)_
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.12 (using SDK 3.1.112)
+
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
