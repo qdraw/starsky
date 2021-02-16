@@ -11,6 +11,7 @@ import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
+import { sort } from "./sort";
 
 const ArchiveContext = React.createContext<IArchiveContext>(
   {} as IArchiveContext
@@ -126,25 +127,31 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
-      // Need to update otherwise other events are not triggerd
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
       // ignore the cache
       if (!action.payload.fileIndexItems) return action.payload;
+
       return {
         ...action.payload,
-        fileIndexItems: new ArrayHelper().UniqueResults(
-          action.payload.fileIndexItems,
-          "filePath"
+        fileIndexItems: sort(
+          new ArrayHelper().UniqueResults(
+            action.payload.fileIndexItems,
+            "filePath"
+          ),
+          action.payload.sort
         )
       };
     case "force-reset":
       // also update the cache
       return updateCache({
         ...action.payload,
-        fileIndexItems: new ArrayHelper().UniqueResults(
-          action.payload.fileIndexItems,
-          "filePath"
+        fileIndexItems: sort(
+          new ArrayHelper().UniqueResults(
+            action.payload.fileIndexItems,
+            "filePath"
+          )
         )
       });
     case "add":
@@ -175,10 +182,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         toSortOnParm
       );
 
-      // order by this to match c# AND not supported in jest
-      let fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
-        a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
-      );
+      let fileIndexItems = sort(concatenatedFileIndexItems);
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };

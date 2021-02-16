@@ -87,11 +87,14 @@ const useFileList = (
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
-        var archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        const archiveMedia = new CastToInterface().MediaArchive(responseObject);
+        archiveMedia.data.sort = new URLPath().StringToIUrl(
+          locationSearch
+        ).sort;
         setArchive(archiveMedia.data);
         break;
       case PageType.DetailView:
-        var detailViewMedia = new CastToInterface().MediaDetailView(
+        const detailViewMedia = new CastToInterface().MediaDetailView(
           responseObject
         );
         setDetailView(detailViewMedia.data);

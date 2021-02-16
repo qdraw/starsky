@@ -1,3 +1,4 @@
+import { SortType } from "../interfaces/IArchive";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 
@@ -55,6 +56,10 @@ export class URLPath {
           urlObject.select = this.getStringArrayFromCommaSeparatedString(
             key[1]
           );
+          break;
+        case "sort".toLowerCase():
+          const sort: SortType = SortType[key[1] as keyof typeof SortType];
+          urlObject.sort = sort;
           break;
         default:
           break;
