@@ -113,21 +113,27 @@ describe("ModalDisplayOptions", () => {
         expect(localStorage.getItem("use-sockets")).toBe(null);
       });
 
-      // it("toggle-sockets 11", () => {
-      //   modal
-      //     .find('[data-test="toggle-sockets"] input')
-      //     .first()
-      //     .simulate("change");
+      it("sort - change to imageFormat", () => {
+        globalHistory.location.search = "";
 
-      //   expect(localStorage.getItem("use-sockets")).toBe("false");
+        modal
+          .find('[data-test="sort"] select')
+          .first()
+          .simulate("change", { target: { value: "imageFormat" } });
 
-      //   modal
-      //     .find('[data-test="toggle-sockets"] input')
-      //     .last()
-      //     .simulate("change");
+        expect(globalHistory.location.search).toBe("?sort=imageFormat");
+      });
 
-      //   expect(localStorage.getItem("use-sockets")).toBe(null);
-      // });
+      it("sort - change to fileName", () => {
+        globalHistory.location.search = "";
+
+        modal
+          .find('[data-test="sort"] select')
+          .first()
+          .simulate("change", { target: { value: "fileName" } });
+
+        expect(globalHistory.location.search).toBe("?sort=fileName");
+      });
     });
 
     it("test if handleExit is called", () => {
