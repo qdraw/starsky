@@ -198,6 +198,12 @@ export class UrlQuery {
     if (requested.details) {
       urlObject.details = requested.details;
     }
+
+    // to re-render the page
+    if (requested.sort) {
+      urlObject.sort = requested.sort;
+    }
+
     return this.UrlIndexServerApi(urlObject);
   };
 

@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import { SortType } from "../../../interfaces/IArchive";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import Modal from "../../atoms/modal/modal";
+import Select from "../../atoms/select/select";
 import SwitchButton from "../../atoms/switch-button/switch-button";
 
 interface IModalDisplayOptionsProps {
@@ -62,7 +64,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
   }, [collections, history.location.search]);
 
   function toggleCollections() {
-    var urlObject = new URLPath().StringToIUrl(history.location.search);
+    const urlObject = new URLPath().StringToIUrl(history.location.search);
     // set the default option
     if (urlObject.collections === undefined) urlObject.collections = true;
     urlObject.collections = !urlObject.collections;
@@ -89,6 +91,19 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
       return;
     }
     localStorage.setItem("use-sockets", "false");
+  }
+
+  function currentSort(): string | undefined {
+    const urlObject = new URLPath().StringToIUrl(history.location.search);
+    return urlObject.sort?.toString();
+  }
+
+  function toggleSort(option: string) {
+    const urlObject = new URLPath().StringToIUrl(history.location.search);
+    urlObject.sort = SortType[option as keyof typeof SortType];
+    history.navigate(new URLPath().IUrlToString(urlObject), {
+      replace: true
+    });
   }
 
   return (
@@ -130,7 +145,13 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
           rightLabel={MessageSwitchButtonIsSocketOff}
         />
       </div>
-      <div className="modal content--text"></div>
+      <div className="modal content--text">
+        <Select
+          selectOptions={Object.values(SortType) as any}
+          callback={toggleSort}
+          selected={currentSort()}
+        />
+      </div>
     </Modal>
   );
 };

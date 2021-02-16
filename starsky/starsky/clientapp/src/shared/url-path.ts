@@ -58,8 +58,7 @@ export class URLPath {
           );
           break;
         case "sort".toLowerCase():
-          const sort: SortType = SortType[key[1] as keyof typeof SortType];
-          urlObject.sort = sort;
+          urlObject.sort = SortType[key[1] as keyof typeof SortType];
           break;
         default:
           break;
