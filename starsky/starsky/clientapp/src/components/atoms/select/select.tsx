@@ -25,10 +25,14 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
   }
 
   return (
-    <select className="select" onChange={(e) => change(e.target.value)}>
+    <select
+      defaultValue={selected}
+      className="select"
+      onChange={(e) => change(e.target.value)}
+    >
       {selectOptions.map((value, index) => {
         return (
-          <option key={index} value={value} selected={selected === value}>
+          <option key={index} value={value}>
             {value}
           </option>
         );

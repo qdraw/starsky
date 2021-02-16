@@ -112,6 +112,22 @@ describe("ModalDisplayOptions", () => {
 
         expect(localStorage.getItem("use-sockets")).toBe(null);
       });
+
+      // it("toggle-sockets 11", () => {
+      //   modal
+      //     .find('[data-test="toggle-sockets"] input')
+      //     .first()
+      //     .simulate("change");
+
+      //   expect(localStorage.getItem("use-sockets")).toBe("false");
+
+      //   modal
+      //     .find('[data-test="toggle-sockets"] input')
+      //     .last()
+      //     .simulate("change");
+
+      //   expect(localStorage.getItem("use-sockets")).toBe(null);
+      // });
     });
 
     it("test if handleExit is called", () => {
@@ -122,9 +138,9 @@ describe("ModalDisplayOptions", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
+      const component = mount(
         <ModalDisplayOptions
           parentFolder="/"
           isOpen={true}
