@@ -17,14 +17,9 @@ export function sorter(
         if (!a.imageFormat) a.imageFormat = ImageFormat.unknown;
         if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
 
-        console.log("---");
-
-        console.log(a.imageFormat, b.imageFormat);
-
         const enumOrder = Object.values(ImageFormat);
-
         return (
-          enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat)
+          enumOrder.indexOf(b.imageFormat) - enumOrder.indexOf(a.imageFormat)
         );
       });
     default:
