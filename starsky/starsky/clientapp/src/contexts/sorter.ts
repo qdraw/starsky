@@ -1,7 +1,7 @@
 import { SortType } from "../interfaces/IArchive";
 import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 
-export function sort(
+export function sorter(
   concatenatedFileIndexItems: IFileIndexItem[],
   sort?: SortType
 ): IFileIndexItem[] {
@@ -16,6 +16,8 @@ export function sort(
       return [...concatenatedFileIndexItems].sort((a, b) => {
         if (!a.imageFormat) a.imageFormat = ImageFormat.unknown;
         if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
+
+        console.log("---");
 
         console.log(a.imageFormat, b.imageFormat);
 

@@ -11,7 +11,7 @@ import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
-import { sort } from "./sort";
+import { sorter } from "./sorter";
 
 const ArchiveContext = React.createContext<IArchiveContext>(
   {} as IArchiveContext
@@ -135,7 +135,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
 
       return {
         ...action.payload,
-        fileIndexItems: sort(
+        fileIndexItems: sorter(
           new ArrayHelper().UniqueResults(
             action.payload.fileIndexItems,
             "filePath"
@@ -147,7 +147,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       // also update the cache
       return updateCache({
         ...action.payload,
-        fileIndexItems: sort(
+        fileIndexItems: sorter(
           new ArrayHelper().UniqueResults(
             action.payload.fileIndexItems,
             "filePath"
@@ -182,7 +182,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         toSortOnParm
       );
 
-      let fileIndexItems = sort(concatenatedFileIndexItems);
+      let fileIndexItems = sorter(concatenatedFileIndexItems);
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
