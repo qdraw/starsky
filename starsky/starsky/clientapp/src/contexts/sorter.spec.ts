@@ -3,6 +3,21 @@ import { IFileIndexItem, ImageFormat } from "../interfaces/IFileIndexItem";
 import { sorter } from "./sorter";
 
 describe("sorter", () => {
+  it("sort on non valid null", () => {
+    const list = [
+      {
+        fileName: "b"
+      } as IFileIndexItem,
+      {
+        fileName: "a"
+      } as IFileIndexItem
+    ] as IFileIndexItem[];
+
+    const resultList = sorter(list, null as any);
+
+    expect(resultList.length).toBe(0);
+  });
+
   it("sort on filename", () => {
     const list = [
       {

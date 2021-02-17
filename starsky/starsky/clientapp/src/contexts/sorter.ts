@@ -23,7 +23,6 @@ export function sorter(
         );
       });
     default:
-      break;
+      return [];
   }
-  return [];
 }
