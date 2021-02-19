@@ -199,7 +199,6 @@ export class UrlQuery {
       urlObject.details = requested.details;
     }
 
-    // to re-render the page
     if (requested.sort) {
       urlObject.sort = requested.sort;
     }

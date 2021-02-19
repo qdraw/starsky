@@ -67,7 +67,8 @@ namespace starsky.foundation.database.Interfaces
             string singleItemDbPath, 
             List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
-            bool hideDeleted = true);
+            bool hideDeleted = true, 
+            SortType sort = SortType.FileName);
         
         FileIndexItem GetObjectByFilePath(string filePath);
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);

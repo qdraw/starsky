@@ -19,7 +19,7 @@ export function sorter(
 
         const enumOrder = Object.values(ImageFormat);
         return (
-          enumOrder.indexOf(b.imageFormat) - enumOrder.indexOf(a.imageFormat)
+          enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat)
         );
       });
     default:

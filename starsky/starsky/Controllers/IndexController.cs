@@ -42,7 +42,8 @@ namespace starsky.Controllers
             string f = "/", 
             string colorClass = null,
             bool collections = true,
-            bool hidedelete = true
+            bool hidedelete = true,
+            SortType sort = SortType.FileName
             )
         {
             f = PathHelper.PrefixDbSlash(f);
@@ -52,7 +53,7 @@ namespace starsky.Controllers
             var subPath = _query.SubPathSlashRemove(f);
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections);
+            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);
             // returns no object when it a directory
             
             if (singleItem?.IsDirectory == false)
@@ -64,7 +65,7 @@ namespace starsky.Controllers
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subPath,colorClassActiveList,collections,hidedelete),
+                FileIndexItems = SortHelper.Helper(_query.DisplayFileFolders(subPath,colorClassActiveList,collections,hidedelete), sort),
                 ColorClassActiveList = 	colorClassActiveList,
                 RelativeObjects = _query.GetNextPrevInFolder(subPath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),

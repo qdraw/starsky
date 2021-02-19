@@ -39,6 +39,7 @@ const useFileList = (
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState("/");
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
+  console.log(location);
 
   const fetchContent = async (
     locationLocal: string,
@@ -84,13 +85,11 @@ const useFileList = (
     )
       return;
 
+    responseObject.sort = new URLPath().StringToIUrl(locationSearch).sort;
     setPageType(responseObject.pageType);
     switch (responseObject.pageType) {
       case PageType.Archive:
         const archiveMedia = new CastToInterface().MediaArchive(responseObject);
-        archiveMedia.data.sort = new URLPath().StringToIUrl(
-          locationSearch
-        ).sort;
         setArchive(archiveMedia.data);
         break;
       case PageType.DetailView:

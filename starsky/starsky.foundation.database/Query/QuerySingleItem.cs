@@ -118,7 +118,7 @@ namespace starsky.foundation.database.Query
             var itemResult = new DetailView
             {
                 FileIndexItem = currentFileIndexItem,
-                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList),
+                RelativeObjects = GetNextPrevInSubFolder(currentFileIndexItem,fileIndexItemsForPrevNextList, sort),
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(singleItemDbPath),
                 ColorClassActiveList = colorClassActiveList,
                 IsDirectory = false,
@@ -138,12 +138,15 @@ namespace starsky.foundation.database.Query
             return itemResult;
         }
         
-        private RelativeObjects GetNextPrevInSubFolder(FileIndexItem currentFileIndexItem, 
-            List<FileIndexItem> fileIndexItemsList)
+        private RelativeObjects GetNextPrevInSubFolder(
+	        FileIndexItem currentFileIndexItem,
+	        List<FileIndexItem> fileIndexItemsList, SortType sortType)
         {
             // Check if this is item is not !deleted! yet
             if (currentFileIndexItem == null) return new RelativeObjects();
-            
+
+            fileIndexItemsList = SortHelper.Helper(fileIndexItemsList, sortType).ToList();
+	            
             var currentIndex = fileIndexItemsList.FindIndex(p => p.FilePath == currentFileIndexItem.FilePath);
             var relativeObject = new RelativeObjects();
 
