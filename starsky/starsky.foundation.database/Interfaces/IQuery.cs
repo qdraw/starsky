@@ -58,7 +58,8 @@ namespace starsky.foundation.database.Interfaces
             string singleItemDbPath, 
             List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
-            bool hideDeleted = true);
+            bool hideDeleted = true, 
+            SortType sort = SortType.FileName);
 
         // To make an object without any query
         DetailView SingleItem(

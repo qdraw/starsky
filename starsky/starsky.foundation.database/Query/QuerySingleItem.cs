@@ -25,7 +25,8 @@ namespace starsky.foundation.database.Query
             string singleItemDbPath,
             List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
-            bool hideDeleted = true)
+            bool hideDeleted = true, 
+            SortType sort = SortType.FileName)
         {
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
             var parentFolder = FilenamesHelper.GetParentPath(singleItemDbPath);
@@ -37,7 +38,8 @@ namespace starsky.foundation.database.Query
                 singleItemDbPath,
                 colorClassActiveList,
                 enableCollections,
-                hideDeleted);
+                hideDeleted,
+                sort);
         }
 
         /// <summary>
@@ -54,7 +56,8 @@ namespace starsky.foundation.database.Query
             string singleItemDbPath,
             List<ColorClassParser.Color> colorClassActiveList = null,
             bool enableCollections = true,
-            bool hideDeleted = true)
+            bool hideDeleted = true, 
+            SortType sort = SortType.FileName)
         {
             // reject empty requests
             if (string.IsNullOrWhiteSpace(singleItemDbPath) ) return null;
