@@ -49,8 +49,8 @@ describe("sorter", () => {
 
     const resultList = sorter(list, SortType.imageFormat);
 
-    expect(resultList[0].fileName).toBe("a");
-    expect(resultList[1].fileName).toBe("b");
+    expect(resultList[0].fileName).toBe("b");
+    expect(resultList[1].fileName).toBe("a");
   });
 
   it("sort on imageFormat, example 2", () => {
@@ -58,17 +58,63 @@ describe("sorter", () => {
       {
         fileName: "a",
         imageFormat: ImageFormat.mp4
-      } as IFileIndexItem,
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.gpx
+      },
       {
         fileName: "b",
         imageFormat: ImageFormat.xmp
+      } as IFileIndexItem,
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.gif
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.bmp
+      },
+
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.tiff
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.notfound
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.png
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.unknown
+      },
+      {
+        fileName: "a",
+        imageFormat: ImageFormat.jpg
+      } as IFileIndexItem,
+      {
+        fileName: "a",
+        imageFormat: undefined
       } as IFileIndexItem
     ] as IFileIndexItem[];
     //
 
     const resultList = sorter(list, SortType.imageFormat);
 
-    expect(resultList[0].fileName).toBe("a");
-    expect(resultList[1].fileName).toBe("b");
+    expect(resultList[0].imageFormat).toBe(ImageFormat.notfound);
+    expect(resultList[1].imageFormat).toBe(ImageFormat.unknown);
+    expect(resultList[2].imageFormat).toBe(ImageFormat.unknown); // undefined
+    expect(resultList[3].imageFormat).toBe(ImageFormat.jpg);
+    expect(resultList[4].imageFormat).toBe(ImageFormat.tiff);
+    expect(resultList[5].imageFormat).toBe(ImageFormat.bmp);
+    expect(resultList[6].imageFormat).toBe(ImageFormat.gif);
+    expect(resultList[7].imageFormat).toBe(ImageFormat.png);
+    expect(resultList[8].imageFormat).toBe(ImageFormat.xmp);
+    expect(resultList[9].imageFormat).toBe(ImageFormat.gpx);
+    expect(resultList[10].imageFormat).toBe(ImageFormat.mp4);
   });
 });

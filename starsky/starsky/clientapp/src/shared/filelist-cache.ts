@@ -103,7 +103,8 @@ export class FileListCache {
     return (
       this.cachePrefix +
       `c${urlObject.colorClass};l${urlObject.collections}` +
-      urlObject.f
+      urlObject.f +
+      urlObject.sort
     );
   }
 

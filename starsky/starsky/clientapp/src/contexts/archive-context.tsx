@@ -127,6 +127,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
+      console.log(state.fileIndexItems);
+
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
@@ -181,8 +183,11 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         concatenatedFileIndexItems,
         toSortOnParm
       );
+      console.log(concatenatedFileIndexItems);
 
       let fileIndexItems = sorter(concatenatedFileIndexItems);
+      console.log("state.sort", state.sort);
+      console.log(fileIndexItems);
 
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
