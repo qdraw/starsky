@@ -127,6 +127,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
+      console.log("130 -->");
       console.log(state.fileIndexItems);
 
       // Need to update otherwise other events are not triggered
@@ -269,10 +270,11 @@ function UpdateColorClassUsageActiveList(
  */
 function updateCache(stateLocal: IArchiveProps): IArchiveProps {
   if (stateLocal.pageType !== PageType.Archive) return stateLocal;
-  var urlObject = {
+  const urlObject = {
     f: stateLocal.subPath,
     colorClass: stateLocal.colorClassActiveList,
-    collections: stateLocal.collections
+    collections: stateLocal.collections,
+    sort: stateLocal.sort
   } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;

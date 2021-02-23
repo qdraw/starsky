@@ -39,7 +39,6 @@ const useFileList = (
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState("/");
   var location = new UrlQuery().UrlQueryServerApi(locationSearch);
-  console.log(location);
 
   const fetchContent = async (
     locationLocal: string,
