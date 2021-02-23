@@ -34,6 +34,22 @@ describe("sorter", () => {
     expect(resultList[1].fileName).toBe("b");
   });
 
+  it("sort on imageFormat when is undefined", () => {
+    const list = [
+      {
+        fileName: "b"
+      } as IFileIndexItem,
+      {
+        fileName: "a"
+      } as IFileIndexItem
+    ] as IFileIndexItem[];
+
+    const resultList = sorter(list, SortType.imageFormat);
+
+    expect(resultList[0].fileName).toBe("b");
+    expect(resultList[1].fileName).toBe("a");
+  });
+
   it("sort on imageFormat", () => {
     const list = [
       {
