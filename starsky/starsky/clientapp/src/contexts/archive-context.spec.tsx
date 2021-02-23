@@ -4,6 +4,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import ArrayHelper from "../shared/array-helper";
+import { FileListCache } from "../shared/filelist-cache";
 import { ArchiveAction, archiveReducer } from "./archive-context";
 
 describe("ArchiveContext", () => {
@@ -19,13 +20,49 @@ describe("ArchiveContext", () => {
       ]
     } as IArchiveProps;
 
-    // fullpath input
+    // fullPath input
     var action = { type: "force-reset", payload: state } as ArchiveAction;
 
     var result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(1);
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
+  });
+
+  it("force-reset - should update cache", () => {
+    var state = {
+      pageType: PageType.Archive,
+      subPath: "/",
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        }
+      ]
+    } as IArchiveProps;
+
+    const cacheSetObjectSpy = jest
+      .spyOn(FileListCache.prototype, "CacheSetObject")
+      .mockImplementationOnce(() => {});
+
+    // fullPath input
+    var action = { type: "force-reset", payload: state } as ArchiveAction;
+
+    archiveReducer(state, action);
+
+    expect(cacheSetObjectSpy).toBeCalled();
+    expect(cacheSetObjectSpy).toBeCalledWith(
+      {
+        collections: undefined,
+        colorClass: undefined,
+        f: "/",
+        sort: undefined
+      },
+      {
+        fileIndexItems: [{ filePath: "/test.jpg" }],
+        pageType: "Archive",
+        subPath: "/"
+      }
+    );
   });
 
   it("set - it should ignore when fileIndexItem is undefined", () => {
@@ -47,7 +84,7 @@ describe("ArchiveContext", () => {
       ]
     } as IArchiveProps;
 
-    // fullpath input
+    // fullPath input
     var action = { type: "set", payload: state } as ArchiveAction;
 
     var result = archiveReducer(state, action);
