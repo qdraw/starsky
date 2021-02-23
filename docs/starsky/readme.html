@@ -155,6 +155,52 @@ except for the executable files</p>
 <p>To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.</p>
 <h4 id="pm2-pm2-warmupsh">pm2 <code>pm2-warmup.sh</code></h4>
 <p>To warmup the installation after a restart this bash script is provided</p>
+<p>If you prefer a Powershell script, you could use the following script:</p>
+<pre><code class="Powershell language-Powershell">$TestUrl = "$(testUrl)"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Write-Output "Starting"
+$MaxAttempts = 5
+If (![string]::IsNullOrWhiteSpace($TestUrl)) {
+    Write-Output "Making request to $TestUrl"
+    Try {
+        $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+        # Allow redirections on the warm up
+        $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
+        $stopwatch.Stop()
+        $statusCode = [int]$response.StatusCode
+        $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
+        Write-Output "$statusCode Warmed Up Site $TestUrl in $stopWatchMilliSeconds ms"
+    } catch {
+        $_.Exception|format-list -force
+    }
+    For ($i = 0; $i -lt $MaxAttempts; $i++) {
+        try {
+            Write-Output "Checking Site"
+            $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+            # Don't allow redirections on the check
+            $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
+            $stopwatch.Stop()
+            $statusCode = [int]$response.StatusCode
+            $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
+            Write-Output "$statusCode Second request took $stopWatchMilliSeconds ms"
+            If ($statusCode -ge 200 -And $statusCode -lt 400) {
+                break;
+            }
+            Start-Sleep -s 2
+        } catch {
+            $_.Exception|format-list -force
+            Start-Sleep -s 30
+        }
+    }
+    If ($statusCode -ge 200 -And $statusCode -lt 400) {
+        # YES!, it worked
+    } Else {
+        throw "Warm up failed for " + $TestUrl
+    }
+} Else {
+    Write-Output "No TestUrl configured for this machine."
+}
+Write-Output "Done"</code></pre>
 <h4 id="publish-scripts-for-self-containing-binaries">Publish-scripts for 'self containing' binaries</h4>
 <p>The scripts that are used to create a full build. (Linux has <code>libunwind8</code> and <code>gettext</code> as dependency)</p>
 <p>The Cake script provide options to build for specific runtimes.</p>
