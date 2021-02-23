@@ -24,11 +24,11 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     "Weergave opties",
     "Display options"
   );
-  const MessageSwitchButtonCollectionsOn = language.text(
+  const MessageSwitchButtonCollectionsOff = language.text(
     "Toon raw bestanden",
     "Show raw files"
   );
-  const MessageSwitchButtonCollectionsOff = language.text(
+  const MessageSwitchButtonCollectionsOn = language.text(
     "Verberg raw bestanden",
     "Hide Raw files"
   );
