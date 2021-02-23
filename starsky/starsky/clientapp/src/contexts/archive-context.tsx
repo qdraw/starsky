@@ -11,6 +11,7 @@ import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import { IUrl } from "../interfaces/IUrl";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
+import { sorter } from "./sorter";
 
 const ArchiveContext = React.createContext<IArchiveContext>(
   {} as IArchiveContext
@@ -126,25 +127,34 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
-      // Need to update otherwise other events are not triggerd
+      console.log("130 -->");
+      console.log(state.fileIndexItems);
+
+      // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
       // ignore the cache
       if (!action.payload.fileIndexItems) return action.payload;
+
       return {
         ...action.payload,
-        fileIndexItems: new ArrayHelper().UniqueResults(
-          action.payload.fileIndexItems,
-          "filePath"
+        fileIndexItems: sorter(
+          new ArrayHelper().UniqueResults(
+            action.payload.fileIndexItems,
+            "filePath"
+          ),
+          action.payload.sort
         )
       };
     case "force-reset":
       // also update the cache
       return updateCache({
         ...action.payload,
-        fileIndexItems: new ArrayHelper().UniqueResults(
-          action.payload.fileIndexItems,
-          "filePath"
+        fileIndexItems: sorter(
+          new ArrayHelper().UniqueResults(
+            action.payload.fileIndexItems,
+            "filePath"
+          )
         )
       });
     case "add":
@@ -175,11 +185,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         toSortOnParm
       );
 
-      // order by this to match c# AND not supported in jest
-      let fileIndexItems = [...concatenatedFileIndexItems].sort((a, b) =>
-        a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
-      );
-
+      let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
       UpdateColorClassUsageActiveListLoop(state);
@@ -260,10 +266,11 @@ function UpdateColorClassUsageActiveList(
  */
 function updateCache(stateLocal: IArchiveProps): IArchiveProps {
   if (stateLocal.pageType !== PageType.Archive) return stateLocal;
-  var urlObject = {
+  const urlObject = {
     f: stateLocal.subPath,
     colorClass: stateLocal.colorClassActiveList,
-    collections: stateLocal.collections
+    collections: stateLocal.collections,
+    sort: stateLocal.sort
   } as IUrl;
   new FileListCache().CacheSetObject(urlObject, { ...stateLocal });
   return stateLocal;

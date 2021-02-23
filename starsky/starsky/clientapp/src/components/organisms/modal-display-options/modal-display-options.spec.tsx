@@ -112,6 +112,28 @@ describe("ModalDisplayOptions", () => {
 
         expect(localStorage.getItem("use-sockets")).toBe(null);
       });
+
+      it("sort - change to imageFormat", () => {
+        globalHistory.location.search = "";
+
+        modal
+          .find('[data-test="sort"] select')
+          .first()
+          .simulate("change", { target: { value: "imageFormat" } });
+
+        expect(globalHistory.location.search).toBe("?sort=imageFormat");
+      });
+
+      it("sort - change to fileName", () => {
+        globalHistory.location.search = "";
+
+        modal
+          .find('[data-test="sort"] select')
+          .first()
+          .simulate("change", { target: { value: "fileName" } });
+
+        expect(globalHistory.location.search).toBe("?sort=fileName");
+      });
     });
 
     it("test if handleExit is called", () => {
@@ -122,9 +144,9 @@ describe("ModalDisplayOptions", () => {
         return <>{props.children}</>;
       });
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
+      const component = mount(
         <ModalDisplayOptions
           parentFolder="/"
           isOpen={true}
