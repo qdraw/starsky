@@ -29,6 +29,7 @@ namespace starsky.Controllers
 	    /// <param name="colorClass">filter on colorClass (use int)</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
+	    /// <param name="sort">how to orderBy, defaults to fileName</param>
 	    /// <returns></returns>
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subPath not found in the database</response>
