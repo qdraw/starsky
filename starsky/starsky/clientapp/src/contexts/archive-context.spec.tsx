@@ -65,6 +65,30 @@ describe("ArchiveContext", () => {
     );
   });
 
+  it("force-reset - should ignore cache due pageType", () => {
+    var state = {
+      pageType: PageType.Search,
+      subPath: "/",
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        }
+      ]
+    } as IArchiveProps;
+
+    const cacheSetObjectSpy = jest
+      .spyOn(FileListCache.prototype, "CacheSetObject")
+      .mockImplementationOnce(() => {});
+
+    // fullPath input
+    var action = { type: "force-reset", payload: state } as ArchiveAction;
+
+    archiveReducer(state, action);
+
+    expect(cacheSetObjectSpy).toBeCalledTimes(0);
+    cacheSetObjectSpy.mockReset();
+  });
+
   it("set - it should ignore when fileIndexItem is undefined", () => {
     var action = { type: "set", payload: {} } as ArchiveAction;
     var result = archiveReducer({} as any, action);
