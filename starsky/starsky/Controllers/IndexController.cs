@@ -61,11 +61,15 @@ namespace starsky.Controllers
 	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem.ParentDirectory);
                 return Json(singleItem);
             }
+
+            var fileIndexItems = SortHelper.Helper(
+	            _query.DisplayFileFolders(subPath, colorClassActiveList,
+		            collections, hidedelete), sort);
             
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = SortHelper.Helper(_query.DisplayFileFolders(subPath,colorClassActiveList,collections,hidedelete), sort),
+                FileIndexItems = fileIndexItems,
                 ColorClassActiveList = 	colorClassActiveList,
                 RelativeObjects = _query.GetNextPrevInFolder(subPath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),

@@ -184,12 +184,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         concatenatedFileIndexItems,
         toSortOnParm
       );
-      console.log(concatenatedFileIndexItems);
 
-      let fileIndexItems = sorter(concatenatedFileIndexItems);
-      console.log("state.sort", state.sort);
-      console.log(fileIndexItems);
-
+      let fileIndexItems = sorter(concatenatedFileIndexItems, state.sort);
       fileIndexItems = fileIndexItems.filter(filterOkCondition);
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
       UpdateColorClassUsageActiveListLoop(state);
