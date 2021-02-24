@@ -68,6 +68,7 @@ function Trash(archive: IArchiveProps) {
           <SearchPagination {...archive} />
           {collectionsCount >= 1 ? (
             <ItemListView
+              iconList={true}
               {...archive}
               colorClassUsage={archive.colorClassUsage}
             >

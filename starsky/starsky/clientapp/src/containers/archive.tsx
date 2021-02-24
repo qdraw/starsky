@@ -42,7 +42,7 @@ function Archive(archive: IArchiveProps) {
             colorClassActiveList={archive.colorClassActiveList}
             colorClassUsage={archive.colorClassUsage}
           />
-          <ItemListView {...archive}> </ItemListView>
+          <ItemListView iconList={false} {...archive}></ItemListView>
         </div>
       </div>
     </>

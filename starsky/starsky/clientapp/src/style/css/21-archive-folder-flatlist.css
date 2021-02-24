@@ -1,5 +1,52 @@
+.folder-flat {
+  padding: 0px !important;
+}
+.list-flat-box > button {
+  display: inline-block;
+  width: 100%;
+  background-color: transparent;
+}
+
 .flatlistitem {
   width: 100%;
+}
+
+.folder-flat .flatlistitem {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+@media screen and (max-width: 600px) {
+  .folder-flat .flatlistitem {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+.list-flat-box--select .box-content--selected > div {
+  background-color: #1565c0;
+  color: white;
+}
+
+.list-flat-box--select .flatlistitem {
+  cursor: pointer;
+}
+.list-flat-box--select .flatlistitem::before {
+  mask-image: url("../images/baseline-add_circle_outline-24px.svg");
+  mask-size: cover;
+  background-color: black;
+  height: 14px;
+  width: 14px;
+  margin-right: 5px;
+  content: "";
+  display: inline-block;
+}
+.list-flat-box--select .box-content--selected .flatlistitem::before {
+  background-color: white;
+}
+
+.list-flat-box:nth-child(even),
+.flatlistitem:nth-child(even) {
+  background-color: #eceff1;
 }
 
 .flatlistitem .name,
@@ -7,14 +54,48 @@
 .flatlistitem .size,
 .flatlistitem .imageformat {
   display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ...*/
+  vertical-align: middle;
+  padding-top: 5px;
+  min-height: 30px;
 }
 
 .flatlistitem .name {
-  width: 30%;
+  width: calc(100% - 310px);
 }
 
-.flatlistitem .lastedited,
-.flatlistitem .size,
+.list-flat-box--select .flatlistitem .name {
+  width: calc(100% - 330px);
+}
+
+.flatlistitem .lastedited {
+  width: 200px;
+}
+.flatlistitem .size {
+  width: 80px;
+}
 .flatlistitem .imageformat {
-  width: 20%;
+  width: 30px;
+}
+
+@media screen and (max-width: 600px) {
+  /* .flatlistitem .name, */
+  .flatlistitem .name,
+  .flatlistitem .lastedited,
+  .flatlistitem .size,
+  .flatlistitem .imageformat {
+    overflow: auto;
+  }
+  .flatlistitem .name {
+    width: calc(100% - 175px);
+    word-break: break-all;
+    padding-right: 5px;
+  }
+  .list-flat-box--select .flatlistitem .name {
+    width: calc(100% - 200px);
+  }
+  .flatlistitem .lastedited {
+    width: 65px;
+  }
 }

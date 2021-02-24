@@ -98,7 +98,7 @@ const parseDate = (
       day: "numeric"
     });
   }
-  // toLocaleDateString assumes that the input is UTC, which is usaly not the case
+  // toLocaleDateString assumes that the input is UTC, which is usually not the case
   return dateTimeObject.toLocaleDateString(locateString, {
     timeZone: "UTC",
     weekday: "long",
