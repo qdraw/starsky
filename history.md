@@ -46,6 +46,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.4.6 _(Unreleased)_ - 2021-02-??
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages
+- [x]   (Fixed) _Front-end_ Switch the text of the show raw button in Display options
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
