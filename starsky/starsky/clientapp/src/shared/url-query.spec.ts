@@ -15,13 +15,19 @@ describe("url-query", () => {
     expect(result).toContain(1);
   });
 
-  it("UrlQueryServerApi", () => {
+  it("UrlQueryServerApi f/colorclass/collections", () => {
     var result = urlQuery.UrlQueryServerApi(
       "?f=test&colorClass=1&collections=false&details=true"
     );
     expect(result).toContain(1);
     expect(result).toContain("false");
     expect(result).toContain("test");
+  });
+
+  it("UrlQueryServerApi sort", () => {
+    var result = urlQuery.UrlQueryServerApi("?sort=fileName");
+    expect(result).toContain("sort");
+    expect(result).toContain("fileName");
   });
 
   it("UrlIndexServerApi", () => {

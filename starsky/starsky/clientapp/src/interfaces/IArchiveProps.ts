@@ -1,5 +1,6 @@
 import { IRelativeObjects, PageType } from "../interfaces/IDetailView";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
+import { SortType } from "./IArchive";
 
 export interface IArchiveProps {
   fileIndexItems: Array<IFileIndexItem>;
@@ -17,4 +18,5 @@ export interface IArchiveProps {
   searchQuery?: string;
   collections?: boolean;
   dateCache: number;
+  sort?: SortType;
 }

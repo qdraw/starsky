@@ -87,7 +87,8 @@ namespace starskytest.FakeMocks
 		}
 
 		public DetailView SingleItem(string singleItemDbPath, List<ColorClassParser.Color> colorClassActiveList = null,
-			bool enableCollections = true, bool hideDeleted = true)
+			bool enableCollections = true, bool hideDeleted = true, 
+			SortType sort = SortType.FileName)
 		{
 			if ( _fakeContext.All(p => p.FilePath != singleItemDbPath) )
 			{
@@ -111,7 +112,8 @@ namespace starskytest.FakeMocks
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
-			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true)
+			List<ColorClassParser.Color> colorClassActiveList = null, bool enableCollections = true, bool hideDeleted = true, 
+			SortType sort = SortType.FileName)
 		{
 			throw new System.NotImplementedException();
 		}

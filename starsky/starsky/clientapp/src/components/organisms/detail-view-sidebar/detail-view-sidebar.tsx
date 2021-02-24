@@ -219,8 +219,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         if (new Keyboard().isInForm(event)) return;
         event.preventDefault();
 
-        console.log(fileIndexItem);
-
         const updateChange = new UpdateChange(
           fileIndexItem,
           setFileIndexItem,

@@ -29,6 +29,7 @@ namespace starsky.Controllers
 	    /// <param name="colorClass">filter on colorClass (use int)</param>
 	    /// <param name="collections">to combine files with the same name before the extension</param>
 	    /// <param name="hidedelete">ignore deleted files</param>
+	    /// <param name="sort">how to orderBy, defaults to fileName</param>
 	    /// <returns></returns>
 	    /// <response code="200">returns a list of items from the database</response>
 	    /// <response code="404">subPath not found in the database</response>
@@ -42,7 +43,8 @@ namespace starsky.Controllers
             string f = "/", 
             string colorClass = null,
             bool collections = true,
-            bool hidedelete = true
+            bool hidedelete = true,
+            SortType sort = SortType.FileName
             )
         {
             f = PathHelper.PrefixDbSlash(f);
@@ -52,7 +54,7 @@ namespace starsky.Controllers
             var subPath = _query.SubPathSlashRemove(f);
 
             // First check if it is a single Item
-            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections);
+            var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);
             // returns no object when it a directory
             
             if (singleItem?.IsDirectory == false)
@@ -60,11 +62,15 @@ namespace starsky.Controllers
 	            singleItem.IsReadOnly = _appSettings.IsReadOnly(singleItem.FileIndexItem.ParentDirectory);
                 return Json(singleItem);
             }
+
+            var fileIndexItems = SortHelper.Helper(
+	            _query.DisplayFileFolders(subPath, colorClassActiveList,
+		            collections, hidedelete), sort);
             
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
             {
-                FileIndexItems = _query.DisplayFileFolders(subPath,colorClassActiveList,collections,hidedelete),
+                FileIndexItems = fileIndexItems,
                 ColorClassActiveList = 	colorClassActiveList,
                 RelativeObjects = _query.GetNextPrevInFolder(subPath), // Args are not shown in this view
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),
