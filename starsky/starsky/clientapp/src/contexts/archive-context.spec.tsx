@@ -1,5 +1,5 @@
 import "core-js/features/array/some"; // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-import { IArchive, newIArchive } from "../interfaces/IArchive";
+import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
@@ -118,12 +118,12 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].filePath).toBe("/test.jpg");
   });
 
-  it("set - should sort when is PageType.Archive", () => {
+  it("set - should not default default sort when is PageType.Archive", () => {
     var state = {
       fileIndexItems: [
         {
-          fileName: "sec.jpg",
-          filePath: "/sec.jpg",
+          fileName: "a.jpg",
+          filePath: "/a.jpg",
           imageFormat: ImageFormat.jpg
         },
         {
@@ -141,8 +141,36 @@ describe("ArchiveContext", () => {
     var result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(2);
-    expect(result.fileIndexItems[0].filePath).toBe("/__first.mp4");
-    expect(result.fileIndexItems[1].filePath).toBe("/sec.jpg");
+    expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
+    expect(result.fileIndexItems[1].filePath).toBe("/__first.mp4");
+  });
+
+  it("set - should sort imageFormat when is PageType.Archive", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          fileName: "a.jpg",
+          filePath: "/a.jpg",
+          imageFormat: ImageFormat.jpg
+        },
+        {
+          fileName: "__first.mp4",
+          filePath: "/__first.mp4",
+          imageFormat: ImageFormat.mp4
+        }
+      ],
+      sort: SortType.imageFormat, // < - - - - - - - - -
+      pageType: PageType.Archive // < - - - - - - - - -
+    } as IArchiveProps;
+
+    // fullPath input
+    var action = { type: "set", payload: state } as ArchiveAction;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(2);
+    expect(result.fileIndexItems[0].filePath).toBe("/a.jpg");
+    expect(result.fileIndexItems[1].filePath).toBe("/__first.mp4");
   });
 
   it("set - should ignore when is PageType.Search", () => {
