@@ -127,9 +127,6 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
-      console.log("130 -->");
-      console.log(state.fileIndexItems);
-
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
