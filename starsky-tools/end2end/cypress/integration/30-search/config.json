@@ -3,17 +3,20 @@
       "local": {
         "isEnabled": true,
         "url": "/search",
-        "urlSearchJpg": "/search?t=-imageformat:jpg"
+        "urlSearchJpg": "/search?t=-imageformat:jpg",
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
       },
       "heroku-demo" : {
         "isEnabled": true,
         "url": "/search",
-        "urlSearchJpg": "/search?t=-imageformat:jpg"
+        "urlSearchJpg": "/search?t=-imageformat:jpg",
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
       },
       "no-create-account" : {
         "isEnabled": true,
         "url": "/search",
-        "urlSearchJpg": "/search?t=-imageformat:jpg"
+        "urlSearchJpg": "/search?t=-imageformat:jpg",
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
       }
     }
   }
