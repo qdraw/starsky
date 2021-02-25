@@ -1,5 +1,5 @@
 import * as React from "react";
-import { newIArchive } from "../interfaces/IArchive";
+import { newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import {
   IRelativeObjects,
@@ -136,8 +136,13 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         action.payload.fileIndexItems,
         "filePath"
       );
-      if (state.pageType === PageType.Archive) {
-        items = sorter(items);
+
+      if (
+        action.payload.pageType === PageType.Archive &&
+        action.payload.sort &&
+        action.payload.sort !== SortType.fileName
+      ) {
+        items = sorter(items, action.payload.sort);
       }
       return {
         ...action.payload,
