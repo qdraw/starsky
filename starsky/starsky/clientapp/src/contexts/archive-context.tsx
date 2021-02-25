@@ -135,16 +135,16 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
     case "set":
       // ignore the cache
       if (!action.payload.fileIndexItems) return action.payload;
-
+      let items = new ArrayHelper().UniqueResults(
+        action.payload.fileIndexItems,
+        "filePath"
+      );
+      if (state.pageType === PageType.Archive) {
+        items = sorter(items);
+      }
       return {
         ...action.payload,
-        fileIndexItems: sorter(
-          new ArrayHelper().UniqueResults(
-            action.payload.fileIndexItems,
-            "filePath"
-          ),
-          action.payload.sort
-        )
+        fileIndexItems: items
       };
     case "force-reset":
       // also update the cache
