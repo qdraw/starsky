@@ -131,6 +131,10 @@ npx create-react-app my-app --template typescript
 
 - copy the `package.json` and `package-lock.json` from the `my-app` folder to the `clientapp` folder
 
+```
+npm ci
+```
+
 The following packages are added:
 
 ```
@@ -150,6 +154,9 @@ npm install --save eslint-plugin-prettier
 npm install --save prettier
 ```
 
+> Note:
+> `@types/storybook__react`is deprecated but needed to build devDependencies
+
 Remove this package
 
 ```
@@ -162,17 +169,12 @@ npm uninstall --save web-vitals
  "name": "clientapp",
 ```
 
-#### Proxy tag for backend services
+#### Proxy tag for backend services & homepage
 
 Used when running `npm start`
 
 ```json
 "proxy": "http://localhost:5000",
-```
-
-#### Homepage
-
-```json
 "homepage": "/starsky/",
 ```
 
@@ -184,7 +186,7 @@ This is added to the `package.json`
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20201130  v4.0.1 (2020-11-23)'"
+"upgrade": "echo 'check readme.md 20210214  v4.0.2 (2021-02-03)'"
 ```
 
 ### collectCoverageFrom and coverageReporters
@@ -223,6 +225,8 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
 ```
 
 ## ESlint/prettier
+
+You should replace the existing eslintConfig chapter
 
 ```json
   "eslintConfig": {

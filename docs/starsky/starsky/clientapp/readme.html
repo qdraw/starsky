@@ -117,6 +117,7 @@ In the repository of <a href="https://github.com/facebook/create-react-app/relea
 <ul>
 <li>copy the <code>package.json</code> and <code>package-lock.json</code> from the <code>my-app</code> folder to the <code>clientapp</code> folder</li>
 </ul>
+<pre><code>npm ci</code></pre>
 <p>The following packages are added:</p>
 <pre><code>npm install --save abortcontroller-polyfill
 npm install --save @reach/router
@@ -132,21 +133,24 @@ npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier</code></pre>
+<blockquote>
+  <p>Note:<br />
+  <code>@types/storybook__react</code>is deprecated but needed to build devDependencies</p>
+</blockquote>
 <p>Remove this package</p>
 <pre><code>npm uninstall --save web-vitals</code></pre>
 <h4 id="update-the-name-of-the-project">Update the name of the project</h4>
 <pre><code class="json language-json"> "name": "clientapp",</code></pre>
-<h4 id="proxy-tag-for-backend-services">Proxy tag for backend services</h4>
+<h4 id="proxy-tag-for-backend-services--homepage">Proxy tag for backend services &amp; homepage</h4>
 <p>Used when running <code>npm start</code></p>
-<pre><code class="json language-json">"proxy": "http://localhost:5000",</code></pre>
-<h4 id="homepage">Homepage</h4>
-<pre><code class="json language-json">"homepage": "/starsky/",</code></pre>
+<pre><code class="json language-json">"proxy": "http://localhost:5000",
+"homepage": "/starsky/",</code></pre>
 <h4 id="npm-run-testci-is-used-by-the-build-script-to-run-all-tests-and-eslint"><code>npm run test:ci</code> is used by the build-script to run all tests and ESlint</h4>
 <p>This is added to the <code>package.json</code></p>
 <pre><code class="json language-json">"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.html 20201130  v4.0.1 (2020-11-23)'"</code></pre>
+"upgrade": "echo 'check readme.html 20210214  v4.0.2 (2021-02-03)'"</code></pre>
 <h3 id="collectcoveragefrom-and-coveragereporters">collectCoverageFrom and coverageReporters</h3>
 <p>With jest <code>collectCoverageFrom</code> and <code>coverageReporters</code> are used to get the right output</p>
 <pre><code class="json language-json">"jest": {
@@ -178,6 +182,7 @@ npm install --save prettier</code></pre>
   }
 },</code></pre>
 <h2 id="eslintprettier">ESlint/prettier</h2>
+<p>You should replace the existing eslintConfig chapter</p>
 <pre><code class="json language-json">  "eslintConfig": {
     "extends": [
       "react-app",

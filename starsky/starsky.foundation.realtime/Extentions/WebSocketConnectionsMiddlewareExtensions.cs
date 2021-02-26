@@ -10,7 +10,7 @@ namespace starsky.foundation.realtime.Extentions
 	{
 		public static IApplicationBuilder MapWebSocketConnections(this IApplicationBuilder app, 
 			PathString pathMatch, WebSocketConnectionsOptions options, 
-			bool featureToggleEnabled = true)
+			bool? featureToggleEnabled = true)
 		{
 			if (app == null)
 			{
@@ -19,7 +19,7 @@ namespace starsky.foundation.realtime.Extentions
 
 			return app.Map(pathMatch, branchedApp =>
 			{
-				if ( featureToggleEnabled )
+				if ( featureToggleEnabled == true )
 				{
 					branchedApp.UseMiddleware<WebSocketConnectionsMiddleware>(options);
 					return;

@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{842d2080-b847-43c3-8535-e5065970dd47}</ProjectGuid>
         <RootNamespace>starsky.foundation.accountmanagement</RootNamespace>
-        <Version>0.4.5</Version>
+        <Version>0.4.6</Version>
     </PropertyGroup>
     
     <ItemGroup>
@@ -15,7 +15,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.9" />
+      <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.1.12" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     </ItemGroup>
 

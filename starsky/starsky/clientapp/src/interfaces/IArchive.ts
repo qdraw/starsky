@@ -14,6 +14,12 @@ export interface IArchive {
   searchQuery?: string;
   collections?: boolean;
   dateCache: number;
+  sort?: SortType;
+}
+
+export enum SortType {
+  fileName = "fileName" as any,
+  imageFormat = "imageFormat" as any
 }
 
 export function newIArchive(): IArchive {
