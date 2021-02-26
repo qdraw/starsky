@@ -1,5 +1,5 @@
 import * as React from "react";
-import { newIArchive } from "../interfaces/IArchive";
+import { newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import {
   IRelativeObjects,
@@ -127,24 +127,26 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         }
       });
 
-      console.log("130 -->");
-      console.log(state.fileIndexItems);
-
       // Need to update otherwise other events are not triggered
       return updateCache({ ...state, lastUpdated: new Date() });
     case "set":
       // ignore the cache
       if (!action.payload.fileIndexItems) return action.payload;
+      let items = new ArrayHelper().UniqueResults(
+        action.payload.fileIndexItems,
+        "filePath"
+      );
 
+      if (
+        action.payload.pageType === PageType.Archive &&
+        action.payload.sort &&
+        action.payload.sort !== SortType.fileName
+      ) {
+        items = sorter(items, action.payload.sort);
+      }
       return {
         ...action.payload,
-        fileIndexItems: sorter(
-          new ArrayHelper().UniqueResults(
-            action.payload.fileIndexItems,
-            "filePath"
-          ),
-          action.payload.sort
-        )
+        fileIndexItems: items
       };
     case "force-reset":
       // also update the cache
