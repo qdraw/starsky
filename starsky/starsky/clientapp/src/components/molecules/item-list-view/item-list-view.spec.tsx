@@ -14,6 +14,7 @@ describe("ItemListView", () => {
   it("renders (without state component)", () => {
     shallow(
       <ItemListView
+        iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
         colorClassUsage={[]}
       />
@@ -27,7 +28,11 @@ describe("ItemListView", () => {
 
     it("search with data-filepath in child element", () => {
       var component = mount(
-        <ItemListView fileIndexItems={exampleData} colorClassUsage={[]} />
+        <ItemListView
+          iconList={true}
+          fileIndexItems={exampleData}
+          colorClassUsage={[]}
+        />
       );
       var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
@@ -37,14 +42,22 @@ describe("ItemListView", () => {
 
     it("no content", () => {
       var component = shallow(
-        <ItemListView fileIndexItems={undefined as any} colorClassUsage={[]} />
+        <ItemListView
+          iconList={true}
+          fileIndexItems={undefined as any}
+          colorClassUsage={[]}
+        />
       );
       expect(component.text()).toBe("no content");
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
       var component = shallow(
-        <ItemListView fileIndexItems={[]} colorClassUsage={[2]} />
+        <ItemListView
+          iconList={true}
+          fileIndexItems={[]}
+          colorClassUsage={[2]}
+        />
       );
       expect(component.text()).toBe(
         "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
@@ -67,7 +80,11 @@ describe("ItemListView", () => {
       jest.useFakeTimers();
 
       var component = mount(
-        <ItemListView fileIndexItems={exampleData} colorClassUsage={[]}>
+        <ItemListView
+          iconList={true}
+          fileIndexItems={exampleData}
+          colorClassUsage={[]}
+        >
           item
         </ItemListView>,
         { attachTo: (window as any).domNode }
@@ -93,7 +110,11 @@ describe("ItemListView", () => {
         });
 
       var component = mount(
-        <ItemListView fileIndexItems={exampleData} colorClassUsage={[]} />
+        <ItemListView
+          iconList={true}
+          fileIndexItems={exampleData}
+          colorClassUsage={[]}
+        />
       );
 
       act(() => {

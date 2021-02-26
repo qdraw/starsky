@@ -3,7 +3,7 @@ import { mount, shallow } from "enzyme";
 import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import ListImageBox from "./list-image-box";
+import ListImageNormalSelectContainer from "./list-image-normal-select-container";
 
 describe("ListImageTest", () => {
   it("renders", () => {
@@ -11,7 +11,7 @@ describe("ListImageTest", () => {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
-    shallow(<ListImageBox item={fileIndexItem} />);
+    shallow(<ListImageNormalSelectContainer item={fileIndexItem} />);
   });
 
   describe("NonSelectMode", () => {
@@ -25,7 +25,9 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
       var component = mount(
-        <ListImageBox item={fileIndexItem}>t</ListImageBox>
+        <ListImageNormalSelectContainer item={fileIndexItem}>
+          t
+        </ListImageNormalSelectContainer>
       );
       component.find(Link).simulate("click", {
         metaKey: false
@@ -40,7 +42,9 @@ describe("ListImageTest", () => {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
-      var component = mount(<ListImageBox item={fileIndexItem} />);
+      var component = mount(
+        <ListImageNormalSelectContainer item={fileIndexItem} />
+      );
       component.find(Link).simulate("click", {
         metaKey: true
       });
@@ -63,10 +67,12 @@ describe("ListImageTest", () => {
 
       var onSelectionCallback = jest.fn();
       var component = mount(
-        <ListImageBox
+        <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
-        />
+        >
+          t
+        </ListImageNormalSelectContainer>
       );
       component.find("button").simulate("click", {
         metaKey: false
@@ -86,10 +92,12 @@ describe("ListImageTest", () => {
 
       var onSelectionCallback = jest.fn();
       var component = mount(
-        <ListImageBox
+        <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
-        />
+        >
+          t
+        </ListImageNormalSelectContainer>
       );
       component.find("button").simulate("click", {
         shiftKey: true
