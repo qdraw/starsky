@@ -20,6 +20,7 @@ describe('Delete file from upload (50)', () => {
   const fileName2 = '20200822_111408.jpg'
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
+  const fileName4 = '20200822_134151.mp4'
 
   it('uploadFileName1 (to make sure the config is right)', () => {
     // clean trash
@@ -28,7 +29,7 @@ describe('Delete file from upload (50)', () => {
       method: 'DELETE',
       url: '/starsky/api/delete',
       qs: {
-        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};`
+        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`
       }
     })
 
@@ -138,5 +139,9 @@ describe('Delete file from upload (50)', () => {
     cy.get('.folder > div').should(($lis) => {
       expect($lis).to.have.length(2)
     })
+  })
+
+  it('remove collection item, but not the other file', () => {
+
   })
 })

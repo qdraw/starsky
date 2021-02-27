@@ -42,10 +42,16 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     "Close detail screen"
   );
   const MessageSaved = language.text("Opgeslagen", "Saved");
+
   const MessageMoveToTrash = language.text(
     "Verplaats naar prullenmand",
     "Move to Trash"
   );
+  const MessageMoveToTrashMultiple = language.text(
+    "Verplaats bestanden naar prullenmand",
+    "Move to Trash"
+  );
+
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -299,6 +305,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     </li>
   ) : null;
 
+  console.log(state?.fileIndexItem?.collectionPaths?.length);
+
   return (
     <>
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
@@ -422,6 +430,15 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
                 : MessageRestoreFromTrash}
+              dfsdkf dflnskdfk
+              {state.collections &&
+              state.fileIndexItem.collectionPaths &&
+              state.fileIndexItem.collectionPaths?.length >= 2 ? (
+                <span className="note">
+                  <br />
+                  test
+                </span>
+              ) : null}
             </li>
             <li
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
