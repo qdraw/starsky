@@ -3,7 +3,7 @@ import { mount, shallow } from "enzyme";
 import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import ListImageNormalSelectContainer from "./list-image-normal-select-container";
+import ListImageNormalSelectContainer from "./list-image-view-select-container";
 
 describe("ListImageTest", () => {
   it("renders", () => {

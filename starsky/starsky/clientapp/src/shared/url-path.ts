@@ -60,6 +60,13 @@ export class URLPath {
         case "sort".toLowerCase():
           urlObject.sort = SortType[key[1] as keyof typeof SortType];
           break;
+        case "list".toLowerCase():
+          if (key[1] === "true") {
+            urlObject.list = true;
+          } else {
+            urlObject.list = false;
+          }
+          break;
         default:
           break;
       }

@@ -10,6 +10,7 @@ export interface IUrl {
   colorClass?: Array<number>;
   collections?: boolean;
   sort?: SortType;
+  list?: boolean;
 }
 
 export function newIUrl(): IUrl {

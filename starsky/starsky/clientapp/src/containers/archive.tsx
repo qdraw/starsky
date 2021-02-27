@@ -12,6 +12,10 @@ import { URLPath } from "../shared/url-path";
 function Archive(archive: IArchiveProps) {
   var history = useLocation();
 
+  const [iconList] = React.useState(
+    !new URLPath().StringToIUrl(history.location.search).list
+  );
+
   // The sidebar
   const [sidebar, setSidebar] = React.useState(
     new URLPath().StringToIUrl(history.location.search).sidebar
@@ -42,7 +46,7 @@ function Archive(archive: IArchiveProps) {
             colorClassActiveList={archive.colorClassActiveList}
             colorClassUsage={archive.colorClassUsage}
           />
-          <ItemListView iconList={false} {...archive}></ItemListView>
+          <ItemListView iconList={iconList} {...archive}></ItemListView>
         </div>
       </div>
     </>

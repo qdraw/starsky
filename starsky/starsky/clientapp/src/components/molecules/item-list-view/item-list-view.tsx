@@ -8,14 +8,14 @@ import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../list-image-child-item/list-image-child-item";
-import ListImageNormalSelectContainer from "../list-image-normal-select-container/list-image-normal-select-container";
+import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>;
   colorClassUsage: Array<number>;
   pageType?: PageType;
-  iconList: boolean;
+  iconList?: boolean;
 }
 /**
  * A list with links to the items
@@ -84,7 +84,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
         ) : null
       ) : null}
       {items.map((item) => (
-        <ListImageNormalSelectContainer
+        <ListImageViewSelectContainer
           item={item}
           className={props.iconList ? "list-image-box" : "list-flat-box"}
           key={item.fileName + item.lastEdited + item.colorClass}
@@ -95,7 +95,7 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
           ) : (
             <FlatListItem item={item} />
           )}
-        </ListImageNormalSelectContainer>
+        </ListImageViewSelectContainer>
       ))}
     </div>
   );

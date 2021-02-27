@@ -2,7 +2,7 @@ import { globalHistory } from "@reach/router";
 import { storiesOf } from "@storybook/react";
 import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import ListImageBox from "./list-image-normal-select-container";
+import ListImageBox from "./list-image-view-select-container";
 
 var fileIndexItem = {
   fileName: "test.jpg",

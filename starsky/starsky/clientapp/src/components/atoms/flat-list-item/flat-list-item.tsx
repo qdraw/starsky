@@ -25,8 +25,14 @@ const FlatListItem: React.FunctionComponent<IFlatListItem> = ({ item }) => {
     <div className="flatlistitem">
       <div className="name">{item.fileName}</div>
       <div className="lastedited">
-        {parseDateDate(item.lastEdited)}-{parseDateMonth(item.lastEdited)}-
-        {parseDateYear(item.lastEdited)} {parseTime(item.lastEdited)}
+        {parseDateYear(item.lastEdited) !== 1 ? (
+          <>
+            {parseDateDate(item.lastEdited)}-{parseDateMonth(item.lastEdited)}-
+            {parseDateYear(item.lastEdited)} {parseTime(item.lastEdited)}
+          </>
+        ) : (
+          "--"
+        )}
       </div>
       <div className="size">
         {!item.isDirectory && item.size ? BytesFormat(item.size) : "--"}
