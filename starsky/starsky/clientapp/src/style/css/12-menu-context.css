@@ -28,7 +28,6 @@
   width: 225px;
   box-shadow: 0 2px 6px 0px #263238;
   list-style: none;
-  display: table;
   position: absolute;
   top: 10px;
   right: 30px;
@@ -50,24 +49,17 @@
 }
 
 .menu-context .menu-options .menu-option {
-  width: 225px;
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
+  padding-left: 15px;
+  line-height: 18px;
+  text-align: left;
   height: 50px;
-
-  /* font-weight: 500;
+  font-weight: 500;
   cursor: pointer;
-  word-break: break-all;
   display: flex;
-  align-items: center;
-  padding-left: 15px; */
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
 }
-
-/* .menu-context .menu-options .menu-option > span {
-  position: absolute;
-  left: 15px;
-} */
 
 .menu-context .menu-options .menu-option:nth-child(even) {
   background-color: #eceff1;

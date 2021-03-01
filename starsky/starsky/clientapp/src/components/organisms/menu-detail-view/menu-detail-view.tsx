@@ -47,10 +47,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     "Verplaats naar prullenmand",
     "Move to Trash"
   );
-  const MessageMoveToTrashMultiple = language.text(
-    "Verplaats bestanden naar prullenmand",
-    "Move to Trash"
-  );
+  const MessageIncludingWord = language.text("Inclusief: ", "Including: ");
 
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
@@ -305,8 +302,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     </li>
   ) : null;
 
-  console.log(state?.fileIndexItem?.collectionPaths?.length);
-
   return (
     <>
       {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
@@ -430,14 +425,26 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
                 : MessageRestoreFromTrash}
-              dfsdkf dflnskdfk
+
               {state.collections &&
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
-                <span className="note">
-                  <br />
-                  test
-                </span>
+                <em>
+                  {MessageIncludingWord}
+                  {state.fileIndexItem.collectionPaths.map((item, index) =>
+                    index !== 0 ? (
+                      <span key={index}>
+                        {item.split(".")[item.split(".").length - 1]}
+                        {index !==
+                        (state.fileIndexItem.collectionPaths as string[])
+                          .length -
+                          1
+                          ? ", "
+                          : null}{" "}
+                      </span>
+                    ) : null
+                  )}
+                </em>
               ) : null}
             </li>
             <li
