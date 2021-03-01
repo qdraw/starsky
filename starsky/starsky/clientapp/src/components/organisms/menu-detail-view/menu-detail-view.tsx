@@ -214,6 +214,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     var resultGet = await FetchGet(
       new UrlQuery().UrlIndexServerApi({ f: state.subPath })
     );
+    if (!resultGet) return null;
     if (resultGet.statusCode !== 200) {
       console.error(resultGet);
       setIsLoading(false);
