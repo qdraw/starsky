@@ -429,7 +429,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {state.collections &&
               state.fileIndexItem.collectionPaths &&
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
-                <em>
+                <em data-test="trash-including">
                   {MessageIncludingWord}
                   {state.fileIndexItem.collectionPaths.map((item, index) =>
                     index !== 0 ? (
