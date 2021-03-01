@@ -160,11 +160,15 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     if (!isMarkedAsDeleted) {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
-      var resultDo = await FetchPost(
+      const resultDo = await FetchPost(
         new UrlQuery().UrlUpdateApi(),
         bodyParams.toString()
       );
-      if (resultDo.statusCode !== 200 && resultDo.statusCode !== 404) {
+      if (
+        resultDo.statusCode &&
+        resultDo.statusCode !== 200 &&
+        resultDo.statusCode !== 404
+      ) {
         // 404: file can already been deleted
         console.error(resultDo);
         setIsLoading(false);
