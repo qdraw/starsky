@@ -445,7 +445,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                           .length -
                           1
                           ? ", "
-                          : null}{" "}
+                          : null}
                       </span>
                     ) : null
                   )}
