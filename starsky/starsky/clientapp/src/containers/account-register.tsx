@@ -214,7 +214,6 @@ const AccountRegister: FunctionComponent = () => {
             className="btn btn--default"
             type="submit"
             disabled={loading || !isFormEnabled}
-            onClick={(e) => {}}
           >
             {loading ? "Loading..." : MessageCreateNewAccount}
           </ButtonStyled>
