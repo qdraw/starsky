@@ -70,7 +70,9 @@ const DetailView: React.FC<IDetailView> = () => {
   useEffect(() => {
     new UpdateRelativeObject()
       .Update(state, isSearchQuery, history.location.search, setRelativeObjects)
-      .catch(() => {});
+      .catch(() => {
+        // do nothing on catch error
+      });
     // function UpdateRelativeObject  is not subject to change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history.location.search, isSearchQuery, state.subPath]);
@@ -163,7 +165,9 @@ const DetailView: React.FC<IDetailView> = () => {
         .then((data) => {
           navigateNext(data);
         })
-        .catch(() => {});
+        .catch(() => {
+          // do nothing on catch error
+        });
       return;
     }
     navigateNext(relativeObjects);

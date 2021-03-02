@@ -28,7 +28,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(List<FileIndexItem>),200)]
         [ProducesResponseType(typeof(List<FileIndexItem>),404)]
         [Produces("application/json")]
-        public IActionResult Delete(string f, bool collections = true)
+        public IActionResult Delete(string f, bool collections = false)
 		{
 			var fileIndexResultsList = _deleteItem.Delete(f, collections);
             // When all items are not found

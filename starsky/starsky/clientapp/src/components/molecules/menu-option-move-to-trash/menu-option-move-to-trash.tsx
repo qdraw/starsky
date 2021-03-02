@@ -19,6 +19,9 @@ interface IMenuOptionMoveToTrashProps {
   dispatch: React.Dispatch<ArchiveAction>;
 }
 
+/**
+ * Used from Archive and Search
+ */
 const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(
   ({ state, dispatch, select, setSelect, isReadOnly }) => {
     const settings = useGlobalSettings();

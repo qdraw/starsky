@@ -30,11 +30,17 @@ export class FakeWebSocketService implements WebSocketService {
     callback(this.onCloseEvent);
   }
 
-  public close(): void {}
+  public close(): void {
+    // it should do nothing
+  }
 
   public send(
     data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView
-  ): void {}
+  ): void {
+    // it should do nothing
+  }
 
-  public onMessage(callback: (event: MessageEvent) => void): void {}
+  public onMessage(callback: (event: MessageEvent) => void): void {
+    // it should do nothing
+  }
 }

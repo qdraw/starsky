@@ -146,7 +146,6 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
             className="btn btn--default"
             type="submit"
             disabled={loading}
-            onClick={(e) => {}}
           >
             {loading ? "Loading..." : MessageChangePassword}
           </ButtonStyled>

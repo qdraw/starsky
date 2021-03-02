@@ -185,7 +185,6 @@ const Login: React.FC<ILoginProps> = () => {
                 className="btn btn--default"
                 type="submit"
                 disabled={loading}
-                onClick={(e) => {}}
               >
                 {loading ? "Loading..." : MessageLogin}
               </ButtonStyled>

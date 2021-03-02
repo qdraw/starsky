@@ -26,6 +26,7 @@ describe('Upload to folder', () => {
   const fileName2 = '20200822_111408.jpg'
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
+  const fileName4 = '20200822_134151.mp4'
 
   it('Check if more menu exist', {
     retries: { runMode: 1, openMode: 1 }
@@ -73,6 +74,14 @@ describe('Upload to folder', () => {
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
       expect($lis.eq(0)).to.contain(fileName3)
+    })
+
+    cy.uploadFile(fileName4, fileType, fileInput)
+    cy.wait(1000)
+
+    cy.get('[data-test=upload-files] li').should(($lis) => {
+      expect($lis).to.have.length(1)
+      expect($lis.eq(0)).to.contain(fileName4)
     })
 
     cy.get('.modal-exit-button').click()

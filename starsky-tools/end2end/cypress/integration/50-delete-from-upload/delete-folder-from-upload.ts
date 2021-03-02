@@ -25,6 +25,16 @@ describe('Delete folder from upload', () => {
         f: '/starsky-end2end-test'
       }
     })
+
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      url: '/starsky/api/synchronize',
+      qs: {
+        f: '/starsky-end2end-test'
+      }
+    })
+
     // check if folder /starsky-end2end-test is here
     checkIfExistAndCreate(config)
   })

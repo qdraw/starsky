@@ -1,5 +1,4 @@
-import * as React from "react";
-import { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
@@ -45,10 +44,10 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
     var history = useLocation();
 
     // the results
-    const [suggest, setSuggest] = React.useState(new Array<string>());
+    const [suggest, setSuggest] = useState(new Array<string>());
 
     // to store the search query
-    const [query, setQuery] = React.useState(
+    const [query, setQuery] = useState(
       props.defaultText ? props.defaultText : ""
     );
 
@@ -56,7 +55,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
     const inputFormControlReference = useRef<HTMLInputElement>(null);
 
     // used for color of icon
-    const [inputFocus, setInputFocus] = React.useState(true);
+    const [inputFocus, setInputFocus] = useState(true);
 
     // can't set this inside effect or if ==> performance issue, runs to often
     const responseObject = useFetch(
@@ -102,7 +101,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
     /**
      * is form active
      */
-    const [formFocus, setFormFocus] = React.useState(false);
+    const [formFocus, setFormFocus] = useState(false);
 
     /**
      * Add listener to checks if you don't point outside the form
@@ -130,7 +129,7 @@ const MenuInlineSearch: React.FunctionComponent<IMenuSearchBarProps> = memo(
         setFormFocus(false);
       }
     }
-    const [keyDownIndex, setKeyDownIndex] = React.useState(-1);
+    const [keyDownIndex, setKeyDownIndex] = useState(-1);
 
     return (
       <div className="menu-inline-search">

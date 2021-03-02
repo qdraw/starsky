@@ -4,7 +4,9 @@ import { URLPath } from "./url-path";
 export class Sidebar {
   private setSidebar: React.Dispatch<
     React.SetStateAction<boolean | undefined>
-  > = () => {};
+  > = () => {
+    /* should do nothing */
+  };
   private history: IUseLocation;
   private sidebar: boolean | undefined;
 

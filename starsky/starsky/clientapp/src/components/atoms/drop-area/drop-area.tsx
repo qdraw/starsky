@@ -240,8 +240,8 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const containsFiles = (event: DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.types) {
-      for (var i = 0; i < event.dataTransfer.types.length; i++) {
-        if (event.dataTransfer.types[i] === "Files") {
+      for (const type of event.dataTransfer.types) {
+        if (type === "Files") {
           return true;
         }
       }

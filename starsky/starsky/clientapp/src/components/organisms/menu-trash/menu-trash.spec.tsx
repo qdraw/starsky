@@ -194,7 +194,7 @@ describe("MenuTrash", () => {
       });
     });
 
-    it("more force delete", () => {
+    it("more force delete, expect modal", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
@@ -226,6 +226,49 @@ describe("MenuTrash", () => {
       expect(modalSpy).toBeCalled();
 
       expect(globalHistory.location.search).toBe("?select=test1.jpg");
+
+      // cleanup
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/");
+        component.unmount();
+      });
+    });
+
+    it("more force delete, expect modal 2", () => {
+      // usage ==> import * as useFetch from '../hooks/use-fetch';
+      jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
+        return newIConnectionDefault();
+      });
+
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+      var modalSpy = jest
+        .spyOn(Modal, "default")
+        .mockImplementationOnce(({ children }) => {
+          return <span id="test">{children}</span>;
+        });
+
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test1.jpg");
+      });
+
+      var component = mount(
+        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+      );
+
+      var item = component.find('[data-test="delete"]');
+
+      act(() => {
+        item.simulate("click");
+      });
+
+      expect(modalSpy).toBeCalled();
+
+      expect(globalHistory.location.search).toBe("?select=test1.jpg");
+
+      console.log(component.html());
 
       // cleanup
       act(() => {
