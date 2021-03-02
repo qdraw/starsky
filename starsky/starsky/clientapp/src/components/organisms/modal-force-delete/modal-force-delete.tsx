@@ -97,7 +97,11 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
         <div className="modal content--text">
           {MessageDeleteIntroText}
           <br />
-          <button onClick={() => handleExit()} className="btn btn--info">
+          <button
+            data-test="force-cancel"
+            onClick={() => handleExit()}
+            className="btn btn--info"
+          >
             {MessageCancel}
           </button>
           <button
@@ -105,6 +109,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
               forceDelete();
               handleExit();
             }}
+            data-test="force-delete"
             className="btn btn--default"
           >
             {MessageDeleteImmediately}
