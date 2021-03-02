@@ -89,6 +89,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
     var bodyParams = new URLSearchParams();
     bodyParams.append("f", selectParams);
+    bodyParams.append("collections", "false");
 
     undoSelection();
 

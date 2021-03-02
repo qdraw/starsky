@@ -155,7 +155,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     if (!state || isReadOnly) return;
 
     setIsLoading(true);
-    var bodyParams = newBodyParams();
+    const bodyParams = newBodyParams();
+    if (state.collections !== undefined)
+      bodyParams.set("collections", state.collections.toString());
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
