@@ -11,10 +11,10 @@ import { Select } from "../../../shared/select";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
-import Modal from "../../atoms/modal/modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import ModalForceDelete from "../modal-force-delete/modal-force-delete";
 import NavContainer from "../nav-container/nav-container";
 
 export interface IMenuTrashProps {
@@ -46,11 +46,6 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     "Verwijder onmiddellijk",
     "Delete immediately"
   );
-  const MessageDeleteIntroText = language.text(
-    "Weet je zeker dat je dit bestand wilt verwijderen van alle devices?",
-    "Are you sure you want to delete this file from all devices?"
-  );
-  const MessageCancel = language.text("Annuleren", "Cancel");
 
   const [hamburgerMenu, setHamburgerMenu] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -65,44 +60,12 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     setSelect(new URLPath().StringToIUrl(history.location.search).select);
   }, [history.location.search]);
 
-  var allSelection = () =>
+  const allSelection = () =>
     new Select(select, setSelect, state, history).allSelection();
-  var undoSelection = () =>
+  const undoSelection = () =>
     new Select(select, setSelect, state, history).undoSelection();
-  var removeSidebarSelection = () =>
+  const removeSidebarSelection = () =>
     new Select(select, setSelect, state, history).removeSidebarSelection();
-
-  function forceDelete() {
-    if (!select) return;
-    setIsLoading(true);
-
-    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
-      select,
-      state.fileIndexItems
-    );
-    if (!toUndoTrashList) return;
-    var selectParams = new URLPath().ArrayToCommaSeperatedStringOneParent(
-      toUndoTrashList,
-      ""
-    );
-    if (selectParams.length === 0) return;
-
-    var bodyParams = new URLSearchParams();
-    bodyParams.append("f", selectParams);
-    bodyParams.append("collections", "false");
-
-    undoSelection();
-
-    FetchPost(
-      new UrlQuery().UrlDeleteApi(),
-      bodyParams.toString(),
-      "delete"
-    ).then(() => {
-      dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
-      ClearSearchCache(history.location.search);
-      setIsLoading(false);
-    });
-  }
 
   function undoTrash() {
     if (!select) return;
@@ -143,38 +106,15 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
     <>
       {isLoading ? <Preloader isOverlay={true} /> : null}
       {isModalDeleteOpen ? (
-        <Modal
-          id="delete-modal"
+        <ModalForceDelete
+          setSelect={setSelect}
+          state={state}
           isOpen={isModalDeleteOpen}
-          handleExit={() => {
-            setModalDeleteOpen(false);
-          }}
-        >
-          <>
-            <div className="modal content--subheader">
-              {MessageDeleteImmediately}
-            </div>
-            <div className="modal content--text">
-              {MessageDeleteIntroText}
-              <br />
-              <button
-                onClick={() => setModalDeleteOpen(false)}
-                className="btn btn--info"
-              >
-                {MessageCancel}
-              </button>
-              <button
-                onClick={() => {
-                  forceDelete();
-                  setModalDeleteOpen(false);
-                }}
-                className="btn btn--default"
-              >
-                {MessageDeleteImmediately}
-              </button>
-            </div>
-          </>
-        </Modal>
+          select={select}
+          dispatch={dispatch}
+          setIsLoading={setIsLoading}
+          handleExit={() => setModalDeleteOpen(!isModalDeleteOpen)}
+        />
       ) : null}
 
       <header
