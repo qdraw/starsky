@@ -121,16 +121,33 @@ function hexStringToByte (str) {
 Cypress.Commands.add('uploadFile', uploadFile)
 
 // // API upload
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       fileRequest: typeof fileRequest;
-//     }
-//   }
-// }
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      fileRequest: typeof fileRequest;
+    }
+  }
+}
 
-// function fileRequest (filePath: string, requestOptions: any) {
-//   const data = new FormData()
-// }
+function fileRequest (fileName: string, to: string, imageType: string) {
+  cy.fixture(fileName, 'binary').then(imageBin => {
+    const blob = Cypress.Blob.binaryStringToBlob(imageBin, imageType)
+    const xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
+    const data = new FormData()
+    data.set('data', blob, fileName)
 
-// Cypress.Commands.add('fileRequest', fileRequest)
+    xhr.open('POST', '/api/upload')
+    xhr.setRequestHeader('accept', 'application/json')
+    xhr.setRequestHeader('to', to)
+    xhr.onload = function (e) {
+      // done(xhr)
+    }
+    xhr.onerror = function (e) {
+      // done(xhr)
+    }
+    xhr.send(data)
+  })
+}
+
+Cypress.Commands.add('fileRequest', fileRequest)
