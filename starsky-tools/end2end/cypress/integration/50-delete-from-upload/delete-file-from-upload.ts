@@ -55,6 +55,12 @@ describe('Delete file from upload (50)', () => {
       '/starsky-end2end-test',
       'image/jpeg'
     )
+    cy.wait(500)
+
+    cy.request(config.urlApiCollectionsFalse).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.fileIndexItems.length).to.eq(4)
+    })
   })
 
   it('remove collection item, but not the other file', () => {
