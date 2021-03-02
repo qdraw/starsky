@@ -235,7 +235,7 @@ describe("MenuTrash", () => {
       });
     });
 
-    it("more force delete, expect modal 2222", () => {
+    it("more force delete, expect modal 2", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
