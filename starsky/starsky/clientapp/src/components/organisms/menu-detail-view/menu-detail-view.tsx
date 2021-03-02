@@ -9,6 +9,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { CastToInterface } from "../../../shared/cast-to-interface";
+import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
 import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
@@ -436,18 +437,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state.fileIndexItem.collectionPaths?.length >= 2 ? (
                 <em data-test="trash-including">
                   {MessageIncludingWord}
-                  {state.fileIndexItem.collectionPaths.map((item, index) =>
-                    index !== 0 ? (
-                      <span key={index}>
-                        {item.split(".")[item.split(".").length - 1]}
-                        {index !==
-                        (state.fileIndexItem.collectionPaths as string[])
-                          .length -
-                          1
-                          ? ", "
-                          : null}
-                      </span>
-                    ) : null
+                  {new Comma().CommaSpaceLastDot(
+                    state.fileIndexItem.collectionPaths
                   )}
                 </em>
               ) : null}

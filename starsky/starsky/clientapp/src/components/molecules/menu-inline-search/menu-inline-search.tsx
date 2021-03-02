@@ -1,4 +1,3 @@
-import * as React from "react";
 import { memo, useEffect, useRef } from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";

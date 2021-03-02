@@ -389,7 +389,7 @@ describe("MenuDetailView", () => {
 
       var trashIncl = component.find('[data-test="trash-including"]').text();
 
-      expect(trashIncl).toBe("Including: arw");
+      expect(trashIncl).toBe("Including: jpg, arw");
 
       act(() => {
         component.unmount();

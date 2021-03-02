@@ -10,17 +10,6 @@ export interface IButtonProps {
 }
 
 const ButtonStyled: React.FunctionComponent<IButtonProps> = memo((props) => {
-  // const [loading, changeLoading] = useState(false);
-
-  // const onClickHandler = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-  //   const promise = props.onClick(event);
-
-  //   if (promise) {
-  //     changeLoading(true);
-  //     promise.then(() => changeLoading(false));
-  //   }
-  // }, [props.onClick]);
-
   return (
     <button
       type={props.type || "button"}
