@@ -51,7 +51,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
     if (!select) return;
     setIsLoading(true);
 
-    var toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
+    const toUndoTrashList = new URLPath().MergeSelectFileIndexItem(
       select,
       state.fileIndexItems
     );
@@ -60,6 +60,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
       toUndoTrashList,
       ""
     );
+
     if (selectParams.length === 0) return;
 
     var bodyParams = new URLSearchParams();
