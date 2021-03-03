@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
   IFileIndexItem,
-  newIFileIndexItem,
-  newIFileIndexItemArray
+  newIFileIndexItem
 } from "../../../interfaces/IFileIndexItem";
 import FetchPost from "../../../shared/fetch-post";
 import Notification from "../../atoms/notification/notification";
-import { MoreMenuEventCloseConst } from "../more-menu/more-menu";
 import Portal from "../portal/portal";
 import Preloader from "../preloader/preloader";
+import { UploadFiles } from "./upload-files";
 
 export interface IDropAreaProps {
   endpoint: string;
@@ -158,6 +157,21 @@ function next(
 }
 
 /**
+ * Has the user a file or is dragging elements on the page
+ * @param event DragEvent which should contain files
+ */
+const containsFiles = (event: DragEvent) => {
+  if (event.dataTransfer && event.dataTransfer.types) {
+    for (const type of event.dataTransfer.types) {
+      if (type === "Files") {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+/**
  * Drop Area / Upload field, callback is list of uploaded files
  * @param props Endpoints, settings to enable drag 'n drop, add extra classes
  */
@@ -168,6 +182,24 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [notificationStatus, setNotificationStatus] = useState("");
+
+  /**
+   * on selecting a file
+   */
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    const {
+      target: { files }
+    } = event;
+
+    new UploadFiles(
+      setIsLoading,
+      setNotificationStatus,
+      props.endpoint,
+      props.folderPath,
+      props.callback
+    ).uploadFiles(files);
+  };
 
   /**
    * On a mouse drop
@@ -183,70 +215,13 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       dataTransfer: { files }
     } = event;
 
-    uploadFiles(files);
-  };
-
-  /**
-   * on selecting a file
-   */
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return;
-    const {
-      target: { files }
-    } = event;
-
-    uploadFiles(files);
-  };
-
-  /**
-   * Pushing content to the server
-   * @param files FileList
-   */
-  const uploadFiles = (files: FileList) => {
-    // only needed for the more menu
-    window.dispatchEvent(
-      new CustomEvent(MoreMenuEventCloseConst, { bubbles: false })
-    );
-
-    var filesList = Array.from(files);
-    console.log("Files: ", files);
-
-    const { length } = filesList;
-    if (length === 0) {
-      return false;
-    }
-
-    setIsLoading(true);
-
-    PostSingleFormData(
+    new UploadFiles(
+      setIsLoading,
+      setNotificationStatus,
       props.endpoint,
       props.folderPath,
-      filesList,
-      0,
-      newIFileIndexItemArray(),
-      (result) => {
-        setIsLoading(false);
-        if (props.callback) {
-          props.callback(result);
-        }
-      },
-      setNotificationStatus
-    );
-  };
-
-  /**
-   * Has the user a file or is dragging elements on the page
-   * @param event DragEvent which should contain files
-   */
-  const containsFiles = (event: DragEvent) => {
-    if (event.dataTransfer && event.dataTransfer.types) {
-      for (const type of event.dataTransfer.types) {
-        if (type === "Files") {
-          return true;
-        }
-      }
-    }
-    return false;
+      props.callback
+    ).uploadFiles(files);
   };
 
   /**
@@ -255,8 +230,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
-    if (!event.target) return;
-    if (!containsFiles(event)) return;
+    if (!event.target || !containsFiles(event)) return;
     setDrag(true);
     setDragTarget(event.target as Element);
     setDropEffect(event);
@@ -269,10 +243,9 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
    */
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    if (!containsFiles(event)) return;
-    if ((event.target as Element) === dragTarget) {
-      setDrag(false);
-    }
+    if (!containsFiles(event) || (event.target as Element) !== dragTarget)
+      return;
+    setDrag(false);
   };
 
   /**
@@ -320,7 +293,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     document.body.classList.remove("drag");
   }, [dragActive]);
 
-  const dropareaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`;
+  const dropAreaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`;
 
   return (
     <>
@@ -337,13 +310,13 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
       {props.enableInputButton ? (
         <>
           <input
-            id={dropareaId}
+            id={dropAreaId}
             className="droparea-file-input"
             type="file"
             multiple={true}
             onChange={onChange}
           />
-          <label className={props.className} htmlFor={dropareaId}>
+          <label className={props.className} htmlFor={dropAreaId}>
             Upload
           </label>
         </>
