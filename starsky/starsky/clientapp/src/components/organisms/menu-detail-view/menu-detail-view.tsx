@@ -9,6 +9,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { CastToInterface } from "../../../shared/cast-to-interface";
+import { Comma } from "../../../shared/comma";
 import { IsEditedNow } from "../../../shared/date";
 import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
@@ -42,10 +43,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     "Close detail screen"
   );
   const MessageSaved = language.text("Opgeslagen", "Saved");
+
   const MessageMoveToTrash = language.text(
     "Verplaats naar prullenmand",
     "Move to Trash"
   );
+  const MessageIncludingWord = language.text("Inclusief: ", "Including: ");
+
   const MessageRestoreFromTrash = language.text(
     "Zet terug uit prullenmand",
     "Restore from Trash"
@@ -151,17 +155,23 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     if (!state || isReadOnly) return;
 
     setIsLoading(true);
-    var bodyParams = newBodyParams();
+    const bodyParams = newBodyParams();
+    if (state.collections !== undefined)
+      bodyParams.set("collections", state.collections.toString());
 
     // Add remove tag
     if (!isMarkedAsDeleted) {
       bodyParams.set("Tags", "!delete!");
       bodyParams.set("append", "true");
-      var resultDo = await FetchPost(
+      const resultDo = await FetchPost(
         new UrlQuery().UrlUpdateApi(),
         bodyParams.toString()
       );
-      if (resultDo.statusCode !== 200 && resultDo.statusCode !== 404) {
+      if (
+        resultDo.statusCode &&
+        resultDo.statusCode !== 200 &&
+        resultDo.statusCode !== 404
+      ) {
         // 404: file can already been deleted
         console.error(resultDo);
         setIsLoading(false);
@@ -211,6 +221,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
     var resultGet = await FetchGet(
       new UrlQuery().UrlIndexServerApi({ f: state.subPath })
     );
+    if (!resultGet) return null;
     if (resultGet.statusCode !== 200) {
       console.error(resultGet);
       setIsLoading(false);
@@ -422,6 +433,17 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {!isMarkedAsDeleted
                 ? MessageMoveToTrash
                 : MessageRestoreFromTrash}
+
+              {state.collections &&
+              state.fileIndexItem.collectionPaths &&
+              state.fileIndexItem.collectionPaths?.length >= 2 ? (
+                <em data-test="trash-including">
+                  {MessageIncludingWord}
+                  {new Comma().CommaSpaceLastDot(
+                    state.fileIndexItem.collectionPaths
+                  )}
+                </em>
+              ) : null}
             </li>
             <li
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}

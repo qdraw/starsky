@@ -49,12 +49,16 @@
 }
 
 .menu-context .menu-options .menu-option {
-  font-weight: 500;
-  width: 100%;
-  cursor: pointer;
-  line-height: 50px;
-  vertical-align: middle;
   padding-left: 15px;
+  line-height: 18px;
+  text-align: left;
+  height: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .menu-context .menu-options .menu-option:nth-child(even) {

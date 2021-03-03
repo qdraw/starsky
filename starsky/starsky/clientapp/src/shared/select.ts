@@ -6,7 +6,9 @@ export class Select {
   private select: string[] | undefined = [];
   private setSelect: React.Dispatch<
     React.SetStateAction<string[] | undefined>
-  > = () => {};
+  > = () => {
+    /* should do nothing */
+  };
   private history: IUseLocation = {} as IUseLocation;
   private state: IArchiveProps;
 

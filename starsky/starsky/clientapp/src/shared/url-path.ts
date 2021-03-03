@@ -164,8 +164,7 @@ export class URLPath {
   public getChild(getFilePath: string): string {
     if (!getFilePath) return "";
     getFilePath = this.removeEndOnSlash(getFilePath);
-    var result = getFilePath.split("/")[getFilePath.split("/").length - 1];
-    return result;
+    return getFilePath.split("/")[getFilePath.split("/").length - 1];
   }
 
   public getParent(locationHash: string): string {
@@ -193,8 +192,7 @@ export class URLPath {
 
   private removeEndOnSlash(input: string): string {
     if (!input.endsWith("/")) return input;
-    var output = input.substring(0, input.length - 1);
-    return output;
+    return input.substring(0, input.length - 1);
   }
 
   public StartOnSlash(input: string): string {

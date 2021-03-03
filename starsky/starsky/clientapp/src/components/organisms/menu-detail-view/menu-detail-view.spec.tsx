@@ -371,6 +371,31 @@ describe("MenuDetailView", () => {
       });
     });
 
+    it("trash click to trash and collection is true", () => {
+      var component = mount(
+        <MenuDetailView
+          state={{
+            ...state,
+            fileIndexItem: {
+              ...state.fileIndexItem,
+              collectionPaths: [".jpg", "t.arw"]
+            },
+            collections: true
+          }}
+          dispatch={jest.fn()}
+        />
+      );
+      expect(component.exists('[data-test="trash-including"]')).toBeTruthy();
+
+      var trashIncl = component.find('[data-test="trash-including"]').text();
+
+      expect(trashIncl).toBe("Including: jpg, arw");
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
     it("rotate click", async () => {
       jest.useFakeTimers();
       var setTimeoutSpy = jest.spyOn(global, "setTimeout");

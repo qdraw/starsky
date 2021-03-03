@@ -20,55 +20,69 @@ describe('Delete file from upload (50)', () => {
   const fileName2 = '20200822_111408.jpg'
   const fileName1 = '20200822_112430.jpg'
   const fileName3 = '20200822_134151.jpg'
+  const fileName4 = '20200822_134151.mp4'
 
-  it('uploadFileName1 (to make sure the config is right)', () => {
+  it('clear cache & upload all files that are needed in background', () => {
     // clean trash
     cy.request({
       failOnStatusCode: false,
       method: 'DELETE',
       url: '/starsky/api/delete',
       qs: {
-        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};`
+        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`
       }
     })
 
     checkIfExistAndCreate(config)
+
+    cy.fileRequest(
+      fileName1,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
+    cy.fileRequest(
+      fileName2,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
+    cy.fileRequest(
+      fileName3,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
+    cy.fileRequest(
+      fileName4,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
+    cy.wait(500)
+
+    cy.request(config.urlApiCollectionsFalse).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.fileIndexItems.length).to.eq(4)
+    })
   })
 
-  // Copy
-  it('[duplicate] Upload more content and check if the name exist', {
-    retries: { runMode: 2, openMode: 2 }
-  }, () => {
-    if (!config.isEnabled) return
-
-    uploadFileName1(config.url, fileName1)
-
-    // and from here on its duplicate
-    cy.visit(config.url)
+  it('remove collection item, but not the other file', () => {
+    cy.visit(config.urlVideoItemCollectionsFalse)
 
     cy.get('.item.item--more').click()
-    cy.get('.menu-option--input label').click()
+    cy.get('[data-test=trash]').click()
 
-    const fileType = 'image/jpeg'
-    const fileInput = '.menu-option--input input[type=file]'
-
-    cy.uploadFile(fileName2, fileType, fileInput)
-    cy.wait(1000)
-
-    cy.get('[data-test=upload-files] li').should(($lis) => {
-      expect($lis).to.have.length(1)
-      expect($lis.eq(0)).to.contain(fileName2)
+    cy.visit(config.url)
+    cy.get('.folder > div').should(($lis) => {
+      expect($lis).to.have.length(3)
     })
+    cy.wait(3000)
+    cy.visit(config.trash)
 
-    cy.uploadFile(fileName3, fileType, fileInput)
-    cy.wait(1000)
+    cy.get('.item.item--select').click()
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click()
 
-    cy.get('[data-test=upload-files] li').should(($lis) => {
-      expect($lis).to.have.length(1)
-      expect($lis.eq(0)).to.contain(fileName3)
+    cy.request(config.urlApiCollectionsFalse).then((res) => {
+      expect(res.status).to.eq(200)
+      expect(res.body.fileIndexItems.length).to.eq(3)
     })
-
-    cy.get('.modal-exit-button').click()
   })
 
   it('remove first on to trash and undo afterwards', () => {

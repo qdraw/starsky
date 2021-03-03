@@ -25,7 +25,6 @@ function useKeyboardEvent(
     const handler = function (event: KeyboardEvent) {
       if (regex && event.key.match(regex)) {
         callback(event);
-        return;
       }
     };
     window.addEventListener("keydown", handler);
