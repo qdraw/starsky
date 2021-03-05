@@ -74,7 +74,8 @@ describe('Delete file from upload (50)', () => {
     cy.get('.folder > div').should(($lis) => {
       expect($lis).to.have.length(3)
     })
-    cy.wait(4000)
+
+    cy.wait(5000)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
