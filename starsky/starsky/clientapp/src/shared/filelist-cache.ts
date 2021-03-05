@@ -104,7 +104,7 @@ export class FileListCache {
       this.cachePrefix +
       `c${urlObject.colorClass};l${urlObject.collections}` +
       urlObject.f +
-      urlObject.sort
+      `;s${urlObject.sort ? true : false}`
     );
   }
 

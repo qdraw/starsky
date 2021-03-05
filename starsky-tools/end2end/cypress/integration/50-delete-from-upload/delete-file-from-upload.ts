@@ -32,6 +32,7 @@ describe('Delete file from upload (50)', () => {
         f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`
       }
     })
+    cy.wait(500)
 
     checkIfExistAndCreate(config)
 
@@ -80,6 +81,13 @@ describe('Delete file from upload (50)', () => {
 
     cy.get('.item.item--select').click()
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click()
+
+    // more menu and delete
+    cy.get('.item.item--more').click()
+    cy.get('[data-test=delete]').click()
+
+    // verwijder onmiddelijk
+    cy.get('.modal .btn.btn--default').click()
 
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)

@@ -70,10 +70,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
     case "remove":
       // files == subpath style not only the name (/dir/file.jpg)
-      var { toRemoveFileList } = action;
+      const { toRemoveFileList } = action;
 
-      var deletedFilesCount = 0;
-      let afterFileIndexItems: IFileIndexItem[] = [];
+      let deletedFilesCount = 0;
+      const afterFileIndexItems: IFileIndexItem[] = [];
 
       state.fileIndexItems.forEach((item) => {
         if (toRemoveFileList.indexOf(item.filePath) === -1) {
@@ -84,14 +84,20 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       });
 
       // to update the total results
-      var collectionsCount = state.collectionsCount - deletedFilesCount;
+      const collectionsCount = state.collectionsCount - deletedFilesCount;
 
-      return updateCache({
+      const newState = {
         ...state,
         fileIndexItems: afterFileIndexItems,
         collectionsCount,
         lastUpdated: new Date()
-      });
+      };
+
+      // when you remove the last item of the directory
+      if (newState.fileIndexItems.length === 0) {
+        newState.colorClassUsage = [];
+      }
+      return updateCache(newState);
     case "update":
       var {
         select,
@@ -242,8 +248,9 @@ function UpdateColorClassUsageActiveList(
   if (state.colorClassUsage === undefined) state.colorClassUsage = [];
 
   // add to list of colorclasses that can be selected
-  if (state.colorClassUsage.indexOf(colorclass) === -1)
+  if (state.colorClassUsage.indexOf(colorclass) === -1) {
     state.colorClassUsage.push(colorclass);
+  }
 
   if (state.colorClassActiveList === undefined) state.colorClassActiveList = [];
   // when the user selects by colorclass
@@ -253,14 +260,14 @@ function UpdateColorClassUsageActiveList(
   // only usefull when there are no colorclasses selected
 
   state.colorClassUsage.forEach((usage) => {
-    const even = (element: IFileIndexItem) => element.colorClass === usage;
+    const existLambda = (element: IFileIndexItem) =>
+      element.colorClass === usage;
     // some is not working in context of jest
-    if (!state.fileIndexItems.some(even).valueOf()) {
-      var indexer = state.colorClassUsage.indexOf(usage);
+    if (!state.fileIndexItems.some(existLambda).valueOf()) {
+      const indexer = state.colorClassUsage.indexOf(usage);
       state.colorClassUsage.splice(indexer, 1);
     }
   });
-  return;
 }
 
 /**
