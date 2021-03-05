@@ -36,6 +36,11 @@ describe('Delete file from upload (50)', () => {
     checkIfExistAndCreate(config)
 
     cy.fileRequest(
+      fileName4,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
+    cy.fileRequest(
       fileName1,
       '/starsky-end2end-test',
       'image/jpeg'
@@ -50,11 +55,7 @@ describe('Delete file from upload (50)', () => {
       '/starsky-end2end-test',
       'image/jpeg'
     )
-    cy.fileRequest(
-      fileName4,
-      '/starsky-end2end-test',
-      'image/jpeg'
-    )
+
     cy.wait(500)
 
     cy.request(config.urlApiCollectionsFalse).then((res) => {
@@ -73,7 +74,7 @@ describe('Delete file from upload (50)', () => {
     cy.get('.folder > div').should(($lis) => {
       expect($lis).to.have.length(3)
     })
-    cy.wait(3000)
+    cy.wait(4000)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
