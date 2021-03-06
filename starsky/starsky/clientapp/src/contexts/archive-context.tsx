@@ -220,6 +220,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         const index = fileIndexItems.findIndex(
           (x) => x.filePath === deleteItem.filePath
         );
+        console.log(index);
+
         if (index !== -1) {
           fileIndexItems.splice(index, 1);
         }
