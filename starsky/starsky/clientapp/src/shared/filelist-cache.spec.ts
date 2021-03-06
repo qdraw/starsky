@@ -1,4 +1,4 @@
-import { IArchive, newIArchive } from "../interfaces/IArchive";
+import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
 import { newDetailView, PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItem } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "./filelist-cache";
@@ -147,7 +147,7 @@ describe("FileListCache", () => {
     it("check default value", () => {
       fileListCache.CacheSet("", {} as any);
 
-      var result = sessionStorage.getItem(
+      const result = sessionStorage.getItem(
         fileListCache.CacheKeyGenerator({
           f: "/",
           collections: true,
@@ -155,10 +155,35 @@ describe("FileListCache", () => {
         })
       );
 
-      var cacheGetter = fileListCache.CacheGet("");
+      const cacheGetter = fileListCache.CacheGet("");
 
       expect(cacheGetter).toBeTruthy();
       expect(result).toBeTruthy();
+    });
+
+    it("default sort value should be fileName", () => {
+      fileListCache.CacheSet("", {} as any);
+
+      const explicitSet = fileListCache.CacheKeyGenerator({
+        sort: SortType.fileName
+      });
+
+      const implicitSet = fileListCache.CacheKeyGenerator({});
+      expect(explicitSet === implicitSet).toBeTruthy();
+    });
+
+    it("sort value should be fileName NOT imageFormat", () => {
+      fileListCache.CacheSet("", {} as any);
+
+      const imageFormatStorageKey = fileListCache.CacheKeyGenerator({
+        sort: SortType.imageFormat
+      });
+
+      const fileNameStorageKey = fileListCache.CacheKeyGenerator({
+        sort: SortType.fileName
+      });
+
+      expect(imageFormatStorageKey === fileNameStorageKey).toBeFalsy();
     });
 
     it("ignore when old", () => {
