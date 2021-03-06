@@ -254,7 +254,7 @@ namespace starsky.foundation.storage.Storage
 				File.Delete(path);
 				return true;
 			}
-			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
+			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(2),5);
 		}
 
 		public bool WriteStream(Stream stream, string path)

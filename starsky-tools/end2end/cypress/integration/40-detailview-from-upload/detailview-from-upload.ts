@@ -62,13 +62,13 @@ describe('DetailView (from upload)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName2)
 
-    cy.get('.nextprev.nextprev--next').first().click()
+    cy.get('.nextprev.nextprev--next').first()
+      .click()
       .url()
       .should('contain', fileName1)
 
-    cy.wait(300)
-
     cy.get('.nextprev.nextprev--next').first().click()
+      .wait(300)
       .url()
       .should('contain', fileName3)
   })
@@ -78,12 +78,12 @@ describe('DetailView (from upload)', () => {
     cy.visit(config.url + '/' + fileName3)
 
     cy.get('.nextprev.nextprev--prev').first().click()
+      .wait(100)
       .url()
       .should('contain', fileName1)
 
-    cy.wait(300)
-
     cy.get('.nextprev.nextprev--prev').first().click()
+      .wait(300)
       .url()
       .should('contain', fileName2)
   })

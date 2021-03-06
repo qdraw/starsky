@@ -1,4 +1,4 @@
-import { IArchive } from "../interfaces/IArchive";
+import { IArchive, SortType } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
 import { IUrl } from "../interfaces/IUrl";
 import { DifferenceInDate } from "./date";
@@ -104,7 +104,7 @@ export class FileListCache {
       this.cachePrefix +
       `c${urlObject.colorClass};l${urlObject.collections}` +
       urlObject.f +
-      urlObject.sort
+      `;s${!urlObject.sort ? SortType.fileName : urlObject.sort}`
     );
   }
 
