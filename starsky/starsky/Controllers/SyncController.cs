@@ -204,7 +204,7 @@ namespace starsky.Controllers
 		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(rename,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 
-			return Json(rename.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted));
+			return Json(rename.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList());
 		}
 
     }
