@@ -221,6 +221,25 @@ describe("ArchiveContext", () => {
     expect(result.fileIndexItems[0].filePath).toBe("/test1.jpg");
   });
 
+  it("remove - last colorClassUsage is removed", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        }
+      ],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    // fullpath input
+    var action = { type: "remove", toRemoveFileList: ["/test.jpg"] } as any;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.colorClassUsage).toStrictEqual([]);
+  });
+
   it("update - check if item is update (append false)", () => {
     var state = {
       ...newIArchive(),
