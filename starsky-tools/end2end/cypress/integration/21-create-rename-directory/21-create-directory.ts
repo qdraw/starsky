@@ -55,4 +55,10 @@ describe('Create Rename Dir', () => {
 
     cy.request(config.urlMkdir + '/z_test_auto_created_update')
   })
+
+  it('delete it afterwards', () => {
+    if (!config.isEnabled) return
+
+    cy.visit(config.url)
+  })
 })

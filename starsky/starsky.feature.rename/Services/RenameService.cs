@@ -46,6 +46,9 @@ namespace starsky.feature.rename.Services
 				// 7. file to existing file > skip
 
 				var inputFileSubPath = inputFileSubPaths[i];
+				// where its from
+				fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.Deleted});
+
 				var toFileSubPath = toFileSubPaths[i];
 				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
