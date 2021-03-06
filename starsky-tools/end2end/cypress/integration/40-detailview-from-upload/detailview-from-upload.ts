@@ -67,8 +67,9 @@ describe('DetailView (from upload)', () => {
       .url()
       .should('contain', fileName1)
 
+    cy.wait(300)
+
     cy.get('.nextprev.nextprev--next').first().click()
-      .wait(300)
       .url()
       .should('contain', fileName3)
   })
@@ -78,12 +79,12 @@ describe('DetailView (from upload)', () => {
     cy.visit(config.url + '/' + fileName3)
 
     cy.get('.nextprev.nextprev--prev').first().click()
-      .wait(100)
       .url()
       .should('contain', fileName1)
 
+    cy.wait(300)
+
     cy.get('.nextprev.nextprev--prev').first().click()
-      .wait(300)
       .url()
       .should('contain', fileName2)
   })
