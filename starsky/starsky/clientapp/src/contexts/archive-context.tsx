@@ -224,6 +224,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
           fileIndexItems.splice(index, 1);
         }
       }
+      console.log("      fileIndexItems");
+      console.log(fileIndexItems);
 
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
       UpdateColorClassUsageActiveListLoop(state);
