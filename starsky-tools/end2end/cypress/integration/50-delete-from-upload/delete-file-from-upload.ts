@@ -77,6 +77,7 @@ describe('Delete file from upload (50)', () => {
     })
 
     cy.wait(5000)
+    cy.log(`go to: ${config.trash}`)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
@@ -92,6 +93,14 @@ describe('Delete file from upload (50)', () => {
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.fileIndexItems.length).to.eq(3)
+    })
+
+    cy.visit(config.url)
+
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName3}"]`)
+
+    cy.get('.folder > div').should(($lis) => {
+      expect($lis).to.have.length(3)
     })
   })
 

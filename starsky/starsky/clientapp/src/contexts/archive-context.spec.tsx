@@ -442,6 +442,91 @@ describe("ArchiveContext", () => {
     ]);
   });
 
+  it("add -- remove a collection item", () => {
+    // current state
+    var state = {
+      fileIndexItems: [
+        {
+          fileName: "test0.jpg",
+          filePath: "/test0.jpg",
+          status: IExifStatus.Ok
+        },
+        {
+          fileName: "test0.mp4",
+          filePath: "/test0.mp4",
+          status: IExifStatus.Ok
+        }
+      ],
+      collections: true
+    } as IArchiveProps;
+
+    // to add/remove this
+    var add = [
+      {
+        fileName: "test0.mp4",
+        filePath: "/test0.mp4",
+        status: IExifStatus.Deleted
+      }
+    ];
+    var action = { type: "add", add } as any;
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        fileName: "test0.jpg",
+        filePath: "/test0.jpg",
+        status: IExifStatus.Ok
+      }
+    ]);
+  });
+
+  it("add -- implicit delete", () => {
+    console.log("-implicit delete");
+
+    // current state
+    var state = {
+      fileIndexItems: [
+        {
+          fileName: "test0.jpg",
+          fileCollectionName: "test0",
+          filePath: "/test0.jpg",
+          status: IExifStatus.Ok
+        },
+        {
+          fileName: "test1.jpg",
+          fileCollectionName: "test1",
+          filePath: "/test1.jpg",
+          status: IExifStatus.Ok
+        }
+      ],
+      collections: true
+    } as IArchiveProps;
+
+    // to add/remove this
+    var add = [
+      {
+        fileName: "test0.jpg",
+        filePath: "/test0.jpg",
+        status: IExifStatus.Deleted
+      }
+    ];
+    var action = { type: "add", add } as any;
+    var result = archiveReducer(state, action);
+
+    console.log("<--");
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        fileName: "test1.jpg",
+        fileCollectionName: "test1",
+        filePath: "/test1.jpg",
+        status: IExifStatus.Ok
+      }
+    ]);
+  });
+
   it("add -- and check if is ordered", () => {
     // current state
     var state = {

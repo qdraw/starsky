@@ -180,28 +180,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         return state;
       }
 
-      console.log("actionAdd");
-      for (const item of Array.from(actionAdd)) {
-        console.log(item);
-      }
-
       let concatenatedFileIndexItems = [
         ...Array.from(actionAdd).filter(filterOkCondition),
         ...state.fileIndexItems
       ];
-
-      // todo delete items that are added
-
-      // console.log("    b  console.log(concatenatedFileIndexItems);");
-      // console.log(concatenatedFileIndexItems);
-
-      // concatenatedFileIndexItems = concatenatedFileIndexItems.filter(
-      //   filterOkCondition
-      // );
-      console.log("      console.log(concatenatedFileIndexItems);");
-      for (const item of concatenatedFileIndexItems) {
-        console.log(item);
-      }
 
       const toSortOnParm = state.collections
         ? "fileCollectionName"
@@ -217,29 +199,16 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       for (const deleteItem of Array.from(actionAdd).filter(
         (value) => value.status === IExifStatus.Deleted
       )) {
-        console.log("deleteItem.filePath");
-
-        console.log(deleteItem.filePath);
-
         const index = fileIndexItems.findIndex(
           (x) => x.filePath === deleteItem.filePath
         );
-        console.log(index);
-
         if (index !== -1) {
           fileIndexItems.splice(index, 1);
         }
       }
-      console.log("      fileIndexItems");
-      console.log(fileIndexItems);
 
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
       UpdateColorClassUsageActiveListLoop(state);
-      console.log("      console.log(state.fileIndexItems);");
-      for (const item of state.fileIndexItems) {
-        console.log(item);
-      }
-
       return updateCache(state);
   }
 }
