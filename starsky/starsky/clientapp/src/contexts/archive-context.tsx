@@ -217,6 +217,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       for (const deleteItem of Array.from(actionAdd).filter(
         (value) => value.status === IExifStatus.Deleted
       )) {
+        console.log("deleteItem.filePath");
+
+        console.log(deleteItem.filePath);
+
         const index = fileIndexItems.findIndex(
           (x) => x.filePath === deleteItem.filePath
         );
