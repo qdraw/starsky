@@ -179,6 +179,42 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test"));
 			Assert.IsFalse(storage.ExistFolder("/test"));
 		}
+		
+		[TestMethod]
+		public void Delete_IsFolderRemoved_IncludingChildFolders()
+		{
+			var storage = new FakeIStorage(
+				new List<string>
+				{
+					"/test",
+					"/",
+					"/test/child_folder"
+				},
+				new List<string> {"/test/child_folder/i.jpg"},
+				new List<byte[]>
+				{
+					FakeCreateAn.CreateAnImage.Bytes
+				});
+			var selectorStorage = new FakeSelectorStorage(storage);
+
+			var fakeQuery =
+				new FakeIQuery(new List<FileIndexItem> {
+					new FileIndexItem("/test"){IsDirectory = true, Tags = "!delete!"},
+					new FileIndexItem("/test/child_folder"){IsDirectory = true},	
+					new FileIndexItem("/test/child_folder/2"){IsDirectory = true}
+				});
+			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
+			var result = deleteItem.Delete("/test", true);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 	
+				result.FirstOrDefault().Status);
+			
+			Assert.AreEqual(0,fakeQuery.GetAllFolders().Count);
+			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test"));
+			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test/child_folder"));
+			Assert.IsNull(fakeQuery.GetObjectByFilePath("/test/child_folder/2"));
+			Assert.IsFalse(storage.ExistFolder("/test"));
+		}
 
 		[TestMethod]
 		public void Delete_DirectoryWithChildItems_CollectionsOn()

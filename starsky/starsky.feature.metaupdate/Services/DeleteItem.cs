@@ -118,8 +118,16 @@ namespace starsky.feature.metaupdate.Services
 				RemoveXmpSideCarFile(detailViewItem);
 				RemoveJsonSideCarFile(detailViewItem);
 				RemoveFileOrFolderFromDisk(detailViewItem);
+				
+				// the child directories are still stored in the database
+				if ( detailViewItem.FileIndexItem.IsDirectory != true )
+					continue;
+				
+				foreach ( var item in _query.GetAllRecursive(collectionSubPath) )
+				{
+					_query.RemoveItem(item);
+				}
 			}
-
 			return fileIndexResultsList;
 		}
 
