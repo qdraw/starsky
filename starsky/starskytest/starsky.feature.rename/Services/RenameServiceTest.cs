@@ -880,6 +880,12 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 
 		[TestMethod]
+		public void RenameFolderToExistingFolderInDatabaseButNotOnDisk()
+		{
+			
+		}
+		
+		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void FromFolderToFolder_Null_exception()
 		{

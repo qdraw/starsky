@@ -20,6 +20,8 @@ describe('Create Rename Dir', () => {
     cy.resetStorage()
 
     cy.sendAuthenticationHeader()
+    // create parent directory if not exist
+    checkIfExistAndCreate(config)
   })
 
   it('Create Rename Dir - Check if folder is there & create', () => {
@@ -35,7 +37,6 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=mkdir]').click()
 
-    // dont include in starsky-end2end-test
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
     cy.get('.btn.btn--default').click()
 
@@ -60,5 +61,27 @@ describe('Create Rename Dir', () => {
     if (!config.isEnabled) return
 
     cy.visit(config.url)
+
+    cy.get('.item.item--select').click()
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
+
+    cy.get('.item.item--more').click()
+    cy.get('[data-test=trash]').click()
+
+    cy.wait(3000)
+    cy.visit(config.trash)
+
+    cy.get('.item.item--select').click()
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
+
+    // verwijder onmiddelijk
+    cy.get('.modal .btn.btn--default').click()
+
+    // item should be in the trash
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+
+    // and not in the source folder
+    cy.visit(config.url)
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
   })
 })

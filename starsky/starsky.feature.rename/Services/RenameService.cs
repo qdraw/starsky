@@ -59,20 +59,8 @@ namespace starsky.feature.rename.Services
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					// move entire folder
-					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
-					
-					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-					// Rename child items
-					fileIndexItems.ForEach(p =>
-						{
-							var parentDirectory = p.ParentDirectory
-								.Replace(inputFileSubPath, toFileSubPath);
-							p.ParentDirectory = parentDirectory;
-							p.Status = FileIndexItem.ExifStatus.Ok;
-						}
-					);
-
+					fileIndexItems = FromFolderToDeleted(inputFileSubPath, toFileSubPath,
+						fileIndexItems);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
@@ -118,6 +106,29 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+
+		private List<FileIndexItem> FromFolderToDeleted(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexItems)
+		{
+			// move entire folder
+			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
+					
+			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+			// Rename child items
+			fileIndexItems.ForEach(p =>
+				{
+					var parentDirectory = p.ParentDirectory
+						.Replace(inputFileSubPath, toFileSubPath);
+					p.ParentDirectory = parentDirectory;
+					p.Status = FileIndexItem.ExifStatus.Ok;
+				}
+			);
+			
+			// todo:
+			// todo: Move folder to location that does exist in database but not on disk. It now creates a duplicate folder
+			
+			
+			return fileIndexItems;
+		}
 
 		private string GetFileName(string toFileSubPath, string inputFileSubPath)
 		{

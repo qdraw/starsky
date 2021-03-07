@@ -9,7 +9,8 @@
         "mkdirApi": "/api/sync/mkdir",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       },
       "heroku-demo" : {
         "isEnabled": true,
@@ -20,7 +21,8 @@
         "mkdirApi": "/api/sync/mkdir",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       },
       "no-create-account" : {
         "isEnabled": true,
@@ -31,7 +33,8 @@
         "mkdirApi": "/api/sync/mkdir",
         "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       }
     }
   }
