@@ -186,6 +186,7 @@ namespace starsky.Controllers
 	    /// <param name="f">from subPath</param>
 	    /// <param name="to">to subPath</param>
 	    /// <param name="collections">is collections bool</param>
+	    /// <param name="currentStatus">default is to not included files that are removed in result </param>
 	    /// <returns>list of details form changed files (IActionResult Rename)</returns>
 	    /// <response code="200">the item including the updated content</response>
 	    /// <response code="404">item not found in the database or on disk</response>
@@ -194,7 +195,7 @@ namespace starsky.Controllers
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[HttpPost("/api/sync/rename")]
 	    [Produces("application/json")]	    
-		public async Task<IActionResult> Rename(string f, string to, bool collections = true)
+		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 	    {
 		    var rename = new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
@@ -204,8 +205,9 @@ namespace starsky.Controllers
 		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(rename,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 
-			return Json(rename.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList());
-		}
+		    return Json(currentStatus ? rename.Where(p => p.Status 
+				    != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList() : rename);
+	    }
 
     }
 }

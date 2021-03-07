@@ -198,7 +198,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
 
       // remove deleted items
       for (const deleteItem of Array.from(actionAdd).filter(
-        (value) => value.status === IExifStatus.Deleted
+        (value) =>
+          value.status === IExifStatus.Deleted ||
+          value.status === IExifStatus.NotFoundNotInIndex ||
+          value.status === IExifStatus.NotFoundSourceMissing
       )) {
         const index = fileIndexItems.findIndex(
           (x) => x.filePath === deleteItem.filePath
@@ -209,6 +212,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       }
 
       state = { ...state, fileIndexItems, lastUpdated: new Date() };
+      // when you remove the last item of the directory
+      if (state.fileIndexItems.length === 0) {
+        state.colorClassUsage = [];
+      }
       UpdateColorClassUsageActiveListLoop(state);
       return updateCache(state);
   }

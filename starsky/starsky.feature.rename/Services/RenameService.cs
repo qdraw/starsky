@@ -23,7 +23,8 @@ namespace starsky.feature.rename.Services
 			_iStorage = iStorage;
 		}
 
-		/// <summary>Move or rename files and update the database</summary>
+		/// <summary>Move or rename files and update the database.
+		/// The services also returns the source folders/files as NotFoundSourceMissing</summary>
 		/// <param name="f">subPath to file or folder</param>
 		/// <param name="to">subPath location to move</param>
 		/// <param name="collections">true = copy files with the same name</param>
@@ -78,7 +79,7 @@ namespace starsky.feature.rename.Services
 				{
 					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
 					// when renaming a folder it should warn the UI that it should remove the source item
-					fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.Deleted});
+					fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -422,8 +423,8 @@ namespace starsky.feature.rename.Services
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 			
-			// when renaming a file it should warn the UI that it should remove the source item
-			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.Deleted});
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private void FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
@@ -451,6 +452,9 @@ namespace starsky.feature.rename.Services
 					
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
+			
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
     }

@@ -132,7 +132,7 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			var renameFs = new RenameService(_query,_iStorageSubPath)
 				.Rename(_newImage.DbPath, "/exist/test2.jpg")
-				.Where( p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList();
+				.Where( p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 
 			Assert.AreEqual(1,renameFs.Count);
 			
@@ -246,7 +246,7 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename( _fileInExist.FilePath, _folderExist.FilePath+ "/test2.jpg")
-				.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList();
+				.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 			
 			// query database
 			var all = _query.GetAllRecursive();
@@ -326,7 +326,8 @@ namespace starskytest.starsky.feature.rename.Services
 			// check if files are moved
 			var values = istorage.GetAllFilesInDirectory("/nonExist").ToList();
 			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
@@ -370,7 +371,8 @@ namespace starskytest.starsky.feature.rename.Services
 			// check if files are moved (on fake Filesystem)
 			var values = fakeIStorage.GetAllFilesInDirectory("/test").ToList();
 			Assert.AreEqual("/test/file.jpg", values.FirstOrDefault(p => p == "/test/file.jpg"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFsResult.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFsResult.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFsResult[1].Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
@@ -397,9 +399,11 @@ namespace starskytest.starsky.feature.rename.Services
 
 			// check if sidecar json are moved (on fake Filesystem)
 			var values = iStorage.GetAllFilesInDirectoryRecursive("/test").ToList();
+			
 			Assert.AreEqual("/test/.starsky.file.jpg.json", 
 				values.FirstOrDefault(p => p == "/test/.starsky.file.jpg.json"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
@@ -451,12 +455,12 @@ namespace starskytest.starsky.feature.rename.Services
 			var all2 = _query.GetAllRecursive();
 
 			Assert.AreEqual("/folder1/file.jpg",
-				all2.FirstOrDefault(p => p.FileName == "file.jpg" && p.Status != FileIndexItem.ExifStatus.Deleted).FilePath);
+				all2.FirstOrDefault(p => p.FileName == "file.jpg" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
 			Assert.AreEqual("/folder1/subfolder",
-				all2.FirstOrDefault(p => p.FileName == "subfolder" && p.Status != FileIndexItem.ExifStatus.Deleted).FilePath);
+				all2.FirstOrDefault(p => p.FileName == "subfolder" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
 			Assert.AreEqual("/folder1/subfolder/child.jpg",
-				all2.FirstOrDefault(p => p.FileName == "child.jpg" &&  p.Status != FileIndexItem.ExifStatus.Deleted).FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, renameFs[0].Status );
+				all2.FirstOrDefault(p => p.FileName == "child.jpg" &&  p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs[0].Status );
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
 
 			_query.RemoveItem(existSubFolder);
@@ -506,9 +510,13 @@ namespace starskytest.starsky.feature.rename.Services
 				new List<string>{"/child_folder/test_01.jpg"});
 
 			var renameFs = new RenameService(_query, iStorage).Rename(itemInChildFolderPath, "/");
+
+			// where its from
+			Assert.AreEqual("/child_folder",renameFs.FirstOrDefault().ParentDirectory);
+			Assert.AreEqual("/child_folder/test_01.jpg",renameFs.FirstOrDefault().FilePath);
 			
-			Assert.AreEqual("/",renameFs.FirstOrDefault().ParentDirectory);
-			Assert.AreEqual("/test_01.jpg",renameFs.FirstOrDefault().FilePath);
+			Assert.AreEqual("/",renameFs[1].ParentDirectory);
+			Assert.AreEqual("/test_01.jpg",renameFs[1].FilePath);
 
 			Assert.AreEqual("/test_01.jpg", _query.SingleItem("/test_01.jpg").FileIndexItem.FilePath);
 			Assert.AreEqual(null, _query.SingleItem(itemInChildFolderPath));
@@ -528,8 +536,9 @@ namespace starskytest.starsky.feature.rename.Services
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename(itemInChildFolderPath, "/child_folder2");
 			
-			Assert.AreEqual("/child_folder2",renameFs.FirstOrDefault().ParentDirectory);
-			Assert.AreEqual("/child_folder2/test_10.jpg",renameFs.FirstOrDefault().FilePath);
+			// the first one is the deleted item
+			Assert.AreEqual("/child_folder2",renameFs[1].ParentDirectory);
+			Assert.AreEqual("/child_folder2/test_10.jpg",renameFs[1].FilePath);
 
 			Assert.AreEqual("/child_folder2/test_10.jpg", 
 				_query.SingleItem("/child_folder2/test_10.jpg").FileIndexItem.FilePath);
@@ -558,7 +567,7 @@ namespace starskytest.starsky.feature.rename.Services
 			// only say: fromItemJpg > toItemJpg
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename(fromItemJpg, toItemJpg)
-				.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList();
+				.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 
 			// it has moved the files
 			Assert.IsFalse(iStorage.ExistFile(fromItemJpg));
@@ -688,9 +697,10 @@ namespace starskytest.starsky.feature.rename.Services
 			// Move DNG to different folder
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename(item1dng, "/child_folder2");
-			
+
+			Assert.AreEqual(item1dng,renameFs[0].FilePath);
 			Assert.AreEqual(item1dng.Replace("child_folder","child_folder2"),
-				renameFs.FirstOrDefault().FilePath);
+				renameFs[1].FilePath);
 
 			// did move the side car file
 			Assert.IsTrue(iStorage.ExistFile(item1SideCar.Replace("child_folder","child_folder2")));
@@ -711,9 +721,10 @@ namespace starskytest.starsky.feature.rename.Services
 			// Move Jpg to different folder but the xmp should be ignored
 			var renameFs = new RenameService(_query, iStorage)
 				.Rename(item1, "/child_folder2");
-			
+
+			Assert.AreEqual(item1,renameFs.FirstOrDefault().FilePath);
 			Assert.AreEqual(item1.Replace("child_folder","child_folder2"),
-				renameFs.FirstOrDefault().FilePath);
+				renameFs[1].FilePath);
 
 			// it should not move the sidecar file
 			Assert.IsFalse(iStorage.ExistFile(item1SideCar.Replace("child_folder","child_folder2")));
