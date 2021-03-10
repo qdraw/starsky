@@ -1,10 +1,6 @@
 parameters:
-- name: sonarqubeEnabled
-  displayName: Run Sonarqube?
-  type: boolean
-  default: true
 - name: unitTestsEnabled
-  displayName: Run unit tests?
+  displayName: Run unit tests & sonar scan?
   type: boolean
   default: true
 
@@ -67,6 +63,8 @@ steps:
       nugetPackages: $(NUGET_PACKAGES)
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
+    parameters:
+      unitTest: ${{ parameters.unitTestsEnabled }} 
 
   - template: /pipelines/azure/steps/build_zip_bundle.yml
 
