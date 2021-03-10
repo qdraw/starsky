@@ -407,7 +407,7 @@ namespace starsky.feature.rename.Services
 					
 			// todo: remove folder from disk + remove duplicate database item 
 			// remove duplicate item from list
-			//_query.GetObjectByFilePath(inputFileSubPath);
+			// _query GetObjectByFilePath (inputFileSubPath)
 		}
 
 		private void FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
