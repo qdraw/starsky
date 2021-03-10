@@ -1,3 +1,13 @@
+parameters:
+- name: sonarqubeEnabled
+  displayName: Run Sonarqube?
+  type: boolean
+  default: true
+- name: unitTestsEnabled
+  displayName: Run unit tests?
+  type: boolean
+  default: true
+
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -5,7 +15,6 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-  sonarqube: true
 
 pool:
   vmImage: ubuntu-20.04
@@ -50,10 +59,11 @@ steps:
   - template: /pipelines/azure/steps/build_clientapp.yml
     parameters:
       npmConfigCache: $(npm_config_cache)
+      jest: ${{ parameters.unitTestsEnabled }}
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
-      vstest: true
+      vstest: ${{ parameters.unitTestsEnabled }}
       nugetPackages: $(NUGET_PACKAGES)
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
