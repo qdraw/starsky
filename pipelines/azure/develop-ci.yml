@@ -50,6 +50,16 @@ pr:
     - starsky.netframework/*
 
 steps:
+
+  - task: PowerShell@2
+    condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
+    displayName: "[ne] Create zip with coverage with no content"
+    inputs:
+      targetType: 'inline'
+      script: |
+        New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
+        Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+
   - template: /pipelines/azure/steps/use_dotnet_version.yml
 
   - template: /pipelines/azure/steps/build_clientapp.yml
