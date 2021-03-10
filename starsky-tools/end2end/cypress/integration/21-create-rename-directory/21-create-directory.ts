@@ -54,6 +54,7 @@ describe('Create Rename Dir', () => {
     cy.get('[data-name=foldername]').type('_update')
     cy.get('.btn.btn--default').click()
 
+    cy.wait(500)
     cy.request(config.urlMkdir + '/z_test_auto_created_update')
   })
 
@@ -73,6 +74,10 @@ describe('Create Rename Dir', () => {
 
     cy.get('.item.item--select').click()
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').click()
+
+    // menu ->
+    cy.get('.item.item--more').click()
+    cy.get('[data-test=delete]').click()
 
     // verwijder onmiddelijk
     cy.get('.modal .btn.btn--default').click()
