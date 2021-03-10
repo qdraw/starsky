@@ -123,8 +123,10 @@ namespace starsky.feature.metaupdate.Services
 				if ( detailViewItem.FileIndexItem.IsDirectory != true )
 					continue;
 				
-				foreach ( var item in _query.GetAllRecursive(collectionSubPath) )
+				foreach ( var item in _query.GetAllRecursive(collectionSubPath).Where(p => p.IsDirectory == true) )
 				{
+					item.Status = FileIndexItem.ExifStatus.Deleted;
+					fileIndexResultsList.Add(item.Clone());
 					_query.RemoveItem(item);
 				}
 			}

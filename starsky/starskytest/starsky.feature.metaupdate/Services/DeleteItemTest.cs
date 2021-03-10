@@ -267,5 +267,30 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(0, storage.GetAllFilesInDirectoryRecursive("/").Count());
 			Assert.AreEqual(0, fakeQuery.GetAllRecursive("/").Count);
 		}
+
+
+		[TestMethod]
+		public void Delete_ChildDirectories()
+		{
+			var storage = new FakeIStorage(new List<string> {"/test", "/", "/test/child", "/test/child/child"},
+				new List<string> (),
+				new List<byte[]>());
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var fakeQuery =
+				new FakeIQuery(new List<FileIndexItem> {
+					new FileIndexItem("/test") {IsDirectory = true, Tags = "!delete!"}, 
+					new FileIndexItem("/test/child") {IsDirectory = true}, 
+					new FileIndexItem("/test/child/child") {IsDirectory = true}, 
+				});
+			
+			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);
+			var result = deleteItem.Delete("/test", false);
+			
+			Assert.AreEqual(3, result.Count);
+			Assert.AreEqual("/test", result[0].FilePath);
+			Assert.AreEqual("/test/child", result[1].FilePath);
+			Assert.AreEqual("/test/child/child", result[2].FilePath);
+		}
 	}
 }
