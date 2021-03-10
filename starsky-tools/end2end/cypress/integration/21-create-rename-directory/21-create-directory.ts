@@ -103,6 +103,8 @@ describe('Create Rename Dir', () => {
       }
     })
 
+    cy.wait(1000)
+
     cy.request({
       failOnStatusCode: false,
       method: 'DELETE',
@@ -111,6 +113,8 @@ describe('Create Rename Dir', () => {
         f: '/starsky-end2end-test/z_test_auto_created_update'
       }
     })
+
     cy.visit(config.url)
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
   })
 })
