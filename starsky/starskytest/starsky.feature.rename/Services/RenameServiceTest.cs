@@ -880,9 +880,65 @@ namespace starskytest.starsky.feature.rename.Services
 		}
 
 		[TestMethod]
-		public void RenameFolderToExistingFolderInDatabaseButNotOnDisk()
+		public void Rename_FolderToExistingFolderInDatabaseButNotOnDisk()
 		{
+			var iStorage = new FakeIStorage(new List<string>{"/", "/source_folder"});
+
+			_query.AddItem(
+				new FileIndexItem("/source_folder") {IsDirectory = true});
+			_query.AddItem(
+				new FileIndexItem("/target_folder_3") {IsDirectory = true});
 			
+			// Move Jpg to different folder but the xmp should be ignored
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename("/source_folder", "/target_folder_3");
+
+
+			var countTargetFolder = _query.GetAllRecursive()
+				.Where(p => p.FilePath == "/target_folder_3").ToList();
+			
+			Assert.AreEqual(1, countTargetFolder.Count);
+			
+			Assert.AreEqual("/source_folder", renameFs[0].FilePath);
+			Assert.AreEqual("/target_folder_3", renameFs[1].FilePath);
+		}
+		
+		[TestMethod]
+		public void Rename_FolderToExistingFolder_With_Child_Items_InDatabaseButNotOnDisk()
+		{
+			var iStorage = new FakeIStorage(
+				new List<string>{"/", "/source_folder_2"},
+				new List<string>{"/source_folder_2/test.jpg"}
+				);
+
+			_query.AddItem(
+				new FileIndexItem("/source_folder_2") {IsDirectory = true});
+			_query.AddItem(
+				new FileIndexItem("/source_folder_2/test.jpg"));
+			_query.AddItem(
+				new FileIndexItem("/target_folder_4") {IsDirectory = true});
+			_query.AddItem(
+				new FileIndexItem("/target_folder_4/test.jpg"));
+			
+
+			var renameFs = new RenameService(_query, iStorage)
+				.Rename("/source_folder_2", "/target_folder_4");
+
+
+			
+			var countTargetChildItem = _query.GetAllRecursive()
+				.Where(p => p.FilePath == "/target_folder_4/test.jpg").ToList();
+			
+			Assert.AreEqual(1, countTargetChildItem.Count);
+			
+			var countTargetFolder = _query.GetAllRecursive()
+				.Where(p => p.FilePath == "/target_folder_4").ToList();
+			
+			Assert.AreEqual(1, countTargetFolder.Count);
+			
+			Assert.AreEqual("/source_folder_2", renameFs[0].FilePath);
+			Assert.AreEqual( "/target_folder_4/test.jpg", renameFs[1].FilePath);
+			Assert.AreEqual( "/target_folder_4", renameFs[2].FilePath);
 		}
 		
 		[TestMethod]

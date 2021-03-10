@@ -46,11 +46,11 @@ namespace starsky.feature.rename.Services
 				// 6. file to file
 				// 7. file to existing file > skip
 
+				
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
-				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
-				
+
 				// The To location must be
 				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
@@ -60,7 +60,7 @@ namespace starsky.feature.rename.Services
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
 					fileIndexItems = FromFolderToDeleted(inputFileSubPath, toFileSubPath,
-						fileIndexItems);
+						fileIndexItems, fileIndexResultsList);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
@@ -92,7 +92,7 @@ namespace starsky.feature.rename.Services
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 					FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
-				
+
 				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -107,7 +107,9 @@ namespace starsky.feature.rename.Services
 	        return fileIndexResultsList;
         }
 
-		private List<FileIndexItem> FromFolderToDeleted(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexItems)
+		private List<FileIndexItem> FromFolderToDeleted(string inputFileSubPath,
+			string toFileSubPath, List<FileIndexItem> fileIndexItems,
+			List<FileIndexItem> fileIndexResultsList)
 		{
 			// move entire folder
 			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
@@ -122,10 +124,18 @@ namespace starsky.feature.rename.Services
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
 			);
+
+			// when there is already a database item in the output folder, but not on disk
+			// in the final step we going to update the database item to the new name
+			var toCheckList = fileIndexItems.Select(p => p.FilePath).ToList();
+			toCheckList.Add(toFileSubPath);
+			var checkOutput = _query.GetObjectsByFilePathAsync(toCheckList).Result;
+			foreach ( var item in checkOutput )
+			{
+				_query.RemoveItem(item);
+			}
 			
-			// todo:
-			// todo: Move folder to location that does exist in database but not on disk. It now creates a duplicate folder
-			
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 			
 			return fileIndexItems;
 		}
