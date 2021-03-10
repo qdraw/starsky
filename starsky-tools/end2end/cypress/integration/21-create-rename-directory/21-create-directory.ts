@@ -89,4 +89,28 @@ describe('Create Rename Dir', () => {
     cy.visit(config.url)
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
   })
+
+  it('safe guard for other tests - if not deleted remove via the api', () => {
+    if (!config.isEnabled) return
+
+    cy.request({
+      failOnStatusCode: false,
+      method: 'POST',
+      url: '/starsky/api/update',
+      qs: {
+        f: '/starsky-end2end-test/z_test_auto_created_update',
+        tags: '!delete!'
+      }
+    })
+
+    cy.request({
+      failOnStatusCode: false,
+      method: 'DELETE',
+      url: '/starsky/api/delete',
+      qs: {
+        f: '/starsky-end2end-test/z_test_auto_created_update'
+      }
+    })
+    cy.visit(config.url)
+  })
 })
