@@ -77,6 +77,7 @@ steps:
       script: |
         New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
         Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+        Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
 
   - template: /pipelines/azure/steps/publish_artifacts.yml
     parameters:
