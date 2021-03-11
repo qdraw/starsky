@@ -102,11 +102,11 @@ function updateArchiveFromEvent(
 ) {
   const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
   // useLocation, state or archive is here always the default value
-  var parentLocationPath = new URLPath().StringToIUrl(window.location.search).f;
+  const parentLocationPath = new URLPath().StringToIUrl(window.location.search)
+    .f;
 
-  var toAddedFiles = [];
-  for (let index = 0; index < pushMessagesEvent.length; index++) {
-    const pushMessage = pushMessagesEvent[index];
+  const toAddedFiles = [];
+  for (const pushMessage of pushMessagesEvent) {
     // only update in current directory view
     if (parentLocationPath !== pushMessage.parentDirectory) {
       // we choose to remove everything to avoid display errors
@@ -115,5 +115,6 @@ function updateArchiveFromEvent(
     }
     toAddedFiles.push(pushMessage);
   }
+
   dispatch({ type: "add", add: toAddedFiles });
 }
