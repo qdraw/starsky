@@ -25,9 +25,25 @@ steps:
       targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
       action: 'check-licenses'
 
+  # clientapp has no outdated check due use of create react app
+
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "clientapp_outdated"
-      displayName: 'ClientApp outdated check'
-      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      name: "starskyapp_vulnerabilities"
+      displayName: 'StarskyApp vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      action: 'find-vulnerabilities'
+      
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starskyapp_license"
+      displayName: 'StarskyApp license check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      action: 'check-licenses'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starskyapp_outdated"
+      displayName: 'StarskyApp outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
       action: 'outdated'
