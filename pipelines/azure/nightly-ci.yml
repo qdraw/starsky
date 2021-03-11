@@ -6,6 +6,7 @@ pool:
   demands:
   - npm
 
+schedules:
 - cron: "0 8 * * 6"
   displayName: Weekly Saturday check
   branches:
