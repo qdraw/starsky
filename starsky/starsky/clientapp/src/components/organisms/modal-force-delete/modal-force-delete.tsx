@@ -74,7 +74,7 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
       bodyParams.toString(),
       "delete"
     ).then((result) => {
-      if (result.statusCode === 200) {
+      if (result.statusCode === 200 || result.statusCode === 404) {
         dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
       }
 

@@ -23,7 +23,8 @@ namespace starsky.feature.rename.Services
 			_iStorage = iStorage;
 		}
 
-		/// <summary>Move or rename files and update the database</summary>
+		/// <summary>Move or rename files and update the database.
+		/// The services also returns the source folders/files as NotFoundSourceMissing</summary>
 		/// <param name="f">subPath to file or folder</param>
 		/// <param name="to">subPath location to move</param>
 		/// <param name="collections">true = copy files with the same name</param>
@@ -45,11 +46,11 @@ namespace starsky.feature.rename.Services
 				// 6. file to file
 				// 7. file to existing file > skip
 
+				
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
-				
 				var detailView = _query.SingleItem(inputFileSubPath, null, collections, false);
-				
+
 				// The To location must be
 				var inputFileFolderStatus = _iStorage.IsFolderOrFile(inputFileSubPath);
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
@@ -58,25 +59,15 @@ namespace starsky.feature.rename.Services
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					// move entire folder
-					_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
-					
-					fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-					// Rename child items
-					fileIndexItems.ForEach(p =>
-						{
-							var parentDirectory = p.ParentDirectory
-								.Replace(inputFileSubPath, toFileSubPath);
-							p.ParentDirectory = parentDirectory;
-							p.Status = FileIndexItem.ExifStatus.Ok;
-						}
-					);
-
+					fileIndexItems = FromFolderToDeleted(inputFileSubPath, toFileSubPath,
+						fileIndexItems, fileIndexResultsList);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
 					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
+					// when renaming a folder it should warn the UI that it should remove the source item
+					fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -101,7 +92,7 @@ namespace starsky.feature.rename.Services
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 					FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
-				
+
 				// Rename parent item >eg the folder or file
 				detailView.FileIndexItem.SetFilePath(toFileSubPath);
 				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
@@ -115,6 +106,40 @@ namespace starsky.feature.rename.Services
 
 	        return fileIndexResultsList;
         }
+
+		private List<FileIndexItem> FromFolderToDeleted(string inputFileSubPath,
+			string toFileSubPath, List<FileIndexItem> fileIndexItems,
+			List<FileIndexItem> fileIndexResultsList)
+		{
+			// move entire folder
+			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
+					
+			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+			// Rename child items
+			fileIndexItems.ForEach(p =>
+				{
+					var parentDirectory = p.ParentDirectory
+						.Replace(inputFileSubPath, toFileSubPath);
+					p.ParentDirectory = parentDirectory;
+					p.Status = FileIndexItem.ExifStatus.Ok;
+					p.Tags = p.Tags.Replace("!delete!", string.Empty);
+				}
+			);
+
+			// when there is already a database item in the output folder, but not on disk
+			// in the final step we going to update the database item to the new name
+			var toCheckList = fileIndexItems.Select(p => p.FilePath).ToList();
+			toCheckList.Add(toFileSubPath);
+			var checkOutput = _query.GetObjectsByFilePathAsync(toCheckList).Result;
+			foreach ( var item in checkOutput )
+			{
+				_query.RemoveItem(item);
+			}
+			
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
+			
+			return fileIndexItems;
+		}
 
 		private string GetFileName(string toFileSubPath, string inputFileSubPath)
 		{
@@ -382,7 +407,7 @@ namespace starsky.feature.rename.Services
 					
 			// todo: remove folder from disk + remove duplicate database item 
 			// remove duplicate item from list
-			_query.GetObjectByFilePath(inputFileSubPath);
+			// _query GetObjectByFilePath (inputFileSubPath)
 		}
 
 		private void FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
@@ -419,6 +444,9 @@ namespace starsky.feature.rename.Services
 					
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
+			
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private void FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
@@ -446,6 +474,9 @@ namespace starsky.feature.rename.Services
 					
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
+			
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
     }
