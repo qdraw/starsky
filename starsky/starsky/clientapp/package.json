@@ -31,6 +31,9 @@
     "typescript": "^4.2.3"
   },
   "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
     "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
     "storybook": "start-storybook",
