@@ -1,10 +1,17 @@
 trigger: none
+pr: none
 
 pool:
   vmImage: ubuntu-20.04
   demands:
   - npm
 
+- cron: "0 8 * * 6"
+  displayName: Weekly Saturday check
+  branches:
+    include:
+    - master
+  always: true
 
 steps:
   - checkout: self
