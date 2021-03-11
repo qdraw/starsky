@@ -65,7 +65,9 @@ namespace starsky.Controllers
 
             var fileIndexItems = SortHelper.Helper(
 	            _query.DisplayFileFolders(subPath, colorClassActiveList,
-		            collections, hidedelete), sort);
+		            collections, hidedelete), sort).ToList();
+            var fileIndexItemsWithoutCollections = _query.DisplayFileFolders(
+	            subPath, null, false, hidedelete).ToList();
             
             // (singleItem.IsDirectory) or not found
             var directoryModel = new ArchiveViewModel
@@ -76,11 +78,10 @@ namespace starsky.Controllers
                 Breadcrumb = Breadcrumbs.BreadcrumbHelper(subPath),
                 SearchQuery = subPath.Split("/").LastOrDefault(),
                 SubPath = subPath,
-                CollectionsCount = _query.DisplayFileFolders(
-	                subPath,null,false,hidedelete).
+                CollectionsCount = fileIndexItemsWithoutCollections.
 	                Count(p => p.IsDirectory == false),
-                ColorClassUsage = _query.DisplayFileFolders(
-	                subPath,null,false,hidedelete)
+                // when change colorclass selection you should see all options
+                ColorClassUsage = fileIndexItemsWithoutCollections
 	                .Select( p => p.ColorClass).Distinct()
 	                .OrderBy(p => (int) (p)).ToList(),
                 IsReadOnly =  _appSettings.IsReadOnly(subPath),

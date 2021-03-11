@@ -10,11 +10,4 @@ steps:
       path: ${{ parameters.nugetPackages }}
     displayName: Cache NuGet packages
 
-  - task: Bash@3
-    enabled: true
-    displayName: 'display ${{ parameters.nugetPackages }}'
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo ${{ parameters.nugetPackages }}
 

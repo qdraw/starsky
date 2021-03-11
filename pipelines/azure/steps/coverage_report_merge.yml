@@ -1,7 +1,11 @@
+parameters:
+  unitTest: true
+
 steps:
 
   - task: PowerShell@2
     displayName: 'Cake MergeCoverageFiles'
+    condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
       arguments: '${{ parameters.runtimeArg }} -target="MergeCoverageFiles"'
@@ -10,6 +14,7 @@ steps:
 
   - task: PowerShell@2
     displayName: 'Cake CoverageReport'
+    condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
       arguments: '${{ parameters.runtimeArg }} -target="CoverageReport"'
@@ -17,6 +22,7 @@ steps:
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
   - task: PublishCodeCoverageResults@1
+    condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     displayName: 'Publish code coverage from $(Build.SourcesDirectory)/starsky/starskytest/coverage-merge-cobertura.xml'
     inputs:
       codeCoverageTool: Cobertura

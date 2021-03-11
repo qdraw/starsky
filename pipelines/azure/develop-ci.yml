@@ -1,3 +1,9 @@
+parameters:
+- name: unitTestsEnabled
+  displayName: Run unit tests & sonar scan?
+  type: boolean
+  default: true
+
 variables:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
@@ -5,7 +11,6 @@ variables:
   CI: true
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-  sonarqube: true
 
 pool:
   vmImage: ubuntu-20.04
@@ -45,20 +50,36 @@ pr:
     - starsky.netframework/*
 
 steps:
+
   - template: /pipelines/azure/steps/use_dotnet_version.yml
 
   - template: /pipelines/azure/steps/build_clientapp.yml
     parameters:
       npmConfigCache: $(npm_config_cache)
+      jest: ${{ parameters.unitTestsEnabled }}
 
   - template: /pipelines/azure/steps/build_server.yml
     parameters:
-      vstest: true
+      vstest: ${{ parameters.unitTestsEnabled }}
       nugetPackages: $(NUGET_PACKAGES)
 
   - template: /pipelines/azure/steps/coverage_report_merge.yml
+    parameters:
+      unitTest: ${{ parameters.unitTestsEnabled }} 
 
   - template: /pipelines/azure/steps/build_zip_bundle.yml
+
+  - task: PowerShell@2
+    condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
+    displayName: "[ne] Create zip with coverage with no content"
+    inputs:
+      targetType: 'inline'
+      script: |
+        New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
+        New-Item -ItemType file '$(Build.SourcesDirectory)/temp/index.html'
+        Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+        Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
+        Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
 
   - template: /pipelines/azure/steps/publish_artifacts.yml
     parameters:

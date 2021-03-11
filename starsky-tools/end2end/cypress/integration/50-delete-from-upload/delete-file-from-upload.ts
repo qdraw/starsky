@@ -32,9 +32,15 @@ describe('Delete file from upload (50)', () => {
         f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`
       }
     })
+    cy.wait(500)
 
     checkIfExistAndCreate(config)
 
+    cy.fileRequest(
+      fileName4,
+      '/starsky-end2end-test',
+      'image/jpeg'
+    )
     cy.fileRequest(
       fileName1,
       '/starsky-end2end-test',
@@ -50,11 +56,7 @@ describe('Delete file from upload (50)', () => {
       '/starsky-end2end-test',
       'image/jpeg'
     )
-    cy.fileRequest(
-      fileName4,
-      '/starsky-end2end-test',
-      'image/jpeg'
-    )
+
     cy.wait(500)
 
     cy.request(config.urlApiCollectionsFalse).then((res) => {
@@ -73,15 +75,32 @@ describe('Delete file from upload (50)', () => {
     cy.get('.folder > div').should(($lis) => {
       expect($lis).to.have.length(3)
     })
-    cy.wait(3000)
+
+    cy.wait(5000)
+    cy.log(`go to: ${config.trash}`)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click()
 
+    // more menu and delete
+    cy.get('.item.item--more').click()
+    cy.get('[data-test=delete]').click()
+
+    // verwijder onmiddelijk
+    cy.get('.modal .btn.btn--default').click()
+
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.fileIndexItems.length).to.eq(3)
+    })
+
+    cy.visit(config.url)
+
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName3}"]`)
+
+    cy.get('.folder > div').should(($lis) => {
+      expect($lis).to.have.length(3)
     })
   })
 
