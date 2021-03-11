@@ -79,9 +79,10 @@ export async function LocationIsRemoteCallback(
   args: boolean
 ) {
   if (args !== undefined && args !== null) {
-    await SetupFileWatcher();
     await closeAndCreateNewWindow();
     await appConfig.set(LocationIsRemoteSettingsKey, args.toString());
+    // filewatcher need to be after update/set
+    await SetupFileWatcher();
   }
 
   const currentSettings = await appConfig.get(LocationIsRemoteSettingsKey);
