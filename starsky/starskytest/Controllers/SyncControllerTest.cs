@@ -259,6 +259,36 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task SyncControllerTest_Rename_WithCurrentStatusDisabled()
+		{
+			InsertSearchData();
+
+			var context = new ControllerContext
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			
+			var fakeStorage =  new FakeIStorage(new List<string> { "/" }, 
+				new List<string> { _createAnImage.DbPath });
+			var storageSelector = new FakeSelectorStorage(fakeStorage);
+			
+			var controller =
+				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+					new FakeIWebSocketConnectionsService())
+				{
+					ControllerContext = context
+				};
+			
+			var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg", true, false) as JsonResult;
+			var list = result.Value as List<FileIndexItem>;
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,list[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list[1].Status);
+
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
+		}
+
+		[TestMethod]
 		public async Task SyncControllerTest_Rename_Good_SocketUpdate()
 		{
 			InsertSearchData();

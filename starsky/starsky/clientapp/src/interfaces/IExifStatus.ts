@@ -6,5 +6,7 @@ export enum IExifStatus {
   NotFoundSourceMissing = "NotFoundSourceMissing" as any,
   ServerError = "ServerError" as any,
   IgnoredAlreadyImported = "IgnoredAlreadyImported" as any,
+  OperationNotSupported = "OperationNotSupported" as any,
+  NotFoundNotInIndex = "NotFoundNotInIndex" as any,
   FileError = "FileError" as any
 }

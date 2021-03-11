@@ -62,7 +62,8 @@ describe('DetailView (from upload)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName2)
 
-    cy.get('.nextprev.nextprev--next').first().click()
+    cy.get('.nextprev.nextprev--next').first()
+      .click()
       .url()
       .should('contain', fileName1)
 

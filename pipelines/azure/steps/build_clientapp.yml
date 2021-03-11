@@ -17,7 +17,7 @@ steps:
       restoreKeys: |
         npm | clientapp | "$(Agent.OS)"
       path: ${{ parameters.npmConfigCache }}
-    displayName: Cache npm ${{ parameters.npmConfigCache }}
+    displayName: Cache npm
 
   - task: PowerShell@2
     displayName: 'Cake Client [with tests]'

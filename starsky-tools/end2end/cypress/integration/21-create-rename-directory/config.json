@@ -1,34 +1,40 @@
 {
     "starsky": {
       "local": {
-        "isEnabled": false,
+        "isEnabled": true,
         "url": "/?f=/starsky-end2end-test",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "mkdirApi": "/api/sync/mkdir",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       },
       "heroku-demo" : {
-        "isEnabled": false,
+        "isEnabled": true,
         "url": "/?f=/starsky-end2end-test",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "mkdirApi": "/api/sync/mkdir",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       },
       "no-create-account" : {
-        "isEnabled": false,
+        "isEnabled": true,
         "url": "/?f=/starsky-end2end-test",
         "mkdirName": "starsky-end2end-test",
         "mkdirPath": "/starsky-end2end-test",
         "urlMkdir": "/api/index/?f=/starsky-end2end-test",
         "mkdirApi": "/api/sync/mkdir",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
         "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
-        "successUrl" : "/?f=/"
+        "successUrl" : "/?f=/",
+        "trash": "/trash"
       }
     }
   }

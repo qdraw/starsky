@@ -69,8 +69,10 @@ _See `./pipelines/azure` for details_
 
 _See `./.github/workflows` for details_
 
-### End2End tests on public demo environment
+### End2End tests on public heroku demo environment
 ![end2end on heroku-demo](https://github.com/qdraw/starsky/workflows/end2end%20on%20heroku-demo/badge.svg?branch=master)
+### End2End tests on private Azure demo environment
+![end2end on private azure demo](https://qdraw.vsrm.visualstudio.com/_apis/public/Release/badge/7bab52f1-7600-4295-a199-1bb81cc1e4d7/6/15)
 
 _See `./starsky-tools/end2end` for details_
 

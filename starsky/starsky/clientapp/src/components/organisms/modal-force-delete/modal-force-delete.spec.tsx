@@ -75,7 +75,7 @@ describe("ModalForceDelete", () => {
     const fetchSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(async () => {
-        return { statusCode: 404 } as IConnectionDefault;
+        return { statusCode: 500 } as IConnectionDefault;
       });
 
     const dispatch = jest.fn();

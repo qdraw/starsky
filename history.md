@@ -47,6 +47,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages
 - [x]   (Fixed) _Front-end_ Switch the text of the show raw button in Display options
+- [x]   (Fixed) _Front-end_ When last file with colorClass is removed, the display is now correct (PR #313)
+- [x]   (Fixed) _Front-end_ Implicit delete by updating from sockets should now not cover collection items with the same base name (PR #313)
+- [x]   (Fixed) _Back-end_  When use DeleteItem the child directories are not stored in the database (PR #314)
+- [x]   (Fixed) _Back-end_ Give removed items back when using `/api/rename` as status NotFoundSourceMissing (PR #314)
+- [x]   (Fixed) _Back-end_ Don't create duplicate database items when there is already a database item in the output folder, but not on disk (PR #314)
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
