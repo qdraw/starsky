@@ -10,4 +10,4 @@ steps:
     inputs:
       targetType: filePath
       filePath: ./starsky-tools/build-tools/audit-npm.ps1
-      arguments: "-targetFolder '${{ parameters.targetFolder }}' -failOnVulnLevel 'moderate' -action '${{ parameters.action }}' -depth '${{ parameters.action }}'"
+      arguments: "-targetFolder '${{ parameters.targetFolder }}' -failOnVulnLevel 'moderate' -action '${{ parameters.action }}' -depth '${{ parameters.depth }}'"
