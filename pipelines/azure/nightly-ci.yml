@@ -31,7 +31,7 @@ steps:
       displayName: 'ClientApp outdated check'
       targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
       action: 'outdated'
-      depth: 1
+      depth: 0
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
