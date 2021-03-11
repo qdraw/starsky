@@ -98,7 +98,7 @@ describe('Create Rename Dir', () => {
       method: 'POST',
       url: '/starsky/api/update',
       qs: {
-        f: '/starsky-end2end-test/z_test_auto_created_update',
+        f: '/starsky-end2end-test/z_test_auto_created_update;/starsky-end2end-test/z_test_auto_created',
         tags: '!delete!'
       }
     })
@@ -110,11 +110,12 @@ describe('Create Rename Dir', () => {
       method: 'DELETE',
       url: '/starsky/api/delete',
       qs: {
-        f: '/starsky-end2end-test/z_test_auto_created_update'
+        f: '/starsky-end2end-test/z_test_auto_created_update;/starsky-end2end-test/z_test_auto_created'
       }
     })
 
     cy.visit(config.url)
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created_update"] button').should('not.exist')
+    cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"] button').should('not.exist')
   })
 })
