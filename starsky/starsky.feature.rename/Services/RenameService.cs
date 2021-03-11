@@ -59,8 +59,7 @@ namespace starsky.feature.rename.Services
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					fileIndexItems = FromFolderToDeleted(inputFileSubPath, toFileSubPath,
-						fileIndexItems, fileIndexResultsList);
+					fileIndexItems = FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
@@ -108,13 +107,12 @@ namespace starsky.feature.rename.Services
         }
 
 		private List<FileIndexItem> FromFolderToDeleted(string inputFileSubPath,
-			string toFileSubPath, List<FileIndexItem> fileIndexItems,
-			List<FileIndexItem> fileIndexResultsList)
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
 		{
 			// move entire folder
 			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
 					
-			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+			var fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 			// Rename child items
 			fileIndexItems.ForEach(p =>
 				{
@@ -404,10 +402,6 @@ namespace starsky.feature.rename.Services
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}
 			);
-					
-			// todo: remove folder from disk + remove duplicate database item 
-			// remove duplicate item from list
-			// _query GetObjectByFilePath (inputFileSubPath)
 		}
 
 		private void FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
