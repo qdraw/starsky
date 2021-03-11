@@ -18,22 +18,28 @@ steps:
       targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
       action: 'find-vulnerabilities'
 
-  # clientapp has no outdated check due use of create react app
-
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
       name: "starskyapp_vulnerabilities"
       displayName: 'StarskyApp vulnerabilities check'
       targetFolder: "$(Build.SourcesDirectory)/starskyapp"
       action: 'find-vulnerabilities'
-      
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_outdated"
+      displayName: 'ClientApp outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'outdated'
+      depth: 1
+
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
       name: "starskyapp_outdated"
       displayName: 'StarskyApp outdated check'
       targetFolder: "$(Build.SourcesDirectory)/starskyapp"
       action: 'outdated'
-      depth: 3
+      depth: 1
       
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
