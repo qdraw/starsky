@@ -273,7 +273,9 @@ const DetailView: React.FC<IDetailView> = () => {
           collections={state.collections === true}
           isEnabled={true}
           filePath={state.fileIndexItem.filePath}
-          onToggle={() => {}}
+          onToggle={() => {
+            // do nothing when press toggle
+          }}
         />
 
         {isDetails && state.fileIndexItem.status ? (
