@@ -3,7 +3,10 @@ import { IArchive, newIArchive, SortType } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
-import { ImageFormat } from "../interfaces/IFileIndexItem";
+import {
+  ImageFormat,
+  newIFileIndexItemArray
+} from "../interfaces/IFileIndexItem";
 import ArrayHelper from "../shared/array-helper";
 import { FileListCache } from "../shared/filelist-cache";
 import { ArchiveAction, archiveReducer } from "./archive-context";
@@ -233,6 +236,43 @@ describe("ArchiveContext", () => {
 
     // fullpath input
     var action = { type: "remove", toRemoveFileList: ["/test.jpg"] } as any;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+    expect(result.colorClassUsage).toStrictEqual([]);
+  });
+
+  it("add - undefined", () => {
+    var state = { fileIndexItems: newIFileIndexItemArray() } as IArchiveProps;
+
+    // fullpath input
+    var action = { type: "add", add: undefined } as any;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("add - last colorClassUsage is removed", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        }
+      ],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.jpg",
+        status: IExifStatus.Deleted // <- say its deleted
+      }
+    ];
+
+    // fullpath input
+    var action = { type: "add", add } as any;
 
     var result = archiveReducer(state, action);
 

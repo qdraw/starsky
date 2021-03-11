@@ -166,6 +166,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         )
       });
     case "add":
+      if (!action.add) return state;
+
       const filterOkCondition = (value: IFileIndexItem) => {
         return (
           value.status === IExifStatus.Ok ||
