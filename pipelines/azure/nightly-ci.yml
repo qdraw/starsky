@@ -1,0 +1,33 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-20.04
+  demands:
+  - npm
+
+
+steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_vulnerabilities"
+      displayName: 'ClientApp vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'find-vulnerabilities'
+      
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_license"
+      displayName: 'ClientApp license check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'check-licenses'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_outdated"
+      displayName: 'ClientApp outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'outdated'
