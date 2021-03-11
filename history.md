@@ -52,6 +52,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_  When use DeleteItem the child directories are not stored in the database (PR #314)
 - [x]   (Fixed) _Back-end_ Give removed items back when using `/api/rename` as status NotFoundSourceMissing (PR #314)
 - [x]   (Fixed) _Back-end_ Don't create duplicate database items when there is already a database item in the output folder, but not on disk (PR #314)
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.3 2021-02-22)_ (PR #318)
+- [x]   (Security) _App_  Upgrade Electron to 12.x (PR #318)
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
