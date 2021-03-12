@@ -74,6 +74,8 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=rename]').click()
 
+    cy.intercept('/starsky/api/sync/rename').as('rename')
+
     cy.get('[data-name=foldername]').type('_update')
     cy.get('.btn.btn--default').click()
 
@@ -81,7 +83,7 @@ describe('Create Rename Dir', () => {
       .get('.modal .warning-box')
       .should('not.exist')
 
-    cy.wait(500)
+    cy.wait('@rename')
     cy.request(config.urlMkdir + '/z_test_auto_created_update')
 
     cy
