@@ -13,7 +13,7 @@ variables:
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: 'ubuntu-20.04'
   demands:
   - msbuild
   - java
@@ -80,6 +80,8 @@ steps:
         Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
         Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
         Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
+
+  - template: /pipelines/azure/steps/publish_end2end_container.yml
 
   - template: /pipelines/azure/steps/publish_artifacts.yml
     parameters:
