@@ -1,0 +1,8 @@
+steps:
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: starsky-tools-end2end'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)/starsky-tools/end2end'
+      ArtifactName: 'starsky-tools-end2end'
+      publishLocation: 'Container'

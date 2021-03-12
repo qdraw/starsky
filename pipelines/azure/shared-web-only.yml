@@ -33,7 +33,7 @@ pr:
     - master
     
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-20.04'
 
 steps:
 - checkout: self
@@ -48,11 +48,7 @@ steps:
   parameters:
     nugetPackages: $(NUGET_PACKAGES)
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/starsky-tools/end2end'
-    ArtifactName: 'starsky-tools-end2end'
-    publishLocation: 'Container'
+- template: /pipelines/azure/steps/publish_end2end_container.yml
 
 - task: PublishBuildArtifacts@1
   inputs:
