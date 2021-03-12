@@ -152,10 +152,14 @@ npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
+npm uninstall --save @types/node
+npm install --save @types/node
 ```
 
 > Note:
 > `@types/storybook__react`is deprecated but needed to build devDependencies
+
+> @types/node 14.x is used instead of 12.x
 
 Remove this package
 
@@ -186,7 +190,7 @@ This is added to the `package.json`
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20210214  v4.0.2 (2021-02-03)'"
+"upgrade": "echo 'check readme.md 20210311  v4.0.3'"
 ```
 
 ### collectCoverageFrom and coverageReporters

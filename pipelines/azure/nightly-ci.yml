@@ -1,0 +1,64 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-20.04
+  demands:
+  - npm
+
+schedules:
+- cron: "0 8 * * 6"
+  displayName: Weekly Saturday check
+  branches:
+    include:
+    - master
+  always: true
+
+steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_vulnerabilities"
+      displayName: 'ClientApp vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starskyapp_vulnerabilities"
+      displayName: 'StarskyApp vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_outdated"
+      displayName: 'ClientApp outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'outdated'
+      depth: 0
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starskyapp_outdated"
+      displayName: 'StarskyApp outdated check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      action: 'outdated'
+      depth: 0
+      
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "clientapp_license"
+      displayName: 'ClientApp license check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+      action: 'check-licenses'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starskyapp_license"
+      displayName: 'StarskyApp license check'
+      targetFolder: "$(Build.SourcesDirectory)/starskyapp"
+      action: 'check-licenses'
