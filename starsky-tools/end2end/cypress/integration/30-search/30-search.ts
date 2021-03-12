@@ -20,11 +20,13 @@ describe('Search', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
 
+    cy.intercept('/starsky/api/search*').as('search')
+
     cy.get(flow.fields.search).type(flow.fields.searchData)
       .url()
       .should('contain', flow.successUrl)
 
-    cy.wait(100)
+    cy.wait('@search')
     cy.get(flow.boxContent)
   })
 
