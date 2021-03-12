@@ -132,10 +132,15 @@ npm install --save-dev @storybook/react
 npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
-npm install --save prettier</code></pre>
+npm install --save prettier
+npm uninstall --save @types/node
+npm install --save @types/node</code></pre>
 <blockquote>
   <p>Note:<br />
   <code>@types/storybook__react</code>is deprecated but needed to build devDependencies</p>
+</blockquote>
+<blockquote>
+  <p><a href="https://github.com/types">@types</a>/node 14.x is used instead of 12.x</p>
 </blockquote>
 <p>Remove this package</p>
 <pre><code>npm uninstall --save web-vitals</code></pre>
@@ -150,7 +155,7 @@ npm install --save prettier</code></pre>
 <pre><code class="json language-json">"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
 "test:ci": "npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.html 20210214  v4.0.2 (2021-02-03)'"</code></pre>
+"upgrade": "echo 'check readme.html 20210311  v4.0.3'"</code></pre>
 <h3 id="collectcoveragefrom-and-coveragereporters">collectCoverageFrom and coverageReporters</h3>
 <p>With jest <code>collectCoverageFrom</code> and <code>coverageReporters</code> are used to get the right output</p>
 <pre><code class="json language-json">"jest": {
