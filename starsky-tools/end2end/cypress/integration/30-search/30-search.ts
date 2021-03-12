@@ -24,6 +24,7 @@ describe('Search', () => {
       .url()
       .should('contain', flow.successUrl)
 
+    cy.wait(100)
     cy.get(flow.boxContent)
   })
 

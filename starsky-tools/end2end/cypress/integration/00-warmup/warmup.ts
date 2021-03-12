@@ -18,6 +18,7 @@ describe('Warmup', () => {
       }
       count++
       if (count < 15) {
+        cy.wait(400)
         retry(count)
         return
       }

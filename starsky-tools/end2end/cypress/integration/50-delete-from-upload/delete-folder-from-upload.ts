@@ -53,7 +53,8 @@ describe('Delete folder from upload', () => {
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test"] button').click()
+    // force can be outside of scroll area
+    cy.get('[data-filepath="/starsky-end2end-test"] button').click({ force: true })
 
     cy.get('.item.item--more').click()
     cy.get('[data-test=delete]').click()
