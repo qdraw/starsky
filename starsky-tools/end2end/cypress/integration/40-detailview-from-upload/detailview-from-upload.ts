@@ -62,15 +62,19 @@ describe('DetailView (from upload)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName2)
 
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+
     cy.get('.nextprev.nextprev--next').first()
       .click()
-      .url()
+
+    cy.wait('@index1')
+
+    cy.url()
       .should('contain', fileName1)
 
-    cy.wait(300)
-
     cy.get('.nextprev.nextprev--next').first().click()
-      .url()
+
+    cy.url()
       .should('contain', fileName3)
   })
 
@@ -78,11 +82,13 @@ describe('DetailView (from upload)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url + '/' + fileName3)
 
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+
     cy.get('.nextprev.nextprev--prev').first().click()
       .url()
       .should('contain', fileName1)
 
-    cy.wait(300)
+    cy.wait('@index1')
 
     cy.get('.nextprev.nextprev--prev').first().click()
       .url()

@@ -26,4 +26,5 @@ export async function SetupFileWatcher() {
     });
 
   FileWatcherObjects.add([watch, tempPathIncludingBaseUrl]);
+  console.log("add:", tempPathIncludingBaseUrl);
 }

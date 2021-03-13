@@ -1,0 +1,13 @@
+parameters:
+  displayName: ""
+  targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
+  action: "all"
+  depth: 10
+
+steps:
+  - task: PowerShell@2
+    displayName: ${{ parameters.displayName }}
+    inputs:
+      targetType: filePath
+      filePath: ./starsky-tools/build-tools/audit-npm.ps1
+      arguments: "-targetFolder '${{ parameters.targetFolder }}' -failOnVulnLevel 'moderate' -action '${{ parameters.action }}' -depth '${{ parameters.depth }}'"

@@ -60,24 +60,27 @@ describe('Upload to folder', () => {
     const fileType = 'image/jpeg'
     const fileInput = '.menu-option--input input[type=file]'
 
+    cy.intercept('/starsky/api/upload').as('upload2')
     cy.uploadFile(fileName2, fileType, fileInput)
-    cy.wait(1000)
+    cy.wait('@upload2')
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
       expect($lis.eq(0)).to.contain(fileName2)
     })
 
+    cy.intercept('/starsky/api/upload').as('upload3')
     cy.uploadFile(fileName3, fileType, fileInput)
-    cy.wait(1000)
+    cy.wait('@upload3')
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
       expect($lis.eq(0)).to.contain(fileName3)
     })
 
+    cy.intercept('/starsky/api/upload').as('upload4')
     cy.uploadFile(fileName4, fileType, fileInput)
-    cy.wait(1000)
+    cy.wait('@upload4')
 
     cy.get('[data-test=upload-files] li').should(($lis) => {
       expect($lis).to.have.length(1)
@@ -93,7 +96,6 @@ describe('Upload to folder', () => {
     cy.visit(config.url)
 
     cy.get('.folder > div').should(($lis) => {
-      expect($lis).to.have.length(3)
       expect($lis.eq(0)).to.contain(fileName2)
       expect($lis.eq(1)).to.contain(fileName1)
       expect($lis.eq(2)).to.contain(fileName3)

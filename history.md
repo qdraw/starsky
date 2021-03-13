@@ -52,6 +52,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_  When use DeleteItem the child directories are not stored in the database (PR #314)
 - [x]   (Fixed) _Back-end_ Give removed items back when using `/api/rename` as status NotFoundSourceMissing (PR #314)
 - [x]   (Fixed) _Back-end_ Don't create duplicate database items when there is already a database item in the output folder, but not on disk (PR #314)
+- [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.3 2021-02-22)_ (PR #318)
+- [x]   (Security) _App_  Upgrade Electron to 12.x (PR #318)
+- [x]   (Fixed) _App_ Fix local remote toggle in settings not switching the file watcher (PR #318)
+- [x]   (Fixed) _Back-end_ DbUpdateConcurrencyException when renaming (PR #320 / Issue #312)
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
@@ -68,7 +72,6 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ performance update for metaPreflight, reduced a cache call. Helpful for large folders
 - [x]   (Security) _Frond-end_  Upgrade ClientApp CRA _(Create React App 4.0.2 2021-02-03)_
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.12 (using SDK 3.1.112)
-
 
 # version 0.4.4 - 2021-01-10
 - [x]   (Security) _App_ npm audit fix node_modules/ini 1.3.8
