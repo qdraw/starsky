@@ -38,7 +38,7 @@ const useFileList = (
   const [detailView, setDetailView] = useState(newDetailView());
   const [pageType, setPageType] = useState(PageType.Loading);
   const [parent, setParent] = useState("/");
-  var location = new UrlQuery().UrlQueryServerApi(locationSearch);
+  const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
   const fetchContent = async (
     locationLocal: string,
@@ -103,7 +103,7 @@ const useFileList = (
   };
 
   const fetchContentCache = async (
-    location: string,
+    locationScoped: string,
     abortController: AbortController
   ): Promise<void> => {
     var content = new FileListCache().CacheGet(locationSearch);
@@ -115,7 +115,7 @@ const useFileList = (
       setPageTypeHelper(content);
     } else {
       console.log(" -- Fetch Content");
-      await fetchContent(location, abortController);
+      await fetchContent(locationScoped, abortController);
     }
   };
 
