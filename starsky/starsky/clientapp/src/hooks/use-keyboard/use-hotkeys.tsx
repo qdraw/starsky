@@ -29,7 +29,9 @@ export interface IHotkeysKeyboardEvent {
  */
 function useHotKeys(
   predefined: IHotkeysKeyboardEvent = { key: "" },
-  callback: (event: KeyboardEvent) => void,
+  callback: (event: KeyboardEvent) => void = () => {
+    /* should do nothing, you should overwrite this */
+  },
   dependencies: any = []
 ) {
   useEffect(() => {

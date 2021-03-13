@@ -106,9 +106,13 @@ const executeTouchMove = (
 
   if (eventName) {
     debounce(
-      (eventName: string, touches: ICurrentTouches, theGesture: string) => {
-        callHandler(eventName, touches, handlers);
-        setGesture(theGesture);
+      (
+        eventNameScoped: string,
+        touchesScoped: ICurrentTouches,
+        theGestureScoped: string
+      ) => {
+        callHandler(eventNameScoped, touchesScoped, handlers);
+        setGesture(theGestureScoped);
       },
       100
     )(eventName, touches, theGesture);
