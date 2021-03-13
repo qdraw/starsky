@@ -23,6 +23,7 @@ interface IFlatListItem {
 const FlatListItem: React.FunctionComponent<IFlatListItem> = ({ item }) => {
   return (
     <div className="flatlistitem">
+      <div className={`icon imageformat-${item.imageFormat}`}></div>
       <div className="name">{item.fileName}</div>
       <div className="lastedited">
         {parseDateYear(item.lastEdited) !== 1 ? (

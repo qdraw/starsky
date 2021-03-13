@@ -28,18 +28,10 @@ export class URLPath {
           }
           break;
         case "details".toLowerCase():
-          if (key[1] === "true") {
-            urlObject.details = true;
-          } else {
-            urlObject.details = false;
-          }
+          urlObject.details = key[1] === "true";
           break;
         case "sidebar".toLowerCase():
-          if (key[1] === "true") {
-            urlObject.sidebar = true;
-          } else {
-            urlObject.sidebar = false;
-          }
+          urlObject.sidebar = key[1] === "true";
           break;
         case "f":
           urlObject.f = key[1];
@@ -61,11 +53,7 @@ export class URLPath {
           urlObject.sort = SortType[key[1] as keyof typeof SortType];
           break;
         case "list".toLowerCase():
-          if (key[1] === "true") {
-            urlObject.list = true;
-          } else {
-            urlObject.list = false;
-          }
+          urlObject.list = key[1] === "true";
           break;
         default:
           break;

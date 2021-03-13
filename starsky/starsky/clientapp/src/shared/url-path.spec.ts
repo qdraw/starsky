@@ -68,16 +68,28 @@ describe("url-path", () => {
       expect(test.p).toBeUndefined();
     });
     it("p 15", () => {
-      var test = urlPath.StringToIUrl("?p=15");
+      const test = urlPath.StringToIUrl("?p=15");
       expect(test.p).toBe(15);
     });
     it("select 2 items", () => {
-      var test = urlPath.StringToIUrl("?select=test,test2");
+      const test = urlPath.StringToIUrl("?select=test,test2");
       expect(test.select).toStrictEqual(["test", "test2"]);
     });
     it("select 1 item", () => {
-      var test = urlPath.StringToIUrl("?select=test");
+      const test = urlPath.StringToIUrl("?select=test");
       expect(test.select).toStrictEqual(["test"]);
+    });
+    it("list default", () => {
+      const test = urlPath.StringToIUrl("?list=undefined");
+      expect(test.list).toStrictEqual(false);
+    });
+    it("list false", () => {
+      const test = urlPath.StringToIUrl("?list=false");
+      expect(test.list).toStrictEqual(false);
+    });
+    it("list true", () => {
+      const test = urlPath.StringToIUrl("?list=true");
+      expect(test.list).toStrictEqual(true);
     });
   });
 
