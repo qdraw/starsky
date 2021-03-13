@@ -13,6 +13,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.database.Query
@@ -25,16 +26,19 @@ namespace starsky.foundation.database.Query
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IMemoryCache _cache;
         private readonly AppSettings _appSettings;
+        private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
             IMemoryCache memoryCache = null, 
             AppSettings appSettings = null,
-            IServiceScopeFactory scopeFactory = null)
+            IServiceScopeFactory scopeFactory = null, 
+            IWebLogger logger = null)
         {
 	        _context = context;
             _cache = memoryCache;
             _appSettings = appSettings;
             _scopeFactory = scopeFactory;
+            _logger = logger;
         }
 
 		/// <summary>
@@ -55,9 +59,9 @@ namespace starsky.foundation.database.Query
             {
 	            return LocalQuery(_context);
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException e)
             {
-	            if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+	            _logger?.LogInformation("catch-ed ObjectDisposedException", e);
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
@@ -79,9 +83,9 @@ namespace starsky.foundation.database.Query
 			{
 				return await LocalQuery(_context);
 			}
-			catch (ObjectDisposedException)
+			catch (ObjectDisposedException e)
 			{
-				if ( _appSettings != null && _appSettings.Verbose )	 Console.WriteLine("catch ObjectDisposedException");
+				_logger?.LogInformation("catch-ed ObjectDisposedException", e);
 				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 		}
@@ -255,7 +259,7 @@ namespace starsky.foundation.database.Query
 	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 	        // https://go.microsoft.com/fwlink/?linkid=2097913
 	        await Task.Delay(10);
-	        if ( _appSettings.Verbose ) Console.WriteLine($"Retry Exception {e}\n");
+	        _logger?.LogInformation("Retry Exception", e);
 	        var context = new InjectServiceScope(_scopeFactory).Context();
 	        context.Attach(updateStatusContent).State = EntityState.Modified;
 	        await context.SaveChangesAsync();
@@ -295,12 +299,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        foreach (var entry in concurrencyException.Entries)
-		        {
-			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
-				        entry.GetDatabaseValues(), entry.Metadata.Name, 
-				        entry.OriginalValues.SetValues);
-		        }
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 	        }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
@@ -340,9 +339,24 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
-
+	        catch (DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+	        }
+	        
 	        CacheUpdateItem(updateStatusContentList);
 	        return updateStatusContentList;
+        }
+
+        internal void SolveConcurrencyExceptionLoop(
+	        IReadOnlyList<EntityEntry> concurrencyExceptionEntries)
+        {
+	        foreach (var entry in concurrencyExceptionEntries)
+	        {
+		        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
+			        entry.GetDatabaseValues(), entry.Metadata.Name, 
+			        entry.OriginalValues.SetValues);
+	        }
         }
         
         internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
@@ -543,8 +557,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( DbUpdateConcurrencyException e)
 	        {
-		        Console.WriteLine("AddItem catch-ed DbUpdateConcurrencyException");
-		        Console.WriteLine(e);
+		        _logger?.LogInformation("AddItem catch-ed DbUpdateConcurrencyException (ignored)", e);
 	        }
             
             AddCacheItem(updateStatusContent);
@@ -667,25 +680,16 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException disposedException)
 	        {
-		        Console.WriteLine("catch-ed disposedException:");
-		        Console.WriteLine(disposedException);
-		        
+		        _logger?.LogInformation("catch-ed disposedException:",disposedException);
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalQuery(context);
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        Console.WriteLine("concurrencyException catch-ed:");
-		        Console.WriteLine(concurrencyException);
-
-		        foreach (var entry in concurrencyException.Entries)
-		        {
-			        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
-				        entry.GetDatabaseValues(), entry.Metadata.Name, 
-				        entry.OriginalValues.SetValues);
-		        }
+		        _logger?.LogInformation("catch-ed disposedException:",concurrencyException);
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
 	        }
-
+	        
 	        // remove parent directory cache
 			RemoveCacheItem(updateStatusContent);
 

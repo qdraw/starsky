@@ -3,19 +3,44 @@ import configFile from './config.json'
 const config = configFile[envFolder][envName]
 
 describe('Warmup', () => {
-  it('Warmup before starting', {
-    retries: {
-      runMode: 10,
-      openMode: 10
-    }
-  }, () => {
+  it('Warmup before starting', () => {
     if (!config.isEnabled) return false
-    cy.request(config.url, {
+    retry()
+  })
+
+  function retry (count = 0) {
+    cy.request({
       failOnStatusCode: false,
-      retryOnNetworkFailure: true,
-      log: true
+      url: config.url
+    }).then((response) => {
+      if (response.status === 200 || response.status === 401) {
+        return
+      }
+      count++
+      if (count < 15) {
+        cy.wait(400)
+        retry(count)
+        return
+      }
+      throw new Error(response.body)
+    })
+  }
+
+  it('ignore loca.lt warning', () => {
+    if (!config.isEnabled) return false
+
+    cy.request({
+      failOnStatusCode: false,
+      url: config.url
     }).then((status) => {
-      console.log(status)
+      if (status.status !== 401) {
+        return
+      }
+      cy.visit({
+        failOnStatusCode: false,
+        url: config.url
+      })
+      cy.get('.btn-primary').click()
     })
   })
 })

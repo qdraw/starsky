@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IArchive, newIArchive } from "../interfaces/IArchive";
 import { PageType } from "../interfaces/IDetailView";
 import { CastToInterface } from "../shared/cast-to-interface";
@@ -12,6 +12,37 @@ export interface ISearchList {
     abortController: AbortController
   ) => Promise<void>;
 }
+
+/**
+ * Fail on 401, 404 and other errors
+ * @param res response
+ * @param setPageType pagetype
+ * @param setArchive when 401
+ * @returns true when fail, false when success
+ */
+const setErrorPageType = (
+  res: Response,
+  setPageType: Dispatch<SetStateAction<PageType>>,
+  setArchive: Dispatch<SetStateAction<IArchive>>
+): boolean => {
+  if (res.status === 404) {
+    setPageType(PageType.NotFound);
+    return true;
+  } else if (res.status === 401) {
+    setArchive({
+      ...newIArchive(),
+      pageType: PageType.Unauthorized,
+      fileIndexItems: [],
+      colorClassUsage: []
+    });
+    setPageType(PageType.Unauthorized);
+    return true;
+  } else if (res.status >= 400 && res.status <= 550) {
+    setPageType(PageType.ApplicationException);
+    return true;
+  }
+  return false;
+};
 
 const useSearchList = (
   query: string | undefined,
@@ -28,11 +59,11 @@ const useSearchList = (
     : undefined;
 
   const fetchContent = async (
-    location: string | undefined,
+    locationScoped: string | undefined,
     abortController: AbortController
   ): Promise<void> => {
     try {
-      if (!location) {
+      if (!locationScoped) {
         setArchive({
           ...newIArchive(),
           pageType: PageType.Search,
@@ -47,26 +78,14 @@ const useSearchList = (
       // force start with a loading icon
       if (resetPageTypeBeforeLoading) setPageType(PageType.Loading);
 
-      const res: Response = await fetch(location, {
+      const res: Response = await fetch(locationScoped, {
         signal: abortController.signal,
         credentials: "include",
         method: "GET"
       });
 
-      if (res.status === 404) {
-        setPageType(PageType.NotFound);
-        return;
-      } else if (res.status === 401) {
-        setArchive({
-          ...newIArchive(),
-          pageType: PageType.Unauthorized,
-          fileIndexItems: [],
-          colorClassUsage: []
-        });
-        setPageType(PageType.Unauthorized);
-        return;
-      } else if (res.status >= 400 && res.status <= 550) {
-        setPageType(PageType.ApplicationException);
+      // 401, 404 and other errors
+      if (setErrorPageType(res, setPageType, setArchive)) {
         return;
       }
 

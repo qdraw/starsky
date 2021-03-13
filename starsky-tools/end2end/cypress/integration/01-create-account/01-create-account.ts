@@ -38,9 +38,9 @@ describe('Create Account', () => {
     })
 
     cy.get(flow.form).within(() => {
-      cy.get(flow.fields.name).type('demo@qdraw.nl')
-      cy.get(flow.fields.password).type('demo@qdraw.nl')
-      cy.get(flow.fields.confirmPassword).type('demo@qdraw.nl')
+      cy.get(flow.fields.name).type(Cypress.env('AUTH_USER'))
+      cy.get(flow.fields.password).type(Cypress.env('AUTH_PASS'))
+      cy.get(flow.fields.confirmPassword).type(Cypress.env('AUTH_PASS'))
       cy.get(flow.fields.submit)
         .click()
         .url()

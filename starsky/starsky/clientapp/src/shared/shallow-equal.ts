@@ -34,9 +34,7 @@ const shallowEqual = (
   var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
 
   // Test for A's keys different from B.
-  for (var idx = 0; idx < keysA.length; idx++) {
-    var key = keysA[idx];
-
+  for (const key of keysA) {
     if (!bHasOwnProperty(key)) {
       return false;
     }

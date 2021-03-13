@@ -176,7 +176,6 @@ namespace starskytest.Services
 		 [TestMethod]
 		 public void ExifRead_GetImageWidthHeight_returnNothing()
 		 {
-		     var iStorage = new FakeIStorage();
 		     var directory = new List<Directory> {BuildDirectory(new List<object>())};
 		     var returnNothing = new ReadMetaExif(null).GetImageWidthHeight(directory,true);
 		     Assert.AreEqual(returnNothing,0);
