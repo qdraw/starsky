@@ -684,7 +684,7 @@ namespace starsky.foundation.readmeta.Services
             
         public int GetImageWidthHeight(List<Directory> allExifItems, bool isWidth)
         {
-            // The size lives normaly in the first 5 headers
+            // The size lives normally in the first 5 headers
             // > "Exif IFD0" .dng
             // [Exif SubIFD] > arw; on header place 17&18
             var directoryNames = new[] {"JPEG", "PNG-IHDR", "BMP Header", "GIF Header", 
@@ -699,27 +699,34 @@ namespace starsky.foundation.readmeta.Services
 
                 var maxCount = GetImageWidthHeightMaxCount(dirName, allExifItems);
                 
-                for (int i = 0; i < maxCount; i++)
+                for (var i = 0; i < maxCount; i++)
                 {
 	                if(i >= allExifItems.Count) continue;
                     var exifItem = allExifItems[i];
-
-                    var ratingCountsJpeg =
-                        exifItem.Tags.Count(p => p.DirectoryName == dirName 
-                                                 && p.Name.Contains(typeName) && p.Description != "0");
-                    if (ratingCountsJpeg >= 1)
-                    {
-                        var widthTag = exifItem.Tags
-                            .FirstOrDefault(p => p.DirectoryName == dirName 
-                                                 && p.Name.Contains(typeName) && p.Description != "0")
-                            ?.Description;
-                        widthTag = widthTag?.Replace(" pixels", string.Empty);
-                        int.TryParse(widthTag, out var widthInt);
-                        return widthInt >= 1 ? widthInt : 0; // (widthInt >= 1) return widthInt)
-                    }
+                    var value = GetImageSizeInsideLoop(exifItem, dirName, typeName);
+                    if ( value != 0 ) return value;
                 }
             }
             return 0;
+        }
+
+        private int GetImageSizeInsideLoop( Directory exifItem, string dirName, string typeName)
+        {
+	        
+	        var ratingCountsJpeg =
+		        exifItem.Tags.Count(p => p.DirectoryName == dirName 
+		                                 && p.Name.Contains(typeName) && p.Description != "0");
+	        if (ratingCountsJpeg >= 1)
+	        {
+		        var widthTag = exifItem.Tags
+			        .FirstOrDefault(p => p.DirectoryName == dirName 
+			                             && p.Name.Contains(typeName) && p.Description != "0")
+			        ?.Description;
+		        widthTag = widthTag?.Replace(" pixels", string.Empty);
+		        int.TryParse(widthTag, out var widthInt);
+		        return widthInt >= 1 ? widthInt : 0; // (widthInt >= 1) return widthInt)
+	        }
+	        return 0;
         }
         
 

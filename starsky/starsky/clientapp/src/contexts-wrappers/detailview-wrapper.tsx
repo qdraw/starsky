@@ -79,8 +79,7 @@ function updateDetailViewFromEvent(
   // useLocation, state or detailView is here always the default value
   var locationPath = new URLPath().StringToIUrl(window.location.search).f;
 
-  for (let index = 0; index < pushMessages.length; index++) {
-    const pushMessage = pushMessages[index];
+  for (const pushMessage of pushMessages) {
     // only update the state of the current view
     if (locationPath !== pushMessage.filePath) {
       // we choose to remove everything to avoid display errors

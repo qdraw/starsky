@@ -30,20 +30,23 @@ export class UpdateChange {
     this.dispatch = dispatch;
     this.history = history;
     this.state = state;
-
+    // bind this to object
     this.Update = this.Update.bind(this);
   }
 
-  // value: string, name: string
+  /**
+   * Send update request
+   * @param items - tuple with "value: string, name: string"
+   */
   public Update(items: [string, string][]) {
     const updateObject: any = { f: this.fileIndexItem.filePath };
 
     for (let [name, value] of items) {
       if (!name) continue;
 
-      value = value.replace(AsciiNull(), "");
+      let replacedValue = value.replace(AsciiNull(), "");
       // allow empty requests
-      if (!value) value = AsciiNull();
+      if (!replacedValue) replacedValue = AsciiNull();
 
       // compare
       const fileIndexObject: any = this.fileIndexItem;
@@ -51,17 +54,15 @@ export class UpdateChange {
       if (!fileIndexObject[name] === undefined) continue; //to update empty start to first fill
 
       const currentString: string = fileIndexObject[name];
-      if (value === currentString) continue;
+      if (replacedValue === currentString) continue;
 
-      updateObject[name] = value.trim();
+      updateObject[name] = replacedValue.trim();
     }
 
     const bodyParams = new URLPath()
       .ObjectToSearchParams(updateObject)
       .toString()
       .replace(/%00/gi, AsciiNull());
-
-    console.log(bodyParams);
 
     if (bodyParams === "") return;
 
