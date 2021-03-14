@@ -9,6 +9,8 @@ interface IGetAllTransferObject {
   item: IDetailView | IArchive;
 }
 
+type NullableIArchiveOrDetailView = IArchive | IDetailView | null;
+
 export class FileListCache {
   private cachePrefix = "starsky;";
 
@@ -117,7 +119,7 @@ export class FileListCache {
    * GETTER of cache
    * @param locationSearch where to look for
    */
-  public CacheGet(locationSearch: string): IArchive | IDetailView | null {
+  public CacheGet(locationSearch: string): NullableIArchiveOrDetailView {
     var urlObject = new URLPath().StringToIUrl(locationSearch);
     return this.CacheGetObject(urlObject);
   }
@@ -126,7 +128,7 @@ export class FileListCache {
    * GETTER of cache
    * @param urlObject where to look for
    */
-  public CacheGetObject(urlObject: IUrl): IArchive | IDetailView | null {
+  public CacheGetObject(urlObject: IUrl): NullableIArchiveOrDetailView {
     if (localStorage.getItem("clientCache") === "false") return null;
     urlObject = this.SetDefaultUrlObjectValues(urlObject);
 
@@ -146,8 +148,7 @@ export class FileListCache {
    */
   private GetAll(): IGetAllTransferObject[] {
     var list = [];
-    for (let index = 0; index < Object.keys(sessionStorage).length; index++) {
-      const itemName = Object.keys(sessionStorage)[index];
+    for (const itemName of Object.keys(sessionStorage)) {
       if (!itemName || !itemName.startsWith(this.cachePrefix)) continue;
       var item = this.ParseJson(sessionStorage.getItem(itemName));
       if (!item || !item.dateCache) continue;
