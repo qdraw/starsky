@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
   IFileIndexItem,
@@ -73,14 +74,20 @@ export function PostSingleFormData(
 
   formData.append("file", inputFilesList[index]);
 
-  FetchPost(endpoint, formData, "post", { to: folderPath }).then((response) => {
-    if (!response.data) {
-      outputUploadFilesList.push({
-        filePath: inputFilesList[index].name,
-        fileName: inputFilesList[index].name,
-        status: IExifStatus.ServerError
-      } as IFileIndexItem);
-
+  FetchPost(endpoint, formData, "post", { to: folderPath })
+    .then((response) => {
+      ProcessResponse(
+        response,
+        endpoint,
+        folderPath,
+        inputFilesList,
+        index,
+        outputUploadFilesList,
+        callBackWhenReady,
+        setNotificationStatus
+      );
+    })
+    .catch(() => {
       next(
         endpoint,
         folderPath,
@@ -90,38 +97,25 @@ export function PostSingleFormData(
         callBackWhenReady,
         setNotificationStatus
       );
-      return;
-    }
-
-    Array.from(response.data).forEach((dataItem: any) => {
-      if (!dataItem) {
-        outputUploadFilesList.push({
-          filePath: inputFilesList[index].name,
-          fileName: inputFilesList[index].name,
-          status: IExifStatus.ServerError
-        } as IFileIndexItem);
-      } else if (
-        dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
-        outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
-      } else if (
-        !dataItem.fileIndexItem &&
-        (dataItem.status as IExifStatus) !== IExifStatus.Ok
-      ) {
-        // when `/import` already existing item
-        outputUploadFilesList.push({
-          filePath: dataItem.filePath,
-          fileName: inputFilesList[index].name,
-          isDirectory: false,
-          fileHash: dataItem.fileHash,
-          status: dataItem.status
-        } as IFileIndexItem);
-      } else {
-        dataItem.fileIndexItem.lastEdited = new Date().toISOString();
-        outputUploadFilesList.push(dataItem.fileIndexItem);
-      }
     });
+}
+
+function ProcessResponse(
+  response: IConnectionDefault,
+  endpoint: string,
+  folderPath: string | undefined,
+  inputFilesList: File[],
+  index: number,
+  outputUploadFilesList: IFileIndexItem[],
+  callBackWhenReady: (result: IFileIndexItem[]) => void,
+  setNotificationStatus: React.Dispatch<React.SetStateAction<string>>
+) {
+  if (!response.data) {
+    outputUploadFilesList.push({
+      filePath: inputFilesList[index].name,
+      fileName: inputFilesList[index].name,
+      status: IExifStatus.ServerError
+    } as IFileIndexItem);
 
     next(
       endpoint,
@@ -132,7 +126,48 @@ export function PostSingleFormData(
       callBackWhenReady,
       setNotificationStatus
     );
+    return;
+  }
+
+  Array.from(response.data).forEach((dataItem: any) => {
+    if (!dataItem) {
+      outputUploadFilesList.push({
+        filePath: inputFilesList[index].name,
+        fileName: inputFilesList[index].name,
+        status: IExifStatus.ServerError
+      } as IFileIndexItem);
+    } else if (
+      dataItem.fileIndexItem &&
+      (dataItem.status as IExifStatus) !== IExifStatus.Ok
+    ) {
+      outputUploadFilesList.push(CastFileIndexItem(dataItem.fileIndexItem));
+    } else if (
+      !dataItem.fileIndexItem &&
+      (dataItem.status as IExifStatus) !== IExifStatus.Ok
+    ) {
+      // when `/import` already existing item
+      outputUploadFilesList.push({
+        filePath: dataItem.filePath,
+        fileName: inputFilesList[index].name,
+        isDirectory: false,
+        fileHash: dataItem.fileHash,
+        status: dataItem.status
+      } as IFileIndexItem);
+    } else {
+      dataItem.fileIndexItem.lastEdited = new Date().toISOString();
+      outputUploadFilesList.push(dataItem.fileIndexItem);
+    }
   });
+
+  next(
+    endpoint,
+    folderPath,
+    inputFilesList,
+    index,
+    outputUploadFilesList,
+    callBackWhenReady,
+    setNotificationStatus
+  );
 }
 
 function next(
