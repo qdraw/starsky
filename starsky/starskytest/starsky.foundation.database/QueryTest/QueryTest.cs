@@ -13,6 +13,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -633,8 +634,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        var serviceScope = CreateNewScope();
 	        var scope = serviceScope.CreateScope();
 	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-	        var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, 
-		        new AppSettings{Verbose = true}, serviceScope);
+	        var query = new Query(dbContext,_memoryCache, 
+		        new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger());
 	        var item = await query.AddItemAsync(new FileIndexItem("/GetObjectByFilePathAsync/test.jpg")
 	        {
 		        Tags = "hi"
