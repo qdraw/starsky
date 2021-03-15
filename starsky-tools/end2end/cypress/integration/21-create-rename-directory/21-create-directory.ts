@@ -58,9 +58,10 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=mkdir]').click()
 
+    cy.intercept('/starsky/api/sync/mkdir').as('mkdir')
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
     cy.get('.btn.btn--default').click()
-    cy.wait(1500)
+    cy.wait('@mkdir')
 
     cy.visit(config.url)
     cy.get('[data-filepath="/starsky-end2end-test/z_test_auto_created"]').should('exist')
