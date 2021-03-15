@@ -96,6 +96,8 @@ Task("TestEnv")
 
         // DotNet localTools need to be part of the Env Path
         var pathEnv = Environment.GetEnvironmentVariable("PATH").Contains($".dotnet{System.IO.Path.DirectorySeparatorChar}tools");
+        Information("PATH - " + Environment.GetEnvironmentVariable("PATH"));
+
         if(!pathEnv) {
           throw new Exception($".dotnet{System.IO.Path.DirectorySeparatorChar}tools is not part of the path");
         }
