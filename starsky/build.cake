@@ -94,12 +94,32 @@ Task("TestEnv")
             Information($"{systemTempPath} exist");
         }
 
-        // DotNet localTools need to be part of the Env Path
-        var pathEnv = Environment.GetEnvironmentVariable("PATH").Contains($".dotnet{System.IO.Path.DirectorySeparatorChar}tools");
-        Information("PATH - " + Environment.GetEnvironmentVariable("PATH"));
+        /*  check if tools are installed */
+        IEnumerable<string> redirectedStandardOutput;
+        IEnumerable<string> redirectedErrorOutput;
+        var exitCodeWithArgument =
+            StartProcess(
+                "dotnet",
+                new ProcessSettings {
+                  Arguments = new ProcessArgumentBuilder()
+                      .Append($"tool")
+                      .Append($"list")
+                      .Append($"--local"),
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                },
+                out redirectedStandardOutput,
+                out redirectedErrorOutput
+            );
 
-        if(!pathEnv) {
-          throw new Exception($".dotnet{System.IO.Path.DirectorySeparatorChar}tools is not part of the path");
+        // Output process output.
+        foreach(var stdOutput in redirectedStandardOutput.Skip(2))
+        {
+            if(stdOutput.StartsWith("cake.tool") || stdOutput.StartsWith("dotnet-reportgenerator-globaltool") ||
+              stdOutput.StartsWith("dotnet-sonarscanner")) {
+                continue;
+            }
+            throw new Exception($"{stdOutput} -> should be one the values");
         }
     });
 
