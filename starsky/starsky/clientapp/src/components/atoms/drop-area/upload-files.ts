@@ -3,7 +3,7 @@ import {
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import { MoreMenuEventCloseConst } from "../more-menu/more-menu";
-import { PostSingleFormData } from "./drop-area";
+import { PostSingleFormData } from "./post-single-form-data";
 
 export class UploadFiles {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
