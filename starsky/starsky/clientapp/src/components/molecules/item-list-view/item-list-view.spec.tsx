@@ -1,12 +1,13 @@
 import { globalHistory } from "@reach/router";
 import { mount, shallow } from "enzyme";
-import React from "react";
 import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
 } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
+import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
+import * as ListImageChildItem from "../list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
 import * as ShiftSelectionHelper from "./shift-selection-helper";
 
@@ -37,6 +38,21 @@ describe("ItemListView", () => {
       var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
       expect(component.exists(query)).toBeTruthy();
+      component.unmount();
+    });
+
+    it("should return FlatListItem when iconList is false", () => {
+      const flatListItemSpy = jest
+        .spyOn(FlatListItem, "default")
+        .mockImplementationOnce(() => <></>);
+      var component = mount(
+        <ItemListView
+          iconList={false}
+          fileIndexItems={exampleData}
+          colorClassUsage={[]}
+        />
+      );
+      expect(flatListItemSpy).toBeCalled();
       component.unmount();
     });
 
@@ -102,6 +118,7 @@ describe("ItemListView", () => {
     });
 
     it("when clicking shift in selection mode", () => {
+      const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
       globalHistory.navigate("/?select=");
       var shiftSelectionHelperSpy = jest
         .spyOn(ShiftSelectionHelper, "ShiftSelectionHelper")
@@ -130,6 +147,24 @@ describe("ItemListView", () => {
         "/test.jpg",
         exampleData
       );
+      expect(listImageChildItemSpy).toBeCalled();
+    });
+
+    it("should return ListImageChildItem when iconList is true", () => {
+      // should be last in list
+      const listImageChildItemSpy = jest
+        .spyOn(ListImageChildItem, "default")
+        .mockImplementationOnce(() => <>t</>);
+      var component = mount(
+        <ItemListView
+          iconList={true}
+          fileIndexItems={exampleData}
+          colorClassUsage={[]}
+        />
+      );
+      expect(listImageChildItemSpy).toBeCalled();
+      component.unmount();
+      jest.spyOn(ListImageChildItem, "default").mockReset();
     });
   });
 });
