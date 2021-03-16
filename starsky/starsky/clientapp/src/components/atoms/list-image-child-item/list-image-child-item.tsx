@@ -1,6 +1,6 @@
 import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
-import ListImage from "../../atoms/list-image/list-image";
+import ListImage from "../list-image/list-image";
 
 const ListImageChildItem: React.FunctionComponent<IFileIndexItem> = (item) => {
   return (

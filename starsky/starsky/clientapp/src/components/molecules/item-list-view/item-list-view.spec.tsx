@@ -7,7 +7,7 @@ import {
 } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
-import * as ListImageChildItem from "../list-image-child-item/list-image-child-item";
+import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ItemListView from "./item-list-view";
 import * as ShiftSelectionHelper from "./shift-selection-helper";
 

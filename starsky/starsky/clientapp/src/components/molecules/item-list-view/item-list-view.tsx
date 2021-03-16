@@ -7,7 +7,7 @@ import { INavigateState } from "../../../interfaces/INavigateState";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
-import ListImageChildItem from "../list-image-child-item/list-image-child-item";
+import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 
