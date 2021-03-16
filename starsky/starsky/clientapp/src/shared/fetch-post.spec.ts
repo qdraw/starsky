@@ -68,4 +68,24 @@ describe("fetch-post", () => {
     });
     expect(result.data).toBe("response");
   });
+
+  it("bad network connection", async () => {
+    var spy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+      throw new Error("bad connection");
+    });
+    var result = await FetchPost("/test", "");
+
+    expect(spy).toBeCalledWith("/test", {
+      body: "",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/x-www-form-urlencoded",
+        "X-XSRF-TOKEN": "X-XSRF-TOKEN"
+      },
+      method: "post"
+    });
+    expect(result.data).toStrictEqual(null);
+    expect(result.statusCode).toStrictEqual(999);
+  });
 });
