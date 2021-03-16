@@ -37,7 +37,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageCloseDialog = language.text("Sluiten", "Close");
+  const MessageCloseDialog = language.text("Terug naar map", "Parent folder");
   const MessageCloseDetailScreenDialog = language.text(
     "Sluit detailscherm",
     "Close detail screen"
@@ -363,7 +363,6 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
                 // event.button = is only trigged in safari
                 if (event.metaKey || event.ctrlKey || event.button === 1)
                   return;
-
                 setIsLoading(true);
               }}
               to={new UrlQuery().updateFilePathHash(
