@@ -1,0 +1,133 @@
+.folder-flat {
+  padding: 0px !important;
+  border-top: 1px solid #eceff1;
+  border-bottom: 1px solid #eceff1;
+  margin-top: 15px;
+}
+.list-flat-box > button {
+  display: inline-block;
+  width: 100%;
+  background-color: transparent;
+}
+
+.flatlistitem {
+  width: 100%;
+}
+
+.folder-flat .flatlistitem {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+@media screen and (max-width: 600px) {
+  .folder-flat .flatlistitem {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+.list-flat-box--select .box-content--selected > div {
+  background-color: #1e88e5;
+  color: white;
+}
+
+.list-flat-box--select .flatlistitem {
+  cursor: pointer;
+}
+.list-flat-box--select .flatlistitem::before {
+  mask-image: url("../images/baseline-add_circle_outline-24px.svg");
+  mask-size: cover;
+  background-color: black;
+  height: 14px;
+  width: 14px;
+  margin-right: 5px;
+  content: "";
+  display: inline-block;
+}
+
+.list-flat-box--select .box-content--selected .flatlistitem::before {
+  background-color: white;
+}
+
+.flatlistitem .icon {
+  background-image: url("../images/baseline-file-24px.svg");
+  background-size: cover;
+  height: 14px;
+  width: 14px;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.flatlistitem .icon.imageformat-jpg {
+  background-image: url("../images/baseline-file-jpg-24px.svg");
+}
+.flatlistitem .icon.imageformat-png {
+  background-image: url("../images/baseline-file-png-24px.svg");
+}
+.flatlistitem .icon.imageformat-tiff {
+  background-image: url("../images/baseline-file-raw-24px.svg");
+}
+.flatlistitem .icon.imageformat-mp4 {
+  background-image: url("../images/baseline-file-mp4-24px.svg");
+}
+.flatlistitem .icon.imageformat-gpx {
+  background-image: url("../images/baseline-file-gpx-24px.svg");
+}
+
+/* gif has no icon yet */
+.flatlistitem .icon.imageformat-bmp {
+  background-image: url("../images/baseline-file-bmp-24px.svg");
+}
+.isDirectory-true .flatlistitem .icon.imageformat-unknown {
+  background-image: url("../images/baseline-folder-24px.svg");
+}
+
+.list-flat-box:nth-child(even) {
+  background-color: #eceff1;
+}
+
+.flatlistitem .name,
+.flatlistitem .lastedited,
+.flatlistitem .size,
+.flatlistitem .imageformat {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis; /* ...*/
+  vertical-align: middle;
+  padding-top: 12px;
+  line-height: 1.2;
+  padding-bottom: 10px;
+  min-height: 40px;
+}
+
+.flatlistitem .name {
+  width: calc(100% - 335px);
+}
+
+.list-flat-box--select .flatlistitem .name {
+  width: calc(100% - 355px);
+}
+
+.flatlistitem .lastedited {
+  width: 200px;
+}
+.flatlistitem .size {
+  width: 80px;
+}
+.flatlistitem .imageformat {
+  width: 35px;
+}
+
+@media screen and (max-width: 600px) {
+  .flatlistitem .name {
+    width: calc(100% - 220px);
+    word-break: break-all;
+    padding-right: 5px;
+  }
+  /* select mode on: */
+  .list-flat-box--select .flatlistitem .name {
+    width: calc(100% - 240px);
+  }
+  .flatlistitem .lastedited {
+    width: 80px;
+  }
+}

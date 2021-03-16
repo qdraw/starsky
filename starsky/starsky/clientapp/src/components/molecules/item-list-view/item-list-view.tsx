@@ -6,13 +6,16 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
-import ListImageBox from "../list-image-box/list-image-box";
+import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
+import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
+import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
 import { ShiftSelectionHelper } from "./shift-selection-helper";
 
 interface ItemListProps {
   fileIndexItems: Array<IFileIndexItem>;
   colorClassUsage: Array<number>;
   pageType?: PageType;
+  iconList?: boolean;
 }
 /**
  * A list with links to the items
@@ -54,11 +57,20 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
     }, 100);
   }, [history, history.location.state]);
 
+  function onSelectionCallback(filePath: string) {
+    ShiftSelectionHelper(
+      history,
+      new URLPath().getSelect(history.location.search),
+      filePath,
+      items
+    );
+  }
+
   let items = props.fileIndexItems;
   if (!items) return <div className="folder">no content</div>;
 
   return (
-    <div className="folder" ref={folderRef}>
+    <div className={props.iconList ? "folder" : "folder-flat"} ref={folderRef}>
       {props.pageType !== PageType.Loading ? (
         items.length === 0 ? (
           props.colorClassUsage.length >= 1 ? (
@@ -71,18 +83,18 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
         ) : null
       ) : null}
       {items.map((item) => (
-        <ListImageBox
+        <ListImageViewSelectContainer
           item={item}
+          className={props.iconList ? "list-image-box" : "list-flat-box"}
           key={item.fileName + item.lastEdited + item.colorClass}
-          onSelectionCallback={(f) =>
-            ShiftSelectionHelper(
-              history,
-              new URLPath().getSelect(history.location.search),
-              f,
-              items
-            )
-          }
-        />
+          onSelectionCallback={onSelectionCallback}
+        >
+          {props.iconList ? (
+            <ListImageChildItem {...item} />
+          ) : (
+            <FlatListItem item={item} />
+          )}
+        </ListImageViewSelectContainer>
       ))}
     </div>
   );

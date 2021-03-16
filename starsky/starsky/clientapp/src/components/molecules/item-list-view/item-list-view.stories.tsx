@@ -23,6 +23,7 @@ storiesOf("components/molecules/item-list-view", module)
     globalHistory.navigate("/");
     return (
       <ItemListView
+        iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
         colorClassUsage={[]}
       />
@@ -32,6 +33,7 @@ storiesOf("components/molecules/item-list-view", module)
     globalHistory.navigate("/");
     return (
       <ItemListView
+        iconList={true}
         fileIndexItems={exampleData8Selected}
         colorClassUsage={[]}
       />
@@ -41,6 +43,7 @@ storiesOf("components/molecules/item-list-view", module)
     globalHistory.navigate("/?select=");
     return (
       <ItemListView
+        iconList={true}
         fileIndexItems={exampleData8Selected}
         colorClassUsage={[]}
       />

@@ -78,6 +78,7 @@ function Search(archive: IArchiveProps) {
           <SearchPagination {...archive} />
           {archive.collectionsCount >= 1 ? (
             <ItemListView
+              iconList={true}
               {...archive}
               colorClassUsage={archive.colorClassUsage}
             >
