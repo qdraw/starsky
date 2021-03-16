@@ -104,6 +104,7 @@ function ProcessResponse(
     return;
   }
 
+  // Success
   Array.from(response.data).forEach((dataItem: any) => {
     if (!dataItem) {
       outputUploadFilesList.push({
