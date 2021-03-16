@@ -358,7 +358,12 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
               }
-              onClick={() => {
+              onClick={(event) => {
+                // Command (mac) or ctrl click means open new window
+                // event.button = is only trigged in safari
+                if (event.metaKey || event.ctrlKey || event.button === 1)
+                  return;
+
                 setIsLoading(true);
               }}
               to={new UrlQuery().updateFilePathHash(
