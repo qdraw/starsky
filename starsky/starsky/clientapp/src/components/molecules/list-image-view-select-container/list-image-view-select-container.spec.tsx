@@ -108,5 +108,27 @@ describe("ListImageTest", () => {
       // the update is done in the callback, not here
       expect(globalHistory.location.search).toBe("?select=");
     });
+
+    it("shift click it should not submit callback when input is undefined", () => {
+      var fileIndexItem = {
+        fileName: "test",
+        filePath: "/test.jpg",
+        status: IExifStatus.Ok
+      } as IFileIndexItem;
+
+      var component = mount(
+        <ListImageNormalSelectContainer
+          item={fileIndexItem}
+          onSelectionCallback={undefined as any}
+        >
+          t
+        </ListImageNormalSelectContainer>
+      );
+      component.find("button").simulate("click", {
+        shiftKey: true
+      });
+      // should normal toggle instead of shift action
+      expect(globalHistory.location.search).toBe("?select=");
+    });
   });
 });
