@@ -7,7 +7,8 @@ import {
 } from "../../../interfaces/IConnectionDefault";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
-import DropArea, { PostSingleFormData } from "./drop-area";
+import DropArea from "./drop-area";
+import { PostSingleFormData } from "./post-single-form-data";
 
 describe("DropArea", () => {
   it("renders", () => {

@@ -28,7 +28,15 @@ const FetchPost = async (
       "application/x-www-form-urlencoded";
   }
 
-  const res = await fetch(url, settings);
+  let res: Response;
+  try {
+    res = await fetch(url, settings);
+  } catch (err) {
+    return {
+      statusCode: 999,
+      data: null
+    };
+  }
 
   try {
     const data = await res.json();

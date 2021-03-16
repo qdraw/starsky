@@ -56,6 +56,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _App_  Upgrade Electron to 12.x (PR #318)
 - [x]   (Fixed) _App_ Fix local remote toggle in settings not switching the file watcher (PR #318)
 - [x]   (Fixed) _Back-end_ DbUpdateConcurrencyException when renaming (PR #320 / Issue #312)
+- [x]   (Fixed) _Front-end_ Connection error gives now ServerError instead of failing silence (PR #323 / Issue #322 )
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
