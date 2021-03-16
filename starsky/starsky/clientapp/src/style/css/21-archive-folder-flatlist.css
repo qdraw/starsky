@@ -26,7 +26,7 @@
 }
 
 .list-flat-box--select .box-content--selected > div {
-  background-color: #1565c0;
+  background-color: #1e88e5;
   color: white;
 }
 
@@ -72,7 +72,12 @@
 .flatlistitem .icon.imageformat-gpx {
   background-image: url("../images/baseline-file-gpx-24px.svg");
 }
-.flatlistitem .isDirectory-true .icon {
+
+/* gif has no icon yet */
+.flatlistitem .icon.imageformat-bmp {
+  background-image: url("../images/baseline-file-bmp-24px.svg");
+}
+.isDirectory-true .flatlistitem .icon.imageformat-unknown {
   background-image: url("../images/baseline-folder-24px.svg");
 }
 
