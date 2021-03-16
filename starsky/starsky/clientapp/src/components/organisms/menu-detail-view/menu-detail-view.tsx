@@ -37,7 +37,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
-  const MessageCloseDialog = language.text("Sluiten", "Close");
+  // Not close anymore because its looks like closing a window
+  const MessageCloseDialog = language.text("Terug naar map", "Parent folder");
   const MessageCloseDetailScreenDialog = language.text(
     "Sluit detailscherm",
     "Close detail screen"
@@ -358,7 +359,11 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
               }
-              onClick={() => {
+              onClick={(event) => {
+                // Command (mac) or ctrl click means open new window
+                // event.button = is only trigged in safari
+                if (event.metaKey || event.ctrlKey || event.button === 1)
+                  return;
                 setIsLoading(true);
               }}
               to={new UrlQuery().updateFilePathHash(

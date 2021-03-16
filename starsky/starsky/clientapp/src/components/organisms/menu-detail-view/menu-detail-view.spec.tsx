@@ -1,4 +1,4 @@
-import { globalHistory } from "@reach/router";
+import { globalHistory, Link } from "@reach/router";
 import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
@@ -122,6 +122,56 @@ describe("MenuDetailView", () => {
       act(() => {
         component.unmount();
       });
+    });
+  });
+
+  describe("close", () => {
+    it("when click on Link, with command key it should ignore preloader", () => {
+      const state = {
+        subPath: "/test/image.jpg",
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          fileHash: "000",
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 1).toISOString(),
+          parentDirectory: "/test"
+        }
+      } as IDetailView;
+      var component = mount(
+        <MenuDetailView state={state} dispatch={jest.fn()}>
+          t
+        </MenuDetailView>
+      );
+      component.find(Link).simulate("click", {
+        metaKey: true
+      });
+
+      expect(component.exists(".preloader--overlay")).toBeFalsy();
+      component.unmount();
+    });
+
+    it("when click on Link, should show preloader", () => {
+      const state = {
+        subPath: "/test/image.jpg",
+        fileIndexItem: {
+          status: IExifStatus.Ok,
+          fileHash: "000",
+          filePath: "/test/image.jpg",
+          fileName: "image.jpg",
+          lastEdited: new Date(1970, 1, 1).toISOString(),
+          parentDirectory: "/test"
+        }
+      } as IDetailView;
+      var component = mount(
+        <MenuDetailView state={state} dispatch={jest.fn()}>
+          t
+        </MenuDetailView>
+      );
+      component.find(Link).simulate("click");
+
+      expect(component.exists(".preloader--overlay")).toBeTruthy();
+      component.unmount();
     });
   });
 
