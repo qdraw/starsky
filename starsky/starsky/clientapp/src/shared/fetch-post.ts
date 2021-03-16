@@ -28,7 +28,7 @@ const FetchPost = async (
       "application/x-www-form-urlencoded";
   }
 
-  let res: Response = new Response();
+  let res: Response;
   try {
     res = await fetch(url, settings);
   } catch (err) {
