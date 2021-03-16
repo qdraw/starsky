@@ -58,6 +58,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ DbUpdateConcurrencyException when renaming (PR #320 / Issue #312)
 - [x]   (Fixed) _Front-end_ Connection error gives now ServerError instead of failing silence (PR #323 / Issue #322 )
 - [x]   (Fixed) _Front-end_  Flat list behind query parameter `?list=true`, on archive pages, there is no UI option yet  (PR #302 Issue #251)
+- [x]   (Fixed) _Front-end_  Detailview command click on close keeps loading (PR #324 Issue #316)  
+- [x]   (Changed) _Front-end_  Rename of 'Close' to 'Parent Folder' because its looks like closing a window and it is't the same (PR #324)  
+
 
 # version 0.4.5 - 2021-02-14
 - [x]   (Fixed) _Back-end_ When remove a folder, the files within the folder are still in the database bug _issue #188_
