@@ -37,6 +37,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
+  // Not close anymore because its looks like closing a window
   const MessageCloseDialog = language.text("Terug naar map", "Parent folder");
   const MessageCloseDetailScreenDialog = language.text(
     "Sluit detailscherm",
