@@ -313,7 +313,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
       {/* allowed in readonly to download */}
       {isModalExportOpen && state && !isSourceMissing ? (

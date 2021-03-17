@@ -69,7 +69,7 @@ const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> 
       ) : null}
       {isLoading ? (
         <Portal>
-          <Preloader isDetailMenu={false} isOverlay={true} />
+          <Preloader isWhite={false} isOverlay={true} />
         </Portal>
       ) : null}
     </>

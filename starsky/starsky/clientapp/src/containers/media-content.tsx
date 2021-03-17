@@ -64,7 +64,7 @@ const MediaContent: React.FC = () => {
       ) : null}
       <HealthStatusError />
       {pageType === PageType.Loading ? (
-        <Preloader isOverlay={true} isDetailMenu={false} />
+        <Preloader isOverlay={true} isWhite={false} />
       ) : null}
       {pageType === PageType.NotFound ? (
         <NotFoundPage>not found</NotFoundPage>

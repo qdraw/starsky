@@ -7,13 +7,14 @@ export interface IPanAndZoomImage {
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   translateRotation: Orientation;
   onWheelCallback(): void;
+  id?: string; // to known when a image is changed
 }
 
 /**
  * @see: jkettmann.com/jr-to-sr-refactoring-react-pan-and-zoom-image-component
  * @param param0:  IPanAndZoomImage
  */
-const PanAndZoomImage = ({ src, ...props }: IPanAndZoomImage) => {
+const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   const [isPanning, setPanning] = useState(false);
   const [image, setImage] = useState({ width: 0, height: 0 });
 
@@ -30,11 +31,19 @@ const PanAndZoomImage = ({ src, ...props }: IPanAndZoomImage) => {
     setPosition(defaultPosition);
     // use Memo gives issues elsewhere
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  useEffect(() => {
+    if (!props.setIsLoading) return;
+    props.setIsLoading(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [src]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const onLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.log("--onload");
+
     const target = e.target as any;
     setImage({
       width: target.naturalWidth,

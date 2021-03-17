@@ -251,7 +251,7 @@ const DetailView: React.FC<IDetailView> = () => {
   });
 
   if (!state.fileIndexItem || !relativeObjects) {
-    return <Preloader parent={"/"} isDetailMenu={true} isOverlay={true} />;
+    return <Preloader parent={"/"} isWhite={true} isOverlay={true} />;
   }
 
   return (
@@ -261,8 +261,8 @@ const DetailView: React.FC<IDetailView> = () => {
         {isLoading ? (
           <Preloader
             parent={state.fileIndexItem.parentDirectory}
-            isDetailMenu={true}
-            isOverlay={true}
+            isWhite={true}
+            isOverlay={false}
           />
         ) : (
           ""
@@ -305,6 +305,7 @@ const DetailView: React.FC<IDetailView> = () => {
           {!isError && state.fileIndexItem.fileHash ? (
             <FileHashImage
               setError={setError}
+              id={state.fileIndexItem.filePath}
               isError={isError}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}

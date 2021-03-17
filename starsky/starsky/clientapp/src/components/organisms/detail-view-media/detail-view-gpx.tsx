@@ -156,7 +156,7 @@ const DetailViewGpx: React.FC = () => {
 
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
       <div className="main main--error main--gpx" ref={mapReference} />
       <div className="gpx-controls">
         <button

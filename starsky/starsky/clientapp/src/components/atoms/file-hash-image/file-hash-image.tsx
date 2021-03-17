@@ -12,6 +12,7 @@ export interface IFileHashImageProps {
   fileHash: string;
   orientation?: Orientation;
   tags?: string;
+  id?: string; // filepath to know when image is changed
 }
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
@@ -51,6 +52,7 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
 
   return (
     <PanAndZoomImage
+      id={props.id}
       setError={props.setError}
       setIsLoading={props.setIsLoading}
       translateRotation={translateRotation}
