@@ -39,18 +39,21 @@ namespace starskytest.starskySyncCli
             var args = new List<string> {
                 "-v",
                 "-c","test",
+                "--connection", "StarskyCliSubPathOneImage",
                 "-d", "InMemoryDatabase", 
                 "-b", newImage.BasePath, 
                 "--thumbnailtempfolder", newImage.BasePath, 
                 "--exiftoolpath", newImage.FullFilePath 
             }.ToArray();
-            
+
+            Console.WriteLine("-->");
             foreach (var arg in args)
             {
                 Console.WriteLine(arg);
             }
             
             Program.Main(args);
+            Console.WriteLine("<--");
         }
         
     }
