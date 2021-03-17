@@ -4,6 +4,8 @@ parameters:
   action: "all"
   depth: 10
 
+# pwsh ./starsky-tools/build-tools/audit-npm.ps1 -failOnVulnLevel 'moderate' -action outdated -depth 0 -targetFolder path
+
 steps:
   - task: PowerShell@2
     displayName: ${{ parameters.displayName }}
