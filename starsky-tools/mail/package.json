@@ -11,6 +11,6 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "imap-simple": "^4.3.0",
-    "request": "^2.88.0"
+    "request": "^2.88.2"
   }
 }
