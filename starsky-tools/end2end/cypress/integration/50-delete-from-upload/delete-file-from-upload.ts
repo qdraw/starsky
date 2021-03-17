@@ -56,14 +56,38 @@ describe('Delete file from upload (50)', () => {
       '/starsky-end2end-test',
       'image/jpeg'
     )
+    waitOnUploadIsDone(0)
+  })
 
-    cy.wait(500)
-
+  it('check if upload is done', () => {
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)
       expect(res.body.fileIndexItems.length).to.eq(4)
     })
   })
+
+  function waitOnUploadIsDone (index:number, max: number = 10) {
+    cy.request({
+      url: config.urlApiCollectionsFalse,
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }).then((response) => {
+      expect(response.status).to.eq(200)
+      cy.log(JSON.stringify(response.body.fileIndexItems))
+
+      if (response.body.fileIndexItems.length === 4) {
+        cy.log('4 items, done')
+        return
+      }
+      cy.wait(1500)
+      index++
+      if (index < max) {
+        waitOnUploadIsDone(index, max)
+      }
+    })
+  }
 
   it('remove collection item, but not the other file', () => {
     cy.visit(config.urlVideoItemCollectionsFalse)
@@ -76,7 +100,8 @@ describe('Delete file from upload (50)', () => {
       expect($lis).to.have.length(3)
     })
 
-    cy.wait(5000)
+    waitFileInTrash(0, `/starsky-end2end-test/${fileName4}`)
+
     cy.log(`go to: ${config.trash}`)
     cy.visit(config.trash)
 
@@ -104,6 +129,31 @@ describe('Delete file from upload (50)', () => {
     })
   })
 
+  function waitFileInTrash (index:number, filePath: string, max: number = 10) {
+    cy.request({
+      url: '/api/search/trash',
+      method: 'GET',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }).then((response) => {
+      expect(response.status).to.eq(200)
+      cy.log(JSON.stringify(response.body.fileIndexItems))
+
+      for (const item of response.body.fileIndexItems) {
+        if (item.filePath === filePath) {
+          cy.log('in trash end')
+          return
+        }
+      }
+      cy.wait(1500)
+      index++
+      if (index < max) {
+        waitFileInTrash(index, filePath, max)
+      }
+    })
+  }
+
   it('remove first on to trash and undo afterwards', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
@@ -118,7 +168,7 @@ describe('Delete file from upload (50)', () => {
       expect($lis).to.have.length(2)
     })
 
-    cy.wait(3000)
+    waitFileInTrash(0, `/starsky-end2end-test/${fileName1}`)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
@@ -151,7 +201,7 @@ describe('Delete file from upload (50)', () => {
       expect($lis).to.have.length(2)
     })
 
-    cy.wait(3000)
+    waitFileInTrash(0, `/starsky-end2end-test/${fileName1}`)
     cy.visit(config.trash)
 
     cy.get('.item.item--select').click()
