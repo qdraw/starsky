@@ -62,3 +62,47 @@ steps:
       displayName: 'StarskyApp license check'
       targetFolder: "$(Build.SourcesDirectory)/starskyapp"
       action: 'check-licenses'
+
+  # Tools
+  
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_docs_vulnerabilities"
+      displayName: 'Tools/Docs vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/docs"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_dropbox_import_vulnerabilities"
+      displayName: 'Tools/Dropbox Import vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/dropbox-import"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_end2end_vulnerabilities"
+      displayName: 'Tools/End2End vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/end2end"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_mail_vulnerabilities"
+      displayName: 'Tools/mail vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/mail"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_mock_vulnerabilities"
+      displayName: 'Tools/mock vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/mock"
+      action: 'find-vulnerabilities'
+
+  - template: /pipelines/azure/steps/audit_npm.yml
+    parameters:
+      name: "starsky_tools_thumbnail_vulnerabilities"
+      displayName: 'Tools/thumbnail vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/thumbnail"
+      action: 'find-vulnerabilities'      
