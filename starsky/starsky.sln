@@ -91,6 +91,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskysynchronizecli", "st
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskythumbnailcli", "starskythumbnailcli\starskythumbnailcli.csproj", "{26399A15-B762-4550-BC1E-5B4C1F71F7E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.webtelemetry", "starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj", "{19D361BA-BA3E-49F1-AC6C-BF815F106E42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,10 @@ Global
 		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26399A15-B762-4550-BC1E-5B4C1F71F7E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19D361BA-BA3E-49F1-AC6C-BF815F106E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19D361BA-BA3E-49F1-AC6C-BF815F106E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19D361BA-BA3E-49F1-AC6C-BF815F106E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19D361BA-BA3E-49F1-AC6C-BF815F106E42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -260,5 +266,6 @@ Global
 		{8CD2E452-AB62-446C-AD42-7D90B63D1B81} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{2146484C-070D-4384-9BA6-642F63789591} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{26399A15-B762-4550-BC1E-5B4C1F71F7E3} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{19D361BA-BA3E-49F1-AC6C-BF815F106E42} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal
