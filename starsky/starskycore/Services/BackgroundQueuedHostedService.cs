@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.webtelemetry.Interfaces;
 
 namespace starskycore.Services
 {

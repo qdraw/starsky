@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.webtelemetry.Interfaces;
 using starskycore.Services;
 using starskytest.FakeMocks;
 #pragma warning disable 1998
