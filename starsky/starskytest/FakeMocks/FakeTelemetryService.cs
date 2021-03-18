@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.webtelemetry.Interfaces;
 
 namespace starskytest.FakeMocks
 {

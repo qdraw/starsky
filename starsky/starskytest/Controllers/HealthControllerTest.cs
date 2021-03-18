@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.webtelemetry.Helpers;
 using starskycore.Helpers;
 using starskycore.ViewModels;
 using starskytest.FakeMocks;

@@ -2,10 +2,10 @@ using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.webtelemetry.Interfaces;
 
-namespace starsky.foundation.platform.Services
+namespace starsky.foundation.webtelemetry.Services
 {
 	[Service(typeof(ITelemetryService), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class TelemetryService : ITelemetryService

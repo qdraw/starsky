@@ -1,6 +1,6 @@
 using System;
 
-namespace starsky.foundation.platform.Interfaces
+namespace starsky.foundation.webtelemetry.Interfaces
 {
 	public interface ITelemetryService
 	{
