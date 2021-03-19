@@ -113,7 +113,9 @@ describe('Delete file from upload (50)', () => {
     cy.get('[data-test=delete]').click()
 
     // verwijder onmiddelijk
+    cy.intercept('/starsky/api/delete').as('delete4')
     cy.get('.modal .btn.btn--default').click()
+    cy.wait('@delete4')
 
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200)
@@ -174,6 +176,7 @@ describe('Delete file from upload (50)', () => {
     cy.get('.item.item--select').click()
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click()
 
+    // restore
     cy.get('.item.item--more').click()
     cy.get('[data-test=restore-from-trash]').click()
 
@@ -211,7 +214,9 @@ describe('Delete file from upload (50)', () => {
     cy.get('[data-test=delete]').click()
 
     // verwijder onmiddelijk
+    cy.intercept('/starsky/api/delete').as('delete1')
     cy.get('.modal .btn.btn--default').click()
+    cy.wait('@delete1')
 
     // item should be in the trash
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).should('not.exist')
