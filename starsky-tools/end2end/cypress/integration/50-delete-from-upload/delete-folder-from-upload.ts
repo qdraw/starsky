@@ -59,7 +59,10 @@ describe('Delete folder from upload', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=delete]').click()
 
+    // verwijder onmiddelijk
+    cy.intercept('/starsky/api/delete').as('delete_dir')
     cy.get('.modal .btn.btn--default').click()
+    cy.wait('@delete_dir')
 
     // // item should be in the trash
     cy.get('[data-filepath="/starsky-end2end-test"] button').should('not.exist')
