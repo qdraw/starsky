@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
+import { OnLoadMouseAction } from "./on-load-mouse-action";
+import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
+import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 
 export interface IPanAndZoomImage {
   src: string;
@@ -10,13 +13,22 @@ export interface IPanAndZoomImage {
   id?: string; // to known when a image is changed
 }
 
+export type ImageObject = { width: number; height: number };
+export type PositionObject = {
+  oldX: number;
+  oldY: number;
+  x: number;
+  y: number;
+  z: number;
+};
+
 /**
  * @see: jkettmann.com/jr-to-sr-refactoring-react-pan-and-zoom-image-component
  * @param param0:  IPanAndZoomImage
  */
 const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   const [isPanning, setPanning] = useState(false);
-  const [image, setImage] = useState({ width: 0, height: 0 });
+  const [image, setImage] = useState({ width: 0, height: 0 } as ImageObject);
 
   const defaultPosition = {
     oldX: 0,
@@ -40,57 +52,6 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   }, [src]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const onLoad = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.log("--onload");
-
-    const target = e.target as any;
-    setImage({
-      width: target.naturalWidth,
-      height: target.naturalHeight
-    });
-
-    if (!props.setError || !props.setIsLoading) {
-      return;
-    }
-
-    props.setError(false);
-    props.setIsLoading(false);
-  };
-
-  const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault();
-    setPanning(true);
-    setPosition({
-      ...position,
-      oldX: e.clientX,
-      oldY: e.clientY
-    });
-  };
-
-  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY) {
-      const sign = Math.sign(e.deltaY) / 10;
-      const scale = 1 - sign;
-
-      if (!containerRef.current) {
-        return;
-      }
-      const rect = containerRef.current.getBoundingClientRect();
-
-      setPosition({
-        ...position,
-        x: position.x * scale - (rect.width / 2 - e.clientX + rect.x) * sign,
-        y:
-          position.y * scale -
-          ((image.height * rect.width) / image.width / 2 - e.clientY + rect.y) *
-            sign,
-        z: position.z * scale
-      });
-
-      props.onWheelCallback();
-    }
-  };
 
   useEffect(() => {
     const mouseup = () => {
@@ -126,8 +87,19 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           : "pan-zoom-image-container is-panning"
       }
       ref={containerRef}
-      onMouseDown={onMouseDown}
-      onWheel={onWheel}
+      onMouseDown={
+        new OnMouseDownMouseAction(setPanning, position, setPosition)
+          .onMouseDown
+      }
+      onWheel={
+        new OnWheelMouseAction(
+          image,
+          setPosition,
+          position,
+          containerRef,
+          props.onWheelCallback
+        ).onWheel
+      }
     >
       <div
         style={{
@@ -138,7 +110,10 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           className={`pan-zoom-image--image image--default ${props.translateRotation}`}
           alt="floorplan"
           src={src}
-          onLoad={onLoad}
+          onLoad={
+            new OnLoadMouseAction(setImage, props.setError, props.setIsLoading)
+              .onLoad
+          }
           onError={() => {
             if (!props.setError || !props.setIsLoading) {
               return;

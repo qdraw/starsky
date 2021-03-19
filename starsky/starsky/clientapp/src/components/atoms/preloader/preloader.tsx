@@ -8,6 +8,7 @@ export interface IPreloaderProps {
 }
 
 const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
+  const isWhiteClassName = props.isWhite ? "preloader--white" : null;
   return (
     <>
       {props.isOverlay ? (
@@ -21,11 +22,7 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
           <div className="preloader preloader--icon"></div>
         </div>
       ) : (
-        <div
-          className={`preloader preloader--icon ${
-            props.isWhite ? "preloader--white" : null
-          }`}
-        ></div>
+        <div className={`preloader preloader--icon ${isWhiteClassName}`}></div>
       )}
     </>
   );
