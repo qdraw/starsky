@@ -147,6 +147,7 @@ describe("PanAndZoomImage", () => {
     });
 
     it("click on zoom in button", () => {
+      // after simulate wheel due spy on
       const zoomSpy = jest
         .spyOn(OnWheelMouseAction.prototype, "zoom")
         .mockImplementationOnce(() => {});
@@ -170,6 +171,8 @@ describe("PanAndZoomImage", () => {
     });
 
     it("click on zoom Out button", () => {
+      // after simulate wheel due spy on
+
       const zoomSpy = jest
         .spyOn(OnWheelMouseAction.prototype, "zoom")
         .mockImplementationOnce(() => {});
