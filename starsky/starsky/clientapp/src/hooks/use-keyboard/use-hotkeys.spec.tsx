@@ -239,6 +239,30 @@ describe("useHotKeys", () => {
       test.componentMount.unmount();
     });
 
+    it("ctrlKeyOrMetaKey - should return when pessing cmdOrCtlr+shift+q", () => {
+      const callback = jest.fn();
+      const test = mountReactHook(useHotKeys, [
+        {
+          key: "q",
+          ctrlKeyOrMetaKey: true,
+          shiftKey: true
+        } as IHotkeysKeyboardEvent,
+        callback
+      ]);
+
+      const event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "q",
+        shiftKey: true,
+        metaKey: true
+      });
+      window.dispatchEvent(event);
+
+      expect(callback).toBeCalled();
+      test.componentMount.unmount();
+    });
+
     it("ctrlKeyOrMetaKey - should not return when pressing shiftKey with combination option enabled q", () => {
       const callback = jest.fn();
       const test = mountReactHook(useHotKeys, [
@@ -284,7 +308,7 @@ describe("useHotKeys", () => {
       test.componentMount.unmount();
     });
 
-    it("should not return when pressing t only with combination option enabled", () => {
+    it("ctrlKeyOrMetaKey - should not return when pressing t only with combination option enabled", () => {
       const callback = jest.fn();
       const test = mountReactHook(useHotKeys, [
         {
