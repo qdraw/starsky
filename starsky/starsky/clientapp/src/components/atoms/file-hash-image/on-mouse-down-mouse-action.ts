@@ -15,13 +15,24 @@ export class OnMouseDownMouseAction {
     this.setPosition = setPosition;
   }
 
+  public onTouchStart = (e: TouchEvent) => {
+    const clientX = e.touches[0].clientX;
+    const clientY = e.touches[0].clientY;
+    e.preventDefault();
+    this.move(clientX, clientY);
+  };
+
   public onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
+    this.move(e.clientX, e.clientY);
+  };
+
+  public move = (clientX: number, clientY: number) => {
     this.setPanning(true);
     this.setPosition({
       ...this.position,
-      oldX: e.clientX,
-      oldY: e.clientY
+      oldX: clientX,
+      oldY: clientY
     });
   };
 }

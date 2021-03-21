@@ -129,6 +129,13 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           new OnMouseDownMouseAction(setPanning, position, setPosition)
             .onMouseDown
         }
+        onTouchStart={(e) =>
+          new OnMouseDownMouseAction(
+            setPanning,
+            position,
+            setPosition
+          ).onTouchStart(e as any)
+        }
         onWheel={
           new OnWheelMouseAction(
             image,
