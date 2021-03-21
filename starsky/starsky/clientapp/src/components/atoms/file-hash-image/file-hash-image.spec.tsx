@@ -192,4 +192,37 @@ describe("FileHashImage", () => {
       new UrlQuery().UrlThumbnailZoom("hash", 1)
     );
   });
+
+  it("with onResetCallback it should set UrlThumbnailImage", () => {
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onResetCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
+
+    // there is one problem with this test, is assumes the default value
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(component.find("img").prop("src")).toBe(
+      new UrlQuery().UrlThumbnailImage("hash", true)
+    );
+  });
 });
