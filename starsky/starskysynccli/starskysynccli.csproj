@@ -6,7 +6,7 @@
         <ProjectGuid>{47d7c0fd-cee7-494c-85c2-df63234e0e5b}</ProjectGuid>
         <RuntimeFrameworkVersion>3.1.12</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.4.6</Version>
+        <Version>0.4.7</Version>
         <RootNamespace>starskysynccli</RootNamespace>
     </PropertyGroup>
     
