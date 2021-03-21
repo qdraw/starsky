@@ -208,7 +208,7 @@
   top: 50px;
   right: 0px;
   padding-top: 5px;
-  padding-left: 7px;
+  padding-left: 5px;
   width: 50px;
 
   border-bottom-left-radius: 5px;
@@ -222,16 +222,16 @@
 
 .current-location.icon,
 .gpx-controls .icon {
-  float: left;
   height: 40px;
-  width: 50px;
+  width: 40px;
   mask-repeat: no-repeat;
-  mask-position: 5px;
-  padding-left: 33px;
+  mask-position: center;
+  mask-size: 28px 28px;
+  background-color: white;
+  padding-left: 20px;
   padding-right: 7px;
   margin-bottom: 5px;
   cursor: pointer;
-  border: 1px solid #000;
 }
 
 .gpx-controls .icon.icon--lock {
@@ -252,7 +252,7 @@
 
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
-  text-indent: -999px;
+  text-indent: -9999px;
   padding-left: 37px; /* needed for safari instead of 40 */
   background-position: 12px;
   max-width: 40px;
