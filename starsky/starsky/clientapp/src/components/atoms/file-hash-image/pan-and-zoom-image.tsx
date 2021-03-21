@@ -41,15 +41,15 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
   useEffect(() => {
     setPosition(defaultPosition);
+    if (!props.setIsLoading) return;
+
+    const image = containerRef.current?.querySelector("img");
+    const isLoaded = image && image.complete && image.naturalHeight !== 0;
+    props.setIsLoading(isLoaded === false);
+
     // use Memo gives issues elsewhere
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
-
-  useEffect(() => {
-    if (!props.setIsLoading) return;
-    props.setIsLoading(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -80,50 +80,89 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   });
 
   return (
-    <div
-      className={
-        !isPanning
-          ? "pan-zoom-image-container grab"
-          : "pan-zoom-image-container is-panning"
-      }
-      ref={containerRef}
-      onMouseDown={
-        new OnMouseDownMouseAction(setPanning, position, setPosition)
-          .onMouseDown
-      }
-      onWheel={
-        new OnWheelMouseAction(
-          image,
-          setPosition,
-          position,
-          containerRef,
-          props.onWheelCallback
-        ).onWheel
-      }
-    >
+    <>
       <div
-        style={{
-          transform: `translate(${position.x}px, ${position.y}px) scale(${position.z})`
-        }}
+        className={
+          !isPanning
+            ? "pan-zoom-image-container grab"
+            : "pan-zoom-image-container is-panning"
+        }
+        ref={containerRef}
+        onMouseDown={
+          new OnMouseDownMouseAction(setPanning, position, setPosition)
+            .onMouseDown
+        }
+        onWheel={
+          new OnWheelMouseAction(
+            image,
+            setPosition,
+            position,
+            containerRef,
+            props.onWheelCallback
+          ).onWheel
+        }
       >
-        <img
-          className={`pan-zoom-image--image image--default ${props.translateRotation}`}
-          alt="floorplan"
-          src={src}
-          onLoad={
-            new OnLoadMouseAction(setImage, props.setError, props.setIsLoading)
-              .onLoad
-          }
-          onError={() => {
-            if (!props.setError || !props.setIsLoading) {
-              return;
-            }
-            props.setError(true);
-            props.setIsLoading(false);
+        <div
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px) scale(${position.z})`
           }}
-        />
+        >
+          <img
+            className={`pan-zoom-image--image image--default ${props.translateRotation}`}
+            alt="floorplan"
+            src={src}
+            onLoad={
+              new OnLoadMouseAction(
+                setImage,
+                props.setError,
+                props.setIsLoading
+              ).onLoad
+            }
+            onError={() => {
+              if (!props.setError || !props.setIsLoading) {
+                return;
+              }
+              props.setError(true);
+              props.setIsLoading(false);
+            }}
+          />
+        </div>
       </div>
-    </div>
+      <div className="gpx-controls">
+        <button
+          data-test="zoom_in"
+          title={"Zoom in"}
+          className="icon icon--zoom_in"
+          onClick={() =>
+            new OnWheelMouseAction(
+              image,
+              setPosition,
+              position,
+              containerRef,
+              props.onWheelCallback
+            ).zoom(-1)
+          }
+        >
+          Zoom in
+        </button>
+        <button
+          title={"Zoom out"}
+          data-test="zoom_out"
+          className="icon icon--zoom_out"
+          onClick={() =>
+            new OnWheelMouseAction(
+              image,
+              setPosition,
+              position,
+              containerRef,
+              props.onWheelCallback
+            ).zoom(1)
+          }
+        >
+          Zoom out
+        </button>
+      </div>
+    </>
   );
 };
 

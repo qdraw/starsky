@@ -1,11 +1,11 @@
 import { ImageObject, PositionObject } from "./pan-and-zoom-image";
 
 export class OnWheelMouseAction {
-  image: ImageObject;
-  setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
-  position: PositionObject;
-  containerRef: React.RefObject<HTMLDivElement>;
-  onWheelCallback: () => void;
+  private image: ImageObject;
+  private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
+  private position: PositionObject;
+  private containerRef: React.RefObject<HTMLDivElement>;
+  private onWheelCallback: () => void;
 
   constructor(
     image: ImageObject,
@@ -22,30 +22,42 @@ export class OnWheelMouseAction {
   }
 
   public onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY) {
-      const sign = Math.sign(e.deltaY) / 10;
-      const scale = 1 - sign;
+    if (!e.deltaY) return;
+    this.zoom(e.deltaY, e.clientX);
+  };
 
-      if (!this.containerRef.current) {
-        return;
-      }
-      const rect = this.containerRef.current.getBoundingClientRect();
+  /**
+   * Set position for zoom
+   * @param eventDeltaY : -1 is zoom in, +1 zoom out
+   * @param eventclientX pixels calc form left of screen
+   * @returns void
+   */
+  public zoom = (eventDeltaY: number, eventclientX: number = 0) => {
+    const sign = Math.sign(eventDeltaY) / 10;
+    const scale = 1 - sign;
 
-      this.setPosition({
-        ...this.position,
-        x:
-          this.position.x * scale -
-          (rect.width / 2 - e.clientX + rect.x) * sign,
-        y:
-          this.position.y * scale -
-          ((this.image.height * rect.width) / this.image.width / 2 -
-            e.clientY +
-            rect.y) *
-            sign,
-        z: this.position.z * scale
-      });
-
-      this.onWheelCallback();
+    if (!this.containerRef.current) {
+      return;
     }
+    const rect = this.containerRef.current.getBoundingClientRect();
+    // default is to align to the center
+    if (eventclientX <= 0) eventclientX = rect.width / 2;
+    console.log(eventDeltaY, eventclientX);
+
+    this.setPosition({
+      ...this.position,
+      x:
+        this.position.x * scale -
+        (rect.width / 2 - eventclientX + rect.x) * sign,
+      y:
+        this.position.y * scale -
+        ((this.image.height * rect.width) / this.image.width / 2 -
+          eventclientX +
+          rect.y) *
+          sign,
+      z: this.position.z * scale
+    });
+
+    this.onWheelCallback();
   };
 }
