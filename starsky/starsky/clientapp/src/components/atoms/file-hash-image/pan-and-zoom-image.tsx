@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnLoadMouseAction } from "./on-load-mouse-action";
 import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
@@ -79,6 +80,36 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     };
   });
 
+  function zoomIn() {
+    new OnWheelMouseAction(
+      image,
+      setPosition,
+      position,
+      containerRef,
+      props.onWheelCallback
+    ).zoom(-1);
+  }
+
+  function zoomOut() {
+    new OnWheelMouseAction(
+      image,
+      setPosition,
+      position,
+      containerRef,
+      props.onWheelCallback
+    ).zoom(1);
+  }
+
+  // Command + A for mac os
+  useHotKeys({ key: "=", ctrlKeyOrMetaKey: true }, zoomIn, []);
+  // Ctrl + A for windows
+  // useHotKeys({ key: "=", ctrlKey: true }, zoomIn, []);
+
+  // Command + A for mac os
+  // useHotKeys({ key: "-", metaKey: true }, zoomOut, []);
+  // Ctrl + A for windows
+  useHotKeys({ key: "-", ctrlKeyOrMetaKey: true }, zoomOut, []);
+
   return (
     <>
       <div
@@ -133,15 +164,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           data-test="zoom_in"
           title={"Zoom in"}
           className="icon icon--zoom_in"
-          onClick={() =>
-            new OnWheelMouseAction(
-              image,
-              setPosition,
-              position,
-              containerRef,
-              props.onWheelCallback
-            ).zoom(-1)
-          }
+          onClick={() => zoomIn()}
         >
           Zoom in
         </button>
@@ -149,15 +172,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
           title={"Zoom out"}
           data-test="zoom_out"
           className="icon icon--zoom_out"
-          onClick={() =>
-            new OnWheelMouseAction(
-              image,
-              setPosition,
-              position,
-              containerRef,
-              props.onWheelCallback
-            ).zoom(1)
-          }
+          onClick={() => zoomOut()}
         >
           Zoom out
         </button>

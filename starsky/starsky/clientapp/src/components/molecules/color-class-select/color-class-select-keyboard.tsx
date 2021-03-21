@@ -31,7 +31,9 @@ const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> 
   );
 
   useKeyboardEvent(/[0-8]/, (event: KeyboardEvent) => {
-    if (new Keyboard().isInForm(event)) return;
+    // cmd + 0 or ctrl are zoom functions
+    if (new Keyboard().isInForm(event) || event.ctrlKey || event.metaKey)
+      return;
 
     new ColorClassUpdateSingle(
       props.isEnabled,
