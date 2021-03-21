@@ -19,12 +19,15 @@ export class OnWheelMouseAction {
     this.position = position;
     this.containerRef = containerRef;
     this.onWheelCallback = onWheelCallback;
+
+    // bind this to object
+    this.onWheel = this.onWheel.bind(this);
   }
 
-  public onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+  public onWheel(e: React.WheelEvent<HTMLDivElement>) {
     if (!e.deltaY) return;
     this.zoom(e.deltaY, e.clientX);
-  };
+  }
 
   /**
    * Set position for zoom
@@ -32,7 +35,7 @@ export class OnWheelMouseAction {
    * @param eventclientX pixels calc form left of screen
    * @returns void
    */
-  public zoom = (eventDeltaY: number, eventclientX: number = 0) => {
+  public zoom(eventDeltaY: number, eventclientX: number = 0) {
     const sign = Math.sign(eventDeltaY) / 10;
     const scale = 1 - sign;
 
@@ -58,5 +61,5 @@ export class OnWheelMouseAction {
     });
 
     this.onWheelCallback();
-  };
+  }
 }

@@ -2,35 +2,22 @@ import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
+import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 import PanAndZoomImage from "./pan-and-zoom-image";
 
-describe("PanAndZoomImage", () => {
+describe("PanAndZoomImage s", () => {
   it("renders", () => {
     shallow(
       <PanAndZoomImage
         src=""
         translateRotation={Orientation.Horizontal}
         onWheelCallback={jest.fn()}
+        onResetCallback={jest.fn()}
       />
     );
   });
 
   describe("PanAndZoomImage", () => {
-    // it("modal-exit-button", () => {
-    //   const onWheelCallback = jest.fn();
-
-    //   const component = mount(
-    //     <PanAndZoomImage
-    //       src=""
-    //       translateRotation={Orientation.Horizontal}
-    //       onWheelCallback={onWheelCallback}
-    //     />
-    //   );
-    //   component.simulate("load");
-
-    //   component.unmount();
-    // });
-
     it("mouseDown & mousemove event triggerd", () => {
       const onWheelCallback = jest.fn();
 
@@ -40,6 +27,7 @@ describe("PanAndZoomImage", () => {
           setIsLoading={null as any}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
+          onResetCallback={jest.fn()}
         />
       );
 
@@ -65,6 +53,53 @@ describe("PanAndZoomImage", () => {
 
       component.unmount();
     });
+
+    it("click on zoom in button", () => {
+      const zoomSpy = jest
+        .spyOn(OnWheelMouseAction.prototype, "zoom")
+        .mockImplementationOnce(() => {});
+
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+        />
+      );
+
+      component.find("[data-test='zoom_in']").simulate("click");
+
+      expect(zoomSpy).toBeCalled();
+      expect(zoomSpy).toBeCalledWith(-1);
+
+      component.unmount();
+    });
+
+    it("click on zoom Out button", () => {
+      const zoomSpy = jest
+        .spyOn(OnWheelMouseAction.prototype, "zoom")
+        .mockImplementationOnce(() => {});
+
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+        />
+      );
+
+      component.find("[data-test='zoom_out']").simulate("click");
+
+      expect(zoomSpy).toBeCalled();
+      expect(zoomSpy).toBeCalledWith(1);
+
+      component.unmount();
+    });
+
     it("mouse Up should ignore mousemove", () => {
       const onWheelCallback = jest.fn();
 
@@ -74,6 +109,7 @@ describe("PanAndZoomImage", () => {
           setIsLoading={null as any}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
+          onResetCallback={jest.fn()}
         />
       );
 
@@ -116,6 +152,7 @@ describe("PanAndZoomImage", () => {
           setIsLoading={null as any}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
+          onResetCallback={jest.fn()}
         />
       );
 
@@ -139,6 +176,7 @@ describe("PanAndZoomImage", () => {
           setIsLoading={null as any}
           translateRotation={Orientation.Horizontal}
           onWheelCallback={onWheelCallback}
+          onResetCallback={jest.fn()}
         />
       );
 
