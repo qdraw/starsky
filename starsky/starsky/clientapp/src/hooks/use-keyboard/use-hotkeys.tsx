@@ -77,6 +77,7 @@ function useHotKeys(
       }
 
       if (
+        !preDefinedCtrlKeyOrMetaKey &&
         eventKey === preDefinedKey &&
         eventAltKey === preDefinedAltKey &&
         eventCtrlKey === preDefinedCtrlKey &&
