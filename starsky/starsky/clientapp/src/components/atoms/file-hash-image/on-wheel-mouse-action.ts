@@ -42,7 +42,6 @@ export class OnWheelMouseAction {
     const rect = this.containerRef.current.getBoundingClientRect();
     // default is to align to the center
     if (eventclientX <= 0) eventclientX = rect.width / 2;
-    console.log(eventDeltaY, eventclientX);
 
     this.setPosition({
       ...this.position,
