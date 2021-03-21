@@ -27,7 +27,6 @@ export class OnWheelMouseAction {
   public onWheel(e: React.WheelEvent<HTMLDivElement>) {
     if (!e.deltaY) return;
     this.zoom(e.deltaY, e.clientX);
-    console.log(this.position);
   }
 
   /**

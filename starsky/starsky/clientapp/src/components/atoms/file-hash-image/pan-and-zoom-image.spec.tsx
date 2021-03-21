@@ -5,7 +5,7 @@ import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 import PanAndZoomImage from "./pan-and-zoom-image";
 
-describe("PanAndZoomImage s", () => {
+describe("PanAndZoomImage", () => {
   it("renders", () => {
     shallow(
       <PanAndZoomImage
@@ -50,52 +50,6 @@ describe("PanAndZoomImage s", () => {
       expect(component.find(".pan-zoom-image-container").html()).toContain(
         "transform: translate(-291px, -291px)"
       );
-
-      component.unmount();
-    });
-
-    it("click on zoom in button", () => {
-      const zoomSpy = jest
-        .spyOn(OnWheelMouseAction.prototype, "zoom")
-        .mockImplementationOnce(() => {});
-
-      const component = mount(
-        <PanAndZoomImage
-          src=""
-          setIsLoading={null as any}
-          translateRotation={Orientation.Horizontal}
-          onWheelCallback={jest.fn()}
-          onResetCallback={jest.fn()}
-        />
-      );
-
-      component.find("[data-test='zoom_in']").simulate("click");
-
-      expect(zoomSpy).toBeCalled();
-      expect(zoomSpy).toBeCalledWith(-1);
-
-      component.unmount();
-    });
-
-    it("click on zoom Out button", () => {
-      const zoomSpy = jest
-        .spyOn(OnWheelMouseAction.prototype, "zoom")
-        .mockImplementationOnce(() => {});
-
-      const component = mount(
-        <PanAndZoomImage
-          src=""
-          setIsLoading={null as any}
-          translateRotation={Orientation.Horizontal}
-          onWheelCallback={jest.fn()}
-          onResetCallback={jest.fn()}
-        />
-      );
-
-      component.find("[data-test='zoom_out']").simulate("click");
-
-      expect(zoomSpy).toBeCalled();
-      expect(zoomSpy).toBeCalledWith(1);
 
       component.unmount();
     });
@@ -160,6 +114,7 @@ describe("PanAndZoomImage s", () => {
         .find(".pan-zoom-image-container")
         .simulate("wheel", { deltaY: -300 });
 
+      component.render();
       expect(component.find(".pan-zoom-image-container").html()).toContain(
         "scale(1.1)"
       );
@@ -187,6 +142,52 @@ describe("PanAndZoomImage s", () => {
       expect(component.find(".pan-zoom-image-container").html()).toContain(
         "scale(0.9)"
       );
+
+      component.unmount();
+    });
+
+    it("click on zoom in button", () => {
+      const zoomSpy = jest
+        .spyOn(OnWheelMouseAction.prototype, "zoom")
+        .mockImplementationOnce(() => {});
+
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+        />
+      );
+
+      component.find("[data-test='zoom_in']").simulate("click");
+
+      expect(zoomSpy).toBeCalled();
+      expect(zoomSpy).toBeCalledWith(-1);
+
+      component.unmount();
+    });
+
+    it("click on zoom Out button", () => {
+      const zoomSpy = jest
+        .spyOn(OnWheelMouseAction.prototype, "zoom")
+        .mockImplementationOnce(() => {});
+
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={jest.fn()}
+        />
+      );
+
+      component.find("[data-test='zoom_out']").simulate("click");
+
+      expect(zoomSpy).toBeCalled();
+      expect(zoomSpy).toBeCalledWith(1);
 
       component.unmount();
     });
