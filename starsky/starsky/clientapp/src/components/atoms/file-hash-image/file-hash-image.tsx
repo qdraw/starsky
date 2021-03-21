@@ -59,6 +59,9 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       onWheelCallback={() => {
         setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1));
       }}
+      onResetCallback={() => {
+        setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+      }}
       src={imageUrl}
     />
   );

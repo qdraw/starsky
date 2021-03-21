@@ -11,6 +11,7 @@ export interface IPanAndZoomImage {
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   translateRotation: Orientation;
   onWheelCallback(): void;
+  onResetCallback(): void;
   id?: string; // to known when a image is changed
 }
 
@@ -103,15 +104,17 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     ).zoom(1);
   }
 
-  // Command + A for mac os
-  useHotKeys({ key: "=", ctrlKeyOrMetaKey: true }, zoomIn, []);
-  // Ctrl + A for windows
-  // useHotKeys({ key: "=", ctrlKey: true }, zoomIn, []);
+  function reset() {
+    setPosition(defaultPosition);
+    props.onResetCallback();
+  }
 
-  // Command + A for mac os
-  // useHotKeys({ key: "-", metaKey: true }, zoomOut, []);
-  // Ctrl + A for windows
+  // zoom in
+  useHotKeys({ key: "=", ctrlKeyOrMetaKey: true }, zoomIn, []);
+  // zoom out
   useHotKeys({ key: "-", ctrlKeyOrMetaKey: true }, zoomOut, []);
+  // and reset
+  useHotKeys({ key: "0", ctrlKeyOrMetaKey: true }, reset, []);
 
   return (
     <>

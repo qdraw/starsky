@@ -571,7 +571,7 @@ describe("MenuArchive", () => {
       var component = mount(<MenuArchive />);
 
       expect(useHotkeysSpy).toBeCalled();
-      expect(useHotkeysSpy).toBeCalledTimes(2);
+      expect(useHotkeysSpy).toBeCalledTimes(1);
 
       component.unmount();
     });
