@@ -194,5 +194,29 @@ describe("PanAndZoomImage", () => {
 
       component.unmount();
     });
+
+    it("when pessing cmd+0 expect reset callback to be called", () => {
+      const onResetCallbackSpy = jest.fn();
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={onResetCallbackSpy}
+        />
+      );
+
+      var event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: "0",
+        metaKey: true
+      });
+      window.dispatchEvent(event);
+
+      expect(onResetCallbackSpy).toBeCalled();
+      component.unmount();
+    });
   });
 });
