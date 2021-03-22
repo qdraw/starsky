@@ -1,5 +1,5 @@
 {
-    "baseUrl": "https://starskydemo.herokuapp.com",
+    "baseUrl": "https://demostarsky.herokuapp.com",
     "env": {
       "name": "heroku-demo",
       "AUTH_USER": "demo@qdraw.nl",
