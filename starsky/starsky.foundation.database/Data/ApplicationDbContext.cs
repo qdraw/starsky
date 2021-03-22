@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
 
@@ -22,6 +23,8 @@ namespace starsky.foundation.database.Data
 		public DbSet<UserRole> UserRoles { get; set; }
 		public DbSet<Permission> Permissions { get; set; }
 		public DbSet<RolePermission> RolePermissions { get; set; }
+		
+		public DbSet<DataProtectionModel> DataProtectionKeys { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
