@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.foundation.webtelemetry.Helpers;
@@ -45,7 +46,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 503)]
 		public async Task<IActionResult> Index()
 		{
-			var result = await _service.CheckHealthAsync();
+			var result = await _service.CheckHealthAsync().TimeoutAfter(15);
 			if ( result.Status == HealthStatus.Healthy ) return Content(result.Status.ToString());
 
 			Response.StatusCode = 503;
