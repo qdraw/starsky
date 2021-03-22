@@ -13,7 +13,7 @@ Starsky helps you get more value from creative digital assets like images and vi
 ## Demo app
 There is a online demo of the Starsky Application.
 
-[See the online demo](https://starskydemo.herokuapp.com?classes=btn,btn-default)
+[See the online demo](https://demostarsky.herokuapp.com?classes=btn,btn-default)
 
 >
 > Use the following credentials: username: `demo@qdraw.nl` and password: `demo@qdraw.nl`
