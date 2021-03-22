@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			await new QueryNetFramework(dbContext, new FakeMemoryCache(),
+			await new QueryNetFramework(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
 				}, serviceScopeFactory).AddRangeAsync(expectedResult);
@@ -63,7 +63,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			new QueryNetFramework(dbContext, new FakeMemoryCache(),
+			new QueryNetFramework(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
 				}, serviceScopeFactory).AddRange(expectedResult);

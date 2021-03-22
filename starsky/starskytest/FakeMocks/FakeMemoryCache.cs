@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
@@ -11,13 +12,15 @@ namespace starskytest.FakeMocks
     public class FakeMemoryCache : IMemoryCache
     {
         private readonly ICacheEntry _fakeCacheEntry;
+        private readonly Dictionary<string, object> _items;
 
-        public FakeMemoryCache()
+        public FakeMemoryCache(Dictionary<string, object> items)
         {
             var services = new ServiceCollection();
             services.AddSingleton<ICacheEntry,FakeICacheEntry>();
             var serviceProvider = services.BuildServiceProvider();
             _fakeCacheEntry = serviceProvider.GetRequiredService<ICacheEntry>();
+            _items = items;
         }
         public void Dispose()
         {
@@ -25,17 +28,9 @@ namespace starskytest.FakeMocks
 
         public bool TryGetValue(object key, out object value)
         {
-            value = new FileIndexItem{Tags = "test"};
-            // this item does never exist in cache :)
-            if (key.ToString() == "info_" + new CreateAnImage().FullFilePath) return false;
-
-	        if ( key.ToString() == "search-t" )
-	        {
-		        value = new SearchViewModel { FileIndexItems = new List<FileIndexItem>{ new FileIndexItem
-			        {Tags = "t"}}};
-		        //return false; // <= so the cache does not exist
-	        }
-            return true;
+	        value = _items.FirstOrDefault(p => Equals(p.Key, key)).Value;
+	        
+	        return value != null;
         }
 
         public ICacheEntry CreateEntry(object key)

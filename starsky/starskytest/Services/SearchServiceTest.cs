@@ -595,7 +595,13 @@ namespace starskytest.Services
 		[TestMethod]
 		public void SearchService_cacheTest()
 		{
-			var searchService = new SearchService(_dbContext,new FakeMemoryCache(),new AppSettings());
+			var fakeCache =
+				new FakeMemoryCache(new Dictionary<string, object>{{"search-t",
+					new SearchViewModel { FileIndexItems = new List<FileIndexItem>{ 
+						new FileIndexItem {Tags = "t"}}
+					}} 
+				});
+			var searchService = new SearchService(_dbContext,fakeCache);
 			var result = searchService.Search("t"); // <= t is only to detect in fakeCache
 			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}

@@ -3,7 +3,7 @@ export default class UrlQuery {
     return "/api/health";
   }
   public HealthShouldContain(): string {
-    return "Health";
+    return "ealth";
   }
   public HealthVersionApi(version: string): string {
     return `/api/health/version?version=${version}`;
