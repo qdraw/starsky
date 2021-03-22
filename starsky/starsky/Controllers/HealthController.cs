@@ -78,7 +78,7 @@ namespace starsky.Controllers
 				var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
 				if (_cache != null && result.Status == HealthStatus.Healthy )
 				{
-					_cache.Set(cacheKey, result, new TimeSpan(0,2,0));
+					_cache.Set(cacheKey, result, new TimeSpan(0,1,30));
 				}
 				return result;
 			}
