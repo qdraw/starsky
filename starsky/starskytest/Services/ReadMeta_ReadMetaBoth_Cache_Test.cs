@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
@@ -17,16 +18,8 @@ namespace starskytest.Services
     [TestClass]
     public class ReadMeta_ReadMetaBoth_Cache_Test
     {
-        private ServiceProvider _serviceProvider;
-        private IMemoryCache _fakeCache;
 
-        public ReadMeta_ReadMetaBoth_Cache_Test()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IMemoryCache, FakeMemoryCache>();
-            _serviceProvider = services.BuildServiceProvider();
-            _fakeCache = _serviceProvider.GetRequiredService<IMemoryCache>();
-        }
+        
         [TestMethod]
         public void ReadMeta_ReadMetaBothTest_ReadBothWithFilePath()
         {
@@ -35,7 +28,9 @@ namespace starskytest.Services
 	        var iStorage = new StorageSubPathFilesystem(appsettings);
 
             var listofFiles = new List<string>{ new CreateAnImage().DbPath};
-            var listOfMetas = new ReadMeta(iStorage,appsettings,_fakeCache)
+            var fakeCache =
+	            new FakeMemoryCache(new Dictionary<string, object>());
+            var listOfMetas = new ReadMeta(iStorage,appsettings,fakeCache)
                 .ReadExifAndXmpFromFileAddFilePathHash(listofFiles);
             Assert.AreEqual(new CreateAnImage().DbPath.Remove(0,1), 
                 listOfMetas.FirstOrDefault().FileName);
@@ -46,8 +41,9 @@ namespace starskytest.Services
         {
             var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
 	        var iStorage = new StorageSubPathFilesystem(appsettings);
-
-            new ReadMeta(iStorage,appsettings, _fakeCache)
+	        var fakeCache =
+		        new FakeMemoryCache(new Dictionary<string, object>());
+            new ReadMeta(iStorage,appsettings, fakeCache)
                     .RemoveReadMetaCache("fakeString");
         }
 
@@ -65,7 +61,9 @@ namespace starskytest.Services
         public void ReadMeta_ReadMetaBothTest_FakeReadEntry()
         {
 	        var iStorage = new FakeIStorage();
-            Assert.AreEqual("test",new ReadMeta(iStorage,null, _fakeCache).ReadExifAndXmpFromFile("test").Tags);
+	        var fakeCache =
+		        new FakeMemoryCache(new Dictionary<string, object>{{"info_test",new FileIndexItem(){Tags = "test"}}});
+            Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache).ReadExifAndXmpFromFile("test").Tags);
         }
     }
 }
