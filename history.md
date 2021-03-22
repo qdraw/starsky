@@ -44,8 +44,8 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.7 _(Unreleased)_ - 2021-03-??
-- nothing yet
-
+- [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls
+  
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages
