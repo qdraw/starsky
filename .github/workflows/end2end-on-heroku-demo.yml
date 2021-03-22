@@ -14,7 +14,7 @@ jobs:
     - name: Run Cypress in Electron 
       uses: cypress-io/github-action@v2
       env:
-        CYPRESS_BASE_URL: https://starskydemo.herokuapp.com  
+        CYPRESS_BASE_URL: https://demostarsky.herokuapp.com  
         cypress_name: heroku-demo
         cypress_AUTH_USER: demo@qdraw.nl
         cypress_AUTH_PASS:  demo@qdraw.nl
