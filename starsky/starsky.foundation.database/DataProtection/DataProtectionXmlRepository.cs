@@ -10,6 +10,12 @@ using starsky.foundation.injection;
 
 namespace starsky.foundation.database.DataProtection
 {
+	/// <summary>
+	/// @see: https://nicolas.guelpa.me/blog/2017/01/11/dotnet-core-data-protection-keys-repository.html
+	/// @see: https://docs.microsoft.com/en-us/aspnet/core/security/data-protection/introduction?view=aspnetcore-5.0
+	/// @see: https://medium.com/@_kbremner/storing-asp-net-core-data-protection-keys-in-the-database-f284d13897b8
+	/// @see: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/web-farm
+	/// </summary>
 	[Service(typeof(IXmlRepository), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DataProtectionXmlRepository: IXmlRepository
 	{

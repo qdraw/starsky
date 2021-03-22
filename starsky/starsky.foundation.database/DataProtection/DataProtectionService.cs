@@ -1,8 +1,8 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace starsky.foundation.platform.Helpers
+namespace starsky.foundation.database.DataProtection
 {
 	public class DataProtectionService
 	{
