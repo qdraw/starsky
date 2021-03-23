@@ -54,7 +54,7 @@ describe("OnWheelMouseAction", () => {
     expect(setPosition).toBeCalledWith({ x: 3, y: 0, z: 0 });
   });
 
-  it("zoom - ignore middle of image when not passing in any values", () => {
+  it("zoom - ignore horizontal middle of image when not passing in any values", () => {
     const setPosition = jest.fn();
     new OnWheelMouseAction(
       { height: 40, width: 40 }, // image
@@ -76,6 +76,32 @@ describe("OnWheelMouseAction", () => {
     expect(setPosition).toBeCalledWith({
       x: -5.4,
       y: -8.4,
+      z: 0
+    });
+  });
+
+  it("zoom - ignore vertical middle of image when not passing in any values", () => {
+    const setPosition = jest.fn();
+    new OnWheelMouseAction(
+      { height: 40, width: 40 }, // image
+      setPosition,
+      { x: 0, y: 0, z: 0 } as any, // position
+      {
+        current: {
+          getBoundingClientRect: () => {
+            return {
+              y: 30,
+              width: 30
+            };
+          }
+        }
+      } as any,
+      jest.fn()
+    ).zoom(-3, 99);
+    expect(setPosition).toBeCalledTimes(1);
+    expect(setPosition).toBeCalledWith({
+      x: -8.4,
+      y: -5.4,
       z: 0
     });
   });
