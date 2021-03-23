@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.webtelemetry.Helpers;
@@ -204,6 +206,64 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext.Request.Headers["x-api-version"] = "0";
 			var noVersion = controller.Version() as ObjectResult;
 			Assert.AreEqual(202, noVersion.StatusCode);
+		}
+
+		[TestMethod]
+		public async Task CheckHealthAsyncWithTimeout_ShouldTimeout()
+		{
+			var result = await new HealthController(
+					new FakeHealthCheckService(true), null)
+				.CheckHealthAsyncWithTimeout(-1);
+			Assert.AreEqual(HealthStatus.Unhealthy, result.Status);
+		}
+		
+		[TestMethod]
+		public async Task CheckHealthAsyncWithTimeout_ShouldSucceed()
+		{
+			var result = await new HealthController(new FakeHealthCheckService(true), 
+					null)
+				.CheckHealthAsyncWithTimeout();
+			Assert.AreEqual(HealthStatus.Healthy, result.Status);
+		}
+
+		[TestMethod]
+		public async Task CheckHealthAsyncWithTimeout_IgnoreCachedUnHealthyInput()
+		{
+			var entry = new HealthReportEntry(
+				HealthStatus.Unhealthy,
+				"timeout",
+				TimeSpan.FromMilliseconds(1),
+				null,
+				null);
+			var cachedItem = new Dictionary<string, object> {{"health", new HealthReport(
+				new Dictionary<string, HealthReportEntry>{{"timeout",entry}}, 
+				TimeSpan.FromMilliseconds(0))}};
+			
+			var result = await new HealthController(
+					new FakeHealthCheckService(true),
+					null, null, new FakeMemoryCache(cachedItem))
+				.CheckHealthAsyncWithTimeout();
+			Assert.AreEqual(HealthStatus.Healthy, result.Status);
+		}
+		
+		[TestMethod]
+		public async Task CheckHealthAsyncWithTimeout_IgnoreCheckIfCachedInputIsHealthy()
+		{
+			var entry = new HealthReportEntry(
+				HealthStatus.Healthy,
+				"timeout",
+				TimeSpan.FromMilliseconds(1),
+				null,
+				null);
+			var cachedItem = new Dictionary<string, object> {{"health", new HealthReport(
+				new Dictionary<string, HealthReportEntry>{{"timeout",entry}}, 
+				TimeSpan.FromMilliseconds(0))}};
+			
+			var result = await new HealthController(
+					new FakeHealthCheckService(false),
+					null, null, new FakeMemoryCache(cachedItem))
+				.CheckHealthAsyncWithTimeout();
+			Assert.AreEqual(HealthStatus.Healthy, result.Status);
 		}
 	}
 }
