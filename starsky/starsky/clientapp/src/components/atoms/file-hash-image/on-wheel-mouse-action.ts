@@ -5,14 +5,14 @@ export class OnWheelMouseAction {
   private setPosition: React.Dispatch<React.SetStateAction<PositionObject>>;
   private position: PositionObject;
   private containerRef: React.RefObject<HTMLDivElement>;
-  private onWheelCallback: () => void;
+  private onWheelCallback: (z: number) => void;
 
   constructor(
     image: ImageObject,
     setPosition: React.Dispatch<React.SetStateAction<PositionObject>>,
     position: PositionObject,
     containerRef: React.RefObject<HTMLDivElement>,
-    onWheelCallback: () => void
+    onWheelCallback: (z: number) => void
   ) {
     this.image = image;
     this.setPosition = setPosition;
@@ -46,6 +46,7 @@ export class OnWheelMouseAction {
     // default is to align to the center
     if (eventclientX <= 0) eventclientX = rect.width / 2;
 
+    const z = this.position.z * scale;
     this.setPosition({
       ...this.position,
       x:
@@ -57,9 +58,9 @@ export class OnWheelMouseAction {
           eventclientX +
           rect.y) *
           sign,
-      z: this.position.z * scale
+      z
     });
 
-    this.onWheelCallback();
+    this.onWheelCallback(z);
   }
 }

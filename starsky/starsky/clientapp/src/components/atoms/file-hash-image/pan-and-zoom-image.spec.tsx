@@ -46,6 +46,7 @@ describe("PanAndZoomImage", () => {
       act(() => {
         document.dispatchEvent(ev);
       });
+      component.update();
 
       expect(component.find(".pan-zoom-image-container").html()).toContain(
         "transform: translate(-291px, -291px)"

@@ -3,6 +3,7 @@ import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
 import { OnLoadMouseAction } from "./on-load-mouse-action";
 import { OnMouseDownMouseAction } from "./on-mouse-down-mouse-action";
+import { OnMoveMouseTouchAction } from "./on-move-mouse-touch-action";
 import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 
 export interface IPanAndZoomImage {
@@ -10,7 +11,7 @@ export interface IPanAndZoomImage {
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   translateRotation: Orientation;
-  onWheelCallback(): void;
+  onWheelCallback(z: number): void;
   onResetCallback(): void;
   id?: string; // to known when a image is changed
 }
@@ -58,29 +59,32 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // only needed to re-render when the component is mounted
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const mouseup = () => {
       setPanning(false);
     };
-
-    const mousemove = (event: MouseEvent) => {
-      if (isPanning) {
-        setPosition({
-          ...position,
-          x: position.x + event.clientX - position.oldX,
-          y: position.y + event.clientY - position.oldY,
-          oldX: event.clientX,
-          oldY: event.clientY
-        });
-      }
+    // for performance reasons the classes is kept in a function
+    const mouseMove = (event: MouseEvent) => {
+      new OnMoveMouseTouchAction(isPanning, setPosition, position).mousemove(
+        event
+      );
+    };
+    const touchMove = (event: TouchEvent) => {
+      new OnMoveMouseTouchAction(isPanning, setPosition, position).touchMove(
+        event
+      );
     };
 
     window.addEventListener("mouseup", mouseup);
-    window.addEventListener("mousemove", mousemove);
+    window.addEventListener("mousemove", mouseMove);
+    window.addEventListener("touchmove", touchMove);
 
     return () => {
       window.removeEventListener("mouseup", mouseup);
-      window.removeEventListener("mousemove", mousemove);
+      window.removeEventListener("mousemove", mouseMove);
+      window.removeEventListener("touchmove", touchMove);
     };
   });
 
@@ -116,14 +120,17 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   // and reset
   useHotKeys({ key: "0", ctrlKeyOrMetaKey: true }, reset, []);
 
+  let className = "pan-zoom-image-container";
+  if (position.z !== 1) {
+    className = !isPanning
+      ? "pan-zoom-image-container grab"
+      : "pan-zoom-image-container is-panning";
+  }
+
   return (
     <>
       <div
-        className={
-          !isPanning
-            ? "pan-zoom-image-container grab"
-            : "pan-zoom-image-container is-panning"
-        }
+        className={className}
         ref={containerRef}
         onMouseDown={
           new OnMouseDownMouseAction(setPanning, position, setPosition)
@@ -173,22 +180,27 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
         </div>
       </div>
       <div className="gpx-controls">
-        <button
-          data-test="zoom_in"
-          title={"Zoom in"}
-          className="icon icon--zoom_in"
-          onClick={() => zoomIn()}
-        >
-          Zoom in
-        </button>
-        <button
-          title={"Zoom out"}
-          data-test="zoom_out"
-          className="icon icon--zoom_out"
-          onClick={() => zoomOut()}
-        >
-          Zoom out
-        </button>
+        <div className="gpx-controls--button">
+          <button
+            data-test="zoom_in"
+            title={"Zoom in"}
+            className="icon icon--zoom_in"
+            onClick={() => zoomIn()}
+          >
+            Zoom in
+          </button>
+        </div>
+        <div className="gpx-controls--button">
+          <button
+            title={"Zoom out"}
+            data-test="zoom_out"
+            className="icon icon--zoom_out"
+            onClick={() => zoomOut()}
+          >
+            Zoom out
+          </button>
+        </div>
+        <div className="gpx-controls--button spacer"></div>
       </div>
     </>
   );

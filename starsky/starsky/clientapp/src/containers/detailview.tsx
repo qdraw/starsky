@@ -142,6 +142,7 @@ const DetailView: React.FC<IDetailView> = () => {
   const [isError, setError] = React.useState(false);
   useEffect(() => {
     setError(false);
+    setUseGestures(true);
   }, [state.subPath]);
 
   // Reset Loading after changing page
@@ -240,13 +241,14 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   const mainRef = useRef<HTMLDivElement>(null);
+  const [isUseGestures, setUseGestures] = React.useState(true);
 
   useGestures(mainRef, {
     onSwipeLeft: () => {
-      next();
+      if (isUseGestures) next();
     },
     onSwipeRight: () => {
-      prev();
+      if (isUseGestures) prev();
     }
   });
 
@@ -310,6 +312,12 @@ const DetailView: React.FC<IDetailView> = () => {
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
               orientation={state.fileIndexItem.orientation}
+              onWheelCallback={() => {
+                if (isUseGestures) setUseGestures(false);
+              }}
+              onResetCallback={() => {
+                setUseGestures(true);
+              }}
             />
           ) : null}
 

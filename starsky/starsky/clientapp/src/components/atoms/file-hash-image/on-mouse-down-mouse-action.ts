@@ -18,17 +18,21 @@ export class OnMouseDownMouseAction {
   public onTouchStart = (e: TouchEvent) => {
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
+    console.log("-touchStart", clientX, clientY);
+
     e.preventDefault();
-    this.move(clientX, clientY);
+    this.down(clientX, clientY);
   };
 
   public onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
-    this.move(e.clientX, e.clientY);
+    this.down(e.clientX, e.clientY);
   };
 
-  public move = (clientX: number, clientY: number) => {
+  public down = (clientX: number, clientY: number) => {
     this.setPanning(true);
+    console.log(this.position);
+
     this.setPosition({
       ...this.position,
       oldX: clientX,

@@ -207,13 +207,22 @@
   z-index: 499;
   top: 50px;
   right: 0px;
-  padding-top: 5px;
-  padding-left: 5px;
-  width: 50px;
-
+  width: 70px;
   border-bottom-left-radius: 5px;
   color: white;
+}
+
+.gpx-controls--button {
+  padding-top: 5px;
+  padding-left: 5px;
+  margin-left: 20px;
   background-color: rgba(54, 56, 57, 0.3);
+  width: 50px;
+  cursor: not-allowed;
+}
+.gpx-controls--button.spacer {
+  background-color: transparent;
+  height: 30px;
 }
 
 .detailview--edit .gpx-controls {
@@ -232,6 +241,7 @@
   padding-right: 7px;
   margin-bottom: 5px;
   cursor: pointer;
+  text-indent: -9999px;
 }
 
 .gpx-controls .icon.icon--lock {

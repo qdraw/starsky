@@ -38,8 +38,6 @@ function useHotKeys(
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (new Keyboard().isInForm(event)) return;
-      console.log(event.key);
-
       if (!predefined || !predefined.key) {
         return;
       }
@@ -60,7 +58,6 @@ function useHotKeys(
         shiftKey: preDefinedShiftKey = false,
         ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
       } = predefined;
-      console.log(preDefinedCtrlKeyOrMetaKey);
 
       if (
         eventKey === preDefinedKey &&

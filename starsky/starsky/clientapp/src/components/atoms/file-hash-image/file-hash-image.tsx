@@ -13,6 +13,8 @@ export interface IFileHashImageProps {
   orientation?: Orientation;
   tags?: string;
   id?: string; // filepath to know when image is changed
+  onWheelCallback?(z: number): void;
+  onResetCallback?(): void;
 }
 
 const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
@@ -56,11 +58,13 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
       setError={props.setError}
       setIsLoading={props.setIsLoading}
       translateRotation={translateRotation}
-      onWheelCallback={() => {
+      onWheelCallback={(z) => {
         setImageUrl(new UrlQuery().UrlThumbnailZoom(props.fileHash, 1));
+        if (props.onWheelCallback) props.onWheelCallback(z);
       }}
       onResetCallback={() => {
         setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+        if (props.onResetCallback) props.onResetCallback();
       }}
       src={imageUrl}
     />
