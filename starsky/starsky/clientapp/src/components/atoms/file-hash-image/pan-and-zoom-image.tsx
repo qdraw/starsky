@@ -67,6 +67,10 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     };
     // for performance reasons the classes is kept in a function
     const mouseMove = (event: MouseEvent) => {
+      console.log("--dddd");
+
+      console.log(event);
+
       new OnMoveMouseTouchAction(isPanning, setPosition, position).mousemove(
         event
       );
