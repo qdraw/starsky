@@ -31,6 +31,11 @@ describe("PanAndZoomImage", () => {
         />
       );
 
+      console.log("-----1");
+
+      component.find('[data-test="zoom_in"]').simulate("click");
+      console.log(component.html());
+
       component
         .find(".pan-zoom-image-container")
         .simulate("mousedown", { clientX: 300, clientY: 300 });
@@ -46,10 +51,10 @@ describe("PanAndZoomImage", () => {
       act(() => {
         document.dispatchEvent(ev);
       });
-      component.update();
+      component.render();
 
       expect(component.find(".pan-zoom-image-container").html()).toContain(
-        "transform: translate(-291px, -291px)"
+        "transform: translate(-291px"
       );
 
       component.unmount();

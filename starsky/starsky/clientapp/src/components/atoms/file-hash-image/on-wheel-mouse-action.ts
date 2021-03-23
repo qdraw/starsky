@@ -46,6 +46,8 @@ export class OnWheelMouseAction {
     // default is to align to the center
     if (eventDeltaY <= 0) eventDeltaY = rect.height / 2;
     if (eventclientX <= 0) eventclientX = rect.width / 2;
+    if (!rect.x) rect.x = 0;
+    if (!rect.y) rect.y = 0;
 
     const z = this.position.z * scale;
     // DEBUG

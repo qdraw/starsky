@@ -51,7 +51,7 @@ describe("OnWheelMouseAction", () => {
     ).zoom(-3);
     expect(setPosition).toBeCalledTimes(1);
     // if not enabled is x": 4.5,
-    expect(setPosition).toBeCalledWith({ x: 3, y: NaN, z: 0 });
+    expect(setPosition).toBeCalledWith({ x: 3, y: 0, z: 0 });
   });
 
   it("zoom - ignore middle of image when not passing in any values", () => {
@@ -75,7 +75,7 @@ describe("OnWheelMouseAction", () => {
     expect(setPosition).toBeCalledTimes(1);
     expect(setPosition).toBeCalledWith({
       x: -5.4,
-      y: NaN,
+      y: -8.4,
       z: 0
     });
   });
