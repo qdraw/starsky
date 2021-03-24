@@ -29,7 +29,6 @@ export class OnMouseDownMouseAction {
 
   public down = (clientX: number, clientY: number) => {
     this.setPanning(true);
-    console.log(this.position);
 
     this.setPosition({
       ...this.position,
