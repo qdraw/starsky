@@ -44,8 +44,10 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.7 _(Unreleased)_ - 2021-03-??
-- [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls
-  
+- [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls (PR #332)
+- [x]   (Fixed) _Front-end_ Zoom function for mobile (DetailView) (PR #327/ Issue #317)
+- [x]   (Added) _Front-end_ Keyboard shortcuts Cmd + = and Cmd + - (DetailView) (PR #327/ Issue #317)
+
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages
