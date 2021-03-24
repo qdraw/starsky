@@ -245,9 +245,13 @@ const DetailView: React.FC<IDetailView> = () => {
 
   useGestures(mainRef, {
     onSwipeLeft: () => {
+      console.log("DEBUG ---swipe left");
+
       if (isUseGestures) next();
     },
     onSwipeRight: () => {
+      console.log("DEBUG ---swipe left");
+
       if (isUseGestures) prev();
     }
   });
