@@ -112,6 +112,7 @@ describe("FileHashImage", () => {
     expect(spyGet).toBeCalledWith(new UrlQuery().UrlThumbnailJsonApi("hash"));
 
     component.unmount();
+    console.log("===");
   });
 
   it("should ignore when DetectAutomaticRotation is true", async () => {
@@ -194,6 +195,16 @@ describe("FileHashImage", () => {
   });
 
   it("with onResetCallback it should set UrlThumbnailImage", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
     const panZoomObject = (props: any) => {
       return (
         <>
@@ -224,5 +235,52 @@ describe("FileHashImage", () => {
     expect(component.find("img").prop("src")).toBe(
       new UrlQuery().UrlThumbnailImage("hash", true)
     );
+  });
+
+  it("with onResetCallback it should set UrlThumbnailImage and pass callback", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onResetCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const onResetCallbackSpy = jest.fn();
+
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+        onResetCallback={onResetCallbackSpy}
+      />
+    );
+
+    // there is one problem with this test, is assumes the default value
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(component.find("img").prop("src")).toBe(
+      new UrlQuery().UrlThumbnailImage("hash", true)
+    );
+    expect(onResetCallbackSpy).toBeCalled();
   });
 });
