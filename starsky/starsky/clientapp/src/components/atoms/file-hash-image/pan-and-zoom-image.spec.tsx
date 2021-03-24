@@ -32,10 +32,7 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      console.log("-----1");
-
       component.find('[data-test="zoom_in"]').simulate("click");
-      console.log(component.html());
 
       component
         .find(".pan-zoom-image-container")

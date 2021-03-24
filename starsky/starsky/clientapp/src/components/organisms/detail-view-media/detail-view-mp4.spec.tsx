@@ -107,8 +107,6 @@ describe("DetailViewMp4", () => {
         .getDOMNode() as HTMLProgressElement;
       component.find("progress").simulate("click", { target: progress });
 
-      console.log(component.html());
-
       expect(component.find(".time").text()).toBe("0:00 / 0:00");
 
       expect(playSpy).toBeCalled();
