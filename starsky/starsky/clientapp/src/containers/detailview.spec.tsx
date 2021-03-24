@@ -2,8 +2,10 @@ import { globalHistory } from "@reach/router";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
+import * as FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
 import * as ContextDetailview from "../contexts/detailview-context";
 import * as useFetch from "../hooks/use-fetch";
+import * as useGestures from "../hooks/use-gestures/use-gestures";
 import * as useLocation from "../hooks/use-location";
 import { newIConnectionDefault } from "../interfaces/IConnectionDefault";
 import {
@@ -379,6 +381,111 @@ describe("DetailView", () => {
       expect(navigateSpy).toHaveBeenNthCalledWith(1, "/?f=/parentDirectory", {
         state: { filePath: "/parentDirectory/test.jpg" }
       });
+
+      component.unmount();
+    });
+    it("should update when swipe left", () => {
+      console.log("- - - -");
+
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: { ...globalHistory.location, search: "" },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const updateRelativeObjectSpy = jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockImplementationOnce(() => Promise.resolve() as any);
+
+      let handlerOnSwipeLeft: Function | undefined;
+      jest
+        .spyOn(useGestures, "default")
+        .mockImplementationOnce((_, handler) => {
+          handlerOnSwipeLeft = handler.onSwipeLeft;
+        })
+        .mockImplementationOnce(() => {});
+
+      const fakeElement = (
+        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+      ) => (
+        <>
+          <button
+            onClick={() => {
+              if (handlerOnSwipeLeft) {
+                handlerOnSwipeLeft();
+              }
+            }}
+            id="fake-button"
+          ></button>
+        </>
+      );
+
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
+      var component = mount(<TestComponent />);
+
+      component.find("#fake-button").simulate("click");
+
+      expect(updateRelativeObjectSpy).toBeCalled();
+
+      component.unmount();
+    });
+
+    it("should update when swipe right", () => {
+      console.log("- - - -");
+
+      const navigateSpy = jest.fn().mockResolvedValueOnce("");
+      const locationObject = {
+        location: { ...globalHistory.location, search: "" },
+        navigate: navigateSpy
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const updateRelativeObjectSpy = jest
+        .spyOn(UpdateRelativeObject.prototype, "Update")
+        .mockImplementationOnce(() => Promise.resolve() as any);
+
+      let handlerOnSwipeLeft: Function | undefined;
+      jest
+        .spyOn(useGestures, "default")
+        .mockImplementationOnce((_, handler) => {
+          handlerOnSwipeLeft = handler.onSwipeRight;
+        })
+        .mockImplementationOnce(() => {});
+
+      const fakeElement = (
+        props: React.PropsWithChildren<FileHashImage.IFileHashImageProps>
+      ) => (
+        <>
+          <button
+            onClick={() => {
+              if (handlerOnSwipeLeft) {
+                handlerOnSwipeLeft();
+              }
+            }}
+            id="fake-button"
+          ></button>
+        </>
+      );
+
+      jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
+      var component = mount(<TestComponent />);
+
+      component.find("#fake-button").simulate("click");
+
+      expect(updateRelativeObjectSpy).toBeCalled();
 
       component.unmount();
     });
