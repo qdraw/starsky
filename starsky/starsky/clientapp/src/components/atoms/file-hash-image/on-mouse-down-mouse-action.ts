@@ -18,8 +18,6 @@ export class OnMouseDownMouseAction {
   public onTouchStart = (e: TouchEvent) => {
     const clientX = e.touches[0].clientX;
     const clientY = e.touches[0].clientY;
-    console.log("-touchStart", clientX, clientY);
-
     e.preventDefault();
     this.down(clientX, clientY);
   };

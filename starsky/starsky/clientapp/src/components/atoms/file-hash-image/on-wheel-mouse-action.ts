@@ -49,21 +49,6 @@ export class OnWheelMouseAction {
     if (!rect.y) rect.y = 0;
 
     const z = this.position.z * scale;
-    // DEBUG
-    console.log({
-      ...this.position,
-      x:
-        this.position.x * scale -
-        (rect.width / 2 - eventclientX + rect.x) * sign,
-      y:
-        this.position.y * scale -
-        ((this.image.height * rect.width) / this.image.width / 2 -
-          eventclientX +
-          rect.y) *
-          sign,
-      z
-    });
-
     this.setPosition({
       ...this.position,
       x:
