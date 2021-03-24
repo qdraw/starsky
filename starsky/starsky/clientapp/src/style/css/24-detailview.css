@@ -244,6 +244,11 @@
   text-indent: -9999px;
 }
 
+.gpx-controls .icon:disabled {
+  background-color: #90a4ae;
+  cursor: not-allowed;
+}
+
 .gpx-controls .icon.icon--lock {
   mask-image: url("../images/baseline-lock-24px.svg");
 }
@@ -260,6 +265,11 @@
   mask-image: url("../images/baseline-zoom_out-24px.svg");
 }
 
+.gpx-controls .icon.icon--zoom_reset {
+  mask-image: url("../images/baseline-zoom_reset-24px.svg");
+}
+
+.gpx-controls .icon.icon--zoom_reset,
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
   text-indent: -9999px;

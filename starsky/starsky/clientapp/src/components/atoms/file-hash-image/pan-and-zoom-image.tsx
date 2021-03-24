@@ -200,6 +200,17 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
             Zoom out
           </button>
         </div>
+        <div className="gpx-controls--button">
+          <button
+            disabled={position.z === 1}
+            data-test="zoom_reset"
+            title={"Reset zoom"}
+            className={"icon icon--zoom_reset"}
+            onClick={() => reset()}
+          >
+            Zoom in
+          </button>
+        </div>
         <div className="gpx-controls--button spacer"></div>
       </div>
     </>
