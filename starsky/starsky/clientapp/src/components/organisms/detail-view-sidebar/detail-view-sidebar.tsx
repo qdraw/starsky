@@ -26,6 +26,7 @@ import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import DetailViewExifStatus from "../../atoms/detailview-exifstatus/detailview-exifstatus";
+import DetailViewInfoMakeModelAperture from "../../atoms/detailview-info-make-model-aperture/detailview-info-make-model-aperture";
 import FormControl from "../../atoms/form-control/form-control";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
@@ -377,30 +378,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             ""
           )}
 
-          {fileIndexItem.make &&
-          fileIndexItem.model &&
-          fileIndexItem.aperture &&
-          fileIndexItem.focalLength ? (
-            <div className="box">
-              <div className="icon icon--shutter-speed" />
-              <b>
-                <span data-test="make">{fileIndexItem.make}&nbsp;</span>
-                <span data-test="model">{fileIndexItem.model}</span>
-              </b>
-              <p>
-                f/<span data-test="aperture">{fileIndexItem.aperture}</span>
-                &nbsp;&nbsp;&nbsp;
-                {fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-                <span data-test="focalLength">
-                  {fileIndexItem.focalLength.toFixed(1)}
-                </span>{" "}
-                mm&nbsp;&nbsp;&nbsp;
-                {fileIndexItem.isoSpeed !== 0 ? (
-                  <>ISO {fileIndexItem.isoSpeed}</>
-                ) : null}
-              </p>
-            </div>
-          ) : null}
+          <DetailViewInfoMakeModelAperture fileIndexItem={fileIndexItem} />
 
           {fileIndexItem.lensModel ? (
             <div className="box">
