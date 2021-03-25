@@ -231,7 +231,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             {copyPasteAction}
           </Notification>
         ) : null}
-        <DetailViewExifStatus fileIndexItem={fileIndexItem} />
+        <DetailViewExifStatus status={fileIndexItem.status} />
         <div className="content--header">Tags</div>
         <div className="content--text">
           <FormControl
