@@ -228,7 +228,7 @@
 /* for small screens you cant click on next icon */
 @media screen and (max-height: 390px) {
   .gpx-controls {
-    width: 150px;
+    width: 200px;
     height: 70px;
   }
   .gpx-controls--button {
