@@ -156,33 +156,41 @@ const DetailViewGpx: React.FC = () => {
 
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
       <div className="main main--error main--gpx" ref={mapReference} />
       <div className="gpx-controls">
-        <button
-          data-test="lock"
-          className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
-          onClick={unLockLockToggle}
-        >
-          {isMapLocked ? "Unlock" : "Lock"}
-        </button>
-        <button
-          data-test="zoom_in"
-          className="icon icon--zoom_in"
-          onClick={zoomIn}
-        >
-          Zoom in
-        </button>
-        <button
-          data-test="zoom_out"
-          className="icon icon--zoom_out"
-          onClick={zoomOut}
-        >
-          Zoom out
-        </button>
-        <CurrentLocationButton
-          callback={changeLocation}
-        ></CurrentLocationButton>
+        <div className="gpx-controls--button">
+          <button
+            data-test="lock"
+            className={isMapLocked ? "icon icon--lock" : "icon icon--lock_open"}
+            onClick={unLockLockToggle}
+          >
+            {isMapLocked ? "Unlock" : "Lock"}
+          </button>
+        </div>
+        <div className="gpx-controls--button">
+          <button
+            data-test="zoom_in"
+            className="icon icon--zoom_in"
+            onClick={zoomIn}
+          >
+            Zoom in
+          </button>
+        </div>
+        <div className="gpx-controls--button">
+          <button
+            data-test="zoom_out"
+            className="icon icon--zoom_out"
+            onClick={zoomOut}
+          >
+            Zoom out
+          </button>
+        </div>
+        <div className="gpx-controls--button">
+          <CurrentLocationButton
+            callback={changeLocation}
+          ></CurrentLocationButton>
+        </div>
       </div>
     </>
   );

@@ -23,7 +23,7 @@ const SearchPage: FunctionComponent<RouteComponentProps<any>> = () => {
   return (
     <>
       {searchList.pageType === PageType.Loading ? (
-        <Preloader isOverlay={true} isDetailMenu={false}></Preloader>
+        <Preloader isOverlay={true} isWhite={false}></Preloader>
       ) : null}
       <ArchiveContextWrapper {...searchList.archive} />
     </>

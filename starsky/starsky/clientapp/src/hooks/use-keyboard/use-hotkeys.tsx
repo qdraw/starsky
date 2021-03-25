@@ -8,6 +8,7 @@ export interface IHotkeysKeyboardEvent {
   ctrlKey?: boolean;
   metaKey?: boolean;
   shiftKey?: boolean;
+  ctrlKeyOrMetaKey?: boolean;
 }
 /**
  * Use key with alt, ctrl, command or shift key
@@ -37,7 +38,6 @@ function useHotKeys(
   useEffect(() => {
     const handler = function (event: KeyboardEvent) {
       if (new Keyboard().isInForm(event)) return;
-
       if (!predefined || !predefined.key) {
         return;
       }
@@ -55,10 +55,26 @@ function useHotKeys(
         altKey: preDefinedAltKey = false,
         ctrlKey: preDefinedCtrlKey = false,
         metaKey: preDefinedMetaKey = false,
-        shiftKey: preDefinedShiftKey = false
+        shiftKey: preDefinedShiftKey = false,
+        ctrlKeyOrMetaKey: preDefinedCtrlKeyOrMetaKey = false
       } = predefined;
 
       if (
+        eventKey === preDefinedKey &&
+        eventAltKey === preDefinedAltKey &&
+        eventShiftKey === preDefinedShiftKey &&
+        preDefinedCtrlKeyOrMetaKey &&
+        !preDefinedCtrlKey &&
+        !preDefinedMetaKey &&
+        (eventCtrlKey || eventMetaKey)
+      ) {
+        event.preventDefault();
+        callback(event);
+        return;
+      }
+
+      if (
+        !preDefinedCtrlKeyOrMetaKey &&
         eventKey === preDefinedKey &&
         eventAltKey === preDefinedAltKey &&
         eventCtrlKey === preDefinedCtrlKey &&
@@ -74,7 +90,7 @@ function useHotKeys(
       window.removeEventListener("keydown", handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...dependencies, predefined, callback]);
+  });
 }
 
 export default useHotKeys;

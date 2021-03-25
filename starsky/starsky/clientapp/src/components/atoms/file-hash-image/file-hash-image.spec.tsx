@@ -151,7 +151,7 @@ describe("FileHashImage", () => {
     component.unmount();
   });
 
-  it("should replace source image when event is returned", () => {
+  it("onWheelCallback should replace source image when event is returned", () => {
     const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
       {
         statusCode: 500
@@ -191,5 +191,137 @@ describe("FileHashImage", () => {
     expect(component.find("img").prop("src")).toBe(
       new UrlQuery().UrlThumbnailZoom("hash", 1)
     );
+  });
+
+  it("onWheelCallback should return callback", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onWheelCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const onWheelCallbackSpy = jest.fn();
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+        onWheelCallback={onWheelCallbackSpy}
+      />
+    );
+
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(onWheelCallbackSpy).toBeCalled();
+  });
+
+  it("with onResetCallback it should set UrlThumbnailImage", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onResetCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+      />
+    );
+
+    // there is one problem with this test, is assumes the default value
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(component.find("img").prop("src")).toBe(
+      new UrlQuery().UrlThumbnailImage("hash", true)
+    );
+  });
+
+  it("with onResetCallback it should set UrlThumbnailImage and pass callback", () => {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        statusCode: 500
+      } as IConnectionDefault
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const panZoomObject = (props: any) => {
+      return (
+        <>
+          <img src={props.src} alt="test" />
+          <button onClick={props.onResetCallback}></button>
+        </>
+      );
+    };
+    jest
+      .spyOn(PanAndZoomImage, "default")
+      .mockImplementationOnce(panZoomObject)
+      .mockImplementationOnce(panZoomObject);
+
+    const onResetCallbackSpy = jest.fn();
+
+    const component = mount(
+      <FileHashImage
+        isError={false}
+        fileHash="hash"
+        orientation={Orientation.Horizontal}
+        onResetCallback={onResetCallbackSpy}
+      />
+    );
+
+    // there is one problem with this test, is assumes the default value
+    act(() => {
+      component.find("button").simulate("click");
+    });
+    component.update();
+
+    expect(component.find("img").prop("src")).toBe(
+      new UrlQuery().UrlThumbnailImage("hash", true)
+    );
+    expect(onResetCallbackSpy).toBeCalled();
   });
 });

@@ -11,7 +11,9 @@ describe('Warmup', () => {
   function retry (count = 0) {
     cy.request({
       failOnStatusCode: false,
-      url: config.url
+      retryOnNetworkFailure: true,
+      url: config.url,
+      timeout: 60000
     }).then((response) => {
       if (response.status === 200 || response.status === 401) {
         return

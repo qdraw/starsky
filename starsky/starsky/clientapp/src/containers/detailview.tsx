@@ -142,6 +142,7 @@ const DetailView: React.FC<IDetailView> = () => {
   const [isError, setError] = React.useState(false);
   useEffect(() => {
     setError(false);
+    setUseGestures(true);
   }, [state.subPath]);
 
   // Reset Loading after changing page
@@ -240,18 +241,19 @@ const DetailView: React.FC<IDetailView> = () => {
   }
 
   const mainRef = useRef<HTMLDivElement>(null);
+  const [isUseGestures, setUseGestures] = React.useState(true);
 
   useGestures(mainRef, {
     onSwipeLeft: () => {
-      next();
+      if (isUseGestures) next();
     },
     onSwipeRight: () => {
-      prev();
+      if (isUseGestures) prev();
     }
   });
 
   if (!state.fileIndexItem || !relativeObjects) {
-    return <Preloader parent={"/"} isDetailMenu={true} isOverlay={true} />;
+    return <Preloader parent={"/"} isWhite={true} isOverlay={true} />;
   }
 
   return (
@@ -261,8 +263,8 @@ const DetailView: React.FC<IDetailView> = () => {
         {isLoading ? (
           <Preloader
             parent={state.fileIndexItem.parentDirectory}
-            isDetailMenu={true}
-            isOverlay={true}
+            isWhite={true}
+            isOverlay={false}
           />
         ) : (
           ""
@@ -305,10 +307,17 @@ const DetailView: React.FC<IDetailView> = () => {
           {!isError && state.fileIndexItem.fileHash ? (
             <FileHashImage
               setError={setError}
+              id={state.fileIndexItem.filePath}
               isError={isError}
               setIsLoading={setIsLoading}
               fileHash={state.fileIndexItem.fileHash}
               orientation={state.fileIndexItem.orientation}
+              onWheelCallback={() => {
+                if (isUseGestures) setUseGestures(false);
+              }}
+              onResetCallback={() => {
+                setUseGestures(true);
+              }}
             />
           ) : null}
 

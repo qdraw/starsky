@@ -47,7 +47,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
       setSelect(urlObject.select);
     }
 
-    var preloader = <Preloader isOverlay={true} isDetailMenu={false} />;
+    var preloader = <Preloader isOverlay={true} isWhite={false} />;
     const [isPreloaderState, setPreloaderState] = React.useState(false);
 
     function preloaderStateOnClick(event: React.MouseEvent) {

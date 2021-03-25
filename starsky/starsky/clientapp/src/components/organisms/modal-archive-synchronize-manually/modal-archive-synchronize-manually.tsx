@@ -186,7 +186,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         props.handleExit();
       }}
     >
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : ""}
 
       <div className="modal content--subheader">
         {MessageSynchronizeManually}

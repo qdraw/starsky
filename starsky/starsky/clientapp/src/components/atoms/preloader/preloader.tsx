@@ -2,12 +2,13 @@ import React from "react";
 
 export interface IPreloaderProps {
   isOverlay: boolean;
-  isDetailMenu?: boolean;
+  isWhite?: boolean;
   isTransition?: boolean;
   parent?: string;
 }
 
 const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
+  const isWhiteClassName = props.isWhite ? "preloader--white" : null;
   return (
     <>
       {props.isOverlay ? (
@@ -21,7 +22,7 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
           <div className="preloader preloader--icon"></div>
         </div>
       ) : (
-        <div className="preloader preloader--icon"></div>
+        <div className={`preloader preloader--icon ${isWhiteClassName}`}></div>
       )}
     </>
   );

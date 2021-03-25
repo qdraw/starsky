@@ -24,7 +24,7 @@ const TrashPage: FunctionComponent<RouteComponentProps<any>> = () => {
       <Preloader
         isTransition={false}
         isOverlay={true}
-        isDetailMenu={false}
+        isWhite={false}
       ></Preloader>
     );
 

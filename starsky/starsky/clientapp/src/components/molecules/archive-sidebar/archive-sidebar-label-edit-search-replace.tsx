@@ -181,7 +181,7 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
         </Notification>
       ) : null}
 
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
 
       <h4>Tags:</h4>
       <FormControl

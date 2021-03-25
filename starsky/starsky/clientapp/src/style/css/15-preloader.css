@@ -37,6 +37,10 @@
   z-index: 410;
 }
 
+.preloader.preloader--icon.preloader--white {
+  background-color: white;
+}
+
 .preloader.preloader--inside {
   display: block;
   width: 100px;

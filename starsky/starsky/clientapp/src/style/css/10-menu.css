@@ -263,7 +263,6 @@
 @media screen and (max-width: 450px) {
   .header > .wrapper > .item--first {
     margin-left: 10px;
-    margin-top: 4px;
   }
 }
 

@@ -115,7 +115,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     if (props.itemsCount === 0 || colorClassUsage.length === 1) return <></>;
     return (
       <div className="colorclass colorclass--filter">
-        {isLoading ? <Preloader isDetailMenu={false} isOverlay={true} /> : null}
+        {isLoading ? <Preloader isWhite={false} isOverlay={true} /> : null}
         {props.colorClassActiveList.length !== 0
           ? resetButton
           : resetButtonDisabled}

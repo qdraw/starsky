@@ -203,61 +203,97 @@
 }
 
 .gpx-controls {
-  position: absolute;
-  z-index: 1002;
-  bottom: 10px;
-  left: 10px;
-  width: 300px;
-  height: 35px;
-  border-radius: 3px;
+  position: fixed;
+  z-index: 499;
+  top: 50px;
+  right: 0px;
+  width: 70px;
+  border-bottom-left-radius: 5px;
+  color: white;
+}
+
+.gpx-controls--button {
+  padding-top: 5px;
+  padding-left: 5px;
+  margin-left: 20px;
+  background-color: rgba(54, 56, 57, 0.3);
+  width: 50px;
+  cursor: not-allowed;
+}
+.gpx-controls--button.spacer {
+  background-color: transparent;
+  height: 30px;
+}
+
+/* for small screens you cant click on next icon */
+@media screen and (max-height: 390px) {
+  .gpx-controls {
+    width: 200px;
+    height: 70px;
+  }
+  .gpx-controls--button {
+    margin-left: 0px;
+    float: right;
+  }
+}
+
+.detailview--edit .gpx-controls {
+  right: 320px;
 }
 
 .current-location.icon,
 .gpx-controls .icon {
-  float: left;
   height: 40px;
-  background-repeat: no-repeat;
-  background-position: 5px;
-  padding-left: 33px;
+  width: 40px;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 28px 28px;
+  background-color: white;
+  padding-left: 20px;
   padding-right: 7px;
-  margin-right: 5px;
-  background-color: #fff;
+  margin-bottom: 5px;
   cursor: pointer;
+  text-indent: -9999px;
+}
+
+.gpx-controls .icon:disabled {
+  background-color: #90a4ae;
+  cursor: not-allowed;
 }
 
 .gpx-controls .icon.icon--lock {
-  background-image: url("../images/baseline-lock-24px.svg");
+  mask-image: url("../images/baseline-lock-24px.svg");
 }
 
 .gpx-controls .icon.icon--lock_open {
-  background-image: url("../images/baseline-lock_open-24px.svg");
-}
-
-.gpx-controls .icon.icon--lock,
-.gpx-controls .icon.icon--lock_open {
-  min-width: 86px;
+  mask-image: url("../images/baseline-lock_open-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_in {
-  background-image: url("../images/baseline-zoom_in-24px.svg");
+  mask-image: url("../images/baseline-zoom_in-24px.svg");
 }
 
 .gpx-controls .icon.icon--zoom_out {
-  background-image: url("../images/baseline-zoom_out-24px.svg");
+  mask-image: url("../images/baseline-zoom_out-24px.svg");
 }
 
+.gpx-controls .icon.icon--zoom_reset {
+  mask-image: url("../images/baseline-zoom_reset-24px.svg");
+}
+
+.gpx-controls .icon.icon--zoom_reset,
 .gpx-controls .icon.icon--zoom_in,
 .gpx-controls .icon.icon--zoom_out {
-  text-indent: -999px;
+  text-indent: -9999px;
   padding-left: 37px; /* needed for safari instead of 40 */
   background-position: 12px;
   max-width: 40px;
 }
 
 .current-location.icon.icon--location_on {
-  background-image: url("../images/baseline-location_on-24px.svg");
+  mask-image: url("../images/baseline-location_on-24px.svg");
 }
 
 .current-location.icon.icon--wrong_location {
-  background-image: url("../images/baseline-wrong_location-24px.svg");
+  mask-image: url("../images/baseline-wrong_location-24px.svg");
 }

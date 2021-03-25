@@ -203,7 +203,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
   return (
     <>
-      {isLoading ? <Preloader isDetailMenu={false} isOverlay={false} /> : ""}
+      {isLoading ? <Preloader isWhite={false} isOverlay={false} /> : ""}
       {isError ? (
         <Notification
           callback={() => setIsError("")}

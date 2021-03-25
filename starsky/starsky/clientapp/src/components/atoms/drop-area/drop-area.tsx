@@ -157,7 +157,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     <>
       {isLoading ? (
         <Portal>
-          <Preloader isDetailMenu={false} isOverlay={true} />
+          <Preloader isWhite={false} isOverlay={true} />
         </Portal>
       ) : null}
       {notificationStatus ? (
