@@ -225,6 +225,18 @@
   height: 30px;
 }
 
+/* for small screens you cant click on next icon */
+@media screen and (max-height: 390px) {
+  .gpx-controls {
+    width: 150px;
+    height: 70px;
+  }
+  .gpx-controls--button {
+    margin-left: 0px;
+    float: right;
+  }
+}
+
 .detailview--edit .gpx-controls {
   right: 320px;
 }
