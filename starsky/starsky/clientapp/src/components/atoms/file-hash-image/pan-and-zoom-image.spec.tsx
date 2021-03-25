@@ -258,5 +258,29 @@ describe("PanAndZoomImage", () => {
       expect(onResetCallbackSpy).toBeCalled();
       component.unmount();
     });
+
+    it("click on zoom in and reset button", () => {
+      jest.spyOn(OnWheelMouseAction.prototype, "zoom").mockRestore();
+
+      const onResetCallbackSpy = jest.fn();
+      const component = mount(
+        <PanAndZoomImage
+          src=""
+          setIsLoading={null as any}
+          translateRotation={Orientation.Horizontal}
+          onWheelCallback={jest.fn()}
+          onResetCallback={onResetCallbackSpy}
+        />
+      );
+
+      component.find("[data-test='zoom_in']").simulate("click");
+      component.update();
+
+      component.find("[data-test='zoom_reset']").simulate("click");
+
+      expect(onResetCallbackSpy).toBeCalled();
+
+      component.unmount();
+    });
   });
 });

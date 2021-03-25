@@ -109,8 +109,6 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
   }
 
   function reset() {
-    console.log("-[debug] reset is called");
-
     setPosition(defaultPosition);
     props.onResetCallback();
   }
