@@ -36,7 +36,7 @@ describe("DetailViewSidebar", () => {
   });
 
   it("test warning (without state component)", () => {
-    var wrapper = shallow(
+    var wrapper = mount(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
