@@ -25,6 +25,8 @@ import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import DetailViewExifStatus from "../../atoms/detailview-exifstatus/detailview-exifstatus";
+import DetailViewInfoMakeModelAperture from "../../atoms/detailview-info-make-model-aperture/detailview-info-make-model-aperture";
 import FormControl from "../../atoms/form-control/form-control";
 import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "../../molecules/color-class-select/color-class-select";
@@ -61,26 +63,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
     const MessageDateHour = language.text("uur", "hour");
     const MessageNounNameless = language.text("Naamloze", "Unnamed");
     const MessageLocation = language.text("locatie", "location");
-    const MessageReadOnlyFile = language.text(
-      "Alleen lezen bestand",
-      "Read only file"
-    );
-    const MessageNotFoundSourceMissing = language.text(
-      "Mist in de index",
-      "Misses in the index"
-    );
-    const MessageServerError = language.text(
-      "Er is iets mis met de input",
-      "Something is wrong with the input"
-    );
-    const MessageDeleted = language.text(
-      "Staat in de prullenmand",
-      "Is in the trash"
-    );
-    const MessageDeletedRestoreInstruction = language.text(
-      "'Zet terug uit prullenmand' om het item te bewerken",
-      "'Restore from Trash' to edit the item"
-    );
     const MessageCreationDate = language.text("Aanmaakdatum", "Creation date");
     const MessageCreationDateUnknownTime = language.text(
       "is op een onbekend moment",
@@ -250,39 +232,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             {copyPasteAction}
           </Notification>
         ) : null}
-        {fileIndexItem.status === IExifStatus.Deleted ||
-        fileIndexItem.status === IExifStatus.ReadOnly ||
-        fileIndexItem.status === IExifStatus.NotFoundSourceMissing ||
-        fileIndexItem.status === IExifStatus.ServerError ? (
-          <>
-            <div className="content--header">Status</div>
-            <div className="content content--text">
-              {fileIndexItem.status === IExifStatus.Deleted ? (
-                <>
-                  <div className="warning-box">{MessageDeleted}</div>
-                  {MessageDeletedRestoreInstruction}
-                </>
-              ) : null}
-              {fileIndexItem.status === IExifStatus.NotFoundSourceMissing ? (
-                <>
-                  <div className="warning-box">
-                    {MessageNotFoundSourceMissing}
-                  </div>{" "}
-                </>
-              ) : null}
-              {fileIndexItem.status === IExifStatus.ReadOnly ? (
-                <>
-                  <div className="warning-box">{MessageReadOnlyFile}</div>{" "}
-                </>
-              ) : null}
-              {fileIndexItem.status === IExifStatus.ServerError ? (
-                <>
-                  <div className="warning-box">{MessageServerError}</div>{" "}
-                </>
-              ) : null}
-            </div>
-          </>
-        ) : null}
+        <DetailViewExifStatus status={fileIndexItem.status} />
         <div className="content--header">Tags</div>
         <div className="content--text">
           <FormControl
@@ -428,30 +378,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
             ""
           )}
 
-          {fileIndexItem.make &&
-          fileIndexItem.model &&
-          fileIndexItem.aperture &&
-          fileIndexItem.focalLength ? (
-            <div className="box">
-              <div className="icon icon--shutter-speed" />
-              <b>
-                <span data-test="make">{fileIndexItem.make}&nbsp;</span>
-                <span data-test="model">{fileIndexItem.model}</span>
-              </b>
-              <p>
-                f/<span data-test="aperture">{fileIndexItem.aperture}</span>
-                &nbsp;&nbsp;&nbsp;
-                {fileIndexItem.shutterSpeed} sec&nbsp;&nbsp;&nbsp;
-                <span data-test="focalLength">
-                  {fileIndexItem.focalLength.toFixed(1)}
-                </span>{" "}
-                mm&nbsp;&nbsp;&nbsp;
-                {fileIndexItem.isoSpeed !== 0 ? (
-                  <>ISO {fileIndexItem.isoSpeed}</>
-                ) : null}
-              </p>
-            </div>
-          ) : null}
+          <DetailViewInfoMakeModelAperture fileIndexItem={fileIndexItem} />
 
           {fileIndexItem.lensModel ? (
             <div className="box">
