@@ -116,6 +116,8 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       : "";
     setItemName(toUpdateItemName);
 
+    console.log("[debug] toUpdateItemName " + toUpdateItemName);
+
     if (toUpdateItemName === "") {
       setExistItemName(false);
       return;
