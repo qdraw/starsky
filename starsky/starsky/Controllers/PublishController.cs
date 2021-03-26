@@ -111,7 +111,7 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		public IActionResult Exist(string itemName)
 		{
-			return Json(CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
+			return Json(string.IsNullOrEmpty(itemName) || CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
 		}
 
 		private bool CheckIfNameExist(string slugItemName)
