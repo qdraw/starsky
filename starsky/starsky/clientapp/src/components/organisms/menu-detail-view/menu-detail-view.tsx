@@ -21,6 +21,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
+import MenuOptionPublishButton from "../../molecules/menu-option-publish-button/menu-option-publish-button";
 import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
@@ -457,6 +458,10 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             >
               {MessageRotateToRight}
             </li>
+            <MenuOptionPublishButton
+              select={[state.fileIndexItem.fileName]}
+              stateFileIndexItems={[state.fileIndexItem]}
+            />
           </MoreMenu>
         </div>
       </header>
