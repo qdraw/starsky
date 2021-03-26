@@ -111,11 +111,12 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(void), 401)]
 		public IActionResult Exist(string itemName)
 		{
-			return Json(string.IsNullOrEmpty(itemName) || CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
+			return Json(CheckIfNameExist(_appSettings.GenerateSlug(itemName)));
 		}
 
 		private bool CheckIfNameExist(string slugItemName)
 		{
+			if ( string.IsNullOrEmpty(slugItemName) ) return true;
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
 			return _hostStorage.ExistFolder(location) || _hostStorage.ExistFile(location + ".zip");
 		}

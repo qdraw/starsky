@@ -11,11 +11,6 @@ import ModalPublish from "./modal-publish";
 
 describe("ModalPublish", () => {
   it("renders", () => {
-    // interface IModalExportProps {
-    //   isOpen: boolean;
-    //   select: Array<string> | undefined;
-    //   handleExit: Function;
-    // }
     shallow(
       <ModalPublish
         select={["/"]}
@@ -240,5 +235,67 @@ describe("ModalPublish", () => {
     act(() => {
       modal.unmount();
     });
+  });
+
+  it("undo typing", async () => {
+    console.log("undo typing");
+
+    jest.spyOn(Modal, "default").mockRestore();
+
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: ["_default"]
+    } as IConnectionDefault;
+
+    jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    const fetchGetSpy = jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => {
+        return Promise.resolve({
+          statusCode: 200,
+          data: true
+        } as IConnectionDefault);
+      });
+
+    const modal = mount(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+
+    act(() => {
+      // update component + now press a key
+      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
+      modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
+    });
+
+    // need await for update
+    await act(async () => {
+      await modal.render();
+    });
+
+    expect(modal.html()).toContain('class="warning-box"');
+
+    // and now undo
+    act(() => {
+      // update component + now press a key
+      modal.find('[data-name="item-name"]').getDOMNode().textContent = "";
+      modal.find('[data-name="item-name"]').simulate("input", { key: "" });
+    });
+
+    // should only send get once. the second time should be avoid due sending emthy string
+
+    expect(fetchGetSpy).toBeCalled();
+    expect(fetchGetSpy).toBeCalledTimes(1);
   });
 });
