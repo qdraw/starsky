@@ -178,6 +178,19 @@ namespace starskytest.Controllers
 			Assert.IsFalse(storage.ExistFolder(Path.DirectorySeparatorChar + "test"));
 			Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.zip"));
 		}
-		
+
+		[TestMethod]
+		public void Exist_EmptyString()
+		{
+			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(new List<FileIndexItem>()),
+				new FakeSelectorStorage(),
+				_bgTaskQueue);
+			var actionResult = controller.Exist(string.Empty)as JsonResult;
+			var result = actionResult.Value is bool;
+			Assert.IsTrue(result);
+		}
+
 	}
 }
