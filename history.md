@@ -47,6 +47,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls (PR #332)
 - [x]   (Fixed) _Front-end_ Zoom function for mobile (DetailView) (PR #327/ Issue #317)
 - [x]   (Added) _Front-end_ Keyboard shortcuts Cmd + = and Cmd + - (DetailView) (PR #327/ Issue #317)
+- [x]   (Fixed)  _Back-end_  Sending empty string on "/api/publish/exist" should return true (PR #334)
+- [x]   (Fixed)  _Front-end_  Add publish option to Search and DetailView (PR #335/ Issue #298)
 
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
