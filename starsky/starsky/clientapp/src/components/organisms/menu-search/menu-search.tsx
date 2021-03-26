@@ -14,6 +14,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
+import MenuOptionPublishButton from "../../molecules/menu-option-publish-button/menu-option-publish-button";
 import ModalDownload from "../modal-download/modal-download";
 import NavContainer from "../nav-container/nav-container";
 
@@ -200,6 +201,10 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
               >
                 Download
               </li>
+              <MenuOptionPublishButton
+                select={select}
+                stateFileIndexItems={state.fileIndexItems}
+              />
             </MoreMenu>
           ) : null}
 
