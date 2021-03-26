@@ -115,6 +115,12 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
       ? event.target.textContent.trim()
       : "";
     setItemName(toUpdateItemName);
+
+    if (!toUpdateItemName) {
+      setExistItemName(false);
+      return;
+    }
+
     FetchGet(new UrlQuery().UrlPublishExist(toUpdateItemName)).then(
       (result) => {
         if (result.statusCode !== 200) return;
