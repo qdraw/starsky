@@ -25,7 +25,7 @@
   "Microsoft.Extensions.Identity.Stores 3.1.13",
   "Microsoft.EntityFrameworkCore 3.1.13",
   "Microsoft.EntityFrameworkCore.Relational 3.1.13",
-  "Newtonsoft.Json 12.0.3",
+  "Newtonsoft.Json 13.0.1",
   "Pomelo.EntityFrameworkCore.MySql 3.2.4",
   "System.ComponentModel.Annotations 5.0.0",
   "Microsoft.AspNetCore.Http 2.2.2",
