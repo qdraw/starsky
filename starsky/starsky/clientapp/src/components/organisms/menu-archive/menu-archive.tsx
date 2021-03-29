@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   ArchiveContext,
   defaultStateFallback
@@ -15,16 +15,17 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import DropArea from "../../atoms/drop-area/drop-area";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
+import MenuOption from "../../atoms/menu-option/menu-option";
 import ModalDropAreaFilesAdded from "../../atoms/modal-drop-area-files-added/modal-drop-area-files-added";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
-import MenuOptionPublishButton from "../../molecules/menu-option-publish-button/menu-option-publish-button";
 import ModalArchiveMkdir from "../modal-archive-mkdir/modal-archive-mkdir";
 import ModalArchiveRename from "../modal-archive-rename/modal-archive-rename";
 import ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manually/modal-archive-synchronize-manually";
 import ModalDisplayOptions from "../modal-display-options/modal-display-options";
 import ModalDownload from "../modal-download/modal-download";
+import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
 
 interface IMenuArchiveProps {}
@@ -46,10 +47,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
     "Weergave opties",
     "Display options"
   );
-  const MessageSynchronizeManually = language.text(
-    "Handmatig synchroniseren",
-    "Synchronize manually"
-  );
+
   const MessageSelectFurther = language.text(
     "Verder selecteren",
     "Select further"
@@ -90,7 +88,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   var toggleLabels = () =>
     new Sidebar(sidebar, setSidebar, history).toggleSidebar();
 
-  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+  const [isModalExportOpen, setModalExportOpen] = useState(false);
+  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
 
   // Selection
   const [select, setSelect] = React.useState(
@@ -202,6 +201,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
         />
       ) : null}
 
+      <ModalPublishToggleWrapper
+        select={select}
+        stateFileIndexItems={state.fileIndexItems}
+        isModalPublishOpen={isModalPublishOpen}
+        setModalPublishOpen={setModalPublishOpen}
+      />
+
       {/* Menu */}
       <header
         className={
@@ -275,15 +281,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               >
                 {MessageDisplayOptions}
               </li>
-              <li
-                className="menu-option"
-                data-test="synchronize-manually"
-                onClick={() =>
-                  setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)
-                }
-              >
-                {MessageSynchronizeManually}
-              </li>
+              <MenuOption
+                testName="synchronize-manually"
+                isSet={isSynchronizeManuallyOpen}
+                set={setSynchronizeManuallyOpen}
+                nl="Handmatig synchroniseren"
+                en="Synchronize manually"
+              />
               {state ? <UploadMenuItem /> : null}
               <li
                 className={
@@ -317,27 +321,30 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
                 </li>
               ) : null}
               {select.length >= 1 ? (
-                <li
-                  data-test="export"
-                  className="menu-option"
-                  onClick={() => setModalExportOpen(!isModalExportOpen)}
-                >
-                  Download
-                </li>
+                <>
+                  <MenuOption
+                    testName="export"
+                    isSet={isModalExportOpen}
+                    set={setModalExportOpen}
+                    nl="Download"
+                    en="Download"
+                  />
+                  <MenuOption
+                    testName="publish"
+                    isSet={isModalPublishOpen}
+                    set={setModalPublishOpen}
+                    nl="Publiceren"
+                    en="Publish"
+                  />
+                  <MenuOptionMoveToTrash
+                    state={state}
+                    dispatch={dispatch}
+                    select={select}
+                    setSelect={setSelect}
+                    isReadOnly={isReadOnly}
+                  />
+                </>
               ) : null}
-              {select.length >= 1 ? (
-                <MenuOptionPublishButton
-                  select={select}
-                  stateFileIndexItems={state.fileIndexItems}
-                />
-              ) : null}
-              <MenuOptionMoveToTrash
-                state={state}
-                dispatch={dispatch}
-                select={select}
-                setSelect={setSelect}
-                isReadOnly={isReadOnly}
-              />
               <li
                 className="menu-option"
                 data-test="display-options"
@@ -345,15 +352,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
               >
                 {MessageDisplayOptions}
               </li>
-              <li
-                className="menu-option"
-                data-test="synchronize-manually"
-                onClick={() =>
-                  setSynchronizeManuallyOpen(!isSynchronizeManuallyOpen)
-                }
-              >
-                {MessageSynchronizeManually}
-              </li>
+              <MenuOption
+                testName="synchronize-manually"
+                isSet={isSynchronizeManuallyOpen}
+                set={setSynchronizeManuallyOpen}
+                nl="Handmatig synchroniseren"
+                en="Synchronize manually"
+              />
               {state ? <UploadMenuItem /> : null}
             </MoreMenu>
           ) : null}

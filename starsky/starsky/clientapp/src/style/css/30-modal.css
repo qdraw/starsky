@@ -9,7 +9,7 @@ div.modal-bg {
   transition: opacity 250ms ease 250ms;
   pointer-events: none;
   touch-action: none;
-  z-index: 600;
+  z-index: 700;
 }
 
 div.modal-bg.modal-bg--open {
