@@ -19,12 +19,13 @@ import { Language } from "../../../shared/language";
 import { ClearSearchCache } from "../../../shared/search/clear-search-cache";
 import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
+import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
-import MenuOptionPublishButton from "../../molecules/menu-option-publish-button/menu-option-publish-button";
 import ModalDetailviewRenameFile from "../modal-detailview-rename-file/modal-detailview-rename-file";
 import ModalDownload from "../modal-download/modal-download";
 import ModalMoveFile from "../modal-move-file/modal-move-file";
+import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 
 export interface MenuDetailViewProps {
   state: IDetailView;
@@ -288,6 +289,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
   const [isModalExportOpen, setModalExportOpen] = React.useState(false);
   const [isModalRenameFileOpen, setModalRenameFileOpen] = React.useState(false);
   const [isModalMoveFile, setModalMoveFile] = React.useState(false);
+  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
 
   const goToParentFolderJSX: JSX.Element | null = isSearchQuery ? (
     <li
@@ -340,6 +342,13 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           isOpen={isModalMoveFile}
         />
       ) : null}
+
+      <ModalPublishToggleWrapper
+        select={[state.fileIndexItem.fileName]}
+        stateFileIndexItems={[state.fileIndexItem]}
+        isModalPublishOpen={isModalPublishOpen}
+        setModalPublishOpen={setModalPublishOpen}
+      />
 
       <header
         className={
@@ -458,9 +467,12 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             >
               {MessageRotateToRight}
             </li>
-            <MenuOptionPublishButton
-              select={[state.fileIndexItem.fileName]}
-              stateFileIndexItems={[state.fileIndexItem]}
+            <MenuOption
+              testName="publish"
+              isSet={isModalPublishOpen}
+              set={setModalPublishOpen}
+              nl="Publiceren"
+              en="Publish"
             />
           </MoreMenu>
         </div>

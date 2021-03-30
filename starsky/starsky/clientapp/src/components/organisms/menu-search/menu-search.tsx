@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArchiveAction,
   defaultStateFallback
@@ -11,11 +11,12 @@ import { Select } from "../../../shared/select";
 import { Sidebar } from "../../../shared/sidebar";
 import { URLPath } from "../../../shared/url-path";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
+import MenuOption from "../../atoms/menu-option/menu-option";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import MenuOptionMoveToTrash from "../../molecules/menu-option-move-to-trash/menu-option-move-to-trash";
-import MenuOptionPublishButton from "../../molecules/menu-option-publish-button/menu-option-publish-button";
 import ModalDownload from "../modal-download/modal-download";
+import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
 import NavContainer from "../nav-container/nav-container";
 
 export interface IMenuSearchProps {
@@ -75,7 +76,8 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
     new Sidebar(sidebar, setSidebar, history).toggleSidebar();
 
   // download modal
-  const [isModalExportOpen, setModalExportOpen] = React.useState(false);
+  const [isModalExportOpen, setModalExportOpen] = useState(false);
+  const [isModalPublishOpen, setModalPublishOpen] = useState(false);
 
   return (
     <>
@@ -95,6 +97,13 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
           isOpen={isModalExportOpen}
         />
       ) : null}
+
+      <ModalPublishToggleWrapper
+        select={select}
+        stateFileIndexItems={state.fileIndexItems}
+        isModalPublishOpen={isModalPublishOpen}
+        setModalPublishOpen={setModalPublishOpen}
+      />
 
       <header
         className={
@@ -187,23 +196,26 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                   {MessageSelectAll}
                 </li>
               ) : null}
+              <MenuOption
+                testName="export"
+                isSet={isModalExportOpen}
+                set={setModalExportOpen}
+                nl="Download"
+                en="Download"
+              />
+              <MenuOption
+                testName="publish"
+                isSet={isModalPublishOpen}
+                set={setModalPublishOpen}
+                nl="Publiceren"
+                en="Publish"
+              />
               <MenuOptionMoveToTrash
                 state={state}
                 dispatch={dispatch}
                 select={select}
                 setSelect={setSelect}
                 isReadOnly={false}
-              />
-              <li
-                data-test="export"
-                className="menu-option"
-                onClick={() => setModalExportOpen(!isModalExportOpen)}
-              >
-                Download
-              </li>
-              <MenuOptionPublishButton
-                select={select}
-                stateFileIndexItems={state.fileIndexItems}
               />
             </MoreMenu>
           ) : null}

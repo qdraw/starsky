@@ -49,9 +49,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_ Keyboard shortcuts Cmd + = and Cmd + - (DetailView) (PR #327/ Issue #317)
 - [x]   (Fixed)  _Back-end_  Sending empty string on "/api/publish/exist" should return true (PR #334)
 - [x]   (Added)  _Front-end_  Add publish option to Search and DetailView (PR #335/ Issue #298)
-- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.13 (using SDK 3.1.407)
-- [x]   (Changed) _Tools_ make it easier to deploy starsky with the new pm2 instances bash script to auto download releases
-
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.13 (using SDK 3.1.407) (PR #338 & #337)
+- [x]   (Changed) _Tools_ make it easier to deploy starsky with the new pm2 instances bash script to auto download releases (PR #341)
+- [x]   (Fixed) _Front-end_ Publish selection click in modal closes and opens more menu in the right corner of the screen (PR #339/ Issue #336) 
+  
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages

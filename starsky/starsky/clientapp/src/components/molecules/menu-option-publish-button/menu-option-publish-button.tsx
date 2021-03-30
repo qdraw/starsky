@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { Language } from "../../../shared/language";
@@ -8,12 +8,17 @@ import ModalPublish from "../../organisms/modal-publish/modal-publish";
 interface MoreMenuPublishButtonProps {
   select: string[];
   stateFileIndexItems: IFileIndexItem[];
+  isModalPublishOpen: boolean;
+  setModalPublishOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MenuOptionPublishButton: React.FunctionComponent<MoreMenuPublishButtonProps> = memo(
-  ({ select, stateFileIndexItems }) => {
-    const [isModalPublishOpen, setModalPublishOpen] = useState(false);
-
+  ({
+    select,
+    stateFileIndexItems,
+    isModalPublishOpen,
+    setModalPublishOpen
+  }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
     const MessagePublish = language.text("Publiceren", "Publish");
