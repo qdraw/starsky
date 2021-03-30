@@ -184,6 +184,7 @@ export class URLPath {
   }
 
   public StartOnSlash(input: string): string {
+    if (!input) throw new Error("should pass any input");
     if (input.startsWith("/")) return input;
     return "/" + input;
   }
@@ -289,7 +290,7 @@ export class URLPath {
     var subPaths: string[] = [];
 
     fileIndexItems.forEach((item) => {
-      if (select.indexOf(item.fileName) >= 0) {
+      if (item.fileName && select.indexOf(item.fileName) >= 0) {
         if (item.parentDirectory === "/") item.parentDirectory = ""; // no double slash in front of path
         subPaths.push(
           item.parentDirectory + new URLPath().StartOnSlash(item.fileName)

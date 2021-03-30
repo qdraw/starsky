@@ -25,7 +25,7 @@ const ModalPublishToggleWrapper: React.FunctionComponent<IModalPublishWrapperPro
       : [];
     return (
       <>
-        {isModalPublishOpen ? (
+        {select && isModalPublishOpen ? (
           <ModalPublish
             handleExit={() => setModalPublishOpen(!isModalPublishOpen)}
             select={selectFallback}
