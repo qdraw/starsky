@@ -147,60 +147,28 @@ except for the executable files</p>
 <p>You could try to clean the temp Folder This is located on Mac OS: <code>~/Library/Application\ Support/starsky/</code> and Windows: <code>C:\Users&amp;lt;user&amp;gt;\AppData\Roaming\starsky\</code></p>
 <h3 id="bash-build-and-configuration-scripts">Bash build and configuration scripts</h3>
 <p>Those scripts are optional and used for configuration.</p>
-<h4 id="pm2-pm2-new-instancesh">pm2 <code>pm2-new-instance.sh</code></h4>
+<h4 id="pm2-pm2-install-latest-releasesh">pm2 <code>./pm2-install-latest-release.sh</code></h4>
+<p>To install and upgrade to the latest stable release run this script</p>
+<p>It uses the following default parameters</p>
+<pre><code class="sh language-sh">--name starsky
+--runtime linux-arm</code></pre>
+<h4 id="pm2-pm2-new-instancesh">pm2 <code>./pm2-new-instance.sh</code></h4>
 <p>The script <a href="starsky/pm2-new-instance.sh"><code>pm2-new-instance.sh</code></a> is a script to setup Starsky using <a href="http://pm2.keymetrics.io/">pm2</a>.</p>
+<p>You should install pm2 before running this script</p>
+<p>It uses the following env settings</p>
 <pre><code class="sh language-sh"> export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"</code></pre>
-<h4 id="pm2-pm2-deploy-on-envsh">pm2 <code>pm2-deploy-on-env.sh</code></h4>
-<p>To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.</p>
-<h4 id="pm2-pm2-warmupsh">pm2 <code>pm2-warmup.sh</code></h4>
+<ul>
+<li>It uses by default the name <code>starsky</code> in pm2</li>
+<li>If this name already exist, it overwrite this name with the new location</li>
+</ul>
+<h4 id="pm2-pm2-deploy-on-envsh">pm2 <code>./pm2-deploy-on-env.sh</code></h4>
+<p>To update starsky-$RUNTIME.zip with the content of the folder and to remove the content of the parent folder of this script. <br />
+The following content are not deleted: app settings, temp, zip files and database files. <br />
+The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.</p>
+<h4 id="pm2-pm2-warmupsh">pm2 <code>./pm2-warmup.sh</code></h4>
 <p>To warmup the installation after a restart this bash script is provided</p>
-<p>If you prefer a Powershell script, you could use the following script:</p>
-<pre><code class="Powershell language-Powershell">$TestUrl = "$(testUrl)"
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Write-Output "Starting"
-$MaxAttempts = 5
-If (![string]::IsNullOrWhiteSpace($TestUrl)) {
-    Write-Output "Making request to $TestUrl"
-    Try {
-        $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-        # Allow redirections on the warm up
-        $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
-        $stopwatch.Stop()
-        $statusCode = [int]$response.StatusCode
-        $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
-        Write-Output "$statusCode Warmed Up Site $TestUrl in $stopWatchMilliSeconds ms"
-    } catch {
-        $_.Exception|format-list -force
-    }
-    For ($i = 0; $i -lt $MaxAttempts; $i++) {
-        try {
-            Write-Output "Checking Site"
-            $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-            # Don't allow redirections on the check
-            $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
-            $stopwatch.Stop()
-            $statusCode = [int]$response.StatusCode
-            $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
-            Write-Output "$statusCode Second request took $stopWatchMilliSeconds ms"
-            If ($statusCode -ge 200 -And $statusCode -lt 400) {
-                break;
-            }
-            Start-Sleep -s 2
-        } catch {
-            $_.Exception|format-list -force
-            Start-Sleep -s 30
-        }
-    }
-    If ($statusCode -ge 200 -And $statusCode -lt 400) {
-        # YES!, it worked
-    } Else {
-        throw "Warm up failed for " + $TestUrl
-    }
-} Else {
-    Write-Output "No TestUrl configured for this machine."
-}
-Write-Output "Done"</code></pre>
+<p>If you prefer a Powershell script, you could use <code>pm2-warmup.ps1</code></p>
 <h4 id="publish-scripts-for-self-containing-binaries">Publish-scripts for 'self containing' binaries</h4>
 <p>The scripts that are used to create a full build. (Linux has <code>libunwind8</code> and <code>gettext</code> as dependency)</p>
 <p>The Cake script provide options to build for specific runtimes.</p>
