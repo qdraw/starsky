@@ -49,6 +49,7 @@ cd "$(dirname "$0")"
 export ASPNETCORE_URLS="http://localhost:4823/"
 export ASPNETCORE_ENVIRONMENT="Production"
 
+# only asked with --appinsights true parameter
 if [ ! -z "$USEAPPINSIGHTS" ];
 then
     echo "Copy the App Insights key string and press [ENTER]:"
