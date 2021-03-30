@@ -281,4 +281,20 @@ describe("url-path", () => {
       expect(encoded).toBe("%2B");
     });
   });
+
+  describe("StartOnSlash", () => {
+    it("undefined input", () => {
+      try {
+        new URLPath().StartOnSlash("");
+      } catch (error) {
+        return;
+      }
+      throw new Error("should not pass");
+    });
+
+    it("/", () => {
+      var encoded = new URLPath().StartOnSlash("+");
+      expect(encoded).toBe("/");
+    });
+  });
 });
