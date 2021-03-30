@@ -293,8 +293,18 @@ describe("url-path", () => {
     });
 
     it("/", () => {
-      var encoded = new URLPath().StartOnSlash("+");
+      var encoded = new URLPath().StartOnSlash("/");
       expect(encoded).toBe("/");
+    });
+
+    it("test", () => {
+      var encoded = new URLPath().StartOnSlash("test");
+      expect(encoded).toBe("/test");
+    });
+
+    it("/test", () => {
+      var encoded = new URLPath().StartOnSlash("/test");
+      expect(encoded).toBe("/test");
     });
   });
 });
