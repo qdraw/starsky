@@ -196,31 +196,27 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
                   {MessageSelectAll}
                 </li>
               ) : null}
-              {select.length >= 1 ? (
-                <>
-                  <MenuOption
-                    testName="export"
-                    isSet={isModalExportOpen}
-                    set={setModalExportOpen}
-                    nl="Download"
-                    en="Download"
-                  />
-                  <MenuOption
-                    testName="publish"
-                    isSet={isModalPublishOpen}
-                    set={setModalPublishOpen}
-                    nl="Publiceren"
-                    en="Publish"
-                  />
-                  <MenuOptionMoveToTrash
-                    state={state}
-                    dispatch={dispatch}
-                    select={select}
-                    setSelect={setSelect}
-                    isReadOnly={false}
-                  />
-                </>
-              ) : null}
+              <MenuOption
+                testName="export"
+                isSet={isModalExportOpen}
+                set={setModalExportOpen}
+                nl="Download"
+                en="Download"
+              />
+              <MenuOption
+                testName="publish"
+                isSet={isModalPublishOpen}
+                set={setModalPublishOpen}
+                nl="Publiceren"
+                en="Publish"
+              />
+              <MenuOptionMoveToTrash
+                state={state}
+                dispatch={dispatch}
+                select={select}
+                setSelect={setSelect}
+                isReadOnly={false}
+              />
             </MoreMenu>
           ) : null}
 

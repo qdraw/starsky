@@ -20,19 +20,15 @@ const ModalPublishToggleWrapper: React.FunctionComponent<IModalPublishWrapperPro
     isModalPublishOpen,
     setModalPublishOpen
   }) => {
+    const selectFallback = select
+      ? new URLPath().MergeSelectFileIndexItem(select, stateFileIndexItems)
+      : [];
     return (
       <>
         {isModalPublishOpen ? (
           <ModalPublish
             handleExit={() => setModalPublishOpen(!isModalPublishOpen)}
-            select={
-              select
-                ? new URLPath().MergeSelectFileIndexItem(
-                    select,
-                    stateFileIndexItems
-                  )
-                : []
-            }
+            select={selectFallback}
             isOpen={isModalPublishOpen}
           />
         ) : null}
