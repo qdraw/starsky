@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Script goals:
+# Uses starsky-$RUNTIME.zip to deploy and setup pm2 instance
+# When zip file does not exist, download it from github releases
+# overwrite pm2 name if already exist
+
 PM2NAME="starsky"
 RUNTIME="linux-arm"
 
@@ -70,6 +75,7 @@ else
    echo "try to download latest release"
    
    # Get latest stable from Github Releases
+   # check also 'install-latest-release'
    curl -s https://api.github.com/repos/qdraw/starsky/releases/latest \
    | grep "browser_download_url.*starsky-$RUNTIME.zip" \
    | cut -d ":" -f 2,3 \
@@ -126,6 +132,14 @@ fi
 
 if [ -f pm2-deploy-on-env.sh ]; then
     chmod +rwx ./pm2-deploy-on-env.sh
+fi
+
+if [ -f pm2-install-latest-release.sh ]; then
+    chmod +rwx ./pm2-install-latest-release.sh
+fi
+
+if [ -f pm2-restore-x-rights.sh ]; then
+    chmod +rwx ./pm2-restore-x-rights.sh
 fi
 
 if [ -f pm2-warmup.sh ]; then

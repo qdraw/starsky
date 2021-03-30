@@ -22,7 +22,7 @@
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
@@ -49,6 +49,14 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Remove="clientapp\coverage\**" />
+        <None Remove="pm2-install-latest-release.sh" />
+        <Content Include="pm2-install-latest-release.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="pm2-warmup.ps1" />
+        <Content Include="pm2-warmup.ps1">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
