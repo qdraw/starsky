@@ -50,6 +50,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed)  _Back-end_  Sending empty string on "/api/publish/exist" should return true (PR #334)
 - [x]   (Added)  _Front-end_  Add publish option to Search and DetailView (PR #335/ Issue #298)
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.13 (using SDK 3.1.407)
+- [x]   (Changed) _Tools_ make it easier to deploy starsky with the new pm2 instances bash script to auto download releases
 
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for

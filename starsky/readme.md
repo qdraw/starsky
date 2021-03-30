@@ -177,72 +177,41 @@ You could try to clean the temp Folder This is located on Mac OS: `~/Library/App
 
 Those scripts are optional and used for configuration.
 
-#### pm2 `pm2-new-instance.sh`
+#### pm2 `./pm2-install-latest-release.sh`
+To install and upgrade to the latest stable release run this script
+
+It uses the following default parameters
+```sh
+--name starsky
+--runtime linux-arm
+```
+
+#### pm2 `./pm2-new-instance.sh`
 
 The script [`pm2-new-instance.sh`](starsky/pm2-new-instance.sh) is a script to setup Starsky using [pm2](http://pm2.keymetrics.io/).
+
+You should install pm2 before running this script
+
+It uses the following env settings
 
 ```sh
  export ASPNETCORE_URLS="http://localhost:4823/"
  export ASPNETCORE_ENVIRONMENT="Production"
 ```
 
-#### pm2 `pm2-deploy-on-env.sh`
+- It uses by default the name `starsky` in pm2
+- If this name already exist, it overwrite this name with the new location
 
-To remove the content of the parent folder of this script. The following content are not deleted: app settings, temp, zip files and database files. The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
+#### pm2 `./pm2-deploy-on-env.sh`
+To update starsky-$RUNTIME.zip with the content of the folder and to remove the content of the parent folder of this script. 
+The following content are not deleted: app settings, temp, zip files and database files. 
+The starsky files will get executed and need to have those rights. The pm2 instance will be restarted.
 
-#### pm2 `pm2-warmup.sh`
+#### pm2 `./pm2-warmup.sh`
 
 To warmup the installation after a restart this bash script is provided
 
-If you prefer a Powershell script, you could use the following script:
-
-```Powershell
-$TestUrl = "$(testUrl)"
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Write-Output "Starting"
-$MaxAttempts = 5
-If (![string]::IsNullOrWhiteSpace($TestUrl)) {
-    Write-Output "Making request to $TestUrl"
-    Try {
-        $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-        # Allow redirections on the warm up
-        $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
-        $stopwatch.Stop()
-        $statusCode = [int]$response.StatusCode
-        $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
-        Write-Output "$statusCode Warmed Up Site $TestUrl in $stopWatchMilliSeconds ms"
-    } catch {
-        $_.Exception|format-list -force
-    }
-    For ($i = 0; $i -lt $MaxAttempts; $i++) {
-        try {
-            Write-Output "Checking Site"
-            $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-            # Don't allow redirections on the check
-            $response = Invoke-WebRequest -UseBasicParsing $TestUrl -MaximumRedirection 10
-            $stopwatch.Stop()
-            $statusCode = [int]$response.StatusCode
-            $stopwatchMilliSeconds = $Stopwatch.ElapsedMilliseconds
-            Write-Output "$statusCode Second request took $stopWatchMilliSeconds ms"
-            If ($statusCode -ge 200 -And $statusCode -lt 400) {
-                break;
-            }
-            Start-Sleep -s 2
-        } catch {
-            $_.Exception|format-list -force
-            Start-Sleep -s 30
-        }
-    }
-    If ($statusCode -ge 200 -And $statusCode -lt 400) {
-        # YES!, it worked
-    } Else {
-        throw "Warm up failed for " + $TestUrl
-    }
-} Else {
-    Write-Output "No TestUrl configured for this machine."
-}
-Write-Output "Done"
-```
+If you prefer a Powershell script, you could use `pm2-warmup.ps1`
 
 #### Publish-scripts for 'self containing' binaries
 
