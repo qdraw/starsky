@@ -129,6 +129,13 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     );
   }
 
+  const existItemNameComponent = existItemName ? (
+    <div className="warning-box">
+      {MessageItemNameInUse}
+      {/* optional you could overwrite by pressing Publish*/}
+    </div>
+  ) : null;
+
   return (
     <Modal
       id="detailview-publish-modal"
@@ -152,12 +159,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
               onInput={updateItemName}
               name="item-name"
             ></FormControl>
-            {existItemName ? (
-              <div className="warning-box">
-                {MessageItemNameInUse}
-                {/* optional you could overwrite by pressing Publish*/}
-              </div>
-            ) : null}
+            {existItemNameComponent}
             <h4>{MessagePublishProfileName}</h4>
             <Select
               selectOptions={allPublishProfiles}
