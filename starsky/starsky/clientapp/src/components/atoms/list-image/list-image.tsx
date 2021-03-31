@@ -12,6 +12,9 @@ interface IListImageProps {
   alt?: string;
 }
 
+/**
+ * Used inside archive/search
+ */
 const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
   const target = useRef<HTMLDivElement>(null);
   var alt = props.alt ? props.alt : "afbeelding";
@@ -87,17 +90,14 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     );
   }
 
+  const className = error
+    ? `img-box--error img-box--${props.imageFormat}`
+    : isLoading
+    ? "img-box img-box--loading"
+    : "img-box";
+
   return (
-    <div
-      ref={target}
-      className={
-        error
-          ? `img-box--error img-box--${props.imageFormat}`
-          : isLoading
-          ? "img-box img-box--loading"
-          : "img-box"
-      }
-    >
+    <div ref={target} className={className}>
       {intersected ? (
         <img
           src={src}
