@@ -100,6 +100,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     props.onBlur(element);
   };
 
+  const propsClassName = props.className ? props.className : "";
+
   return (
     <>
       {props.warning !== false && childLength >= maxlength ? (
@@ -118,8 +120,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
         contentEditable={props.contentEditable}
         className={
           props.contentEditable
-            ? `form-control ${props.className ? props.className : ""}`
-            : `form-control disabled ${props.className ? props.className : ""}`
+            ? `form-control ${propsClassName}`
+            : `form-control disabled ${propsClassName}`
         }
       >
         {props.children}
