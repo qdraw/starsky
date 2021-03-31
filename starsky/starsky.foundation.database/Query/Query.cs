@@ -274,7 +274,7 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public FileIndexItem UpdateItem(FileIndexItem updateStatusContent)
         {
-	        void LocalQuery(ApplicationDbContext context)
+	        void LocalUpdateItemQuery(ApplicationDbContext context)
 	        {
 		        //  Update te last edited time manual
 		        updateStatusContent.SetLastEdited();
@@ -285,17 +285,21 @@ namespace starsky.foundation.database.Query
 	        
 	        try
 	        {
-		        LocalQuery(_context);
-	        }
-            catch ( ObjectDisposedException)
-            {
-	            var context = new InjectServiceScope(_scopeFactory).Context();
-	            LocalQuery(context);
-            }
-	        catch (InvalidOperationException)
-	        {
-		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        LocalQuery(context);
+		        try
+		        {
+			        LocalUpdateItemQuery(_context);
+		        }
+		        catch ( ObjectDisposedException error)
+		        {
+			        _logger?.LogError(error,"catch-ed error");
+			        var context = new InjectServiceScope(_scopeFactory).Context();
+			        LocalUpdateItemQuery(context);
+		        }
+		        catch (InvalidOperationException)
+		        {
+			        var context = new InjectServiceScope(_scopeFactory).Context();
+			        LocalUpdateItemQuery(context);
+		        }
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
