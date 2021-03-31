@@ -576,6 +576,11 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
+		    async Task<FileIndexItem> LocalDefaultQuery()
+		    {
+			    return await LocalQuery(_context);
+		    }
+
 		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
 			    await context.FileIndex.AddAsync(fileIndexItem);
@@ -586,14 +591,19 @@ namespace starsky.foundation.database.Query
 			    AddCacheItem(fileIndexItem);
 			    return fileIndexItem;
 		    }
-		    
+
 		    try
 		    {
 			    return await LocalQuery(_context);
 		    }
-		    catch (ObjectDisposedException)
+		    catch ( Microsoft.Data.Sqlite.SqliteException )
 		    {
-			    var context = new InjectServiceScope( _scopeFactory).Context();
+			    return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(2),
+				    3);
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    var context = new InjectServiceScope(_scopeFactory).Context();
 			    return await LocalQuery(context);
 		    }
 	    }
