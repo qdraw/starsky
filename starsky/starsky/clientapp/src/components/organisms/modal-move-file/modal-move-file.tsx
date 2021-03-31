@@ -90,6 +90,9 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
       pageType: PageType.Loading
     } as IFileList;
   }
+  const usesFileListArchive = usesFileList.archive
+    ? usesFileList.archive.fileIndexItems
+    : newIFileIndexItemArray();
 
   return (
     <Modal
@@ -138,11 +141,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           ) : null}
           {usesFileList.pageType !== PageType.Loading ? (
             <ItemTextListView
-              fileIndexItems={
-                usesFileList.archive
-                  ? usesFileList.archive.fileIndexItems
-                  : newIFileIndexItemArray()
-              }
+              fileIndexItems={usesFileListArchive}
               callback={(path) => {
                 setCurrentFolderPath(path);
               }}

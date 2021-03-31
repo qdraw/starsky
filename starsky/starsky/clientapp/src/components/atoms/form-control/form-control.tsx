@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import { Language } from "../../../shared/language";
+import { LimitLength } from "./limit-length";
 
 export interface IFormControlProps {
   contentEditable: boolean;
@@ -15,8 +16,11 @@ export interface IFormControlProps {
   spellcheck?: boolean;
 }
 
-const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
-  var maxlength = props.maxlength ? props.maxlength : 255;
+const FormControl: React.FunctionComponent<IFormControlProps> = ({
+  onBlur,
+  ...props
+}) => {
+  const maxlength = props.maxlength ? props.maxlength : 255;
 
   const [childLength, setChildLength] = useState(
     props.children?.toString().length ? props.children?.toString().length : 0
@@ -35,43 +39,10 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
   );
 
   /**
-   * Limit on keydown
-   * @param element KeydownEvent
-   */
-  var limitLengthKey = function (element: React.KeyboardEvent<HTMLDivElement>) {
-    if (
-      (element.metaKey || element.ctrlKey) &&
-      (element.key === "a" || element.key === "e")
-    ) {
-      return;
-    }
-
-    if (!element.currentTarget.textContent) {
-      setChildLength(0);
-      return;
-    }
-
-    var elementLength = element.currentTarget.textContent.trim().length;
-
-    if (
-      elementLength < maxlength ||
-      window.getSelection()?.type === "Range" ||
-      (element.key === "x" && element.ctrlKey) ||
-      (element.key === "x" && element.metaKey) ||
-      !element.key.match(/^.{0,1}$/)
-    )
-      return;
-
-    setChildLength(elementLength);
-
-    element.preventDefault();
-  };
-
-  /**
    * Limit length on paste event
    * @param element ClipboardEvent
    */
-  var limitLengthPaste = function (
+  const limitLengthPaste = function (
     element: React.ClipboardEvent<HTMLDivElement>
   ) {
     if (childLength + element.clipboardData.getData("Text").length <= maxlength)
@@ -80,25 +51,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
     setChildLength(childLength + element.clipboardData.getData("Text").length);
   };
 
-  /**
-   * Limit length before sending to onBlurEvent
-   * @param element Focus event
-   */
-  var limitLengthBlur = function (element: React.FocusEvent<HTMLDivElement>) {
-    if (!element.currentTarget.textContent) {
-      setChildLength(0);
-      if (!props.onBlur) return;
-      props.onBlur(element);
-      return;
-    }
-
-    if (element.currentTarget.textContent.length - 1 >= maxlength + 1) {
-      setChildLength(element.currentTarget.textContent.length - 1);
-      return;
-    }
-    if (!props.onBlur) return;
-    props.onBlur(element);
-  };
+  const propsClassName = props.className ? props.className : "";
 
   return (
     <>
@@ -107,9 +60,13 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
       ) : null}
 
       <div
-        onBlur={limitLengthBlur}
+        onBlur={
+          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur
+        }
         data-name={props.name}
-        onKeyDown={limitLengthKey}
+        onKeyDown={
+          new LimitLength(setChildLength, onBlur, maxlength).LimitLengthKey
+        }
         onInput={props.onInput}
         onPaste={limitLengthPaste}
         spellCheck={props.spellcheck}
@@ -118,8 +75,8 @@ const FormControl: React.FunctionComponent<IFormControlProps> = (props) => {
         contentEditable={props.contentEditable}
         className={
           props.contentEditable
-            ? `form-control ${props.className ? props.className : ""}`
-            : `form-control disabled ${props.className ? props.className : ""}`
+            ? `form-control ${propsClassName}`
+            : `form-control disabled ${propsClassName}`
         }
       >
         {props.children}
