@@ -291,7 +291,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( ObjectDisposedException error)
 		        {
-			        _logger?.LogError(error,"catch-ed error");
+			        _logger?.LogInformation(error,"catch-ed ObjectDisposedException");
 			        var context = new InjectServiceScope(_scopeFactory).Context();
 			        LocalUpdateItemQuery(context);
 		        }
