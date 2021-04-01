@@ -578,7 +578,8 @@ namespace starsky.foundation.database.Query
 	    {
 		    async Task<FileIndexItem> LocalDefaultQuery()
 		    {
-			    return await LocalQuery(_context);
+			    var context = new InjectServiceScope(_scopeFactory).Context();
+			    return await LocalQuery(context);
 		    }
 
 		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
@@ -596,8 +597,9 @@ namespace starsky.foundation.database.Query
 		    {
 			    return await LocalQuery(_context);
 		    }
-		    catch ( Microsoft.Data.Sqlite.SqliteException )
+		    catch ( Microsoft.Data.Sqlite.SqliteException e)
 		    {
+			    _logger?.LogInformation(e, "catch-ed SqliteException");
 			    return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(2),
 				    3);
 		    }
