@@ -81,7 +81,7 @@ fi
 # delete files in www-root
 if [ -f starsky.dll ]; then
     echo "delete dlls so, and everything except pm2 helpers, and"
-    echo "configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
+    echo "    configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
 
     LSOUTPUT=$(ls)
     for ENTRY in $LSOUTPUT
@@ -95,7 +95,7 @@ if [ -f starsky.dll ]; then
         then
             rm -rf "$ENTRY"
         else
-            echo "$ENTRY"
+            echo "     > skip: $ENTRY"
         fi
     done
 else
@@ -164,10 +164,6 @@ if [ -f starskyimportercli ]; then
     chmod +rwx ./starskyimportercli
 fi
 
-if [ -f starskysynccli ]; then
-    chmod +rwx ./starskysynccli
-fi
-
 if [ -f starskysynchronizecli ]; then
     chmod +rwx ./starskysynchronizecli
 fi
@@ -204,6 +200,10 @@ if [ -f pm2-warmup.sh ]; then
     chmod +rwx ./pm2-warmup.sh
 fi
 
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+fi
+
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
@@ -218,6 +218,30 @@ if [ -f starskygeocli ]; then
     ./starskygeocli -h > /dev/null 2>&1
 fi
 
+ISIMPORTEROK=999
+if [ -f starskyimportercli ]; then
+    echo "run starskyimportercli to check if runtime matches the system"
+    ./starskyimportercli -h > /dev/null 2>&1
+    ISIMPORTEROK=$?
+fi
+
+# symlink
+if [[ $ISIMPORTEROK -eq 0 ]]; then
+  echo "creating symlinks in user bin (~/bin)"
+  DIRNAME="$(pwd)"
+  mkdir -p ~/bin
+  ln -sfn $DIRNAME"/starskygeocli" ~/bin/starskygeocli
+  ln -sfn $DIRNAME"/starskyimportercli" ~/bin/starskyimportercli
+  ln -sfn $DIRNAME"/starskysynchronizecli" ~/bin/starskysynchronizecli
+  ln -sfn $DIRNAME"/starskythumbnailcli" ~/bin/starskythumbnailcli
+  ln -sfn $DIRNAME"/starskywebftpcli" ~/bin/starskywebftpcli
+  ln -sfn $DIRNAME"/starskywebhtmlcli" ~/bin/starskywebhtmlcli
+  ln -sfn $DIRNAME"/starskyadmincli" ~/bin/starskyadmincli
+  ln -sfn $DIRNAME"/starsky" ~/bin/starsky
+else
+  echo "> skip symlink creation due wrong architecture"
+fi
+
 if ! command -v pm2 &> /dev/null
 then
     echo "FAIL pm2 is missing run: "
@@ -229,7 +253,7 @@ then
     exit 1
 fi
 
-if [ -f starsky ]; then
+if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
 
     pm2 describe $PM2NAME > /dev/null
     HASDESCRIBE=$?
@@ -266,12 +290,12 @@ if [ -f starsky ]; then
 
     echo "> AUTO SAVE DONE - pm2 save " $PM2NAME
     pm2 save --force
-    
+
     echo "Done and saved :)"
     echo ""
     echo "!> to warmup, you need to run:"
     echo "./pm2-warmup.sh --port "$PORT
 else
-    echo "FAIL skipped adding to pm2 due missing starsky file"
+    echo "FAIL skipped adding to pm2 due missing starsky file or wrong architecture"
     exit 1
 fi
