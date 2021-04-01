@@ -57,6 +57,10 @@
         <Content Include="pm2-warmup.ps1">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="pm2-download-azure-devops.sh" />
+        <Content Include="pm2-download-azure-devops.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">

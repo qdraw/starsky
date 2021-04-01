@@ -98,6 +98,7 @@ GET_DATA () {
 
   if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "starsky-"$RUNTIME".zip is downloaded"
+    echo "run: pm2-new-instance.sh to install"
     exit
   fi
 
