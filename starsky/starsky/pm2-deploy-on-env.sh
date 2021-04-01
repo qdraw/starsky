@@ -49,6 +49,7 @@ if [ -d "WebHtmlPublish/UserViews" ]; then
   cp -r "WebHtmlPublish/UserViews" "UserViews/"
 fi
 
+# delete files in www-root
 if [ -f starsky.dll ]; then
     echo "delete dlls so, and everything except pm2 helpers, and"
     echo "configs, temp, thumbnailTempFolder, deploy zip, sqlite database"

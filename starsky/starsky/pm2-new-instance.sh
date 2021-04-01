@@ -7,6 +7,7 @@
 
 PM2NAME="starsky"
 RUNTIME="linux-arm"
+PORT="4823"
 
 ARGUMENTS=("$@")
 
@@ -21,6 +22,7 @@ for ((i = 1; i <= $#; i++ )); do
         echo "--runtime linux-arm"
         echo "(or:) --runtime linux-arm64"
         echo "(optional) --appinsights true - to ask for app insights keys"
+        echo "(optional) --port 4823"
     fi
 
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
@@ -32,7 +34,12 @@ for ((i = 1; i <= $#; i++ )); do
     then
         RUNTIME="${ARGUMENTS[CURRENT]}"
     fi
-    
+
+    if [[ ${ARGUMENTS[PREV]} == "--port" ]];
+    then
+        PORT="${ARGUMENTS[CURRENT]}"
+    fi
+
     if [[ ${ARGUMENTS[PREV]} == "--appinsights" ]];
     then
         USEAPPINSIGHTS="${ARGUMENTS[CURRENT]}"
@@ -40,18 +47,64 @@ for ((i = 1; i <= $#; i++ )); do
   fi
 done
 
-if ! command -v pm2 &> /dev/null
-then
-    echo "warning: pm2 is missing, the script continues but skips the last step"
-fi
+
 
 # settings
 echo "run with the following parameters "
-echo "--name " $PM2NAME " --runtime" $RUNTIME " --appinsights" $USEAPPINSIGHTS
+echo "--name " $PM2NAME " --runtime" $RUNTIME "--port" $PORT " --appinsights" $USEAPPINSIGHTS
 
 cd "$(dirname "$0")"
 
-export ASPNETCORE_URLS="http://localhost:4823/"
+if ! command -v pm2 &> /dev/null
+then
+    echo "warning: pm2 is missing, the script continues but skips the last step"
+    echo "cannot stop current service"
+else
+  echo "check if service exist >"
+  pm2 describe $PM2NAME > /dev/null
+  HASDESCRIBE=$?
+
+  if [ "${HASDESCRIBE}" -eq 0 ]; then
+    echo "stop service"
+    pm2 stop $PM2NAME
+  fi;
+fi
+
+
+# remove current installation
+
+# Keep UserViews over a release
+if [ -d "WebHtmlPublish/UserViews" ]; then
+  cp -r "WebHtmlPublish/UserViews" "UserViews/"
+fi
+
+# delete files in www-root
+if [ -f starsky.dll ]; then
+    echo "delete dlls so, and everything except pm2 helpers, and"
+    echo "    configs, temp, thumbnailTempFolder, deploy zip, sqlite database"
+
+    LSOUTPUT=$(ls)
+    for ENTRY in $LSOUTPUT
+    do
+        if [[ $ENTRY != "appsettings"* && $ENTRY != "pm2-"*
+        && $ENTRY != "thumbnailTempFolder"
+        && $ENTRY != "temp"
+        && $ENTRY != "UserViews"* # Keep UserViews
+        && $ENTRY != "starsky-"*
+        && $ENTRY != *".db" ]];
+        then
+            rm -rf "$ENTRY"
+        else
+            echo "     > skip: $ENTRY"
+        fi
+    done
+else
+   echo "> skip: starsky.dll File not found"
+fi
+
+# new settings:
+
+export ASPNETCORE_URLS="http://localhost:"$PORT"/"
 export ASPNETCORE_ENVIRONMENT="Production"
 
 # only asked with --appinsights true parameter
@@ -66,14 +119,14 @@ then
 fi
 
 if [ -f starsky-$RUNTIME.zip ]; then
-   echo "upgrade existing zip file" 
+   echo "upgrade existing zip file"
    echo "going to unzip starsky-$RUNTIME.zip"
-   
+
     unzip -q -o starsky-$RUNTIME.zip -x "pm2-new-instance.sh"
 else
-   echo "continue > starsky-$RUNTIME.zip File not found" 
+   echo "continue > starsky-$RUNTIME.zip File not found"
    echo "try to download latest release"
-   
+
    # Get latest stable from Github Releases
    # check also 'install-latest-release'
    curl -s https://api.github.com/repos/qdraw/starsky/releases/latest \
@@ -81,11 +134,11 @@ else
    | cut -d ":" -f 2,3 \
    | tr -d \" \
    | wget -qi -
-   
+
    if [ -f starsky-$RUNTIME.zip ]; then
       echo "use latest stable,"
       echo "going to unzip starsky-$RUNTIME.zip"
-      unzip -q -o starsky-$RUNTIME.zip
+      unzip -q -o starsky-$RUNTIME.zip -x "pm2-new-instance.sh"
    else
       echo "FAILED > starsky-$RUNTIME.zip Download failed; exit now"
       exit 1
@@ -96,6 +149,11 @@ echo "reset rights if those are wrong"
 /usr/bin/find . -type d -exec chmod 755 {} \;
 /usr/bin/find . -type f -exec chmod 644 {} \;
 
+# to restore the content UserViews
+if [ -d "UserViews" ]; then
+  cp -fr "UserViews" "WebHtmlPublish"
+  rm -rf "UserViews"
+fi
 
 # execute rights for specific files
 if [ -f starskygeocli ]; then
@@ -104,10 +162,6 @@ fi
 
 if [ -f starskyimportercli ]; then
     chmod +rwx ./starskyimportercli
-fi
-
-if [ -f starskysynccli ]; then
-    chmod +rwx ./starskysynccli
 fi
 
 if [ -f starskysynchronizecli ]; then
@@ -146,6 +200,10 @@ if [ -f pm2-warmup.sh ]; then
     chmod +rwx ./pm2-warmup.sh
 fi
 
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+fi
+
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
@@ -160,50 +218,84 @@ if [ -f starskygeocli ]; then
     ./starskygeocli -h > /dev/null 2>&1
 fi
 
+ISIMPORTEROK=999
+if [ -f starskyimportercli ]; then
+    echo "run starskyimportercli to check if runtime matches the system"
+    ./starskyimportercli -h > /dev/null 2>&1
+    ISIMPORTEROK=$?
+fi
+
+# symlink
+if [[ $ISIMPORTEROK -eq 0 ]]; then
+  echo "creating symlinks in user bin (~/bin)"
+  DIRNAME="$(pwd)"
+  mkdir -p ~/bin
+  ln -sfn $DIRNAME"/starskygeocli" ~/bin/starskygeocli
+  ln -sfn $DIRNAME"/starskyimportercli" ~/bin/starskyimportercli
+  ln -sfn $DIRNAME"/starskysynchronizecli" ~/bin/starskysynchronizecli
+  ln -sfn $DIRNAME"/starskythumbnailcli" ~/bin/starskythumbnailcli
+  ln -sfn $DIRNAME"/starskywebftpcli" ~/bin/starskywebftpcli
+  ln -sfn $DIRNAME"/starskywebhtmlcli" ~/bin/starskywebhtmlcli
+  ln -sfn $DIRNAME"/starskyadmincli" ~/bin/starskyadmincli
+  ln -sfn $DIRNAME"/starsky" ~/bin/starsky
+else
+  echo "> skip symlink creation due wrong architecture"
+fi
+
 if ! command -v pm2 &> /dev/null
 then
     echo "FAIL pm2 is missing run: "
     echo "sudo npm install -g pm2"
     echo "and run it again to add it to pm2"
+    echo ""
+    echo "!> to warmup, you need to run:"
+    echo "./pm2-warmup.sh --port "$PORT
     exit 1
 fi
 
-if [ -f starsky ]; then
+if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
 
-    echo "check if service exist >"
     pm2 describe $PM2NAME > /dev/null
     HASDESCRIBE=$?
-    
+
+    echo "check if service exist >"
     SHOULDSCRIPTPATH=$(pwd)"/starsky"
     SCRIPTPATH=$(pm2 describe $PM2NAME | grep "script path" | grep -oP '\s│\K[^|]+' | sed 's/..$//' | xargs)
     echo "<"
-    echo "$SCRIPTPATH"
-    echo "$SHOULDSCRIPTPATH"
-    echo "$HASDESCRIBE"
-    
+
+    echo "new config: ""$SCRIPTPATH"
+    echo "path in pm2 config: ""$SHOULDSCRIPTPATH"
+
     if [ ! -z "$SCRIPTPATH" ] && [ "$SCRIPTPATH" != "$SHOULDSCRIPTPATH" ]; then
-        echo "remove pm2 instance due script path on a different location " 
-        echo "script path:" $SCRIPTPATH 
-        echo "should script path: " $SHOULDSCRIPTPATH 
+        echo "remove pm2 instance due script path on a different location "
+        echo "script path:" $SCRIPTPATH
+        echo "should script path: " $SHOULDSCRIPTPATH
         pm2 delete $PM2NAME
         pm2 save --force
         # now the service does not exist anymore
         HASDESCRIBE=1
     fi
-    
+
     if [ "${HASDESCRIBE}" -ne 0 ]; then
-      echo "start"
+      echo "add new service"
       pm2 start --name $PM2NAME ./starsky
     else
-      echo "re start"
-      pm2 restart $PM2NAME
+      echo "start existing service"
+      pm2 start $PM2NAME
     fi;
-    
+
     echo "pm2 show status of " $PM2NAME
     pm2 status
+    echo "--"
 
-    echo "> AUTO SAVE - pm2 save " $PM2NAME
+    echo "> AUTO SAVE DONE - pm2 save " $PM2NAME
     pm2 save --force
-fi
 
-echo "Done and saved :)"
+    echo "Done and saved :)"
+    echo ""
+    echo "!> to warmup, you need to run:"
+    echo "./pm2-warmup.sh --port "$PORT
+else
+    echo "FAIL skipped adding to pm2 due missing starsky file or wrong architecture"
+    exit 1
+fi
