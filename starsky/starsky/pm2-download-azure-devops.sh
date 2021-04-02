@@ -92,10 +92,6 @@ GET_DATA () {
    # echo '-28T16:20:31.273Z"},"uri":"vstfs:///Build/Build/3216","sou' | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+'
 
   VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
-  
-  if [[ -z $VSTFSURL ]]; then
-    echo ">  FAIL: VSTFSURL is nothing"
-  fi
 
   BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
   if [[ ! -z $BUILDNUMBER ]]; then
@@ -104,7 +100,7 @@ GET_DATA () {
     
   BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
   if [[ -z $BUILDID ]]; then
-    echo "FAIL no build id found"
+    echo "Continue > No build id found for: "$LOCALDEVOPSDEFID
     return 1
   fi
 
@@ -141,10 +137,11 @@ GET_DATA () {
 
 for i in "${DEVOPSDEFIDS[@]}"
 do
-   GET_DATA $i
+    GET_DATA $i
 done
 
 if [ -f "starsky-"$RUNTIME".zip" ]; then
+    echo "YEAH > download for "$RUNTIME" looks ok"
     echo "get pm2-new-instance.sh installer file"
     unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./pm2-new-instance.sh
 fi
