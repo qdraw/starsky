@@ -158,23 +158,22 @@ namespace starsky.foundation.storage.Storage
 			FileStream fileStream;
 			try
 			{
-				if ( maxRead <= 1 )
-				{
-					fileStream = new FileStream(path, FileMode.Open, 
-						FileAccess.Read, FileShare.Read, 4096,true );
-				}
-				else
-				{
-					fileStream = new FileStream(path, FileMode.Open, FileAccess.Read,
-						FileShare.Read, maxRead, true);
-				}
+				fileStream = new FileStream(path, FileMode.Open, 
+					FileAccess.Read, FileShare.Read, 4096,true );
+
+				if ( maxRead < 1 ) return fileStream;
+				
+				byte[] buffer = new byte[maxRead];
+				fileStream.Read(buffer, 0, maxRead);
+				fileStream.Close();
+				return new MemoryStream(buffer);
 			}
 			catch ( FileNotFoundException e)
 			{
 				_logger?.LogError(e, "[ReadStream] catch-ed FileNotFoundException");
 				return Stream.Null;
 			}
-			return fileStream;
+			
 		}
 
 		/// <summary>

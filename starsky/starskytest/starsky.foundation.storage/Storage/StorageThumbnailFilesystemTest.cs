@@ -57,6 +57,17 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 		
 		[TestMethod]
+		public void ReadStream_MaxLength()
+		{
+			new CreateAnImage();
+
+			var stream =_thumbnailStorage.ReadStream(_fileNameWithoutExtension, 100);
+			Assert.AreEqual(100,stream.Length);
+			
+			stream.Dispose();
+		}
+		
+		[TestMethod]
 		public void WriteStream()
 		{
 			var createNewImage = new CreateAnImage();

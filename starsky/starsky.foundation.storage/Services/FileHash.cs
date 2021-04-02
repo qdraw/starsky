@@ -42,7 +42,7 @@ namespace starsky.foundation.storage.Services
         /// <param name="subPath">subPath</param>
         /// <param name="timeoutInMilliseconds">Timeout in ms seconds, before a random string will be returned</param>
         /// <returns>base32 hash</returns>
-        public KeyValuePair<string,bool> GetHashCode(string subPath, int timeoutInMilliseconds = 60000)
+        public KeyValuePair<string,bool> GetHashCode(string subPath, int timeoutInMilliseconds = 30000)
         {
             return _calcHashCode(subPath,timeoutInMilliseconds);
         }
@@ -50,7 +50,7 @@ namespace starsky.foundation.storage.Services
         // Here are some tricks used to avoid that CalculateMd5Async keeps waiting forever.
         // In some cases hashing a file keeps waiting forever (at least on linux-arm)
 
-        private KeyValuePair<string,bool> _calcHashCode(string subPath, int timeoutInMilliseconds = 60000)
+        private KeyValuePair<string,bool> _calcHashCode(string subPath, int timeoutInMilliseconds = 30000)
         {
             var q = Md5TimeoutAsyncWrapper(subPath,timeoutInMilliseconds).Result;
             return q;
@@ -70,7 +70,7 @@ namespace starsky.foundation.storage.Services
         /// <param name="fullFileName">full filePath on disk to have the file</param>
         /// <param name="timeoutInMilliseconds">number of milli seconds to be hashed</param>
         /// <returns></returns>
-        public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutInMilliseconds = 60000)
+        public async Task<KeyValuePair<string,bool>> GetHashCodeAsync(string fullFileName, int timeoutInMilliseconds = 30000)
         {
 	        try
 	        {

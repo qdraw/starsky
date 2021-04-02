@@ -105,6 +105,18 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			Assert.IsFalse(Directory.Exists(Path.Combine(_newImage.BasePath, folderDeleteName)));
 		}
+		
+				
+		[TestMethod]
+		public void ReadStream_MaxLength()
+		{
+			new CreateAnImage();
+
+			var stream = _storage.ReadStream(_newImage.DbPath, 100);
+			Assert.AreEqual(100,stream.Length);
+			
+			stream.Dispose();
+		}
 
 	}
 }
