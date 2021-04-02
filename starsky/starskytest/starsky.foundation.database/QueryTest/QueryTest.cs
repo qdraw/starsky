@@ -14,6 +14,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.Attributes;
 using starskytest.FakeMocks;
+using starskytest.starsky.foundation.platform.Services;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -695,6 +696,26 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        await _query.RemoveItemAsync(getItem);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(AggregateException))]
+        public async Task AddItemAsync_SqliteRetry()
+        {
+	        var services = new ServiceCollection();
+	        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite("Data Source=app__data.db"));
+	        var serviceProvider = services.BuildServiceProvider();
+
+	        var logger = new FakeIWebLogger();
+	        var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+	        var scope = serviceScope.CreateScope();
+	        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+	        var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope, logger);
+
+	        var item = new FileIndexItem("/test/010101.jpg");
+
+	        await query.AddItemAsync(item);
+	        // should fail due update
+        }
+        
         [TestMethod]
         public async Task UpdateItemAsync_Single_DisposedItem()
         {

@@ -597,11 +597,11 @@ namespace starsky.foundation.database.Query
 		    {
 			    return await LocalQuery(_context);
 		    }
-		    catch ( Microsoft.Data.Sqlite.SqliteException e)
+		    catch ( DbUpdateException e)
 		    {
-			    _logger?.LogInformation(e, "catch-ed SqliteException");
-			    return await RetryHelper.DoAsync(LocalDefaultQuery, TimeSpan.FromSeconds(2),
-				    3);
+			    _logger?.LogInformation(e, "going to retry 2 times");
+			    return await RetryHelper.DoAsync(
+				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
 		    }
 		    catch ( ObjectDisposedException )
 		    {
