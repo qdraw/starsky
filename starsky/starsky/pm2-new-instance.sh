@@ -6,8 +6,23 @@
 # overwrite pm2 name if already exist
 
 PM2NAME="starsky"
-RUNTIME="linux-arm"
 PORT="4823"
+RUNTIME="linux-arm" # defaults to your current os
+case $(uname -m) in
+  "aarch64")
+    RUNTIME="linux-arm64"
+    ;;
+
+  "armv7l")
+    RUNTIME="linux-arm"
+    ;;
+
+  "x86_64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx.10.12-x64"
+    fi
+    ;;
+esac
 
 ARGUMENTS=("$@")
 

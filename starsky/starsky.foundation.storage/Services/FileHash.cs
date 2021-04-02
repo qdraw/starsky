@@ -37,7 +37,7 @@ namespace starsky.foundation.storage.Services
         }
 
         /// <summary>
-        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 5 seconds
+        /// Returns a Base32 case insensitive fileHash, used with the default timeout of 1 minute
         /// </summary>
         /// <param name="subPath">subPath</param>
         /// <param name="timeoutInMilliseconds">Timeout in ms seconds, before a random string will be returned</param>

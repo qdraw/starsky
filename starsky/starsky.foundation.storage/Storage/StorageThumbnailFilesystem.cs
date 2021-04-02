@@ -113,7 +113,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 
 			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().ReadStream(filePath);
+			return new StorageHostFullPathFilesystem().ReadStream(filePath, maxRead);
 		}
 
 		/// <summary>

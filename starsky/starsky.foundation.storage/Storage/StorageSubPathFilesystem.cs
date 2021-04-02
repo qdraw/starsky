@@ -229,15 +229,22 @@ namespace starsky.foundation.storage.Storage
 			
 			if ( _appSettings.Verbose ) Console.WriteLine(path);
 
-			FileStream LocalGet()
+			Stream LocalGet()
 			{
 				var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
+				var fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
 				if ( maxRead <= 1 )
 				{
-					return new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
+					// read all
+					return fileStream;
 				}
-				return new FileStream(fullFilePath, FileMode.Open, FileAccess.Read,
-					FileShare.Read, maxRead);
+				
+				// read only the first number of bytes
+				byte[] buffer = new byte[maxRead];
+				fileStream.Read(buffer, 0, maxRead);
+				fileStream.Close();
+				fileStream.Dispose();
+				return new MemoryStream(buffer);
 			}
 
 			return new RetryStream().Retry(LocalGet);

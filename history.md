@@ -52,7 +52,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.13 (using SDK 3.1.407) (PR #338 & #337)
 - [x]   (Changed) _Tools_ make it easier to deploy starsky with the new pm2 instances bash script to auto download releases (PR #341)
 - [x]   (Fixed) _Front-end_ Publish selection click in modal closes and opens more menu in the right corner of the screen (PR #339/ Issue #336) 
-  
+- [x]   (Fixed) _Back-end_ Performance improvement by hash size limit (pull/348 issue/345)
+- [x]   (Fixed) _Back-end_ Fix for SQLite exception (pull/348 issue/344)
+- [x]   (Fixed) _Tools_ Make install scripts easier for the server in combination with PM2 (pull/348)
+
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
 - [x]   (Added) _Front-end_  add sort option for fileName and ImageFormat but only on archive pages

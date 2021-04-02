@@ -576,6 +576,12 @@ namespace starsky.foundation.database.Query
 	    /// <returns>item with id</returns>
 	    public virtual async Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem)
 	    {
+		    async Task<FileIndexItem> LocalDefaultQuery()
+		    {
+			    var context = new InjectServiceScope(_scopeFactory).Context();
+			    return await LocalQuery(context);
+		    }
+
 		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
 			    await context.FileIndex.AddAsync(fileIndexItem);
@@ -586,14 +592,26 @@ namespace starsky.foundation.database.Query
 			    AddCacheItem(fileIndexItem);
 			    return fileIndexItem;
 		    }
-		    
+
 		    try
 		    {
 			    return await LocalQuery(_context);
 		    }
-		    catch (ObjectDisposedException)
+		    catch ( Microsoft.Data.Sqlite.SqliteException e)
 		    {
-			    var context = new InjectServiceScope( _scopeFactory).Context();
+			    _logger?.LogInformation(e, "catch-ed SqliteException going to retry 2 times");
+			    return await RetryHelper.DoAsync(
+				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
+		    }
+		    catch ( DbUpdateException e)
+		    {
+			    _logger?.LogInformation(e, "catch-ed DbUpdateException going to retry 2 times");
+			    return await RetryHelper.DoAsync(
+				    LocalDefaultQuery, TimeSpan.FromSeconds(2), 2);
+		    }
+		    catch ( ObjectDisposedException )
+		    {
+			    var context = new InjectServiceScope(_scopeFactory).Context();
 			    return await LocalQuery(context);
 		    }
 	    }
