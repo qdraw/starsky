@@ -10,7 +10,22 @@
 # Get pm2-new-instance.sh ready to run (but not run)
 
 RUNTIME="linux-arm"
-# linux-arm64, linux-arm, osx.10.12-x64 (or windows)
+case $(uname -m) in
+  "aarch64")
+    RUNTIME="linux-arm64"
+    ;;
+
+  "armv7l")
+    RUNTIME="linux-arm"
+    ;;
+
+  "x86_64")
+    if [ $(uname) = "Darwin" ]; then
+        RUNTIME="osx.10.12-x64"
+    fi
+    ;;
+esac
+
 
 BRANCH="master"
 # azure devops
