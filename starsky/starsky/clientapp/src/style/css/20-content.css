@@ -230,6 +230,12 @@
   text-decoration: underline;
 }
 
+@media (prefers-color-scheme: dark) {
+  .content .legal-text-row a {
+    color: #fff;
+  }
+}
+
 .publish .warning-box {
   margin-top: 4px;
 }
