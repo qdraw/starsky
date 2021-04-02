@@ -3,6 +3,7 @@
 # Script goals:
 # Removes starsky-$RUNTIME script 
 # Assumes that pm2-new-instance.sh download and install a new pm2 instance
+# download pm2-new-instance.sh installer and run afterwards
 
 PM2NAME="starsky"
 RUNTIME="linux-arm"
@@ -36,6 +37,22 @@ done
 cd "$(dirname "$0")"
 echo $RUNTIME
 
-rm "starsky-$RUNTIME.zip"
+# to upgrade delete this file
+if [ -f "starsky-$RUNTIME.zip" ]; then
+    echo "remove exiting zip file"
+    rm "starsky-$RUNTIME.zip"
+fi
 
-bash pm2-new-instance.sh $ARGUMENTS
+if [ ! -f pm2-new-instance.sh ]; then
+    echo "install script is downloaded from github"
+    wget -q https://raw.githubusercontent.com/qdraw/starsky/master/starsky/starsky/pm2-new-instance.sh -O pm2-new-instance.sh
+fi
+
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+    bash pm2-new-instance.sh $ARGUMENTS
+else 
+    echo " pm2-new-instance.sh is missing, please download it yourself and run it"
+    exit 1
+fi
+

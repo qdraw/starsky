@@ -2,6 +2,9 @@
 cd "$(dirname "$0")"
 
 ## DEPLOY ONLY
+# use ./pm2-new-instance.sh for upgrading and installation
+# this script is only for getting a local file and deploy it over, does not install anything
+
 # for warnup check: ./pm2-warmup.sh --port 4823
 
 PM2NAME="starsky"
@@ -132,6 +135,14 @@ fi
 
 if [ -f pm2-deploy-on-env.sh ]; then
     chmod +rwx ./pm2-deploy-on-env.sh
+fi
+
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+fi
+
+if [ -f pm2-download-azure-devops.sh ]; then
+    chmod +rwx ./pm2-download-azure-devops.sh
 fi
 
 if [ -f pm2-warmup.sh ]; then

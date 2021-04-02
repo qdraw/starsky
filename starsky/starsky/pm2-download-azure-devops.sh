@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# For insiders only
+# Please use: 
+# ./pm2-install-latest-release.sh 
+# for public builds
+
+# Script goal:
+# Download binaries with zip folder from Azure Devops
+# Get pm2-new-instance.sh ready to run (but not run)
+
 RUNTIME="linux-arm"
 # linux-arm64, linux-arm, osx.10.12-x64 (or windows)
 
@@ -8,7 +17,8 @@ BRANCH="master"
 ORGANIZATION="qdraw"
 DEVOPSPROJECT="starsky"
 DEVOPSDEFIDS=( 17 20 )
-# DEVOPSPAT <= use this one
+# STARSKY_DEVOPS_PAT <= use this one
+# export STARSKY_DEVOPS_PAT=""
 
 # get arguments
 ARGUMENTS=("$@")
@@ -38,14 +48,14 @@ for ((i = 1; i <= $#; i++ )); do
 
     if [[ ${ARGUMENTS[PREV]} == "--token" ]];
     then
-        DEVOPSPAT="${ARGUMENTS[CURRENT]}"
+        STARSKY_DEVOPS_PAT="${ARGUMENTS[CURRENT]}"
     fi
   fi
 done
 
-if [[ -z $DEVOPSPAT ]]; then
+if [[ -z $STARSKY_DEVOPS_PAT ]]; then
   echo "enter your PAT: and press enter"
-  read DEVOPSPAT
+  read STARSKY_DEVOPS_PAT
 fi
 
 BRANCH="${BRANCH/refs\/heads\//}"
@@ -57,25 +67,34 @@ GET_DATA () {
   LOCALDEVOPSDEFID=$1
   echo "try: get artifact for Id: "$LOCALDEVOPSDEFID
   URLBUILDS="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds?api-version=5.1&\$top=1&statusFilter=completed&definitions="$LOCALDEVOPSDEFID"&branchName=refs%2Fheads%2F"$BRANCH
-  RESULTBUILDS=$(curl -sS --user :$DEVOPSPAT $URLBUILDS)
-
+  RESULTBUILDS=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLBUILDS)
+  
   if [[ "$RESULTBUILDS" == *"Object moved to"* ]]; then
     echo "FAIL: You don't have access!"
     exit 1
   fi
 
-  VSTFSURL=$(grep -E -o 'uri\":\"vstfs:\/\/\/Build\/Build\/\d+' <<< $RESULTBUILDS)
-  BUILDID=$(grep -E -o '\d+' <<< $VSTFSURL)
+   # echo '-28T16:20:31.273Z"},"uri":"vstfs:///Build/Build/3216","sou' | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+'
 
-  if [[ -z $BUILDID ]]; then
-    echo "FAIL no build id found"
-    exit 1
+  VSTFSURL=$(echo $RESULTBUILDS | grep -Eo 'uri.{3}?vstfs.{4}Build.Build.[0-9]+') 
+  
+  if [[ -z $VSTFSURL ]]; then
+    echo ">  FAIL: VSTFSURL is nothing"
   fi
 
+  BUILDNUMBER=$(echo $RESULTBUILDS | grep -Eo '(buildNumber.{3})([0-9]{8}.[0-9]{1,5})') 
+  if [[ ! -z $BUILDNUMBER ]]; then
+     echo $BUILDNUMBER
+  fi
+    
+  BUILDID=$(grep -E -o '[0-9]+' <<< $VSTFSURL)
+  if [[ -z $BUILDID ]]; then
+    echo "FAIL no build id found"
+    return 1
+  fi
 
   URLGETARTIFACT="https://dev.azure.com/"$ORGANIZATION"/"$DEVOPSPROJECT"/_apis/build/builds/"$BUILDID"/artifacts?api-version=5.1&artifactName="$RUNTIME
-  echo $URLGETARTIFACT
-  RESULTARTIFACT=$(curl -sS --user :$DEVOPSPAT $URLGETARTIFACT)
+  RESULTARTIFACT=$(curl -sS --user :$STARSKY_DEVOPS_PAT $URLGETARTIFACT)
 
   # find url to download from
   DOWNLOADJSONURL=$(grep -E -o "\"downloadUrl\":.+\"" <<< $RESULTARTIFACT)
@@ -89,7 +108,7 @@ GET_DATA () {
   fi
 
   echo "Download > "$DOWNLOADJSONURL
-  curl -sS --user :$DEVOPSPAT $DOWNLOADJSONURL -o "temp_"$RUNTIME".zip"
+  curl -sS --user :$STARSKY_DEVOPS_PAT $DOWNLOADJSONURL -o "temp_"$RUNTIME".zip"
 
   # ignore folders
   echo "unzip double zipped output from azure devops"
@@ -98,8 +117,7 @@ GET_DATA () {
 
   if [ -f "starsky-"$RUNTIME".zip" ]; then
     echo "starsky-"$RUNTIME".zip is downloaded"
-    echo "run: pm2-new-instance.sh to install"
-    exit
+    return 0
   fi
 
   echo "FAIL output file: starsky-"$RUNTIME".zip not found"
@@ -110,3 +128,17 @@ for i in "${DEVOPSDEFIDS[@]}"
 do
    GET_DATA $i
 done
+
+if [ -f "starsky-"$RUNTIME".zip" ]; then
+    echo "get pm2-new-instance.sh installer file"
+    unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > ./pm2-new-instance.sh
+fi
+
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+    echo "run for the setup:"
+    echo "./pm2-new-instance.sh"
+else 
+    echo " pm2-new-instance.sh is missing, please download it yourself and run it"
+    exit 1
+fi

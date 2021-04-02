@@ -48,6 +48,18 @@ if [ -f pm2-install-latest-release.sh ]; then
     chmod +rwx ./pm2-install-latest-release.sh
 fi
 
+if [ -f pm2-new-instance.sh ]; then
+    chmod +rwx ./pm2-new-instance.sh
+fi
+
+if [ -f pm2-download-azure-devops.sh ]; then
+    chmod +rwx ./pm2-download-azure-devops.sh
+fi
+
+if [ -f temp/exiftool-unix/exiftool ]; then
+    chmod +rwx temp/exiftool-unix/exiftool
+fi
+
 if [ -f pm2-restore-x-rights.sh ]; then
     chmod +rwx ./pm2-restore-x-rights.sh
 fi
