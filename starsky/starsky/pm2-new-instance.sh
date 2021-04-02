@@ -204,6 +204,10 @@ if [ -f pm2-new-instance.sh ]; then
     chmod +rwx ./pm2-new-instance.sh
 fi
 
+if [ -f pm2-download-azure-devops.sh ]; then
+    chmod +rwx ./pm2-download-azure-devops.sh
+fi
+
 if [ -f starsky ]; then
     chmod +rwx ./starsky
 fi
@@ -216,6 +220,10 @@ fi
 if [ -f starskygeocli ]; then
     echo "run starskygeocli to auto download dependencies"
     ./starskygeocli -h > /dev/null 2>&1
+fi
+
+if [ -f temp/exiftool-unix/exiftool ]; then
+    chmod +rwx temp/exiftool-unix/exiftool
 fi
 
 ISIMPORTEROK=999
