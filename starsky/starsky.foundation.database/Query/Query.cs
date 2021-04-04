@@ -380,43 +380,48 @@ namespace starsky.foundation.database.Query
 	        }
         }
         
-        internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
+        /// <summary>
+        /// Delegate to abstract OriginalValues Settter
+        /// </summary>
+        /// <param name="propertyValues"> propertyValues</param>
+        internal delegate void OriginalValuesSetValuesDelegate(PropertyValues propertyValues);
 
         /// <summary>
+        /// Database concurrency refers to situations in which multiple processes or users access or change the same data in a database at the same time.
         /// @see: https://docs.microsoft.com/en-us/ef/core/saving/concurrency
         /// </summary>
-        /// <param name="entryEntity"></param>
-        /// <param name="proposedValues"></param>
-        /// <param name="databaseValues"></param>
-        /// <param name="entryMetadataName"></param>
-        /// <param name="entryOriginalValuesSetValues"></param>
-        /// <exception cref="NotSupportedException"></exception>
+        /// <param name="entryEntity">item</param>
+        /// <param name="proposedValues">new update</param>
+        /// <param name="databaseValues">old database item</param>
+        /// <param name="entryMetadataName">meta name</param>
+        /// <param name="entryOriginalValuesSetValues">entry item</param>
+        /// <exception cref="NotSupportedException">unknown how to fix</exception>
         internal void SolveConcurrencyException(object entryEntity, 
 	        PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
 	        OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
         {
-	        if (entryEntity is FileIndexItem)
-	        {
-		        foreach (var property in proposedValues.Properties)
-		        {
-			        var proposedValue = proposedValues[property];
-			        proposedValues[property] = proposedValue;
-		        }
-
-		        // Refresh original values to bypass next concurrency check
-		        if ( databaseValues != null )
-		        {
-			        entryOriginalValuesSetValues(databaseValues);
-		        }
-	        }
-	        else
-	        {
+	        if ( !( entryEntity is FileIndexItem ) )
 		        throw new NotSupportedException(
 			        "Don't know how to handle concurrency conflicts for "
 			        + entryMetadataName);
+	        
+	        foreach (var property in proposedValues.Properties)
+	        {
+		        var proposedValue = proposedValues[property];
+		        proposedValues[property] = proposedValue;
+	        }
+
+	        // Refresh original values to bypass next concurrency check
+	        if ( databaseValues != null )
+	        {
+		        entryOriginalValuesSetValues(databaseValues);
 	        }
         }
         
+        /// <summary>
+        /// Is Cache enabled, null object or feature toggle disabled
+        /// </summary>
+        /// <returns>true when enabled</returns>
 	    internal bool IsCacheEnabled()
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
