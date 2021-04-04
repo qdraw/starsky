@@ -506,8 +506,8 @@ namespace starskytest.starsky.feature.rename.Services
 		public async Task Rename_MoveFileToRootFolder()
 		{
 			var itemInChildFolderPath = "/child_folder/test_01.jpg";
-			_query.AddItem(new FileIndexItem(itemInChildFolderPath));
-			_query.AddParentItemsAsync(itemInChildFolderPath).ConfigureAwait(false);
+			await _query.AddItemAsync(new FileIndexItem(itemInChildFolderPath));
+			await _query.AddParentItemsAsync(itemInChildFolderPath);
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder"}, 
 				new List<string>{"/child_folder/test_01.jpg"});
 
