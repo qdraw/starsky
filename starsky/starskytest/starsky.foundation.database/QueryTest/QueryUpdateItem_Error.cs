@@ -250,8 +250,6 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.Options;
 
 			var scope = CreateNewScopeSqliteException();
-			var context = scope.CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>();
 
 			var sqLiteFailContext = new SqliteExceptionDbContext(options);
 			Assert.AreEqual(sqLiteFailContext.Count, 0);

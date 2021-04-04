@@ -167,8 +167,6 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
           )
         )
       };
-      console.log(forceResetUpdated.colorClassUsage);
-
       return updateCache(forceResetUpdated);
     case "add":
       if (!action.add) return state;
