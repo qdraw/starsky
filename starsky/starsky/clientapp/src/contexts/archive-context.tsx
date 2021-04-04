@@ -39,10 +39,12 @@ export type ArchiveAction =
       fileHash?: string;
     }
   | {
+      // ignores cache
       type: "set";
       payload: IArchiveProps;
     }
   | {
+      // also update the cache
       type: "force-reset";
       payload: IArchiveProps;
     }
@@ -156,7 +158,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       };
     case "force-reset":
       // also update the cache
-      return updateCache({
+      const forceResetUpdated = {
         ...action.payload,
         fileIndexItems: sorter(
           new ArrayHelper().UniqueResults(
@@ -164,10 +166,10 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
             "filePath"
           )
         )
-      });
+      };
+      return updateCache(forceResetUpdated);
     case "add":
       if (!action.add) return state;
-
       const filterOkCondition = (value: IFileIndexItem) => {
         return (
           value.status === IExifStatus.Ok ||
@@ -177,6 +179,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       };
 
       const actionAdd = filterColorClassBeforeAdding(state, action.add);
+
       // when adding items outside current colorclass filter
       if (actionAdd.length === 0) {
         new FileListCache().CacheCleanEverything();
@@ -191,6 +194,13 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       const toSortOnParm = state.collections
         ? "fileCollectionName"
         : "filePath";
+
+      // only the order within fileCollectionName, not the actual order of the list
+      concatenatedFileIndexItems = CollectionsSortOnImageFormat(
+        concatenatedFileIndexItems,
+        state.collections
+      );
+
       concatenatedFileIndexItems = new ArrayHelper().UniqueResults(
         concatenatedFileIndexItems,
         toSortOnParm
@@ -255,6 +265,39 @@ function UpdateColorClassUsageActiveListLoop(state: IArchiveProps) {
     if (colorClass === undefined) continue;
     UpdateColorClassUsageActiveList(state, colorClass);
   }
+}
+
+/**
+ * When sending a list with items make sure that the jpegs are listed first
+ * only the order within fileCollectionName, not the actual order of the list
+ * @param concatenatedFileIndexItems - the list
+ * @param collections - only if collections is on
+ * @returns new orderd list
+ */
+function CollectionsSortOnImageFormat(
+  concatenatedFileIndexItems: IFileIndexItem[],
+  collections?: boolean
+): IFileIndexItem[] {
+  if (!collections) return concatenatedFileIndexItems;
+
+  concatenatedFileIndexItems.forEach((item) => {
+    const collectionsItems = concatenatedFileIndexItems.filter(
+      (x) =>
+        x.fileCollectionName === item.fileCollectionName &&
+        x.parentDirectory === item.parentDirectory
+    );
+    const sortedCollectionsItems = sorter(
+      collectionsItems,
+      SortType.imageFormat
+    );
+    concatenatedFileIndexItems = concatenatedFileIndexItems.filter(
+      (p) => !sortedCollectionsItems.includes(p)
+    );
+    sortedCollectionsItems.forEach((element) => {
+      concatenatedFileIndexItems.push(element);
+    });
+  });
+  return concatenatedFileIndexItems;
 }
 
 /**

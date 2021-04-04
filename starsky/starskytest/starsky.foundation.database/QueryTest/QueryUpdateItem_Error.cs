@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +21,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryUpdateItemError
 	{
+		private IServiceScopeFactory CreateNewScopeSqliteException()
+		{
+			var services = new ServiceCollection();
+			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(QueryTest)));
+			var serviceProvider = services.BuildServiceProvider();
+			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
+		}
+		
 		private static bool IsCalledDbUpdateConcurrency { get; set; }
 
 		private class UpdateEntryUpdateConcurrency : IUpdateEntry
@@ -90,11 +101,63 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 			}
 
+			public int Count { get; set; }
+
 			public override int SaveChanges()
 			{
-				throw new DbUpdateConcurrencyException("t",
-					new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Count;
 			}	
+			
+			public override Task<int> SaveChangesAsync(
+				CancellationToken cancellationToken = default)
+			{
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Task.FromResult(Count);
+			}
+		}
+		
+		private class SqliteExceptionDbContext : ApplicationDbContext
+		{
+			public SqliteExceptionDbContext(DbContextOptions options) : base(options)
+			{
+			}
+
+			public int Count { get; set; }
+
+
+			public override DbSet<FileIndexItem> FileIndex => null;
+
+			public override int SaveChanges()
+			{
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new Microsoft.Data.Sqlite.SqliteException("t",1,2);
+				}
+				return Count;
+			}	
+			
+			public override Task<int> SaveChangesAsync(
+				CancellationToken cancellationToken = default)
+			{
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new Microsoft.Data.Sqlite.SqliteException("t",1,2);
+				}
+				return Task.FromResult(Count);
+			}
 		}
 
 
@@ -113,6 +176,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 		
 		[TestMethod]
+		public async Task Query_UpdateItemAsync_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+				
+		[TestMethod]
+		public async Task Query_UpdateItemAsync_Multiple_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+		[TestMethod]
 		public void Query_RemoveItem_DbUpdateConcurrencyException()
 		{
 			IsCalledDbUpdateConcurrency = false;
@@ -124,6 +216,48 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			fakeQuery.RemoveItem(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+
+		[TestMethod]
+		public async Task RemoveItemAsync_SQLiteException()
+		{
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase("MovieListDatabase")
+				.Options;
+
+			var scope = CreateNewScopeSqliteException();
+			var context = scope.CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>();
+			await context.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
+			await context.SaveChangesAsync();
+			var item = await context.FileIndex.FirstOrDefaultAsync(
+				p => p.FilePath == "/test.jpg");
+
+			var sqLiteFailContext = new SqliteExceptionDbContext(options);
+			Assert.AreEqual(sqLiteFailContext.Count, 0);
+
+			var fakeQuery = new Query(sqLiteFailContext, null, null, scope, new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(item);
+			
+			Assert.AreEqual(sqLiteFailContext.Count, 1);
+		}
+		
+		[TestMethod]
+		public async Task AddItemAsync_SQLiteException()
+		{
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase("MovieListDatabase")
+				.Options;
+
+			var scope = CreateNewScopeSqliteException();
+
+			var sqLiteFailContext = new SqliteExceptionDbContext(options);
+			Assert.AreEqual(sqLiteFailContext.Count, 0);
+
+			var fakeQuery = new Query(sqLiteFailContext, null, null, scope, new FakeIWebLogger());
+			await fakeQuery.AddItemAsync(new FileIndexItem("/test22.jpg"));
+			
+			Assert.AreEqual(sqLiteFailContext.Count, 1);
 		}
 		
 		private class FakePropertyValues : PropertyValues

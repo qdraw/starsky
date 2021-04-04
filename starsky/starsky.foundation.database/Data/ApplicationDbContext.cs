@@ -12,7 +12,7 @@ namespace starsky.foundation.database.Data
 		{
 		}
 
-		public DbSet<FileIndexItem> FileIndex { get; set; }
+		public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 		public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
 		public DbSet<User> Users { get; set; }

@@ -11,7 +11,7 @@ import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFolderProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: (state?: string) => void;
   subPath: string;
 }
 
@@ -122,7 +122,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     await history.navigate(replacePath, { replace: true });
 
     // Close window
-    props.handleExit();
+    props.handleExit(replacePath);
   }
 
   return (

@@ -535,7 +535,8 @@ describe("ArchiveContext", () => {
       {
         fileName: "test0.jpg",
         filePath: "/test0.jpg",
-        status: IExifStatus.Ok
+        status: IExifStatus.Ok,
+        imageFormat: ImageFormat.unknown
       }
     ]);
   });
@@ -581,6 +582,50 @@ describe("ArchiveContext", () => {
         fileName: "test1.jpg",
         fileCollectionName: "test1",
         filePath: "/test1.jpg",
+        status: IExifStatus.Ok
+      }
+    ]);
+  });
+
+  it("add -- change order for raw files", () => {
+    console.log("-change order for raw files");
+
+    // current state
+    var state = {
+      fileIndexItems: newIFileIndexItemArray(),
+      collections: true
+    } as IArchiveProps;
+
+    // to add/remove this
+    var add = [
+      {
+        fileName: "test0.arw",
+        fileCollectionName: "test0",
+        filePath: "/test0.arw",
+        imageFormat: ImageFormat.tiff,
+        status: IExifStatus.Ok
+      },
+      {
+        fileName: "test0.jpg",
+        fileCollectionName: "test0",
+        filePath: "/test0.jpg",
+        imageFormat: ImageFormat.jpg,
+        status: IExifStatus.Ok
+      }
+    ];
+
+    var action = { type: "add", add } as any;
+    var result = archiveReducer(state, action);
+
+    console.log("<--");
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems).toStrictEqual([
+      {
+        fileName: "test0.jpg",
+        fileCollectionName: "test0",
+        filePath: "/test0.jpg",
+        imageFormat: "jpg",
         status: IExifStatus.Ok
       }
     ]);

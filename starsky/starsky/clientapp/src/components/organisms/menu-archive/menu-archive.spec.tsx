@@ -221,6 +221,72 @@ describe("MenuArchive", () => {
       globalHistory.navigate("/");
     });
 
+    it("menu click rename should call dispatch(dir)", () => {
+      globalHistory.navigate("/?f=/test");
+
+      var state = {
+        subPath: "/test",
+        fileIndexItems: [
+          {
+            status: IExifStatus.Ok,
+            filePath: "/trashed/test1.jpg",
+            fileName: "test1.jpg"
+          }
+        ]
+      } as IArchive;
+      const dispatch = jest.fn();
+      var contextValues = { state, dispatch };
+
+      jest
+        .spyOn(ModalArchiveRename, "default")
+        .mockImplementationOnce((props) => {
+          return (
+            <button
+              id="test-btn-fake"
+              onClick={() => props.handleExit("t")}
+            ></button>
+          );
+        });
+
+      jest
+        .spyOn(React, "useContext")
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues)
+        .mockImplementationOnce(() => contextValues);
+
+      var component = mount(<MenuArchive>t</MenuArchive>);
+
+      act(() => {
+        component.find('[data-test="rename"]').simulate("click");
+      });
+      act(() => {
+        component.update();
+      });
+
+      act(() => {
+        component.find("#test-btn-fake").simulate("click");
+      });
+
+      expect(dispatch).toBeCalled();
+      expect(dispatch).toBeCalledWith({
+        payload: {
+          fileIndexItems: [
+            {
+              fileName: "test1.jpg",
+              filePath: "/trashed/test1.jpg",
+              status: "Ok"
+            }
+          ],
+          subPath: "t"
+        },
+        type: "force-reset"
+      });
+
+      component.unmount();
+
+      globalHistory.navigate("/");
+    });
+
     it("display options (default menu)", () => {
       jest.spyOn(React, "useContext").mockReset();
 

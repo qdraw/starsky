@@ -61,7 +61,7 @@ namespace starsky.foundation.database.Query
             }
             catch (ObjectDisposedException e)
             {
-	            _logger?.LogInformation("catch-ed ObjectDisposedException", e);
+	            _logger?.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
@@ -85,7 +85,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch (ObjectDisposedException e)
 			{
-				_logger?.LogInformation("catch-ed ObjectDisposedException", e);
+				_logger?.LogInformation("[GetObjectByFilePathAsync] catch-ed ObjectDisposedException", e);
 				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 		}
@@ -193,21 +193,37 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
         {
-	        //  Update te last edited time manual
-	        updateStatusContent.SetLastEdited();
+	        async Task LocalQuery(DbContext context, FileIndexItem fileIndexItem)
+	        {
+		        //  Update te last edited time manual
+		        fileIndexItem.SetLastEdited();
+		        context.Attach(fileIndexItem).State = EntityState.Modified;
+		        await context.SaveChangesAsync();
+		        context.Attach(fileIndexItem).State = EntityState.Detached;
+		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+	        }
+
 	        try
 	        {
-		        _context.Attach(updateStatusContent).State = EntityState.Modified;
-		        await _context.SaveChangesAsync();
-		        _context.Attach(updateStatusContent).State = EntityState.Detached;
+		        await LocalQuery(_context, updateStatusContent);
 	        }
-	        catch ( ObjectDisposedException e)
+	        catch ( ObjectDisposedException e )
 	        {
 		        await RetrySaveChangesAsync(updateStatusContent, e);
 	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        await _context.SaveChangesAsync();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
+		        }
+	        }
             
-	        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-
 	        return updateStatusContent;
         }
 
@@ -219,6 +235,8 @@ namespace starsky.foundation.database.Query
         /// <returns>same item</returns>
         public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
         {
+	        if ( !updateStatusContentList.Any() ) return new List<FileIndexItem>();
+	        
 	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
 	        {
 		        foreach ( var item in fileIndexItems )
@@ -234,6 +252,7 @@ namespace starsky.foundation.database.Query
 			        context.Attach(item).State = EntityState.Detached;
 		        }
 
+		        CacheUpdateItem(fileIndexItems);
 		        return fileIndexItems;
 	        }
 
@@ -241,10 +260,33 @@ namespace starsky.foundation.database.Query
 	        {
 		        return await LocalQuery(_context, updateStatusContentList);
 	        }
-	        catch (ObjectDisposedException)
+	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return await LocalQuery(context, updateStatusContentList);
+		        try
+		        {
+			        return await LocalQuery(context, updateStatusContentList);
+		        }
+		        catch ( DbUpdateConcurrencyException concurrencyException)
+		        {
+			        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			        return await LocalQuery(context, updateStatusContentList);
+		        }
+	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        return await LocalQuery(_context, updateStatusContentList);
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        var items =  await GetObjectsByFilePathAsync(updateStatusContentList
+				        .Select(p => p.FilePath).ToList());
+			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
+			        return updateStatusContentList;
+		        }
 	        }
         }
 
@@ -281,32 +323,36 @@ namespace starsky.foundation.database.Query
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 				context.SaveChanges();
 		        context.Attach(updateStatusContent).State = EntityState.Detached;
+		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 	        }
 	        
 	        try
 	        {
-		        try
-		        {
-			        LocalUpdateItemQuery(_context);
-		        }
-		        catch ( ObjectDisposedException error)
-		        {
-			        _logger?.LogInformation(error,"catch-ed ObjectDisposedException");
-			        var context = new InjectServiceScope(_scopeFactory).Context();
-			        LocalUpdateItemQuery(context);
-		        }
-		        catch (InvalidOperationException)
-		        {
-			        var context = new InjectServiceScope(_scopeFactory).Context();
-			        LocalUpdateItemQuery(context);
-		        }
+		        LocalUpdateItemQuery(_context);
+	        }
+	        catch ( ObjectDisposedException error)
+	        {
+		        _logger?.LogInformation(error,"[UpdateItem] catch-ed ObjectDisposedException");
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalUpdateItemQuery(context);
+	        }
+	        catch (InvalidOperationException)
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        LocalUpdateItemQuery(context);
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
-            
-            CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
 
             return updateStatusContent;
         }
@@ -346,6 +392,14 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
 	        
 	        CacheUpdateItem(updateStatusContentList);
@@ -363,34 +417,48 @@ namespace starsky.foundation.database.Query
 	        }
         }
         
-        internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
+        /// <summary>
+        /// Delegate to abstract OriginalValues Setter
+        /// </summary>
+        /// <param name="propertyValues"> propertyValues</param>
+        internal delegate void OriginalValuesSetValuesDelegate(PropertyValues propertyValues);
 
+        /// <summary>
+        /// Database concurrency refers to situations in which multiple processes or users access or change the same data in a database at the same time.
+        /// @see: https://docs.microsoft.com/en-us/ef/core/saving/concurrency
+        /// </summary>
+        /// <param name="entryEntity">item</param>
+        /// <param name="proposedValues">new update</param>
+        /// <param name="databaseValues">old database item</param>
+        /// <param name="entryMetadataName">meta name</param>
+        /// <param name="entryOriginalValuesSetValues">entry item</param>
+        /// <exception cref="NotSupportedException">unknown how to fix</exception>
         internal void SolveConcurrencyException(object entryEntity, 
 	        PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
 	        OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
         {
-	        if (entryEntity is FileIndexItem)
-	        {
-		        foreach (var property in proposedValues.Properties)
-		        {
-			        var proposedValue = proposedValues[property];
-			        proposedValues[property] = proposedValue;
-		        }
-
-		        // Refresh original values to bypass next concurrency check
-		        if ( databaseValues != null )
-		        {
-			        entryOriginalValuesSetValues(databaseValues);
-		        }
-	        }
-	        else
-	        {
+	        if ( !( entryEntity is FileIndexItem ) )
 		        throw new NotSupportedException(
 			        "Don't know how to handle concurrency conflicts for "
 			        + entryMetadataName);
+	        
+	        foreach (var property in proposedValues.Properties)
+	        {
+		        var proposedValue = proposedValues[property];
+		        proposedValues[property] = proposedValue;
+	        }
+
+	        // Refresh original values to bypass next concurrency check
+	        if ( databaseValues != null )
+	        {
+		        entryOriginalValuesSetValues(databaseValues);
 	        }
         }
         
+        /// <summary>
+        /// Is Cache enabled, null object or feature toggle disabled
+        /// </summary>
+        /// <returns>true when enabled</returns>
 	    internal bool IsCacheEnabled()
 	    {
 		    if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
@@ -481,7 +549,7 @@ namespace starsky.foundation.database.Query
         /// This Does remove a SINGLE item from the cache NOT from the database
         /// </summary>
         /// <param name="updateStatusContent"></param>
-        private void RemoveCacheItem(FileIndexItem updateStatusContent)
+        public void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
@@ -584,7 +652,8 @@ namespace starsky.foundation.database.Query
 
 		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
-			    await context.FileIndex.AddAsync(fileIndexItem);
+			    // only in test case fileIndex is null
+			    if ( context.FileIndex != null ) await context.FileIndex.AddAsync(fileIndexItem);
 			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
@@ -708,8 +777,15 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        _logger?.LogInformation("catch-ed disposedException:",concurrencyException);
-		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        _logger?.LogInformation("catch-ed concurrencyException:",concurrencyException);
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[RemoveItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
 	        
 	        // remove parent directory cache
@@ -727,23 +803,34 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
 	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	    {
-		    async Task LocalQuery(ApplicationDbContext context)
+		    async Task<bool> LocalRemoveDefaultQuery()
 		    {
-			    context.FileIndex.Remove(updateStatusContent);
+			    await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
+			    return true;
+		    }
+
+		    async Task LocalRemoveQuery(ApplicationDbContext context)
+		    {
+			    context.FileIndex?.Remove(updateStatusContent);
 			    await context.SaveChangesAsync();
 		    }
 
 		    try
 		    {
-			    await LocalQuery(_context);
+			    await LocalRemoveQuery(_context);
+		    }
+		    catch ( Microsoft.Data.Sqlite.SqliteException )
+		    {
+			    // Files that are locked
+			    await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2), 4);
 		    }
 		    catch ( ObjectDisposedException )
 		    {
-			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			    await LocalRemoveDefaultQuery();
 		    }
 		    catch ( InvalidOperationException )
 		    {
-			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			    await LocalRemoveDefaultQuery();
 		    }
 
 		    // remove parent directory cache
