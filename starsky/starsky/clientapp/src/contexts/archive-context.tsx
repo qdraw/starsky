@@ -170,7 +170,6 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       return updateCache(forceResetUpdated);
     case "add":
       if (!action.add) return state;
-      console.log(state.colorClassUsage);
       const filterOkCondition = (value: IFileIndexItem) => {
         return (
           value.status === IExifStatus.Ok ||
@@ -180,11 +179,9 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       };
 
       const actionAdd = filterColorClassBeforeAdding(state, action.add);
-      console.log("actionAdd", actionAdd);
 
       // when adding items outside current colorclass filter
       if (actionAdd.length === 0) {
-        console.log("--len0");
         new FileListCache().CacheCleanEverything();
         return state;
       }
