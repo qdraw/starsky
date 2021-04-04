@@ -559,9 +559,9 @@ namespace starskytest.starsky.feature.rename.Services
 			var toItemJpg = "/child_folder/test_21_edit.jpg";
 			var toItemDng = "/child_folder/test_21_edit.dng";
 
-			_query.AddItem(new FileIndexItem(fromItemJpg));
-			_query.AddItem(new FileIndexItem(fromItemDng));
-			_query.AddParentItemsAsync(fromItemDng).ConfigureAwait(false);
+			await _query.AddItemAsync(new FileIndexItem(fromItemJpg));
+			await _query.AddItemAsync(new FileIndexItem(fromItemDng));
+			await _query.AddParentItemsAsync(fromItemDng);
 			
 			var iStorage = new FakeIStorage(new List<string>{"/","/child_folder","/child_folder2"}, 
 				new List<string>{fromItemJpg, fromItemDng});
