@@ -259,7 +259,12 @@ namespace starsky.foundation.database.Query
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        return await LocalQuery(_context, updateStatusContentList);
+		        _logger?.LogInformation("going to call save changes after DbUpdateConcurrencyException");
+		        await _context.SaveChangesAsync();
+
+		        var items = await GetObjectsByFilePathAsync(
+			        updateStatusContentList.Select(p => p.FilePath).ToList());
+		        return items;
 	        }
         }
 
