@@ -55,6 +55,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Performance improvement by hash size limit (pull/348 issue/345)
 - [x]   (Fixed) _Back-end_ Fix for SQLite exception (pull/348 issue/344)
 - [x]   (Fixed) _Tools_ Make install scripts easier for the server in combination with PM2 (pull/348)
+- [x]   (Fixed) _Back-end_ DbUpdateConcurrencyException save after, instead of nothing (pull #349)
+- [x]   (Fixed) _Back-end_ fix issue where rename did not work in combination with useDiskWatcher (issue #347 pull #349)
 
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for
