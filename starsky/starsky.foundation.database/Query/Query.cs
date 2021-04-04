@@ -381,7 +381,7 @@ namespace starsky.foundation.database.Query
         }
         
         /// <summary>
-        /// Delegate to abstract OriginalValues Settter
+        /// Delegate to abstract OriginalValues Setter
         /// </summary>
         /// <param name="propertyValues"> propertyValues</param>
         internal delegate void OriginalValuesSetValuesDelegate(PropertyValues propertyValues);
