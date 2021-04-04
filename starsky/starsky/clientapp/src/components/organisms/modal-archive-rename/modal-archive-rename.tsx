@@ -1,17 +1,20 @@
 import React from "react";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
+import { IArchiveProps } from "../../../interfaces/IArchiveProps";
+import FetchGet from "../../../shared/fetch-get";
 import FetchPost from "../../../shared/fetch-post";
 import { FileExtensions } from "../../../shared/file-extensions";
 import { FileListCache } from "../../../shared/filelist-cache";
 import { Language } from "../../../shared/language";
+import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import FormControl from "../../atoms/form-control/form-control";
 import Modal from "../../atoms/modal/modal";
 
 interface IModalRenameFolderProps {
   isOpen: boolean;
-  handleExit: Function;
+  handleExit: (state?: IArchiveProps) => void;
   subPath: string;
 }
 
@@ -121,8 +124,12 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     );
     await history.navigate(replacePath, { replace: true });
 
+    // and fetch new data
+    const url = new UrlQuery().UrlIndexServerApi(
+      new URLPath().StringToIUrl(replacePath)
+    );
     // Close window
-    props.handleExit();
+    props.handleExit((await FetchGet(url)).data);
   }
 
   return (
