@@ -197,7 +197,7 @@ namespace starsky.Controllers
 	    [Produces("application/json")]	    
 		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 	    {
-		    var rename = new RenameService(_query, _iStorage).Rename(f, to, collections);
+		    var rename = await new RenameService(_query, _iStorage).Rename(f, to, collections);
 		    
 		    // When all items are not found
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

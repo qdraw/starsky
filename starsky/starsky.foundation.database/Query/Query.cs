@@ -234,6 +234,7 @@ namespace starsky.foundation.database.Query
 			        context.Attach(item).State = EntityState.Detached;
 		        }
 
+		        CacheUpdateItem(fileIndexItems);
 		        return fileIndexItems;
 	        }
 
@@ -241,10 +242,15 @@ namespace starsky.foundation.database.Query
 	        {
 		        return await LocalQuery(_context, updateStatusContentList);
 	        }
-	        catch (ObjectDisposedException)
+	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return await LocalQuery(context, updateStatusContentList);
+	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        return await LocalQuery(_context, updateStatusContentList);
 	        }
         }
 
@@ -304,6 +310,7 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        LocalUpdateItemQuery(_context);
 	        }
             
             CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
@@ -346,6 +353,7 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        LocalQuery(_context);
 	        }
 	        
 	        CacheUpdateItem(updateStatusContentList);
@@ -365,6 +373,15 @@ namespace starsky.foundation.database.Query
         
         internal delegate void OriginalValuesSetValuesDelegate(PropertyValues t);
 
+        /// <summary>
+        /// @see: https://docs.microsoft.com/en-us/ef/core/saving/concurrency
+        /// </summary>
+        /// <param name="entryEntity"></param>
+        /// <param name="proposedValues"></param>
+        /// <param name="databaseValues"></param>
+        /// <param name="entryMetadataName"></param>
+        /// <param name="entryOriginalValuesSetValues"></param>
+        /// <exception cref="NotSupportedException"></exception>
         internal void SolveConcurrencyException(object entryEntity, 
 	        PropertyValues proposedValues, PropertyValues databaseValues, string entryMetadataName, 
 	        OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
@@ -481,7 +498,7 @@ namespace starsky.foundation.database.Query
         /// This Does remove a SINGLE item from the cache NOT from the database
         /// </summary>
         /// <param name="updateStatusContent"></param>
-        private void RemoveCacheItem(FileIndexItem updateStatusContent)
+        public void RemoveCacheItem(FileIndexItem updateStatusContent)
         {
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
@@ -708,8 +725,9 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
-		        _logger?.LogInformation("catch-ed disposedException:",concurrencyException);
+		        _logger?.LogInformation("catch-ed concurrencyException:",concurrencyException);
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        LocalQuery(_context);
 	        }
 	        
 	        // remove parent directory cache
@@ -727,7 +745,14 @@ namespace starsky.foundation.database.Query
 	    /// <returns></returns>
 	    public async Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent)
 	    {
-		    async Task LocalQuery(ApplicationDbContext context)
+		    async Task<bool> LocalRemoveDefaultQuery()
+		    {
+			    await LocalRemoveQuery(new InjectServiceScope(_scopeFactory)
+				    .Context());
+			    return true;
+		    }
+
+		    async Task LocalRemoveQuery(ApplicationDbContext context)
 		    {
 			    context.FileIndex.Remove(updateStatusContent);
 			    await context.SaveChangesAsync();
@@ -735,15 +760,20 @@ namespace starsky.foundation.database.Query
 
 		    try
 		    {
-			    await LocalQuery(_context);
+			    await LocalRemoveQuery(_context);
+		    }
+		    catch ( Microsoft.Data.Sqlite.SqliteException )
+		    {
+			    // Files that are locked
+			    await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2), 4);
 		    }
 		    catch ( ObjectDisposedException )
 		    {
-			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			    await LocalRemoveDefaultQuery();
 		    }
 		    catch ( InvalidOperationException )
 		    {
-			    await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
+			    await LocalRemoveDefaultQuery();
 		    }
 
 		    // remove parent directory cache

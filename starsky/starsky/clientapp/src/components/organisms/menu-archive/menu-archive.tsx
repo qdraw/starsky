@@ -185,17 +185,13 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
       {isModalRenameFolder && !isReadOnly && state.subPath !== "/" ? (
         <ModalArchiveRename
           subPath={state.subPath}
-          handleExit={(payload) => {
-            console.log("payload", {
-              ...payload,
-              fileIndexItems: state.fileIndexItems
-            });
-
+          handleExit={(newSubPath) => {
             setModalRenameFolder(!isModalRenameFolder);
-            if (!payload) return;
+            if (!newSubPath) return;
+            // only the path is changed
             dispatch({
               type: "force-reset",
-              payload: { ...payload, fileIndexItems: state.fileIndexItems }
+              payload: { ...state, subPath: newSubPath }
             });
           }}
           isOpen={isModalRenameFolder}
