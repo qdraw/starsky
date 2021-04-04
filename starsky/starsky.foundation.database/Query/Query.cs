@@ -610,7 +610,8 @@ namespace starsky.foundation.database.Query
 
 		    async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
 		    {
-			    await context.FileIndex.AddAsync(fileIndexItem);
+			    // only in test case fileIndex is null
+			    if ( context.FileIndex != null ) await context.FileIndex.AddAsync(fileIndexItem);
 			    await context.SaveChangesAsync();
 			    // Fix for: The instance of entity type 'Item' cannot be tracked because
 			    // another instance with the same key value for {'Id'} is already being tracked
@@ -756,14 +757,13 @@ namespace starsky.foundation.database.Query
 	    {
 		    async Task<bool> LocalRemoveDefaultQuery()
 		    {
-			    await LocalRemoveQuery(new InjectServiceScope(_scopeFactory)
-				    .Context());
+			    await LocalRemoveQuery(new InjectServiceScope(_scopeFactory).Context());
 			    return true;
 		    }
 
 		    async Task LocalRemoveQuery(ApplicationDbContext context)
 		    {
-			    context.FileIndex.Remove(updateStatusContent);
+			    context.FileIndex?.Remove(updateStatusContent);
 			    await context.SaveChangesAsync();
 		    }
 
