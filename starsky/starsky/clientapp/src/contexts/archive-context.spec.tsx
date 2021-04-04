@@ -535,7 +535,8 @@ describe("ArchiveContext", () => {
       {
         fileName: "test0.jpg",
         filePath: "/test0.jpg",
-        status: IExifStatus.Ok
+        status: IExifStatus.Ok,
+        imageFormat: ImageFormat.unknown
       }
     ]);
   });
