@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -90,11 +92,30 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			{
 			}
 
+			public int Count { get; set; }
+
 			public override int SaveChanges()
 			{
-				throw new DbUpdateConcurrencyException("t",
-					new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Count;
 			}	
+			
+			public override Task<int> SaveChangesAsync(
+				CancellationToken cancellationToken = default)
+			{
+				Count++;
+				if ( Count == 1 )
+				{
+					throw new DbUpdateConcurrencyException("t",
+						new List<IUpdateEntry>{new UpdateEntryUpdateConcurrency()});
+				}
+				return Task.FromResult(Count);
+			}
 		}
 
 
@@ -108,6 +129,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
 			fakeQuery.UpdateItem(new FileIndexItem());
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+		[TestMethod]
+		public async Task Query_UpdateItemAsync_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
+				
+		[TestMethod]
+		public async Task Query_UpdateItemAsync_Multiple_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}

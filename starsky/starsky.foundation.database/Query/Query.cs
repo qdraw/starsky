@@ -193,21 +193,30 @@ namespace starsky.foundation.database.Query
         /// <returns>this item</returns>
         public async Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent)
         {
-	        //  Update te last edited time manual
-	        updateStatusContent.SetLastEdited();
+	        async Task LocalQuery(DbContext context, FileIndexItem fileIndexItem)
+	        {
+		        //  Update te last edited time manual
+		        fileIndexItem.SetLastEdited();
+		        context.Attach(fileIndexItem).State = EntityState.Modified;
+		        await context.SaveChangesAsync();
+		        context.Attach(fileIndexItem).State = EntityState.Detached;
+		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+	        }
+
 	        try
 	        {
-		        _context.Attach(updateStatusContent).State = EntityState.Modified;
-		        await _context.SaveChangesAsync();
-		        _context.Attach(updateStatusContent).State = EntityState.Detached;
+		        await LocalQuery(_context, updateStatusContent);
 	        }
-	        catch ( ObjectDisposedException e)
+	        catch ( ObjectDisposedException e )
 	        {
 		        await RetrySaveChangesAsync(updateStatusContent, e);
 	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        await LocalQuery(_context, updateStatusContent);
+	        }
             
-	        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-
 	        return updateStatusContent;
         }
 

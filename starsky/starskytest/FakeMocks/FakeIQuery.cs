@@ -265,6 +265,10 @@ namespace starskytest.FakeMocks
 		{
 		}
 
+		public void RemoveCacheItem(FileIndexItem updateStatusContent)
+		{
+		}
+
 		public async Task AddParentItemsAsync(string subPath)
 		{
 			var path = subPath == "/" || string.IsNullOrEmpty(subPath) ? "/" : PathHelper.RemoveLatestSlash(subPath);
