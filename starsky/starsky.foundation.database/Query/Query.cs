@@ -61,7 +61,7 @@ namespace starsky.foundation.database.Query
             }
             catch (ObjectDisposedException e)
             {
-	            _logger?.LogInformation("catch-ed ObjectDisposedException", e);
+	            _logger?.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
@@ -85,7 +85,7 @@ namespace starsky.foundation.database.Query
 			}
 			catch (ObjectDisposedException e)
 			{
-				_logger?.LogInformation("catch-ed ObjectDisposedException", e);
+				_logger?.LogInformation("[GetObjectByFilePathAsync] catch-ed ObjectDisposedException", e);
 				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 		}
@@ -214,8 +214,14 @@ namespace starsky.foundation.database.Query
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        _logger?.LogInformation("going to save after UpdateItemAsync");
-		        await _context.SaveChangesAsync();
+		        try
+		        {
+			        await _context.SaveChangesAsync();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
             
 	        return updateStatusContent;
@@ -229,6 +235,8 @@ namespace starsky.foundation.database.Query
         /// <returns>same item</returns>
         public async Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList)
         {
+	        if ( !updateStatusContentList.Any() ) return new List<FileIndexItem>();
+	        
 	        async Task<List<FileIndexItem>> LocalQuery(DbContext context, List<FileIndexItem> fileIndexItems)
 	        {
 		        foreach ( var item in fileIndexItems )
@@ -255,17 +263,30 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return await LocalQuery(context, updateStatusContentList);
+		        try
+		        {
+			        return await LocalQuery(context, updateStatusContentList);
+		        }
+		        catch ( DbUpdateConcurrencyException concurrencyException)
+		        {
+			        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+			        return await LocalQuery(context, updateStatusContentList);
+		        }
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        _logger?.LogInformation("going to call save changes after DbUpdateConcurrencyException");
-		        await _context.SaveChangesAsync();
-
-		        var items = await GetObjectsByFilePathAsync(
-			        updateStatusContentList.Select(p => p.FilePath).ToList());
-		        return items;
+		        try
+		        {
+			        return await LocalQuery(_context, updateStatusContentList);
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        var items =  await GetObjectsByFilePathAsync(updateStatusContentList
+				        .Select(p => p.FilePath).ToList());
+			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
+			        return updateStatusContentList;
+		        }
 	        }
         }
 
@@ -311,7 +332,7 @@ namespace starsky.foundation.database.Query
 	        }
 	        catch ( ObjectDisposedException error)
 	        {
-		        _logger?.LogInformation(error,"catch-ed ObjectDisposedException");
+		        _logger?.LogInformation(error,"[UpdateItem] catch-ed ObjectDisposedException");
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        LocalUpdateItemQuery(context);
 	        }
@@ -323,8 +344,14 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        _logger?.LogInformation("going to safe after UpdateItem");
-		        _context.SaveChanges();
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
 
             return updateStatusContent;
@@ -365,8 +392,14 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        _logger?.LogInformation("going to save UpdateItem for DbUpdateConcurrencyException");
-		        _context.SaveChanges();
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
 	        
 	        CacheUpdateItem(updateStatusContentList);
@@ -745,9 +778,14 @@ namespace starsky.foundation.database.Query
 	        catch (DbUpdateConcurrencyException concurrencyException)
 	        {
 		        _logger?.LogInformation("catch-ed concurrencyException:",concurrencyException);
-		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
-		        _logger?.LogInformation("going to save RemoveItem for DbUpdateConcurrencyException");
-		        _context.SaveChanges();
+		        try
+		        {
+			        _context.SaveChanges();
+		        }
+		        catch ( DbUpdateConcurrencyException e)
+		        {
+			        _logger?.LogInformation(e, "[RemoveItem] save failed after DbUpdateConcurrencyException");
+		        }
 	        }
 	        
 	        // remove parent directory cache
