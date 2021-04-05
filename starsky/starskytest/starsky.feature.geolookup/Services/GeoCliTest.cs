@@ -80,6 +80,33 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 		
 		[TestMethod]
+		public async Task GeoCliInput_AbsolutePath_HappyFlow()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+			var storage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/test.jpg"},
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var appSettings = new AppSettings();
+			var geoWrite = new FakeIGeoLocationWrite();
+			var geoLookup = new FakeIGeoReverseLookup();
+			var console = new FakeConsoleWrapper();
+			var geoCli = new GeoCli(geoLookup, geoWrite,
+				new FakeSelectorStorage(storage), appSettings,
+				console, httpClientHelper,
+				new FakeIGeoFileDownload());
+			await geoCli.CommandLineAsync(new List<string> {"-p", "/test"}.ToArray());
+
+			Assert.AreEqual(appSettings.StorageFolder, "/test" + Path.DirectorySeparatorChar);
+			Assert.AreEqual(1, geoLookup.Count);
+			Assert.IsTrue(storage.ExistFile("/test.jpg"));
+		}
+		
+		[TestMethod]
 		public async Task GeoCliInput_Default_HappyFlow()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
