@@ -44,7 +44,7 @@ namespace starskytest.starskyGeoCore.Services
 	            }
             };
             var fakeIStorage = new FakeIStorage();
-            new GeoLocationWrite(_appSettings, _exifTool, fakeIStorage,fakeIStorage).LoopFolder(metaFilesInDirectory, true);
+            new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage)).LoopFolder(metaFilesInDirectory, true);
         }
     }
 }

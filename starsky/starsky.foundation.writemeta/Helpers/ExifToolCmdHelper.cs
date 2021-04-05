@@ -231,7 +231,7 @@ namespace starsky.foundation.writemeta.Helpers
 	        string command, List<string> comparedNames, FileIndexItem updateModel)
         {
 	        // To Reset Image:
-	        // exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State=
+	        // exiftool reset.jpg -gps:all= -xmp:geotag= -City= -xmp:City= -State= -xmp:State= -overwrite_original
 
 	        // CultureInfo.InvariantCulture is used for systems where comma is the default seperator
             if (comparedNames.Contains( nameof(FileIndexItem.Latitude).ToLowerInvariant() ))
@@ -278,6 +278,15 @@ namespace starsky.foundation.writemeta.Helpers
             return command;
         }
         
+        /// <summary>
+        /// Add state to ExifTool command
+        /// to remove:
+        /// -Country= -Country-PrimaryLocationName= -State= -Province-State=  -City= -xmp:City= -overwrite_original
+        /// </summary>
+        /// <param name="command">Command that is used</param>
+        /// <param name="comparedNames">names lowercase</param>
+        /// <param name="updateModel">the model with the data</param>
+        /// <returns></returns>
         private static string UpdateLocationStateCommand(string command, List<string> comparedNames, FileIndexItem updateModel)
         {
             if (comparedNames.Contains( nameof(FileIndexItem.LocationState).ToLowerInvariant() ))

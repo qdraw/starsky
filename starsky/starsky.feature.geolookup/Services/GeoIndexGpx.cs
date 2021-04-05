@@ -89,7 +89,7 @@ namespace starsky.feature.geolookup.Services
             metaFilesInDirectory = GetNoLocationItems(metaFilesInDirectory);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
-            new GeoCacheStatusService(_cache).Update(subPath,
+            new GeoCacheStatusService(_cache).StatusUpdate(subPath,
 	            metaFilesInDirectory.Count, StatusType.Total);
             
             foreach (var metaFileItem in metaFilesInDirectory.Select((value, index) => new { value, index }))
@@ -109,12 +109,12 @@ namespace starsky.feature.geolookup.Services
                 toUpdateMetaFiles.Add(metaFileItem.value);
                 
                 // status update
-                new GeoCacheStatusService(_cache).Update(metaFileItem.value.ParentDirectory, 
+                new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory, 
 	                metaFileItem.index, StatusType.Current);
             }
             
             // Ready signal
-            new GeoCacheStatusService(_cache).Update(subPath,
+            new GeoCacheStatusService(_cache).StatusUpdate(subPath,
 	            metaFilesInDirectory.Count, StatusType.Current);
             
             return toUpdateMetaFiles;

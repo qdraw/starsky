@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
 namespace starsky.foundation.writemeta.Services
 {
+	[Service(typeof(IGeoLocationWrite), InjectionLifetime = InjectionLifetime.Scoped)]
     public class GeoLocationWrite : IGeoLocationWrite
     {
         private readonly IExifTool _exifTool;
@@ -17,12 +20,12 @@ namespace starsky.foundation.writemeta.Services
         private readonly IStorage _iStorage;
         private readonly IStorage _thumbnailStorage;
 
-        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, IStorage iStorage, IStorage thumbnailStorage)
+        public GeoLocationWrite(AppSettings appSettings, IExifTool exifTool, ISelectorStorage selectorStorage)
         {
             _exifTool = exifTool;
             _appSettings = appSettings;
-            _thumbnailStorage = thumbnailStorage;
-            _iStorage = iStorage;
+            _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+            _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
         }
         
         /// <summary>

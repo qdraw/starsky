@@ -37,7 +37,7 @@ namespace starsky.feature.geolookup.Services
 			return result;
 		}
         
-		public void Update(string path, int current, StatusType type)
+		public void StatusUpdate(string path, int current, StatusType type)
 		{
 			if(_cache == null || string.IsNullOrWhiteSpace(path)) return;
 			

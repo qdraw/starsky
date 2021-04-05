@@ -117,19 +117,19 @@ namespace starsky.foundation.storage.Services
         }
 
         /// <summary>
-        /// Calculate the hash based on the first 8 Kilobytes of the file
+        /// Calculate the hash based on the first 16 Kilobytes of the file
         /// @see https://stackoverflow.com/a/45573180
         /// </summary>
         /// <param name="fullFilePath">full File Path on disk</param>
         /// <returns>Task with a md5 hash</returns>
         private async Task<string> CalculateMd5Async(string fullFilePath)
         {
-            var block = ArrayPool<byte>.Shared.Rent(8192); // 8 Kilobytes
+            var block = ArrayPool<byte>.Shared.Rent(16384); // 16 Kilobytes
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.ReadStream(fullFilePath,8192)) // reading 8 Kilobytes
+                    using (var stream = _iStorage.ReadStream(fullFilePath,16384)) // reading 16 Kilobytes
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length)
