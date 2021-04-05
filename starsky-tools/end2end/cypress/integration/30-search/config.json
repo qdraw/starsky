@@ -4,19 +4,22 @@
         "isEnabled": true,
         "url": "/search",
         "urlSearchJpg": "/search?t=-imageformat:jpg",
-        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test"
       },
       "heroku-demo" : {
         "isEnabled": true,
         "url": "/search",
         "urlSearchJpg": "/search?t=-imageformat:jpg",
-        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test"
       },
       "no-create-account" : {
         "isEnabled": true,
         "url": "/search",
         "urlSearchJpg": "/search?t=-imageformat:jpg",
-        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg"
+        "urlSearchFromUpload": "/search?t=-inurl:starsky-end2end-test -imageformat:jpg",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test"
       }
     }
   }

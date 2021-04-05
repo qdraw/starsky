@@ -14,11 +14,17 @@ describe('Search -from upload', () => {
     cy.resetStorage()
 
     cy.sendAuthenticationHeader()
+
+    // clean cache before running
+    cy.request('POST', config.searchClearCache)
   })
 
   it('Go to urlSearchFromUpload page and newest first', () => {
     if (!config.isEnabled) return
+
+    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
     cy.visit(config.urlSearchFromUpload)
+    cy.wait('@search')
 
     // newest first
 
