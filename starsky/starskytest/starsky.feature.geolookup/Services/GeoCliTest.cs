@@ -91,7 +91,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 				new List<string> {"/test.jpg"},
 				new List<byte[]> {CreateAnImage.Bytes});
 
-			var appSettings = new AppSettings();
+			var appSettings = new AppSettings{Verbose = true};
 			var geoWrite = new FakeIGeoLocationWrite();
 			var geoLookup = new FakeIGeoReverseLookup();
 			var console = new FakeConsoleWrapper();
