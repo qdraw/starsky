@@ -73,7 +73,7 @@ namespace starsky.feature.geolookup.Services
             
 			// Using both options
 			string inputPath;
-			// -s = if subpath || -p is path
+			// -s = if subPath || -p is path
 			if ( new ArgsHelper(_appSettings).IsSubPathOrPath(args) )
 			{
 				inputPath = _appSettings.DatabasePathToFilePath(
