@@ -1,0 +1,8 @@
+exclude_patterns:
+  - "starsky/starsky.foundation.database/Migrations/"
+  - "starsky/starskytest/"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/*.stories.tsx"
+  - "**/*.d.ts"
+  - "**/dist/"
