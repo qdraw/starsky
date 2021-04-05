@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,7 +11,6 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -50,7 +49,38 @@ namespace starskytest.starsky.feature.geolookup.Services
 		}
 		
 		[TestMethod]
-		public async Task GeoCliInput_DefaultFlow()
+		public async Task GeoCliInput_RelativeUrl_HappyFlow()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory);
+
+			var relativeParentFolder = new AppSettings().DatabasePathToFilePath(
+				new StructureService(new FakeIStorage(), new AppSettings().Structure)
+					.ParseSubfolders(0),false);
+			
+			var storage = new FakeIStorage(new List<string> {"/"},
+				new List<string> {"/test.jpg"},
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var appSettings = new AppSettings();
+			var geoWrite = new FakeIGeoLocationWrite();
+			var geoLookup = new FakeIGeoReverseLookup();
+			var console = new FakeConsoleWrapper();
+			var geoCli = new GeoCli(geoLookup, geoWrite,
+				new FakeSelectorStorage(storage), appSettings,
+				console, httpClientHelper,
+				new FakeIGeoFileDownload());
+			await geoCli.CommandLineAsync(new List<string> {"-g", "0"}.ToArray());
+
+			Assert.AreEqual(appSettings.StorageFolder, relativeParentFolder + Path.DirectorySeparatorChar);
+			Assert.AreEqual(1, geoLookup.Count);
+			Assert.IsTrue(storage.ExistFile("/test.jpg"));
+		}
+		
+		[TestMethod]
+		public async Task GeoCliInput_Default_HappyFlow()
 		{
 			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
 			{
