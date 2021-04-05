@@ -6,8 +6,10 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIGeoLocationWrite : IGeoLocationWrite
 	{
+		public List<List<FileIndexItem>> Inputs { get; set; } = new List<List<FileIndexItem>>();
 		public void LoopFolder(List<FileIndexItem> metaFilesInDirectory, bool syncLocationNames)
 		{
+			Inputs.Add(metaFilesInDirectory);
 		}
 	}
 }

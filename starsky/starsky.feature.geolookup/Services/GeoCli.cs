@@ -51,7 +51,7 @@ namespace starsky.feature.geolookup.Services
 		/// </summary>
 		/// <param name="args">arguments provided by command line app</param>
 		/// <returns>Void Task</returns>
-		public async Task CommandLineTask(string[] args)
+		public async Task CommandLineAsync(string[] args)
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 

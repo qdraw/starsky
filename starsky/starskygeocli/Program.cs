@@ -44,7 +44,7 @@ namespace starskyGeoCli
 
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
-				appSettings, console, httpClientHelper, geoFileDownload).CommandLineTask(args);
+				appSettings, console, httpClientHelper, geoFileDownload).CommandLineAsync(args);
 		}
 	}
 }
