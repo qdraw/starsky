@@ -1,3 +1,4 @@
+version: "2"
 exclude_patterns:
   - "starsky/starsky.foundation.database/Migrations/"
   - "starsky/starskytest/"
@@ -6,3 +7,31 @@ exclude_patterns:
   - "**/*.stories.tsx"
   - "**/*.d.ts"
   - "**/dist/"
+
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 7
+  complex-logic:
+    enabled: true
+    config:
+      threshold: 7
+  file-lines:
+    enabled: false
+    config:
+      threshold: 1500
+  method-complexity:
+    enabled: true
+  method-count:
+    enabled: true
+  method-lines:
+    enabled: false
+  nested-control-flow:
+    enabled: true
+  return-statements:
+    enabled: false
+  similar-code:
+    enabled: false
+  identical-code:
+    enabled: true
