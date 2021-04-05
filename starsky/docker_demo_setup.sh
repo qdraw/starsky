@@ -80,6 +80,11 @@ function  end_popd {
   popd
 }
 
+echo "download dependencies; exiftool and geo data"  
+starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
+dotnet run --project ${starskygeocli[0]} --configuration Release -- -h
+echo "end download"
+
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
 else

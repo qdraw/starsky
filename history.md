@@ -58,6 +58,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ DbUpdateConcurrencyException save after, instead of nothing (pull #349)
 - [x]   (Fixed) _Back-end_ fix issue where rename did not work in combination with useDiskWatcher (issue #347 pull #349)
 - [x]   (Fixed) _Front-end_ input field when using safari you should not break words (pull #359)
+- [x]   (Changed) _Back-end_ Geo CLI downloads now on startup dependencies (Issue #340 / pull #351)
 
 # version 0.4.6 - 2021-03-21
 - [x]   (Added) _Front-end_  add prefilled selected option for

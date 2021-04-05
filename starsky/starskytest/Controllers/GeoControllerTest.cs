@@ -19,6 +19,7 @@ using starskycore.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -101,7 +102,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
+			var controller = new GeoController(_appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -114,7 +115,7 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage))
+			var controller = new GeoController(_appSettings, _bgTaskQueue, new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -126,13 +127,13 @@ namespace starskytest.Controllers
 		public void StatusCheck_CachedItemExist()
 		{
 			// set startup status aka 50%
-			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",1, StatusType.Current);
-			new GeoCacheStatusService(_memoryCache).Update("/StatusCheck_CachedItemExist",2, StatusType.Total);
+			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",1, StatusType.Current);
+			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",2, StatusType.Total);
 
 			var storage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(storage);
 			
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector,_memoryCache)
+			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, new FakeIGeoLocationWrite(), _memoryCache)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -148,7 +149,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -162,7 +163,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -181,7 +182,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"2QOYZWMPACZAJ2MABGMOZ6CCPY"});
 			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -207,7 +208,7 @@ namespace starskytest.Controllers
 		{
 			var storage = new FakeIStorage(); // <= main folder not found
 			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_exifTool, _appSettings, _bgTaskQueue, storageSelector)
+			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, new FakeIGeoLocationWrite())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

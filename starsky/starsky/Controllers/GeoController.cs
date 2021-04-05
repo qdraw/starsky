@@ -25,25 +25,25 @@ namespace starsky.Controllers
 	[Authorize]
 	public class GeoController : Controller
 	{
-		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readMeta;
 		private readonly IMemoryCache _cache;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
+		private readonly IGeoLocationWrite _geoLocationWrite;
 
-		public GeoController(IExifTool exifTool, 
-			AppSettings appSettings, IBackgroundTaskQueue queue,
+		public GeoController(AppSettings appSettings, IBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
+			IGeoLocationWrite geoLocationWrite,
 			IMemoryCache memoryCache = null )
 		{
 			_appSettings = appSettings;
-			_exifTool = exifTool;
 			_bgTaskQueue = queue;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_readMeta = new ReadMeta(_iStorage);
+			_geoLocationWrite = geoLocationWrite;
 			_cache = memoryCache;
 		}
 
@@ -98,7 +98,7 @@ namespace starsky.Controllers
 				GeoBackgroundTask(
 					new GeoIndexGpx(_appSettings, _iStorage, _cache),
 					new GeoReverseLookup(_appSettings, new GeoFileDownload(_appSettings), _cache), 
-					new GeoLocationWrite(_appSettings, _exifTool, _iStorage, _thumbnailStorage),
+					_geoLocationWrite,
 					f, index,
 					overwriteLocationNames);
 			});

@@ -9,12 +9,14 @@ using NGeoNames.Entities;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 
 namespace starsky.feature.geolookup.Services
 {
+	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
     public class GeoReverseLookup : IGeoReverseLookup
     {
         private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
@@ -98,7 +100,7 @@ namespace starsky.feature.geolookup.Services
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
             
-	        new GeoCacheStatusService(_cache).Update(subPath, metaFilesInDirectory.Count, StatusType.Total);
+	        new GeoCacheStatusService(_cache).StatusUpdate(subPath, metaFilesInDirectory.Count, StatusType.Total);
 
             foreach (var metaFileItem in metaFilesInDirectory.Select(
 	            (value, index) => new { value, index }))
@@ -117,7 +119,7 @@ namespace starsky.feature.geolookup.Services
                     metaFileItem.value.Latitude,
                     metaFileItem.value.Longitude);
 
-                new GeoCacheStatusService(_cache).Update(metaFileItem.value.ParentDirectory, 
+                new GeoCacheStatusService(_cache).StatusUpdate(metaFileItem.value.ParentDirectory, 
 	                metaFileItem.index, StatusType.Current);
 	                
                 if (distanceTo > 35) continue; 
@@ -138,7 +140,7 @@ namespace starsky.feature.geolookup.Services
             }
             
             // Ready signal
-            new GeoCacheStatusService(_cache).Update(subPath,
+            new GeoCacheStatusService(_cache).StatusUpdate(subPath,
 	            metaFilesInDirectory.Count, StatusType.Current);
             
             return metaFilesInDirectory;

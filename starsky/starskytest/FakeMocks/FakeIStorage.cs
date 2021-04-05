@@ -99,11 +99,15 @@ namespace starskytest.FakeMocks
 
 		public void FileMove(string inputSubPath, string toSubPath)
 		{
-			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
-			if ( indexOfFiles == -1 )
+			var existOldFile = ExistFile(inputSubPath);
+			var existNewFile = ExistFile(toSubPath);
+
+			if (!existOldFile || existNewFile)
 			{
-				throw new ArgumentException($"inputSubPath:{inputSubPath} - toSubPath:{toSubPath} indexOfFiles---1");
+				return;
 			}
+			
+			var indexOfFiles = _outputSubPathFiles.IndexOf(inputSubPath);
 			_outputSubPathFiles[indexOfFiles] = toSubPath;
 		}
 
