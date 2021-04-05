@@ -26,6 +26,11 @@
   word-break: break-word;
 }
 
+/* for safari you should not break words in a single line*/
+input.form-control {
+  word-break: inherit;
+}
+
 .form-control.disabled,
 .form-control:disabled {
   background-color: #cfd8dc;
@@ -50,7 +55,7 @@
   content: "";
   position: relative;
   left: 4px;
-  padding-top: 3px;
+  padding-top: 6px;
   padding-bottom: 3px;
   padding-left: 23px;
 
