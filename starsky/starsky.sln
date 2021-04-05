@@ -64,6 +64,7 @@ ProjectSection(SolutionItems) = preProject
 	readme.md = readme.md
 	readme-docker-instructions.md = readme-docker-instructions.md
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
+	docker_demo_setup.sh = docker_demo_setup.sh
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
