@@ -98,7 +98,7 @@ describe("ModalArchiveRename", () => {
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
         { statusCode: 200 } as IConnectionDefault
       );
-      var fetchPostSpy = jest
+      jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
