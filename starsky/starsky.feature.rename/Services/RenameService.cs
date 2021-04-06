@@ -65,7 +65,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
+					await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems,fileIndexResultsList, detailView);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -363,9 +363,13 @@ namespace starsky.feature.rename.Services
 		/// <param name="inputFileSubPath">from path</param>
 		/// <param name="toFileSubPath">to path</param>
 		/// <param name="fileIndexItems">list of results</param>
+		/// <param name="fileIndexResultsList"></param>
+		/// <param name="detailView"></param>
 		/// <exception cref="ArgumentNullException">fileIndexItems is null</exception>
-		internal async Task FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
-			List<FileIndexItem> fileIndexItems)
+		internal async Task FromFolderToFolder(string inputFileSubPath, 
+			string toFileSubPath, List<FileIndexItem> fileIndexItems, 
+			List<FileIndexItem> fileIndexResultsList, DetailView detailView)
+
 		{
 			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems), 
 				"Should contain value");
@@ -385,7 +389,7 @@ namespace starsky.feature.rename.Services
 			
 			// Replace all Recursive items in Query
 			// Does only replace in existing database items
-			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
+			fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
 					
 			// Rename child items
 			fileIndexItems.ForEach(p =>
@@ -399,7 +403,6 @@ namespace starsky.feature.rename.Services
 			// save before changing on disk
 			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 				detailView, toFileSubPath);
-
 			
 			// rename child folders
 			foreach ( var inputChildFolder in directChildFolders )
