@@ -121,8 +121,10 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     );
     await history.navigate(replacePath, { replace: true });
 
+    console.log(filePathAfterChange);
+
     // Close window
-    props.handleExit(replacePath);
+    props.handleExit(filePathAfterChange);
   }
 
   return (
