@@ -1,6 +1,8 @@
+import { globalHistory } from "@reach/router";
 import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
+import * as useLocation from "../../../hooks/use-location";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
@@ -59,11 +61,12 @@ describe("ModalArchiveRename", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      const handleExitSpy = jest.fn();
+      const modal = mount(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
-          handleExit={() => {}}
+          handleExit={handleExitSpy}
         ></ModalArchiveRename>
       );
 
@@ -83,6 +86,54 @@ describe("ModalArchiveRename", () => {
         new UrlQuery().UrlSyncRename(),
         "f=%2Ftest&to=%2Fdirectory"
       );
+
+      // Cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+
+    it("change directory name should give callback", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 200 } as IConnectionDefault
+      );
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const locationObject = {
+        location: globalHistory.location,
+        navigate: jest.fn()
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject)
+        .mockImplementationOnce(() => locationObject);
+
+      const handleExitSpy = jest.fn();
+      const modal = mount(
+        <ModalArchiveRename
+          isOpen={true}
+          subPath="/test"
+          handleExit={handleExitSpy}
+        ></ModalArchiveRename>
+      );
+
+      act(() => {
+        modal.find('[data-name="foldername"]').getDOMNode().textContent =
+          "directory";
+        modal.find('[data-name="foldername"]').simulate("input");
+      });
+
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
+
+      expect(handleExitSpy).toBeCalledWith("/directory");
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
