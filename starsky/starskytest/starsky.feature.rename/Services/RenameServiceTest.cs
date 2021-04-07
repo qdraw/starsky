@@ -578,11 +578,18 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.IsTrue(iStorage.ExistFile(toItemJpg));
 			Assert.IsTrue(iStorage.ExistFile(toItemDng));
 			
-			// and the result is ok
-			Assert.AreEqual(toItemJpg, renameFs[0].FilePath);
-			Assert.AreEqual(toItemDng, renameFs[1].FilePath);
+			var toItemJpgItem = renameFs
+				.FirstOrDefault(p => p.FilePath == toItemJpg);
+			var toItemDngItem = renameFs
+				.FirstOrDefault(p => p.FilePath == toItemDng);
+			
+			Assert.AreEqual(toItemJpg, toItemJpgItem.FilePath);
+			Assert.AreEqual(toItemDng, toItemDngItem.FilePath);
 
-			// and the database is ok
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, toItemJpgItem.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, toItemDngItem.Status);
+			
+			// // and the database is ok
 			Assert.AreEqual(toItemJpg, 
 				_query.SingleItem(toItemJpg).FileIndexItem.FilePath);
 			Assert.AreEqual(toItemDng, 
@@ -901,8 +908,19 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(1, countTargetFolder.Count);
 			
-			Assert.AreEqual("/source_folder", renameFs[0].FilePath);
-			Assert.AreEqual("/target_folder_3", renameFs[1].FilePath);
+			Assert.AreEqual("/source_folder", renameFs[1].FilePath);
+			Assert.AreEqual("/target_folder_3", renameFs[0].FilePath);
+			
+			var sourceFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/source_folder");
+			var targetFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_3");
+			
+			Assert.AreEqual("/source_folder", sourceFolder.FilePath);
+			Assert.AreEqual("/target_folder_3", targetFolder.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, sourceFolder.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFolder.Status);
 		}
 		
 		[TestMethod]
@@ -937,17 +955,29 @@ namespace starskytest.starsky.feature.rename.Services
 				.Where(p => p.FilePath == "/target_folder_4").ToList();
 			
 			Assert.AreEqual(1, countTargetFolder.Count);
+
+			var sourceFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/source_folder_2");
+			var targetFile = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_4/test.jpg");
+			var targetFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_4");
 			
-			Assert.AreEqual("/source_folder_2", renameFs[0].FilePath);
-			Assert.AreEqual( "/target_folder_4/test.jpg", renameFs[1].FilePath);
-			Assert.AreEqual( "/target_folder_4", renameFs[2].FilePath);
+			Assert.AreEqual("/source_folder_2", sourceFolder.FilePath);
+			Assert.AreEqual("/target_folder_4/test.jpg", targetFile.FilePath);
+			Assert.AreEqual("/target_folder_4", targetFolder.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, sourceFolder.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFile.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFolder.Status);
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void FromFolderToFolder_Null_exception()
+		public async Task FromFolderToFolder_Null_exception()
 		{
-			new RenameService(null, null).FromFolderToFolder(null, null, null);
+			await new RenameService(null, null).FromFolderToFolder(null, 
+				null, null,null);
 			// expect exception
 		}
 

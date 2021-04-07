@@ -65,7 +65,7 @@ namespace starsky.feature.rename.Services
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
-					await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems,fileIndexResultsList, detailView);
+					await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -81,14 +81,14 @@ namespace starsky.feature.rename.Services
 				{
 					// toFileSubPath should contain the full subPath
 					await FromFileToDeleted(inputFileSubPath, toFileSubPath, 
-						fileIndexResultsList);
+						fileIndexResultsList, fileIndexItems, detailView);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
 				{
 					toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
 					// toFileSubPath must be the to copy directory, the filename is kept the same
-					await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
+					await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, fileIndexItems, detailView);
 				} 
 			}
 	        return fileIndexResultsList;
@@ -357,23 +357,28 @@ namespace starsky.feature.rename.Services
 			}
 		}
 
+		
+		internal Task FromFolderToFolder(string inputFileSubPath, 
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList, DetailView detailView)
+		{
+			if ( fileIndexResultsList == null )
+			{
+				throw new ArgumentNullException(nameof(fileIndexResultsList), "Should contain value");
+			}
+			return FromFolderToFolderAsync(inputFileSubPath, toFileSubPath, fileIndexResultsList,detailView);
+		}
+		
 		/// <summary>
 		/// Copy from a folder to a folder
 		/// </summary>
 		/// <param name="inputFileSubPath">from path</param>
 		/// <param name="toFileSubPath">to path</param>
-		/// <param name="fileIndexItems">list of results</param>
 		/// <param name="fileIndexResultsList"></param>
 		/// <param name="detailView"></param>
 		/// <exception cref="ArgumentNullException">fileIndexItems is null</exception>
-		internal async Task FromFolderToFolder(string inputFileSubPath, 
-			string toFileSubPath, List<FileIndexItem> fileIndexItems, 
-			List<FileIndexItem> fileIndexResultsList, DetailView detailView)
-
+		private async Task FromFolderToFolderAsync(string inputFileSubPath, 
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList, DetailView detailView)
 		{
-			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems), 
-				"Should contain value");
-			
 			// 1. Get Direct child files
 			// 2. Get Direct folder and child folders
 			// 3. move child files
@@ -389,7 +394,7 @@ namespace starsky.feature.rename.Services
 			
 			// Replace all Recursive items in Query
 			// Does only replace in existing database items
-			fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
+			var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
 					
 			// Rename child items
 			fileIndexItems.ForEach(p =>
@@ -425,9 +430,8 @@ namespace starsky.feature.rename.Services
 		}
 
 		private async Task FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
-			List<FileIndexItem> fileIndexResultsList)
+			List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems, DetailView detailView)
 		{
-			
 			// when trying to rename something wrongs
 			var fileName = FilenamesHelper.GetFileName(toFileSubPath);
 			if ( !FilenamesHelper.IsValidFileName(fileName) )
@@ -446,16 +450,18 @@ namespace starsky.feature.rename.Services
 			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 			// clear cache (to FileSubPath parents)
 			_query.RemoveCacheParentItem(toParentSubFolder);
+			
+			// Check if the parent folder exist in the database
+			await _query.AddParentItemsAsync(toParentSubFolder);
 
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+					
 			// add folder to file system
 			if ( !_iStorage.ExistFolder(toParentSubFolder) )
 			{
 				_iStorage.CreateDirectory(toParentSubFolder);
 			}
-					
-			// Check if the parent folder exist in the database
-			await _query.AddParentItemsAsync(toParentSubFolder);
-					
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 			
@@ -463,7 +469,8 @@ namespace starsky.feature.rename.Services
 			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
-		private async Task FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		private async Task FromFileToFolder(string inputFileSubPath, string toFileSubPath, 
+			List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems, DetailView detailView)
 		{
 			// you can't move the file to the same location
 			if ( inputFileSubPath == toFileSubPath )
@@ -474,7 +481,7 @@ namespace starsky.feature.rename.Services
 				});
 				return; //next
 			}
-					
+			
 			// from/input cache should be cleared
 			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
 			_query.RemoveCacheParentItem(inputParentSubFolder);
@@ -485,7 +492,10 @@ namespace starsky.feature.rename.Services
 					
 			// Check if the parent folder exist in the database // parentSubFolder
 			await _query.AddParentItemsAsync(toParentSubFolder);
-					
+
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+			
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 			
