@@ -60,14 +60,12 @@ namespace starsky.feature.rename.Services
 				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
 				{
-					fileIndexItems = await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList);
+					await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
 					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
 				{
 					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
-					// when renaming a folder it should warn the UI that it should remove the source item
-					fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 				}
 				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
 				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
@@ -92,30 +90,32 @@ namespace starsky.feature.rename.Services
 					// toFileSubPath must be the to copy directory, the filename is kept the same
 					await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
 				} 
-
-				// Rename parent item >eg the folder or file
-				detailView.FileIndexItem.SetFilePath(toFileSubPath);
-				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-				fileIndexItems.Add(detailView.FileIndexItem);
-	
-				// To update the file that is changed
-				await _query.UpdateItemAsync(fileIndexItems);
-
-				fileIndexResultsList.AddRange(fileIndexItems);
 			}
-
 	        return fileIndexResultsList;
         }
 
-		private async Task<List<FileIndexItem>> FromFolderToDeleted(string inputFileSubPath,
-			string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		private async Task SaveToDatabaseAsync(List<FileIndexItem> fileIndexItems, 
+			List<FileIndexItem> fileIndexResultsList, DetailView detailView, string toFileSubPath)
+		{
+			// Rename parent item >eg the folder or file
+			detailView.FileIndexItem.SetFilePath(toFileSubPath);
+			detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+			
+			fileIndexItems.Add(detailView.FileIndexItem);
+	
+			// To update the file that is changed
+			await _query.UpdateItemAsync(fileIndexItems);
+
+			fileIndexResultsList.AddRange(fileIndexItems);
+		}
+
+		private async Task FromFolderToDeleted(string inputFileSubPath,
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList,
+			DetailView detailView)
 		{
 			// clean from cache
 			_query.RemoveCacheParentItem(inputFileSubPath);
 			
-			// move entire folder
-			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
-					
 			var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
 			// Rename child items
 			fileIndexItems.ForEach(p =>
@@ -138,9 +138,14 @@ namespace starsky.feature.rename.Services
 				await _query.RemoveItemAsync(item);
 			}
 			
-			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
+			// save before changing on disk
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
 			
-			return fileIndexItems;
+			// move entire folder
+			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
+			
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private string GetFileName(string toFileSubPath, string inputFileSubPath)
@@ -359,7 +364,7 @@ namespace starsky.feature.rename.Services
 		/// <param name="toFileSubPath">to path</param>
 		/// <param name="fileIndexItems">list of results</param>
 		/// <exception cref="ArgumentNullException">fileIndexItems is null</exception>
-		internal void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
+		internal async Task FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
 			List<FileIndexItem> fileIndexItems)
 		{
 			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems), 
@@ -377,7 +382,25 @@ namespace starsky.feature.rename.Services
 			// Store direct files
 			var directChildItems = new List<string>();
 			directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+			
+			// Replace all Recursive items in Query
+			// Does only replace in existing database items
+			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
 					
+			// Rename child items
+			fileIndexItems.ForEach(p =>
+				{
+					p.ParentDirectory =
+						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+					p.Status = FileIndexItem.ExifStatus.Ok;
+				}
+			);
+			
+			// save before changing on disk
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+
+			
 			// rename child folders
 			foreach ( var inputChildFolder in directChildFolders )
 			{
@@ -393,19 +416,9 @@ namespace starsky.feature.rename.Services
 				var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
 				_iStorage.FileMove(inputChildItem,outputChildItem);
 			}
-					
-			// Replace all Recursive items in Query
-			// Does only replace in existing database items
-			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-					
-			// Rename child items
-			fileIndexItems.ForEach(p =>
-				{
-					p.ParentDirectory =
-						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
-					p.Status = FileIndexItem.ExifStatus.Ok;
-				}
-			);
+			
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private async Task FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
