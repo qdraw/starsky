@@ -282,9 +282,9 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/exist/.starsky.test2.jpg.json", 
 				values.FirstOrDefault(p => p == "/exist/.starsky.test2.jpg.json"));
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
-				renameFs.FirstOrDefault(p => p.FilePath == _folderExist.FilePath + "/test2.jpg").Status );
+				renameFs.FirstOrDefault(p => p.FilePath == "/exist/test2.jpg").Status );
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
-				renameFs.FirstOrDefault(p => p.FilePath == _fileInExist.FilePath).Status );
+				renameFs.FirstOrDefault(p => p.FilePath == "/exist/file.jpg").Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
@@ -478,8 +478,25 @@ namespace starskytest.starsky.feature.rename.Services
 				all2.FirstOrDefault(p => p.FileName == "subfolder" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
 			Assert.AreEqual("/folder1/subfolder/child.jpg",
 				all2.FirstOrDefault(p => p.FileName == "child.jpg" &&  p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs[0].Status );
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
+			
+			// FileIndexItem.ExifStatus.Ok, /folder1/file.jpg -			
+			// FileIndexItem.ExifStatus.Ok, /folder1
+			// NotFoundSourceMissing /exist
+			
+			var file = renameFs
+				.FirstOrDefault(p => p.FilePath == "/folder1/file.jpg");
+			var folder1 = renameFs
+				.FirstOrDefault(p => p.FilePath == "/folder1");
+			var exist = renameFs
+				.FirstOrDefault(p => p.FilePath == "/exist");
+			
+			Assert.AreEqual("/folder1/file.jpg", file.FilePath);
+			Assert.AreEqual("/folder1", folder1.FilePath);
+			Assert.AreEqual("/exist", exist.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, file.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, folder1.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, exist.Status);
 
 			await _query.RemoveItemAsync(existSubFolder);
 			await _query.RemoveItemAsync(existSubFolderChildJpg);
@@ -947,9 +964,9 @@ namespace starskytest.starsky.feature.rename.Services
 				new List<string>{"/source_folder_2/test.jpg"}
 				);
 
-			_query.AddItem(
+			await _query.AddItemAsync(
 				new FileIndexItem("/source_folder_2") {IsDirectory = true});
-			_query.AddItem(
+			await _query.AddItemAsync(
 				new FileIndexItem("/source_folder_2/test.jpg"));
 			await _query.AddItemAsync(
 				new FileIndexItem("/target_folder_4") {IsDirectory = true});
