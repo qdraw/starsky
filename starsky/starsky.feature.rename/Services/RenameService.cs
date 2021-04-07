@@ -461,7 +461,9 @@ namespace starsky.feature.rename.Services
 			if ( !_iStorage.ExistFolder(toParentSubFolder) )
 			{
 				_iStorage.CreateDirectory(toParentSubFolder);
+				fileIndexResultsList.Add(new FileIndexItem(toParentSubFolder){Status = FileIndexItem.ExifStatus.Ok});
 			}
+			
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 			
@@ -481,11 +483,13 @@ namespace starsky.feature.rename.Services
 				});
 				return; //next
 			}
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 			
 			// from/input cache should be cleared
 			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
 			_query.RemoveCacheParentItem(inputParentSubFolder);
-					
+
 			// clear cache // parentSubFolder (to FileSubPath parents)
 			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 			_query.RemoveCacheParentItem(toParentSubFolder); 
@@ -496,11 +500,9 @@ namespace starsky.feature.rename.Services
 			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 				detailView, toFileSubPath);
 			
+			// First update database and then update for diskwatcher
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
-			
-			// when renaming a folder it should warn the UI that it should remove the source item
-			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
     }
