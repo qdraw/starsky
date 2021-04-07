@@ -282,8 +282,8 @@ namespace starskytest.Controllers
 			var result = await controller.Rename(_createAnImage.DbPath, "/test.jpg", true, false) as JsonResult;
 			var list = result.Value as List<FileIndexItem>;
 
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,list[0].Status);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list[1].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,list[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,list[1].Status);
 
 			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/test.jpg"));
 		}
