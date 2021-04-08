@@ -57,38 +57,31 @@ namespace starsky.feature.rename.Services
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				var fileIndexItems = new List<FileIndexItem>();
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				switch ( inputFileFolderStatus )
 				{
-					await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
-				{
-					await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
-				{
-					// overwrite a file is not supported
-					fileIndexResultsList.Add(new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.OperationNotSupported
-					});
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
-				{
-					// toFileSubPath should contain the full subPath
-					await FromFileToDeleted(inputFileSubPath, toFileSubPath, 
-						fileIndexResultsList, fileIndexItems, detailView);
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
-				{
-					toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
-					// toFileSubPath must be the to copy directory, the filename is kept the same
-					await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, fileIndexItems, detailView);
+					case FolderOrFileModel.FolderOrFileTypeList.Folder when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted:
+						await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.Folder when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder:
+						await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File:
+						// overwrite a file is not supported
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted:
+						// toFileSubPath should contain the full subPath
+						await FromFileToDeleted(inputFileSubPath, toFileSubPath, 
+							fileIndexResultsList, fileIndexItems, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder:
+						toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
+						// toFileSubPath must be the to copy directory, the filename is kept the same
+						await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, fileIndexItems, detailView);
+						break;
 				} 
 			}
 	        return fileIndexResultsList;
