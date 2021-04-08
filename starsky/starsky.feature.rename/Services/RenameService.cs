@@ -451,6 +451,7 @@ namespace starsky.feature.rename.Services
 			// Check if the parent folder exist in the database
 			await _query.AddParentItemsAsync(toParentSubFolder);
 
+			// Save in database before change on disk
 			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
 				detailView, toFileSubPath);
 					
