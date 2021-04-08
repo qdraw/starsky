@@ -39,14 +39,18 @@ namespace starsky.feature.rename.Services
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				// options
-				// 1. file to direct folder file.jpg /folder/ (not covered)
-				// 2. folder to folder (not covered)
-				// 3. folder with child folders to folder (not covered)
-				// 4. folder merge parent folder with current folder (not covered), /test/ => /test/test/
-				// 5. folder to existing folder > merge (not covered)
-				// 6. file to file
-				// 7. file to existing file > skip
-
+				// 1. FromFolderToDeleted:
+				//		folder rename
+				// 2. FromFolderToFolder:
+				//		folder with child folders to folder
+				// 3. Not named
+				//		file to file
+				//		- overwrite a file is not supported
+				// 4. FromFileToDeleted:
+				//		rename a file to new location
+				// 5. FromFileToFolder:
+				//		file to direct folder file.jpg  -> /folder/ 
+				// 6. folder merge parent folder with current folder (not covered), /test/ => /test/test/
 				
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
