@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -15,6 +17,7 @@ namespace starsky.foundation.database.Query
         /// Query all FileIndexItems with the type folder
         /// </summary>
         /// <returns>List of all folders in database, including content</returns>
+        [Obsolete("replace by async variant")]
         public List<FileIndexItem> GetAllFolders()
         {
 	        try

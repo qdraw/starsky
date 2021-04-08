@@ -43,7 +43,8 @@ namespace starsky.foundation.sync.SyncServices
 			// Loop trough all folders recursive
 			foreach ( var subPath in subPaths )
 			{
-				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
+				// including child folders, but not recursive
+				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
 				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
 				
 				// And check files within this folder
@@ -52,6 +53,9 @@ namespace starsky.foundation.sync.SyncServices
 
 				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
+				
+				var indexItems2 = await CheckIfFolderExistOnDisk(fileIndexItems);
+				allResults.AddRange(indexItems2);
 			}
 
 			// // remove the duplicates from a large list of folders
@@ -61,11 +65,42 @@ namespace starsky.foundation.sync.SyncServices
 			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
 		}
+
+		private async Task<IEnumerable<FileIndexItem>> CheckIfFolderExistOnDisk(IReadOnlyCollection<FileIndexItem> fileIndexItems)
+		{
+			var fileIndexItemsOnlyFolder = fileIndexItems
+				.Where(p => p.IsDirectory == true).ToList();
+
+			return (await fileIndexItemsOnlyFolder
+				.ForEachAsync(async item =>
+				{
+					// assume only the input of directories
+					if ( _subPathStorage.ExistFolder(item.FilePath) )
+					{
+						return item;
+					}
+					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+
+					// Child items within
+					var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
+					foreach ( var remove in removeItems )
+					{
+						await query.RemoveItemAsync(remove);
+					}
+					// Item it self
+					await query.RemoveItemAsync(item);
+					item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+					return item;
+				}, _appSettings.MaxDegreesOfParallelism));
+		}
 		
 		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
-			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItems, pathsOnDisk);
+			var fileIndexItemsOnlyFiles = fileIndexItems
+				.Where(p => p.IsDirectory == false).ToList();
+			
+			var pathsToUpdateInDatabase = PathsToUpdateInDatabase(fileIndexItemsOnlyFiles, pathsOnDisk);
 			if ( !pathsToUpdateInDatabase.Any() ) return new List<FileIndexItem>();
 				
 			var result = await pathsToUpdateInDatabase

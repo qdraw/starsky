@@ -186,6 +186,16 @@ namespace starskytest.FakeMocks
 			return _fakeContext.Where(p => p.IsDirectory == true).ToList();
 		}
 
+		public Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		{
+			throw new NotImplementedException();
+		}
+
 		public FileIndexItem AddItem(FileIndexItem updateStatusContent)
 		{
 			_fakeContext.Add(updateStatusContent);
