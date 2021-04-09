@@ -55,7 +55,7 @@ namespace starsky.foundation.sync.SyncServices
 				allResults.AddRange(indexItems);
 				
 				var indexItems2 = await CheckIfFolderExistOnDisk(fileIndexItems);
-				allResults.AddRange(indexItems2);
+				if ( indexItems2.Any() ) allResults.AddRange(indexItems2);
 			}
 
 			// // remove the duplicates from a large list of folders
@@ -65,35 +65,7 @@ namespace starsky.foundation.sync.SyncServices
 			allResults.Add(await AddParentFolder(inputSubPath));
 			return allResults;
 		}
-
-		private async Task<IEnumerable<FileIndexItem>> CheckIfFolderExistOnDisk(IReadOnlyCollection<FileIndexItem> fileIndexItems)
-		{
-			var fileIndexItemsOnlyFolder = fileIndexItems
-				.Where(p => p.IsDirectory == true).ToList();
-
-			return (await fileIndexItemsOnlyFolder
-				.ForEachAsync(async item =>
-				{
-					// assume only the input of directories
-					if ( _subPathStorage.ExistFolder(item.FilePath) )
-					{
-						return item;
-					}
-					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
-
-					// Child items within
-					var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
-					foreach ( var remove in removeItems )
-					{
-						await query.RemoveItemAsync(remove);
-					}
-					// Item it self
-					await query.RemoveItemAsync(item);
-					item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
-					return item;
-				}, _appSettings.MaxDegreesOfParallelism));
-		}
-		
+	
 		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
 			IReadOnlyCollection<string> pathsOnDisk)
 		{
@@ -172,5 +144,48 @@ namespace starsky.foundation.sync.SyncServices
 			// and order by alphabet and remove duplicates
 			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
 		}
+		
+		
+		private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(IReadOnlyCollection<FileIndexItem> fileIndexItems)
+		{
+			var fileIndexItemsOnlyFolder = fileIndexItems
+				.Where(p => p.IsDirectory == true).ToList();
+			
+			if ( !fileIndexItemsOnlyFolder.Any() ) return new List<FileIndexItem>();
+
+			return (await fileIndexItemsOnlyFolder
+				.ForEachAsync(async item =>
+				{
+					// assume only the input of directories
+					if ( _subPathStorage.ExistFolder(item.FilePath) )
+					{
+						return item;
+					}
+					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+					return await RemoveChildItems(query, item);
+				}, _appSettings.MaxDegreesOfParallelism)).ToList();
+		}
+
+		/// <summary>
+		/// Remove all items that are included
+		/// </summary>
+		/// <param name="query">To run async a query object</param>
+		/// <param name="item">root item to search for all items within this item</param>
+		/// <returns>root item</returns>
+		internal async Task<FileIndexItem> RemoveChildItems(IQuery query, FileIndexItem item)
+		{
+			// Child items within
+			var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
+			foreach ( var remove in removeItems )
+			{
+				await query.RemoveItemAsync(remove);
+			}
+			
+			// Item it self
+			await query.RemoveItemAsync(item);
+			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+			return item;
+		}
+		
 	}
 }

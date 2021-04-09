@@ -188,12 +188,17 @@ namespace starskytest.FakeMocks
 
 		public Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 		{
-			throw new NotImplementedException();
+			return Task.FromResult(_fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList());
 		}
 
-		public Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
 		{
-			throw new NotImplementedException();
+			var result = new List<FileIndexItem>();
+			foreach ( var subPath in filePaths )
+			{
+				result.AddRange(await GetAllObjectsAsync(subPath));
+			}
+			return result;
 		}
 
 		public FileIndexItem AddItem(FileIndexItem updateStatusContent)
