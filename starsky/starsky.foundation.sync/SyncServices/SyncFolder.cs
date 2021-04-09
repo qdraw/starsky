@@ -43,8 +43,8 @@ namespace starsky.foundation.sync.SyncServices
 			// Loop trough all folders recursive
 			foreach ( var subPath in subPaths )
 			{
-				// including child folders, but not recursive
-				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
+				// get only direct child files and NOT recursive
+				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
 				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
 				
 				// And check files within this folder
@@ -53,9 +53,14 @@ namespace starsky.foundation.sync.SyncServices
 
 				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
-				
-				var indexItems2 = await CheckIfFolderExistOnDisk(fileIndexItems);
-				if ( indexItems2.Any() ) allResults.AddRange(indexItems2);
+			}
+
+			// Check to direct child directories to exist in the database
+			var checkedDirectories = (await CheckIfFolderExistOnDisk(inputSubPath))
+				.Where( p => p != null).ToList();
+			if ( checkedDirectories.Any() )
+			{
+				allResults.AddRange(checkedDirectories);
 			}
 
 			// // remove the duplicates from a large list of folders
@@ -144,22 +149,21 @@ namespace starsky.foundation.sync.SyncServices
 			// and order by alphabet and remove duplicates
 			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
 		}
-		
-		
-		private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(IReadOnlyCollection<FileIndexItem> fileIndexItems)
-		{
-			var fileIndexItemsOnlyFolder = fileIndexItems
-				.Where(p => p.IsDirectory == true).ToList();
-			
-			if ( !fileIndexItemsOnlyFolder.Any() ) return new List<FileIndexItem>();
 
-			return (await fileIndexItemsOnlyFolder
+		private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(string inputSubPath)
+		{
+			var directChildItems =
+				( await _query.GetFoldersAsync(inputSubPath) ).ToList();
+			
+			if ( !directChildItems.Any() ) return new List<FileIndexItem>();
+
+			return (await directChildItems
 				.ForEachAsync(async item =>
 				{
 					// assume only the input of directories
 					if ( _subPathStorage.ExistFolder(item.FilePath) )
 					{
-						return item;
+						return null;
 					}
 					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 					return await RemoveChildItems(query, item);
@@ -170,7 +174,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// Remove all items that are included
 		/// </summary>
 		/// <param name="query">To run async a query object</param>
-		/// <param name="item">root item to search for all items within this item</param>
+		/// <param name="item">root item</param>
 		/// <returns>root item</returns>
 		internal async Task<FileIndexItem> RemoveChildItems(IQuery query, FileIndexItem item)
 		{

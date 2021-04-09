@@ -109,14 +109,7 @@ namespace starsky.foundation.database.Interfaces
 	    /// <returns></returns>
         List<FileIndexItem> GetAllFolders();
 
-	    /// <summary>
-	    /// 
-	    /// </summary>
-	    /// <param name="subPath"></param>
-	    /// <returns></returns>
-	    Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath);
-
-	    Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths);
+	    Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
 	    
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem);

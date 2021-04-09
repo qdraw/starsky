@@ -13,28 +13,28 @@ using starsky.foundation.platform.Helpers;
 namespace starsky.foundation.database.Query
 {
 	/// <summary>
-	/// QueryGetAllObjects
+	/// QueryGetFoldersAsync
 	/// </summary>
 	public partial class Query : IQuery
 	{
-		public async Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
+		public async Task<List<FileIndexItem>> GetFoldersAsync(string subPath)
 		{
-			return await GetAllObjectsAsync(new List<string> {subPath});
+			return await GetFoldersAsync(new List<string> {subPath});
 		}
 
-		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetFoldersAsync(List<string> filePaths)
 		{
 			try
 			{
-				return FormatOk(await GetAllObjectsQuery(_context, filePaths).ToListAsync());
+				return FormatOk(await GetAllFoldersQuery(_context, filePaths).ToListAsync());
 			}
 			catch ( ObjectDisposedException )
 			{
-				return FormatOk(await GetAllObjectsQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
+				return FormatOk(await GetAllFoldersQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
 			}
 		}
 		
-		private IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
+		private IOrderedQueryable<FileIndexItem> GetAllFoldersQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
 
@@ -43,7 +43,7 @@ namespace starsky.foundation.database.Query
 			{
 				var subPath = PathHelper.RemoveLatestSlash(filePath);
 				if ( filePath == "/" ) subPath = "/";
-				predicates.Add(p => p.ParentDirectory == subPath);
+				predicates.Add(p => p.ParentDirectory == subPath && p.IsDirectory == true);
 			}
 				
 			var predicate = PredicateBuilder.OrLoop(predicates);

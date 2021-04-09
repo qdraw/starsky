@@ -15,7 +15,6 @@ namespace starsky.foundation.database.Query
         /// Query all FileIndexItems with the type folder
         /// </summary>
         /// <returns>List of all folders in database, including content</returns>
-        [Obsolete("replace by async variant")]
         public List<FileIndexItem> GetAllFolders()
         {
 	        try
