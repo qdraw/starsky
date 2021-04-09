@@ -371,5 +371,28 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(0,files.Count);
 		}
+		
+				
+		[TestMethod]
+		public async Task RemoveChildItems_Floating_items()
+		{
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk3"){IsDirectory = true});
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk3/test.jpg"));
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk3/test_dir"){IsDirectory = true});
+			await _query.AddItemAsync(new FileIndexItem("/Folder_InDbButNotOnDisk3/test_dir/test.jpg"));
+
+			var storage = new FakeIStorage();
+			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
+				new ConsoleWrapper());
+
+			var rootItem = await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk3");
+			var result = await syncFolder.RemoveChildItems(_query, rootItem);
+			
+			Assert.AreEqual("/Folder_InDbButNotOnDisk3", result.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,result.Status);
+
+			var data = await _query.GetAllRecursiveAsync("/Folder_InDbButNotOnDisk3");
+			Assert.AreEqual(0, data.Count);
+		}
 	}
 }

@@ -39,14 +39,18 @@ namespace starsky.feature.rename.Services
 			for (var i = 0; i < toFileSubPaths.Length; i++)
 			{
 				// options
-				// 1. file to direct folder file.jpg /folder/ (not covered)
-				// 2. folder to folder (not covered)
-				// 3. folder with child folders to folder (not covered)
-				// 4. folder merge parent folder with current folder (not covered), /test/ => /test/test/
-				// 5. folder to existing folder > merge (not covered)
-				// 6. file to file
-				// 7. file to existing file > skip
-
+				// 1. FromFolderToDeleted:
+				//		folder rename
+				// 2. FromFolderToFolder:
+				//		folder with child folders to folder
+				// 3. Not named
+				//		file to file
+				//		- overwrite a file is not supported
+				// 4. FromFileToDeleted:
+				//		rename a file to new location
+				// 5. FromFileToFolder:
+				//		file to direct folder file.jpg  -> /folder/ 
+				// 6. folder merge parent folder with current folder (not covered), /test/ => /test/test/
 				
 				var inputFileSubPath = inputFileSubPaths[i];
 				var toFileSubPath = toFileSubPaths[i];
@@ -57,65 +61,58 @@ namespace starsky.feature.rename.Services
 				var toFileFolderStatus = _iStorage.IsFolderOrFile(toFileSubPath);
 
 				var fileIndexItems = new List<FileIndexItem>();
-				if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-				     && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted)
+				switch ( inputFileFolderStatus )
 				{
-					fileIndexItems = await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList);
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder 
-					&& toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
-				{
-					FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexItems);
-					// when renaming a folder it should warn the UI that it should remove the source item
-					fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File 
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File)
-				{
-					// overwrite a file is not supported
-					fileIndexResultsList.Add(new FileIndexItem
-					{
-						Status = FileIndexItem.ExifStatus.OperationNotSupported
-					});
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted) 
-				{
-					// toFileSubPath should contain the full subPath
-					await FromFileToDeleted(inputFileSubPath, toFileSubPath, 
-						fileIndexResultsList);
-				}
-				else if ( inputFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File
-				          && toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder )
-				{
-					toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
-					// toFileSubPath must be the to copy directory, the filename is kept the same
-					await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList);
+					case FolderOrFileModel.FolderOrFileTypeList.Folder when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted:
+						await FromFolderToDeleted(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.Folder when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder:
+						await FromFolderToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.File:
+						// overwrite a file is not supported
+						fileIndexResultsList.Add(new FileIndexItem
+						{
+							Status = FileIndexItem.ExifStatus.OperationNotSupported
+						});
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted:
+						// toFileSubPath should contain the full subPath
+						await FromFileToDeleted(inputFileSubPath, toFileSubPath, 
+							fileIndexResultsList, fileIndexItems, detailView);
+						break;
+					case FolderOrFileModel.FolderOrFileTypeList.File when toFileFolderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder:
+						toFileSubPath = GetFileName(toFileSubPath, inputFileSubPath);
+						// toFileSubPath must be the to copy directory, the filename is kept the same
+						await FromFileToFolder(inputFileSubPath, toFileSubPath, fileIndexResultsList, fileIndexItems, detailView);
+						break;
 				} 
-
-				// Rename parent item >eg the folder or file
-				detailView.FileIndexItem.SetFilePath(toFileSubPath);
-				detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-				fileIndexItems.Add(detailView.FileIndexItem);
-	
-				// To update the file that is changed
-				await _query.UpdateItemAsync(fileIndexItems);
-
-				fileIndexResultsList.AddRange(fileIndexItems);
 			}
-
 	        return fileIndexResultsList;
         }
 
-		private async Task<List<FileIndexItem>> FromFolderToDeleted(string inputFileSubPath,
-			string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		private async Task SaveToDatabaseAsync(List<FileIndexItem> fileIndexItems, 
+			List<FileIndexItem> fileIndexResultsList, DetailView detailView, string toFileSubPath)
+		{
+			// Rename parent item >eg the folder or file
+			detailView.FileIndexItem.SetFilePath(toFileSubPath);
+			detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+			
+			fileIndexItems.Add(detailView.FileIndexItem);
+	
+			// To update the file that is changed
+			await _query.UpdateItemAsync(fileIndexItems);
+
+			fileIndexResultsList.AddRange(fileIndexItems);
+		}
+
+		private async Task FromFolderToDeleted(string inputFileSubPath,
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList,
+			DetailView detailView)
 		{
 			// clean from cache
 			_query.RemoveCacheParentItem(inputFileSubPath);
 			
-			// move entire folder
-			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
-					
 			var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
 			// Rename child items
 			fileIndexItems.ForEach(p =>
@@ -138,9 +135,14 @@ namespace starsky.feature.rename.Services
 				await _query.RemoveItemAsync(item);
 			}
 			
-			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
+			// save before changing on disk
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
 			
-			return fileIndexItems;
+			// move entire folder
+			_iStorage.FolderMove(inputFileSubPath,toFileSubPath);
+			
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private string GetFileName(string toFileSubPath, string inputFileSubPath)
@@ -352,19 +354,28 @@ namespace starsky.feature.rename.Services
 			}
 		}
 
+		
+		internal Task FromFolderToFolder(string inputFileSubPath, 
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList, DetailView detailView)
+		{
+			if ( fileIndexResultsList == null )
+			{
+				throw new ArgumentNullException(nameof(fileIndexResultsList), "Should contain value");
+			}
+			return FromFolderToFolderAsync(inputFileSubPath, toFileSubPath, fileIndexResultsList,detailView);
+		}
+		
 		/// <summary>
 		/// Copy from a folder to a folder
 		/// </summary>
 		/// <param name="inputFileSubPath">from path</param>
 		/// <param name="toFileSubPath">to path</param>
-		/// <param name="fileIndexItems">list of results</param>
+		/// <param name="fileIndexResultsList"></param>
+		/// <param name="detailView"></param>
 		/// <exception cref="ArgumentNullException">fileIndexItems is null</exception>
-		internal void FromFolderToFolder(string inputFileSubPath, string toFileSubPath,
-			List<FileIndexItem> fileIndexItems)
+		private async Task FromFolderToFolderAsync(string inputFileSubPath, 
+			string toFileSubPath, List<FileIndexItem> fileIndexResultsList, DetailView detailView)
 		{
-			if ( fileIndexItems == null ) throw new ArgumentNullException(nameof(fileIndexItems), 
-				"Should contain value");
-			
 			// 1. Get Direct child files
 			// 2. Get Direct folder and child folders
 			// 3. move child files
@@ -377,7 +388,24 @@ namespace starsky.feature.rename.Services
 			// Store direct files
 			var directChildItems = new List<string>();
 			directChildItems.AddRange(_iStorage.GetAllFilesInDirectory(inputFileSubPath));
+			
+			// Replace all Recursive items in Query
+			// Does only replace in existing database items
+			var fileIndexItems = await _query.GetAllRecursiveAsync(inputFileSubPath);
 					
+			// Rename child items
+			fileIndexItems.ForEach(p =>
+				{
+					p.ParentDirectory =
+						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
+					p.Status = FileIndexItem.ExifStatus.Ok;
+				}
+			);
+			
+			// save before changing on disk
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+			
 			// rename child folders
 			foreach ( var inputChildFolder in directChildFolders )
 			{
@@ -393,25 +421,14 @@ namespace starsky.feature.rename.Services
 				var outputChildItem = inputChildItem.Replace(inputFileSubPath, toFileSubPath);
 				_iStorage.FileMove(inputChildItem,outputChildItem);
 			}
-					
-			// Replace all Recursive items in Query
-			// Does only replace in existing database items
-			fileIndexItems = _query.GetAllRecursive(inputFileSubPath);
-					
-			// Rename child items
-			fileIndexItems.ForEach(p =>
-				{
-					p.ParentDirectory =
-						p.ParentDirectory.Replace(inputFileSubPath, toFileSubPath);
-					p.Status = FileIndexItem.ExifStatus.Ok;
-				}
-			);
+			
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
 		private async Task FromFileToDeleted(string inputFileSubPath, string toFileSubPath,
-			List<FileIndexItem> fileIndexResultsList)
+			List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems, DetailView detailView)
 		{
-			
 			// when trying to rename something wrongs
 			var fileName = FilenamesHelper.GetFileName(toFileSubPath);
 			if ( !FilenamesHelper.IsValidFileName(fileName) )
@@ -430,16 +447,21 @@ namespace starsky.feature.rename.Services
 			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 			// clear cache (to FileSubPath parents)
 			_query.RemoveCacheParentItem(toParentSubFolder);
+			
+			// Check if the parent folder exist in the database
+			await _query.AddParentItemsAsync(toParentSubFolder);
 
+			// Save in database before change on disk
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+					
 			// add folder to file system
 			if ( !_iStorage.ExistFolder(toParentSubFolder) )
 			{
 				_iStorage.CreateDirectory(toParentSubFolder);
+				fileIndexResultsList.Add(new FileIndexItem(toParentSubFolder){Status = FileIndexItem.ExifStatus.Ok});
 			}
-					
-			// Check if the parent folder exist in the database
-			await _query.AddParentItemsAsync(toParentSubFolder);
-					
+			
 			_iStorage.FileMove(inputFileSubPath,toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
 			
@@ -447,7 +469,8 @@ namespace starsky.feature.rename.Services
 			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
-		private async Task FromFileToFolder(string inputFileSubPath, string toFileSubPath, List<FileIndexItem> fileIndexResultsList)
+		private async Task FromFileToFolder(string inputFileSubPath, string toFileSubPath, 
+			List<FileIndexItem> fileIndexResultsList, List<FileIndexItem> fileIndexItems, DetailView detailView)
 		{
 			// you can't move the file to the same location
 			if ( inputFileSubPath == toFileSubPath )
@@ -458,23 +481,26 @@ namespace starsky.feature.rename.Services
 				});
 				return; //next
 			}
-					
+			// when renaming a folder it should warn the UI that it should remove the source item
+			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
+			
 			// from/input cache should be cleared
 			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
 			_query.RemoveCacheParentItem(inputParentSubFolder);
-					
+
 			// clear cache // parentSubFolder (to FileSubPath parents)
 			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
 			_query.RemoveCacheParentItem(toParentSubFolder); 
 					
 			// Check if the parent folder exist in the database // parentSubFolder
 			await _query.AddParentItemsAsync(toParentSubFolder);
-					
+
+			await SaveToDatabaseAsync(fileIndexItems, fileIndexResultsList,
+				detailView, toFileSubPath);
+			
+			// First update database and then update for diskwatcher
 			_iStorage.FileMove(inputFileSubPath, toFileSubPath);
 			MoveSidecarFile(inputFileSubPath, toFileSubPath);
-			
-			// when renaming a folder it should warn the UI that it should remove the source item
-			fileIndexResultsList.Add(new FileIndexItem(inputFileSubPath){Status = FileIndexItem.ExifStatus.NotFoundSourceMissing});
 		}
 
     }

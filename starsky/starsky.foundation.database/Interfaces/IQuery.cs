@@ -70,9 +70,25 @@ namespace starsky.foundation.database.Interfaces
             bool hideDeleted = true, 
             SortType sort = SortType.FileName);
         
+        /// <summary>
+        /// Get FirstOrDefault for that filePath
+        /// </summary>
+        /// <param name="filePath">subPath style</param>
+        /// <returns>item</returns>
         FileIndexItem GetObjectByFilePath(string filePath);
+        
+        /// <summary>
+        /// Get FirstOrDefault for that filePath
+        /// </summary>
+        /// <param name="filePath">subPath style</param>
+        /// <returns>item</returns>
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
 
+        /// <summary>
+        /// Get FirstOrDefault for that filePath list
+        /// </summary>
+        /// <param name="filePathList">subPath style list</param>
+        /// <returns>items</returns>
         Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
 
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
@@ -87,8 +103,17 @@ namespace starsky.foundation.database.Interfaces
         string GetSubPathByHash(string fileHash);
 	    void ResetItemByHash(string fileHash);
 
+	    /// <summary>
+	    /// Only global search for all folder
+	    /// </summary>
+	    /// <returns></returns>
         List<FileIndexItem> GetAllFolders();
 
+	    Task<List<FileIndexItem>> GetFoldersAsync(string subPath);
+
+	    Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath);
+	    Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths);
+	    
         FileIndexItem AddItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> AddItemAsync(FileIndexItem fileIndexItem);
 

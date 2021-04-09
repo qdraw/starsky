@@ -281,8 +281,11 @@ namespace starskytest.starsky.feature.rename.Services
 			var values = iStorage.GetAllFilesInDirectoryRecursive("/").ToList();
 			Assert.AreEqual("/exist/.starsky.test2.jpg.json", 
 				values.FirstOrDefault(p => p == "/exist/.starsky.test2.jpg.json"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
-			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, 
+				renameFs.FirstOrDefault(p => p.FilePath == "/exist/test2.jpg").Status );
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
+				renameFs.FirstOrDefault(p => p.FilePath == "/exist/file.jpg").Status );
+
 			RemoveFoldersAndFilesInDatabase();
 		}
 
@@ -315,21 +318,34 @@ namespace starskytest.starsky.feature.rename.Services
 
 			var initFolderList =  new List<string> { "/" };
 			var initFileList = new List<string> { _fileInExist.FilePath };
-			var istorage = new FakeIStorage(initFolderList,initFileList);
-			var renameFs1 = await new RenameService(_query, istorage)
+			var iStorage = new FakeIStorage(initFolderList,initFileList);
+			var renameFs1 = await new RenameService(_query, iStorage)
 				.Rename(initFileList.FirstOrDefault(), "/nonExist/test5.jpg", true);
 			var renameFs =renameFs1.Where(p => p.Status != FileIndexItem.ExifStatus.Deleted).ToList();
 			
-			var all2 = _query.GetAllRecursive();
+			var all2 = await _query.GetAllRecursiveAsync();
 			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test5.jpg");
 			Assert.AreEqual("test5.jpg",selectFile3.FileName);
 			Assert.AreEqual("/nonExist",selectFile3.ParentDirectory);
 
 			// check if files are moved
-			var values = istorage.GetAllFilesInDirectory("/nonExist").ToList();
+			var values = iStorage.GetAllFilesInDirectory("/nonExist").ToList();
 			Assert.AreEqual("/nonExist/test5.jpg", values.FirstOrDefault(p => p == "/nonExist/test5.jpg"));
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs.FirstOrDefault().Status );
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
+
+			var initFileListFirst = renameFs.FirstOrDefault(p =>
+				p.FilePath == initFileList.FirstOrDefault());
+			Assert.AreEqual(initFileList.FirstOrDefault(), initFileListFirst.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, initFileListFirst.Status );
+
+			var nonExistTest5 = renameFs.FirstOrDefault(p =>
+				p.FilePath == "/nonExist/test5.jpg");
+			Assert.AreEqual("/nonExist/test5.jpg", nonExistTest5.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, nonExistTest5.Status );
+
+			var nonExist = renameFs.FirstOrDefault(p =>
+				p.FilePath == "/nonExist");
+			Assert.AreEqual("/nonExist", nonExist.FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, nonExist.Status );
 
 			RemoveFoldersAndFilesInDatabase();
 		}
@@ -462,8 +478,25 @@ namespace starskytest.starsky.feature.rename.Services
 				all2.FirstOrDefault(p => p.FileName == "subfolder" && p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
 			Assert.AreEqual("/folder1/subfolder/child.jpg",
 				all2.FirstOrDefault(p => p.FileName == "child.jpg" &&  p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).FilePath);
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, renameFs[0].Status );
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
+			
+			// FileIndexItem.ExifStatus.Ok, /folder1/file.jpg -			
+			// FileIndexItem.ExifStatus.Ok, /folder1
+			// NotFoundSourceMissing /exist
+			
+			var file = renameFs
+				.FirstOrDefault(p => p.FilePath == "/folder1/file.jpg");
+			var folder1 = renameFs
+				.FirstOrDefault(p => p.FilePath == "/folder1");
+			var exist = renameFs
+				.FirstOrDefault(p => p.FilePath == "/exist");
+			
+			Assert.AreEqual("/folder1/file.jpg", file.FilePath);
+			Assert.AreEqual("/folder1", folder1.FilePath);
+			Assert.AreEqual("/exist", exist.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, file.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, folder1.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, exist.Status);
 
 			await _query.RemoveItemAsync(existSubFolder);
 			await _query.RemoveItemAsync(existSubFolderChildJpg);
@@ -578,11 +611,18 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.IsTrue(iStorage.ExistFile(toItemJpg));
 			Assert.IsTrue(iStorage.ExistFile(toItemDng));
 			
-			// and the result is ok
-			Assert.AreEqual(toItemJpg, renameFs[0].FilePath);
-			Assert.AreEqual(toItemDng, renameFs[1].FilePath);
+			var toItemJpgItem = renameFs
+				.FirstOrDefault(p => p.FilePath == toItemJpg);
+			var toItemDngItem = renameFs
+				.FirstOrDefault(p => p.FilePath == toItemDng);
+			
+			Assert.AreEqual(toItemJpg, toItemJpgItem.FilePath);
+			Assert.AreEqual(toItemDng, toItemDngItem.FilePath);
 
-			// and the database is ok
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, toItemJpgItem.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, toItemDngItem.Status);
+			
+			// // and the database is ok
 			Assert.AreEqual(toItemJpg, 
 				_query.SingleItem(toItemJpg).FileIndexItem.FilePath);
 			Assert.AreEqual(toItemDng, 
@@ -901,8 +941,19 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			Assert.AreEqual(1, countTargetFolder.Count);
 			
-			Assert.AreEqual("/source_folder", renameFs[0].FilePath);
-			Assert.AreEqual("/target_folder_3", renameFs[1].FilePath);
+			Assert.AreEqual("/source_folder", renameFs[1].FilePath);
+			Assert.AreEqual("/target_folder_3", renameFs[0].FilePath);
+			
+			var sourceFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/source_folder");
+			var targetFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_3");
+			
+			Assert.AreEqual("/source_folder", sourceFolder.FilePath);
+			Assert.AreEqual("/target_folder_3", targetFolder.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, sourceFolder.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFolder.Status);
 		}
 		
 		[TestMethod]
@@ -913,9 +964,9 @@ namespace starskytest.starsky.feature.rename.Services
 				new List<string>{"/source_folder_2/test.jpg"}
 				);
 
-			_query.AddItem(
+			await _query.AddItemAsync(
 				new FileIndexItem("/source_folder_2") {IsDirectory = true});
-			_query.AddItem(
+			await _query.AddItemAsync(
 				new FileIndexItem("/source_folder_2/test.jpg"));
 			await _query.AddItemAsync(
 				new FileIndexItem("/target_folder_4") {IsDirectory = true});
@@ -937,17 +988,29 @@ namespace starskytest.starsky.feature.rename.Services
 				.Where(p => p.FilePath == "/target_folder_4").ToList();
 			
 			Assert.AreEqual(1, countTargetFolder.Count);
+
+			var sourceFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/source_folder_2");
+			var targetFile = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_4/test.jpg");
+			var targetFolder = renameFs
+				.FirstOrDefault(p => p.FilePath == "/target_folder_4");
 			
-			Assert.AreEqual("/source_folder_2", renameFs[0].FilePath);
-			Assert.AreEqual( "/target_folder_4/test.jpg", renameFs[1].FilePath);
-			Assert.AreEqual( "/target_folder_4", renameFs[2].FilePath);
+			Assert.AreEqual("/source_folder_2", sourceFolder.FilePath);
+			Assert.AreEqual("/target_folder_4/test.jpg", targetFile.FilePath);
+			Assert.AreEqual("/target_folder_4", targetFolder.FilePath);
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, sourceFolder.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFile.Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, targetFolder.Status);
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void FromFolderToFolder_Null_exception()
+		public async Task FromFolderToFolder_Null_exception()
 		{
-			new RenameService(null, null).FromFolderToFolder(null, null, null);
+			await new RenameService(null, null).FromFolderToFolder(null, 
+				null, null,null);
 			// expect exception
 		}
 
