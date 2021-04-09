@@ -181,11 +181,13 @@ namespace starsky.foundation.sync.SyncServices
 			var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
 			foreach ( var remove in removeItems )
 			{
+				_console.Write("✕");
 				await query.RemoveItemAsync(remove);
 			}
 			
 			// Item it self
 			await query.RemoveItemAsync(item);
+			_console.Write("✕");
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			return item;
 		}
