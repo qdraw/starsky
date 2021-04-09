@@ -16,12 +16,12 @@ using starsky.foundation.platform.Models;
 namespace starskytest.starsky.foundation.database.QueryTest
 {
 	[TestClass]
-	public class QueryGetAllFilesTest
+	public class QueryGetAllObjectsTest
 	{
 		private readonly IMemoryCache _memoryCache;
 		private readonly IQuery _query;
 
-		public QueryGetAllFilesTest()
+		public QueryGetAllObjectsTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -78,67 +78,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				IsDirectory = false
 			});
 		}
-
-		[TestMethod]
-		public void QueryAddSingleItemRootFolderTest()
-		{
-			InsertSearchData();
-			// Test root folder ("/)
-			var getAllFilesExpectedResult = new List<FileIndexItem>
-			{
-				_insertSearchDatahiJpgInput,
-				_insertSearchDatahi2JpgInput,
-			};
-
-			var getAllResult = _query.GetAllFiles("/basic");
-
-			CollectionAssert.AreEqual(getAllFilesExpectedResult.Select(p => p.FilePath).ToList(), 
-				getAllResult.Select(p => p.FilePath).ToList());
-		}
 		
 		[TestMethod]
-		public void GetAllFiles_DisposedItem()
-		{
-			var serviceScope = CreateNewScope();
-			var scope = serviceScope.CreateScope();
-			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
-	        
-			// item sub folder
-			var item = new FileIndexItem("/test_821827/test_0191919.jpg");
-			dbContext.FileIndex.Add(item);
-			dbContext.SaveChanges();
-	        
-			// Important to dispose!
-			dbContext.Dispose();
-
-			item.Tags = "test";
-			query.UpdateItem(item);
-
-			var getItem = query.GetAllFiles("/test_821827");
-			Assert.IsNotNull(getItem);
-			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
-
-			query.RemoveItem(getItem.FirstOrDefault());
-		}
-		
-		
-		[TestMethod]
-		public void QueryAddSingleItemSubFolderTest()
-		{
-			InsertSearchData();
-
-			// Test subfolder
-			var getAllFilesSubFolderExpectedResult = new List<FileIndexItem> {_insertSearchDatahi2SubfolderJpgInput};
-
-			var getAllResultSubfolder = _query.GetAllFiles("/basic/subfolder");
-            
-			CollectionAssert.AreEqual(getAllFilesSubFolderExpectedResult.Select(p => p.FilePath).ToList(), 
-				getAllResultSubfolder.Select(p => p.FilePath).ToList());
-		}
-		
-		[TestMethod]
-		public async Task GetAllFilesAsync_GetResult()
+		public async Task GetAllObjectsAsync_GetResult()
 		{
 			var appSettings = new AppSettings
 			{
@@ -147,18 +89,53 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
 			var query = new Query(dbContext);
 
-			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync") {IsDirectory = true});
-			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test") {IsDirectory = true});
-			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test.jpg"));
-			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllFilesAsync/test/test.jpg"));
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjectsAsync") {IsDirectory = true});
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjectsAsync/test") {IsDirectory = true});
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjectsAsync/test.jpg"));
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjectsAsync/test/test.jpg"));
 			await dbContext.SaveChangesAsync();
 	        
-			var items = await query.GetAllFilesAsync("/GetAllFilesAsync");
+			var items = (await query.GetAllObjectsAsync("/GetAllObjectsAsync"))
+				.OrderBy(p => p.FileName).ToList();
 
-			Assert.AreEqual(1, items.Count);
-
-			Assert.AreEqual("/GetAllFilesAsync/test.jpg", items[0].FilePath);
+			Assert.AreEqual(2, items.Count);
+			Assert.AreEqual("/GetAllObjectsAsync/test", items[0].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
+			
+			Assert.AreEqual("/GetAllObjectsAsync/test.jpg", items[1].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[1].Status);
+		}
+		
+		[TestMethod]
+		public async Task GetAllObjectsAsync_MultiQuery_GetResult()
+		{
+			var appSettings = new AppSettings
+			{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
+			};
+			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
+			var query = new Query(dbContext);
+
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjects_multi_01") {IsDirectory = true});
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjects_multi_01/test.jpg"));
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjects_multi_02") {IsDirectory = true});
+			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllObjects_multi_02/test.jpg"));
+			await dbContext.SaveChangesAsync();
+	        
+			var items = (await query.GetAllObjectsAsync(
+					new List<string>{
+						"/GetAllObjects_multi_01",
+						"/GetAllObjects_multi_02"
+					}))
+				.OrderBy(p => p.FileName).ToList();
+
+			Assert.AreEqual(2, items.Count);
+			Assert.AreEqual("/GetAllObjects_multi_01/test.jpg", items[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[0].Status);
+			
+			Assert.AreEqual("/GetAllObjects_multi_02/test.jpg", items[1].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[1].Status);
 		}
 	}
 }
+
