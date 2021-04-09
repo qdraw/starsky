@@ -136,6 +136,32 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/GetAllObjects_multi_02/test.jpg", items[1].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[1].Status);
 		}
+		
+		[TestMethod]
+		public async Task GetAllObjectsAsync_DisposedItem()
+		{
+			var serviceScope = CreateNewScope();
+			var scope = serviceScope.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+			// item sub folder
+			var item = new FileIndexItem("/test_3457834583/test_0191919.jpg");
+			await dbContext.FileIndex.AddAsync(item);
+			await dbContext.SaveChangesAsync();
+	        
+			// Important to dispose!
+			await dbContext.DisposeAsync();
+
+			item.Tags = "test";
+			await query.UpdateItemAsync(item);
+
+			var getItem = await query.GetAllObjectsAsync("/test_3457834583");
+			Assert.IsNotNull(getItem);
+			Assert.AreEqual("test", getItem.FirstOrDefault().Tags);
+
+			await query.RemoveItemAsync(getItem.FirstOrDefault());
+		}
 	}
 }
 
