@@ -44,7 +44,7 @@ namespace starsky.foundation.sync.SyncServices
 			foreach ( var subPath in subPaths )
 			{
 				// get only direct child files and NOT recursive
-				var fileIndexItems = await _query.GetAllFilesAsync(subPath);
+				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
 				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
 				
 				// And check files within this folder
@@ -53,14 +53,13 @@ namespace starsky.foundation.sync.SyncServices
 
 				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
 				allResults.AddRange(indexItems);
-			}
 
-			// Check to direct child directories to exist in the database
-			var checkedDirectories = (await CheckIfFolderExistOnDisk(inputSubPath))
-				.Where( p => p != null).ToList();
-			if ( checkedDirectories.Any() )
-			{
-				allResults.AddRange(checkedDirectories);
+				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems))
+					.Where( p => p != null).ToList();
+				if ( dirItems.Any() )
+				{
+					allResults.AddRange(dirItems);
+				}
 			}
 
 			// // remove the duplicates from a large list of folders
@@ -150,14 +149,14 @@ namespace starsky.foundation.sync.SyncServices
 			return new HashSet<string>(pathsToScan).OrderBy(p => p).ToList();
 		}
 
-		private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(string inputSubPath)
+		private async Task<List<FileIndexItem>> CheckIfFolderExistOnDisk(List<FileIndexItem> fileIndexItems)
 		{
-			var directChildItems =
-				( await _query.GetFoldersAsync(inputSubPath) ).ToList();
+			var fileIndexItemsOnlyFolders = fileIndexItems
+				.Where(p => p.IsDirectory == true).ToList();
 			
-			if ( !directChildItems.Any() ) return new List<FileIndexItem>();
+			if ( !fileIndexItemsOnlyFolders.Any() ) return new List<FileIndexItem>();
 
-			return (await directChildItems
+			return (await fileIndexItemsOnlyFolders
 				.ForEachAsync(async item =>
 				{
 					// assume only the input of directories
