@@ -59,7 +59,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ fix issue where rename did not work in combination with useDiskWatcher (issue #347 pull #349)
 - [x]   (Fixed) _Front-end_ input field when using safari you should not break words (pull #359)
 - [x]   (Changed) _Back-end_ Geo CLI downloads now on startup dependencies (Issue #340 / pull #351)
-- [x]   (Fixed)  _Back-end_ Rename service should now work with useDiskWatcher:true (Issue #352 / pull #354)
+- [x]   (Fixed)  _Back-end_ Rename service should now work with useDiskWatcher:true (Issue #352 / pull #354 & #355)
 - [x]   (Fixed)  _Back-end_ Delete floating folders in database on scan synchronize (pull #354)
 
 # version 0.4.6 - 2021-03-21
