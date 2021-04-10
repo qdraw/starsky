@@ -15,7 +15,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	{
 		private List<string> IsExecuted { get; set; } = new List<string>();
 
-		private Task<List<FileIndexItem>> TestExecuted(Tuple<string, WatcherChangeTypes> value)
+		private Task<List<FileIndexItem>> TestExecuted(Tuple<string, string, WatcherChangeTypes> value)
 		{
 			IsExecuted.Add(value.Item1);
 			return Task.FromResult(new List<FileIndexItem>());
@@ -38,11 +38,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var fileProcessor = new FileProcessor(TestExecuted);
 
 			const string path = "/test";
-			fileProcessor.QueueInput(path, WatcherChangeTypes.Changed);
+			fileProcessor.QueueInput(path, null, WatcherChangeTypes.Changed);
 
 			await Task.Delay(5);
 			
-			fileProcessor.QueueInput(path+ "/2", WatcherChangeTypes.Changed);
+			fileProcessor.QueueInput(path+ "/2", null, WatcherChangeTypes.Changed);
 
 			await Task.Delay(10);
 

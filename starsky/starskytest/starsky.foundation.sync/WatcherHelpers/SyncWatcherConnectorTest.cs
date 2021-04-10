@@ -27,8 +27,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), new FakeIQuery());
 			syncWatcherPreflight.Sync(
-				new Tuple<string, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), WatcherChangeTypes.Changed));
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
@@ -44,8 +44,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, websockets, new FakeIQuery());
 			syncWatcherPreflight.Sync(
-				new Tuple<string, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), WatcherChangeTypes.Changed));
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count);
 			Assert.IsTrue(websockets.FakeSendToAllAsync[0].Contains("filePath\":\"/test\""));
@@ -63,8 +63,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var appSettings = new AppSettings();
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, new FakeIQuery());
 			syncWatcherConnector.Sync(
-				new Tuple<string, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test"), WatcherChangeTypes.Changed));
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(0, websockets.FakeSendToAllAsync.Count);
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
@@ -102,8 +102,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
 			syncWatcherConnector.Sync(
-				new Tuple<string, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test.jpg"), WatcherChangeTypes.Changed));
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 
 			Assert.AreEqual(string.Empty,query.SingleItem("/test.jpg").FileIndexItem.Tags);
 		}
@@ -141,8 +141,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
 			syncWatcherConnector.Sync(
-				new Tuple<string, WatcherChangeTypes>(
-					Path.Combine(appSettings.StorageFolder, "test.jpg"), WatcherChangeTypes.Changed));
+				new Tuple<string, string,  WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
 			
 			Assert.AreEqual(0, query.DisplayFileFolders().Count());
 		}
