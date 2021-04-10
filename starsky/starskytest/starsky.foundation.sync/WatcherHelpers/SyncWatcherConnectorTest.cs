@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,15 +21,48 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 	public class SyncWatcherConnectorTest
 	{
 		[TestMethod]
-		public void Sync_CheckInput()
+		public async Task Sync_CheckInput()
 		{
 			var sync = new FakeISynchronize();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
 				new FakeIWebSocketConnectionsService(), new FakeIQuery());
-			syncWatcherPreflight.Sync(
+			await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
+
+			Assert.AreEqual("/test", sync.Inputs[0].Item1);
+		}
+		
+		[TestMethod]
+		public async Task Sync_Rename()
+		{
+			var sync = new FakeISynchronize();
+			var appSettings = new AppSettings();
+			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
+				new FakeIWebSocketConnectionsService(), new FakeIQuery());
+			var result = await syncWatcherPreflight.Sync(
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
+
+			Assert.AreEqual("/test", sync.Inputs[0].Item1);
+			Assert.AreEqual("/test2", sync.Inputs[1].Item1);
+			// result
+			Assert.AreEqual("/test", result[0].FilePath);
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, result[0].Status);
+		}
+		
+				
+		[TestMethod]
+		public async Task Sync_Rename_skipNull()
+		{
+			var sync = new FakeISynchronize();
+			var appSettings = new AppSettings();
+			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
+				new FakeIWebSocketConnectionsService(), new FakeIQuery());
+			var result = await syncWatcherPreflight.Sync(
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Renamed));
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
