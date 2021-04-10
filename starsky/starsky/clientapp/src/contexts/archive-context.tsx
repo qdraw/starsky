@@ -29,6 +29,10 @@ export type ArchiveAction =
       toRemoveFileList: string[];
     }
   | {
+      type: "rename-folder";
+      path: string;
+    }
+  | {
       type: "update";
       tags?: string;
       colorclass?: number;
@@ -168,6 +172,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         )
       };
       return updateCache(forceResetUpdated);
+    case "rename-folder":
+      return updateCache({ ...state, subPath: action.path });
     case "add":
       if (!action.add) return state;
       const filterOkCondition = (value: IFileIndexItem) => {

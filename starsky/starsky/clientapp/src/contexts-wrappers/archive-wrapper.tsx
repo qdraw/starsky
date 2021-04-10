@@ -105,16 +105,29 @@ function updateArchiveFromEvent(
   const parentLocationPath = new URLPath().StringToIUrl(window.location.search)
     .f;
 
+  const toAddedFiles = filterArchiveFromEvent(
+    pushMessagesEvent,
+    parentLocationPath
+  );
+  dispatch({ type: "add", add: toAddedFiles });
+}
+
+export function filterArchiveFromEvent(
+  pushMessagesEvent: IFileIndexItem[],
+  parentLocationPath?: string
+) {
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {
     // only update in current directory view
-    if (parentLocationPath !== pushMessage.parentDirectory) {
+    if (
+      parentLocationPath !== pushMessage.parentDirectory &&
+      parentLocationPath !== pushMessage.filePath
+    ) {
       // we choose to remove everything to avoid display errors
       new FileListCache().CacheCleanEverything();
       continue;
     }
     toAddedFiles.push(pushMessage);
   }
-
-  dispatch({ type: "add", add: toAddedFiles });
+  return toAddedFiles;
 }

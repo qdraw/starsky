@@ -41,11 +41,25 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_query = scope.ServiceProvider.GetRequiredService<IQuery>();
 		}
 
-		public async Task<List<FileIndexItem>> Sync(Tuple<string, WatcherChangeTypes> watcherOutput)
+		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
 		{
-			var (fullFilePath,_ ) = watcherOutput;
-			var syncData = await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
-			
+			var (fullFilePath, toPath, type ) = watcherOutput;
+			var syncData = new List<FileIndexItem>();
+			if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath))
+			{
+				await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
+				syncData.Add(new FileIndexItem(_appSettings.FullPathToDatabaseStyle(fullFilePath))
+				{
+					IsDirectory = true, 
+					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				});
+				syncData.AddRange(await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(toPath)));
+			}
+			else
+			{
+				syncData = await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
+			}
+
 			var filtered = FilterBefore(syncData);
 			if ( !filtered.Any() ) return syncData;
 

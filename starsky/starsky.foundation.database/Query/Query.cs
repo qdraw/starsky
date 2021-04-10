@@ -822,7 +822,8 @@ namespace starsky.foundation.database.Query
 		    catch ( Microsoft.Data.Sqlite.SqliteException )
 		    {
 			    // Files that are locked
-			    await RetryHelper.DoAsync(LocalRemoveDefaultQuery, TimeSpan.FromSeconds(2), 4);
+			    await RetryHelper.DoAsync(LocalRemoveDefaultQuery,
+				    TimeSpan.FromSeconds(2), 4);
 		    }
 		    catch ( ObjectDisposedException )
 		    {
@@ -831,6 +832,11 @@ namespace starsky.foundation.database.Query
 		    catch ( InvalidOperationException )
 		    {
 			    await LocalRemoveDefaultQuery();
+		    }
+		    catch ( DbUpdateConcurrencyException e)
+		    {
+			    _logger?.LogInformation(e,"[RemoveItemAsync] catch-ed " +
+			                              "DbUpdateConcurrencyException (do nothing)");
 		    }
 
 		    // remove parent directory cache

@@ -16,23 +16,23 @@ namespace starsky.foundation.sync.WatcherHelpers
 	/// </summary>
 	public class FileProcessor
 	{
-		private readonly Queue<Tuple<string, WatcherChangeTypes>> _workQueue;
+		private readonly Queue<Tuple<string, string, WatcherChangeTypes>> _workQueue;
 		private Thread _workerThread;
 		private readonly SynchronizeDelegate _processFile;
 		private readonly AutoResetEvent _waitHandle;
 
-		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, WatcherChangeTypes> value);
+		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
 		
 		public FileProcessor(SynchronizeDelegate processFile)
 		{
-			_workQueue = new Queue<Tuple<string, WatcherChangeTypes>>();
+			_workQueue = new Queue<Tuple<string, string, WatcherChangeTypes>>();
 			_waitHandle =  new AutoResetEvent(true);
 			_processFile = processFile;
 		}
 
-		public void QueueInput(string filepath, WatcherChangeTypes changeTypes)
+		public void QueueInput(string filepath, string toPath,  WatcherChangeTypes changeTypes)
 		{
-			var item = new Tuple<string, WatcherChangeTypes>(filepath, changeTypes);
+			var item = new Tuple<string, string, WatcherChangeTypes>(filepath, toPath, changeTypes);
 			_workQueue.Enqueue(item);
 
 			// Initialize and start thread when first file is added
@@ -82,7 +82,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 		}
 
-		private Tuple<string, WatcherChangeTypes> RetrieveFile()
+		private Tuple<string, string, WatcherChangeTypes> RetrieveFile()
 		{
 			return _workQueue.Count > 0 ? _workQueue.Dequeue() : null;
 		}

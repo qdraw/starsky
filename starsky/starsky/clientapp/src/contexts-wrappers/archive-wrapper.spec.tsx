@@ -14,7 +14,8 @@ import {
   newIFileIndexItem
 } from "../interfaces/IFileIndexItem";
 import ArchiveContextWrapper, {
-  ArchiveEventListenerUseEffect
+  ArchiveEventListenerUseEffect,
+  filterArchiveFromEvent
 } from "./archive-wrapper";
 
 describe("ArchiveContextWrapper", () => {
@@ -243,5 +244,15 @@ describe("ArchiveContextWrapper", () => {
       var element = (result.componentMount as any) as ReactWrapper;
       element.unmount();
     });
+  });
+  it("updateArchiveFromEvent -", () => {
+    const list = [
+      {
+        filePath: "/test.jpg",
+        parentDirectory: "/"
+      }
+    ] as IFileIndexItem[];
+    const result = filterArchiveFromEvent(list);
+    console.log(result);
   });
 });
