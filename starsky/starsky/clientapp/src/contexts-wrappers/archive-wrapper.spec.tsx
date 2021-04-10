@@ -9,12 +9,14 @@ import { mountReactHook } from "../hooks/___tests___/test-hook";
 import { newIArchive } from "../interfaces/IArchive";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
+import { IExifStatus } from "../interfaces/IExifStatus";
 import {
   IFileIndexItem,
   newIFileIndexItem
 } from "../interfaces/IFileIndexItem";
 import ArchiveContextWrapper, {
   ArchiveEventListenerUseEffect,
+  dispatchEmptyFolder,
   filterArchiveFromEvent
 } from "./archive-wrapper";
 
@@ -188,6 +190,7 @@ describe("ArchiveContextWrapper", () => {
               fileName: "test",
               filePath: "/test.jpg",
               parentDirectory: "/",
+              status: IExifStatus.Ok,
               tags: "",
               title: ""
             }
@@ -203,7 +206,8 @@ describe("ArchiveContextWrapper", () => {
           ...newIFileIndexItem(),
           filePath: "/test.jpg",
           fileName: "test",
-          parentDirectory: "/"
+          parentDirectory: "/",
+          status: IExifStatus.Ok
         }
       ];
       var event = new CustomEvent(useSocketsEventName, {
@@ -246,6 +250,50 @@ describe("ArchiveContextWrapper", () => {
     });
   });
 
+  describe("dispatchEmptyFolder", () => {
+    it("should dispatch when source folder is not found", () => {
+      const list = [
+        {
+          filePath: "/test",
+          parentDirectory: "/",
+          status: IExifStatus.NotFoundSourceMissing
+        }
+      ] as IFileIndexItem[];
+
+      const dispatch = jest.fn();
+      dispatchEmptyFolder(list, "/test", dispatch);
+      expect(dispatch).toBeCalled();
+    });
+
+    it("should not dispatch when source folder is oke", () => {
+      const list = [
+        {
+          filePath: "/test",
+          parentDirectory: "/",
+          status: IExifStatus.Ok
+        }
+      ] as IFileIndexItem[];
+
+      const dispatch = jest.fn();
+      dispatchEmptyFolder(list, "/test", dispatch);
+      expect(dispatch).toBeCalledTimes(0);
+    });
+
+    it("should not dispatch when location is diff", () => {
+      const list = [
+        {
+          filePath: "/test/image.jpg",
+          parentDirectory: "/test",
+          status: IExifStatus.Ok
+        }
+      ] as IFileIndexItem[];
+
+      const dispatch = jest.fn();
+      dispatchEmptyFolder(list, "/test", dispatch);
+      expect(dispatch).toBeCalledTimes(0);
+    });
+  });
+
   describe("updateArchiveFromEvent", () => {
     it("should ignore child folder", () => {
       const list = [
@@ -262,7 +310,7 @@ describe("ArchiveContextWrapper", () => {
       expect(result.length).toBe(1);
     });
 
-    it("should include parent folder", () => {
+    it("should not include parent folder", () => {
       const list = [
         {
           filePath: "/",

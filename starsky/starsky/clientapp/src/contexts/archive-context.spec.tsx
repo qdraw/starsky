@@ -12,6 +12,26 @@ import { FileListCache } from "../shared/filelist-cache";
 import { ArchiveAction, archiveReducer } from "./archive-context";
 
 describe("ArchiveContext", () => {
+  it("remove-folder - folder should be gone", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        },
+        {
+          filePath: "/test.jpg"
+        }
+      ]
+    } as IArchiveProps;
+
+    // fullPath input
+    var action = { type: "remove-folder" } as ArchiveAction;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(0);
+  });
+
   it("force-reset - it should not add duplicate content", () => {
     var state = {
       fileIndexItems: [

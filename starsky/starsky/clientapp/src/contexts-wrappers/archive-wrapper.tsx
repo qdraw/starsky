@@ -12,6 +12,7 @@ import {
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
+import { IExifStatus } from "../interfaces/IExifStatus";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import DocumentTitle from "../shared/document-title";
 import { FileListCache } from "../shared/filelist-cache";
@@ -105,11 +106,41 @@ function updateArchiveFromEvent(
   const parentLocationPath = new URLPath().StringToIUrl(window.location.search)
     .f;
 
+  dispatchEmptyFolder(pushMessagesEvent, parentLocationPath, dispatch);
   const toAddedFiles = filterArchiveFromEvent(
     pushMessagesEvent,
     parentLocationPath
   );
+
   dispatch({ type: "add", add: toAddedFiles });
+}
+
+/**
+ *
+ * @param pushMessagesEvent
+ * @param parentLocationPath
+ * @param dispatch
+ * @returns
+ */
+export function dispatchEmptyFolder(
+  pushMessagesEvent: IFileIndexItem[],
+  parentLocationPath: string | undefined,
+  dispatch: (value: ArchiveAction) => void
+) {
+  const parentItems = pushMessagesEvent.filter(
+    (p) => p.filePath === parentLocationPath
+  );
+  if (
+    parentItems.length === 1 &&
+    parentItems[0].status === IExifStatus.NotFoundSourceMissing
+  ) {
+    console.log("---> reset");
+
+    dispatch({
+      type: "remove-folder"
+    });
+    return;
+  }
 }
 
 export function filterArchiveFromEvent(
@@ -119,10 +150,7 @@ export function filterArchiveFromEvent(
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {
     // only update in current directory view && parent directory
-    if (
-      parentLocationPath !== pushMessage.parentDirectory &&
-      parentLocationPath !== pushMessage.filePath
-    ) {
+    if (parentLocationPath !== pushMessage.parentDirectory) {
       // we choose to remove everything to avoid display errors
       new FileListCache().CacheCleanEverything();
       continue;

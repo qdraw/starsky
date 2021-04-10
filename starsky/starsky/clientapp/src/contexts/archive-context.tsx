@@ -53,6 +53,9 @@ export type ArchiveAction =
       payload: IArchiveProps;
     }
   | {
+      type: "remove-folder";
+    }
+  | {
       type: "add";
       add: Array<IFileIndexItem>;
     };
@@ -74,6 +77,14 @@ const initialState: State = {
 
 export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
+    case "remove-folder":
+      return updateCache({
+        ...state,
+        colorClassUsage: [],
+        colorClassActiveList: [],
+        collectionsCount: 0,
+        fileIndexItems: []
+      });
     case "remove":
       // files == subpath style not only the name (/dir/file.jpg)
       const { toRemoveFileList } = action;
@@ -105,7 +116,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       }
       return updateCache(newState);
     case "update":
-      var {
+      const {
         select,
         tags,
         description,
