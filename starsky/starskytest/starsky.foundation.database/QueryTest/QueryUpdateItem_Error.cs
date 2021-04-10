@@ -189,6 +189,20 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
 		}
 		
+		[TestMethod]
+		public async Task Query_RemoveItemAsync_DbUpdateConcurrencyException()
+		{
+			IsCalledDbUpdateConcurrency = false;
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null,null, null,new FakeIWebLogger());
+			await fakeQuery.RemoveItemAsync(new FileIndexItem("test"));
+			
+			Assert.IsTrue(IsCalledDbUpdateConcurrency);
+		}
+		
 				
 		[TestMethod]
 		public async Task Query_UpdateItemAsync_Multiple_DbUpdateConcurrencyException()
