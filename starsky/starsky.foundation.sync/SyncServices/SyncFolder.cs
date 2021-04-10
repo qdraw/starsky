@@ -43,7 +43,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Loop trough all folders recursive
 			foreach ( var subPath in subPaths )
 			{
-				// get only direct child files and NOT recursive
+				// get only direct child files and folders and NOT recursive
 				var fileIndexItems = await _query.GetAllObjectsAsync(subPath);
 				fileIndexItems = await _duplicate.RemoveDuplicateAsync(fileIndexItems);
 				
@@ -181,11 +181,13 @@ namespace starsky.foundation.sync.SyncServices
 			var removeItems = await _query.GetAllRecursiveAsync(item.FilePath);
 			foreach ( var remove in removeItems )
 			{
+				_console.Write("✕");
 				await query.RemoveItemAsync(remove);
 			}
 			
 			// Item it self
 			await query.RemoveItemAsync(item);
+			_console.Write("✕");
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
 			return item;
 		}

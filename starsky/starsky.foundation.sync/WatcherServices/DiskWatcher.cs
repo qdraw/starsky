@@ -81,17 +81,17 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
 			Console.WriteLine(e.FullPath + " " +  e.ChangeType + " --1--");
-			_fileProcessor.QueueInput(e.FullPath, e.ChangeType);
+			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 			// e.FullPath e.ChangeType
 		}
 
 		private void OnRenamed(object source, RenamedEventArgs e)
 		{
-			Console.WriteLine(e.OldFullPath, e.FullPath);
+			Console.WriteLine("rename: ");
+			Console.WriteLine(e.OldFullPath + " " + e.FullPath);
 
-			_fileProcessor.QueueInput(e.OldFullPath, WatcherChangeTypes.Deleted);
-			_fileProcessor.QueueInput(e.FullPath, WatcherChangeTypes.Created);
+			_fileProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
 			// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath
 		}
 

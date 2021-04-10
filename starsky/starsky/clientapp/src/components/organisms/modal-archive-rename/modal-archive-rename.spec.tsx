@@ -92,6 +92,49 @@ describe("ModalArchiveRename", () => {
       modal.unmount();
     });
 
+    it("change directory name and expect dispatch", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../../../shared/fetch-post';;
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 200 } as IConnectionDefault
+      );
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const dispatch = jest.fn();
+      const handleExitSpy = jest.fn();
+      const modal = mount(
+        <ModalArchiveRename
+          isOpen={true}
+          subPath="/test"
+          handleExit={handleExitSpy}
+          dispatch={dispatch}
+        ></ModalArchiveRename>
+      );
+
+      act(() => {
+        modal.find('[data-name="foldername"]').getDOMNode().textContent =
+          "directory";
+        modal.find('[data-name="foldername"]').simulate("input");
+      });
+
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
+
+      expect(dispatch).toBeCalled();
+      expect(dispatch).toBeCalledWith({
+        path: "/directory",
+        type: "rename-folder"
+      });
+
+      // Cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+
     it("change directory name should give callback", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../../../shared/fetch-post';;
@@ -182,6 +225,53 @@ describe("ModalArchiveRename", () => {
 
       // Where should be a warning
       expect(modal.exists(".warning-box")).toBeTruthy();
+
+      // Cleanup
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+
+    it("change directory name and FAIL with UNDO dispatch", async () => {
+      // spy on fetch
+      // use this import => import * as FetchPost from '../../../shared/fetch-post';
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { statusCode: 500 } as IConnectionDefault
+      );
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const dispatch = jest.fn();
+      var modal = mount(
+        <ModalArchiveRename
+          isOpen={true}
+          subPath="/test"
+          handleExit={() => {}}
+          dispatch={dispatch}
+        ></ModalArchiveRename>
+      );
+
+      act(() => {
+        modal.find('[data-name="foldername"]').getDOMNode().textContent =
+          "directory";
+        modal.find('[data-name="foldername"]').simulate("input");
+      });
+
+      // await is needed
+      await act(async () => {
+        await modal.find(".btn--default").simulate("click");
+      });
+
+      expect(dispatch).toBeCalled();
+
+      expect(dispatch).toHaveBeenNthCalledWith(1, {
+        path: "/directory",
+        type: "rename-folder"
+      });
+      expect(dispatch).toHaveBeenNthCalledWith(2, {
+        path: "/test",
+        type: "rename-folder"
+      });
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

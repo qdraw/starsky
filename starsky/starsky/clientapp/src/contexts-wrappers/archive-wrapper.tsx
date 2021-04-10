@@ -12,6 +12,7 @@ import {
 import { useSocketsEventName } from "../hooks/realtime/use-sockets.const";
 import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
+import { IExifStatus } from "../interfaces/IExifStatus";
 import { IFileIndexItem } from "../interfaces/IFileIndexItem";
 import DocumentTitle from "../shared/document-title";
 import { FileListCache } from "../shared/filelist-cache";
@@ -105,9 +106,53 @@ function updateArchiveFromEvent(
   const parentLocationPath = new URLPath().StringToIUrl(window.location.search)
     .f;
 
+  dispatchEmptyFolder(pushMessagesEvent, parentLocationPath, dispatch);
+  const toAddedFiles = filterArchiveFromEvent(
+    pushMessagesEvent,
+    parentLocationPath
+  );
+
+  dispatch({ type: "add", add: toAddedFiles });
+}
+
+/**
+ * When a folder is renamed there is item send with status
+ * @param pushMessagesEvent - list of items that contains
+ * @param parentLocationPath - the path to check
+ * @param dispatch - send reset
+ * @returns
+ */
+export function dispatchEmptyFolder(
+  pushMessagesEvent: IFileIndexItem[],
+  parentLocationPath: string | undefined,
+  dispatch: (value: ArchiveAction) => void
+) {
+  const parentItems = pushMessagesEvent.filter(
+    (p) => p.filePath === parentLocationPath
+  );
+  if (
+    parentItems.length === 1 &&
+    parentItems[0].status === IExifStatus.NotFoundSourceMissing
+  ) {
+    dispatch({
+      type: "remove-folder"
+    });
+  }
+}
+
+/**
+ * Filter items that are not in the current folder
+ * @param pushMessagesEvent - list of items
+ * @param parentLocationPath - path of the folder
+ * @returns filtered items
+ */
+export function filterArchiveFromEvent(
+  pushMessagesEvent: IFileIndexItem[],
+  parentLocationPath?: string
+) {
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {
-    // only update in current directory view
+    // only update in current directory view && parent directory
     if (parentLocationPath !== pushMessage.parentDirectory) {
       // we choose to remove everything to avoid display errors
       new FileListCache().CacheCleanEverything();
@@ -115,6 +160,5 @@ function updateArchiveFromEvent(
     }
     toAddedFiles.push(pushMessage);
   }
-
-  dispatch({ type: "add", add: toAddedFiles });
+  return toAddedFiles;
 }

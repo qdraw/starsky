@@ -1,4 +1,5 @@
 import React from "react";
+import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
 import useLocation from "../../../hooks/use-location";
 import FetchPost from "../../../shared/fetch-post";
@@ -13,6 +14,7 @@ interface IModalRenameFolderProps {
   isOpen: boolean;
   handleExit: (state?: string) => void;
   subPath: string;
+  dispatch?: React.Dispatch<ArchiveAction>;
 }
 
 const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
@@ -78,6 +80,14 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     }
   }
 
+  function dispatchRename(path: string) {
+    if (!props.dispatch) return;
+    props.dispatch({
+      type: "rename-folder",
+      path: path
+    });
+  }
+
   /**
    * Send Change request to back-end services
    * @param event : change vent
@@ -93,6 +103,10 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
       folderName
     );
 
+    // do a rename in the current context
+    // before due trigger of useDiskWatcher
+    dispatchRename(filePathAfterChange);
+
     // API call
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", props.subPath);
@@ -104,6 +118,9 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     );
 
     if (result.statusCode !== 200) {
+      // undo dispatch
+      dispatchRename(props.subPath);
+
       setError(MessageGeneralError);
       // and renable
       setIsLoading(false);

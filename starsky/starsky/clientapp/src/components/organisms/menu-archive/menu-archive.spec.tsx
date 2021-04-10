@@ -243,7 +243,14 @@ describe("MenuArchive", () => {
           return (
             <button
               id="test-btn-fake"
-              onClick={() => props.handleExit("t")}
+              onClick={() => {
+                if (props.dispatch) {
+                  props.dispatch({
+                    type: "rename-folder",
+                    path: "t"
+                  });
+                }
+              }}
             ></button>
           );
         });
@@ -269,17 +276,8 @@ describe("MenuArchive", () => {
 
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith({
-        payload: {
-          fileIndexItems: [
-            {
-              fileName: "test1.jpg",
-              filePath: "/trashed/test1.jpg",
-              status: "Ok"
-            }
-          ],
-          subPath: "t"
-        },
-        type: "force-reset"
+        type: "rename-folder",
+        path: "t"
       });
 
       component.unmount();
@@ -288,7 +286,7 @@ describe("MenuArchive", () => {
     });
 
     it("display options (default menu)", () => {
-      jest.spyOn(React, "useContext").mockReset();
+      jest.spyOn(React, "useContext").mockRestore();
 
       globalHistory.navigate("/?f=/test");
 

@@ -29,6 +29,10 @@ export type ArchiveAction =
       toRemoveFileList: string[];
     }
   | {
+      type: "rename-folder";
+      path: string;
+    }
+  | {
       type: "update";
       tags?: string;
       colorclass?: number;
@@ -47,6 +51,9 @@ export type ArchiveAction =
       // also update the cache
       type: "force-reset";
       payload: IArchiveProps;
+    }
+  | {
+      type: "remove-folder";
     }
   | {
       type: "add";
@@ -70,6 +77,14 @@ const initialState: State = {
 
 export function archiveReducer(state: State, action: ArchiveAction): State {
   switch (action.type) {
+    case "remove-folder":
+      return updateCache({
+        ...state,
+        colorClassUsage: [],
+        colorClassActiveList: [],
+        collectionsCount: 0,
+        fileIndexItems: []
+      });
     case "remove":
       // files == subpath style not only the name (/dir/file.jpg)
       const { toRemoveFileList } = action;
@@ -101,7 +116,7 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       }
       return updateCache(newState);
     case "update":
-      var {
+      const {
         select,
         tags,
         description,
@@ -168,6 +183,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
         )
       };
       return updateCache(forceResetUpdated);
+    case "rename-folder":
+      return updateCache({ ...state, subPath: action.path });
     case "add":
       if (!action.add) return state;
       const filterOkCondition = (value: IFileIndexItem) => {
