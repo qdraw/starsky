@@ -137,7 +137,6 @@ export function dispatchEmptyFolder(
     dispatch({
       type: "remove-folder"
     });
-    return;
   }
 }
 
