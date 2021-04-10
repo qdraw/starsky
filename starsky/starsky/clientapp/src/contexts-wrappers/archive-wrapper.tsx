@@ -118,7 +118,7 @@ export function filterArchiveFromEvent(
 ) {
   const toAddedFiles = [];
   for (const pushMessage of pushMessagesEvent) {
-    // only update in current directory view
+    // only update in current directory view && parent directory
     if (
       parentLocationPath !== pushMessage.parentDirectory &&
       parentLocationPath !== pushMessage.filePath
