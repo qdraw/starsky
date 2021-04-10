@@ -116,10 +116,10 @@ function updateArchiveFromEvent(
 }
 
 /**
- *
- * @param pushMessagesEvent
- * @param parentLocationPath
- * @param dispatch
+ * When a folder is renamed there is item send with status
+ * @param pushMessagesEvent - list of items that contains
+ * @param parentLocationPath - the path to check
+ * @param dispatch - send reset
  * @returns
  */
 export function dispatchEmptyFolder(
@@ -134,8 +134,6 @@ export function dispatchEmptyFolder(
     parentItems.length === 1 &&
     parentItems[0].status === IExifStatus.NotFoundSourceMissing
   ) {
-    console.log("---> reset");
-
     dispatch({
       type: "remove-folder"
     });
@@ -143,6 +141,12 @@ export function dispatchEmptyFolder(
   }
 }
 
+/**
+ * Filter items that are not in the current folder
+ * @param pushMessagesEvent - list of items
+ * @param parentLocationPath - path of the folder
+ * @returns filtered items
+ */
 export function filterArchiveFromEvent(
   pushMessagesEvent: IFileIndexItem[],
   parentLocationPath?: string
