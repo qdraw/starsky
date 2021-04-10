@@ -245,14 +245,36 @@ describe("ArchiveContextWrapper", () => {
       element.unmount();
     });
   });
-  it("updateArchiveFromEvent -", () => {
-    const list = [
-      {
-        filePath: "/test.jpg",
-        parentDirectory: "/"
-      }
-    ] as IFileIndexItem[];
-    const result = filterArchiveFromEvent(list);
-    console.log(result);
+
+  describe("updateArchiveFromEvent", () => {
+    it("should ignore child folder", () => {
+      const list = [
+        {
+          filePath: "/test.jpg",
+          parentDirectory: "/"
+        },
+        {
+          filePath: "/child/test.jpg",
+          parentDirectory: "/child"
+        }
+      ] as IFileIndexItem[];
+      const result = filterArchiveFromEvent(list, "/");
+      expect(result.length).toBe(1);
+    });
+
+    it("should include parent folder", () => {
+      const list = [
+        {
+          filePath: "/",
+          parentDirectory: "/"
+        },
+        {
+          filePath: "/test.jpg",
+          parentDirectory: "/"
+        }
+      ] as IFileIndexItem[];
+      const result = filterArchiveFromEvent(list, "/");
+      expect(result.length).toBe(2);
+    });
   });
 });
