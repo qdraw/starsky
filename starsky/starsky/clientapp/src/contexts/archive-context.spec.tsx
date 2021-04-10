@@ -24,12 +24,31 @@ describe("ArchiveContext", () => {
       ]
     } as IArchiveProps;
 
-    // fullPath input
     var action = { type: "remove-folder" } as ArchiveAction;
 
     var result = archiveReducer(state, action);
 
     expect(result.fileIndexItems.length).toBe(0);
+  });
+
+  it("rename-folder - path should be changed", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg"
+        },
+        {
+          filePath: "/test.jpg"
+        }
+      ],
+      subPath: "/test"
+    } as IArchiveProps;
+
+    var action = { type: "rename-folder", path: "/test2" } as ArchiveAction;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.subPath).toBe("/test2");
   });
 
   it("force-reset - it should not add duplicate content", () => {
