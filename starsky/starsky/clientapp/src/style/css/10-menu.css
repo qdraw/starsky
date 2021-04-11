@@ -41,9 +41,6 @@
 .header.header--select {
   background-color: #1565c0;
 }
-.header.header--edit.header.header--select {
-  background-color: #283593;
-}
 
 .header .wrapper {
   display: -ms-flexbox;

@@ -1,6 +1,7 @@
 .relativelink {
   height: 50px;
-  background-color: #eceff1;
+  background-color: #f5f8fa;
+  /* lighter than Blue Gray 50 ECEFF1*/
   font-size: 14px;
   font-weight: 300;
 }

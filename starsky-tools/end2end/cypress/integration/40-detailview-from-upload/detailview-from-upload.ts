@@ -80,6 +80,8 @@ describe('DetailView (from upload)', () => {
 
   it('go back', () => {
     if (!config.isEnabled) return
+
+    cy.clearLocalStorage()
     cy.visit(config.url + '/' + fileName3)
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
