@@ -26,7 +26,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
 
     const colorContent: Array<string> = [
       language.text("Kleurloos", "Colorless"),
-      language.text("Paars", "Purple"),
+      language.text("Roze", "Pink"),
       language.text("Rood", "Red"),
       language.text("Oranje", "Orange"),
       language.text("Geel", "Yellow"),

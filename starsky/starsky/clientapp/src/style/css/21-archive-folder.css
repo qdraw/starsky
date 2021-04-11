@@ -7,11 +7,12 @@
   width: 300px;
   height: 300px;
   padding: 10px;
+  background-color: transparent;
 }
 
 .list-image-box > .box-content {
   display: block;
-  background-color: #eceff1;
+  box-shadow: 0px 0px 5px 2px rgba(162, 161, 161, 0.25);
   height: 100%;
   border-radius: 5px;
   text-decoration: none;
@@ -22,11 +23,12 @@
 
 .list-image-box--select > .box-content {
   cursor: grabbing;
+  background-color: transparent;
 }
 
 @media (prefers-color-scheme: dark) {
   .list-image-box > .box-content {
-    background-color: #78909c;
+    box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.25);
   }
 }
 
@@ -111,8 +113,13 @@ between 1 and 2 items
   border-bottom-right-radius: 5px;
   border-left-width: 0px;
   border-right-width: 0px;
-  background-color: #cfd8dc;
   transition: background ease-in-out 0.5s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .list-image-box > .box-content > .caption {
+    color: white;
+  }
 }
 
 .list-image-box--view > .box-content:hover .caption {
@@ -228,6 +235,12 @@ between 1 and 2 items
   display: inline-block;
 }
 
+@media (prefers-color-scheme: dark) {
+  .list-image-box > .box-content.isDirectory-true > .caption > .name:before {
+    filter: invert(100%);
+  }
+}
+
 .list-image-box > .box-content > .img-box {
   height: 69%;
   width: 100%;
@@ -305,6 +318,18 @@ between 1 and 2 items
   background-image: url("../images/baseline-file-png-24px.svg");
 }
 
+@media (prefers-color-scheme: dark) {
+  .list-image-box > .box-content.isDirectory-false > .img-box--error,
+  .list-image-box > .box-content.isDirectory-false > .img-box--gpx,
+  .list-image-box > .box-content.isDirectory-false > .img-box--tiff,
+  .list-image-box > .box-content.isDirectory-false > .img-box--mp4,
+  .list-image-box > .box-content.isDirectory-false > .img-box--jpg,
+  .list-image-box > .box-content.isDirectory-false > .img-box--bmp,
+  .list-image-box > .box-content.isDirectory-false > .img-box--png {
+    filter: invert(100%);
+  }
+}
+
 .list-image-box > .box-content > .img-box--loading > img {
   width: 0px;
   height: 0px;
@@ -312,4 +337,10 @@ between 1 and 2 items
 
 .list-image-box .box-content .img-box--loading {
   background-image: url("../images/preloader-fancy.svg");
+}
+
+@media (prefers-color-scheme: dark) {
+  .list-image-box .box-content .img-box--loading {
+    filter: invert(100%);
+  }
 }

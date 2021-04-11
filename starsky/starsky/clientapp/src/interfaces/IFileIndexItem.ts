@@ -1,7 +1,7 @@
 import { IExifStatus } from "./IExifStatus";
 
 export enum Color {
-  Winner = 1, // Paars - purple
+  Winner = 1, // Paars/Roze - purple
   WinnerAlt = 2, // rood - Red -
   Superior = 3, // Oranje - orange
   SuperiorAlt = 4, // Geel - yellow
