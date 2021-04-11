@@ -43,6 +43,10 @@
   color: white;
 }
 
+.list-flat-box--select:nth-child(odd) .box-content--selected > div {
+  background-color: #3291eb;
+}
+
 .list-flat-box--select .flatlistitem {
   cursor: pointer;
 }
