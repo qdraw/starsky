@@ -90,6 +90,7 @@ between 1 and 2 items
   display: block;
   border-radius: 20px;
   border: #607d8b solid 5px;
+  box-shadow: 0px 0px 5px 2px rgba(162, 161, 161, 0.5);
   content: "";
   z-index: 5;
 }
@@ -97,13 +98,12 @@ between 1 and 2 items
 /* select */
 .list-image-box--select > .isDirectory-true.box-content--selected:before,
 .list-image-box--select > .isDirectory-false.box-content--selected:before {
-  background-color: #283593;
-  width: 45px;
-  height: 45px;
-  mask-image: url("../images/baseline-check_circle-24px.svg");
-  mask-size: cover;
+  width: 40px;
+  height: 40px;
+  background-image: url("../images/baseline-check_circle-cover-sized-1565c0-24px.svg");
+  background-size: contain;
+  border: 0px;
   z-index: 5;
-  border: 5px solid #283593;
 }
 
 .list-image-box > .box-content > .caption {
