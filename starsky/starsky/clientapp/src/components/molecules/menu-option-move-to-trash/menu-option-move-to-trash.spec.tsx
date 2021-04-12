@@ -85,7 +85,7 @@ describe("MenuOptionMoveToTrash", () => {
       component.unmount();
     });
 
-    it("check if when pressing key", () => {
+    it("check if when pressing Delete key", () => {
       jest.spyOn(FetchPost, "default").mockReset();
       var test = {
         ...newIArchive(),
@@ -141,6 +141,7 @@ describe("MenuOptionMoveToTrash", () => {
       });
 
       expect(fetchPostSpy).toBeCalled();
+      // dont know why dispatch is not called
 
       component.unmount();
     });
