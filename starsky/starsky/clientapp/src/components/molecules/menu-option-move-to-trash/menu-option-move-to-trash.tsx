@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { ArchiveAction } from "../../../contexts/archive-context";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import useLocation from "../../../hooks/use-location";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import FetchPost from "../../../shared/fetch-post";
@@ -80,6 +81,13 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
       // Client side Caching: the order of files in a normal folder has changed
       new FileListCache().CacheCleanEverything();
     }
+
+    /**
+     * When pressing delete its moved to the trash
+     */
+    useHotKeys({ key: "Delete" }, () => {
+      moveToTrashSelection();
+    });
 
     return (
       <>
