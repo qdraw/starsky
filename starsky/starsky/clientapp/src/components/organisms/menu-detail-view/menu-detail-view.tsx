@@ -398,17 +398,18 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             </Link>
           ) : null}
 
-          <div
+          <button
             className="item item--labels"
             onClick={() => {
               toggleLabels();
             }}
           >
             Labels
-          </div>
+          </button>
           <MoreMenu>
             {goToParentFolderJSX}
             <li
+              tabIndex={0}
               className={
                 !isSourceMissing ? "menu-option" : "menu-option disabled"
               }
@@ -419,6 +420,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
             </li>
             {!isDetails ? (
               <li
+                tabIndex={0}
                 className="menu-option"
                 data-test="labels"
                 onClick={toggleLabels}
@@ -427,6 +429,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               </li>
             ) : null}
             <li
+              tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="move"
               onClick={() => setModalMoveFile(!isModalMoveFile)}
@@ -434,6 +437,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {MessageMove}
             </li>
             <li
+              tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rename"
               onClick={() => setModalRenameFileOpen(!isModalRenameFileOpen)}
@@ -441,6 +445,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               {MessageRenameFileName}
             </li>
             <li
+              tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="trash"
               onClick={TrashFile}
@@ -461,6 +466,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
               ) : null}
             </li>
             <li
+              tabIndex={0}
               className={!isReadOnly ? "menu-option" : "menu-option disabled"}
               data-test="rotate"
               onClick={rotateImage90}

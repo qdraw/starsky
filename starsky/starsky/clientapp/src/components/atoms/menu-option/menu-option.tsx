@@ -20,6 +20,7 @@ const MenuOption: React.FunctionComponent<IMenuOptionProps> = memo(
       <>
         {
           <li
+            tabIndex={0}
             data-test={testName}
             className="menu-option"
             onClick={() => set(!isSet)}

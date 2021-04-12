@@ -21,6 +21,10 @@
   transition: background ease-in-out 0.5s;
 }
 
+.list-image-box > .box-content:focus {
+  border: 3px solid #283593;
+}
+
 .list-image-box--select > .box-content {
   cursor: grabbing;
   background-color: transparent;
