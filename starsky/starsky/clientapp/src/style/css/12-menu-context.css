@@ -75,6 +75,11 @@
   background: #b0bec5;
 }
 
+.menu-context .menu-options .menu-option:focus {
+  border: 3px solid #283593;
+  padding-left: 13px;
+}
+
 @media (prefers-color-scheme: dark) {
   .menu-context .menu-options .menu-option:hover {
     background-color: #546e7a;

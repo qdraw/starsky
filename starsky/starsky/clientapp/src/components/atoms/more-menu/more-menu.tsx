@@ -36,7 +36,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
   });
 
   return (
-    <div
+    <button
       className={!children ? "item item--more disabled" : "item item--more"}
       onClick={toggleMoreMenu}
     >
@@ -50,7 +50,7 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
       >
         <ul className="menu-options">{children}</ul>
       </div>
-    </div>
+    </button>
   );
 };
 

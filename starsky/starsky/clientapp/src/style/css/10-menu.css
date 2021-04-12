@@ -98,6 +98,11 @@
   text-align: left;
 }
 
+.header .menu-item a:focus {
+  border: 3px solid #283593;
+  padding-left: 22px;
+}
+
 .header .menu-item button:focus {
   background-color: #283593;
 }
@@ -164,6 +169,11 @@
   overflow: hidden;
   text-overflow: ellipsis; /* ... */
   background-color: transparent;
+}
+
+.header .item:focus {
+  box-sizing: border-box;
+  border-bottom: 3px solid #283593;
 }
 
 .header .item:before {

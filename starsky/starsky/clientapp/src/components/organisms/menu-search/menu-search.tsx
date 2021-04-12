@@ -173,7 +173,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
           {/* More menu - In the select context there are more options */}
           {select && select.length === 0 ? (
             <MoreMenu>
-              <li className="menu-option" onClick={() => allSelection()}>
+              <li
+                tabIndex={0}
+                className="menu-option"
+                onClick={() => allSelection()}
+              >
                 {MessageSelectAll}
               </li>
             </MoreMenu>

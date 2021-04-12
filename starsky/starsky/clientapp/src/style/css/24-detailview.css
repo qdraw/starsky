@@ -220,6 +220,11 @@
   width: 50px;
   cursor: not-allowed;
 }
+
+.gpx-controls--button button:focus {
+  background-color: #283593;
+}
+
 .gpx-controls--button.spacer {
   background-color: transparent;
   height: 30px;
