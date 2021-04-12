@@ -45,6 +45,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.8 _(Unreleased)_ - 2021-03-??
 - [x]   (Changed) _Front-end_ Make Archive UI more white & Dark mode UI fixes (PR #358)
+- [x]   (Added) _Front-end_  In select mode press delete key should move to trash in archive & search view (PR #360 / Issue #357)
 
 # version 0.4.7 - 2021-03-11
 - [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls (PR #332)

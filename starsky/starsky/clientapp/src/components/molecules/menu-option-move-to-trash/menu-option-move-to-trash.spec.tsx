@@ -1,6 +1,8 @@
+import { globalHistory } from "@reach/router";
 import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
+import * as useLocation from "../../../hooks/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import {
@@ -80,6 +82,68 @@ describe("MenuOptionMoveToTrash", () => {
         toRemoveFileList: ["/test.jpg"],
         type: "remove"
       });
+      component.unmount();
+    });
+
+    it("check if when pressing Delete key", () => {
+      jest.spyOn(FetchPost, "default").mockReset();
+      var test = {
+        ...newIArchive(),
+        fileIndexItems: [
+          {
+            ...newIFileIndexItem(),
+            parentDirectory: "/",
+            fileName: "test.jpg"
+          } as IFileIndexItem
+        ]
+      } as IArchiveProps;
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        {
+          ...newIConnectionDefault(),
+          data: null,
+          statusCode: 200
+        }
+      );
+      const locationObject = {
+        location: globalHistory.location,
+        navigate: jest.fn()
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject);
+
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const dispatch = jest.fn();
+      const component = mount(
+        <MenuOptionMoveToTrash
+          setSelect={jest.fn()}
+          select={["test.jpg"]}
+          isReadOnly={false}
+          state={test}
+          dispatch={dispatch}
+        >
+          t
+        </MenuOptionMoveToTrash>
+      );
+
+      act(() => {
+        const event = new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          key: "Delete"
+        });
+        window.dispatchEvent(event);
+      });
+
+      expect(fetchPostSpy).toBeCalled();
+      // dont know why dispatch is not called
+
+      component.unmount();
     });
   });
 });
