@@ -1,7 +1,8 @@
+import { globalHistory } from "@reach/router";
 import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
-import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
+import * as useLocation from "../../../hooks/use-location";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
 import {
@@ -81,9 +82,10 @@ describe("MenuOptionMoveToTrash", () => {
         toRemoveFileList: ["/test.jpg"],
         type: "remove"
       });
+      component.unmount();
     });
 
-    it("check if when pressing key", async () => {
+    it("check if when pressing key", () => {
       jest.spyOn(FetchPost, "default").mockReset();
       var test = {
         ...newIArchive(),
@@ -103,18 +105,21 @@ describe("MenuOptionMoveToTrash", () => {
           statusCode: 200
         }
       );
+      const locationObject = {
+        location: globalHistory.location,
+        navigate: jest.fn()
+      };
+
+      jest
+        .spyOn(useLocation, "default")
+        .mockImplementationOnce(() => locationObject);
+
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const useHotkeysSpy = jest
-        .spyOn(useHotKeys, "default")
-        .mockImplementationOnce(() => {
-          return { key: "Delete" };
-        });
-
-      var dispatch = jest.fn();
-      var component = await mount(
+      const dispatch = jest.fn();
+      const component = mount(
         <MenuOptionMoveToTrash
           setSelect={jest.fn()}
           select={["test.jpg"]}
@@ -126,12 +131,18 @@ describe("MenuOptionMoveToTrash", () => {
         </MenuOptionMoveToTrash>
       );
 
-      expect(fetchPostSpy).toBeCalled();
-      expect(dispatch).toBeCalled();
-      expect(dispatch).toBeCalledWith({
-        toRemoveFileList: ["/test.jpg"],
-        type: "remove"
+      act(() => {
+        const event = new KeyboardEvent("keydown", {
+          bubbles: true,
+          cancelable: true,
+          key: "Delete"
+        });
+        window.dispatchEvent(event);
       });
+
+      expect(fetchPostSpy).toBeCalled();
+
+      component.unmount();
     });
   });
 });
