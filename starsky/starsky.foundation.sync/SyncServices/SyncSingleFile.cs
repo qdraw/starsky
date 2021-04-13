@@ -102,7 +102,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="dbItem">item that contain size and fileHash</param>
 		/// <returns>database item</returns>
-		private async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
+		internal async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
 		{
 			// when last edited is the same
 			var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);

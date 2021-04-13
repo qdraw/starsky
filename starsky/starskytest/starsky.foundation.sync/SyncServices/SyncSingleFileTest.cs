@@ -19,13 +19,15 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	public class SyncSingleFileTest
 	{
 		private readonly IStorage _iStorageFake;
+		private readonly DateTime _dateTime;
 
 		public SyncSingleFileTest()
 		{
+			_dateTime = new DateTime(2020, 02, 02);
 			_iStorageFake = new FakeIStorage(new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_test.jpg", "/status_deleted.jpg"},
 				new List<byte[]>{CreateAnImageNoExif.Bytes, 
-					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes});
+					CreateAnImageColorClass.Bytes, CreateAnImageStatusDeleted.Bytes}, new List<DateTime>{_dateTime,new DateTime(),new DateTime()});
 		}
 
 		[TestMethod]
@@ -464,5 +466,32 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
 		}
 
+		[TestMethod]
+		public async Task SizeFileHashIsTheSame_true()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+				_iStorageFake, new ConsoleWrapper());
+			
+			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/test.jpg")
+			{
+				LastEdited = _dateTime
+			});
+
+			Assert.IsTrue(theSame.Item1);
+		}
+		[TestMethod]
+		
+		public async Task SizeFileHashIsTheSame_NotFoundFalse()
+		{
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
+				_iStorageFake, new ConsoleWrapper());
+			
+			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/not-found.jpg")
+			{
+				LastEdited = _dateTime
+			});
+
+			Assert.IsFalse(theSame.Item1);
+		}
 	}
 }
