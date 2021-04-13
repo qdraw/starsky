@@ -29,7 +29,8 @@ namespace starskytest.Models
 	                                        " <rdf:Description rdf:about=\'\'\n " + " xmlns:pdf=\'http://ns.adobe.com/pdf/1.3/\'>\n  " +
 	                                        "<pdf:Keywords>kamer</pdf:Keywords>\n </rdf:Description>\n</rdf:RDF>\n</x:xmpmeta>\n";
 
-	    public Task<bool> WriteTagsAsync(string subPath, string command)
+	    public Task<bool> WriteTagsAsync(string subPath, string command,
+		    DateTime lastWriteTime)
 		{
 			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 

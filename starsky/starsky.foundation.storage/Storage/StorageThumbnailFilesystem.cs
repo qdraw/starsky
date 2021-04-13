@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -121,22 +122,23 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="stream"></param>
 		/// <param name="path"></param>
+		/// <param name="lastWriteTime"></param>
 		/// <returns></returns>
-		public bool WriteStream(Stream stream, string path)
+		public bool WriteStream(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			return new StorageHostFullPathFilesystem()
-				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg"));
+				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg"),lastWriteTime);
 		}
 
-		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		public bool WriteStreamOpenOrCreate(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		public Task<bool> WriteStreamAsync(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			var fullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
+			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath, lastWriteTime);
 		}
 
 		public StorageInfo Info(string path)

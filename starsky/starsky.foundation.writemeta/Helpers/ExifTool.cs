@@ -27,12 +27,13 @@ namespace starsky.foundation.writemeta.Helpers
 		}
 
 		/// <summary>
-		/// Write commands to ExifTool for ReadStream (Does NOT work with mono/legacy)
+		/// Write commands to ExifTool for ReadStream
 		/// </summary>
 		/// <param name="subPath">the location</param>
 		/// <param name="command">exifTool command line args</param>
+		/// <param name="lastWriteTime">When its edited in the database (UTC)</param>
 		/// <returns>true=success</returns>
-		public async Task<bool> WriteTagsAsync(string subPath, string command)
+		public async Task<bool> WriteTagsAsync(string subPath, string command, DateTime lastWriteTime)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
 			var runner = new StreamToStreamRunner(_appSettings, inputStream);
@@ -40,7 +41,7 @@ namespace starsky.foundation.writemeta.Helpers
 			// Need to Dispose for Windows
 			inputStream.Close();
 			Console.Write("‘");
-			return await _iStorage.WriteStreamAsync(stream, subPath);
+			return await _iStorage.WriteStreamAsync(stream, subPath, lastWriteTime);
 		}
 
 		/// <summary>

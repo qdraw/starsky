@@ -30,10 +30,11 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !ExistFile(path) )
 			{
+				// when NOT found
 				return new StorageInfo
 				{
 					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
-					Size = -1
+					Size = -1,
 				};
 			}
 			
@@ -41,6 +42,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				IsFolderOrFile = IsFolderOrFile(path),
 				Size = new FileInfo(path).Length,
+				LastWriteTime = File.GetLastWriteTime(path).ToUniversalTime()
 			};
 		}
 		
@@ -256,7 +258,7 @@ namespace starsky.foundation.storage.Storage
 			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(2),5);
 		}
 
-		public bool WriteStream(Stream stream, string path)
+		public bool WriteStream(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			if ( !stream.CanRead ) return false;
 
@@ -275,13 +277,21 @@ namespace starsky.foundation.storage.Storage
 				}
 
 				stream.Dispose();
+				SetLastWriteTime(path, lastWriteTime);
+
 				return true;
 			}
 						
 			return RetryHelper.Do(LocalRun, TimeSpan.FromSeconds(1));
 		}
 
-		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		private void SetLastWriteTime (string path, DateTime lastWriteTime)
+		{
+			if ( lastWriteTime.Year == 1 ) return;
+			File.SetLastWriteTime(path, lastWriteTime.ToLocalTime());
+		}
+
+		public bool WriteStreamOpenOrCreate(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			if ( !stream.CanRead ) return false;
 
@@ -295,6 +305,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				stream.CopyTo(fileStream);
 			}
+			SetLastWriteTime(path, lastWriteTime);
 			return true;
 		}
 
@@ -304,7 +315,7 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="stream">fileStream</param>
 		/// <param name="path">filePath</param>
 		/// <returns>success or fail</returns>
-		public async Task<bool> WriteStreamAsync(Stream stream, string path)
+		public async Task<bool> WriteStreamAsync(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			if ( !stream.CanRead ) return false;
 
@@ -318,6 +329,7 @@ namespace starsky.foundation.storage.Storage
 					fileStream.Dispose();
 				}
 				stream.Dispose();
+				SetLastWriteTime(path, lastWriteTime);
 				return true;
 			}
 

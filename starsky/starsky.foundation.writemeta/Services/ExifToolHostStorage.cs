@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
@@ -20,9 +21,10 @@ namespace starsky.foundation.writemeta.Services
 			_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings);
 
 		}
-		public async Task<bool> WriteTagsAsync(string subPath, string command)
+		public async Task<bool> WriteTagsAsync(string subPath, string command,
+			DateTime lastWriteTime)
 		{
-			return await _exifTool.WriteTagsAsync(subPath,command);
+			return await _exifTool.WriteTagsAsync(subPath,command,lastWriteTime);
 		}
 
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)

@@ -176,7 +176,7 @@ namespace starsky.foundation.writemeta.Helpers
 			    var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			    var command = ExifToolCommandLineArgs(updateModel, comparedNames, true);
 				    
-			    await _exifTool.WriteTagsAsync(withXmp, command);
+			    await _exifTool.WriteTagsAsync(withXmp, command, updateModel.LastEdited);
 		    }
 	    }
 
@@ -194,7 +194,7 @@ namespace starsky.foundation.writemeta.Helpers
 	        foreach (var path in subPathsList)
 	        {
 		        if ( ! _iStorage.ExistFile(path) ) continue;
-		        await _exifTool.WriteTagsAsync(path, command);
+		        await _exifTool.WriteTagsAsync(path, command, updateModel.LastEdited);
 	        }
 
 	        if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )

@@ -225,7 +225,7 @@ namespace starskytest.FakeMocks
 			return stream1;
 		}
 
-		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		public bool WriteStreamOpenOrCreate(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			if ( !_outputSubPathFiles.Contains(path) )
 			{
@@ -251,7 +251,7 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
-		public bool WriteStream(Stream stream, string path)
+		public bool WriteStream(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			_outputSubPathFiles.Add(path);
 
@@ -275,7 +275,7 @@ namespace starskytest.FakeMocks
 			return true;
 		}
 
-		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		public Task<bool> WriteStreamAsync(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			return Task.FromResult(WriteStream(stream, path));
 		}

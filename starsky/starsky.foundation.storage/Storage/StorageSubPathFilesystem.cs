@@ -240,10 +240,12 @@ namespace starsky.foundation.storage.Storage
 				}
 				
 				// read only the first number of bytes
-				byte[] buffer = new byte[maxRead];
+				var buffer = new byte[maxRead];
 				fileStream.Read(buffer, 0, maxRead);
+				// end close afterwards
 				fileStream.Close();
 				fileStream.Dispose();
+				
 				return new MemoryStream(buffer);
 			}
 
@@ -251,32 +253,31 @@ namespace starsky.foundation.storage.Storage
 		}
 
 
-		
-		
 		/// <summary>
 		/// Write fileStream to disk
 		/// </summary>
 		/// <param name="stream">some stream</param>
 		/// <param name="path">location</param>
+		/// <param name="lastEdited">to match last edit times input in UTC</param>
 		/// <returns></returns>
 		/// <exception cref="FileNotFoundException"></exception>
-		public bool WriteStream(Stream stream, string path)
+		public bool WriteStream(Stream stream, string path, DateTime lastEdited = new DateTime())
 		{
 			// should be able to write files that are not exist yet			
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
 
-			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath);
+			return new StorageHostFullPathFilesystem().WriteStream(stream, fullFilePath, lastEdited);
 		}
 
-		public bool WriteStreamOpenOrCreate(Stream stream, string path)
+		public bool WriteStreamOpenOrCreate(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task<bool> WriteStreamAsync(Stream stream, string path)
+		public Task<bool> WriteStreamAsync(Stream stream, string path, DateTime lastWriteTime = new DateTime())
 		{
 			var fullFilePath = _appSettings.DatabasePathToFilePath(path,false);
-			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
+			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath,lastWriteTime);
 		}
 	}
 }

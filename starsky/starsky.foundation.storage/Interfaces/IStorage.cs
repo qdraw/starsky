@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -55,10 +56,10 @@ namespace starsky.foundation.storage.Interfaces
 
 		Stream ReadStream(string path, int maxRead = -1);
 		
-		bool WriteStream(Stream stream, string path);
-		bool WriteStreamOpenOrCreate(Stream stream, string path);
+		bool WriteStream(Stream stream, string path, DateTime lastWriteTime = new DateTime());
+		bool WriteStreamOpenOrCreate(Stream stream, string path, DateTime lastWriteTime = new DateTime());
 
-		Task<bool> WriteStreamAsync(Stream stream, string path);
+		Task<bool> WriteStreamAsync(Stream stream, string path, DateTime lastWriteTime = new DateTime());
 		StorageInfo Info(string path);
 	}
 }

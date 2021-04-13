@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +26,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
 			await new ExifToolService(new FakeSelectorStorage(fakeStorage), appSettings)
-				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"", DateTime.Now);
 		}
 		
 		[TestMethod]
