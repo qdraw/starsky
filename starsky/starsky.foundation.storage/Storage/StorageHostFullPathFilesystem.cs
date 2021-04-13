@@ -30,6 +30,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !ExistFile(path) )
 			{
+				// when NOT found
 				return new StorageInfo
 				{
 					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Deleted,
@@ -41,6 +42,7 @@ namespace starsky.foundation.storage.Storage
 			{
 				IsFolderOrFile = IsFolderOrFile(path),
 				Size = new FileInfo(path).Length,
+				LastWriteTime = File.GetLastWriteTime(path).ToUniversalTime()
 			};
 		}
 		

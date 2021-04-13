@@ -124,12 +124,12 @@ namespace starsky.foundation.storage.Services
         /// <returns>Task with a md5 hash</returns>
         private async Task<string> CalculateMd5Async(string fullFilePath)
         {
-            var block = ArrayPool<byte>.Shared.Rent(8192 ); // 8 Kilobytes each
+            var block = ArrayPool<byte>.Shared.Rent(16384 ); // 16 Kilobytes each (7 times)
             try
             {
                 using (var md5 = MD5.Create())
                 {
-                    using (var stream = _iStorage.ReadStream(fullFilePath,65536)) // reading 64 Kilobytes
+                    using (var stream = _iStorage.ReadStream(fullFilePath,114688)) // 114Kb
                     {
                         int length;
                         while ((length = await stream.ReadAsync(block, 0, block.Length)
