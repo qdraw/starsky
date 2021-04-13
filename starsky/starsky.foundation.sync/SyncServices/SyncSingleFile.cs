@@ -102,13 +102,15 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="dbItem">item that contain size and fileHash</param>
 		/// <returns>database item</returns>
-		private async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
+		internal async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
 		{
-			// when size is the same dont update
-			var (isByteSizeTheSame, size) = CompareByteSizeIsTheSame(dbItem);
-			dbItem.Size = size;
-			if (isByteSizeTheSame) return new Tuple<bool, FileIndexItem>(true ,dbItem);
+			// when last edited is the same
+			var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
+			dbItem.LastEdited = lastEdit;
+			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
 
+			if (isLastEditTheSame) return new Tuple<bool, FileIndexItem>(true ,dbItem);
+			
 			// when byte hash is different update
 			var (fileHashTheSame,_ ) = await CompareFileHashIsTheSame(dbItem);
 
@@ -213,12 +215,17 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="dbItem"></param>
 		/// <returns></returns>
-		private Tuple<bool,long> CompareByteSizeIsTheSame(FileIndexItem dbItem)
+		private Tuple<bool,DateTime> CompareLastEditIsTheSame(FileIndexItem dbItem)
 		{
-			var storageByteSize = _subPathStorage.Info(dbItem.FilePath).Size;
-			var isTheSame = dbItem.Size == storageByteSize;
-			dbItem.Size = storageByteSize;
-			return new Tuple<bool, long>(isTheSame, storageByteSize);
+			var lastWriteTime = _subPathStorage.Info(dbItem.FilePath).LastWriteTime;
+			if ( lastWriteTime.Year == 1 )
+			{
+				return new Tuple<bool, DateTime>(false, lastWriteTime);
+			}
+			
+			var isTheSame = dbItem.LastEdited == lastWriteTime;
+			dbItem.LastEdited = lastWriteTime;
+			return new Tuple<bool, DateTime>(isTheSame, lastWriteTime);
 		}
 
 		/// <summary>

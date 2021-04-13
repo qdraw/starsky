@@ -16,6 +16,9 @@ namespace starskytest.FakeMocks
 	{
 		private List<string> _outputSubPathFolders = new List<string>();
 		private List<string> _outputSubPathFiles  = new List<string>();
+
+		private readonly  Dictionary<string, DateTime> _lastEditDict = new Dictionary<string, DateTime>();
+
 		private readonly  Dictionary<string, byte[]> _byteList = new Dictionary<string, byte[]>();
 
 		/// <summary>
@@ -26,7 +29,7 @@ namespace starskytest.FakeMocks
 		/// <param name="byteListSource"></param>
 		/// <param name="fileHashPerThumbnail">for mock fileHash=subPath</param>
 		public FakeIStorage(List<string> outputSubPathFolders = null, List<string> outputSubPathFiles = null, 
-			IReadOnlyList<byte[]> byteListSource = null)
+			IReadOnlyList<byte[]> byteListSource = null, List<DateTime> lastEdited = null)
 		{
 	
 			if ( outputSubPathFolders != null )
@@ -53,6 +56,13 @@ namespace starskytest.FakeMocks
 				}
 			}
 
+			if ( lastEdited != null && lastEdited.Any() )
+			{
+				for ( int i = 0; i < _outputSubPathFiles.Count; i++ )
+				{
+					_lastEditDict.Add(_outputSubPathFiles[i],lastEdited[i]);
+				}
+			}
 		}
 
 		private readonly Exception _exception;
@@ -299,10 +309,18 @@ namespace starskytest.FakeMocks
 			}
 			
 			var result = _byteList.FirstOrDefault(p => p.Key == path).Value;
+
+			var lastEdit = new DateTime();
+			if ( _lastEditDict != null )
+			{
+				lastEdit = _lastEditDict.FirstOrDefault(p => p.Key == path).Value;
+			}
+			
 			return new StorageInfo
 			{
 				IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.File,
-				Size = result.Length
+				Size = result.Length,
+				LastWriteTime = lastEdit
 			};
 
 		}
