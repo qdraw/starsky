@@ -104,9 +104,10 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>database item</returns>
 		private async Task<Tuple<bool,FileIndexItem>> SizeFileHashIsTheSame(FileIndexItem dbItem)
 		{
+			// when last edited is the same
 			var (isLastEditTheSame, lastEdit) = CompareLastEditIsTheSame(dbItem);
 			dbItem.LastEdited = lastEdit;
-			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;;
+			dbItem.Size = _subPathStorage.Info(dbItem.FilePath).Size;
 
 			if (isLastEditTheSame) return new Tuple<bool, FileIndexItem>(true ,dbItem);
 			

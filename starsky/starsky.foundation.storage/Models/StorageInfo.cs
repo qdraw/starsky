@@ -8,7 +8,7 @@ namespace starsky.foundation.storage.Models
 		public long Size { get; set; }
 
 		/// <summary>
-		/// In UTC
+		/// Input in UTC, witten down local
 		/// </summary>
 		public DateTime LastWriteTime { get; set; }
 	}
