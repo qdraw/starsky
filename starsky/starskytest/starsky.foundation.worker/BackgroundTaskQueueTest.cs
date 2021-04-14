@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -127,6 +128,21 @@ namespace starskytest.starsky.foundation.worker
 		}
 
 
+
+		[TestMethod]
+		public async Task StartAsync_CancelBeforeStart()
+		{
+			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue());
+		
+			var ship = new CancellationToken();
+			var value = false;
+			PropertyInfo propertyInfo = ship.GetType().GetProperty("IsCancellationRequested");
+			propertyInfo.SetValue(ship,
+				Convert.ChangeType(value, propertyInfo.PropertyType), null);
+				
+			// await service.StartAsync(ship);
+			
+		}
 
 	}
 }
