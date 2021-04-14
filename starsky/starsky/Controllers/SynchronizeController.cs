@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.platform.JsonConverter;
-using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
-using starsky.foundation.worker.Services;
 
 namespace starsky.Controllers
 {
@@ -25,7 +17,7 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Experimental/Alpha API to sync data! Please use /api/sync 
+		/// Faster API to Check if directory is changed (not recursive)
 		/// </summary>
 		/// <param name="f">subPaths split by dot comma</param>
 		/// <returns>list of changed files</returns>
