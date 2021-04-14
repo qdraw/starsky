@@ -14,14 +14,11 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Index_Result_200()
 		{
-			var actionResult = await new SynchronizeController(new FakeISynchronize(), new FakeIQuery(
-				new List<FileIndexItem>
-				{
-					new FileIndexItem("/"){IsDirectory = true}
-					
-				}), new FakeIWebSocketConnectionsService(), 
-				new FakeIBackgroundTaskQueue(), 
-				new FakeMemoryCache(null)).Index("/") as OkObjectResult;
+			var items = new Dictionary<string, FileIndexItem.ExifStatus>{{"/", 
+				FileIndexItem.ExifStatus.Ok }};
+			var actionResult = await new SynchronizeController(
+				new FakeIManualBackgroundSyncService(items)
+				).Index("/") as OkObjectResult;
 			
 			Assert.AreEqual(200, actionResult.StatusCode);
 		}
@@ -29,13 +26,26 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Index_Result_NotFound()
 		{
-			var actionResult = await new SynchronizeController(new FakeISynchronize(), new FakeIQuery(
-					new List<FileIndexItem>()
-					), new FakeIWebSocketConnectionsService(), 
-				new FakeIBackgroundTaskQueue(), 
-				new FakeMemoryCache(null)).Index("/") as NotFoundObjectResult;
-
+			var items = new Dictionary<string, FileIndexItem.ExifStatus>{{"/", 
+				FileIndexItem.ExifStatus.NotFoundNotInIndex }};
+			var actionResult = await new SynchronizeController(
+				new FakeIManualBackgroundSyncService(items)
+			).Index("/") as NotFoundObjectResult;
+			
 			Assert.AreEqual(404, actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task Index_Result_Waiting()
+		{
+			var items = new Dictionary<string, FileIndexItem.ExifStatus>{{"/", 
+				FileIndexItem.ExifStatus.OperationNotSupported }};
+			
+			var actionResult = await new SynchronizeController(
+				new FakeIManualBackgroundSyncService(items)
+			).Index("/") as BadRequestObjectResult;
+			
+			Assert.AreEqual(400, actionResult.StatusCode);
 		}
 	}
 }
