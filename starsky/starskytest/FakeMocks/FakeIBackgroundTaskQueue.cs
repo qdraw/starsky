@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 
 namespace starskytest.FakeMocks
 {

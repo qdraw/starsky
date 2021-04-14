@@ -19,7 +19,9 @@ namespace starskytest.Controllers
 				{
 					new FileIndexItem("/"){IsDirectory = true}
 					
-				})).Index("/") as OkObjectResult;
+				}), new FakeIWebSocketConnectionsService(), 
+				new FakeIBackgroundTaskQueue(), 
+				new FakeMemoryCache(null)).Index("/") as OkObjectResult;
 			
 			Assert.AreEqual(200, actionResult.StatusCode);
 		}
@@ -27,9 +29,12 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task Index_Result_NotFound()
 		{
-			var actionResult = await new SynchronizeController(
-				new FakeISynchronize(), new FakeIQuery()).Index("/") as NotFoundObjectResult;
-			
+			var actionResult = await new SynchronizeController(new FakeISynchronize(), new FakeIQuery(
+					new List<FileIndexItem>()
+					), new FakeIWebSocketConnectionsService(), 
+				new FakeIBackgroundTaskQueue(), 
+				new FakeMemoryCache(null)).Index("/") as NotFoundObjectResult;
+
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 	}

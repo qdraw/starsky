@@ -3,10 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.webtelemetry.Interfaces;
 
-namespace starskycore.Services
+namespace starsky.foundation.worker.Services
 {
     #region snippet1
     

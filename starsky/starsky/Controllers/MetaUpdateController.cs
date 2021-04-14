@@ -9,7 +9,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 
 namespace starsky.Controllers
 {

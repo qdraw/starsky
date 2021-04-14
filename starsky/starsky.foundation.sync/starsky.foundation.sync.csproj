@@ -14,6 +14,7 @@
       <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
       <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
       <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+      <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
     </ItemGroup>
 
     <ItemGroup>
