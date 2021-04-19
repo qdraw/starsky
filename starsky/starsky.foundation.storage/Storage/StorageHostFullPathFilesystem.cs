@@ -333,22 +333,15 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
         {
-            List<string> findList = new List<string>();
+            var findList = new List<string>();
 
             /* I begin a recursion, following the order:
              * - Insert all the files in the current directory with the recursion
              * - Insert all subdirectories in the list and re-begin the recursion from there until the end
              */
             RecurseFind( path, findList );
-
-            // Add filter for file types
-            var imageFilesList = new List<string>();
-            foreach (var file in findList)
-            {
-	            imageFilesList.Add(file);
-            }
             
-            return imageFilesList;
+            return findList.OrderBy(x => x).ToList();;
         }
 
 		/// <summary>
@@ -358,20 +351,17 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="list">The list of strings.</param>
 		private static void RecurseFind( string path, List<string> list )
         {
-            string[] fl = Directory.GetFiles(path);
-            string[] dl = Directory.GetDirectories(path);
-            if ( fl.Length>0 || dl.Length>0 )
+            var fl = Directory.GetFiles(path);
+            var dl = Directory.GetDirectories(path);
+            if ( fl.Length <= 0 && dl.Length <= 0 ) return;
+            //I begin with the files, and store all of them in the list
+            list.AddRange(fl);
+            // I then add the directory and recurse that directory,
+            // the process will repeat until there are no more files and directories to recurse
+            foreach(var s in dl)
             {
-                //I begin with the files, and store all of them in the list
-                foreach(string s in fl)
-                    list.Add(s);
-                // I then add the directory and recurse that directory,
-                // the process will repeat until there are no more files and directories to recurse
-                foreach(string s in dl)
-                {
-                    list.Add(s);
-                    RecurseFind(s, list);
-                }
+	            list.Add(s);
+	            RecurseFind(s, list);
             }
         }
 	}
