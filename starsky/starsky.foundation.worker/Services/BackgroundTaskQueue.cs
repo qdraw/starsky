@@ -15,6 +15,9 @@ namespace starsky.foundation.worker.Services
             CancellationToken cancellationToken);
     }
 
+    /// <summary>
+    /// @see: https://www.c-sharpcorner.com/article/how-to-call-background-service-from-net-core-web-api/
+    /// </summary>
     [Service(typeof(IBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {
