@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Services;
@@ -73,6 +74,7 @@ namespace starskytest.starsky.foundation.worker
 		    services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
 		    services.AddHostedService<BackgroundQueuedHostedService>();
 		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		    services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		    var serviceProvider = services.BuildServiceProvider();
 
 		    var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
@@ -106,6 +108,7 @@ namespace starskytest.starsky.foundation.worker
 		    services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
 		    services.AddHostedService<BackgroundQueuedHostedService>();
 		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		    services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		    var serviceProvider = services.BuildServiceProvider();
 
 		    var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;

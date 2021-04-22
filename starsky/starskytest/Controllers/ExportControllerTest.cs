@@ -20,6 +20,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Models;
@@ -147,6 +148,7 @@ namespace starskytest.Controllers
 			IServiceCollection services = new ServiceCollection();
 			services.AddHostedService<BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			var serviceProvider = services.BuildServiceProvider();
 
 			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;

@@ -185,8 +185,7 @@ namespace starsky.Controllers
 			}
 			catch
 			{
-				_logger.LogInformation("[IsValidXml] non valid xml ->");
-				_logger.LogInformation(xml);
+				_logger.LogInformation("[IsValidXml] non valid xml");
 				return false;
 			}
 		}
