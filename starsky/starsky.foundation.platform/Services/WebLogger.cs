@@ -15,7 +15,7 @@ namespace starsky.foundation.platform.Services
 		public WebLogger(ILoggerFactory logger = null, IServiceScopeFactory scopeFactory = null)
 		{
 			_console = scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>();
-			_logger = logger?.CreateLogger("app");
+			_logger = logger?.CreateLogger(string.Empty);
 		}
 
 		public void LogInformation(string message, params object[] args)
