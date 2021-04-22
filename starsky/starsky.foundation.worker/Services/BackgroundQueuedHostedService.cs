@@ -18,7 +18,7 @@ namespace starsky.foundation.worker.Services
 		private readonly IWebLogger _logger;
 
 		public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue,
-			IWebLogger logger, ITelemetryService telemetryService = null)
+			IWebLogger logger, ITelemetryService telemetryService)
 		{
 			TaskQueue = taskQueue;
 			_telemetryService = telemetryService;
@@ -44,7 +44,7 @@ namespace starsky.foundation.worker.Services
                 {
 	                _logger.LogError(exception,  
 		                "Error occurred executing {WorkItem}.", nameof(workItem));
-	                _telemetryService?.TrackException(exception);
+	                _telemetryService.TrackException(exception);
                 }
             }
 

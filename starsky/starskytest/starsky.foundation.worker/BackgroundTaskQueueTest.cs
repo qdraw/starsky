@@ -74,6 +74,7 @@ namespace starskytest.starsky.foundation.worker
 		    services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
 		    services.AddHostedService<BackgroundQueuedHostedService>();
 		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+		    services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 		    services.AddSingleton<IWebLogger, FakeIWebLogger>();
 		    var serviceProvider = services.BuildServiceProvider();
 
@@ -109,6 +110,7 @@ namespace starskytest.starsky.foundation.worker
 		    services.AddHostedService<BackgroundQueuedHostedService>();
 		    services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 		    services.AddSingleton<IWebLogger, FakeIWebLogger>();
+		    services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 		    var serviceProvider = services.BuildServiceProvider();
 
 		    var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
@@ -135,14 +137,13 @@ namespace starskytest.starsky.foundation.worker
 		public async Task StartAsync_CancelBeforeStart()
 		{
 			var fakeLogger = new FakeIWebLogger();
-			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue(), fakeLogger);
+			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue(), fakeLogger, new FakeTelemetryService());
 
 			var cancelTokenSource = new CancellationTokenSource();
 			cancelTokenSource.Cancel();
 			
 			// use reflection to hit protected method
-			service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync").Invoke(service, new object?[]{cancelTokenSource.Token});
-
+			service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync").Invoke(service, new object[]{cancelTokenSource.Token});
 			// should stop and not hit timeout
 		}
 

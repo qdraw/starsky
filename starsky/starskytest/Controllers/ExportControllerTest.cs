@@ -26,6 +26,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
@@ -149,6 +150,7 @@ namespace starskytest.Controllers
 			services.AddHostedService<BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			var serviceProvider = services.BuildServiceProvider();
 
 			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
