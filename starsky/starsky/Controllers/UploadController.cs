@@ -185,6 +185,8 @@ namespace starsky.Controllers
 			}
 			catch
 			{
+				_logger.LogInformation("[IsValidXml] non valid xml ->");
+				_logger.LogInformation(xml);
 				return false;
 			}
 		}
@@ -214,7 +216,8 @@ namespace starsky.Controllers
 		{
 			var to = Request.Headers["to"].ToString();
 			if ( string.IsNullOrWhiteSpace(to) ) return BadRequest("missing 'to' header");
-
+			_logger.LogInformation($"[UploadToFolderSidecarFile] to:{to}");
+			
 			var parentDirectory = GetParentDirectoryFromRequestHeader();
 			if ( parentDirectory == null )
 			{
