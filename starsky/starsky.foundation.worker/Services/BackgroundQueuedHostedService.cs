@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -6,27 +7,30 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.webtelemetry.Interfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.worker.Services
 {
-	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-    public class BackgroundQueuedHostedService : BackgroundService
-    {
-	    private readonly ITelemetryService _telemetryService;
-	    private readonly IWebLogger _logger;
+	[Service(typeof(IHostedService),
+		InjectionLifetime = InjectionLifetime.Singleton)]
+	public class BackgroundQueuedHostedService : BackgroundService
+	{
+		private readonly ITelemetryService _telemetryService;
+		private readonly IWebLogger _logger;
 
-	    public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, IWebLogger logger, ITelemetryService telemetryService = null)
-        {
-            TaskQueue = taskQueue;
-            _telemetryService = telemetryService;
-            _logger = logger;
-        }
+		public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue,
+			IWebLogger logger, ITelemetryService telemetryService = null)
+		{
+			TaskQueue = taskQueue;
+			_telemetryService = telemetryService;
+			_logger = logger;
+		}
 
-        private IBackgroundTaskQueue TaskQueue { get; }
-
-        protected override async Task ExecuteAsync(
+		private IBackgroundTaskQueue TaskQueue { get; }
+		
+		protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-	        _logger.LogInformation("Queued Hosted Service is starting.");  
+	        _logger.LogInformation($"Queued Hosted Service is starting on {Environment.MachineName}");  
             
             while (!stoppingToken.IsCancellationRequested)
             {

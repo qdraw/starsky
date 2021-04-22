@@ -20,11 +20,6 @@ namespace starsky
 					// AddServerHeader removes the header: Server: Kestrel
 					options.AddServerHeader = false;
 				})
-				.ConfigureLogging(logging =>
-				{
-					logging.ClearProviders();
-					logging.AddConsole();
-				})
 				.UseStartup<Startup>();
 	
 	}

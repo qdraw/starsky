@@ -127,21 +127,20 @@ namespace starskytest.starsky.foundation.worker
 
 		}
 
-
-
 		[TestMethod]
+		[Timeout(5000)]
 		public async Task StartAsync_CancelBeforeStart()
 		{
-			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue());
-		
-			var ship = new CancellationToken();
-			var value = false;
-			PropertyInfo propertyInfo = ship.GetType().GetProperty("IsCancellationRequested");
-			propertyInfo.SetValue(ship,
-				Convert.ChangeType(value, propertyInfo.PropertyType), null);
-				
-			// await service.StartAsync(ship);
+			var fakeLogger = new FakeIWebLogger();
+			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue(), fakeLogger);
+
+			var cancelTokenSource = new CancellationTokenSource();
+			cancelTokenSource.Cancel();
 			
+			// use reflection to hit protected method
+			service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync").Invoke(service, new object?[]{cancelTokenSource.Token});
+
+			// should stop and not hit timeout
 		}
 
 	}
