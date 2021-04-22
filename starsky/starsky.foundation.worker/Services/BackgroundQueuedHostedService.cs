@@ -3,20 +3,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.webtelemetry.Interfaces;
 
 namespace starsky.foundation.worker.Services
 {
-    #region snippet1
-    
-    [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
+	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
     public class BackgroundQueuedHostedService : BackgroundService
     {
 	    private readonly ITelemetryService _telemetryService;
-	    public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, ITelemetryService telemetryService = null)
+	    private readonly IWebLogger _logger;
+
+	    public BackgroundQueuedHostedService(IBackgroundTaskQueue taskQueue, IWebLogger logger, ITelemetryService telemetryService = null)
         {
             TaskQueue = taskQueue;
             _telemetryService = telemetryService;
+            _logger = logger;
         }
 
         private IBackgroundTaskQueue TaskQueue { get; }
@@ -24,8 +26,7 @@ namespace starsky.foundation.worker.Services
         protected override async Task ExecuteAsync(
             CancellationToken stoppingToken)
         {
-
-            Console.WriteLine("Queued Hosted Service is starting.");
+	        _logger.LogInformation("Queued Hosted Service is starting.");  
             
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -37,14 +38,13 @@ namespace starsky.foundation.worker.Services
                 }
                 catch (Exception exception)
                 {
-                    Console.WriteLine($"Error occurred executing {nameof(workItem)}.");
-	                Console.WriteLine(exception);
+	                _logger.LogError(exception,  
+		                "Error occurred executing {WorkItem}.", nameof(workItem));
 	                _telemetryService?.TrackException(exception);
                 }
             }
 
-            Console.WriteLine("Queued Hosted Service is stopping.");
+            _logger.LogInformation("Queued Hosted Service is stopping.");
         }
     }
-    #endregion
 }
