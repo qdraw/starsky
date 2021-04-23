@@ -54,6 +54,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task BackgroundTask(string subPath)
 		{
 			var updatedList = await _synchronize.Sync(subPath, false);
+			_query.CacheUpdateItem(updatedList);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			_cache.Remove(QueryCacheName + subPath);
