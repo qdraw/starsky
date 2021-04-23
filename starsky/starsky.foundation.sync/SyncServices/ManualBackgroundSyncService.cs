@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
@@ -9,7 +9,6 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
-using starsky.foundation.worker.Services;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -19,22 +18,19 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly ISynchronize _synchronize;
 		private readonly IQuery _query;
 		private readonly IWebSocketConnectionsService _connectionsService;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IMemoryCache _cache;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
 			IWebSocketConnectionsService connectionsService, 
-			IBackgroundTaskQueue bgTaskQueue,
 			IMemoryCache cache)
 		{
 			_synchronize = synchronize;
 			_connectionsService = connectionsService;
-			_bgTaskQueue = bgTaskQueue;
 			_query = query;
 			_cache = cache;
 		}
 
-		private const string QueryCacheName = "ManualSync_";
+		internal const string QueryCacheName = "ManualSync_";
 		
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
 		{
@@ -49,17 +45,18 @@ namespace starsky.foundation.sync.SyncServices
 
 			_cache.Set(QueryCacheName + subPath, true, 
 				new TimeSpan(0,2,0));
-
-			// Update >
-			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-			{
-				var updatedList = await _synchronize.Sync(fileIndexItem.FilePath, false);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
-					DefaultJsonSerializer.CamelCase), token);
-				_cache.Remove(QueryCacheName + subPath);
-			});
+			
+			await Task.Factory.StartNew(() => BackgroundTask(fileIndexItem.FilePath));
 
 			return FileIndexItem.ExifStatus.Ok;
+		}
+
+		internal async Task BackgroundTask(string subPath)
+		{
+			var updatedList = await _synchronize.Sync(subPath, false);
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			_cache.Remove(QueryCacheName + subPath);
 		}
 	}
 }
