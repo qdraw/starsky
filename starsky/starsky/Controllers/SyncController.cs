@@ -108,13 +108,14 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Do a file sync in a background process
+        /// Do a file sync in a background process (replace with /api/synchronize)
         /// </summary>
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
         /// <response code="200">started sync as background job</response>
         /// <response code="401">User unauthorized</response>
         [HttpPost("/api/sync")]
+        [Obsolete("replace with /api/synchronize")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]	    
