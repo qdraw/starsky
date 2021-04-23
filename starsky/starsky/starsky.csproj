@@ -83,6 +83,7 @@
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
+        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
         <ProjectReference Include="..\starskycore\starskycore.csproj" />
     </ItemGroup>
     <ItemGroup>

@@ -20,9 +20,9 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Interfaces;
-using starskycore.Services;
 using starskycore.ViewModels;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -155,7 +155,9 @@ namespace starskytest.Controllers
 				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
+#pragma warning disable 0618
 			var result = controller.SyncIndex("/") as JsonResult;
+#pragma warning restore 0618
 			var list = result.Value as List<SyncViewModel>;
 			var path = list.FirstOrDefault(p => p.FilePath == "/test.jpg").FilePath;
 			Assert.AreEqual("/test.jpg", path);
@@ -178,7 +180,10 @@ namespace starskytest.Controllers
 				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
+#pragma warning disable 0618
 			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
+#pragma warning restore 0618
+			
 			var list = result.Value as List<SyncViewModel>;
 			var path = list.FirstOrDefault(p => p.FilePath == _createAnImage.DbPath).FilePath;
 
@@ -202,7 +207,10 @@ namespace starskytest.Controllers
 				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
+#pragma warning disable 0618
 			var result = controller.SyncIndex("/404") as JsonResult;
+#pragma warning restore 0618
+			
 			var list = result.Value as List<SyncViewModel>;
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, list[0].Status);

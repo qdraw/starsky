@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 
 namespace starskytest.FakeMocks
 {
@@ -14,7 +14,13 @@ namespace starskytest.FakeMocks
 
 		public Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			Func<CancellationToken, Task> sayHello = GetMessage;
+			return Task.FromResult(sayHello);
+		}
+
+		private Task GetMessage(CancellationToken arg)
+		{
+			return Task.CompletedTask;
 		}
 	}
 }

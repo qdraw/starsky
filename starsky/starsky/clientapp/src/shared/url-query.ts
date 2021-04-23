@@ -315,11 +315,15 @@ export class UrlQuery {
   };
 
   /**
-   * Url of Sync (no need to encode url)
-   * @param parentFolder no need to encode url
+   * Url of Sync (no need to encode parentFolder before input)
+   * @param parentFolder no need to encode this (done in this method)
    */
   public UrlSync(parentFolder: string): string {
-    return this.prefix + "/api/sync?f=" + new URLPath().encodeURI(parentFolder);
+    return (
+      this.prefix +
+      "/api/synchronize?f=" +
+      new URLPath().encodeURI(parentFolder)
+    );
   }
 
   /**

@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.SyncInterfaces;
 
@@ -11,17 +9,15 @@ namespace starsky.Controllers
 	[Authorize]
 	public class SynchronizeController : Controller
 	{
-		private readonly ISynchronize _synchronize;
-		private readonly IQuery _query;
+		private readonly IManualBackgroundSyncService _manualBackgroundSyncService;
 
-		public SynchronizeController(ISynchronize synchronize, IQuery query )
+		public SynchronizeController(IManualBackgroundSyncService manualBackgroundSyncService)
 		{
-			_synchronize = synchronize;
-			_query = query;
+			_manualBackgroundSyncService = manualBackgroundSyncService;
 		}
 
 		/// <summary>
-		/// Experimental/Alpha API to sync data! Please use /api/sync 
+		/// Faster API to Check if directory is changed (not recursive)
 		/// </summary>
 		/// <param name="f">subPaths split by dot comma</param>
 		/// <returns>list of changed files</returns>
@@ -34,18 +30,15 @@ namespace starsky.Controllers
 		[Produces("application/json")]	   
 		public async Task<IActionResult> Index(string f)
 		{
-			var fileIndexItem = await _query.GetObjectByFilePathAsync(f);
-			if ( fileIndexItem == null )
+			var status = await _manualBackgroundSyncService.ManualSync(f);
+			switch ( status )
 			{
-				return NotFound(new List<FileIndexItem>
-				{
-					new FileIndexItem(f)
-					{
-						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
-					}
-				});
+				case FileIndexItem.ExifStatus.NotFoundNotInIndex:
+					return NotFound("Failed");
+				case FileIndexItem.ExifStatus.OperationNotSupported:
+					return BadRequest("Already started");
 			}
-			return Ok(await _synchronize.Sync(fileIndexItem.FilePath));
+			return Ok("Job created");
 		}
 	}
 }

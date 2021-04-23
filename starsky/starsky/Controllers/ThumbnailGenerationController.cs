@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.webtelemetry.Interfaces;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 
 namespace starsky.Controllers
 {

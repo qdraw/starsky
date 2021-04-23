@@ -15,8 +15,8 @@ using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Services;
 using starskycore.Interfaces;
-using starskycore.Services;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers
@@ -108,13 +108,14 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Do a file sync in a background process
+        /// Do a file sync in a background process (replace with /api/synchronize)
         /// </summary>
         /// <param name="f">subPaths split by dot comma</param>
         /// <returns>list of changed files</returns>
         /// <response code="200">started sync as background job</response>
         /// <response code="401">User unauthorized</response>
         [HttpPost("/api/sync")]
+        [Obsolete("replace with /api/synchronize")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]	    
@@ -124,59 +125,56 @@ namespace starsky.Controllers
             // the result list
             var syncResultsList = new List<SyncViewModel>();
 
-            for (var i = 0; i < inputFilePaths.Count; i++)
+            foreach ( var inputSubPath in inputFilePaths )
             {
-                var subPath = inputFilePaths[i];
-	            subPath = PathHelper.RemoveLatestSlash(subPath);
+	            var subPath = PathHelper.RemoveLatestSlash(inputSubPath);
 	            if ( subPath == string.Empty ) subPath = "/";
 
 	            var folderStatus = _iStorage.IsFolderOrFile(subPath);
-				if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-				{
-					var syncItem = new SyncViewModel
-					{
-						FilePath = subPath,
-						Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-					};
-					syncResultsList.Add(syncItem);
-				}
-				else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
-				{
-					var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
-						.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
+	            if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+	            {
+		            var syncItem = new SyncViewModel
+		            {
+			            FilePath = subPath,
+			            Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+		            };
+		            syncResultsList.Add(syncItem);
+	            }
+	            else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
+	            {
+		            var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
+			            .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-					var dirs = _iStorage.GetDirectoryRecursive(subPath);
-					filesAndFoldersInDirectoryArray.AddRange(dirs);
+		            var dirs = _iStorage.GetDirectoryRecursive(subPath);
+		            filesAndFoldersInDirectoryArray.AddRange(dirs);
 					
-					foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
-					{
-						var syncItem = new SyncViewModel
-						{
-							FilePath = fileInDirectory,
-							Status = FileIndexItem.ExifStatus.Ok
-						};
-						syncResultsList.Add(syncItem);
-					}
-				}
-				else // single file
-				{
-					var syncItem = new SyncViewModel
-					{
-						FilePath = subPath,
-						Status = FileIndexItem.ExifStatus.Ok
-					};
-					syncResultsList.Add(syncItem);
-				}
-	        
+		            foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
+		            {
+			            var syncItem = new SyncViewModel
+			            {
+				            FilePath = fileInDirectory,
+				            Status = FileIndexItem.ExifStatus.Ok
+			            };
+			            syncResultsList.Add(syncItem);
+		            }
+	            }
+	            else // single file
+	            {
+		            var syncItem = new SyncViewModel
+		            {
+			            FilePath = subPath,
+			            Status = FileIndexItem.ExifStatus.Ok
+		            };
+		            syncResultsList.Add(syncItem);
+	            }
 	            // Update >
-				_bgTaskQueue.QueueBackgroundWorkItem(async token =>
-				{
-					_sync.SyncFiles(subPath,false);
-					Console.WriteLine(">>> running clear cache "+ subPath);
-					_query.RemoveCacheParentItem(subPath);
-				});
-			}
-			
+	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
+	            {
+		            _sync.SyncFiles(subPath,false);
+		            Console.WriteLine(">>> running clear cache "+ subPath);
+		            _query.RemoveCacheParentItem(subPath);
+	            });
+            }
 			return Json(syncResultsList);
         }
 			   

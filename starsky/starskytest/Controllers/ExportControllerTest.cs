@@ -20,13 +20,15 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.webtelemetry.Interfaces;
+using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
-using starskycore.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
@@ -147,6 +149,8 @@ namespace starskytest.Controllers
 			IServiceCollection services = new ServiceCollection();
 			services.AddHostedService<BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			var serviceProvider = services.BuildServiceProvider();
 
 			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;

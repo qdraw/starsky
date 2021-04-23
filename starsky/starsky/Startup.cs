@@ -20,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using starsky.feature.health.HealthCheck;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
@@ -39,9 +40,11 @@ namespace starsky
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
+        private readonly IHostEnvironment _hostEnvironment;
 
-		public Startup()
+        public Startup(IHostEnvironment hostEnvironment = null)
 		{
+			_hostEnvironment = hostEnvironment;
 			_configuration = SetupAppSettings.AppSettingsToBuilder();
 		}
 
@@ -52,10 +55,24 @@ namespace starsky
 
 	        // before anything else
 			EnableCompression(services);
-	        
+			
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
 
+            services.AddLogging(logging =>
+            {
+	            logging.ClearProviders();
+	            logging.AddConsole();
+	            
+	            // Skip when is Development
+	            if ( string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || _hostEnvironment.IsDevelopment()) return;
+	            // Optional: Apply filters to configure LogLevel Information or above is sent to
+	            // Application Insights for all categories.
+	            logging.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>
+		            (string.Empty, LogLevel.Information);
+	            logging.AddApplicationInsights(_appSettings.ApplicationInsightsInstrumentationKey);
+            });
+            
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();

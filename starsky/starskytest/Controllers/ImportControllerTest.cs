@@ -19,7 +19,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 

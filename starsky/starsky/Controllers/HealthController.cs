@@ -11,11 +11,9 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using starsky.foundation.platform.Exceptions;
 using starsky.foundation.platform.Extensions;
-using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.VersionHelpers;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Interfaces;
-using starskycore.Helpers;
 using starskycore.ViewModels;
 
 [assembly: InternalsVisibleTo("starskytest")]

@@ -27,7 +27,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.SyncServices;
-using starskycore.Services;
+using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 using starskytest.Models;
