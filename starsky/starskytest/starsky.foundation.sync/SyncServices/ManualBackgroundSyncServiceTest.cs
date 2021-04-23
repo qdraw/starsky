@@ -34,7 +34,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
 		}
 		
-				
 		[TestMethod]
 		public async Task IgnoreWhenCacheValue()
 		{
