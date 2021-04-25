@@ -48,6 +48,11 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Front-end_  In select mode press delete key should move to trash in archive & search view (PR #360 / Issue #357)
 - [x]   (Fixed)  _Back-end_ Remove check if byte size is the same for example when updating colorClass is the same (PR #362)
 - [x]   (Fixed)  _Back-end_ Change Byte size to datetime last-edited (PR #362)
+- [x]   (Changed)  _Back-end_ Need to re-sync thumbnails due changed fileHash (PR #362 & PR #361)
+- [x]   (Changed)  _Back-end_ When run sync v2, only check on last edit time instead of filesize (PR #362 & PR #361)
+- [x]   (Added) _Back-end_ Added logs to Application Insights when key is configured (PR #363)
+- [x]   (Added) _Back-end_ Add manual sync for new api (/api/synchronize) and update via websockets (PR #363)
+- [x]   (Added) _Front-end_ Change manual sync to new api (/api/synchronize) (PR #363)
 
 # version 0.4.7 - 2021-03-11
 - [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls (PR #332)
