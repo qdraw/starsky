@@ -13,6 +13,7 @@ import { URLPath } from "../../../shared/url-path";
 import { UrlQuery } from "../../../shared/url-query";
 import Modal from "../../atoms/modal/modal";
 import Preloader from "../../atoms/preloader/preloader";
+import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button";
 
 interface IModalDisplayOptionsProps {
   isOpen: boolean;
@@ -30,10 +31,7 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
     "Handmatig synchroniseren",
     "Synchronize manually"
   );
-  const MessageForceSync = language.text(
-    "Handmatig synchroniseren van huidige map",
-    "Synchronize current directory manually"
-  );
+
   const MessageRemoveCache = language.text(
     "Verwijder cache van huidige map",
     "Refresh cache of current directory"
@@ -136,31 +134,6 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
   useInterval(() => fetchGeoSyncStatus(), 10000);
 
-  function forceSync() {
-    var parentFolder = props.parentFolder ? props.parentFolder : "/";
-    setIsLoading(true);
-    new FileListCache().CacheCleanEverything();
-
-    var urlSync = new UrlQuery().UrlSync(parentFolder);
-    FetchPost(urlSync, "").then((_) => {
-      setTimeout(() => {
-        var url = new UrlQuery().UrlIndexServerApi(
-          new URLPath().StringToIUrl(history.location.search)
-        );
-        FetchGet(url).then((connectionResult) => {
-          var forceSyncResult = new CastToInterface().MediaArchive(
-            connectionResult.data
-          );
-          var payload = forceSyncResult.data as IArchiveProps;
-          if (payload.fileIndexItems) {
-            dispatch({ type: "force-reset", payload });
-          }
-          props.handleExit();
-        });
-      }, 15000);
-    });
-  }
-
   function manualThumbnailSync() {
     var parentFolder = props.parentFolder ? props.parentFolder : "/";
     var bodyParams = new URLSearchParams();
@@ -192,13 +165,12 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         {MessageSynchronizeManually}
       </div>
       <div className="modal content--text">
-        <button
-          className="btn btn--default"
-          data-test="force-sync"
-          onClick={() => forceSync()}
-        >
-          {MessageForceSync}
-        </button>
+        <ForceSyncWaitButton
+          propsParentFolder={props.parentFolder}
+          historyLocationSearch={history.location.search}
+          callback={() => props.handleExit()}
+          dispatch={dispatch}
+        ></ForceSyncWaitButton>
         <button
           className="btn btn--default"
           data-test="remove-cache"
