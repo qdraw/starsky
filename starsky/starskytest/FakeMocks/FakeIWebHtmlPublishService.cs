@@ -8,6 +8,8 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIWebHtmlPublishService : IWebHtmlPublishService
 	{
+		public List<string> ItemNamesGenerateZip { get; set; } = new List<string>();
+		
 		public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList, string publishProfileName, string itemName,
 			string outputParentFullFilePathFolder, bool moveSourceFiles = false)
 		{
@@ -17,6 +19,7 @@ namespace starskytest.FakeMocks
 		public async Task GenerateZip(string fullFileParentFolderPath, string itemName, Dictionary<string, bool> renderCopyResult,
 			bool deleteFolderAfterwards = false)
 		{
+			ItemNamesGenerateZip.Add(itemName);
 		}
 	}
 }

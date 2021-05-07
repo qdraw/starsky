@@ -116,6 +116,24 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
+		{
+			var fakeBg = new FakeIBackgroundTaskQueue();
+			var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
+			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
+				fakeIWebHtmlPublishService, 
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
+				new FakeSelectorStorage(),
+				fakeBg, new FakeIWebLogger());
+			
+			await controller.PublishCreate("/test.jpg", 
+				"test", "test", true);
+			
+			Assert.AreEqual(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip.Count);
+			Assert.AreEqual("test", fakeIWebHtmlPublishService.ItemNamesGenerateZip[0]);
+		}
+		
+		[TestMethod]
 		public async Task PublishCreate_NotFound()
 		{
 			var controller = new PublishController(new AppSettings(), 
