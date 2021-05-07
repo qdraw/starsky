@@ -19,6 +19,8 @@ type ForceSyncWaitButtonPropTypes = {
   dispatch: React.Dispatch<ArchiveAction>;
 };
 
+export const ForceSyncWaitTime = 10000;
+
 /**
  * Helper to get new content in the current view
  * @param param0 where to fetch to, dispatch and callback to close
@@ -80,7 +82,7 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
           historyLocationSearch,
           callback
         });
-      }, 10000);
+      }, ForceSyncWaitTime);
     });
 
     return () => {
