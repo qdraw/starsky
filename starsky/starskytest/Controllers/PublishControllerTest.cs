@@ -91,7 +91,7 @@ namespace starskytest.Controllers
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), new FakeIMetaInfo(null), new FakeSelectorStorage(),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = controller.PublishGet() as JsonResult;
 			var result = actionResult.Value as IEnumerable<string>;
@@ -106,13 +106,31 @@ namespace starskytest.Controllers
 				new FakeIWebHtmlPublishService(), 
 				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
 				new FakeSelectorStorage(),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
 			var result = actionResult.Value as string;
 			
 			Assert.AreEqual("test", result);
+		}
+		
+		[TestMethod]
+		public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
+		{
+			var fakeBg = new FakeIBackgroundTaskQueue();
+			var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
+			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
+				fakeIWebHtmlPublishService, 
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
+				new FakeSelectorStorage(),
+				fakeBg, new FakeIWebLogger());
+			
+			await controller.PublishCreate("/test.jpg", 
+				"test", "test", true);
+			
+			Assert.AreEqual(1, fakeIWebHtmlPublishService.ItemNamesGenerateZip.Count);
+			Assert.AreEqual("test", fakeIWebHtmlPublishService.ItemNamesGenerateZip[0]);
 		}
 		
 		[TestMethod]
@@ -126,7 +144,7 @@ namespace starskytest.Controllers
 						{Status = FileIndexItem.ExifStatus.NotFoundNotInIndex}}
 					),
 				new FakeSelectorStorage(),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = await controller.PublishCreate("/not-found.jpg", 
 				"test", "test", true) as NotFoundObjectResult;
@@ -145,7 +163,7 @@ namespace starskytest.Controllers
 				new FakeIWebHtmlPublishService(), 
 				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
 				new FakeSelectorStorage(storage),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", false) as ConflictObjectResult;
@@ -168,7 +186,7 @@ namespace starskytest.Controllers
 					new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}
 				}),
 				new FakeSelectorStorage(storage),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			
 			var actionResult = await controller.PublishCreate("/test.jpg", 
 				"test", "test", true) as JsonResult;
@@ -186,7 +204,7 @@ namespace starskytest.Controllers
 				new FakeIWebHtmlPublishService(), 
 				new FakeIMetaInfo(new List<FileIndexItem>()),
 				new FakeSelectorStorage(),
-				_bgTaskQueue);
+				_bgTaskQueue, new FakeIWebLogger());
 			var actionResult = controller.Exist(string.Empty)as JsonResult;
 			var result = actionResult.Value is bool;
 			Assert.IsTrue(result);
