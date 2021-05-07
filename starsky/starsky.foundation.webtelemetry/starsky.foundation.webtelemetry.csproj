@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{3b84ed27-fef0-4c2b-8cb5-04b7fdb613f8}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.8</Version>
+        <Version>0.4.9</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
     </PropertyGroup>
     
