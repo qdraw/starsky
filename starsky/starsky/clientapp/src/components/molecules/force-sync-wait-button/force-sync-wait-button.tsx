@@ -19,6 +19,30 @@ type ForceSyncWaitButtonPropTypes = {
   dispatch: React.Dispatch<ArchiveAction>;
 };
 
+/**
+ * Helper to get new content in the current view
+ * @param param0 where to fetch to, dispatch and callback to close
+ */
+export function ForceSyncRequestNewContent({
+  historyLocationSearch,
+  dispatch,
+  callback
+}: ForceSyncWaitButtonPropTypes) {
+  const url = new UrlQuery().UrlIndexServerApi(
+    new URLPath().StringToIUrl(historyLocationSearch)
+  );
+  FetchGet(url).then((connectionResult) => {
+    var forceSyncResult = new CastToInterface().MediaArchive(
+      connectionResult.data
+    );
+    var payload = forceSyncResult.data as IArchiveProps;
+    if (payload.fileIndexItems) {
+      dispatch({ type: "force-reset", payload });
+    }
+    callback();
+  });
+}
+
 const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes> = ({
   propsParentFolder,
   historyLocationSearch,
@@ -32,22 +56,6 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
 
     var urlSync = new UrlQuery().UrlSync(parentFolder);
     return FetchPost(urlSync, "");
-  }
-
-  function requestNewContent() {
-    const url = new UrlQuery().UrlIndexServerApi(
-      new URLPath().StringToIUrl(historyLocationSearch)
-    );
-    FetchGet(url).then((connectionResult) => {
-      var forceSyncResult = new CastToInterface().MediaArchive(
-        connectionResult.data
-      );
-      var payload = forceSyncResult.data as IArchiveProps;
-      if (payload.fileIndexItems) {
-        dispatch({ type: "force-reset", payload });
-      }
-      callback();
-    });
   }
 
   const settings = useGlobalSettings();
@@ -67,7 +75,11 @@ const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes>
     let timeout: NodeJS.Timeout;
     forceSync().then(() => {
       timeout = setTimeout(() => {
-        requestNewContent();
+        ForceSyncRequestNewContent({
+          dispatch,
+          historyLocationSearch,
+          callback
+        });
       }, 10000);
     });
 
