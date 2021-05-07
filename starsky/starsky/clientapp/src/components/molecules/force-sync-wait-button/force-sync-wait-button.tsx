@@ -25,19 +25,19 @@ export const ForceSyncWaitTime = 10000;
  * Helper to get new content in the current view
  * @param param0 where to fetch to, dispatch and callback to close
  */
-export function ForceSyncRequestNewContent({
+export async function ForceSyncRequestNewContent({
   historyLocationSearch,
   dispatch,
   callback
-}: ForceSyncWaitButtonPropTypes) {
+}: ForceSyncWaitButtonPropTypes): Promise<void> {
   const url = new UrlQuery().UrlIndexServerApi(
     new URLPath().StringToIUrl(historyLocationSearch)
   );
   FetchGet(url).then((connectionResult) => {
-    var forceSyncResult = new CastToInterface().MediaArchive(
+    const forceSyncResult = new CastToInterface().MediaArchive(
       connectionResult.data
     );
-    var payload = forceSyncResult.data as IArchiveProps;
+    const payload = forceSyncResult.data as IArchiveProps;
     if (payload.fileIndexItems) {
       dispatch({ type: "force-reset", payload });
     }
