@@ -91,8 +91,8 @@ const DetailViewGpx: React.FC = () => {
 
   // Due a strict CSP policy the following line is not allowed ==>
   // https://github.com/Leaflet/Leaflet/blob/e4b49000843687046cb127811d395394eb93e931/src/core/Util.js#L198
-  new LeafletEmptyImageUrlGridLayer();
-  new LeafletEmptyImageUrlTileLayer("51:12:1");
+  new LeafletEmptyImageUrlGridLayer().init();
+  new LeafletEmptyImageUrlTileLayer("51:12:1").init();
 
   // when having to gpx files next and you browse though it
   const mapReference = useRef<HTMLDivElement>(null);

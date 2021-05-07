@@ -13,6 +13,10 @@ export class LeafletEmptyImageUrlGridLayer extends GridLayer {
     L.GridLayer.include({ _tileReady: this._tileReady });
   }
 
+  public init() {
+    return true;
+  }
+
   public _removeTile(key: string) {
     var tile = this._tiles[key];
     if (!tile) {

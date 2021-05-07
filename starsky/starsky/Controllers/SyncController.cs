@@ -73,12 +73,14 @@ namespace starsky.Controllers
 			        syncResultsList.Add(toAddStatus);
 			        continue;
 		        }
-		        
+
+		        await _query.AddItemAsync(new FileIndexItem(subPath)
+		        {
+			        IsDirectory = true
+		        });
+			        
 		        // add to fs
 		        _iStorage.CreateDirectory(subPath);
-		        
-		        // add to db
-		        _sync.AddSubPathFolder(subPath);
 		        
 		        syncResultsList.Add(toAddStatus);
 	        }

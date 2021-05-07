@@ -11,6 +11,10 @@ export class LeafletEmptyImageUrlTileLayer extends TileLayer {
     L.TileLayer.include({ _abortLoading: this._abortLoading });
   }
 
+  public init() {
+    return true;
+  }
+
   /**
    * Stop the loading
    * Source: https://github.com/Leaflet/Leaflet/issues/6113#issuecomment-377672239
