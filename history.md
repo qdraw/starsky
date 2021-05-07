@@ -54,6 +54,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Add manual sync for new api (/api/synchronize) and update via websockets (PR #363)
 - [x]   (Added) _Front-end_ Change manual sync to new api (/api/synchronize) (PR #363)
 - [x]   (Fixed) _Front-end_ Force sync is not endless loading after socket update (Issue #371 & PR #375)
+- [x]   (Fixed) _Back-end_ Publish name with underscore breaks publish api (Issue #369 & PR #376)
 
 # version 0.4.7 - 2021-04-11
 - [x]   (Changed) _Back-end_  add cache for health check and timeout for 10 seconds on health calls (PR #332)
