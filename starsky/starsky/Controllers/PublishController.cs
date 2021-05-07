@@ -8,6 +8,7 @@ using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -24,10 +25,11 @@ namespace starsky.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _hostStorage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IWebLogger _webLogger;
 
 		public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, 
 			IWebHtmlPublishService publishService, IMetaInfo metaInfo, ISelectorStorage selectorStorage,
-			IBackgroundTaskQueue queue)
+			IBackgroundTaskQueue queue, IWebLogger webLogger)
 		{
 			_appSettings = appSettings;
 			_publishPreflight = publishPreflight;
@@ -35,6 +37,7 @@ namespace starsky.Controllers
 			_metaInfo = metaInfo;
 			_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_bgTaskQueue = queue;
+			_webLogger = webLogger;
 		}
 
 		/// <summary>
@@ -70,13 +73,13 @@ namespace starsky.Controllers
 		public async Task<IActionResult> PublishCreate(string f, string itemName, 
 			string publishProfileName, bool force = false)
 		{
-			Console.WriteLine("Press publish: " + f + DateTime.UtcNow);
+			_webLogger.LogInformation($"[/api/publish/create] Press publish: {itemName} {f} {DateTime.UtcNow}");
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
 			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 				return NotFound(info);
 
-			var slugItemName = _appSettings.GenerateSlug(itemName);
+			var slugItemName = _appSettings.GenerateSlug(itemName, true);
 			var location = Path.Combine(_appSettings.TempFolder,slugItemName );
 			
 			if ( CheckIfNameExist(slugItemName) )
@@ -92,6 +95,7 @@ namespace starsky.Controllers
 					publishProfileName, itemName, location);
 				await _publishService.GenerateZip(_appSettings.TempFolder, itemName, 
 					renderCopyResult,true );	
+				_webLogger.LogInformation($"[/api/publish/create] done: {itemName} {DateTime.UtcNow}");
 			});
 			
 			// Get the zip 	by	[HttpGet("/export/zip/{f}.zip")]
