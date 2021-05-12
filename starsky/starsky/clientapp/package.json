@@ -106,6 +106,6 @@
     ]
   },
   "devDependencies": {
-    "@storybook/react": "^6.1.21"
+    "@storybook/react": "^6.2.9"
   }
 }
