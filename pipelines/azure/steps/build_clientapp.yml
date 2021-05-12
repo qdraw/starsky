@@ -26,7 +26,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} -target="Client"'
+      arguments: '${{ parameters.runtimeArg }} --target="Client"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -37,7 +37,7 @@ steps:
       BUILD_SOURCEBRANCH: $(Build.SourceBranch)
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }}  --no-unit-tests -target="Client"'
+      arguments: '${{ parameters.runtimeArg }}  --no-unit-tests --target="Client"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 

@@ -7,6 +7,6 @@ steps:
     displayName: 'Cake Zip'
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} -target="Zip"'
+      arguments: '${{ parameters.runtimeArg }} --target="Zip"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
