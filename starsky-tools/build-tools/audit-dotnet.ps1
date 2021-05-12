@@ -38,6 +38,7 @@ function check-vulnerable($solution) {
   else
   {
     Write-Host "No vulnerable NuGet-packages"
+    return
   }
 }
 
