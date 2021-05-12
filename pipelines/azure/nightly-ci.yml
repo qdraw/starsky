@@ -19,6 +19,12 @@ steps:
     clean: true
     fetchDepth: 1
 
+  - template: /pipelines/azure/steps/audit_dotnet.yml
+    parameters:
+      name: "clientapp_vulnerabilities"
+      displayName: 'Dotnet vulnerabilities check'
+      targetFolder: "$(Build.SourcesDirectory)/starsky/starsky"
+
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
       name: "clientapp_vulnerabilities"
