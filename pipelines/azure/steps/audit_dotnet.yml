@@ -1,6 +1,6 @@
 parameters:
   displayName: ""
-  targetFolder: "$(Build.SourcesDirectory)/starsky/starsky"
+  targetFolder: "$(Build.SourcesDirectory)/starsky"
 
 # pwsh ./starsky-tools/build-tools/audit-dotnet.ps1 -targetFolder path
 
