@@ -2,6 +2,8 @@ param (
     [string]$projectDirectory = ""
 )
 
+write-host "audit dotnet"
+
 if($projectDirectory -eq "") {
    $projectDirectory =  Get-Location
 }
