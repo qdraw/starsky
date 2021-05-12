@@ -110,7 +110,7 @@ try {
             $properties | ForEach-Object {
 
                 # // https://github.com/facebook/create-react-app/issues/10945
-                if($($_.Value.url) == "https://npmjs.com/advisories/1693" && $($_.Value.module_name) == "postcss") {
+                if($($_.Value.url) -eq "https://npmjs.com/advisories/1693" && $($_.Value.module_name) -eq "postcss") {
                     write-host "skip postcss issue"
                     continue;
                 }
