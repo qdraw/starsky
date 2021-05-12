@@ -23,17 +23,16 @@ function check-vulnerable($solution) {
 
   $output = $(dotnet list $solution package --vulnerable) 
 
-  $errors = $output | Select-String '>'
+  $errors = $output | Select-String '>' | Where-Object {!$_.ToString().Trim().StartsWith( "<PROJECT | SOLUTION>")}
 
   if ($errors.Count -gt 0)
   {
     foreach ($err in $errors)
     {
-        if($err.ToString().Trim().StartsWith( "<PROJECT | SOLUTION>")) {
-            continue;
-        }
         Write-Host "##vso[task.logissue type=error]Error with $err"
     }
+
+    write-host "Task failed"
     exit 1
   }
   else
