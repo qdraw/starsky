@@ -16,7 +16,7 @@ Windows 32 bits: 'win7-x86'
 */
 
 // For NPM
-#addin "Cake.Npm&version=0.17.0"
+#addin "Cake.Npm&version=1.0.0"
 
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
@@ -190,6 +190,16 @@ Task("ClientDevelopWatchStart")
         /* npm watcher to start develop server */
         NpmRunScript("start", s => s.FromPath("./starsky/clientapp/"));
     });
+
+Task("ClientDevelopTestWatch")
+    .Does(() =>
+    {
+        /* should NOT be used in build pipeline */
+
+        /* npm watcher to run jest tester as watcher */
+        NpmRunScript("test", s => s.FromPath("./starsky/clientapp/"));
+    });
+
 
 // npm run test:ci
 Task("ClientTest")
