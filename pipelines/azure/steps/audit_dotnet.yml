@@ -6,6 +6,13 @@ parameters:
 
 steps:
   - task: PowerShell@2
+    displayName: "${{ parameters.targetFolder }}"
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host ${{ parameters.targetFolder }}
+
+  - task: PowerShell@2
     displayName: ${{ parameters.displayName }}
     inputs:
       targetType: filePath
