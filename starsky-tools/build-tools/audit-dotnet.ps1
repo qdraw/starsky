@@ -2,11 +2,11 @@ param (
     [string]$projectDirectory = ""
 )
 
-write-host "audit dotnet"
-
 if($projectDirectory -eq "") {
    $projectDirectory =  Get-Location
 }
+
+write-host "audit dotnet $projectDirectory"
 
 # Check .NET version
 $version = dotnet --version
@@ -49,4 +49,9 @@ foreach ($solution in $solutions)
 {
     $path = Join-Path -Path $projectDirectory -ChildPath  $solution
     check-vulnerable -solution  $path
+}
+
+if ($solutions.Count -gt 0)
+{
+    write-host "no solutions found"
 }
