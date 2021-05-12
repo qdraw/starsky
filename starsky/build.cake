@@ -181,6 +181,16 @@ Task("ClientBuild")
         NpmRunScript("build", s => s.FromPath("./starsky/clientapp/"));
   });
 
+// npm run start
+Task("ClientDevelopWatchStart")
+    .Does(() =>
+    {
+        /* should NOT be used in build pipeline */
+
+        /* npm watcher to start develop server */
+        NpmRunScript("start", s => s.FromPath("./starsky/clientapp/"));
+    });
+
 // npm run test:ci
 Task("ClientTest")
     .Does(() =>
