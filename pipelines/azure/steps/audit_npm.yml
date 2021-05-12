@@ -6,6 +6,7 @@ parameters:
 
 # cd root of repo
 # pwsh ./starsky-tools/build-tools/audit-npm.ps1 -failOnVulnLevel 'moderate' -action outdated -depth 0 -targetFolder starsky/starsky/clientapp/
+# pwsh ./starsky-tools/build-tools/audit-npm.ps1 -failOnVulnLevel 'moderate' -action 'find-vulnerabilities' -depth 0 -targetFolder starsky/starsky/clientapp/
 
 steps:
   - task: PowerShell@2

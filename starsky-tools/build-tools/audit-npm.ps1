@@ -227,38 +227,40 @@ try {
             $attributionsList += $(Get-Content -Path $license -Encoding UTF8 -Raw)
             $attributionsList += "`r`n"
         }
+
+        $attributionsList | Out-File -FilePath $attributionsOutputFile
+        if (-Not $silent) {
+            if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
+                Write-Host "--------------------"
+                Write-Host "Vulnerability check: $vulnCheckStatus"
+                Write-Host "--------------------"
+                Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
+                if ($($findingsVuln.Count) -gt 0) {
+                    Write-Host $($findingsVuln | ConvertTo-Json)
+                }
+            }
+            if (($action -eq "outdated") -Or ($action -eq "all")) {
+                Write-Host "--------------------"
+                Write-Host "Outdated check: $outdatedCheckStatus"
+                Write-Host "--------------------"
+                Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
+                if ($($findingsOutdated.Count) -gt 0) {
+                    Write-Host $($findingsOutdated | ConvertTo-Json)
+                }
+            }
+            if (($action -eq "check-licenses") -Or ($action -eq "all")) {
+                Write-Host "-------------------------"
+                Write-Host "License compliance check: $licenseCheckStatus"
+                Write-Host "-------------------------"
+                Write-Host "License breakdown:"
+                foreach ($line in $summary) {
+                    # otherwise, line breaks are gone :/
+                    Write-Host "$line"
+                }
+            }
+        }
     }
-    $attributionsList | Out-File -FilePath $attributionsOutputFile
-    if (-Not $silent) {
-        if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
-            Write-Host "--------------------"
-            Write-Host "Vulnerability check: $vulnCheckStatus"
-            Write-Host "--------------------"
-            Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
-            if ($($findingsVuln.Count) -gt 0) {
-                Write-Host $($findingsVuln | ConvertTo-Json)
-            }
-        }
-        if (($action -eq "outdated") -Or ($action -eq "all")) {
-            Write-Host "--------------------"
-            Write-Host "Outdated check: $outdatedCheckStatus"
-            Write-Host "--------------------"
-            Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
-            if ($($findingsOutdated.Count) -gt 0) {
-                Write-Host $($findingsOutdated | ConvertTo-Json)
-            }
-        }
-        if (($action -eq "check-licenses") -Or ($action -eq "all")) {
-            Write-Host "-------------------------"
-            Write-Host "License compliance check: $licenseCheckStatus"
-            Write-Host "-------------------------"
-            Write-Host "License breakdown:"
-            foreach ($line in $summary) {
-                # otherwise, line breaks are gone :/
-                Write-Host "$line"
-            }
-        }
-    }
+
     if ($outputFileVuln) {
         $findingsVuln | ConvertTo-Json | Out-File $outputFileVuln -Encoding ASCII
     }
