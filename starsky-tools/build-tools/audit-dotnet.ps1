@@ -9,7 +9,7 @@ if($projectDirectory -eq "") {
 write-host "audit dotnet $projectDirectory"
 
 # Check .NET version
-$version = dotnet --version
+$version = $(dotnet --version)
 if($version.StartsWith("3") || $version.StartsWith("2") || $version.StartsWith("1")) {
     write-host "You need .NET SDK 5.0.200 or newer"
     # https://devblogs.microsoft.com/nuget/how-to-scan-nuget-packages-for-security-vulnerabilities/
@@ -18,10 +18,9 @@ if($version.StartsWith("3") || $version.StartsWith("2") || $version.StartsWith("
 
 function check-vulnerable($solution) {
 
-  write-host "run command: "
-  write-host dotnet list $solution package --vulnerable 
+  write-host "run command: dotnet list $solution package --vulnerable"
 
-  $output = dotnet list $solution package --vulnerable 
+  $output = $(dotnet list $solution package --vulnerable) 
 
   $errors = $output | Select-String '>'
 
@@ -43,15 +42,16 @@ function check-vulnerable($solution) {
 }
 
 # current
-$solutions = Get-ChildItem -Path $projectDirectory/** -Name -Include *.sln
+# $solutions = Get-ChildItem -Path $projectDirectory/** -Name -Include *.sln
+[array]$solutions=Get-ChildItem -Path $projectDirectory/** -Include *.sln | select -expand fullname
 
-foreach ($solution in $solutions)
-{
-    $path = Join-Path -Path $projectDirectory -ChildPath  $solution
-    check-vulnerable -solution  $path
-}
-
-if ($solutions.Count -gt 0)
+if ($solutions.Length -eq 0)
 {
     write-host "no solutions found"
 }
+
+foreach ($solution in $solutions)
+{
+    check-vulnerable -solution  $solution
+}
+
