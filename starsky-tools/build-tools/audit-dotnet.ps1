@@ -1,13 +1,13 @@
 param (
-    [Parameter(Mandatory=$True)][string]$projectDirectory
+    [Parameter(Mandatory=$True)][string]$targetFolder
 )
 
-if($projectDirectory -eq ".") {
+if($targetFolder -eq ".") {
    write-host "fallback to Get-Location"
-   $projectDirectory =  Get-Location
+   $targetFolder =  Get-Location
 }
 
-write-host "audit dotnet $projectDirectory"
+write-host "audit dotnet $targetFolder"
 
 # Check .NET version
 $version = $(dotnet --version)
@@ -42,9 +42,7 @@ function check-vulnerable($solution) {
   }
 }
 
-# current
-# $solutions = Get-ChildItem -Path $projectDirectory/** -Name -Include *.sln
-[array]$solutions=Get-ChildItem -Path $projectDirectory/** -Include *.sln | select -expand fullname
+[array]$solutions=Get-ChildItem -Path $targetFolder/** -Include *.sln | select -expand fullname
 
 if ($solutions.Length -eq 0)
 {
