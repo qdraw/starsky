@@ -16,7 +16,7 @@ Windows 32 bits: 'win7-x86'
 */
 
 // For NPM
-#addin "Cake.Npm&version=0.17.0"
+#addin "Cake.Npm&version=1.0.0"
 
 // Target - The task you want to start. Runs the Default task if not specified.
 var target = Argument("Target", "Default");
