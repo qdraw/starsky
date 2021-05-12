@@ -1,8 +1,8 @@
 param (
-    [string]$projectDirectory = ""
+    [Parameter(Mandatory=$True)][string]$projectDirectory
 )
 
-if($projectDirectory -eq "") {
+if($projectDirectory -eq ".") {
    write-host "fallback to Get-Location"
    $projectDirectory =  Get-Location
 }
