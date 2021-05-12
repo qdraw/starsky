@@ -59,3 +59,5 @@ foreach ($solution in $solutions)
     nuget-restore -solution  $solution
     check-vulnerable -solution  $solution
 }
+
+exit 0
