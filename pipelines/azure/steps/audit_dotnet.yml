@@ -6,7 +6,7 @@ parameters:
 
 steps:
   - task: PowerShell@2
-    displayName: "${{ parameters.targetFolder }}"
+    displayName: "Display info"
     inputs:
       targetType: 'inline'
       script: |
