@@ -108,6 +108,13 @@ try {
         $properties = $audit.advisories.PSObject.Properties
         if ($null -ne $properties -and $properties.Count -gt 0) {
             $properties | ForEach-Object {
+
+                # // https://github.com/facebook/create-react-app/issues/10945
+                if($($_.Value.url) == "https://npmjs.com/advisories/1693" && $($_.Value.module_name) == "postcss") {
+                    write-host "skip postcss issue"
+                    continue;
+                }
+
                 switch ($_.Value.severity) {
                     "high" { $highCount += 1 }
                     "moderate" { $moderateCount += 1 }
