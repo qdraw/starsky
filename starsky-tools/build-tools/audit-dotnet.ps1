@@ -3,6 +3,7 @@ param (
 )
 
 if($projectDirectory -eq "") {
+   write-host "fallback to Get-Location"
    $projectDirectory =  Get-Location
 }
 
