@@ -7,7 +7,7 @@ if($targetFolder -eq ".") {
    $targetFolder =  Get-Location
 }
 
-write-host "audit dotnet $targetFolder"
+write-host "audit script dotnet $targetFolder"
 
 # Check .NET version
 $version = $(dotnet --version)
@@ -42,15 +42,20 @@ function check-vulnerable($solution) {
   }
 }
 
+function nuget-restore($solution) {
+  dotnet restore $solution
+}
+
 [array]$solutions=Get-ChildItem -Path $targetFolder/** -Include *.sln | select -expand fullname
 
 if ($solutions.Length -eq 0)
 {
     write-host "no solutions found"
+    exit 0
 }
 
 foreach ($solution in $solutions)
 {
+    nuget-restore -solution  $solution
     check-vulnerable -solution  $solution
 }
-
