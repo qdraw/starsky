@@ -1,0 +1,20 @@
+parameters:
+  displayName: ""
+  targetFolder: "$(Build.SourcesDirectory)/starsky"
+
+# pwsh ./starsky-tools/build-tools/audit-dotnet.ps1 -targetFolder path
+
+steps:
+  - task: PowerShell@2
+    displayName: "Display info"
+    inputs:
+      targetType: 'inline'
+      script: |
+        Write-Host ${{ parameters.targetFolder }}
+
+  - task: PowerShell@2
+    displayName: ${{ parameters.displayName }}
+    inputs:
+      targetType: filePath
+      filePath: ./starsky-tools/build-tools/audit-dotnet.ps1
+      arguments: "-targetFolder '${{ parameters.targetFolder }}'"

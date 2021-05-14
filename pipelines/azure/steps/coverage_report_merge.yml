@@ -8,7 +8,7 @@ steps:
     condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} -target="MergeCoverageFiles"'
+      arguments: '${{ parameters.runtimeArg }} --target="MergeCoverageFiles"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 
@@ -17,7 +17,7 @@ steps:
     condition: and(succeeded(), eq('${{ parameters.unitTest }}', true) )
     inputs:
       filePath: 'starsky/build.ps1'
-      arguments: '${{ parameters.runtimeArg }} -target="CoverageReport"'
+      arguments: '${{ parameters.runtimeArg }} --target="CoverageReport"'
       pwsh: true
       workingDirectory: '$(Build.SourcesDirectory)/starsky/'
 

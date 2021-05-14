@@ -108,6 +108,13 @@ try {
         $properties = $audit.advisories.PSObject.Properties
         if ($null -ne $properties -and $properties.Count -gt 0) {
             $properties | ForEach-Object {
+
+                # // https://github.com/facebook/create-react-app/issues/10945
+                if($($_.Value.url) -eq "https://npmjs.com/advisories/1693" && $($_.Value.module_name) -eq "postcss") {
+                    write-host "skip postcss issue"
+                    continue;
+                }
+
                 switch ($_.Value.severity) {
                     "high" { $highCount += 1 }
                     "moderate" { $moderateCount += 1 }
@@ -220,38 +227,40 @@ try {
             $attributionsList += $(Get-Content -Path $license -Encoding UTF8 -Raw)
             $attributionsList += "`r`n"
         }
+
+        $attributionsList | Out-File -FilePath $attributionsOutputFile
+        if (-Not $silent) {
+            if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
+                Write-Host "--------------------"
+                Write-Host "Vulnerability check: $vulnCheckStatus"
+                Write-Host "--------------------"
+                Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
+                if ($($findingsVuln.Count) -gt 0) {
+                    Write-Host $($findingsVuln | ConvertTo-Json)
+                }
+            }
+            if (($action -eq "outdated") -Or ($action -eq "all")) {
+                Write-Host "--------------------"
+                Write-Host "Outdated check: $outdatedCheckStatus"
+                Write-Host "--------------------"
+                Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
+                if ($($findingsOutdated.Count) -gt 0) {
+                    Write-Host $($findingsOutdated | ConvertTo-Json)
+                }
+            }
+            if (($action -eq "check-licenses") -Or ($action -eq "all")) {
+                Write-Host "-------------------------"
+                Write-Host "License compliance check: $licenseCheckStatus"
+                Write-Host "-------------------------"
+                Write-Host "License breakdown:"
+                foreach ($line in $summary) {
+                    # otherwise, line breaks are gone :/
+                    Write-Host "$line"
+                }
+            }
+        }
     }
-    $attributionsList | Out-File -FilePath $attributionsOutputFile
-    if (-Not $silent) {
-        if (($action -eq "find-vulnerabilities") -Or ($action -eq "all")) {
-            Write-Host "--------------------"
-            Write-Host "Vulnerability check: $vulnCheckStatus"
-            Write-Host "--------------------"
-            Write-Host "Found: $($findingsVuln.Count) vulnerabilities. Low: $lowCount - Moderate: $moderateCount - High: $highCount"
-            if ($($findingsVuln.Count) -gt 0) {
-                Write-Host $($findingsVuln | ConvertTo-Json)
-            }
-        }
-        if (($action -eq "outdated") -Or ($action -eq "all")) {
-            Write-Host "--------------------"
-            Write-Host "Outdated check: $outdatedCheckStatus"
-            Write-Host "--------------------"
-            Write-Host "Found: $($findingsOutdated.Count) outdated. Major: $majorCount - Minor: $minorCount - Patch: $patchCount"
-            if ($($findingsOutdated.Count) -gt 0) {
-                Write-Host $($findingsOutdated | ConvertTo-Json)
-            }
-        }
-        if (($action -eq "check-licenses") -Or ($action -eq "all")) {
-            Write-Host "-------------------------"
-            Write-Host "License compliance check: $licenseCheckStatus"
-            Write-Host "-------------------------"
-            Write-Host "License breakdown:"
-            foreach ($line in $summary) {
-                # otherwise, line breaks are gone :/
-                Write-Host "$line"
-            }
-        }
-    }
+
     if ($outputFileVuln) {
         $findingsVuln | ConvertTo-Json | Out-File $outputFileVuln -Encoding ASCII
     }
