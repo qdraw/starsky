@@ -39,6 +39,8 @@ namespace starskytest.Middleware
 
 			// Act
 			await authMiddleware.Invoke(httpContext);
+			
+			Assert.IsNotNull(httpContext);
 		}
         
         

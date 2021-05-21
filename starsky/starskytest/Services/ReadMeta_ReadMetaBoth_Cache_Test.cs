@@ -39,23 +39,14 @@ namespace starskytest.Services
 		[TestMethod]
 		public void ReadMeta_ReadMetaBothTest_RemoveCache()
 		{
-			var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-			var iStorage = new StorageSubPathFilesystem(appsettings);
+			var appSettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
+			var iStorage = new StorageSubPathFilesystem(appSettings);
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>());
-			new ReadMeta(iStorage,appsettings, fakeCache)
+			new ReadMeta(iStorage,appSettings, fakeCache)
 				.RemoveReadMetaCache("fakeString");
+			Assert.IsNotNull(appSettings);
 		}
-
-//        [TestMethod]
-//        public void ReadMeta_ReadMetaBothTest_FakeCreateEntry()
-//        {
-//	        var iStorage = new FakeIStorage(null,new List<string>{"/test.jpg"},CreateAnImage.Bytes);
-//
-//            // fakely add item to cache
-//            new ReadMeta(iStorage,new AppSettings(), _fakeCache)
-//	            .ReadExifAndXmpFromFile("/test.jpg",ExtensionRolesHelper.ImageFormat.jpg);
-//        }
 
 		[TestMethod]
 		public void ReadMeta_ReadMetaBothTest_FakeReadEntry()

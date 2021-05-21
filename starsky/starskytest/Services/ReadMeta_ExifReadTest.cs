@@ -45,8 +45,7 @@ namespace starskytest.Services
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagObjectName, "test" );
 			var t = new ReadMetaExif(null).GetObjectName(dir);
-			Assert.AreEqual(t, "test");
-			Assert.AreNotEqual(t,null);
+			Assert.AreEqual("test",t);
 		}
 
 		[TestMethod]
@@ -56,9 +55,7 @@ namespace starskytest.Services
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagCaption, "test123");
 			var t = new ReadMetaExif(null).GetCaptionAbstract(dir);
-			Assert.AreEqual(t, "test123");
-			Assert.AreNotEqual(t,string.Empty);
-			Assert.AreNotEqual(t,null);
+			Assert.AreEqual("test123", t);
 		}
 		 
 		[TestMethod]
@@ -68,8 +65,8 @@ namespace starskytest.Services
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123");
 			var t = new ReadMetaExif(null).GetExifKeywords(dir);
-			Assert.AreEqual(t, "test123");
-			Assert.AreNotEqual(t,null);
+
+			Assert.AreEqual("test123", t);
 		}
 		 
 		[TestMethod]
@@ -79,10 +76,7 @@ namespace starskytest.Services
 			var dir = new IptcDirectory();
 			dir.Set(IptcDirectory.TagKeywords, "test123;test12");
 			var t = new ReadMetaExif(null).GetExifKeywords(dir);
-			Assert.AreEqual(t, "test123, test12"); //with space
-			Assert.AreNotEqual(t, "test123,test12"); // without space
-			Assert.AreNotEqual(t, "test123;test12");
-			Assert.AreNotEqual(t,null);
+			Assert.AreEqual("test123, test12",t); //with space
 		}
 		 
 		[TestMethod]
@@ -178,10 +172,10 @@ namespace starskytest.Services
 		{
 			var directory = new List<Directory> {BuildDirectory(new List<object>())};
 			var returnNothing = new ReadMetaExif(null).GetImageWidthHeight(directory,true);
-			Assert.AreEqual(returnNothing,0);
+			Assert.AreEqual(0,returnNothing);
 		     
 			var returnNothingFalse = new ReadMetaExif(null).GetImageWidthHeight(directory,false);
-			Assert.AreEqual(returnNothingFalse,0);
+			Assert.AreEqual(0,returnNothingFalse);
 		}
 
 		[TestMethod]

@@ -38,6 +38,10 @@ namespace starskytest.Attributes
 			filter.OnResourceExecuted(new ResourceExecutedContext(actionContext, filters));
 
 			// It is not removed in this case, because it didn't exist on forehand
+			
+			Assert.IsNotNull(filter);
+			Assert.IsNotNull(actionContext);
+			Assert.IsNotNull(filters);
 		}
 		
 	}

@@ -197,7 +197,7 @@ namespace starskytest.Services
 			Assert.AreEqual("/test.jpg",updatedItem.FilePath);
 			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,updatedItem.ImageFormat);
 			Assert.AreEqual(false,updatedItem.IsDirectory);
-			Assert.AreEqual(updatedItem.FileHash.Length >= 5,true);
+			Assert.AreEqual(true, updatedItem.FileHash.Length >= 5);
 			Assert.IsTrue(updatedItem.Size > 200);
 		}
 
@@ -232,7 +232,7 @@ namespace starskytest.Services
 			var item = _query.SingleItem(newImage.DbPath).FileIndexItem;
             
 			Assert.AreEqual(item.ImageFormat,ExtensionRolesHelper.ImageFormat.jpg);
-			Assert.AreEqual(item.FileHash.Length >= 5,true);
+			Assert.AreEqual(true,item.FileHash.Length >= 5);
 			_query.RemoveItem(item);
             
 			// The Base Directory will be ignored
@@ -255,10 +255,10 @@ namespace starskytest.Services
 				IsDirectory = false
 			});
 
-			Assert.AreEqual(_syncService.Deleted("/non-existing.jpg"),true);
+			Assert.AreEqual(true, _syncService.Deleted("/non-existing.jpg"));
             
 			// If file exist => ignore this one 
-			Assert.AreEqual(_syncService.Deleted(newImage.DbPath),false);
+			Assert.AreEqual(false, _syncService.Deleted(newImage.DbPath));
 
 		}
 
@@ -290,7 +290,7 @@ namespace starskytest.Services
 			_syncService.Deleted("/non-existing-folder");
 
 			var nonExisting = _query.GetSubPathByHash("4444");
-			Assert.AreEqual(nonExisting,null);
+			Assert.AreEqual(null,nonExisting);
             
 		}
 

@@ -377,7 +377,8 @@ namespace starskytest.Controllers
 		public void AccountController_LogInGet()
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage);
-			controller.LoginGet();
+			var result = controller.LoginGet();
+			Assert.IsNotNull(result);
 		}
 
 		[TestMethod]

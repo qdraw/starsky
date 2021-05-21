@@ -670,6 +670,8 @@ namespace starskytest.starsky.feature.import.Services
 			
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result);
 		}
 
 		[TestMethod]
