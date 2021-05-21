@@ -15,6 +15,7 @@ namespace starskytest.starskyWebFtpCli
 			}.ToArray();
 			Program.Main(args);
 			// should not crash
+			Assert.IsNotNull(args);
 		}
 	}
 }

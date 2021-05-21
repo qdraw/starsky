@@ -38,8 +38,11 @@ namespace starskytest.starsky.foundation.platform.Services
 		[TestMethod]
 		public void IgnoreNullInput()
 		{
-			new FilterStatusCodesInitializer().Initialize(null);
+			RequestTelemetry input = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new FilterStatusCodesInitializer().Initialize(input);
 			// should not crash
+			Assert.IsNull(input);
 		}
 	}
 }

@@ -15,6 +15,7 @@ namespace starskytest.starskyAdminCli
 				"-d", "InMemoryDatabase",
 			}.ToArray();
 			Program.Main(args);
+			Assert.IsNotNull(args);
 		}
 	}
 }
