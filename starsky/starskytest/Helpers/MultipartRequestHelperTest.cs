@@ -35,7 +35,8 @@ namespace starskytest.Helpers
 				{
 					Boundary = new StringSegment("test")
 				};
-			MultipartRequestHelper.GetBoundary(mediaType, 10);
+			var boundary = MultipartRequestHelper.GetBoundary(mediaType, 10);
+			Assert.AreEqual("test", boundary);
 		}
 
 		[TestMethod]
