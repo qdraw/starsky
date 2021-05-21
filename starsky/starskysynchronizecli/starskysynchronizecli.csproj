@@ -16,4 +16,7 @@
       <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
     </ItemGroup>
 
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>
