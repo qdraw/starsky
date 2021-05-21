@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
@@ -16,7 +15,7 @@ namespace starsky.foundation.sync.WatcherServices
 	{
 		private readonly FileProcessor _fileProcessor;
 		private readonly IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
-		private readonly IConsole _console;
+		private readonly IWebLogger _webLogger;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
@@ -25,7 +24,7 @@ namespace starsky.foundation.sync.WatcherServices
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
-			_console = scopeFactory.CreateScope().ServiceProvider.GetService<IConsole>();
+			_webLogger = scopeFactory.CreateScope().ServiceProvider.GetService<IWebLogger>();
 		}
 
 		/// <summary>
@@ -64,7 +63,7 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnError(object source, ErrorEventArgs e)
 		{
 			//  Show that an error has been detected.
-			_console.WriteLine("The FileSystemWatcher has detected an error");
+			_webLogger.LogError("The FileSystemWatcher has detected an error");
 			//  Give more information if the error is due to an internal buffer overflow.
 			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
 			{
@@ -72,27 +71,27 @@ namespace starsky.foundation.sync.WatcherServices
 				//  and internal buffer of the  FileSystemWatcher is not large enough to handle this
 				//  rate of events. The InternalBufferOverflowException error informs the application
 				//  that some of the file system events are being lost.
-				_console.WriteLine(("The file system watcher experienced an internal buffer overflow: " 
-				                    + e.GetException().Message));
+				_webLogger.LogError(e.GetException(),"The file system watcher experienced an internal buffer overflow ");
 			}
 		}
 		
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			Console.WriteLine(e.FullPath + " " +  e.ChangeType + " --1--");
+			_webLogger.LogInformation($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType}");
 			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
-			// e.FullPath e.ChangeType
 		}
 
+		/// <summary>
+		/// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath
+		/// </summary>
+		/// <param name="source">object source (ignored)</param>
+		/// <param name="e">arguments</param>
 		private void OnRenamed(object source, RenamedEventArgs e)
 		{
-			Console.WriteLine("rename: ");
-			Console.WriteLine(e.OldFullPath + " " + e.FullPath);
-
+			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}");
 			_fileProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
-			// Specify what is done when a file is renamed. e.OldFullPath to e.FullPath
 		}
 
 	}
