@@ -552,7 +552,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-n", "test"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).GetName(args), "test");
+			Assert.AreEqual("test",new ArgsHelper(_appSettings).GetName(args));
 		}    
 	}
 }

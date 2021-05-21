@@ -163,7 +163,7 @@ namespace starskytest.Services
 		    
 			// Test if the pre-condition is good
 			var cachedResult = search.Search("test").SearchQuery;
-			Assert.AreEqual(cachedResult,"cache");
+			Assert.AreEqual("cache",cachedResult);
 			
 			// Remove cache
 			search.RemoveCache("test");
@@ -503,8 +503,8 @@ namespace starskytest.Services
 			};
 			_search.MatchSearch(model);
 
-			Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
-			Assert.AreEqual(model.SearchFor.Contains("dion.jpg"), true);
+			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
+			Assert.AreEqual(true, model.SearchFor.Contains("dion.jpg"));
 		}
 
 		[TestMethod]
@@ -513,7 +513,7 @@ namespace starskytest.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "-Tags:dion"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
+			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]
@@ -540,8 +540,8 @@ namespace starskytest.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "-Filename:dion test"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(model.SearchIn.Contains("FileName"), true);
-			Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
+			Assert.AreEqual(true, model.SearchIn.Contains("FileName"));
+			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]
@@ -564,7 +564,7 @@ namespace starskytest.Services
 			// Single keyword
 			var model = new SearchViewModel {SearchQuery = "test"};
 			_search.MatchSearch(model);
-			Assert.AreEqual(model.SearchIn.Contains("Tags"), true);
+			Assert.AreEqual(true, model.SearchIn.Contains("Tags"));
 		}
 
 		[TestMethod]
@@ -572,25 +572,23 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 
-//	        var all = _query.GetAllRecursive().Where(p => p.Tags.Contains("!delete!")).ToList();
 			var del = _search.Search("!delete!");
 			var count = del.FileIndexItems.Count();
 			Assert.AreEqual(1,count);
-			Assert.AreEqual(del.FileIndexItems.FirstOrDefault().FileHash, "stationdeletedfile");
+			Assert.AreEqual("stationdeletedfile", del.FileIndexItems.FirstOrDefault().FileHash);
 		}
 
 		[TestMethod]
 		public void SearchService_RoundDownTest()
 		{
-			Assert.AreEqual(_search.RoundDown(12),10);
+			Assert.AreEqual(10,_search.RoundDown(12));
 		}
         
 		[TestMethod]
 		public void SearchService_RoundUpTest()
 		{
-			Assert.AreEqual(_search.RoundUp(8),120); // NumberOfResultsInView
+			Assert.AreEqual(120,_search.RoundUp(8)); // NumberOfResultsInView
 		}
-
 
 		[TestMethod]
 		public void SearchService_cacheTest()

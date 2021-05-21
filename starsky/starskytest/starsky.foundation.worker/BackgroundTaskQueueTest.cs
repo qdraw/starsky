@@ -147,7 +147,9 @@ namespace starskytest.starsky.foundation.worker
 			cancelTokenSource.Cancel();
 			
 			// use reflection to hit protected method
-			service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync").Invoke(service, new object[]{cancelTokenSource.Token});
+			var method = service.GetType().GetTypeInfo().GetDeclaredMethod("ExecuteAsync");
+			Assert.IsNotNull(method);
+			method.Invoke(service, new object[]{cancelTokenSource.Token});
 			// should stop and not hit timeout
 		}
 

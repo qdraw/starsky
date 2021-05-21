@@ -19,7 +19,7 @@ namespace starskytest.Services
 			var input1 = FileHash.GenerateRandomBytes(10);
 			var input2 = FileHash.GenerateRandomBytes(10);
 			var test2 = FileHash.GenerateRandomBytes(0);
-			Assert.AreEqual(test2.Length,1);
+			Assert.AreEqual(1,test2.Length);
 			Assert.AreNotEqual(input1,input2);
 		}
 
