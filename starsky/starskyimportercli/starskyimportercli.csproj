@@ -12,4 +12,8 @@
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
     </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>

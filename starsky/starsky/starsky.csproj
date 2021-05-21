@@ -22,7 +22,7 @@
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
-
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
@@ -125,4 +125,7 @@
         <WriteLinesToFile File="$(OutDir)temp\.gitkeep" Lines="keep this directory" Overwrite="False" />
     </Target>
 
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>

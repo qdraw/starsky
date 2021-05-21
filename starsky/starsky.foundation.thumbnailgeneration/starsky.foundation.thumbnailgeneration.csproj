@@ -19,4 +19,7 @@
         <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta0005" />
     </ItemGroup>
 
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>
