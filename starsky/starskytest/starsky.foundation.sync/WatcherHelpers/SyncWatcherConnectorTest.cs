@@ -128,11 +128,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				
 			query.AddCacheParentItem("/", 
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
-			{
-				IsDirectory = false, 
-				Tags = "This should not be the tags",
-				ParentDirectory = "/"
-			}});
+				{
+					IsDirectory = false, 
+					Tags = "This should not be the tags",
+					ParentDirectory = "/"
+				}});
 			
 			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
 			syncWatcherConnector.Sync(

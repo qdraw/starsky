@@ -13,14 +13,14 @@ namespace starskytest.starsky.foundation.platform.JsonConverter
 		{
 			var json = JsonSerializer.Serialize(
 				new Dictionary<string, bool>{{
-				"key", true
+					"key", true
 				}}, new JsonSerializerOptions
 				{
-				Converters =
-				{
-					new JsonBoolQuotedConverter(),
-				}
-			});
+					Converters =
+					{
+						new JsonBoolQuotedConverter(),
+					}
+				});
 			
 			Assert.AreEqual("{\"key\":\"true\"}", json);
 		}

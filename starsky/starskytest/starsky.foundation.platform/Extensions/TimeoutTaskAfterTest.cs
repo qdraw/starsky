@@ -10,8 +10,8 @@ namespace starskytest.starsky.foundation.platform.Extensions
 	{
 		private async Task<bool> EndlessTest(int duration = 10000)
 		{
-			 await Task.Delay(duration);
-			 return true;
+			await Task.Delay(duration);
+			return true;
 		}
 		
 		[TestMethod]
@@ -24,14 +24,14 @@ namespace starskytest.starsky.foundation.platform.Extensions
 		}
 		
 		[TestMethod]
-        [Timeout(5000)]
-        [ExpectedException(typeof(TimeoutException))]
-        public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
-        {
-	        // zero is not allowed as time
-        	await EndlessTest().TimeoutAfter(0);
-            // expect TimeoutException
-        }
+		[Timeout(5000)]
+		[ExpectedException(typeof(TimeoutException))]
+		public async Task TimeoutAfter_CheckIfTimeouts_WhenIsZero()
+		{
+			// zero is not allowed as time
+			await EndlessTest().TimeoutAfter(0);
+			// expect TimeoutException
+		}
 		
 		// [TestMethod]
 		// disabled

@@ -77,18 +77,18 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
-        public async Task ImporterCli_ArgPath_Failed()
-        {
-        	var fakeConsole = new FakeConsoleWrapper(new List<string>());
-        	var storage = new FakeIStorage(new List<string>{"/"}, 
-        		new List<string>{"/test"}, 
-        		new List<byte[]>(new byte[0][]));
+		public async Task ImporterCli_ArgPath_Failed()
+		{
+			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test"}, 
+				new List<byte[]>(new byte[0][]));
         	
-        	await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
-	            new AppSettings{Verbose = false}, fakeConsole,_httpClientHelper)
-	            .Importer(new List<string>{"-p", "/test"}.ToArray());
-        	Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
-        }
+			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
+					new AppSettings{Verbose = false}, fakeConsole,_httpClientHelper)
+				.Importer(new List<string>{"-p", "/test"}.ToArray());
+			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
+		}
         		
 	}
 }

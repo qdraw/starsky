@@ -113,10 +113,10 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			
 			overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
 				"/out.jpg", new AppSettingsPublishProfiles
-			{
-				SourceMaxWidth = 100,
-				OverlayMaxWidth = 1
-			});
+				{
+					SourceMaxWidth = 100,
+					OverlayMaxWidth = 1
+				});
 			// itemFileHash not found
 		}
 		

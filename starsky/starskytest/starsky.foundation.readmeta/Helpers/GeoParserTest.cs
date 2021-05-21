@@ -11,10 +11,10 @@ namespace starskytest.starsky.foundation.readmeta.Helpers
 		public void GeoParser_ExifRead_ParseGpsTest()
 		{
 			var latitude = GeoParser.ConvertDegreeMinutesSecondsToDouble("52° 18' 29.54\"", "N");
-			Assert.AreEqual(latitude,  52.308205555500003, 0.000001);
+			Assert.AreEqual(52.308205555500003, latitude, 0.000001);
              
 			var longitude = GeoParser.ConvertDegreeMinutesSecondsToDouble("6° 11' 36.8\"", "E");
-			Assert.AreEqual(longitude,  6.1935555554999997, 0.000001);
+			Assert.AreEqual(6.1935555554999997, longitude,0.000001);
 		}
 	    
 	             

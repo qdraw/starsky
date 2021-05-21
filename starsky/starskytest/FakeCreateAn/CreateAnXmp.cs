@@ -31,6 +31,6 @@ namespace starskytest.FakeCreateAn
 			"1.0</stEvt:softwareAgent></rdf:li></rdf:Seq></xmpMM:History></rdf:Description></rdf:RDF>" +
 			"</x:xmpmeta>";
 		
-		 public static readonly byte[] Bytes =  Encoding.ASCII.GetBytes(XmpString);
+		public static readonly byte[] Bytes =  Encoding.ASCII.GetBytes(XmpString);
 	}
 }

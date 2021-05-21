@@ -37,7 +37,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/"},
 				new List<string>{"/test.jpg","/color_class_winner.jpg"},
 				new List<byte[]>{CreateAnImage.Bytes, CreateAnImageColorClass.Bytes}
-				);
+			);
 			_exampleHash = new FileHash(_iStorageFake).GetHashCode("/test.jpg").Key;
 			
 			_iStorageDirectoryRecursive = new FakeIStorage(
@@ -191,7 +191,7 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
 				new FakeIImportQuery(new List<string>{_exampleHash}),
 
-			new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console);
 
 			var result = await importService.Preflight(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -287,7 +287,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, 
-			new FakeIImportQuery(),
+				new FakeIImportQuery(),
 				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null,  _console);
 			
 			var result = await importService.Preflight(new List<string> {"/test"},

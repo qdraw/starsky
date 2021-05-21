@@ -56,5 +56,3 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public override IList<string> WebSocketRequestedProtocols { get; }
 	}
 }
-
-

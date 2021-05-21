@@ -1,4 +1,3 @@
-
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,4 +21,3 @@ namespace starskytest.Extensions
 		}
 	} 
 }
-		

@@ -113,17 +113,17 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
 					{"zz__example", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
 						{
-							new AppSettingsPublishProfiles
-							{
-								ContentType = TemplateContentType.Jpeg,
-								SourceMaxWidth = 1000,
-								OverlayMaxWidth = 380,
-								Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
-								Folder =  "1000",
-								Append = "_kl1k"
-							}
-						}}
+							ContentType = TemplateContentType.Jpeg,
+							SourceMaxWidth = 1000,
+							OverlayMaxWidth = 380,
+							Path =  "{AssemblyDirectory}/EmbeddedViews/qdrawlarge.png",
+							Folder =  "1000",
+							Append = "_kl1k"
+						}
+					}}
 				}
 			};
 			
@@ -132,16 +132,16 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 				{
 					{"zz__example2", new List<AppSettingsPublishProfiles>
+					{
+						new AppSettingsPublishProfiles
 						{
-							new AppSettingsPublishProfiles
-							{
-								ContentType = TemplateContentType.Jpeg,
-								SourceMaxWidth = 300,
-								OverlayMaxWidth = 380,
-								Folder =  "1000",
-								Append = "_kl1k"
-							}
-						}}
+							ContentType = TemplateContentType.Jpeg,
+							SourceMaxWidth = 300,
+							OverlayMaxWidth = 380,
+							Folder =  "1000",
+							Append = "_kl1k"
+						}
+					}}
 				}
 			};
 

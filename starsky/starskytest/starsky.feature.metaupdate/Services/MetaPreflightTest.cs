@@ -205,9 +205,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					new FileIndexItem("/readonly/test.jpg")
 				}), 
 				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(), 
-				new List<string>{"/readonly/test.jpg"}, 
-				new []{CreateAnImage.Bytes, })));
+					new FakeIStorage(new List<string>(), 
+						new List<string>{"/readonly/test.jpg"}, 
+						new []{CreateAnImage.Bytes, })));
 			
 			var result = metaPreflight.Preflight(
 				new FileIndexItem("/readonly/test.jpg"), 

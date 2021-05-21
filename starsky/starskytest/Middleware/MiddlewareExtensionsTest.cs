@@ -13,33 +13,33 @@ using starskycore.Services;
 namespace starskytest.Middleware
 {
 
-    [TestClass]
-    public class MiddlewareExtensionsTest
-    {
-        private readonly IUserManager _userManager;
+	[TestClass]
+	public class MiddlewareExtensionsTest
+	{
+		private readonly IUserManager _userManager;
 
 
 		public MiddlewareExtensionsTest()
-        {
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
-            var options = builder.Options;
-            var context = new ApplicationDbContext(options);
-            _userManager = new UserManager(context,new AppSettings());
-        }
+		{
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseInMemoryDatabase("test");
+			var options = builder.Options;
+			var context = new ApplicationDbContext(options);
+			_userManager = new UserManager(context,new AppSettings());
+		}
 
         
         
-        [TestMethod]
-        public async Task MiddlewareExtensionsBasicAuthenticationMiddlewareNotSignedIn()
-        {
-            // Arrange
-            var httpContext = new DefaultHttpContext();
-            var authMiddleware = new BasicAuthenticationMiddleware(next: (innerHttpContext) => Task.FromResult(0));
+		[TestMethod]
+		public async Task MiddlewareExtensionsBasicAuthenticationMiddlewareNotSignedIn()
+		{
+			// Arrange
+			var httpContext = new DefaultHttpContext();
+			var authMiddleware = new BasicAuthenticationMiddleware(next: (innerHttpContext) => Task.FromResult(0));
 
-            // Act
-            await authMiddleware.Invoke(httpContext);
-        }
+			// Act
+			await authMiddleware.Invoke(httpContext);
+		}
         
         
 //        [TestMethod]
@@ -83,5 +83,5 @@ namespace starskytest.Middleware
 ////            await authMiddleware.Invoke(httpContext);
 //        }
         
-    }
+	}
 }

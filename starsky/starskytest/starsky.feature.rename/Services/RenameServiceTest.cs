@@ -34,8 +34,8 @@ namespace starskytest.starsky.feature.rename.Services
 		public RenameServiceTest()
 		{
 			var provider = new ServiceCollection()
-			.AddMemoryCache()
-			.BuildServiceProvider();
+				.AddMemoryCache()
+				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
 			
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -962,7 +962,7 @@ namespace starskytest.starsky.feature.rename.Services
 			var iStorage = new FakeIStorage(
 				new List<string>{"/", "/source_folder_2"},
 				new List<string>{"/source_folder_2/test.jpg"}
-				);
+			);
 
 			await _query.AddItemAsync(
 				new FileIndexItem("/source_folder_2") {IsDirectory = true});
