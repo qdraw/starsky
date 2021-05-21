@@ -21,4 +21,7 @@
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.13" />
     </ItemGroup>
 
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>
