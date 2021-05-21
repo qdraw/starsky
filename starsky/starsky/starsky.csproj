@@ -22,8 +22,8 @@
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
-    
-    <PropertyGroup Condition=" '$(RuntimeIdentifier)' == '' ">
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
         <SonarQubeExclude>true</SonarQubeExclude>
     </PropertyGroup>
     

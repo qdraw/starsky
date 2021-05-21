@@ -278,7 +278,9 @@ Task("BuildNetCoreGeneric")
         {
             Configuration = configuration,
             // .Append("/p:DebugType=None") is no pdb files
-            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
+            ArgumentCustomization = args => args.Append("--nologo")
+              .Append("--no-restore")
+              .Append("/p:noSonar=true"),
         };
 
         foreach(var runtime in runtimes)
