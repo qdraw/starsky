@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual(fileIndexItem.FilePath, "/test.jpg");
+			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -126,7 +126,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			// should add files to db
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual(fileIndexItem.FilePath, "/level/deep/test.jpg");
+			Assert.AreEqual("/level/deep/test.jpg", fileIndexItem.FilePath);
 			
 			// should not duplicate add items
 			var count= (await fakeQuery.GetAllFilesAsync("/level/deep"))
@@ -173,7 +173,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
 			var fileIndexItem = detailView.FileIndexItem;
-			Assert.AreEqual(fileIndexItem.FilePath, "/test.jpg");
+			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
 		}
 
 		[TestMethod]
