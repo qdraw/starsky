@@ -142,7 +142,7 @@ namespace starskytest.Controllers
 				new FakeIMetaInfo(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 						{Status = FileIndexItem.ExifStatus.NotFoundNotInIndex}}
-					),
+				),
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			

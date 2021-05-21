@@ -9,7 +9,7 @@ namespace starskytest.FakeMocks
 		{
 			var type = typeof(AppSettings);
 			foreach ( var property in type.GetProperties(BindingFlags.Public 
-			                                             | BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
+				| BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
 				var getMethod = property.GetGetMethod(false);
 				if (getMethod.GetBaseDefinition() == getMethod) {
 					if ( methodGetName == getMethod.Name )

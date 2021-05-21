@@ -18,6 +18,7 @@ namespace starskytest.starskyGeoCli
 				"-h","-v"
 			}.ToArray();
 			Program.Main(args);
+			Assert.IsNotNull(args);
 		}
         
 		[ExcludeFromCoverage]
@@ -30,6 +31,7 @@ namespace starskytest.starskyGeoCli
 				newImage.BasePath, "-e", newImage.FullFilePath 
 			}.ToArray();
 			Program.Main(args);
+			Assert.IsNotNull(args);
 		}
         
 		[ExcludeFromCoverage]
@@ -52,6 +54,7 @@ namespace starskytest.starskyGeoCli
 			}
             
 			Program.Main(args);
+			Assert.IsNotNull(args);
 		}
 	
         

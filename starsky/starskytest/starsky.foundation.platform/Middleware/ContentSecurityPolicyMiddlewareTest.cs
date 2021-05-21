@@ -25,7 +25,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 
 			await host.StartAsync();
 			await host.StopAsync();
-
+			Assert.IsNotNull(host);
 		}
 
 		[TestMethod]

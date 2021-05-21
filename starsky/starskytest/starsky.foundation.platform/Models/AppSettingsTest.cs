@@ -196,12 +196,11 @@ namespace starskytest.starsky.foundation.platform.Models
 				.IsOSPlatform(OSPlatform.Windows);
 			if ( isWindows )
 			{
-				Assert.AreEqual(appSettings.CameraTimeZone.Contains("W. Europe Standard Time"),
-					true);
+				Assert.IsTrue(appSettings.CameraTimeZone.Contains("W. Europe Standard Time"));
 			}
 			else
 			{
-				Assert.AreEqual(appSettings.CameraTimeZone.Contains("Europe/Amsterdam"), true);
+				Assert.IsTrue(appSettings.CameraTimeZone.Contains("Europe/Amsterdam"));
 			}
 
 		}
@@ -210,10 +209,10 @@ namespace starskytest.starsky.foundation.platform.Models
 		public void AppSettingsGenerateSlugLengthCheck()
 		{
 			var slug = new AppSettings().GenerateSlug("1234567890123456789012345678901234567890123" +
-			                                          "456789012345678901234567890123456789012345678901234567890"+
-			                                          "456789012345678901234567890123456789012345678901234567890");
+				"456789012345678901234567890123456789012345678901234567890"+
+				"456789012345678901234567890123456789012345678901234567890");
 			// Length == 65
-			Assert.AreEqual(slug.Length,65);
+			Assert.AreEqual(65, slug.Length);
 		}
 
 		[TestMethod]

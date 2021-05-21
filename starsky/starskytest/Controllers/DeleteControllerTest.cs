@@ -34,95 +34,95 @@ namespace starskytest.Controllers
 	{
 		
 		private readonly IQuery _query;
-        private readonly IExifTool _exifTool;
-        private readonly AppSettings _appSettings;
-        private readonly CreateAnImage _createAnImage;
-        private readonly IBackgroundTaskQueue _bgTaskQueue;
-        private readonly ApplicationDbContext _context;
-        private readonly IReadMeta _readmeta;
-        private readonly IServiceScopeFactory _scopeFactory;
-	    private readonly IStorage _iStorage;
+		private readonly IExifTool _exifTool;
+		private readonly AppSettings _appSettings;
+		private readonly CreateAnImage _createAnImage;
+		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly ApplicationDbContext _context;
+		private readonly IReadMeta _readmeta;
+		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IStorage _iStorage;
 
-	    public DeleteControllerTest()
-        {
-            var provider = new ServiceCollection()
-                .AddMemoryCache()
-                .BuildServiceProvider();
-            var memoryCache = provider.GetService<IMemoryCache>();
+		public DeleteControllerTest()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
             
-            var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builderDb.UseInMemoryDatabase("test1234");
-            var options = builderDb.Options;
-            _context = new ApplicationDbContext(options);
-            _query = new Query(_context,memoryCache);
+			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builderDb.UseInMemoryDatabase("test1234");
+			var options = builderDb.Options;
+			_context = new ApplicationDbContext(options);
+			_query = new Query(_context,memoryCache);
             
-            // Inject Fake ExifTool; dependency injection
-            var services = new ServiceCollection();
+			// Inject Fake ExifTool; dependency injection
+			var services = new ServiceCollection();
 
-            // Fake the readMeta output
-            services.AddSingleton<IReadMeta, FakeReadMeta>();    
+			// Fake the readMeta output
+			services.AddSingleton<IReadMeta, FakeReadMeta>();    
             
-            // Inject Config helper
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            // random config
-            _createAnImage = new CreateAnImage();
-            var dict = new Dictionary<string, string>
-            {
-                { "App:StorageFolder", _createAnImage.BasePath },
-                { "App:ThumbnailTempFolder",_createAnImage.BasePath },
-                { "App:Verbose", "true" }
-            };
-            // Start using dependency injection
-            var builder = new ConfigurationBuilder();  
-            // Add random config to dependency injection
-            builder.AddInMemoryCollection(dict);
-            // build config
-            var configuration = builder.Build();
-            // inject config as object to a service
-            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
+			// Inject Config helper
+			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+			// random config
+			_createAnImage = new CreateAnImage();
+			var dict = new Dictionary<string, string>
+			{
+				{ "App:StorageFolder", _createAnImage.BasePath },
+				{ "App:ThumbnailTempFolder",_createAnImage.BasePath },
+				{ "App:Verbose", "true" }
+			};
+			// Start using dependency injection
+			var builder = new ConfigurationBuilder();  
+			// Add random config to dependency injection
+			builder.AddInMemoryCollection(dict);
+			// build config
+			var configuration = builder.Build();
+			// inject config as object to a service
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
-            // Add Background services
-            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			// Add Background services
+			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
+			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            // get the service
-            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+			// build the service
+			var serviceProvider = services.BuildServiceProvider();
+			// get the service
+			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
-            // inject fake exiftool
-            _exifTool = new FakeExifTool(_iStorage,_appSettings);
+			// inject fake exiftool
+			_exifTool = new FakeExifTool(_iStorage,_appSettings);
             
-            _readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-            _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
             
-            // get the background helper
-            _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			// get the background helper
+			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
 	        
 			_iStorage = new StorageSubPathFilesystem(_appSettings);
 
-        }
+		}
         
-        private FileIndexItem InsertSearchData(bool delete = false)
-        {
-            var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
+		private FileIndexItem InsertSearchData(bool delete = false)
+		{
+			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
-            if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
-            {
-                var isDelete = string.Empty;
-                if (delete) isDelete = "!delete!";
-                _query.AddItem(new FileIndexItem
-                {
-                    FileName = _createAnImage.FileName,
-                    ParentDirectory = "/",
-                    FileHash = fileHashCode,
-                    ColorClass = ColorClassParser.Color.Winner, // 1
-                    Tags = isDelete
-                });
-            }
-            return _query.GetObjectByFilePath(_createAnImage.DbPath);
-        }
+			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
+			{
+				var isDelete = string.Empty;
+				if (delete) isDelete = "!delete!";
+				_query.AddItem(new FileIndexItem
+				{
+					FileName = _createAnImage.FileName,
+					ParentDirectory = "/",
+					FileHash = fileHashCode,
+					ColorClass = ColorClassParser.Color.Winner, // 1
+					Tags = isDelete
+				});
+			}
+			return _query.GetObjectByFilePath(_createAnImage.DbPath);
+		}
 
         
 		[TestMethod]

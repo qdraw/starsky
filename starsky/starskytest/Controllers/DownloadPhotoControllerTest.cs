@@ -129,20 +129,20 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-        public async Task DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test()
-        {
-	        // Arrange
-	        var fileIndexItem = InsertSearchData();
-	        var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+		public async Task DownloadPhoto_isThumbnailFalse_ReturnFileStream_Test()
+		{
+			// Arrange
+			var fileIndexItem = InsertSearchData();
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 	        
-            // Act
-            var controller = new DownloadPhotoController(_query,selectorStorage);
-            controller.ControllerContext.HttpContext = new DefaultHttpContext();
-            var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
-            Assert.AreNotEqual(null,actionResult);
+			// Act
+			var controller = new DownloadPhotoController(_query,selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
+			Assert.AreNotEqual(null,actionResult);
   
-            actionResult.FileStream.Dispose();
-        }
+			actionResult.FileStream.Dispose();
+		}
 
 		[TestMethod]
 		public async Task DownloadPhoto_isThumbnailTrue_ReturnAThumb_ReturnFileStream_Test()

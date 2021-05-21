@@ -90,25 +90,25 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 	
 		[TestMethod]
-        public async Task SingleFile_AddNewFile_NoConsole()
-        {
-        	var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
-        	var sync = new SyncSingleFile(new AppSettings{Verbose = true}, fakeQuery,
-        		_iStorageFake, null); //  % % % % % % % % % % % % % % No Console % % % %
+		public async Task SingleFile_AddNewFile_NoConsole()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+			var sync = new SyncSingleFile(new AppSettings{Verbose = true}, fakeQuery,
+				_iStorageFake, null); //  % % % % % % % % % % % % % % No Console % % % %
         	
-        	await sync.SingleFile("/test.jpg");
+			await sync.SingleFile("/test.jpg");
 
-        	// should add files to db
-        	var detailView = fakeQuery.SingleItem("/test.jpg");
-        	Assert.IsNotNull(detailView);
-        	var fileIndexItem = detailView.FileIndexItem;
-        	Assert.AreEqual(fileIndexItem.FilePath, "/test.jpg");
+			// should add files to db
+			var detailView = fakeQuery.SingleItem("/test.jpg");
+			Assert.IsNotNull(detailView);
+			var fileIndexItem = detailView.FileIndexItem;
+			Assert.AreEqual("/test.jpg", fileIndexItem.FilePath);
         	
-        	// should not duplicate add items
-        	var count= (await fakeQuery.GetAllFilesAsync("/")).Count(
-	            p => p.FileName == "test.jpg");
-        	Assert.AreEqual(1,count);
-        }
+			// should not duplicate add items
+			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(
+				p => p.FileName == "test.jpg");
+			Assert.AreEqual(1,count);
+		}
 		
 		[TestMethod]
 		public async Task SingleFile_AddNewFile_WithParentFolders()
@@ -134,7 +134,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(1,count);
 			
 			// should add parent items
-				// root folder
+			// root folder
 			var rootFolder = fakeQuery.SingleItem("/")?.FileIndexItem;
 			Assert.IsNotNull(rootFolder);
 			Assert.AreEqual(true,rootFolder.IsDirectory);

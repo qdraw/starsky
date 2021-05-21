@@ -213,27 +213,27 @@ namespace starskytest.Controllers
 			Assert.AreEqual("Thumbnail is not ready yet",actionResult.Value);
 		}
 
-        [TestMethod]
-        public async Task ApiController_FloatingDatabaseFileTest_API_Test()
-        {
-            var item = _query.AddItem(new FileIndexItem
-            {
-                ParentDirectory = "/fakeImage/",
-                FileName = "fake.jpg",
-                FileHash = "0986524678765456786543",
+		[TestMethod]
+		public async Task ApiController_FloatingDatabaseFileTest_API_Test()
+		{
+			var item = _query.AddItem(new FileIndexItem
+			{
+				ParentDirectory = "/fakeImage/",
+				FileName = "fake.jpg",
+				FileHash = "0986524678765456786543",
 				Id= 788,
-            });
+			});
             
-            var storage = ArrangeStorage();
+			var storage = ArrangeStorage();
             
-            var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
-            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
-            var actionResult = await controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
-            var thumbnailAnswer = actionResult.StatusCode;
-            Assert.AreEqual(404,thumbnailAnswer);
-            _query.RemoveItem(item);
-        }
+			var actionResult = await controller.Thumbnail(item.FileHash, false, true) as NotFoundObjectResult;
+			var thumbnailAnswer = actionResult.StatusCode;
+			Assert.AreEqual(404,thumbnailAnswer);
+			_query.RemoveItem(item);
+		}
 
 		[TestMethod]
 		public async Task ApiController_Thumbnail1_NonExistingFile_API_Test()

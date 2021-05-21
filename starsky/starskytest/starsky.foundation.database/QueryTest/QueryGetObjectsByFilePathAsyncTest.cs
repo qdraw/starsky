@@ -144,7 +144,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await dbContextDisposed.DisposeAsync();
 			
 			var result = await new Query(dbContextDisposed,
-				new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
+					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
 				.GetObjectsByFilePathAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
 			Assert.AreEqual(1, result.Count);

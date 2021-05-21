@@ -253,7 +253,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var fakeQuery =
 				new FakeIQuery(new List<FileIndexItem> {new FileIndexItem("/test")
-					{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
+						{IsDirectory = true, Tags = "!delete!"}, new FileIndexItem("/test/image.jpg"), 
 					new FileIndexItem("/test/image.dng")});
 			
 			var deleteItem = new DeleteItem( fakeQuery,new AppSettings(), selectorStorage);

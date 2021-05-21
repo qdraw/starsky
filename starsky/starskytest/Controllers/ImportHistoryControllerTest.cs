@@ -26,5 +26,5 @@ namespace starskytest.Controllers
 			var output = result.Value as List<ImportIndexItem>;
 			Assert.AreEqual("/test.jpg", output.FirstOrDefault().FilePath);
 		}
- 	}
+	}
 }

@@ -74,13 +74,13 @@ namespace starskytest.Controllers
 				new List<string>{createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
-	        _readMeta = new ReadMeta(_iStorage,_appSettings);
+			_readMeta = new ReadMeta(_iStorage,_appSettings);
                         
-	        var selectorStorage = new FakeSelectorStorage(_iStorage);
-	        _iSync = new Synchronize(_appSettings, _query, selectorStorage);
+			var selectorStorage = new FakeSelectorStorage(_iStorage);
+			_iSync = new Synchronize(_appSettings, _query, selectorStorage);
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
-			 new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper());
+				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper());
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();

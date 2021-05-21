@@ -20,7 +20,7 @@ namespace starskytest.FakeMocks
 		{
 			var entry = new HealthReportEntry(_isHealthy ? HealthStatus.Healthy : HealthStatus.Unhealthy, "", TimeSpan.Zero, null, null);
 			var dictionary = new Dictionary<string, HealthReportEntry>
-		    {
+			{
 				{ "test", entry }
 			};
 				

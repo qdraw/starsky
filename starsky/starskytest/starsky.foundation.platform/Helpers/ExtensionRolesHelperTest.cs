@@ -11,14 +11,14 @@ namespace starskytest.starsky.foundation.platform.Helpers
 	public class ExtensionRolesHelperTest
 	{
 		
-        [TestMethod]
-        public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
-        {
-            Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.tiff"));
-            Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mp4"));
-            Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
-            Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
-        }
+		[TestMethod]
+		public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
+		{
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.tiff"));
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mp4"));
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.mov"));
+			Assert.AreEqual(false,ExtensionRolesHelper.IsExtensionThumbnailSupported("file.xmp"));
+		}
 		
 		[TestMethod]
 		public void Files_ExtensionThumbSupportedList_JpgCheck()
@@ -42,81 +42,81 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 
 		[TestMethod]
-        public void Files_ExtensionSyncSupportedList_TiffCheck()
-        {
-            var extensionSyncSupportedList = ExtensionRolesHelper.ExtensionSyncSupportedList;
-            Assert.AreEqual(true,extensionSyncSupportedList.Contains("tiff"));
-            Assert.AreEqual(true,extensionSyncSupportedList.Contains("jpg"));
+		public void Files_ExtensionSyncSupportedList_TiffCheck()
+		{
+			var extensionSyncSupportedList = ExtensionRolesHelper.ExtensionSyncSupportedList;
+			Assert.AreEqual(true,extensionSyncSupportedList.Contains("tiff"));
+			Assert.AreEqual(true,extensionSyncSupportedList.Contains("jpg"));
 
-        }
+		}
 
-        [TestMethod]
-        public void Files_GetImageFormat_png_Test()
-        {
-            var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {137, 80, 78, 71});
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.png);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_png_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {137, 80, 78, 71});
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.png);
+		}
         
-        [TestMethod]
-        public void GetImageFormat_Png_Test()
-        {
-	        var newImage = CreateAnPng.Bytes.Take(15).ToArray();
-	        var result = ExtensionRolesHelper.GetImageFormat(newImage);
-	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,result);
-        }
+		[TestMethod]
+		public void GetImageFormat_Png_Test()
+		{
+			var newImage = CreateAnPng.Bytes.Take(15).ToArray();
+			var result = ExtensionRolesHelper.GetImageFormat(newImage);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.png,result);
+		}
         
-        [TestMethod]
-        public void Files_GetImageFormat_jpeg2_Test()
-        {
-            var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_jpeg2_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
+		}
         
-        [TestMethod]
-        public void GetImageFormat_Jpeg_Test()
-        {
-	        var newImage = CreateAnImage.Bytes.Take(15).ToArray();
-	        var result = ExtensionRolesHelper.GetImageFormat(newImage);
-	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,result);
-        }
+		[TestMethod]
+		public void GetImageFormat_Jpeg_Test()
+		{
+			var newImage = CreateAnImage.Bytes.Take(15).ToArray();
+			var result = ExtensionRolesHelper.GetImageFormat(newImage);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,result);
+		}
         
-        [TestMethod]
-        public void Files_GetImageFormat_tiff2_Test()
-        {
-            var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 42});
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_tiff2_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 42});
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+		}
         
-        [TestMethod]
-        public void Files_GetImageFormat_tiff3_Test()
-        {
-            var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 0});
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_tiff3_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {77, 77, 0});
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.tiff);
+		}
 
-        [TestMethod]
-        public void Files_GetImageFormat_bmp_Test()
-        {
-            byte[] bmBytes = Encoding.ASCII.GetBytes("BM");
-            var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.bmp);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_bmp_Test()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("BM");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.bmp);
+		}
         
-        [TestMethod]
-        public void Files_GetImageFormat_gif_Test()
-        {
-            byte[] bmBytes = Encoding.ASCII.GetBytes("GIF");
-            var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.gif);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_gif_Test()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("GIF");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.gif);
+		}
         
-        [TestMethod]
-        public void Files_GetImageFormat_xmp_Test()
-        {
-            byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
-            var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
-            Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
-        }
+		[TestMethod]
+		public void Files_GetImageFormat_xmp_Test()
+		{
+			byte[] bmBytes = Encoding.ASCII.GetBytes("<x:xmpmeta");
+			var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.xmp);
+		}
 
 		[TestMethod]
 		public void ExtensionRolesHelperTest_IsExtensionForceXmp_Positive()
@@ -220,38 +220,38 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-        public void MapFileTypesToExtension_fileWithNonExistingExtension()
-        {
-        	var result = ExtensionRolesHelper.MapFileTypesToExtension("non.ext");
-        	Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
-        }
+		public void MapFileTypesToExtension_fileWithNonExistingExtension()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension("non.ext");
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
         
-        [TestMethod]
-        public void MapFileTypesToExtension_Null()
-        {
-	        var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
-	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
-        }
+		[TestMethod]
+		public void MapFileTypesToExtension_Null()
+		{
+			var result = ExtensionRolesHelper.MapFileTypesToExtension(null);
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.unknown, result);
+		}
 
-        [TestMethod]
-        public void IsExtensionExifToolSupported_Null()
-        {
-	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
-	        Assert.IsFalse(result);
-        }
+		[TestMethod]
+		public void IsExtensionExifToolSupported_Null()
+		{
+			var result = ExtensionRolesHelper.IsExtensionExifToolSupported(null);
+			Assert.IsFalse(result);
+		}
         
-        [TestMethod]
-        public void IsExtensionExifToolSupported_fileWithNoExtension()
-        {
-	        var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
-	        Assert.IsFalse(result);
-        }
+		[TestMethod]
+		public void IsExtensionExifToolSupported_fileWithNoExtension()
+		{
+			var result = ExtensionRolesHelper.IsExtensionExifToolSupported("no_ext");
+			Assert.IsFalse(result);
+		}
 
-        [TestMethod]
-        public void GetImageFormat_NotFound()
-        {
-	        Assert.AreEqual(ExtensionRolesHelper.ImageFormat.notfound, 
-		        ExtensionRolesHelper.GetImageFormat(Stream.Null));
-        }
+		[TestMethod]
+		public void GetImageFormat_NotFound()
+		{
+			Assert.AreEqual(ExtensionRolesHelper.ImageFormat.notfound, 
+				ExtensionRolesHelper.GetImageFormat(Stream.Null));
+		}
 	}
 }

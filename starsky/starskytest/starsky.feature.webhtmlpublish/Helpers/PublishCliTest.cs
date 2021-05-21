@@ -18,7 +18,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Helpers
 			var console = new FakeConsoleWrapper();
 
 			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(), new FakeIWebHtmlPublishService(), 
-					new AppSettings(), console).Publisher(new []{"-h"});
+				new AppSettings(), console).Publisher(new []{"-h"});
 			
 			Assert.IsTrue(console.WrittenLines.FirstOrDefault().Contains("Starksy WebHtml Cli ~ Help:"));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("  use -v -help to show settings: "));
