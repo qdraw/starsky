@@ -14,7 +14,7 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 #pragma warning disable 1998
 
-namespace starskytest.Helpers
+namespace starskytest.Helpers 
 {
 	[TestClass]
 	public class FileStreamingHelperTest
@@ -49,12 +49,12 @@ namespace starskytest.Helpers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 		}
         
-//        ContentDispositionHeaderValue.TryParse(
-//        "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
-//        var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
-//        sectionSingle.Headers = new Dictionary<string, StringValues>();
-//        sectionSingle.Headers.Add("Content-Type",request.ContentType);
-//        sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
+		//        ContentDispositionHeaderValue.TryParse(
+		//        "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
+		//        var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
+		//        sectionSingle.Headers = new Dictionary<string, StringValues>();
+		//        sectionSingle.Headers.Add("Content-Type",request.ContentType);
+		//        sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
 
 		[TestMethod]
 		[ExpectedException(typeof(FileLoadException))]
@@ -62,10 +62,6 @@ namespace starskytest.Helpers
 		{
 			var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
 			httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
-//            //Controller needs a controller context 
-//            var controllerContext = new ControllerContext() {
-//                HttpContext = httpContext,
-//            };
 
 			var ms = new MemoryStream();
 			await FileStreamingHelper.StreamFile(httpContext.Request,_appSettings, new FakeSelectorStorage(new FakeIStorage()));
@@ -101,53 +97,6 @@ namespace starskytest.Helpers
 			streamSelector.Get(SelectorStorage.StorageServices.HostFilesystem)
 				.FileDelete(formValueProvider.FirstOrDefault());
 		}
-        
-//        [TestMethod]
-//        public async Task FileStreamingHelperTest_222222()
-//        {
-//	        // FAIL
-//	        var text = "--9051914041544843365972754266\r\n" +
-//	                   "Content-Disposition: form-data; name=\"text\"\r\n" +
-//	                   "\r\n" +
-//	                   "text default\r\n" +
-//	                   "--9051914041544843365972754266--\r\n";
-//
-//	        var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
-//	        stream.Seek(0, SeekOrigin.Begin);
-//	        
-//	        var formValueProvider = await FileStreamingHelper.StreamFile(
-//		        "multipart/form-data; boundary=\"--9051914041544843365972754266\"",stream, _appSettings);
-//
-//        }
-
-
-//        [TestMethod]
-//        public void FileStreamingHelper_GetTempFilePath_NullOption()
-//        {
-//            _appSettings.ThumbnailTempFolder = String.Empty;
-//            var tempFilePath = FileStreamingHelper.GetTempFilePath(null,_appSettings);
-//            Assert.AreEqual(true,tempFilePath.Contains("_import_"));
-//        }
-        
-        
-//        [TestMethod]
-//        public void FileStreamingHelper_GetTempFilePath_ParseStringSimple_Option()
-//        {
-//            _appSettings.TempFolder = String.Empty;
-//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-//
-//            var tempFilePath = FileStreamingHelper.GetTempFilePath("20180123_132404.jpg",_appSettings);
-//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-//        }
-        
-//        [TestMethod]
-//        public void FileStreamingHelper_GetTempFilePath_ParseStringWithDots_Option()
-//        {
-//            _appSettings.TempFolder = string.Empty;
-//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-//            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04.jpg",_appSettings);
-//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-//        }
 
 		[TestMethod]
 		public void FileStreamingHelper_HeaderFileName_normalStringTest()
@@ -185,95 +134,7 @@ namespace starskytest.Helpers
 			Assert.AreEqual("UPPERCASE.JPG",result);    
 		}
         
-        
-//        [TestMethod]
-//        public void FileStreamingHelper_GetTempFilePath_ParseStringAppendix1_Option()
-//        {
-//            _appSettings.TempFolder = string.Empty;
-//            _appSettings.Structure = "/yyyyMMdd_HHmmss.ext";
-//            var tempFilePath = FileStreamingHelper.GetTempFilePath("2018.01.23_13.24.04-1.jpg",_appSettings);
-//            Assert.AreEqual("20180123_132404.jpg",tempFilePath);
-//        }
-        
       
-        
-        
-		[TestMethod]
-		public async Task FileStreamingHelperTest_FileStreamingHelper_StreamFile_multiPart()
-		{
-			var targetStream = new MemoryStream();
-			var createAnImage = new CreateAnImage();
-            
-//            FileStream requestBody = new FileStream(createAnImage.FullFilePath, FileMode.Open);
-            
-//            var formValueProvider = await FileStreamingHelper.StreamFile("multipart/form-data; boundary=test", targetStream, targetStream);
-//            Assert.AreNotEqual(null, formValueProvider.ToString());
-//            requestBody.Dispose();
-		}
-        
-        
-//        [TestMethod]
-//        public void Test()
-//        {
-//            ContentDispositionHeaderValue.TryParse(
-//                "form-data; name=\"file\"; filename=\"2017-12-07 17.01.25.png\"", out var contentDisposition);
-//
-////            FileStreamingHelper.StreamFile("image/jpeg", Stream requestBody, Stream targetStream)
-//             
-//            
-//            var sectionSingle = new MultipartSection {Body = request.Body as MemoryStream};
-//            sectionSingle.Headers = new Dictionary<string, StringValues>();
-//            sectionSingle.Headers.Add("Content-Type","image/jpeg");
-//            sectionSingle.Headers.Add("Content-Disposition","form-data; name=\"file2\"; filename=\"2017-12-07 17.01.25.png\"");
-//        }
-
-//        [TestMethod]
-//        public void FileStreamingHelperTestGetEncodingTest()
-//        {
-//            
-//            var multipartSection = new MultipartSection();
-//            var bound = Encoding.UTF7.GetBytes("test");
-//            var boundMs = new MemoryStream();
-//            boundMs.Write(bound,0,bound.Length);
-//            var ms = new MemoryStream();
-//            ms.CopyTo(boundMs);
-//            multipartSection.Headers = new Dictionary<string, StringValues>();
-//            multipartSection.Headers.Add("Content-Type","text/plain");
-//            multipartSection.Body = ms;
-//
-//            var result = FileStreamingHelper.GetEncoding(multipartSection);
-//            Assert.AreEqual(null,result);
-//            
-//        }
-
-//        [TestMethod]
-//        public async Task StreamFileBoundaryMultipart()
-//        {
-//            var httpContext = new DefaultHttpContext(); // or mock a `HttpContext`
-//            httpContext.Request.Headers["token"] = "fake_token_here"; //Set header
-//            httpContext.Request.ContentType = "multipart/form-data; boundary=--------------------------202544316310013789687781";
-//
-//            using (MemoryStream ms = new MemoryStream())
-//            using (MemoryStream ms2 = new MemoryStream())
-//
-//            using (FileStream file = new FileStream(new CreateAnImage().FullFilePath, FileMode.Open, FileAccess.Read)) {
-//                byte[] bytes = new byte[file.Length];
-//                file.Read(bytes, 0, (int)file.Length);
-//                ms.Write(bytes, 0, (int)file.Length);
-//                
-//                file.Dispose();
-//
-////                var bound = Encoding.ASCII.GetBytes("--------------------------202544316310013789687781");
-////                var boundMs = new MemoryStream();
-////                boundMs.Write(bound,0,bound.Length);
-////                ms.CopyTo(boundMs);
-//                
-//                httpContext.Request.Body = ms;
-//                await FileStreamingHelper.StreamFile(httpContext.Request, ms2);
-//            }
-           
-		//       }
-        
             
             
 	}
