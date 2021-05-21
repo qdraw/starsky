@@ -28,6 +28,9 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			CancellationTokenSource source = new CancellationTokenSource();
 			source.Cancel();
 			var fileProcessor = new FileProcessor(TestExecuted);
+			
+			// should not hit timeout
+			Assert.IsNotNull(source);
 			await fileProcessor.EndlessWorkQueueAsync(source.Token);
 		}
 

@@ -15,6 +15,7 @@ namespace starskytest.starskyWebHtmlCli
             }.ToArray();
             Program.Main(args);
             // see console log ==> Please add a valid folder: not-found-folder
+            Assert.IsNotNull(args);
         }
         
         [TestMethod]
@@ -23,6 +24,7 @@ namespace starskytest.starskyWebHtmlCli
             var args = new List<string> {}.ToArray();
             Program.Main(args);
             // There is a console log
+            Assert.IsNotNull(args);
         }
     }
 }

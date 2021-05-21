@@ -16,6 +16,7 @@ namespace starskytest.starskySynchronizeCli
                 "-h","-v"
             }.ToArray();
             Program.Main(args);
+            Assert.IsNotNull(args);
         }
         
         [TestMethod]
@@ -27,6 +28,7 @@ namespace starskytest.starskySynchronizeCli
                 newImage.BasePath, "-e", newImage.FullFilePath 
             }.ToArray();
             Program.Main(args);
+            Assert.IsNotNull(args);
         }
         
         [TestMethod]
@@ -48,6 +50,7 @@ namespace starskytest.starskySynchronizeCli
             }
             
             Program.Main(args);
+            Assert.IsNotNull(args);
         }
         
     }

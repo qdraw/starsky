@@ -12,6 +12,7 @@ namespace starskytest.starskythumbnailcli
 		{
 			var args = new List<string> {"-h", "-v"}.ToArray();
 			Program.Main(args);
+			Assert.IsNotNull(args);
 		}
 	}
 }
