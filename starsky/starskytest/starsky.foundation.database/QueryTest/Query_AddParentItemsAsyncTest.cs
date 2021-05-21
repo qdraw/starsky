@@ -85,9 +85,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await _query.AddParentItemsAsync("/test/test/test");
 			var result = await _dbContext.FileIndex.ToListAsync();
 
-			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/").FilePath, "/");
-			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/test").FilePath, "/test");
-			Assert.AreEqual(result.FirstOrDefault(p => p.FilePath == "/test/test").FilePath, "/test/test");
+			Assert.AreEqual("/", result.FirstOrDefault(p => p.FilePath == "/").FilePath);
+			Assert.AreEqual("/test", result.FirstOrDefault(p => p.FilePath == "/test").FilePath);
+			Assert.AreEqual("/test/test", result.FirstOrDefault(p => p.FilePath == "/test/test").FilePath);
 		}
 
 		[TestMethod]

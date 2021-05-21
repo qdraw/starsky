@@ -47,8 +47,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void RemoveCacheItem_Disabled()
 		{
-			_query.RemoveCacheItem(new List<FileIndexItem>());
+			var updateStatusContent = new List<FileIndexItem>();
+			_query.RemoveCacheItem(updateStatusContent);
 			// it should not crash
+			Assert.IsNotNull(updateStatusContent);
 		}
 	    
 	}

@@ -232,7 +232,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			// for selecting the current directory
 			var args = new List<string> {"-p"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).IsSubPathOrPath(args), false);
+			Assert.IsFalse(new ArgsHelper(_appSettings).IsSubPathOrPath(args));
 		}
 
 		[TestMethod]
@@ -241,7 +241,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-t", "true"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).GetThumbnail(args), true);
+			Assert.IsTrue(new ArgsHelper(_appSettings).GetThumbnail(args));
 		}   
         
 		[TestMethod]
@@ -250,7 +250,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			_appSettings.StorageFolder = new CreateAnImage().BasePath;
 			var args = new List<string> {"-o", "true"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).GetOrphanFolderCheck(args), true);
+			Assert.IsTrue(new ArgsHelper(_appSettings).GetOrphanFolderCheck(args));
 		}   
         
 		[TestMethod]
@@ -258,11 +258,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_GetMoveTest()
 		{
 			var args = new List<string> {"-m"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).GetMove(args), true);
+			Assert.IsTrue(new ArgsHelper(_appSettings).GetMove(args));
             
 			// Bool parse check
 			args = new List<string> {"-m","true"}.ToArray();
-			Assert.AreEqual(new ArgsHelper(_appSettings).GetMove(args), true);
+			Assert.IsTrue(new ArgsHelper(_appSettings).GetMove(args));
 		}
         
 		[TestMethod]
@@ -382,8 +382,15 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				.NeedHelpShowDialog();
 			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Importer})
 				.NeedHelpShowDialog();
-			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Geo})
+
+			var geoAppSettings = new AppSettings
+			{
+				ApplicationType = AppSettings.StarskyAppType.Geo
+			};
+			new ArgsHelper(geoAppSettings)
 				.NeedHelpShowDialog();
+			
+			Assert.IsNotNull(geoAppSettings);
 		}
         
         	    
