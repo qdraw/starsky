@@ -571,7 +571,7 @@ Task("PublishWeb")
                     Configuration = configuration,
                     OutputDirectory = distDirectory, // <= first to generic
                     ArgumentCustomization = args => args
-                      .Append("--no-restore --no-build --force"),
+                      .Append("--nologo").Append("--no-build").Append("--no-restore").Append("--no-dependencies"),
                 };
 
 
