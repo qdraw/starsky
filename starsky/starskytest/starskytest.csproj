@@ -95,4 +95,8 @@
             <Link>build.vstest.runsettings</Link>
         </Content>
     </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
 </Project>
