@@ -93,7 +93,7 @@ namespace starskytest.starsky.feature.rename.Services
 				_iStorageSubPath.ReadStream(fileAlreadyExistSubPath));
 			
 			// it should not overwrite the target file
-			Assert.AreEqual(result.Contains("test"), true);
+			Assert.IsTrue(result.Contains("test"));
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, renameFs.FirstOrDefault().Status );
 
 			// and there are no more files with a name that looks like already_8758
@@ -140,8 +140,8 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			// query database
 			var all = _query.GetAllRecursive();
-			Assert.AreEqual(all.FirstOrDefault(
-				p => p.FileName == "test2.jpg").FileName, "test2.jpg");
+			Assert.AreEqual("test2.jpg", all.FirstOrDefault(
+				p => p.FileName == "test2.jpg").FileName);
 			
 			
 			// use cached view
@@ -170,8 +170,9 @@ namespace starskytest.starsky.feature.rename.Services
 			
 			// query database
 			var all = await _query.GetAllRecursiveAsync();
-			Assert.AreEqual(all.FirstOrDefault(
-				p => p.FileName == "test3.jpg").FileName, "test3.jpg");
+			// ReSharper disable once PossibleNullReferenceException
+			Assert.AreEqual("test3.jpg", all.FirstOrDefault(
+				p => p.FileName == "test3.jpg").FileName );
 			
 			
 			var renameFs = await new RenameService(_query,_iStorageSubPath).Rename("/dir1", "/dir2");

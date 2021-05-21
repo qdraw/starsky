@@ -383,14 +383,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var releative = _query.GetNextPrevInFolder("/display/hi3.jpg");
             
 			// Folders ignore deleted items
-			Assert.AreEqual(releative.PrevFilePath,"/display/hi2.jpg");
-			Assert.AreEqual(releative.NextFilePath,null);
+			Assert.AreEqual("/display/hi2.jpg", releative.PrevFilePath);
+			Assert.IsNull(releative.NextFilePath);
 
 			// Next  Relative -- all mode
 			var releative2 = _query.GetNextPrevInFolder("/display/hi.jpg");
             
-			Assert.AreEqual(releative2.NextFilePath,"/display/hi2.jpg");
-			Assert.AreEqual(releative2.PrevFilePath,null);
+			Assert.AreEqual("/display/hi2.jpg", releative2.NextFilePath);
+			Assert.AreEqual(null, releative2.PrevFilePath);
 		}
 
 		[TestMethod]

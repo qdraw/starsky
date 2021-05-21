@@ -194,6 +194,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 					
 				}
 			}.AsEnumerable();
+			Assert.IsNotNull(service);
 			service.PreGenerateThumbnail(input);
 			// should not crash
 		}
