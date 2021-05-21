@@ -22,7 +22,11 @@
         <!--disable TC completely, use this MSBuild property-->
         <TieredCompilation>false</TieredCompilation>
     </PropertyGroup>
-
+    
+    <PropertyGroup Condition=" '$(RuntimeIdentifier)' == '' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+    
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
