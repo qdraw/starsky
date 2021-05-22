@@ -20,6 +20,7 @@ namespace starskytest.root
 
 			// should not crash
 			new Startup().ConfigureServices(serviceCollection);
+			Assert.IsNotNull(serviceCollection);
 		}
 		
 		[TestMethod]
@@ -40,6 +41,9 @@ namespace starskytest.root
 			
 			// should not crash
 			new Startup().Configure(applicationBuilder, env);
+			
+			Assert.IsNotNull(applicationBuilder);
+			Assert.IsNotNull(env);
 		}
 	}
 }

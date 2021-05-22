@@ -18,7 +18,7 @@ namespace starskytest.Controllers
 				FileIndexItem.ExifStatus.Ok }};
 			var actionResult = await new SynchronizeController(
 				new FakeIManualBackgroundSyncService(items)
-				).Index("/") as OkObjectResult;
+			).Index("/") as OkObjectResult;
 			
 			Assert.AreEqual(200, actionResult.StatusCode);
 		}

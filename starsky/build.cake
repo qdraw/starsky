@@ -278,7 +278,9 @@ Task("BuildNetCoreGeneric")
         {
             Configuration = configuration,
             // .Append("/p:DebugType=None") is no pdb files
-            ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
+            ArgumentCustomization = args => args.Append("--nologo")
+              .Append("--no-restore")
+              .Append("/p:noSonar=true"),
         };
 
         foreach(var runtime in runtimes)
@@ -569,7 +571,7 @@ Task("PublishWeb")
                     Configuration = configuration,
                     OutputDirectory = distDirectory, // <= first to generic
                     ArgumentCustomization = args => args
-                      .Append("--no-restore --no-build --force"),
+                      .Append("--nologo").Append("--no-build").Append("--no-restore").Append("--no-dependencies"),
                 };
 
 

@@ -28,204 +28,204 @@ using starskytest.Models;
 
 namespace starskytest.Controllers
 {
-    [TestClass]
-    public class ApiControllerTest
-    {
-        private readonly IQuery _query;
-        private readonly IExifTool _exifTool;
-        private readonly AppSettings _appSettings;
-        private readonly CreateAnImage _createAnImage;
-        private readonly IBackgroundTaskQueue _bgTaskQueue;
-        private readonly ApplicationDbContext _context;
-        private readonly IReadMeta _readmeta;
-        private readonly IServiceScopeFactory _scopeFactory;
-	    private readonly IStorage _iStorage;
+	[TestClass]
+	public class ApiControllerTest
+	{
+		private readonly IQuery _query;
+		private readonly IExifTool _exifTool;
+		private readonly AppSettings _appSettings;
+		private readonly CreateAnImage _createAnImage;
+		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly ApplicationDbContext _context;
+		private readonly IReadMeta _readmeta;
+		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IStorage _iStorage;
 
-	    public ApiControllerTest()
-        {
-            var provider = new ServiceCollection()
-                .AddMemoryCache()
-                .BuildServiceProvider();
-            var memoryCache = provider.GetService<IMemoryCache>();
+		public ApiControllerTest()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+			var memoryCache = provider.GetService<IMemoryCache>();
             
-            var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builderDb.UseInMemoryDatabase("test1234");
-            var options = builderDb.Options;
-            _context = new ApplicationDbContext(options);
-            _query = new Query(_context,memoryCache);
+			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builderDb.UseInMemoryDatabase("test1234");
+			var options = builderDb.Options;
+			_context = new ApplicationDbContext(options);
+			_query = new Query(_context,memoryCache);
             
-            // Inject Fake ExifTool; dependency injection
-            var services = new ServiceCollection();
+			// Inject Fake ExifTool; dependency injection
+			var services = new ServiceCollection();
 
-            // Fake the readMeta output
-            services.AddSingleton<IReadMeta, FakeReadMeta>();    
+			// Fake the readMeta output
+			services.AddSingleton<IReadMeta, FakeReadMeta>();    
             
-            // Inject Config helper
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            // random config
-            _createAnImage = new CreateAnImage();
-            var dict = new Dictionary<string, string>
-            {
-                { "App:StorageFolder", _createAnImage.BasePath },
-                { "App:ThumbnailTempFolder",_createAnImage.BasePath },
-                { "App:Verbose", "true" }
-            };
-            // Start using dependency injection
-            var builder = new ConfigurationBuilder();  
-            // Add random config to dependency injection
-            builder.AddInMemoryCollection(dict);
-            // build config
-            var configuration = builder.Build();
-            // inject config as object to a service
-            services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
+			// Inject Config helper
+			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+			// random config
+			_createAnImage = new CreateAnImage();
+			var dict = new Dictionary<string, string>
+			{
+				{ "App:StorageFolder", _createAnImage.BasePath },
+				{ "App:ThumbnailTempFolder",_createAnImage.BasePath },
+				{ "App:Verbose", "true" }
+			};
+			// Start using dependency injection
+			var builder = new ConfigurationBuilder();  
+			// Add random config to dependency injection
+			builder.AddInMemoryCollection(dict);
+			// build config
+			var configuration = builder.Build();
+			// inject config as object to a service
+			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
-            // Add Background services
-            services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			// Add Background services
+			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
+			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             
-            // build the service
-            var serviceProvider = services.BuildServiceProvider();
-            // get the service
-            _appSettings = serviceProvider.GetRequiredService<AppSettings>();
+			// build the service
+			var serviceProvider = services.BuildServiceProvider();
+			// get the service
+			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
            
-            // inject fake exiftool
-            _exifTool = new FakeExifTool(_iStorage,_appSettings);
+			// inject fake exiftool
+			_exifTool = new FakeExifTool(_iStorage,_appSettings);
             
-            _readmeta = serviceProvider.GetRequiredService<IReadMeta>();
-            _scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
+			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
             
-            // get the background helper
-            _bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			// get the background helper
+			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
 	        
 			_iStorage = new StorageSubPathFilesystem(_appSettings);
 
-        }
+		}
         
-        private FileIndexItem InsertSearchData(bool delete = false)
-        {
-            var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
+		private FileIndexItem InsertSearchData(bool delete = false)
+		{
+			var fileHashCode = new FileHash(_iStorage).GetHashCode(_createAnImage.DbPath).Key;
 	        
-            if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
-            {
-                var isDelete = string.Empty;
-                if (delete) isDelete = "!delete!";
-                _query.AddItem(new FileIndexItem
-                {
-                    FileName = _createAnImage.FileName,
-                    ParentDirectory = "/",
-                    FileHash = fileHashCode,
-                    ColorClass = ColorClassParser.Color.Winner, // 1
-                    Tags = isDelete
-                });
-            }
-            return _query.GetObjectByFilePath(_createAnImage.DbPath);
-        }
+			if (string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)))
+			{
+				var isDelete = string.Empty;
+				if (delete) isDelete = "!delete!";
+				_query.AddItem(new FileIndexItem
+				{
+					FileName = _createAnImage.FileName,
+					ParentDirectory = "/",
+					FileHash = fileHashCode,
+					ColorClass = ColorClassParser.Color.Winner, // 1
+					Tags = isDelete
+				});
+			}
+			return _query.GetObjectByFilePath(_createAnImage.DbPath);
+		}
 
 
       
-        [TestMethod]
-        public void ApiController_CheckIfCacheIsRemoved_CleanCache()
-        {
-	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+		[TestMethod]
+		public void ApiController_CheckIfCacheIsRemoved_CleanCache()
+		{
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-            // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			// Act
+			var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-            _query.AddItem(new FileIndexItem
-            {
-                FileName = "cacheDeleteTest",
-                ParentDirectory = "/",
-                IsDirectory = true
-            });
+			_query.AddItem(new FileIndexItem
+			{
+				FileName = "cacheDeleteTest",
+				ParentDirectory = "/",
+				IsDirectory = true
+			});
             
-            _query.AddItem(new FileIndexItem
-            {
-                FileName = "file.jpg",
-                ParentDirectory = "/cacheDeleteTest",
-                IsDirectory = false
-            });
+			_query.AddItem(new FileIndexItem
+			{
+				FileName = "file.jpg",
+				ParentDirectory = "/cacheDeleteTest",
+				IsDirectory = false
+			});
 
-            Assert.AreEqual(true,_query.DisplayFileFolders("/cacheDeleteTest").Any());
+			Assert.AreEqual(true,_query.DisplayFileFolders("/cacheDeleteTest").Any());
             
-            // Ask the cache
-            _query.DisplayFileFolders("/cacheDeleteTest");
+			// Ask the cache
+			_query.DisplayFileFolders("/cacheDeleteTest");
 
-            // Don't notify the cache that there is an update
-            var newItem = new FileIndexItem
-            {
-                FileName = "file2.jpg",
-                ParentDirectory = "/cacheDeleteTest",
-                IsDirectory = false
-            };
-            _context.FileIndex.Add(newItem);
-            _context.SaveChanges();
-            // Write changes to database
+			// Don't notify the cache that there is an update
+			var newItem = new FileIndexItem
+			{
+				FileName = "file2.jpg",
+				ParentDirectory = "/cacheDeleteTest",
+				IsDirectory = false
+			};
+			_context.FileIndex.Add(newItem);
+			_context.SaveChanges();
+			// Write changes to database
             
-            // Check if there is one item in the cache
-            var beforeQuery = _query.DisplayFileFolders("/cacheDeleteTest");
-            Assert.AreEqual(1, beforeQuery.Count());
+			// Check if there is one item in the cache
+			var beforeQuery = _query.DisplayFileFolders("/cacheDeleteTest");
+			Assert.AreEqual(1, beforeQuery.Count());
 
-            // Act, remove content from cache
-            var actionResult = controller.RemoveCache("/cacheDeleteTest") as JsonResult;
-            Assert.AreEqual("cache successful cleared", actionResult.Value);
+			// Act, remove content from cache
+			var actionResult = controller.RemoveCache("/cacheDeleteTest") as JsonResult;
+			Assert.AreEqual("cache successful cleared", actionResult.Value);
             
-            // Check if there are now two items in the cache
-            var newQuery = _query.DisplayFileFolders("/cacheDeleteTest");
-            Assert.AreEqual(2, newQuery.Count());
-        }
+			// Check if there are now two items in the cache
+			var newQuery = _query.DisplayFileFolders("/cacheDeleteTest");
+			Assert.AreEqual(2, newQuery.Count());
+		}
 
-        [TestMethod]
-        public void RemoveCache_CacheDidNotExist()
-        {
-	        var selectorStorage =
-		        new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+		[TestMethod]
+		public void RemoveCache_CacheDidNotExist()
+		{
+			var selectorStorage =
+				new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-	        // Act
-	        var controller = new ApiController(_query, _exifTool, _appSettings, _bgTaskQueue,
-		        selectorStorage, null);
-	        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			// Act
+			var controller = new ApiController(_query, _exifTool, _appSettings, _bgTaskQueue,
+				selectorStorage, null);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 	        
-	        _query.AddItem(new FileIndexItem
-	        {
-		        FileName = "cacheDeleteTest2",
-		        ParentDirectory = "/",
-		        IsDirectory = true
-	        });
+			_query.AddItem(new FileIndexItem
+			{
+				FileName = "cacheDeleteTest2",
+				ParentDirectory = "/",
+				IsDirectory = true
+			});
 	        
-	        // Act, remove content from cache
-	        var actionResult = controller.RemoveCache("/cacheDeleteTest2") as JsonResult;
-	        Assert.AreEqual("cache did not exist", actionResult.Value);
-        }
+			// Act, remove content from cache
+			var actionResult = controller.RemoveCache("/cacheDeleteTest2") as JsonResult;
+			Assert.AreEqual("cache did not exist", actionResult.Value);
+		}
 
-        [TestMethod]
-        public void ApiController_NonExistingCacheRemove()
-        {
-	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+		[TestMethod]
+		public void ApiController_NonExistingCacheRemove()
+		{
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-            // Act
-            var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
-            controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			// Act
+			var controller = new ApiController(_query,_exifTool,_appSettings,_bgTaskQueue,selectorStorage,null);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
             
-            var actionResult = controller.RemoveCache("/404page") as BadRequestObjectResult;
-            Assert.AreEqual(400,actionResult.StatusCode);
-        }
+			var actionResult = controller.RemoveCache("/404page") as BadRequestObjectResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
 
-        [TestMethod]
-        public void ApiController_CacheDisabled()
-        {
-	        var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+		[TestMethod]
+		public void ApiController_CacheDisabled()
+		{
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-            var appsettings = new AppSettings {AddMemoryCache = false};
+			var appsettings = new AppSettings {AddMemoryCache = false};
 
-            var controller =
-                new ApiController(_query, _exifTool, appsettings, _bgTaskQueue,selectorStorage,null)
-                {
-                    ControllerContext = {HttpContext = new DefaultHttpContext()}
-                };
-            var actionResult = controller.RemoveCache("/404page") as JsonResult;
-            Assert.AreEqual("cache disabled in config",actionResult.Value);
-        }
-    }
+			var controller =
+				new ApiController(_query, _exifTool, appsettings, _bgTaskQueue,selectorStorage,null)
+				{
+					ControllerContext = {HttpContext = new DefaultHttpContext()}
+				};
+			var actionResult = controller.RemoveCache("/404page") as JsonResult;
+			Assert.AreEqual("cache disabled in config",actionResult.Value);
+		}
+	}
 }

@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.storage.Services
 		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void Base32Encode_OutRange()
 		{
-			 // the length (1 << 28 )
+			// the length (1 << 28 )
 			Base32.Encode(new byte[268435456]);
 		}
 

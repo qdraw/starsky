@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var services = new ServiceCollection();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<AppSettings>();
-			services.AddScoped<IConsole, FakeConsoleWrapper>();
+			services.AddScoped<IWebLogger, FakeIWebLogger>();
 			services.AddScoped<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 			services.AddScoped<IQuery, FakeIQuery>();
 			var serviceProvider = services.BuildServiceProvider();

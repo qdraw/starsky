@@ -108,7 +108,8 @@ namespace starskytest.Controllers
 					HttpContext = new DefaultHttpContext()
 				}
 			};
-			controller.Register();
+			var result = controller.Register();
+			Assert.IsNotNull(result);
 		}
 		
 		[TestMethod]

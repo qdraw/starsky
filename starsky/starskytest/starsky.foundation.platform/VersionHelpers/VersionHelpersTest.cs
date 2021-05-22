@@ -37,46 +37,46 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		}
 		
 		/// <summary>
-        /// These are version numbers given with the link in the spec to a regex for semver versions
-        /// @see: https://github.com/maxhauser/semver/blob/master/Semver.Test/SemVersionComparisonTests.cs
-        /// </summary>
+		/// These are version numbers given with the link in the spec to a regex for semver versions
+		/// @see: https://github.com/maxhauser/semver/blob/master/Semver.Test/SemVersionComparisonTests.cs
+		/// </summary>
 		private static readonly Dictionary<string, SemVersionBasic> RegexValidExamples =
-            new Dictionary<string, SemVersionBasic>()
-            {
-                {"0.0.4", new SemVersionBasic(0, 0, 4,"","")},
-                {"1.2.3", new SemVersionBasic(1, 2, 3, "", "")},
-                {"10.20.30", new SemVersionBasic(10, 20, 30, "", "")},
-                {"1.1.2-prerelease+meta", new SemVersionBasic(1, 1, 2, "prerelease", "meta")},
-                {"1.1.2+meta", new SemVersionBasic(1, 1, 2, "", "meta")},
-                {"1.1.2+meta-valid", new SemVersionBasic(1, 1, 2, "", "meta-valid")},
-                {"1.0.0-alpha", new SemVersionBasic(1, 0, 0, "alpha", "")},
-                {"1.0.0-beta", new SemVersionBasic(1, 0, 0, "beta", "")},
-                {"1.0.0-alpha.beta", new SemVersionBasic( 1, 0, 0, "alpha.beta", "")},
-                {"1.0.0-alpha.beta.1", new SemVersionBasic( 1, 0, 0, "alpha.beta.1", "")},
-                {"1.0.0-alpha.1", new SemVersionBasic( 1, 0, 0, "alpha.1", "")},
-                {"1.0.0-alpha0.valid", new SemVersionBasic( 1, 0, 0, "alpha0.valid", "")},
-                {"1.0.0-alpha.0valid", new SemVersionBasic( 1, 0, 0, "alpha.0valid", "")},
-                {"1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay", new SemVersionBasic( 1, 0, 0, 
-	                "alpha-a.b-c-somethinglong", "build.1-aef.1-its-okay")},
-                {"1.0.0-rc.1+build.1", new SemVersionBasic( 1, 0, 0, "rc.1", "build.1")},
-                {"2.0.0-rc.1+build.123", new SemVersionBasic( 2, 0, 0, "rc.1", "build.123")},
-                {"1.2.3-beta", new SemVersionBasic( 1, 2, 3, "beta", "")},
-                {"10.2.3-DEV-SNAPSHOT", new SemVersionBasic( 10, 2, 3, "DEV-SNAPSHOT", "")},
-                {"1.2.3-SNAPSHOT-123", new SemVersionBasic( 1, 2, 3, "SNAPSHOT-123", "")},
-                {"1.0.0", new SemVersionBasic( 1, 0, 0, "", "")},
-                {"2.0.0", new SemVersionBasic( 2, 0, 0, "", "")},
-                {"1.1.7", new SemVersionBasic( 1, 1, 7, "", "")},
-                {"2.0.0+build.1848", new SemVersionBasic( 2, 0, 0, "", "build.1848")},
-                {"2.0.1-alpha.1227", new SemVersionBasic( 2, 0, 1, "alpha.1227", "")},
-                {"1.0.0-alpha+beta", new SemVersionBasic( 1, 0, 0, "alpha", "beta")},
-                {"1.2.3----RC-SNAPSHOT.12.9.1--.12+788", new SemVersionBasic( 1, 2, 3, 
-	                "---RC-SNAPSHOT.12.9.1--.12", "788")},
-                {"1.2.3----R-S.12.9.1--.12+meta", new SemVersionBasic( 1, 2, 3, "---R-S.12.9.1--.12", "meta")},
-                {"1.2.3----RC-SNAPSHOT.12.9.1--.12", new SemVersionBasic( 1, 2, 3, "---RC-SNAPSHOT.12.9.1--.12", "")},
-                {"1.0.0+0.build.1-rc.10000aaa-kk-0.1", new SemVersionBasic( 1, 0, 0, "", 
-	                "0.build.1-rc.10000aaa-kk-0.1")},
-                {"1.0.0-0A.is.legal", new SemVersionBasic( 1, 0, 0, "0A.is.legal", "")},
-            };
+			new Dictionary<string, SemVersionBasic>()
+			{
+				{"0.0.4", new SemVersionBasic(0, 0, 4,"","")},
+				{"1.2.3", new SemVersionBasic(1, 2, 3, "", "")},
+				{"10.20.30", new SemVersionBasic(10, 20, 30, "", "")},
+				{"1.1.2-prerelease+meta", new SemVersionBasic(1, 1, 2, "prerelease", "meta")},
+				{"1.1.2+meta", new SemVersionBasic(1, 1, 2, "", "meta")},
+				{"1.1.2+meta-valid", new SemVersionBasic(1, 1, 2, "", "meta-valid")},
+				{"1.0.0-alpha", new SemVersionBasic(1, 0, 0, "alpha", "")},
+				{"1.0.0-beta", new SemVersionBasic(1, 0, 0, "beta", "")},
+				{"1.0.0-alpha.beta", new SemVersionBasic( 1, 0, 0, "alpha.beta", "")},
+				{"1.0.0-alpha.beta.1", new SemVersionBasic( 1, 0, 0, "alpha.beta.1", "")},
+				{"1.0.0-alpha.1", new SemVersionBasic( 1, 0, 0, "alpha.1", "")},
+				{"1.0.0-alpha0.valid", new SemVersionBasic( 1, 0, 0, "alpha0.valid", "")},
+				{"1.0.0-alpha.0valid", new SemVersionBasic( 1, 0, 0, "alpha.0valid", "")},
+				{"1.0.0-alpha-a.b-c-somethinglong+build.1-aef.1-its-okay", new SemVersionBasic( 1, 0, 0, 
+					"alpha-a.b-c-somethinglong", "build.1-aef.1-its-okay")},
+				{"1.0.0-rc.1+build.1", new SemVersionBasic( 1, 0, 0, "rc.1", "build.1")},
+				{"2.0.0-rc.1+build.123", new SemVersionBasic( 2, 0, 0, "rc.1", "build.123")},
+				{"1.2.3-beta", new SemVersionBasic( 1, 2, 3, "beta", "")},
+				{"10.2.3-DEV-SNAPSHOT", new SemVersionBasic( 10, 2, 3, "DEV-SNAPSHOT", "")},
+				{"1.2.3-SNAPSHOT-123", new SemVersionBasic( 1, 2, 3, "SNAPSHOT-123", "")},
+				{"1.0.0", new SemVersionBasic( 1, 0, 0, "", "")},
+				{"2.0.0", new SemVersionBasic( 2, 0, 0, "", "")},
+				{"1.1.7", new SemVersionBasic( 1, 1, 7, "", "")},
+				{"2.0.0+build.1848", new SemVersionBasic( 2, 0, 0, "", "build.1848")},
+				{"2.0.1-alpha.1227", new SemVersionBasic( 2, 0, 1, "alpha.1227", "")},
+				{"1.0.0-alpha+beta", new SemVersionBasic( 1, 0, 0, "alpha", "beta")},
+				{"1.2.3----RC-SNAPSHOT.12.9.1--.12+788", new SemVersionBasic( 1, 2, 3, 
+					"---RC-SNAPSHOT.12.9.1--.12", "788")},
+				{"1.2.3----R-S.12.9.1--.12+meta", new SemVersionBasic( 1, 2, 3, "---R-S.12.9.1--.12", "meta")},
+				{"1.2.3----RC-SNAPSHOT.12.9.1--.12", new SemVersionBasic( 1, 2, 3, "---RC-SNAPSHOT.12.9.1--.12", "")},
+				{"1.0.0+0.build.1-rc.10000aaa-kk-0.1", new SemVersionBasic( 1, 0, 0, "", 
+					"0.build.1-rc.10000aaa-kk-0.1")},
+				{"1.0.0-0A.is.legal", new SemVersionBasic( 1, 0, 0, "0A.is.legal", "")},
+			};
 		
 		[TestMethod]
 		public void Parse_V040()
@@ -109,65 +109,65 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 		}
 
 		private static readonly IReadOnlyList<SemVersion> VersionsInOrder = new List<SemVersion>()
-        {
-            new SemVersion(-2),
-            new SemVersion(-1, -1),
-            new SemVersion(-1),
-            new SemVersion(0, -1),
-            new SemVersion(0, 0, -1),
-            new SemVersion(0),
-            new SemVersion(0, 0, 1, "13"),
-            new SemVersion(0, 0, 1, "."),
-            new SemVersion(0, 0, 1, ".."),
-            new SemVersion(0, 0, 1, ".a"),
-            new SemVersion(0, 0, 1, "b"),
-            new SemVersion(0, 0, 1, "gamma.12.87"),
-            new SemVersion(0, 0, 1, "gamma.12.87.1"),
-            new SemVersion(0, 0, 1, "gamma.12.87.99"),
-            new SemVersion(0, 0, 1, "gamma.12.87.X"),
-            new SemVersion(0, 0, 1, "gamma.12.88"),
-            new SemVersion(0, 0, 1, "", "12"),
-            new SemVersion(0, 0, 1, "", "."),
-            new SemVersion(0, 0, 1, "", ".."),
-            new SemVersion(0, 0, 1, "", ".a"),
-            new SemVersion(0, 0, 1, "", "bu"),
-            new SemVersion(0, 0, 1, "", "build.12"),
-            new SemVersion(0, 0, 1, "", "build.12.2"),
-            new SemVersion(0, 0, 1, "", "build.13"),
-            new SemVersion(0, 0, 1, "", "uiui"),
-            new SemVersion(0, 1, 1),
-            new SemVersion(0, 2, 1),
-            new SemVersion(1, 0, 0, "alpha"),
-            new SemVersion(1, 0, 0, "alpha", "dev.123"),
-            new SemVersion(1, 0, 0, "alpha", "😞"),
-            new SemVersion(1, 0, 0, "alpha.1"),
-            new SemVersion(1, 0, 0, "alpha.beta"),
-            new SemVersion(1, 0, 0, "beta"),
-            new SemVersion(1, 0, 0, "beta", "dev.123"),
-            new SemVersion(1, 0, 0, "beta.2"),
-            new SemVersion(1, 0, 0, "beta.11"),
-            new SemVersion(1, 0, 0, "rc.1"),
-            new SemVersion(1, 0, 0, "😞"),
-            new SemVersion(1),
-            new SemVersion(1, 0, 10, "alpha"),
-            new SemVersion(1, 2, 0, "alpha", "dev"),
-            new SemVersion(1, 2, 0, "nightly"),
-            new SemVersion(1, 2, 0, "nightly", "dev"),
-            new SemVersion(1, 2, 0, "nightly2"),
-            new SemVersion(1, 2),
-            new SemVersion(1, 2, 0, "", "nightly"),
-            new SemVersion(1, 2, 1, "0"),
-            new SemVersion(1, 2, 1, "99"),
-            new SemVersion(1, 2, 1, "-"),
-            new SemVersion(1, 2, 1, "0A"),
-            new SemVersion(1, 2, 1, "A"),
-            new SemVersion(1, 2, 1, "a"),
-            new SemVersion(1, 2, 1),
-            new SemVersion(1, 4),
-            new SemVersion(2),
-            new SemVersion(2, 1),
-            new SemVersion(2, 1, 1),
-        }.AsReadOnly();
+		{
+			new SemVersion(-2),
+			new SemVersion(-1, -1),
+			new SemVersion(-1),
+			new SemVersion(0, -1),
+			new SemVersion(0, 0, -1),
+			new SemVersion(0),
+			new SemVersion(0, 0, 1, "13"),
+			new SemVersion(0, 0, 1, "."),
+			new SemVersion(0, 0, 1, ".."),
+			new SemVersion(0, 0, 1, ".a"),
+			new SemVersion(0, 0, 1, "b"),
+			new SemVersion(0, 0, 1, "gamma.12.87"),
+			new SemVersion(0, 0, 1, "gamma.12.87.1"),
+			new SemVersion(0, 0, 1, "gamma.12.87.99"),
+			new SemVersion(0, 0, 1, "gamma.12.87.X"),
+			new SemVersion(0, 0, 1, "gamma.12.88"),
+			new SemVersion(0, 0, 1, "", "12"),
+			new SemVersion(0, 0, 1, "", "."),
+			new SemVersion(0, 0, 1, "", ".."),
+			new SemVersion(0, 0, 1, "", ".a"),
+			new SemVersion(0, 0, 1, "", "bu"),
+			new SemVersion(0, 0, 1, "", "build.12"),
+			new SemVersion(0, 0, 1, "", "build.12.2"),
+			new SemVersion(0, 0, 1, "", "build.13"),
+			new SemVersion(0, 0, 1, "", "uiui"),
+			new SemVersion(0, 1, 1),
+			new SemVersion(0, 2, 1),
+			new SemVersion(1, 0, 0, "alpha"),
+			new SemVersion(1, 0, 0, "alpha", "dev.123"),
+			new SemVersion(1, 0, 0, "alpha", "😞"),
+			new SemVersion(1, 0, 0, "alpha.1"),
+			new SemVersion(1, 0, 0, "alpha.beta"),
+			new SemVersion(1, 0, 0, "beta"),
+			new SemVersion(1, 0, 0, "beta", "dev.123"),
+			new SemVersion(1, 0, 0, "beta.2"),
+			new SemVersion(1, 0, 0, "beta.11"),
+			new SemVersion(1, 0, 0, "rc.1"),
+			new SemVersion(1, 0, 0, "😞"),
+			new SemVersion(1),
+			new SemVersion(1, 0, 10, "alpha"),
+			new SemVersion(1, 2, 0, "alpha", "dev"),
+			new SemVersion(1, 2, 0, "nightly"),
+			new SemVersion(1, 2, 0, "nightly", "dev"),
+			new SemVersion(1, 2, 0, "nightly2"),
+			new SemVersion(1, 2),
+			new SemVersion(1, 2, 0, "", "nightly"),
+			new SemVersion(1, 2, 1, "0"),
+			new SemVersion(1, 2, 1, "99"),
+			new SemVersion(1, 2, 1, "-"),
+			new SemVersion(1, 2, 1, "0A"),
+			new SemVersion(1, 2, 1, "A"),
+			new SemVersion(1, 2, 1, "a"),
+			new SemVersion(1, 2, 1),
+			new SemVersion(1, 4),
+			new SemVersion(2),
+			new SemVersion(2, 1),
+			new SemVersion(2, 1, 1),
+		}.AsReadOnly();
 
 		private static readonly IReadOnlyList<(SemVersion, SemVersion)> VersionPairs =
 			AllPairs(VersionsInOrder).ToList().AsReadOnly();
@@ -212,16 +212,16 @@ namespace starskytest.starsky.foundation.platform.VersionHelpers
 #pragma warning disable 1718
 		[TestMethod]
 		public void ComparisonTwoEqVersion3()
-        {
-            var directQ = new SemVersion(1);
-            // ReSharper disable once EqualExpressionComparison
-        	var v2 = directQ >= directQ;
-        	Assert.IsTrue(v2);
+		{
+			var directQ = new SemVersion(1);
+			// ReSharper disable once EqualExpressionComparison
+			var v2 = directQ >= directQ;
+			Assert.IsTrue(v2);
             
-            // ReSharper disable once EqualExpressionComparison
-            var v3 = directQ > directQ;
-            Assert.IsFalse(v3);
-        }
+			// ReSharper disable once EqualExpressionComparison
+			var v3 = directQ > directQ;
+			Assert.IsFalse(v3);
+		}
 #pragma warning restore 1718
 		
 		[TestMethod]

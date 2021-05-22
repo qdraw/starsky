@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.platform.Services
 			var tel = new RequestTelemetry("string name", 
 				new DateTimeOffset(), new TimeSpan(), "401",false);
 			new FilterStatusCodesInitializer().Initialize(tel);
-			Assert.AreEqual(tel.Success, true);
+			Assert.AreEqual(true, tel.Success);
 		}
 		
 		[TestMethod]
@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.platform.Services
 			var tel = new RequestTelemetry("string name", 
 				new DateTimeOffset(), new TimeSpan(), "404",false);
 			new FilterStatusCodesInitializer().Initialize(tel);
-			Assert.AreEqual(tel.Success, true);
+			Assert.AreEqual(true, tel.Success);
 		}
 				
 		[TestMethod]
@@ -32,14 +32,17 @@ namespace starskytest.starsky.foundation.platform.Services
 			var tel = new RequestTelemetry("string name", 
 				new DateTimeOffset(), new TimeSpan(), "500",false);
 			new FilterStatusCodesInitializer().Initialize(tel);
-			Assert.AreEqual(tel.Success, false);
+			Assert.AreEqual(false, tel.Success);
 		}
 		
 		[TestMethod]
 		public void IgnoreNullInput()
 		{
-			new FilterStatusCodesInitializer().Initialize(null);
+			RequestTelemetry input = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new FilterStatusCodesInitializer().Initialize(input);
 			// should not crash
+			Assert.IsNull(input);
 		}
 	}
 }

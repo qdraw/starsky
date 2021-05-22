@@ -18,6 +18,9 @@ using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
+	/// <summary>
+	/// QueryUpdateItem_Error
+	/// </summary>
 	[TestClass]
 	public class QueryUpdateItemError
 	{
@@ -248,12 +251,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				p => p.FilePath == "/test.jpg");
 
 			var sqLiteFailContext = new SqliteExceptionDbContext(options);
-			Assert.AreEqual(sqLiteFailContext.Count, 0);
+			Assert.AreEqual(0,sqLiteFailContext.Count);
 
 			var fakeQuery = new Query(sqLiteFailContext, null, null, scope, new FakeIWebLogger());
 			await fakeQuery.RemoveItemAsync(item);
 			
-			Assert.AreEqual(sqLiteFailContext.Count, 1);
+			Assert.AreEqual(1, sqLiteFailContext.Count);
 		}
 		
 		[TestMethod]
@@ -266,12 +269,12 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = CreateNewScopeSqliteException();
 
 			var sqLiteFailContext = new SqliteExceptionDbContext(options);
-			Assert.AreEqual(sqLiteFailContext.Count, 0);
+			Assert.AreEqual(0,sqLiteFailContext.Count);
 
 			var fakeQuery = new Query(sqLiteFailContext, null, null, scope, new FakeIWebLogger());
 			await fakeQuery.AddItemAsync(new FileIndexItem("/test22.jpg"));
 			
-			Assert.AreEqual(sqLiteFailContext.Count, 1);
+			Assert.AreEqual(1, sqLiteFailContext.Count);
 		}
 		
 		private class FakePropertyValues : PropertyValues

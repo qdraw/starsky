@@ -114,7 +114,7 @@ namespace starskytest.Services
 				nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			_query.RemoveItem(item0);
-
+			Assert.IsNotNull(output);
 		}
 
 		[TestMethod]

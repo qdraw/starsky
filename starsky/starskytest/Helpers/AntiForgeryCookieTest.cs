@@ -32,7 +32,7 @@ namespace starskytest.Helpers
 			var httpContext = new DefaultHttpContext();
 			new AntiForgeryCookie(new FakeAntiforgery()).SetAntiForgeryCookie(httpContext);
 			var requestToken = GetCookieValueFromResponse(httpContext.Response, "X-XSRF-TOKEN");
-			Assert.AreEqual(requestToken,"requestToken");
+			Assert.AreEqual("requestToken",requestToken);
 		}
 	}
 }

@@ -295,9 +295,9 @@ namespace starskytest.FakeMocks
 			if ( ExistFolder(path) )
 			{
 				return new StorageInfo
-                {
-                	IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Folder
-                };
+				{
+					IsFolderOrFile = FolderOrFileModel.FolderOrFileTypeList.Folder
+				};
 			}
 
 			if ( !ExistFile(path) )

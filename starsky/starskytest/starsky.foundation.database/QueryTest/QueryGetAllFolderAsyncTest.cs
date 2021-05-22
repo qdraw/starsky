@@ -126,4 +126,3 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		}
 	}
 }
-

@@ -63,13 +63,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			stopWatch.Start();
 
 			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
-			await sync.Sync(_createAnImage.DbPath);
+			var result = await sync.Sync(_createAnImage.DbPath);
 
 			stopWatch.Stop();
 			var ts = stopWatch.Elapsed;
 			// Format and display the TimeSpan value.
 			var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
 			Console.WriteLine("RunTime " + elapsedTime);
+			Assert.IsNotNull(result);
 		}
 		
 		[TestMethod]
@@ -86,12 +87,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			stopWatch.Start();
 			
 			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
-			await sync.Sync("/");
+			var result = await sync.Sync("/");
 			
 			stopWatch.Stop();
 			var ts = stopWatch.Elapsed;
 			var elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds / 10:00}";
 			Console.WriteLine("RunTime " + elapsedTime);
+			
+			Assert.IsNotNull(result);
 		}
 	}
 }

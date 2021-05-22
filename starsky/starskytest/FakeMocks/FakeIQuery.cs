@@ -106,7 +106,7 @@ namespace starskytest.FakeMocks
 					_fakeContext.Where(
 							p => p.FileCollectionName == fileIndexItem.FileCollectionName)
 						.Select(p => p.FilePath)
-					);
+				);
 			}
 			return new DetailView {FileIndexItem = fileIndexItem,};
 		}
@@ -217,7 +217,7 @@ namespace starskytest.FakeMocks
 			_fakeContext.Add(updateStatusContent);
 			await Task.Delay(new Random().Next(1, 5));
 			if ( _fakeContext.FirstOrDefault(p => 
-				     p.FilePath == updateStatusContent.FilePath) != null ) return updateStatusContent;
+				p.FilePath == updateStatusContent.FilePath) != null ) return updateStatusContent;
 			
 			_fakeContext.Add(updateStatusContent);
 			return updateStatusContent;

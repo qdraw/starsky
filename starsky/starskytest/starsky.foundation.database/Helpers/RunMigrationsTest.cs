@@ -28,6 +28,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
+			Assert.IsNotNull(serviceScopeFactory);
 			await RunMigrations.Run(serviceScopeFactory.CreateScope());
 			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
 		}
@@ -78,6 +79,8 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
+			
+			Assert.IsNotNull(options);
 			await RunMigrations.Run(new AppDbMySqlException(options));
 			
 			// should not crash

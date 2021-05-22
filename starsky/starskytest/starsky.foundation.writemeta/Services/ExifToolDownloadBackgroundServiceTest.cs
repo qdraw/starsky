@@ -33,7 +33,9 @@ namespace starskytest.starsky.foundation.writemeta.Services
 		[TestMethod]
 		public async Task StartAsync()
 		{
-			await new ExifToolDownloadBackgroundService(_serviceScopeFactory).StartAsync(new CancellationToken());
+			var cancelToken = new CancellationToken();
+			await new ExifToolDownloadBackgroundService(_serviceScopeFactory).StartAsync(cancelToken);
+			Assert.IsNotNull(cancelToken);
 		}
 	}
 }

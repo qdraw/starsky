@@ -28,4 +28,3 @@ namespace starskytest.starsky.feature.health.HealthCheck
 		}
 	} 
 }
-

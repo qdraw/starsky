@@ -192,7 +192,7 @@ namespace starskytest.Controllers
 			Assert.AreNotEqual(actionResult, null);
 			var zipHash = actionResult.Value as string;
 
-			Assert.AreEqual(zipHash.Contains("SR"),true);
+			Assert.AreEqual(true,zipHash.Contains("SR"));
 
 			await Task.Delay(150);
 

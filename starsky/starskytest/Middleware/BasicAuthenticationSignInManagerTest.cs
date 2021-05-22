@@ -16,48 +16,48 @@ using starskycore.Services;
 namespace starskytest.Middleware
 {
 
-    [TestClass]
-    public class BasicAuthenticationSignInManagerTest
-    {
-        private IUserManager _userManager;
-        public IServiceProvider Services { get; set; }
+	[TestClass]
+	public class BasicAuthenticationSignInManagerTest
+	{
+		private IUserManager _userManager;
+		public IServiceProvider Services { get; set; }
         
-        public BasicAuthenticationSignInManagerTest()
-        {
+		public BasicAuthenticationSignInManagerTest()
+		{
 
-            var serviceCollection = new ServiceCollection();
-            serviceCollection
-                .AddAuthentication(sharedOptions =>
-                {
-                    sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                });
+			var serviceCollection = new ServiceCollection();
+			serviceCollection
+				.AddAuthentication(sharedOptions =>
+				{
+					sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				});
             
-            Services = serviceCollection.BuildServiceProvider();
-            Services.GetRequiredService<IServiceProvider>();
+			Services = serviceCollection.BuildServiceProvider();
+			Services.GetRequiredService<IServiceProvider>();
             
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("test");
-            var options = builder.Options;
-            var context = new ApplicationDbContext(options);
-            _userManager = new UserManager(context,new AppSettings());
-        }
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseInMemoryDatabase("test");
+			var options = builder.Options;
+			var context = new ApplicationDbContext(options);
+			_userManager = new UserManager(context,new AppSettings());
+		}
 
-        [TestMethod]
-        public async Task BasicAuthenticationSignInManager_TrySignInUser_False_Test()
-        {
-            var httpContext = new DefaultHttpContext();
-            var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
-            // base64 > test:test
+		[TestMethod]
+		public async Task BasicAuthenticationSignInManager_TrySignInUser_False_Test()
+		{
+			var httpContext = new DefaultHttpContext();
+			var authenticationHeaderValue = new BasicAuthenticationHeaderValue("Basic dGVzdDp0ZXN0");
+			// base64 > test:test
 
-            await new BasicAuthenticationSignInManager(
-                httpContext, 
-                authenticationHeaderValue, 
-                _userManager).TrySignInUser();
-            // User is not loged in
-            Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
-        }
+			await new BasicAuthenticationSignInManager(
+				httpContext, 
+				authenticationHeaderValue, 
+				_userManager).TrySignInUser();
+			// User is not loged in
+			Assert.AreEqual(false,httpContext.User.Identity.IsAuthenticated);
+		}
         
 //        BasicAuthenticationSignInManagerTest.BasicAuthenticationSignInManager_TrySignInUser_True_Test
 //    Test method BasicAuthenticationSignInManagerTest.BasicAuthenticationSignInManager_TrySignInUser_True_Test 
@@ -85,5 +85,5 @@ namespace starskytest.Middleware
 //            // User is not loged in
 //            Assert.AreEqual(true,httpContext.User.Identity.IsAuthenticated);
 //        }
-    }
+	}
 }

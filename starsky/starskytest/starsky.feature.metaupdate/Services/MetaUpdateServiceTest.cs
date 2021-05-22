@@ -104,7 +104,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-				new FakeIWebLogger())
+					new FakeIWebLogger())
 				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
@@ -331,5 +331,5 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			_query.RemoveItem(updateItem);
 		}
- 	}
+	}
 }
