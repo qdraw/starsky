@@ -222,6 +222,7 @@ namespace starskytest.FakeMocks
 		public Stream ReadStream(string path, int maxRead = 2147483647)
 		{
 			if ( ! ExistFile(path) ) return Stream.Null;
+			// whats that? -->
 			if ( ExistFile(path) && _byteList.All(p => p.Key != path) )
 			{
 				byte[] byteArray = Encoding.UTF8.GetBytes("test");
