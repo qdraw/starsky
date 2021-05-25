@@ -5,8 +5,7 @@ using System.Runtime.CompilerServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.MetaData.Profiles.Exif;
-using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.platform.Helpers;
@@ -132,16 +131,17 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				using (var inputStream = _iStorage.ReadStream(subPath))
 				using (var image = Image.Load(inputStream))
 				{
+					
 					// Add orginal rotation to the image as json
-					if (image.MetaData.ExifProfile != null && !removeExif)
+					if (image.Metadata.ExifProfile != null && !removeExif)
 					{
-						image.MetaData.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+						image.Metadata.ExifProfile.SetValue(ExifTag.Software, "Starsky");
 					}
-	
-					if (image.MetaData.ExifProfile != null && removeExif)
+					
+					if (image.Metadata.ExifProfile != null && removeExif)
 					{
-						image.MetaData.ExifProfile = null;
-						image.MetaData.IccProfile = null;
+						image.Metadata.ExifProfile = null;
+						image.Metadata.IccProfile = null;
 					}
 						
 					image.Mutate(x => x.AutoOrient());
@@ -176,7 +176,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		internal void ResizeThumbnailImageFormat(Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal void ResizeThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
@@ -185,7 +185,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				image.Save(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
-					CompressionLevel = 9, 
+					CompressionLevel = PngCompressionLevel.Level9, 
 				});
 				return;
 			}
