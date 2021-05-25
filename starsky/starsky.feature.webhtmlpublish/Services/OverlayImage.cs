@@ -3,7 +3,6 @@ using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.Primitives;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -99,7 +98,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
 	    }
 
-	    private void ResizeOverlayImageShared(Image<Rgba32> sourceImage, Image<Rgba32> overlayImage,
+	    private void ResizeOverlayImageShared(Image sourceImage, Image overlayImage,
 		    Stream outputStream, AppSettingsPublishProfiles profile, string outputSubPath)
 	    {
 		    sourceImage.Mutate(x => x.AutoOrient());
@@ -115,12 +114,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    int xPoint = sourceImage.Width - overlayImage.Width;
 		    int yPoint = sourceImage.Height - overlayImage.Height;
 			
-		    // For ImageSharp-0006
-		    // sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
-		    
-		    // For ImageSharp-0005
-		    sourceImage.Mutate(x => x.DrawImage(overlayImage, 
-			    PixelBlenderMode.Normal, 1F, new Point(xPoint, yPoint)));
+		    sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
 
 		    sourceImage.SaveAsJpeg(outputStream);
 		    _hostFileSystem.WriteStream(outputStream, outputSubPath);
