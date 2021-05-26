@@ -346,7 +346,9 @@ namespace starsky.foundation.database.Helpers
 		    bool? oldBoolValue, bool? newBoolValue, List<string> differenceList)
 	    {
 		    if ( newBoolValue == null || oldBoolValue == newBoolValue) return;
-		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newBoolValue, null);
+		    var property = sourceIndexItem.GetType().GetProperty(propertyName);
+		    if ( property == null ) return;
+		    property.SetValue(sourceIndexItem, newBoolValue, null);
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 
@@ -363,14 +365,14 @@ namespace starsky.foundation.database.Helpers
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList, bool append)
         {
-            if (oldStringValue == newStringValue ||
-                (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
+	        // former:                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
+            if (oldStringValue == newStringValue || string.IsNullOrEmpty(newStringValue)) return;
             
             if (propertyName == nameof(FileIndexItem.FileName) ) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         
-	        if(!propertyObject.CanWrite) return;
+	        if(propertyObject == null || !propertyObject.CanWrite) return;
 	        
             if (!append)
             {
@@ -389,6 +391,5 @@ namespace starsky.foundation.database.Helpers
             
             differenceList.Add(propertyName.ToLowerInvariant());
         }
-
     }
 }
