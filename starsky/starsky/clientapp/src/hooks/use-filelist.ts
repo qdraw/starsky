@@ -40,6 +40,12 @@ const useFileList = (
   const [parent, setParent] = useState("/");
   const location = new UrlQuery().UrlQueryServerApi(locationSearch);
 
+  /**
+   * fetchContent inside useFileList
+   * @param locationLocal url
+   * @param abortController how to abort
+   * @returns promise with no content
+   */
   const fetchContent = async (
     locationLocal: string,
     abortController: AbortController
