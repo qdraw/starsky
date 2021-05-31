@@ -159,5 +159,24 @@ describe("UseFileList", () => {
       expect(cacheSetSpy).toBeCalled();
       expect(fetchSpy).toBeCalled();
     });
+
+    it("with connection rejected", async () => {
+      expect(hook.pageType).toBe(PageType.Loading);
+
+      var controller = new AbortController();
+
+      const mockResult = Promise.reject();
+      fetchSpy = jest.spyOn(window, "fetch").mockImplementationOnce(() => {
+        return mockResult;
+      });
+
+      // console.error == undefined
+      await act(async () => {
+        // perform changes within our component
+        await hook.fetchContent("test", controller);
+      });
+
+      expect(hook.pageType).toBe(PageType.ApplicationException);
+    });
   });
 });
