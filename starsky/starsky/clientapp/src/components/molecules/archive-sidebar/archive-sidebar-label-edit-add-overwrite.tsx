@@ -40,6 +40,11 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
     "One or more files are read only. " +
       "Only the files with write permissions have been updated."
   );
+  const MessageErrorGenericFail = new Language(settings.language).text(
+    "Er is iets misgegaan met het updaten. Probeer het opnieuw",
+    "Something went wrong with the update. Please try again"
+  );
+
   const MessageErrorNotFoundSourceMissing = new Language(
     settings.language
   ).text(
@@ -146,8 +151,13 @@ const ArchiveSidebarLabelEditAddOverwrite: React.FunctionComponent = () => {
         setIsLoading(false);
         setInputEnabled(true);
         ClearSearchCache(history.location.search);
+        // undo error message when success
+        if (isError === MessageErrorGenericFail) {
+          setIsError("");
+        }
       })
       .catch(() => {
+        setIsError(MessageErrorGenericFail);
         // loading + update button
         setIsLoading(false);
         setInputEnabled(true);

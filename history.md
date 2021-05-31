@@ -43,8 +43,8 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.9 _(Unreleased)_ - 2021-05-??
-- nothing yet
+# version 0.4.9 _(Unreleased)_ - 2021-06-??
+- [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
 
 # version 0.4.8 - 2021-05-07
 - [x]   (Changed) _Front-end_ Make Archive UI more white & Dark mode UI fixes (PR #358)

@@ -40,6 +40,10 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
     "One or more files are already gone. " +
       "Only the files that are present are updated. Run a manual sync"
   );
+  const MessageErrorGenericFail = new Language(settings.language).text(
+    "Er is iets misgegaan met het updaten. Probeer het opnieuw",
+    "Something went wrong with the update. Please try again"
+  );
 
   var history = useLocation();
   let { state, dispatch } = React.useContext(ArchiveContext);
@@ -157,10 +161,15 @@ const ArchiveSidebarLabelEditSearchReplace: React.FunctionComponent = () => {
             // loading + update button
             setIsLoading(false);
             setInputEnabled(true);
+            // undo error message when success
+            if (isError === MessageErrorGenericFail) {
+              setIsError("");
+            }
 
             ClearSearchCache(history.location.search);
           })
           .catch(() => {
+            setIsError(MessageErrorGenericFail);
             // loading + update button
             setIsLoading(false);
             setInputEnabled(true);
