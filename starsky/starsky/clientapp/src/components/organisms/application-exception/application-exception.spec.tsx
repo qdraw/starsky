@@ -34,9 +34,13 @@ describe("ApplicationException", () => {
   });
 
   it("click on reload", () => {
-    const reloadSpy = jest
-      .spyOn(window.location, "reload")
-      .mockImplementationOnce(() => {});
+    const { location } = window;
+    // @ts-ignore
+    delete window.location;
+    // @ts-ignore
+    window.location = { reload: jest.fn() };
+
+    const reloadSpy = jest.spyOn(window.location, "reload").mockReturnValue();
 
     jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
       return <></>;
@@ -44,11 +48,15 @@ describe("ApplicationException", () => {
 
     const component = mount(<ApplicationException>t</ApplicationException>);
 
+    expect(window.location.reload).not.toHaveBeenCalled();
+
     component.find("[data-test='reload']").simulate("click");
 
-    expect(reloadSpy).toBeCalled();
+    expect(reloadSpy).toBeCalledTimes(1);
 
-    jest.spyOn(window.location, "reload").mockRestore();
+    // restore window object
+    window.location = location;
+
     component.unmount();
   });
 });
