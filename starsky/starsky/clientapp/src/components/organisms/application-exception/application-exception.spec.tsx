@@ -32,4 +32,23 @@ describe("ApplicationException", () => {
 
     component.unmount();
   });
+
+  it("click on reload", () => {
+    const reloadSpy = jest
+      .spyOn(window.location, "reload")
+      .mockImplementationOnce(() => {});
+
+    jest.spyOn(MenuDefault, "default").mockImplementationOnce(() => {
+      return <></>;
+    });
+
+    const component = mount(<ApplicationException>t</ApplicationException>);
+
+    component.find("[data-test='reload']").simulate("click");
+
+    expect(reloadSpy).toBeCalled();
+
+    jest.spyOn(window.location, "reload").mockRestore();
+    component.unmount();
+  });
 });
