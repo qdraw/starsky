@@ -163,6 +163,60 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       jest.spyOn(Notification, "default").mockRestore();
     });
 
+    it("click replace > generic fail > remove message retry when success", async () => {
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [] as any[]
+      };
+
+      const mockIConnectionDefaultReject: Promise<IConnectionDefault> = Promise.reject();
+
+      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefaultReject);
+
+      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+
+      // update component + now press a key
+      act(() => {
+        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+      });
+
+      // need to await here
+      await act(async () => {
+        await component.find(".btn.btn--default").simulate("click");
+      });
+
+      jest.spyOn(FetchPost, "default").mockRestore();
+      jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefaultResolve);
+
+      // force update to show message
+      component.update();
+      expect(component.exists(".notification")).toBeTruthy();
+
+      // second time; now it removes the error message from the component
+      // need to await here
+      await act(async () => {
+        await component.find(".btn.btn--default").simulate("click");
+      });
+
+      // force update to show message
+      component.update();
+      expect(component.exists(".notification")).toBeFalsy();
+
+      act(() => {
+        component.unmount();
+      });
+      jest.spyOn(Notification, "default").mockRestore();
+    });
+
     it("click update | read only", async () => {
       jest.spyOn(FetchPost, "default").mockReset();
 
