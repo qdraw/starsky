@@ -11,6 +11,30 @@
             font-family: Helvetica, Arial, Verdana, Tahoma, sans-serif;
             line-height: 1.4;
         }
+        .btn {
+            display: inline-block;
+            padding: 6px 10px;
+            /* in past 4 instead of 6 */
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            font-family: inherit;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+        .btn.btn--default {
+            color: #fff;
+            background-color: #263238;
+        }
     </style>
 </head>
 
@@ -21,9 +45,16 @@
         <p>
             The application is not responding at the moment <br/>
             Starsky is temporarily unavailable. <br/>
-            <strong>Please try again after 2 minutes.</strong><br/>
-            We apologize for the inconvenience.<br/>
+            We apologize for the inconvenience.<br/><br/>
+            <button class="btn btn--default" id="reload">Reload the application to try it again</button> <br/>
         </p>
     </div>
+    <script>
+        function reload() {
+            window.location.reload()
+        }
+        document.querySelector("#reload").addEventListener("click",reload );
+    </script>
+
 </body>
 </html>
