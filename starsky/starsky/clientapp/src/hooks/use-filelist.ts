@@ -70,6 +70,7 @@ const useFileList = (
       new FileListCache().CacheSet(locationSearch, responseObject);
     } catch (e) {
       console.error(e);
+      setPageType(PageType.ApplicationException);
     }
   };
 

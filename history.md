@@ -45,6 +45,8 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.9 _(Unreleased)_ - 2021-06-??
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
+- [x]   (Fixed) _Front-end_ Fix for keeps loading forever if use filelist (archive) fails  (issue #382 & PR #392)
+- [x]   (Fixed) _Front-end_  Add retry/reload button in Application Exception page  (PR #392)
 
 # version 0.4.8 - 2021-05-07
 - [x]   (Changed) _Front-end_ Make Archive UI more white & Dark mode UI fixes (PR #358)

@@ -11,15 +11,23 @@ const ApplicationException: FunctionComponent<any> = () => {
     "We have a disruption on the application right now"
   );
   const MessageRefreshPageTryAgain = language.text(
-    "Herlaad de pagina om het opnieuw te proberen",
-    "Please reload the page to try again"
+    "Herlaad de applicatie om het opnieuw te proberen",
+    "Please reload the application to try again"
   );
 
   return (
     <>
       <MenuDefault isEnabled={false} />
       <div className="content--header">{MessageApplicationException}</div>
-      <div className="content--subheader">{MessageRefreshPageTryAgain}</div>
+      <div className="content--subheader">
+        <button
+          data-test="reload"
+          className="btn btn--default"
+          onClick={() => window.location.reload()}
+        >
+          {MessageRefreshPageTryAgain}
+        </button>
+      </div>
     </>
   );
 };
