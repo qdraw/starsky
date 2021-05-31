@@ -1,3 +1,12 @@
+// Make sure the version in files are matching the release version in the branch or tag name.
+// When this is not the case auto fix it. 
+
+// Github Tags:
+// export GITHUB_REF=refs/tags/v0.3.0
+
+// Azure Devops release branches
+// export BUILD_SOURCEBRANCH=refs/heads/release/0.4.2
+// the release branches should NOT start with a v
 
 const packageJson = require('./package.json');
 const { spawn } = require('child_process');

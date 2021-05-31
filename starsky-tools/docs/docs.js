@@ -40,6 +40,7 @@ var filePathList = [
 	"starsky-tools/dropbox-import/readme.md",
 	"starsky-tools/end2end/readme.md",
 	"starsky-tools/build-tools/readme.md",
+	"starsky-tools/release-tools/readme.md",
 	"starsky-tools/slack-notification/readme.md",
 ];
 

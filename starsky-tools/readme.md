@@ -33,4 +33,5 @@
 -   [mail](mail/readme.md) imap mail client to import files in Starsky
 -   [sync](sync/readme.md) sync, not working
 -   [thumbnail](thumbnail/readme.md) remote client to generate thumbnails
+-   [release-tools](release-tools/readme.md) pipeline helpers for release end2end
 -   [slack-notification](slack-notification/readme.md) send slack notifications in pipelines
