@@ -7,10 +7,10 @@ namespace starskytest.FakeMocks
 	public class FakeMetaPreflight : IMetaPreflight
 	{
 
-		public (List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
-			changedFileIndexItemName)
+		public Task
 			Preflight(FileIndexItem inputModel,
-				string[] inputFilePaths, bool append, bool collections, int rotateClock)
+				string[] inputFilePaths, bool append, bool collections,
+				int rotateClock)
 		{
 			var detailView = new DetailView {FileIndexItem = inputModel};
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();

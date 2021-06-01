@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Services;
@@ -21,16 +23,18 @@ namespace starsky.Controllers
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebSocketConnectionsService _connectionsService;
+		private readonly IWebLogger _logger;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
 			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, 
-			IWebSocketConnectionsService connectionsService)
+			IWebSocketConnectionsService connectionsService, IWebLogger logger)
 		{
 			_metaPreflight = metaPreflight;
 			_metaUpdateService = metaUpdateService;
 			_metaReplaceService = metaReplaceService;
 			_bgTaskQueue = queue;
 			_connectionsService = connectionsService;
+			_logger = logger;
 		}
 	    
 	    /// <summary>
@@ -56,15 +60,16 @@ namespace starsky.Controllers
 	    public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
 		    bool collections = true, int rotateClock = 0)
 	    {
+		    _logger.LogInformation($"[update] {DateTime.UtcNow} start f: {f} collections: {collections}");
 		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
-			var (fileIndexResultsList, changedFileIndexItemName) =  _metaPreflight.Preflight(inputModel, 
+			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.Preflight(inputModel, 
 				inputFilePaths, append, collections, rotateClock);
 
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var updatedList = _metaUpdateService
+				var updatedList = await _metaUpdateService
 					.Update(changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
@@ -127,7 +132,7 @@ namespace starsky.Controllers
 						}
 					};
 					
-					_metaUpdateService
+					await _metaUpdateService
 						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
 				}

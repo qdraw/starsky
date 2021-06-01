@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -54,23 +55,24 @@ namespace starsky.feature.metaupdate.Services
 		/// Run Update
 		/// </summary>
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
-		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
+		///     List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="fileIndexResultsList">items stored in the database</param>
 		/// <param name="inputModel">(only used when cache is disabled)
-		/// This model is overwritten in the database and ExifTool</param>
+		///     This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, 
+		public async Task<List<FileIndexItem>> Update(
+			Dictionary<string, List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel, 
+			FileIndexItem inputModel,
 			bool collections, bool append, int rotateClock)
 		{
 			if ( changedFileIndexItemName == null )
 			{
-				changedFileIndexItemName = _metaPreflight.Preflight(inputModel,
+				changedFileIndexItemName = (await _metaPreflight.Preflight(inputModel,
 					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
-					rotateClock).changedFileIndexItemName;
+					rotateClock)).changedFileIndexItemName;
 			}
 			var updatedItems = new List<FileIndexItem>();
 			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 

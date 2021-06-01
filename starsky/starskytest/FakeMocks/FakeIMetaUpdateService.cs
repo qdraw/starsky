@@ -6,8 +6,11 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIMetaUpdateService : IMetaUpdateService
 	{
-		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel, bool collections, bool append, int rotateClock)
+		public Task Update(
+			Dictionary<string, List<string>> changedFileIndexItemName,
+			List<FileIndexItem> fileIndexResultsList,
+			FileIndexItem inputModel, bool collections, bool append,
+			int rotateClock)
 		{
 			// does not update yet
 			return fileIndexResultsList;

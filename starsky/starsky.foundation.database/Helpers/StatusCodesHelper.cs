@@ -18,6 +18,21 @@ namespace starsky.foundation.database.Helpers
 	    {
 	    }
 
+	    public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
+	    {
+		    if (fileIndexItem.IsDirectory == true && _appSettings.IsReadOnly(fileIndexItem.FilePath))
+		    {
+			    return FileIndexItem.ExifStatus.DirReadOnly;
+		    }
+
+		    if ( _appSettings.IsReadOnly(fileIndexItem.ParentDirectory) )
+		    {
+			    return  FileIndexItem.ExifStatus.ReadOnly;
+		    }
+		    
+		    return FileIndexItem.ExifStatus.Default;
+	    }
+
 	    public FileIndexItem.ExifStatus IsReadOnlyStatus(DetailView detailView)
 	    {
 		    if(_appSettings == null) throw new DllNotFoundException("add app settings to ctor");
@@ -40,6 +55,11 @@ namespace starsky.foundation.database.Helpers
 		    return FileIndexItem.ExifStatus.Default;
 	    }
 
+	    public FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem fileIndexItem)
+	    {
+		    return fileIndexItem.Tags.Contains("!delete!") ? FileIndexItem.ExifStatus.Deleted : FileIndexItem.ExifStatus.Default;
+	    }
+	    
 	    public FileIndexItem.ExifStatus IsDeletedStatus(DetailView detailView)
 	    {
 		    if (detailView.FileIndexItem.Tags.Contains("!delete!"))
