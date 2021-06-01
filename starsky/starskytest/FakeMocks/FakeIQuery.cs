@@ -148,7 +148,14 @@ namespace starskytest.FakeMocks
 
 		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
 		{
-			throw new NotImplementedException();
+			var result = new List<FileIndexItem>();
+			foreach ( var path in filePathList )
+			{
+				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
+				result.AddRange(_fakeContext.Where(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
+					&& p.FileName.StartsWith(fileNameWithoutExtension)));
+			}
+			return Task.FromResult(result);
 		}
 
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)

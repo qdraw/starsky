@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -37,31 +38,34 @@ namespace starsky.Controllers
 			_logger = logger;
 		}
 	    
-	    /// <summary>
-	    /// Update Exif and Rotation API
-	    /// </summary>
-	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
-	    /// <param name="inputModel">tags: use for keywords
-	    /// colorClass: int 0-9, the colorClass to fast select images
-	    /// description: string to update description/caption abstract, empty will be ignore
-	    /// title: edit image title</param>
-	    /// <param name="collections">StackCollections bool, default true</param>
-	    /// <param name="append">only for stings, add update to existing items</param>
-	    /// <param name="rotateClock">relative orientation -1 or 1</param>
-	    /// <returns>update json (IActionResult Update)</returns>
-	    /// <response code="200">the item including the updated content</response>
-	    /// <response code="404">item not found in the database or on disk</response>
-	    /// <response code="401">User unauthorized</response>
-	    [IgnoreAntiforgeryToken]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-	    [HttpPost("/api/update")]
-	    [Produces("application/json")]
-	    public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
-		    bool collections = true, int rotateClock = 0)
-	    {
-		    _logger.LogInformation($"[update] {DateTime.UtcNow} start f: {f} collections: {collections}");
-		    var inputFilePaths = PathHelper.SplitInputFilePaths(f);
+		/// <summary>
+		/// Update Exif and Rotation API
+		/// </summary>
+		/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+		/// <param name="inputModel">tags: use for keywords
+		/// colorClass: int 0-9, the colorClass to fast select images
+		/// description: string to update description/caption abstract, empty will be ignore
+		/// title: edit image title</param>
+		/// <param name="collections">StackCollections bool, default true</param>
+		/// <param name="append">only for stings, add update to existing items</param>
+		/// <param name="rotateClock">relative orientation -1 or 1</param>
+		/// <returns>update json (IActionResult Update)</returns>
+		/// <response code="200">the item including the updated content</response>
+		/// <response code="404">item not found in the database or on disk</response>
+		/// <response code="401">User unauthorized</response>
+		[IgnoreAntiforgeryToken]
+		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[HttpPost("/api/update")]
+		[Produces("application/json")]
+		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
+			bool collections = true, int rotateClock = 0)
+		{
+			var stopWatch = new Stopwatch();
+			stopWatch.Start();
+			_logger.LogInformation($"[update] f: {f} {DateTime.UtcNow} start  collections: {collections}");
+		    
+			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
 			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.Preflight(inputModel, 
 				inputFilePaths, append, collections, rotateClock);
@@ -76,41 +80,45 @@ namespace starsky.Controllers
 					DefaultJsonSerializer.CamelCase), token);
 			});
 			
-            // When all items are not found
-            if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok 
-                                              && p.Status != FileIndexItem.ExifStatus.Deleted))
-                return NotFound(fileIndexResultsList);
+			// When all items are not found
+			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok 
+			                                  && p.Status != FileIndexItem.ExifStatus.Deleted))
+				return NotFound(fileIndexResultsList);
 
-            // Clone an new item in the list to display
-            var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
+			// Clone an new item in the list to display
+			var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
             
-            // when switching very fast between images the background task has not run yet
-            _metaUpdateService.UpdateReadMetaCache(returnNewResultList);
+			// when switching very fast between images the background task has not run yet
+			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
 	            
-            return Json(returnNewResultList);
-	    }
+			// for debug
+			stopWatch.Stop();
+			_logger.LogInformation($"[update] f: {f} duration: {stopWatch.Elapsed.TotalMilliseconds}");
+
+			return Json(returnNewResultList);
+		}
 	    
-	    /// <summary>
-	    /// Search and Replace text in meta information 
-	    /// </summary>
-	    /// <param name="f">subPath filepath to file, split by dot comma (;)</param>
-	    /// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
-	    /// <param name="search">text to search for</param>
-	    /// <param name="replace">replace [search] with this text</param>
-	    /// <param name="collections">enable collections</param>
-	    /// <returns>list of changed files</returns>
-	    /// <response code="200">Initialized replace job</response>
-	    /// <response code="404">item(s) not found</response>
-	    /// <response code="401">User unauthorized</response>
-	    [HttpPost("/api/replace")]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
-	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-	    [Produces("application/json")]
-	    public IActionResult Replace(string f, string fieldName, string search,
-		    string replace, bool collections = true)
-	    {
-		    var fileIndexResultsList = _metaReplaceService
-			    .Replace(f, fieldName, search, replace, collections);
+		/// <summary>
+		/// Search and Replace text in meta information 
+		/// </summary>
+		/// <param name="f">subPath filepath to file, split by dot comma (;)</param>
+		/// <param name="fieldName">name of fileIndexItem field e.g. Tags</param>
+		/// <param name="search">text to search for</param>
+		/// <param name="replace">replace [search] with this text</param>
+		/// <param name="collections">enable collections</param>
+		/// <returns>list of changed files</returns>
+		/// <response code="200">Initialized replace job</response>
+		/// <response code="404">item(s) not found</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpPost("/api/replace")]
+		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
+		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
+		[Produces("application/json")]
+		public IActionResult Replace(string f, string fieldName, string search,
+			string replace, bool collections = true)
+		{
+			var fileIndexResultsList = _metaReplaceService
+				.Replace(f, fieldName, search, replace, collections);
 		    
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
