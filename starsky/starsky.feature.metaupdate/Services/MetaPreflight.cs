@@ -92,6 +92,9 @@ namespace starsky.feature.metaupdate.Services
 					// this one is good :)
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 					
+					// dont update the fileHash because we don't know yet what it will be
+					fileIndexItem.FileHash = null;
+					
 					// Deleted is allowed but the status need be updated
 					if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
 					      == FileIndexItem.ExifStatus.Deleted) )

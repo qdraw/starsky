@@ -146,6 +146,11 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(result);
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
+		{
+			throw new NotImplementedException();
+		}
+
 		public FileIndexItem RemoveItem(FileIndexItem updateStatusContent)
 		{
 			_fakeContext.Remove(updateStatusContent);
