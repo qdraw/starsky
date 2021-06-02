@@ -35,7 +35,7 @@ namespace starsky.feature.metaupdate.Services
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
-			var fileIndexResultsList = new List<FileIndexItem>();
+			var fileIndexUpdateList = new List<FileIndexItem>();
 			
 			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
@@ -48,7 +48,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
-						fileIndexResultsList);
+						fileIndexUpdateList);
 					continue; 
 				}
 				
@@ -58,7 +58,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
-						fileIndexResultsList);
+						fileIndexUpdateList);
 					continue; 
 				}
 
@@ -76,21 +76,16 @@ namespace starsky.feature.metaupdate.Services
 				}
 				
 				// The hash in FileIndexItem is not correct
-				fileIndexResultsList.Add(fileIndexItem);
+				// Clone to not change after update
+				fileIndexUpdateList.Add(fileIndexItem);
 			}
 			
-			// update database cache
-			_query.CacheUpdateItem(fileIndexResultsList);
-			
-			foreach ( var fileIndexItem in fileIndexResultsList )
-			{
-				// dont update the fileHash because we don't know yet what it will be
-				fileIndexItem.FileHash = null;
-			}
+			// update database cache and cloned due reference
+			_query.CacheUpdateItem(fileIndexUpdateList);
 
-			AddNotFoundInIndexStatus(inputFilePaths, fileIndexResultsList);
+			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
 			
-			return (fileIndexResultsList, changedFileIndexItemName);
+			return (fileIndexUpdateList, changedFileIndexItemName);
 		}
 
 		private async Task<List<FileIndexItem>> GetObjectsByFilePath(string[] inputFilePaths, bool collections)
