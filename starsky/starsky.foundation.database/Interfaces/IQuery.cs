@@ -91,6 +91,13 @@ namespace starsky.foundation.database.Interfaces
         /// <returns>items</returns>
         Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
 
+        /// <summary>
+        /// Get collection items within the list
+        /// </summary>
+        /// <param name="filePathList">subPaths (in non collection style)</param>
+        /// <returns>List with items including the collection items</returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList);
+        
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 

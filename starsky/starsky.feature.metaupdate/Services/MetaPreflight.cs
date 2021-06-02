@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -26,8 +29,9 @@ namespace starsky.feature.metaupdate.Services
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		}
 
-		public (List<FileIndexItem> fileIndexResultsList, Dictionary<string, List<string>>
-			changedFileIndexItemName) Preflight(FileIndexItem inputModel, string[] inputFilePaths,
+		public async Task<(List<FileIndexItem> fileIndexResultsList,
+				Dictionary<string, List<string>> changedFileIndexItemName)>
+			Preflight(FileIndexItem inputModel, string[] inputFilePaths,
 				bool append, bool collections, int rotateClock)
 		{
 			// the result list
@@ -35,81 +39,81 @@ namespace starsky.feature.metaupdate.Services
 			
 			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-			
-			foreach (var subPath in inputFilePaths)
+
+			var fileIndexItemsList = await GetObjectsByFilePath(inputFilePaths, collections);
+			foreach ( var fileIndexItem in fileIndexItemsList )
 			{
-				var detailView = _query.SingleItem(subPath,null,collections,false);
-				
-				if ( detailView?.FileIndexItem == null )
+				// Files that are not on disk
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-					continue;
-				}
-				
-				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
 						fileIndexResultsList);
 					continue; 
 				}
 				
 				// Dir is readonly / don't edit
-				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
 				{
-					new StatusCodesHelper().ReturnExifStatusError(detailView.FileIndexItem, 
+					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
 						fileIndexResultsList);
 					continue; 
 				}
 
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
-				foreach ( var collectionSubPath in collectionSubPathList )
+				CompareAllLabelsAndRotation(changedFileIndexItemName,
+					fileIndexItem, inputModel, append, rotateClock);
+						
+				// this one is good :)
+				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+					
+				// Deleted is allowed but the status need be updated
+				if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
+				      == FileIndexItem.ExifStatus.Deleted) )
 				{
-					var collectionsDetailView = GetCollectionsDetailView(collectionSubPath, 
-						subPath, collections, detailView);
-					
-					CompareAllLabelsAndRotation(changedFileIndexItemName,
-								collectionsDetailView, inputModel, append, rotateClock);
-					
-					// this one is good :)
-					collectionsDetailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-
-					// Deleted is allowed but the status need be updated
-					if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(detailView) 
-					      == FileIndexItem.ExifStatus.Deleted) )
-					{
-						collectionsDetailView.FileIndexItem.Status =
-							FileIndexItem.ExifStatus.Deleted;
-					}
-					
-					// update database cache
-					_query.CacheUpdateItem(new List<FileIndexItem>{collectionsDetailView.FileIndexItem});
-					
-					// The hash in FileIndexItem is not correct
-					fileIndexResultsList.Add(collectionsDetailView.FileIndexItem);
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
+				
+				// The hash in FileIndexItem is not correct
+				fileIndexResultsList.Add(fileIndexItem);
 			}
+			
+			// update database cache
+			_query.CacheUpdateItem(fileIndexResultsList);
+			
+			foreach ( var fileIndexItem in fileIndexResultsList )
+			{
+				// dont update the fileHash because we don't know yet what it will be
+				fileIndexItem.FileHash = null;
+			}
+
+			AddNotFoundInIndexStatus(inputFilePaths, fileIndexResultsList);
+			
 			return (fileIndexResultsList, changedFileIndexItemName);
 		}
 
-		private DetailView GetCollectionsDetailView(string collectionSubPath, string subPath, bool collections, DetailView detailView)
+		private async Task<List<FileIndexItem>> GetObjectsByFilePath(string[] inputFilePaths, bool collections)
 		{
-			// only for performance reasons
-			DetailView collectionsDetailView;
-			if ( collectionSubPath != subPath)
+			if ( collections )
 			{
-				collectionsDetailView = _query.SingleItem(collectionSubPath, 
-					null, collections, false);
+				return await _query.GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
 			}
-			else
+			return await _query.GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		}
+
+		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
+		{
+			foreach (var subPath in inputFilePaths)
 			{
-				collectionsDetailView = detailView;
+				// when item is not in the database
+				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+				}
 			}
-			return collectionsDetailView;
 		}
 
 		/// <summary>
@@ -117,33 +121,33 @@ namespace starsky.feature.metaupdate.Services
 		/// </summary>
 		/// <param name="changedFileIndexItemName">Per file stored  string{FilePath},
 		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
-		/// <param name="collectionsDetailView">DetailView input, only to display changes</param>
+		/// <param name="collectionsFileIndexItem">DetailView input, only to display changes</param>
 		/// <param name="statusModel">object that include the changes</param>
 		/// <param name="append">true= for tags to add</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
 		public void CompareAllLabelsAndRotation( Dictionary<string, List<string>> changedFileIndexItemName, 
-			DetailView collectionsDetailView, FileIndexItem statusModel, bool append, int rotateClock)
+			FileIndexItem collectionsFileIndexItem, FileIndexItem statusModel, bool append, int rotateClock)
 		{
 			if ( changedFileIndexItemName == null )
 				throw new MissingFieldException(nameof(changedFileIndexItemName));
 			
 			// compare and add changes to collectionsDetailView
 			var comparedNamesList = FileIndexCompareHelper
-				.Compare(collectionsDetailView.FileIndexItem, statusModel, append);
+				.Compare(collectionsFileIndexItem, statusModel, append);
 					
 			// if requested, add changes to rotation
-			collectionsDetailView.FileIndexItem = 
-				RotationCompare(rotateClock, collectionsDetailView.FileIndexItem, comparedNamesList);
+			collectionsFileIndexItem = 
+				RotationCompare(rotateClock, collectionsFileIndexItem, comparedNamesList);
 
-			if ( ! changedFileIndexItemName.ContainsKey(collectionsDetailView.FileIndexItem.FilePath) )
+			if ( ! changedFileIndexItemName.ContainsKey(collectionsFileIndexItem.FilePath) )
 			{
 				// add to list
-				changedFileIndexItemName.Add(collectionsDetailView.FileIndexItem.FilePath,comparedNamesList);
+				changedFileIndexItemName.Add(collectionsFileIndexItem.FilePath,comparedNamesList);
 				return;
 			}
 			
 			// overwrite list if already exist
-			changedFileIndexItemName[collectionsDetailView.FileIndexItem.FilePath] = comparedNamesList;
+			changedFileIndexItemName[collectionsFileIndexItem.FilePath] = comparedNamesList;
 		}
 		
 		/// <summary>

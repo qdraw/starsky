@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -257,7 +258,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
-		public void Update_Exception_MissingInList()
+		public async Task Update_Exception_MissingInList()
 		{
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
@@ -266,7 +267,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
 			};
 			
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+			await new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
 					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);

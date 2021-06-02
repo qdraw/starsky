@@ -17,11 +17,21 @@ namespace starsky.foundation.database.Query
 	/// </summary>
 	public partial class Query : IQuery
 	{
+		/// <summary>
+		/// Get all objects inside a folder
+		/// </summary>
+		/// <param name="subPath"></param>
+		/// <returns></returns>
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(string subPath)
 		{
 			return await GetAllObjectsAsync(new List<string> {subPath});
 		}
 
+		/// <summary>
+		/// Get all objects inside a folder
+		/// </summary>
+		/// <param name="filePaths">parent paths</param>
+		/// <returns>list of all objects inside the folder</returns>
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
 		{
 			try

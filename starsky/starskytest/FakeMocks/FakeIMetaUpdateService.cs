@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 
@@ -6,11 +7,10 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIMetaUpdateService : IMetaUpdateService
 	{
-		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, List<FileIndexItem> fileIndexResultsList,
+		public Task<List<FileIndexItem>> Update(Dictionary<string, List<string>> changedFileIndexItemName, List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, bool collections, bool append, int rotateClock)
 		{
-			// does not update yet
-			return fileIndexResultsList;
+			return Task.FromResult(fileIndexResultsList);
 		}
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList)
