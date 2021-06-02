@@ -33,6 +33,24 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.GetService<ApplicationDbContext>()) ;
 		}
 
+		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_SingleItem()
+		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/single_item1.jpg"),
+				new FileIndexItem("/single_item2.jpg")
+			});
+			
+			var result = await (_query as Query).GetObjectsByFilePathCollectionAsync("/single_item1.jpg");
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("/single_item1.jpg",result[0].FilePath);
+
+			await _query.RemoveItemAsync(result[0]);
+			
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2.jpg"));
+		}
 		
 		[TestMethod]
 		public async Task GetObjectsByFilePathCollectionAsync_SingleItem()
