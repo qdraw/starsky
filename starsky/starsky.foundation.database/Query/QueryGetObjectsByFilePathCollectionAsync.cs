@@ -59,7 +59,7 @@ namespace starsky.foundation.database.Query
 			}
 			
 			var predicate = PredicateBuilder.OrLoop(predicates);
-					
+
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 		}
 	}

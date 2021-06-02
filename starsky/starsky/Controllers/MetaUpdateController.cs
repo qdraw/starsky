@@ -61,9 +61,7 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
 			bool collections = true, int rotateClock = 0)
 		{
-			var stopWatch = new Stopwatch();
-			stopWatch.Start();
-			_logger.LogInformation($"[update] f: {f} {DateTime.UtcNow} start  collections: {collections}");
+			var stopwatch = StartUpdateReplaceStopWatch("update", f, collections);
 		    
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
@@ -90,14 +88,27 @@ namespace starsky.Controllers
             
 			// when switching very fast between images the background task has not run yet
 			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
-	            
-			// for debug
-			stopWatch.Stop();
-			_logger.LogInformation($"[update] f: {f} duration: {stopWatch.Elapsed.TotalMilliseconds}");
+
+			StopUpdateReplaceStopWatch("update", f,stopwatch);
 
 			return Json(returnNewResultList);
 		}
-	    
+
+		private Stopwatch StartUpdateReplaceStopWatch(string name, string f, bool collections)
+		{
+			var stopWatch = new Stopwatch();
+			stopWatch.Start();
+			_logger.LogInformation($"[{name}] f: {f} {DateTime.UtcNow} start  collections: {collections}");
+			return stopWatch;
+		}
+
+		private void StopUpdateReplaceStopWatch(string name, string f, Stopwatch stopwatch)
+		{
+			// for debug
+			stopwatch.Stop();
+			_logger.LogInformation($"[update] f: {f} stop duration: {stopwatch.Elapsed.TotalMilliseconds}");
+		}
+
 		/// <summary>
 		/// Search and Replace text in meta information 
 		/// </summary>
@@ -117,6 +128,8 @@ namespace starsky.Controllers
 		public IActionResult Replace(string f, string fieldName, string search,
 			string replace, bool collections = true)
 		{
+			var stopwatch = StartUpdateReplaceStopWatch("replace", f, collections);
+
 			var fileIndexResultsList = _metaReplaceService
 				.Replace(f, fieldName, search, replace, collections);
 		    
@@ -152,7 +165,9 @@ namespace starsky.Controllers
 				}
 
 			});
-					
+
+			StopUpdateReplaceStopWatch("replace", f,stopwatch);
+			
 			// When all items are not found
 			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 			{

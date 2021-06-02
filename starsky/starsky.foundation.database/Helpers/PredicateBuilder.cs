@@ -61,7 +61,7 @@ namespace starsky.foundation.database.Helpers
 		/// <param name="predicates"></param>
 		/// <typeparam name="T"></typeparam>
 		/// <returns></returns>
-		public static Expression<System.Func<T,bool>> OrLoop<T>(List<Expression<Func<T,bool>>> predicates)
+		public static Expression<Func<T,bool>> OrLoop<T>(List<Expression<Func<T,bool>>> predicates)
 		{
 			var predicate = False<T>();
 				
@@ -74,9 +74,8 @@ namespace starsky.foundation.database.Helpers
 				}
 				else
 				{
-					var item = predicates[i - 1];
 					var item2 = predicates[i];
-					predicate =  item.Or(item2);
+					predicate =  predicate.Or(item2);
 				}
 			}
 

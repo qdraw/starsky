@@ -40,77 +40,79 @@ namespace starsky.feature.metaupdate.Services
 			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
-			List<FileIndexItem> fileIndexItemsList;
+			var fileIndexItemsList = await GetObjectsByFilePath(inputFilePaths, collections);
+			foreach ( var fileIndexItem in fileIndexItemsList )
+			{
+				// Files that are not on disk
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
+						FileIndexItem.ExifStatus.NotFoundSourceMissing,
+						fileIndexResultsList);
+					continue; 
+				}
+				
+				// Dir is readonly / don't edit
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
+				     == FileIndexItem.ExifStatus.ReadOnly)
+				{
+					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
+						FileIndexItem.ExifStatus.ReadOnly,
+						fileIndexResultsList);
+					continue; 
+				}
+
+				CompareAllLabelsAndRotation(changedFileIndexItemName,
+					fileIndexItem, inputModel, append, rotateClock);
+						
+				// this one is good :)
+				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+					
+				// Deleted is allowed but the status need be updated
+				if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
+				      == FileIndexItem.ExifStatus.Deleted) )
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
+				}
+				// The hash in FileIndexItem is not correct
+				fileIndexResultsList.Add(fileIndexItem);
+			}
+			
+			// update database cache
+			_query.CacheUpdateItem(fileIndexResultsList);
+			
+			foreach ( var fileIndexItem in fileIndexItemsList )
+			{
+				// dont update the fileHash because we don't know yet what it will be
+				fileIndexItem.FileHash = null;
+			}
+
+			AddNotFoundInIndexStatus(inputFilePaths, fileIndexResultsList);
+			
+			return (fileIndexResultsList, changedFileIndexItemName);
+		}
+
+		private async Task<List<FileIndexItem>> GetObjectsByFilePath(string[] inputFilePaths, bool collections)
+		{
 			if ( collections )
 			{
-				fileIndexItemsList = await _query.GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
+				return await _query.GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
 			}
-			else
-			{
-				fileIndexItemsList = await _query.GetObjectsByFilePathAsync(inputFilePaths.ToList());
-			}
+			return await _query.GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		}
 
-			
+		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
+		{
 			foreach (var subPath in inputFilePaths)
 			{
-				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(subPath);
-
-				var fileIndexItemsIncludingCollections = fileIndexItemsList.Where(
-					p => p.ParentDirectory == FilenamesHelper.GetParentPath(subPath) 
-					     && p.FileName.StartsWith(fileNameWithoutExtension) ).ToList();;
-
-				if ( !fileIndexItemsIncludingCollections.Any())
+				// when item is not in the database
+				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
 				{
 					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
 						FileIndexItem.ExifStatus.NotFoundNotInIndex,
 						fileIndexResultsList);
-					continue;
 				}
-
-				foreach ( var fileIndexItem in fileIndexItemsIncludingCollections ) {
-					if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-					{
-						new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
-							FileIndexItem.ExifStatus.NotFoundSourceMissing,
-							fileIndexResultsList);
-						continue; 
-					}
-				
-					// Dir is readonly / don't edit
-					if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
-					     == FileIndexItem.ExifStatus.ReadOnly)
-					{
-						new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
-							FileIndexItem.ExifStatus.ReadOnly,
-							fileIndexResultsList);
-						continue; 
-					}
-
-					CompareAllLabelsAndRotation(changedFileIndexItemName,
-						fileIndexItem, inputModel, append, rotateClock);
-						
-					// this one is good :)
-					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-					
-					// dont update the fileHash because we don't know yet what it will be
-					fileIndexItem.FileHash = null;
-					
-					// Deleted is allowed but the status need be updated
-					if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
-					      == FileIndexItem.ExifStatus.Deleted) )
-					{
-						fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
-					}
-						
-					// update database cache
-					_query.CacheUpdateItem(new List<FileIndexItem>{fileIndexItem});
-						
-					// The hash in FileIndexItem is not correct
-					fileIndexResultsList.Add(fileIndexItem);
-				}
-
 			}
-			return (fileIndexResultsList, changedFileIndexItemName);
 		}
 
 
