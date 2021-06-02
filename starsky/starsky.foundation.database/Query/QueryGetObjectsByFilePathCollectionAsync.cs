@@ -30,18 +30,18 @@ namespace starsky.foundation.database.Query
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="filePaths"></param>
+		/// <param name="filePathList"></param>
 		/// <returns>lr</returns>
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePaths)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
 		{
 			try
 			{
-				return FormatOk(await GetObjectsByFilePathCollectionQuery(_context, filePaths).ToListAsync());
+				return FormatOk(await GetObjectsByFilePathCollectionQuery(_context, filePathList).ToListAsync());
 			}
 			catch ( ObjectDisposedException )
 			{
 				return FormatOk(await GetObjectsByFilePathCollectionQuery(
-					new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
+					new InjectServiceScope(_scopeFactory).Context(),filePathList).ToListAsync());
 			}
 		}
 		

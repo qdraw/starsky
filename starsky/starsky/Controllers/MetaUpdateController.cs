@@ -106,7 +106,7 @@ namespace starsky.Controllers
 		{
 			// for debug
 			stopwatch.Stop();
-			_logger.LogInformation($"[update] f: {f} stop duration: {stopwatch.Elapsed.TotalMilliseconds}");
+			_logger.LogInformation($"[{name}] f: {f} stop duration: {stopwatch.Elapsed.TotalMilliseconds}");
 		}
 
 		/// <summary>

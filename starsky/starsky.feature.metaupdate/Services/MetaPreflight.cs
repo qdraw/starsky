@@ -115,23 +115,6 @@ namespace starsky.feature.metaupdate.Services
 			}
 		}
 
-
-		// private DetailView GetCollectionsDetailView(string collectionSubPath, string subPath, bool collections, DetailView detailView)
-		// {
-		// 	// only for performance reasons
-		// 	DetailView collectionsDetailView;
-		// 	if ( collectionSubPath != subPath)
-		// 	{
-		// 		collectionsDetailView = _query.SingleItem(collectionSubPath, 
-		// 			null, collections, false);
-		// 	}
-		// 	else
-		// 	{
-		// 		collectionsDetailView = detailView;
-		// 	}
-		// 	return collectionsDetailView;
-		// }
-
 		/// <summary>
 		/// Compare Rotation and All other tags
 		/// </summary>
