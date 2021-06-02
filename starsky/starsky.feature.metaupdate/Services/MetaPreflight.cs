@@ -74,6 +74,7 @@ namespace starsky.feature.metaupdate.Services
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 				}
+				
 				// The hash in FileIndexItem is not correct
 				fileIndexResultsList.Add(fileIndexItem);
 			}
@@ -81,7 +82,7 @@ namespace starsky.feature.metaupdate.Services
 			// update database cache
 			_query.CacheUpdateItem(fileIndexResultsList);
 			
-			foreach ( var fileIndexItem in fileIndexItemsList )
+			foreach ( var fileIndexItem in fileIndexResultsList )
 			{
 				// dont update the fileHash because we don't know yet what it will be
 				fileIndexItem.FileHash = null;
