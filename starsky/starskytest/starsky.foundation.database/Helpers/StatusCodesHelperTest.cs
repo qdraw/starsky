@@ -135,13 +135,12 @@ namespace starskytest.starsky.foundation.database.Helpers
 		[TestMethod]
 		public void StatusCodesHelperTest_ReturnExifStatusError_ReadOnly()
 		{
-			var appSettings = new AppSettings();
 			var statusModel = new FileIndexItem();
 			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
 			var fileIndexResultsList = new List<FileIndexItem>();
 			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
 				fileIndexResultsList);
-			Assert.AreEqual(false,statusBool);
+			Assert.AreEqual(true,statusBool);
 		}
 
 		[TestMethod]

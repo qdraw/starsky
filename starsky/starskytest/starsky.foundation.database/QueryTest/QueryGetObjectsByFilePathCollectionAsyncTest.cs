@@ -147,7 +147,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
 				.GetObjectsByFilePathCollectionAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
-			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);
 		}
 		
