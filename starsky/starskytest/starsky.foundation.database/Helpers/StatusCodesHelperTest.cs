@@ -5,33 +5,34 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Storage;
-using starskycore.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.Helpers
+namespace starskytest.starsky.foundation.database.Helpers
 {
 	[TestClass]
 	public class StatusCodesHelperTest
 	{
-		// [TestMethod]
-		// public void StatusCodesHelperTest_IsDeletedStatus_NotFoundNotInIndex()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var status = new StatusCodesHelper(appSettings).IsDeletedStatus(null);
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
-		// }
-		//
-		// [TestMethod]
-		// public void StatusCodesHelperTest_IsReadOnlyStatus_NotFoundNotInIndex()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(null);
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,status);
-		// }
+		[TestMethod] 
+		public void IsDeletedStatus_Null_Default()
+		{
+			DetailView detailView = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var status = new StatusCodesHelper().IsDeletedStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
 		
 		[TestMethod]
-		public void StatusCodesHelperTest_IsReadOnlyStatus_DirReadOnly()
+		public void IsReadOnlyStatus_Null_Default()
+		{
+			DetailView detailView = null;
+			var appSettings = new AppSettings();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
+		
+		[TestMethod]
+		public void IsReadOnlyStatus_DetailView_DirReadOnly()
 		{
 			// this is the only diff -->>
 			var appSettings = new AppSettings{ReadOnlyFolders = new List<string>{"/"}};
@@ -44,24 +45,38 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly,status);
 		}
 		
-		// [TestMethod]
-		// public void StatusCodesHelperTest_InjectFakeIStorage_GoodSituation()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var detailView = new DetailView
-		// 	{
-		// 		IsDirectory = false,
-		// 		SubPath = "/test.jpg",
-		// 		FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
-		// 	};
-		// 	var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
-		// 	
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status);
-		// 	
-		// 	var status1 = new StatusCodesHelper(appSettings).IsDeletedStatus(detailView);
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok,status1);
-		// }
+		[TestMethod]
+		[ExpectedException(typeof(DllNotFoundException))]
+		public void IsReadOnlyStatus_DetailView_AppSettingsNull()
+		{
+			DetailView detailView = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new StatusCodesHelper(null).IsReadOnlyStatus(detailView);
+			// expect DllNotFoundException
+		}
+				
+		[TestMethod]
+		public void IsReadOnlyStatus_DetailView_Null()
+		{
+			DetailView detailView = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			var status = new StatusCodesHelper(new AppSettings()).IsReadOnlyStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Default,status);
+		}
 		
+		[TestMethod]
+		public void IsReadOnlyStatus_FileIndexItem_DirReadOnly()
+		{
+			// this is the only diff -->>
+			var appSettings = new AppSettings{ReadOnlyFolders = new List<string>{"/"}};
+			var detailView = new FileIndexItem
+			{
+				IsDirectory = true,
+				FilePath = "/"
+			};
+			var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
+			Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly,status);
+		}
 		
 		[TestMethod]
 		public void StatusCodesHelperTest_InjectFakeIStorage_FileDeletedTag()
@@ -71,54 +86,15 @@ namespace starskytest.Helpers
 			{
 				IsDirectory = false,
 				SubPath = "/test.jpg",
-				FileIndexItem = new FileIndexItem{ParentDirectory = "/", Tags = "!delete!", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
+				FileIndexItem = new FileIndexItem{ParentDirectory = "/", 
+					Tags = "!delete!", FileName = "test.jpg", CollectionPaths = new List<string>{"/test.jpg"}}
 			};
-			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
+			var istorage = new FakeIStorage(new List<string> {"/"}, 
+				new List<string> {"/test.jpg"});
 			var status = new StatusCodesHelper(appSettings).IsDeletedStatus(detailView);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,status);
 		}
-		
-		// [TestMethod]
-		// public void StatusCodesHelperTest_InjectFakeIStorage_NotExitSituation()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var detailView = new DetailView
-		// 	{
-		// 		IsDirectory = false,
-		// 		SubPath = "/404.jpg",
-		// 		FileIndexItem = new FileIndexItem{ParentDirectory = "/", FileName = "404.jpg", CollectionPaths = new List<string>{"/404.jpg"}}
-		// 	};
-		// 	var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
-		// 	var status = new StatusCodesHelper(appSettings,istorage).FileCollectionsCheck(detailView);
-		// 	
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,status);
-		// }
-		
-		// [TestMethod]
-		// public void StatusCodesHelperTest_FileCollectionsCheck_NotFoundIsDir()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var detailView = new DetailView
-		// 	{
-		// 		IsDirectory = true,
-		// 		SubPath = "/"
-		// 	};
-		// 	var status = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).FileCollectionsCheck(detailView);
-		// 	Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundIsDir,status);
-		// }
-
-		// [TestMethod]
-		// public void StatusCodesHelperTest_ReturnExifStatusError_NotFoundIsDir()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var statusModel = new FileIndexItem();
-		// 	var statusResults = FileIndexItem.ExifStatus.NotFoundIsDir;
-		// 	var fileIndexResultsList = new List<FileIndexItem>();
-		// 	var statusBool = new StatusCodesHelper(appSettings,new StorageSubPathFilesystem(appSettings)).ReturnExifStatusError(statusModel, statusResults,
-		// 			fileIndexResultsList);
-		// 	Assert.AreEqual(true,statusBool);
-		// }
 
 		[TestMethod]
 		public void StatusCodesHelperTest_ReturnExifStatusError_DirReadOnly()
@@ -156,17 +132,17 @@ namespace starskytest.Helpers
 			Assert.AreEqual(true,statusBool);
 		}
 	
-		// [TestMethod]
-		// public void StatusCodesHelperTest_ReturnExifStatusError_ReadOnly()
-		// {
-		// 	var appSettings = new AppSettings();
-		// 	var statusModel = new FileIndexItem();
-		// 	var statusResults = FileIndexItem.ExifStatus.ReadOnly;
-		// 	var fileIndexResultsList = new List<FileIndexItem>();
-		// 	var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
-		// 		fileIndexResultsList);
-		// 	Assert.AreEqual(false,statusBool);
-		// }
+		[TestMethod]
+		public void StatusCodesHelperTest_ReturnExifStatusError_ReadOnly()
+		{
+			var appSettings = new AppSettings();
+			var statusModel = new FileIndexItem();
+			var statusResults = FileIndexItem.ExifStatus.ReadOnly;
+			var fileIndexResultsList = new List<FileIndexItem>();
+			var statusBool = new StatusCodesHelper().ReturnExifStatusError(statusModel, statusResults,
+				fileIndexResultsList);
+			Assert.AreEqual(false,statusBool);
+		}
 
 		[TestMethod]
 		public void StatusCodesHelperTest_ReadonlyDenied_true()
@@ -200,20 +176,5 @@ namespace starskytest.Helpers
 				fileIndexResultsList);
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,fileIndexResultsList.FirstOrDefault().Status);
 		}
-		
-		// [TestMethod]
-		// [ExpectedException(typeof(DllNotFoundException))]
-		// public void StatusCodesHelperTest_WrongInput()
-		// {
-		// 	new StatusCodesHelper(null,null).FileCollectionsCheck(null);
-		// }
-		//
-		// [TestMethod]
-		// [ExpectedException(typeof(DllNotFoundException))]
-		// public void StatusCodesHelperTest_WrongInput2()
-		// {
-		// 	new StatusCodesHelper(new AppSettings(), null).FileCollectionsCheck(null);
-		// }
-
 	}
 }
