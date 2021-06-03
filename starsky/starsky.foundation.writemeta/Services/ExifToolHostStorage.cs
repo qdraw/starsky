@@ -17,18 +17,14 @@ namespace starsky.foundation.writemeta.Services
 		private readonly IExifTool _exifTool;
 		private readonly IWebLogger _webLogger;
 
-		public ExifToolHostStorageService(IWebLogger webLogger)
-		{
-			_webLogger = webLogger;
-		}
-		
-		public ExifToolHostStorageService(ISelectorStorage selectorStorage, AppSettings appSettings)
+		public ExifToolHostStorageService(ISelectorStorage selectorStorage, AppSettings appSettings,IWebLogger webLogger)
 		{
 			var iStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			var thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings, _webLogger);
-
+			_webLogger = webLogger;
 		}
+		
 		public async Task<KeyValuePair<bool, string>> WriteTagsAsync(string subPath, string command)
 		{
 			return await _exifTool.WriteTagsAsync(subPath,command);

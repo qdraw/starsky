@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
-	public class ExifToolHostStorageTest
+	public class ExifToolHostStorageServiceTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentException))]
@@ -23,7 +23,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 		
@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 	}
