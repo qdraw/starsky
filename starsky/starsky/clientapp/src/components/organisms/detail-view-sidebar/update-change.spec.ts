@@ -77,6 +77,24 @@ describe("Update Change", () => {
       expect(fetchPostSpy).toBeCalledTimes(0);
     });
 
+    it("shou11ld ignore same content", () => {
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({} as IConnectionDefault);
+        });
+
+      new UpdateChange(
+        { tag: "test" } as any,
+        jest.fn(),
+        jest.fn(),
+        {} as any,
+        {} as any
+      ).Update([["tag", "test"]]);
+
+      expect(fetchPostSpy).toBeCalledTimes(0);
+    });
+
     it("no content 2", () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")

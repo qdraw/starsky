@@ -69,7 +69,13 @@ export class UpdateChange {
     FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
       if (item.statusCode !== 200 || !item.data) return;
 
-      var currentItem = item.data[0] as IFileIndexItem;
+      // the order of the item list is by alphabet
+      const currentItemList = (item.data as IFileIndexItem[]).filter(
+        (p) => p.filePath === this.fileIndexItem.filePath
+      );
+      if (currentItemList.length === 0) return;
+
+      const currentItem = currentItemList[0];
       currentItem.lastEdited = new Date().toISOString();
 
       this.setFileIndexItem(currentItem);
