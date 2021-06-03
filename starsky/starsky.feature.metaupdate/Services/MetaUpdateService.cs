@@ -87,7 +87,7 @@ namespace starsky.feature.metaupdate.Services
 					// used for tracking differences, in the database/ExifTool compare
 					var comparedNamesList = changedFileIndexItemName[item.FilePath];
 
-					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
+					await UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
 					updatedItems.Add(detailView.FileIndexItem);
 					continue;
 				}
@@ -118,48 +118,46 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="detailView">output database object</param>
 		/// <param name="comparedNamesList">name of fields updated by exifTool</param>
 		/// <param name="rotateClock">rotation value (if needed)</param>
-		private void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
+		private async Task UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
-					
-			// feature to exif update
-			var exifUpdateFilePaths = new List<string>
-			{
-				detailView.FileIndexItem.FilePath           
-			};
-			
 			// do rotation on thumbs
 			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
 
 			if ( detailView.FileIndexItem.IsDirectory != true 
 			     && ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
 			{
-				// Do an Exif Sync for all files, including thumbnails
-				var exifResult = exifTool.Update(detailView.FileIndexItem, 
-					exifUpdateFilePaths, comparedNamesList);
-				_logger?.LogInformation($"UpdateWriteDiskDatabase: {exifResult}");
-			}
-			else
-			{
-				new FileIndexItemJsonParser(_iStorage).Write(detailView.FileIndexItem);
-			}
-
-			if ( detailView.FileIndexItem.IsDirectory != true )
-			{
-				// change thumbnail names after the original is changed
-				var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
-
-				if ( _thumbnailStorage.ExistFile(detailView.FileIndexItem.FileHash) )
+				// feature to exif update
+				var exifUpdateFilePaths = new List<string>
 				{
+					detailView.FileIndexItem.FilePath           
+				};
+				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
+				
+				// Do an Exif Sync for all files, including thumbnails
+				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(detailView.FileIndexItem, 
+					exifUpdateFilePaths, comparedNamesList,true);
+
+				if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
+				{
+					detailView.FileIndexItem.FileHash = newFileHashes.FirstOrDefault();
+					_logger.LogInformation($"use fileHash from exiftool {detailView.FileIndexItem.FileHash}");
+
+				}
+				else
+				{
+					var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(detailView.FileIndexItem.FilePath)).Key;
 					_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
 				}
 				
-				// Update the hash in the database
-				detailView.FileIndexItem.FileHash = newFileHash;
+				_logger?.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
 			}
-			
+			else
+			{
+				await new FileIndexItemJsonParser(_iStorage).WriteAsync(detailView.FileIndexItem);
+			}
+
 			// Do a database sync + cache sync
-			_query.UpdateItem(detailView.FileIndexItem);
+			await _query.UpdateItemAsync(detailView.FileIndexItem);
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache

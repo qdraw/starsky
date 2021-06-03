@@ -21,7 +21,7 @@ namespace starsky.foundation.writemeta.JsonService
 		/// </summary>
 		/// <param name="fileIndexItem">data object</param>
 		/// <returns>void</returns>
-		public async Task Write(FileIndexItem fileIndexItem)
+		public async Task WriteAsync(FileIndexItem fileIndexItem)
 		{
 			var jsonOutput = JsonSerializer.Serialize(fileIndexItem, new JsonSerializerOptions
 			{

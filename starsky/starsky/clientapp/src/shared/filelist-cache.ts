@@ -16,6 +16,24 @@ export class FileListCache {
 
   private timeoutInMinutes = 3;
 
+  public CacheCleanByPath(path: string) {
+    this.GetAll().forEach((item) => {
+      if (item.name.includes(`f:${path}`)) {
+        console.log("--dsfnkl");
+
+        try {
+          console.log(item.item);
+
+          const updatedItem = item.item;
+          updatedItem.dateCache = 1;
+          sessionStorage.setItem(item.name, JSON.stringify(item.item));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
+  }
+
   /**
    * Set entire list of for a folder
    * @param urlObject params of url
@@ -105,7 +123,8 @@ export class FileListCache {
     return (
       this.cachePrefix +
       `c${urlObject.colorClass};l${urlObject.collections}` +
-      urlObject.f +
+      // should have f:
+      `f:${urlObject.f}` +
       `;s${!urlObject.sort ? SortType.fileName : urlObject.sort}`
     );
   }

@@ -74,6 +74,8 @@ namespace starsky.Controllers
 				var updatedList = await _metaUpdateService
 					.Update(changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
+				_logger.LogInformation("send to socket");
+				await _connectionsService.SendToAllAsync("[system] /api/update called", token);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
 					DefaultJsonSerializer.CamelCase), token);
 			});

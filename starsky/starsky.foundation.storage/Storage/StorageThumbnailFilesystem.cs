@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,6 +59,14 @@ namespace starsky.foundation.storage.Storage
 
 			if (!existOldFile || existNewFile)
 			{
+				if ( !existOldFile )
+				{
+					Console.WriteLine("!existOldFile" + fromPath );
+				}
+				else
+				{
+					Console.WriteLine("existNewFile" + toPath );
+				}
 				return;
 			}
 			hostFilesystem.FileMove(oldThumbPath,newThumbPath);
@@ -65,7 +74,19 @@ namespace starsky.foundation.storage.Storage
 
 		public void FileCopy(string fromPath, string toPath)
 		{
-			throw new System.NotImplementedException();
+			var oldThumbPath = _appSettings.ThumbnailTempFolder + fromPath + ".jpg";
+			var newThumbPath = _appSettings.ThumbnailTempFolder + toPath + ".jpg";
+
+			var hostFilesystem = new StorageHostFullPathFilesystem();
+
+			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
+			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
+
+			if (!existOldFile || existNewFile)
+			{
+				return;
+			}
+			hostFilesystem.FileCopy(oldThumbPath,newThumbPath);
 		}
 
 		public bool FileDelete(string path)
