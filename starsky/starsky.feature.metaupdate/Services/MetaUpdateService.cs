@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
@@ -19,6 +20,7 @@ using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.metaupdate.Services
 {
 	[Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -154,7 +156,7 @@ namespace starsky.feature.metaupdate.Services
 			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
 		}
 
-		private async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, DetailView detailView)
+		internal async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, DetailView detailView)
 		{
 			if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
 			{
