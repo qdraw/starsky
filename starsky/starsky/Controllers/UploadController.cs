@@ -241,7 +241,7 @@ namespace starsky.Controllers
 				if ( !_appSettings.UseDiskWatcher )
 				{
 					await new SyncSingleFile(_appSettings, _query, _iStorage,
-						new ConsoleWrapper()).UpdateSidecarFile(subPath);
+						new ConsoleWrapper(),_logger).UpdateSidecarFile(subPath);
 				}
 				
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);

@@ -35,7 +35,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			var result = await sync.SingleFile("/non_exist.ext");
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
@@ -51,7 +51,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new List<byte[]>{new byte[5]});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				storage, new ConsoleWrapper());
+				storage, new ConsoleWrapper(), new FakeIWebLogger());
 			var result = await sync.SingleFile("/corrupt.jpg");
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result.Status);
@@ -62,7 +62,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			
 			await sync.SingleFile("/test.jpg");
 
@@ -82,7 +82,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			
 			var result = await sync.SingleFile("/status_deleted.jpg");
 			
@@ -94,7 +94,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		{
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings{Verbose = true}, fakeQuery,
-				_iStorageFake, null); //  % % % % % % % % % % % % % % No Console % % % %
+				_iStorageFake, null, new FakeIWebLogger()); //  % % % % % % % % % % % % % % No Console % % % %
         	
 			await sync.SingleFile("/test.jpg");
 
@@ -119,7 +119,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				iStorageFake, new ConsoleWrapper());
+				iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/level/deep/test.jpg");
 
 			var detailView = fakeQuery.SingleItem("/level/deep/test.jpg");
@@ -164,7 +164,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg");
 
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -191,7 +191,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg");
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -215,7 +215,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg");
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -239,7 +239,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg");
 
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -265,7 +265,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg",item);  // % % % % Enter item here % % % % % 
 
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -290,7 +290,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			var result = await sync.SingleFile("/status_deleted.jpg",item);  // % % % % Enter item here % % % % % 
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
@@ -308,7 +308,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
 
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
@@ -336,7 +336,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.jpg",item); // % % % % Enter item here % % % % % 
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -364,7 +364,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.xmp",item);
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -393,7 +393,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
 			
 			var sync = new SyncSingleFile(new AppSettings {Verbose = true}, fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			await sync.SingleFile("/test.xmp",item);
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
@@ -417,7 +417,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			
 			await sync.SingleFile("/color_class_test.jpg");
 			
@@ -436,7 +436,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public void AddDeleteStatus_Null()
 		{
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 
 			var result = sync.AddDeleteStatus(null);
 			Assert.IsNull(result);
@@ -448,7 +448,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var item = new FileIndexItem() {Tags = "test", Status = FileIndexItem.ExifStatus.Ok};
 			
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 
 			var result = sync.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,result.Status);
@@ -460,7 +460,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var item = new FileIndexItem() {Tags = "!delete!"};
 			
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 
 			var result = sync.AddDeleteStatus(item);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,result.Status);
@@ -470,7 +470,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public async Task SizeFileHashIsTheSame_true()
 		{
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			
 			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/test.jpg")
 			{
@@ -484,7 +484,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		public async Task SizeFileHashIsTheSame_NotFoundFalse()
 		{
 			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(),
-				_iStorageFake, new ConsoleWrapper());
+				_iStorageFake, new ConsoleWrapper(), new FakeIWebLogger());
 			
 			var theSame = await sync.SizeFileHashIsTheSame(new FileIndexItem("/not-found.jpg")
 			{

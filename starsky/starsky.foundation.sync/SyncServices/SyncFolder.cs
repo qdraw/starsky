@@ -22,9 +22,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
 		private readonly Duplicate _duplicate;
+		private readonly IWebLogger _logger;
 
 		public SyncFolder(AppSettings appSettings, IQuery query, 
-			ISelectorStorage selectorStorage, IConsole console)
+			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
@@ -32,6 +33,7 @@ namespace starsky.foundation.sync.SyncServices
 			_query = query;
 			_console = console;
 			_duplicate = new Duplicate(_query);
+			_logger = logger;
 		}
 
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath)
@@ -85,7 +87,7 @@ namespace starsky.foundation.sync.SyncServices
 					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_subPathStorage, _console).SingleFile(subPathInFiles, 
+						_subPathStorage, _console, _logger).SingleFile(subPathInFiles, 
 						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
 					
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
