@@ -159,7 +159,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="updateModel">model</param>
 		/// <param name="inputSubPaths">list of paths</param>
 		/// <returns>void</returns>
-		private async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
+		internal async Task CreateXmpFileIsNotExist(FileIndexItem updateModel, List<string> inputSubPaths)
 		{
 			foreach ( var subPath in inputSubPaths )
 			{

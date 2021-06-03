@@ -48,7 +48,14 @@ namespace starskytest.Services
 			Assert.AreEqual(26,fileHashCode.Key.Length);
 		}
         
-        
-        
+		[TestMethod]
+		public void FileHash_StringArray_CreateAnImage_Test()
+		{
+			var createAnImage = new CreateAnImage();
+			var iStorage = new StorageSubPathFilesystem(new AppSettings{StorageFolder = createAnImage.BasePath});
+			var fileHashCode = new FileHash(iStorage).GetHashCode(new []{createAnImage.DbPath});
+			Assert.IsTrue(fileHashCode[0].Value);
+			Assert.AreEqual(26,fileHashCode[0].Key.Length);
+		}
 	}
 }
