@@ -254,7 +254,8 @@ namespace starskytest.Controllers
 			await controller.UpdateAsync(new FileIndexItem(), "/test09.jpg",
 				true);
 
-			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+			Assert.AreEqual(1,fakeFakeIWebSocketConnectionsService
+				.FakeSendToAllAsync.Where(p => !p.StartsWith("[system]")).Count());
 		}
         
 		[TestMethod]
