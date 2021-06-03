@@ -87,7 +87,7 @@ namespace starsky.foundation.sync.SyncServices
 					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_subPathStorage, _console, _logger).SingleFile(subPathInFiles, 
+						_subPathStorage, _logger).SingleFile(subPathInFiles, 
 						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
 					
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )

@@ -19,17 +19,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly IQuery _query;
 		private readonly NewItem _newItem;
-		private readonly IConsole _console;
-		private readonly AppSettings _appSettings;
 		private readonly IWebLogger _logger;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IConsole console, IWebLogger logger)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
 		{
-			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
-			_console = console;
 			_logger = logger;
 		}
 

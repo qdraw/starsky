@@ -365,7 +365,7 @@ namespace starsky.foundation.database.Helpers
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList, bool append)
         {
-	        // former:                 (string.IsNullOrEmpty(newStringValue) && newStringValue != "/")) return;
+	        // former check on not be / and return if that is the case;
             if (oldStringValue == newStringValue || string.IsNullOrEmpty(newStringValue)) return;
             
             if (propertyName == nameof(FileIndexItem.FileName) ) return;
