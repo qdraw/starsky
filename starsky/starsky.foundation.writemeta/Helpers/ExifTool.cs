@@ -57,7 +57,7 @@ namespace starsky.foundation.writemeta.Helpers
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
 
-		private async Task<string> RenameThumbnailByStream(
+		internal async Task<string> RenameThumbnailByStream(
 			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
 		{
 			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
