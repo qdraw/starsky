@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,14 +58,6 @@ namespace starsky.foundation.storage.Storage
 
 			if (!existOldFile || existNewFile)
 			{
-				if ( !existOldFile )
-				{
-					Console.WriteLine("!existOldFile" + fromPath );
-				}
-				else
-				{
-					Console.WriteLine("existNewFile" + toPath );
-				}
 				return;
 			}
 			hostFilesystem.FileMove(oldThumbPath,newThumbPath);

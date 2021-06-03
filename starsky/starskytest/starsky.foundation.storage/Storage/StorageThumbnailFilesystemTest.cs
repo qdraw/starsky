@@ -38,6 +38,23 @@ namespace starskytest.starsky.foundation.storage.Storage
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileMove.jpg"));
 			new CreateAnImage();
 		}
+		
+		[TestMethod]
+		public void FileCopy()
+		{
+			var createNewImage = new CreateAnImage();
+			
+			_thumbnailStorage.FileCopy(_fileNameWithoutExtension, "StorageThumbnailFilesystemTest_FileCopy");
+
+			var path = Path.Combine(createNewImage.BasePath, _fileNameWithoutExtension + ".jpg");
+			Assert.IsTrue(File.Exists(path));
+			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg");
+			Assert.IsTrue(File.Exists(path2));
+			
+			File.Delete(_fileNameWithoutExtension);
+			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg"));
+			new CreateAnImage();
+		}
 
 		[TestMethod]
 		public void FileDelete_NotExist()
