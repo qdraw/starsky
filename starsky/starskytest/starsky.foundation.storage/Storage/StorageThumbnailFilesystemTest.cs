@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		}
 		
 		[TestMethod]
-		public void FileCopy()
+		public void FileCopy_success()
 		{
 			var createNewImage = new CreateAnImage();
 			
@@ -54,6 +54,17 @@ namespace starskytest.starsky.foundation.storage.Storage
 			File.Delete(_fileNameWithoutExtension);
 			File.Delete(Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy.jpg"));
 			new CreateAnImage();
+		}
+		
+		[TestMethod]
+		public void FileCopy_source_notFound()
+		{
+			var createNewImage = new CreateAnImage();
+			
+			_thumbnailStorage.FileCopy("not_found", "StorageThumbnailFilesystemTest_FileCopy2");
+
+			var path2 = Path.Combine(createNewImage.BasePath, "StorageThumbnailFilesystemTest_FileCopy2.jpg");
+			Assert.IsFalse(File.Exists(path2));
 		}
 
 		[TestMethod]
