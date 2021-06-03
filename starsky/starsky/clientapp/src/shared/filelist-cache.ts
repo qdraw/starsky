@@ -16,20 +16,14 @@ export class FileListCache {
 
   private timeoutInMinutes = 3;
 
+  /**
+   * Remove item by fileName
+   * @param path path
+   */
   public CacheCleanByPath(path: string) {
     this.GetAll().forEach((item) => {
       if (item.name.includes(`f:${path}`)) {
-        console.log("--dsfnkl");
-
-        try {
-          console.log(item.item);
-
-          const updatedItem = item.item;
-          updatedItem.dateCache = 1;
-          sessionStorage.setItem(item.name, JSON.stringify(item.item));
-        } catch (error) {
-          console.log(error);
-        }
+        sessionStorage.removeItem(item.name);
       }
     });
   }

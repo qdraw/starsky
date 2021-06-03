@@ -137,16 +137,7 @@ namespace starsky.feature.metaupdate.Services
 				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(detailView.FileIndexItem, 
 					exifUpdateFilePaths, comparedNamesList,true);
 
-				if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
-				{
-					detailView.FileIndexItem.FileHash = newFileHashes.FirstOrDefault();
-					_logger.LogInformation($"use fileHash from exiftool {detailView.FileIndexItem.FileHash}");
-				}
-				else
-				{
-					var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(detailView.FileIndexItem.FilePath)).Key;
-					_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
-				}
+				await ApplyOrGenerateUpdatedFileHash(newFileHashes, detailView);
 				_logger?.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
 			}
 			else
@@ -161,6 +152,20 @@ namespace starsky.feature.metaupdate.Services
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image
 			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
+		}
+
+		private async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, DetailView detailView)
+		{
+			if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
+			{
+				detailView.FileIndexItem.FileHash = newFileHashes.FirstOrDefault();
+				_logger.LogInformation($"use fileHash from exiftool {detailView.FileIndexItem.FileHash}");
+				return;
+			}
+			// when newFileHashes is null or string.empty
+			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(detailView.FileIndexItem.FilePath)).Key;
+			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
+			detailView.FileIndexItem.FileHash = newFileHash;
 		}
 
 		/// <summary>
