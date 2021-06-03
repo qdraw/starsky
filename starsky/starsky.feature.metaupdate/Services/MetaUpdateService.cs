@@ -141,14 +141,12 @@ namespace starsky.feature.metaupdate.Services
 				{
 					detailView.FileIndexItem.FileHash = newFileHashes.FirstOrDefault();
 					_logger.LogInformation($"use fileHash from exiftool {detailView.FileIndexItem.FileHash}");
-
 				}
 				else
 				{
 					var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(detailView.FileIndexItem.FilePath)).Key;
 					_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
 				}
-				
 				_logger?.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
 			}
 			else
