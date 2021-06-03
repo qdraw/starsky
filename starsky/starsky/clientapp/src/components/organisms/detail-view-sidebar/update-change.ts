@@ -1,5 +1,6 @@
 import { DetailViewAction } from "../../../contexts/detailview-context";
 import { IUseLocation } from "../../../hooks/use-location";
+import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { AsciiNull } from "../../../shared/ascii-null";
@@ -38,7 +39,7 @@ export class UpdateChange {
    * Send update request
    * @param items - tuple with "value: string, name: string"
    */
-  public Update(items: [string, string][]) {
+  public Update(items: [string, string][]): Promise<string | boolean> {
     const updateObject: any = { f: this.fileIndexItem.filePath };
 
     for (let [name, value] of items) {
@@ -64,27 +65,46 @@ export class UpdateChange {
       .toString()
       .replace(/%00/gi, AsciiNull());
 
-    if (bodyParams === "") return;
+    if (bodyParams === "") return Promise.resolve("no body param");
 
-    FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams).then((item) => {
-      if (item.statusCode !== 200 || !item.data) return;
-
-      // the order of the item list is by alphabet
-      const currentItemList = (item.data as IFileIndexItem[]).filter(
-        (p) => p.filePath === this.fileIndexItem.filePath
-      );
-      if (currentItemList.length === 0) return;
-
-      const currentItem = currentItemList[0];
-      currentItem.lastEdited = new Date().toISOString();
-
-      this.setFileIndexItem(currentItem);
-      this.dispatch({ type: "update", ...currentItem });
-      ClearSearchCache(this.history.location.search);
-      new FileListCache().CacheSet(this.history.location.search, {
-        ...this.state,
-        fileIndexItem: currentItem
-      });
+    return new Promise((resolve) => {
+      FetchPost(new UrlQuery().UrlUpdateApi(), bodyParams)
+        .then((item) => {
+          this.AfterPost(item, resolve);
+        })
+        .catch((e) => resolve(e));
     });
+  }
+
+  public AfterPost(
+    item: IConnectionDefault,
+    resolve: (value: string | boolean | PromiseLike<string | boolean>) => void
+  ) {
+    if (item.statusCode !== 200 || !item.data || item.data.length === 0) {
+      resolve("wrong status code or missing data");
+      return;
+    }
+
+    // the order of the item list is by alphabet
+    const currentItemList = (item.data as IFileIndexItem[]).filter(
+      (p) => p.filePath === this.fileIndexItem.filePath
+    );
+
+    if (currentItemList.length === 0) {
+      resolve("item not in result");
+      return;
+    }
+
+    const currentItem = currentItemList[0];
+    currentItem.lastEdited = new Date().toISOString();
+
+    this.setFileIndexItem(currentItem);
+    this.dispatch({ type: "update", ...currentItem });
+    ClearSearchCache(this.history.location.search);
+    new FileListCache().CacheSet(this.history.location.search, {
+      ...this.state,
+      fileIndexItem: currentItem
+    });
+    resolve(true);
   }
 }
