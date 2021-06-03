@@ -22,7 +22,7 @@ export const NewWebSocketService = (): WebSocketService => {
 };
 
 function parseJson(data: string): any {
-  if (data.startsWith("[system]")) {
+  if (data && data.startsWith("[system]")) {
     console.log(data);
     return;
   }
