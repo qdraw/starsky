@@ -65,8 +65,13 @@ namespace starsky.foundation.writemeta.Helpers
 			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize);
 			
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
-			_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
+			if ( string.IsNullOrEmpty(newHashCode))
+			{
+				_logger.LogInformation("[ExifTool] newHashCode is null/Empty");
+				return string.Empty;
+			}
 
+			_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
 			_logger.LogInformation("[ExifTool] rename   - " + oldFileHashCodeKeyPair.Key + " > " + newHashCode);
 			return newHashCode;
 		}
