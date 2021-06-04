@@ -30,7 +30,19 @@ namespace starskytest.Models
 		                                   " <rdf:Description rdf:about=\'\'\n " + " xmlns:pdf=\'http://ns.adobe.com/pdf/1.3/\'>\n  " +
 		                                   "<pdf:Keywords>kamer</pdf:Keywords>\n </rdf:Description>\n</rdf:RDF>\n</x:xmpmeta>\n";
 
-		public async Task<KeyValuePair<bool,string>> WriteTagsAsync(string subPath, string command)
+		public async Task<bool> WriteTagsAsync(string subPath, string command)
+		{
+			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
+
+			if ( subPath.EndsWith(".xmp") )
+			{
+				var stream = new PlainTextFileHelper().StringToStream(XmpInjection);
+				await _iStorage.WriteStreamAsync(stream, subPath);
+			}
+			return true;
+		}
+		
+		public async Task<KeyValuePair<bool,string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
 		{
 			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 

@@ -5,7 +5,9 @@ namespace starsky.foundation.writemeta.Interfaces
 {
     public interface IExifTool
     {
-	    Task<KeyValuePair<bool, string>> WriteTagsAsync(string subPath, string command);
+	    Task<bool> WriteTagsAsync(string subPath, string command);
+	    Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command);
+
 	    Task<bool> WriteTagsThumbnailAsync(string fileHash, string command);
     }
 }

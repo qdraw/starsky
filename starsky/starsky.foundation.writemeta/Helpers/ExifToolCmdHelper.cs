@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
@@ -100,7 +101,8 @@ namespace starsky.foundation.writemeta.Helpers
 			List<string> comparedNames, bool includeSoftware = true)
 #pragma warning restore 1998
 		{
-			var task = Task.Run(() => UpdateAsync(updateModel,inputSubPaths,comparedNames,includeSoftware));
+			var task = Task.Run(() => UpdateAsync(updateModel,inputSubPaths,
+				comparedNames,includeSoftware, true));
 			return task.Wait(TimeSpan.FromSeconds(20)) ? task.Result.Item1 : string.Empty;
 		}
 	    
@@ -180,8 +182,18 @@ namespace starsky.foundation.writemeta.Helpers
 			}
 		}
 
+		public Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel,
+			List<string> comparedNames, bool includeSoftware = true, bool renameThumbnail = true)
+		{
+			var exifUpdateFilePaths = new List<string>
+			{
+				updateModel.FilePath           
+			};
+			return UpdateAsync(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware, renameThumbnail);
+		}
+
 		public async Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel, 
-			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware)
+			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware, bool renameThumbnail)
 		{
 			// Creation and update .xmp file with all available content
 			await CreateXmpFileIsNotExist(updateModel, inputSubPaths);
@@ -192,10 +204,14 @@ namespace starsky.foundation.writemeta.Helpers
 			var command = ExifToolCommandLineArgs(updateModel, comparedNames, includeSoftware);
 
 			var fileHashes = new List<string>();
-			foreach (var path in subPathsList)
+			foreach ( var path in subPathsList.Where(path => _iStorage.ExistFile(path)) )
 			{
-				if ( ! _iStorage.ExistFile(path) ) continue;
-				fileHashes.Add((await _exifTool.WriteTagsAsync(path, command)).Value);
+				if (!renameThumbnail )
+				{
+					await _exifTool.WriteTagsAsync(path, command);
+					continue;
+				}
+				fileHashes.Add((await _exifTool.WriteTagsAndRenameThumbnailAsync(path, command)).Value);
 			}
 
 			if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )

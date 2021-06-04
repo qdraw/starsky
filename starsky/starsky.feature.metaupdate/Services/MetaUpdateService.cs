@@ -137,7 +137,7 @@ namespace starsky.feature.metaupdate.Services
 				
 				// Do an Exif Sync for all files, including thumbnails
 				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(detailView.FileIndexItem, 
-					exifUpdateFilePaths, comparedNamesList,true);
+					exifUpdateFilePaths, comparedNamesList,true, true);
 
 				await ApplyOrGenerateUpdatedFileHash(newFileHashes, detailView);
 				_logger?.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");

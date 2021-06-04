@@ -22,9 +22,14 @@ namespace starsky.foundation.writemeta.Services
 			_exifTool = new ExifTool(iStorage, thumbnailStorage, appSettings,logger);
 
 		}
-		public async Task<KeyValuePair<bool, string>> WriteTagsAsync(string subPath, string command)
+		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
 			return await _exifTool.WriteTagsAsync(subPath,command);
+		}
+		
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
+		{
+			return await _exifTool.WriteTagsAndRenameThumbnailAsync(subPath,command);
 		}
 
 		public async Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)
