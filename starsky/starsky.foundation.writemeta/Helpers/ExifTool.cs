@@ -57,6 +57,20 @@ namespace starsky.foundation.writemeta.Helpers
 			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
 		}
 		
+		internal async Task<string> RenameThumbnailByStream(
+			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
+		{
+			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
+			byte[] buffer = new byte[FileHash.MaxReadSize];
+			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize);
+			
+			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
+			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
+
+			_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
+			_logger.LogInformation("[ExifTool] rename   - " + oldFileHashCodeKeyPair.Key + " > " + newHashCode);
+			return newHashCode;
+		}
 
 		/// <summary>
 		/// Write commands to ExifTool for ReadStream
@@ -74,25 +88,6 @@ namespace starsky.foundation.writemeta.Helpers
 			// Need to Dispose for Windows
 			inputStream.Close();
 			return await _iStorage.WriteStreamAsync(stream, subPath);
-		}
-
-		internal async Task<string> RenameThumbnailByStream(
-			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
-		{
-			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
-			byte[] buffer = new byte[FileHash.MaxReadSize];
-			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize);
-			
-			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
-			if ( string.IsNullOrEmpty(newHashCode))
-			{
-				_logger.LogInformation("[ExifTool] newHashCode is null/Empty");
-				return string.Empty;
-			}
-
-			_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
-			_logger.LogInformation("[ExifTool] rename   - " + oldFileHashCodeKeyPair.Key + " > " + newHashCode);
-			return newHashCode;
 		}
 
 		/// <summary>
