@@ -19,16 +19,14 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly IQuery _query;
 		private readonly NewItem _newItem;
-		private readonly IConsole _console;
-		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IConsole console)
+		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
 		{
-			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
-			_console = console;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -46,7 +44,7 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			// Route without database check
-			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
+			_logger.LogInformation($"[SingleFile/no-db] {subPath}" );
 			
 			// Sidecar files are updated but ignored by the process
 			await UpdateSidecarFile(subPath);
@@ -54,6 +52,7 @@ namespace starsky.foundation.sync.SyncServices
 			var statusItem = CheckForStatusNotOk(subPath);
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
+				_logger.LogInformation($"[SingleFile/no-db] status {statusItem.Status} for {subPath}");
 				return statusItem;
 			}
 			
@@ -71,7 +70,7 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task<FileIndexItem> SingleFile(string subPath)
 		{
 			// route with database check
-			if (_appSettings.Verbose ) _console?.WriteLine($"sync file {subPath}" );
+			_logger.LogInformation($"[SingleFile/db] {subPath}" );
 
 			// Sidecar files are updated but ignored by the process
 			await UpdateSidecarFile(subPath);
@@ -81,6 +80,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
+				_logger.LogInformation($"[SingleFile/db] status {statusItem.Status} for {subPath}");
 				return statusItem;
 			}
 

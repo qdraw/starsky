@@ -62,7 +62,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
+			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
 			var result = await sync.Sync(_createAnImage.DbPath);
 
 			stopWatch.Stop();
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 			
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage));
+			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
 			var result = await sync.Sync("/");
 			
 			stopWatch.Stop();

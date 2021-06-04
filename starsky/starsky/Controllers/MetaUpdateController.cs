@@ -61,7 +61,7 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAsync(FileIndexItem inputModel, string f, bool append, 
 			bool collections = true, int rotateClock = 0)
 		{
-			var stopwatch = StartUpdateReplaceStopWatch("update", f, collections);
+			var stopwatch = StartUpdateReplaceStopWatch();
 		    
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
@@ -74,6 +74,8 @@ namespace starsky.Controllers
 				var updatedList = await _metaUpdateService
 					.Update(changedFileIndexItemName, 
 						fileIndexResultsList, inputModel, collections, append, rotateClock);
+				_logger.LogInformation("send to socket");
+				await _connectionsService.SendToAllAsync("[system] /api/update called", token);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
 					DefaultJsonSerializer.CamelCase), token);
 			});
@@ -89,24 +91,24 @@ namespace starsky.Controllers
 			// when switching very fast between images the background task has not run yet
 			_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
 
-			StopUpdateReplaceStopWatch("update", f,stopwatch);
+			StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
 
 			return Json(returnNewResultList);
 		}
 
-		private Stopwatch StartUpdateReplaceStopWatch(string name, string f, bool collections)
+		private Stopwatch StartUpdateReplaceStopWatch()
 		{
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
-			_logger.LogInformation($"[{name}] f: {f} {DateTime.UtcNow} start  collections: {collections}");
 			return stopWatch;
 		}
 
-		private void StopUpdateReplaceStopWatch(string name, string f, Stopwatch stopwatch)
+		private void StopUpdateReplaceStopWatch(string name, string f, bool collections, Stopwatch stopwatch)
 		{
 			// for debug
 			stopwatch.Stop();
-			_logger.LogInformation($"[{name}] f: {f} stop duration: {stopwatch.Elapsed.TotalMilliseconds}");
+			_logger.LogInformation($"[{name}] f: {f} response collections: " +
+			                       $"{collections} duration: {DateTime.UtcNow} {stopwatch.Elapsed.TotalMilliseconds}");
 		}
 
 		/// <summary>
@@ -128,7 +130,7 @@ namespace starsky.Controllers
 		public IActionResult Replace(string f, string fieldName, string search,
 			string replace, bool collections = true)
 		{
-			var stopwatch = StartUpdateReplaceStopWatch("replace", f, collections);
+			var stopwatch = StartUpdateReplaceStopWatch();
 
 			var fileIndexResultsList = _metaReplaceService
 				.Replace(f, fieldName, search, replace, collections);
@@ -166,7 +168,7 @@ namespace starsky.Controllers
 
 			});
 
-			StopUpdateReplaceStopWatch("replace", f,stopwatch);
+			StopUpdateReplaceStopWatch("replace", f, collections, stopwatch);
 			
 			// When all items are not found
 			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))

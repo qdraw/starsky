@@ -332,5 +332,20 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			_query.RemoveItem(updateItem);
 		}
+
+		[TestMethod]
+		public async Task ApplyOrGenerateUpdatedFileHash_Should_Update_WhenNotNull()
+		{
+			var detailView = new DetailView
+			{
+				FileIndexItem = new FileIndexItem("/test.jpg")
+			};
+			await new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),  
+					null)
+				.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView);
+			
+			Assert.IsNotNull(detailView.FileIndexItem.FileHash);
+		}
 	}
 }

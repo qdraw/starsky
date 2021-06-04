@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -47,7 +48,7 @@ namespace starsky.foundation.writemeta.Services
 		/// </summary>
 		/// <param name="subPath"></param>
 		/// <returns></returns>
-		public string XmpSync(string subPath)
+		public async Task<string> XmpSync(string subPath)
 		{
 			// only for raw files
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(subPath) ) return subPath;
@@ -61,7 +62,7 @@ namespace starsky.foundation.writemeta.Services
 			XmpCreate(withXmp);
 				
 			// Now copy content using exifTool
-			CopyExifPublish(subPath, withXmp);
+			await CopyExifPublish(subPath, withXmp);
 
 			return withXmp;
 		}
@@ -73,13 +74,14 @@ namespace starsky.foundation.writemeta.Services
 		/// <param name="fromSubPath"></param>
 		/// <param name="toSubPath"></param>
 		/// <returns></returns>
-		internal string CopyExifPublish(string fromSubPath, string toSubPath)
+		internal async Task<string> CopyExifPublish(string fromSubPath, string toSubPath)
 		{
 			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);
-			return new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).Update(updateModel, comparedNames);
+			return (await new ExifToolCmdHelper(_exifTool,_iStorage, _thumbnailStorage ,_readMeta).UpdateAsync(updateModel, 
+				comparedNames, true, false)).Item1;
 		}
 
 

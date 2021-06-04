@@ -9,6 +9,7 @@ import { OnWheelMouseAction } from "./on-wheel-mouse-action";
 export interface IPanAndZoomImage {
   src: string;
   setError?: React.Dispatch<React.SetStateAction<boolean>>;
+  onErrorCallback?(): void;
   setIsLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   translateRotation: Orientation;
   onWheelCallback(z: number): void;
@@ -175,6 +176,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
               }
               props.setError(true);
               props.setIsLoading(false);
+              if (props.onErrorCallback) props.onErrorCallback();
             }}
           />
         </div>

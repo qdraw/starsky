@@ -142,7 +142,7 @@ namespace starsky.feature.webhtmlpublish.Services
 						    base64ImageArray, fileIndexItemsList, outputParentFullFilePathFolder));
 					    break;
 				    case TemplateContentType.Jpeg:
-					    copyResult.AddRangeOverride(GenerateJpeg(currentProfile, fileIndexItemsList, 
+					    copyResult.AddRangeOverride(await GenerateJpeg(currentProfile, fileIndexItemsList, 
 						    outputParentFullFilePathFolder));
 					    break;
 				    case TemplateContentType.MoveSourceFiles:
@@ -161,7 +161,7 @@ namespace starsky.feature.webhtmlpublish.Services
 				    case TemplateContentType.OnlyFirstJpeg:
 					    if ( !fileIndexItemsList.Any() ) break;
 					    var firstInList = new List<FileIndexItem>{fileIndexItemsList.FirstOrDefault()};
-					    copyResult.AddRangeOverride(GenerateJpeg(currentProfile, firstInList, 
+					    copyResult.AddRangeOverride(await GenerateJpeg(currentProfile, firstInList, 
 						    outputParentFullFilePathFolder));
 					    break;
 			    }
@@ -217,7 +217,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    };
 	    }
 
-	    internal Dictionary<string, bool> GenerateJpeg(AppSettingsPublishProfiles profile, 
+	    internal async Task<Dictionary<string, bool>> GenerateJpeg(AppSettingsPublishProfiles profile, 
 		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
@@ -240,7 +240,7 @@ namespace starsky.feature.webhtmlpublish.Services
                             
 			    if ( profile.MetaData )
 			    {
-				    MetaData(item, outputPath);
+				    await MetaData(item, outputPath);
 			    }
 		    }
 
@@ -249,7 +249,7 @@ namespace starsky.feature.webhtmlpublish.Services
 			    item => profile.Copy);
 	    }
 
-	    private void MetaData(FileIndexItem item, string outputPath)
+	    private async Task MetaData(FileIndexItem item, string outputPath)
 	    {
 		    // Write the metadata to the new created file
 		    var comparedNames = FileIndexCompareHelper.Compare(
@@ -263,9 +263,10 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
 
 		    // Write it back
-		    new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
-			    _thumbnailStorage, null).Update(item, 
-			    new List<string> {outputPath}, comparedNames, false);
+		    await new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
+			    _thumbnailStorage, null).UpdateAsync(item, 
+			    new List<string> {outputPath}, comparedNames, 
+			    false, false);
 	    }
 
 	    internal async Task<Dictionary<string, bool>> GenerateMoveSourceFiles(

@@ -26,13 +26,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, logger);
 			_syncRemove = new SyncRemove(appSettings, query);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
@@ -45,7 +45,7 @@ namespace starsky.foundation.sync.SyncServices
 			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
-			_console.WriteLine($"Sync {subPath}");
+			_console.WriteLine($"[Synchronize] Sync {subPath}");
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )

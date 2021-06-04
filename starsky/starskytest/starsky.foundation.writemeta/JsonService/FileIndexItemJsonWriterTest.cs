@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 		public async Task Json_Write()
 		{
 			var fakeStorage = new FakeIStorage();
-			await new FileIndexItemJsonParser(fakeStorage).Write(new FileIndexItem("/test.jpg"));
+			await new FileIndexItemJsonParser(fakeStorage).WriteAsync(new FileIndexItem("/test.jpg"));
 			Assert.IsTrue(fakeStorage.ExistFile("/.starsky.test.jpg.json"));
 		}
 
@@ -55,7 +55,7 @@ namespace starskytest.starsky.foundation.writemeta.JsonService
 		{
 			var fakeStorage = new FakeIStorage();
 			var itemJsonParser = new FileIndexItemJsonParser(fakeStorage);
-			await itemJsonParser.Write(ExampleItem);
+			await itemJsonParser.WriteAsync(ExampleItem);
 
 			var result = itemJsonParser.Read(new FileIndexItem("/test.jpg"));
 

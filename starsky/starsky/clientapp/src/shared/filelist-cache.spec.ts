@@ -23,6 +23,34 @@ describe("FileListCache", () => {
       expect(result).toBeTruthy();
     });
 
+    it("CacheCleanByPath remove item by name", () => {
+      var detailView = newDetailView();
+
+      fileListCache.CacheSetObject(
+        { f: "/test/image.jpg" },
+        {
+          ...detailView,
+          fileIndexItem: {
+            ...newIFileIndexItem(),
+            tags: "hi",
+            fileCollectionName: "image",
+            parentDirectory: "/test",
+            fileName: "image.jpg"
+          }
+        }
+      );
+      // should not be null -->
+      var result1 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
+      expect(result1).not.toBeNull();
+
+      // action >
+      fileListCache.CacheCleanByPath("/test/image.jpg");
+
+      var result2 = fileListCache.CacheGetObject({ f: "/test/image.jpg" });
+
+      expect(result2).toBeNull();
+    });
+
     it("should update parent item when exist (collections on)", () => {
       var detailView = newDetailView();
       detailView.fileIndexItem = newIFileIndexItem();
