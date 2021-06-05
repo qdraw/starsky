@@ -11,6 +11,12 @@ namespace starsky.foundation.database.Query
 {
 	public partial class Query 
 	{
+		/// <summary>
+		/// Uses Cache
+		/// </summary>
+		/// <param name="inputFilePaths">list of paths</param>
+		/// <param name="collections">uses collections </param>
+		/// <returns>list with items</returns>
 		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string[] inputFilePaths, bool collections)
 		{
 			var resultFileIndexItemsList = new List<FileIndexItem>();
@@ -44,11 +50,17 @@ namespace starsky.foundation.database.Query
 			return await GetObjectsByFilePathAsync(inputFilePaths.ToList());
 		}
 		
+		
+		/// <summary>
+		/// Skip cache
+		/// </summary>
+		/// <param name="filePathList"></param>
+		/// <returns></returns>
 		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
-				return await context.FileIndex.Where(p => filePathList.Contains(p.FilePath)).ToListAsync();
+				return FormatOk(await context.FileIndex.Where(p => filePathList.Contains(p.FilePath)).ToListAsync());
 			}
 
 			try
