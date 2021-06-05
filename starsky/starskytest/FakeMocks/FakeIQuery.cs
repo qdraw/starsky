@@ -146,6 +146,16 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(result);
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string[] inputFilePaths, bool collections)
+		{
+			if ( collections )
+			{
+				return GetObjectsByFilePathCollectionAsync(
+					inputFilePaths.ToList());
+			}
+			return GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();
@@ -299,6 +309,11 @@ namespace starskytest.FakeMocks
 
 		public void RemoveCacheItem(FileIndexItem updateStatusContent)
 		{
+		}
+
+		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
+		{
+			throw new NotImplementedException();
 		}
 
 		public async Task AddParentItemsAsync(string subPath)
