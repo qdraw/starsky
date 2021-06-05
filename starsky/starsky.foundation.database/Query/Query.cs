@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -15,6 +16,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Query
 {
@@ -508,7 +510,7 @@ namespace starsky.foundation.database.Query
 				if ( !_cache.TryGetValue(queryCacheName,
 					out var objectFileFolders) )
 				{
-					_logger.LogInformation($"[CacheUpdateItem] skipped: {item.ParentDirectory}");
+					_logger?.LogInformation($"[CacheUpdateItem] skipped: {item.ParentDirectory}");
 					continue;
 				}
 				
