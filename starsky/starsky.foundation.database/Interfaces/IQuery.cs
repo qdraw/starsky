@@ -91,6 +91,9 @@ namespace starsky.foundation.database.Interfaces
         /// <returns>items</returns>
         Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
 
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(
+	        string[] inputFilePaths, bool collections);
+
         /// <summary>
         /// Get collection items within the list
         /// </summary>
@@ -157,6 +160,9 @@ namespace starsky.foundation.database.Interfaces
         /// </summary>
         /// <param name="updateStatusContent">item</param>
         void RemoveCacheItem(FileIndexItem updateStatusContent);
+
+        Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath);
+        
         
         /// <summary>
         /// Add Sub Path Folder - Parent Folders

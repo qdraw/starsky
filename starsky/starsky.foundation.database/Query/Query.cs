@@ -504,8 +504,13 @@ namespace starsky.foundation.database.Query
 				// ToList() > Collection was modified; enumeration operation may not execute.
 				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
 					item.ParentDirectory);
-				
-				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+
+				if ( !_cache.TryGetValue(queryCacheName,
+					out var objectFileFolders) )
+				{
+					_logger.LogInformation($"[CacheUpdateItem] skipped: {item.ParentDirectory}");
+					continue;
+				}
 				
 				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
@@ -513,7 +518,7 @@ namespace starsky.foundation.database.Query
 				displayFileFolders = displayFileFolders.ToList();
 				
 				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
-				if (obj == null) return;
+				if (obj == null) continue;
 				displayFileFolders.Remove(obj);
 				// Add here item to cached index
 				displayFileFolders.Add(item);
