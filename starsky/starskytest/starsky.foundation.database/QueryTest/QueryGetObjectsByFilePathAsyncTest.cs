@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryGetObjectsByFilePathAsyncTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		private IServiceScopeFactory CreateNewScope()
 		{
@@ -43,7 +43,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_item2.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathAsync(
+			var result = await (_query as Query).GetObjectsByFilePathAsync(
 				new List<string> {"/single_item1.jpg"});
 
 			Assert.AreEqual(1, result.Count);

@@ -53,7 +53,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Get folders
 			var toDeleteList = await _query.GetAllRecursiveAsync(subPaths);
 			// and single objects
-			toDeleteList.AddRange(await _query.GetObjectsByFilePathAsync(subPaths));
+			toDeleteList.AddRange(await _query.GetObjectsByFilePathAsync(subPaths,false));
 			
 			await toDeleteList
 				.ForEachAsync(async item =>

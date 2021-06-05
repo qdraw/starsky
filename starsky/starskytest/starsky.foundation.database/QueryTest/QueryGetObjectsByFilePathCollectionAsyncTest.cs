@@ -16,7 +16,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryGetObjectsByFilePathCollectionAsyncTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
 
 		private IServiceScopeFactory CreateNewScope()
 		{

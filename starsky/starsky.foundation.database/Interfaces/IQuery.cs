@@ -85,22 +85,14 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
 
         /// <summary>
-        /// Get FirstOrDefault for that filePath list
+        /// Cached result that contain values
         /// </summary>
-        /// <param name="filePathList">subPath style list</param>
-        /// <returns>items</returns>
-        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
-
-        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(
-	        string[] inputFilePaths, bool collections);
-
-        /// <summary>
-        /// Get collection items within the list
-        /// </summary>
-        /// <param name="filePathList">subPaths (in non collection style)</param>
-        /// <returns>List with items including the collection items</returns>
-        Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList);
-        
+        /// <param name="inputFilePaths">List of filePaths</param>
+        /// <param name="collections">enable implicit raw files with the same base name</param>
+        /// <returns></returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
+	        bool collections);
+       
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 

@@ -17,7 +17,7 @@ namespace starsky.foundation.database.Query
 		/// <param name="inputFilePaths">list of paths</param>
 		/// <param name="collections">uses collections </param>
 		/// <returns>list with items</returns>
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(string[] inputFilePaths, bool collections)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
 		{
 			var resultFileIndexItemsList = new List<FileIndexItem>();
 			var toQueryPaths = new List<string>();
@@ -56,7 +56,7 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePathList"></param>
 		/// <returns></returns>
-		public async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
+		internal async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{

@@ -40,7 +40,7 @@ namespace starsky.feature.metaupdate.Services
 			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
-			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(inputFilePaths, collections);
+			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(inputFilePaths.ToList(), collections);
 
 			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{
