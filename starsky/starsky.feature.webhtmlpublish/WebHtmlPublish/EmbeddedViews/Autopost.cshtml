@@ -32,7 +32,7 @@
 
     var displayTitleName = !string.IsNullOrEmpty(@item.Title) ? @item.Title : @Model.ItemName;
 
-	<a href="@filePath1000" class="lightbox"
+	<a href="@filePath1000" class="lightbox[blog]"
        title="@Model.ItemName - @item.Title | foto @count"
        data-gps="@latitude,@longitude" data-heightratio="@heightRatio">
         <noscript><img src="@filePath500" alt=" @item.Title" /></noscript>
