@@ -970,6 +970,39 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			Assert.AreEqual(1,displayFileFolders.Count(p => p.FileName == "cache"));
 		}
+		
+		[TestMethod]
+		public void CacheUpdateItem_ignore_when_parent_does_notExist()
+		{
+			// Add folder to cache normally done by: CacheQueryDisplayFileFolders
+			_memoryCache.Set("List`1_/", new List<FileIndexItem>(), 
+				new TimeSpan(1,0,0));
+			// "List`1_" is from CachingDbName
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var success = _memoryCache.TryGetValue("List`1_/_fail_test", out var objectFileFolders);
+			Assert.IsFalse(success);
+		}
+		
+		[TestMethod]
+		public void CacheUpdateItem_shouldHitParentCache()
+		{
+			// Add folder to cache normally done by: CacheQueryDisplayFileFolders
+			_memoryCache.Set("List`1_/", new List<FileIndexItem>(), 
+				new TimeSpan(1,0,0));
+			// "List`1_" is from CachingDbName
+
+			var item = new FileIndexItem {Id = 400, FileName = "cache", ParentDirectory = "/_fail_test1"};
+			_query.AddCacheParentItem("/_fail_test", new List<FileIndexItem>{item});
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test1", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var success = _memoryCache.TryGetValue("List`1_/_fail_test1", out var objectFileFolders);
+			Assert.IsTrue(success);
+		}
 
 		[TestMethod]
 		public void DisplayFileFolders_StackCollection()

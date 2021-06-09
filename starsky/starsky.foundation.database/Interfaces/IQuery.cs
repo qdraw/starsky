@@ -133,6 +133,15 @@ namespace starsky.foundation.database.Interfaces
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
         List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+
+        /// <summary>
+        /// Update parent item with all data from child items
+        /// </summary>
+        /// <param name="directoryName">parent directory</param>
+        /// <param name="items">all items that are in this folder</param>
+        /// <returns>success or not</returns>
+        bool AddCacheParentItem(string directoryName,
+	        List<FileIndexItem> items);
         
         /// <summary>
         /// Cache API within Query to update cached items

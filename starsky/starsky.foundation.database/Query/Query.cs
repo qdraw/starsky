@@ -284,7 +284,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        var items =  await GetObjectsByFilePathAsync(updateStatusContentList
+			        var items =  await GetObjectsByFilePathAsyncQuery(updateStatusContentList
 				        .Select(p => p.FilePath).ToList());
 			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
 			        return updateStatusContentList;
@@ -468,6 +468,7 @@ namespace starsky.foundation.database.Query
 	    }
 
 	    /// <summary>
+	    /// Add child item to parent cache
 	    /// Private api within Query to add cached items
 	    /// Assumes that the parent directory already exist in the cache
 	    /// @see: AddCacheParentItem to add parent item
@@ -501,6 +502,7 @@ namespace starsky.foundation.database.Query
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
+            var skippedCacheItems = new HashSet<string>();
 			foreach (var item in updateStatusContent.ToList())
 			{
 				// ToList() > Collection was modified; enumeration operation may not execute.
@@ -510,7 +512,7 @@ namespace starsky.foundation.database.Query
 				if ( !_cache.TryGetValue(queryCacheName,
 					out var objectFileFolders) )
 				{
-					_logger?.LogInformation($"[CacheUpdateItem] skipped: {item.ParentDirectory}");
+					skippedCacheItems.Add(item.ParentDirectory);
 					continue;
 				}
 				
@@ -532,6 +534,11 @@ namespace starsky.foundation.database.Query
 				
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+			}
+
+			foreach ( var item in skippedCacheItems )
+			{
+				_logger?.LogInformation($"[CacheUpdateItem] skipped: {item}");
 			}
         }
 
@@ -599,7 +606,7 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         /// <param name="items">the items in the folder</param>
-        internal bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+        public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
         {
 	        // Add protection for disabled caching
 	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;

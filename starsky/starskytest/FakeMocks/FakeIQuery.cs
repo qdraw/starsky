@@ -298,6 +298,11 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
+		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 		{
 			Console.WriteLine("CacheUpdateItem is called");

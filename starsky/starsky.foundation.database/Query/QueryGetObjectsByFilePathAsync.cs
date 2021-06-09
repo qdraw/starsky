@@ -24,30 +24,51 @@ namespace starsky.foundation.database.Query
 			foreach ( var path in  inputFilePaths)
 			{
 				var parentPath = FilenamesHelper.GetParentPath(path);
-				var fileName = FilenamesHelper.GetFileName(path);
-				var (success, result) = CacheGetParentFolder(parentPath);
-				var item = result.FirstOrDefault(p =>
-					p.ParentDirectory == parentPath && p.FileName == fileName);
 				
-				if ( !success || item == null)
+				var (success, cachedResult) = CacheGetParentFolder(parentPath);
+
+				List<FileIndexItem> item = null;
+				switch ( collections )
+				{
+					case false:
+						if ( !success ) break;
+						item = cachedResult.Where(p =>
+							p.ParentDirectory == parentPath && 
+							p.FileName == FilenamesHelper.GetFileName(path)).ToList();
+						break;
+					case true:
+						if ( !success ) break;
+						item = cachedResult.Where(p =>
+							p.ParentDirectory == parentPath && 
+							p.FileCollectionName == FilenamesHelper.GetFileNameWithoutExtension(path)).ToList();
+						break;
+				}
+
+				if ( !success || !item.Any())
 				{
 					toQueryPaths.Add(path);
 					continue;
 				}
-				resultFileIndexItemsList.Add(item);
+				resultFileIndexItemsList.AddRange(item);
 			}
 			var fileIndexItemsList = await GetObjectsByFilePathQuery(toQueryPaths.ToArray(), collections);
 			resultFileIndexItemsList.AddRange(fileIndexItemsList);
 			return resultFileIndexItemsList;
 		}
 		
+		/// <summary>
+		/// Switch between collections and non-collections
+		/// </summary>
+		/// <param name="inputFilePaths">list of paths</param>
+		/// <param name="collections">[when true] hide raws or everything with the same name (without extension)</param>
+		/// <returns></returns>
 		private async Task<List<FileIndexItem>> GetObjectsByFilePathQuery(string[] inputFilePaths, bool collections)
 		{
 			if ( collections )
 			{
 				return await GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
 			}
-			return await GetObjectsByFilePathAsync(inputFilePaths.ToList());
+			return await GetObjectsByFilePathAsyncQuery(inputFilePaths.ToList());
 		}
 		
 		
@@ -56,7 +77,7 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePathList"></param>
 		/// <returns></returns>
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList)
+		internal async Task<List<FileIndexItem>> GetObjectsByFilePathAsyncQuery(List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{

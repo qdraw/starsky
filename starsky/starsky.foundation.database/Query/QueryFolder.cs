@@ -109,7 +109,7 @@ namespace starsky.foundation.database.Query
 	            subPath);
             _cache.Set(queryCacheName, objectFileFolders, 
 	            new TimeSpan(1,0,0));
-            return (List<FileIndexItem>) objectFileFolders;
+            return objectFileFolders;
         }
 
         internal List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")
