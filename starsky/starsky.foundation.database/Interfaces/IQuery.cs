@@ -92,7 +92,15 @@ namespace starsky.foundation.database.Interfaces
         /// <returns></returns>
         Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
 	        bool collections);
-       
+
+        /// <summary>
+        /// Query direct by filePaths (without cache)
+        /// </summary>
+        /// <param name="filePathList">List of filePaths</param>
+        /// <returns></returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(
+	        List<string> filePathList);
+        
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 
@@ -132,7 +140,6 @@ namespace starsky.foundation.database.Interfaces
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
-        List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
 
         /// <summary>
         /// Update parent item with all data from child items
@@ -182,3 +189,4 @@ namespace starsky.foundation.database.Interfaces
         void Invoke(ApplicationDbContext applicationDbContext);
     }
 }
+

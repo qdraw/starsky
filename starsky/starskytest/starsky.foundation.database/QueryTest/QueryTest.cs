@@ -989,18 +989,19 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void CacheUpdateItem_shouldHitParentCache()
 		{
+			var folderPath = "/_fail_test";
 			// Add folder to cache normally done by: CacheQueryDisplayFileFolders
-			_memoryCache.Set("List`1_/", new List<FileIndexItem>(), 
+			_memoryCache.Set($"List`1_{folderPath}", new List<FileIndexItem>(), 
 				new TimeSpan(1,0,0));
 			// "List`1_" is from CachingDbName
 
-			var item = new FileIndexItem {Id = 400, FileName = "cache", ParentDirectory = "/_fail_test1"};
-			_query.AddCacheParentItem("/_fail_test", new List<FileIndexItem>{item});
+			var item = new FileIndexItem {Id = 400, FileName = "cache", ParentDirectory = folderPath};
+			_query.AddCacheParentItem(folderPath, new List<FileIndexItem>{item});
 			
-			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test1", FileName = "cache"};
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = folderPath, FileName = "cache"};
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-			var success = _memoryCache.TryGetValue("List`1_/_fail_test1", out var objectFileFolders);
+			var success = _memoryCache.TryGetValue($"List`1_{folderPath}", out var objectFileFolders);
 			Assert.IsTrue(success);
 		}
 

@@ -24,10 +24,10 @@ namespace starsky.foundation.database.Query
 		/// <returns></returns>
 		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(string subPath)
 		{
-			return await GetObjectsByFilePathCollectionAsync(new List<string> {subPath});
+			return await GetObjectsByFilePathCollectionQueryAsync(new List<string> {subPath});
 		}
 
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
+		internal async Task<List<FileIndexItem>> GetObjectsByFilePathCollectionQueryAsync(List<string> filePathList)
 		{
 			try
 			{

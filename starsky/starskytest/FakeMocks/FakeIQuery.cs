@@ -156,6 +156,11 @@ namespace starskytest.FakeMocks
 			return GetObjectsByFilePathAsync(inputFilePaths.ToList());
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
+		{
+			return GetObjectsByFilePathAsync(filePathList);
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();

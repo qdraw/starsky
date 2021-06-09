@@ -65,7 +65,7 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			// // remove the duplicates from a large list of folders
-			var folderList = await _query.GetObjectsByFilePathAsync(subPaths,false);
+			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 			await _duplicate.RemoveDuplicateAsync(folderList);
 				
 			allResults.Add(await AddParentFolder(inputSubPath));

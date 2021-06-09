@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Query
 {
-	public partial class Query 
+	public partial class Query : IQuery
 	{
 		/// <summary>
 		/// Uses Cache
@@ -66,9 +67,9 @@ namespace starsky.foundation.database.Query
 		{
 			if ( collections )
 			{
-				return await GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
+				return await GetObjectsByFilePathCollectionQueryAsync(inputFilePaths.ToList());
 			}
-			return await GetObjectsByFilePathAsyncQuery(inputFilePaths.ToList());
+			return await GetObjectsByFilePathQueryAsync(inputFilePaths.ToList());
 		}
 		
 		
@@ -77,7 +78,7 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePathList"></param>
 		/// <returns></returns>
-		internal async Task<List<FileIndexItem>> GetObjectsByFilePathAsyncQuery(List<string> filePathList)
+		public async Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{

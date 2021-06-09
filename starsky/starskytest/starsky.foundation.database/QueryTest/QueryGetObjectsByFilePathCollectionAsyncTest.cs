@@ -61,7 +61,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_item2.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathCollectionAsync(
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 				new List<string> {"/single_item1.jpg"});
 
 			Assert.AreEqual(1, result.Count);
@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_duplicate.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathCollectionAsync(
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 				new List<string> {"/single_duplicate.jpg"});
 
 			Assert.AreEqual(2, result.Count);
@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			});
 			
-			var result = await _query.GetObjectsByFilePathCollectionAsync(
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
 					"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
 
@@ -132,7 +132,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/two_item_1.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathCollectionAsync(
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
 				new List<string> {"/two_item_0.jpg", "/two_item_1.jpg"});
 
 			Assert.AreEqual(2, result.Count);
@@ -163,7 +163,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var result = await new Query(dbContextDisposed,
 					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
-				.GetObjectsByFilePathCollectionAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
+				.GetObjectsByFilePathCollectionQueryAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
 			Assert.AreEqual(2, result.Count);
 			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);

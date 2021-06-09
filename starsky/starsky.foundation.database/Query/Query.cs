@@ -284,7 +284,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        var items =  await GetObjectsByFilePathAsyncQuery(updateStatusContentList
+			        var items =  await GetObjectsByFilePathQueryAsync(updateStatusContentList
 				        .Select(p => p.FilePath).ToList());
 			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
 			        return updateStatusContentList;
