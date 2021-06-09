@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -16,14 +17,17 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	[TestClass]
 	public class QueryGetObjectsByFilePathAsyncTest
 	{
-		private readonly IQuery _query;
+		private readonly Query _query;
+		private IMemoryCache _memoryCache;
 
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
+			services.AddMemoryCache();
 			services.AddDbContext<ApplicationDbContext>(options => 
 				options.UseInMemoryDatabase(nameof(QueryGetObjectsByFilePathAsyncTest)));
 			var serviceProvider = services.BuildServiceProvider();
+			_memoryCache = serviceProvider.GetService<IMemoryCache>();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
@@ -35,6 +39,73 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 		
 		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_cache_collectionFalse()
+		{
+			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>(), _memoryCache) ;
+
+			var dirName = "/cache_01";
+			query.AddCacheParentItem(dirName,
+				new List<FileIndexItem>
+				{
+					new FileIndexItem($"{dirName}/test1.jpg"),
+					new FileIndexItem($"{dirName}/test1.dng"),
+					new FileIndexItem($"{dirName}/test2.jpg"),
+					new FileIndexItem($"{dirName}/test2.dng")
+				});
+
+			var result = await query.GetObjectsByFilePathAsync(new List<string>{$"{dirName}/test1.jpg"},false);
+			Assert.AreEqual(1, result.Count);
+			
+			Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
+		}
+
+		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_cache_collectionTrue()
+		{
+			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>(), _memoryCache) ;
+
+			var dirName = "/cache_02";
+			query.AddCacheParentItem(dirName,
+				new List<FileIndexItem>
+				{
+					new FileIndexItem($"{dirName}/test1.jpg"),
+					new FileIndexItem($"{dirName}/test1.dng"),
+					new FileIndexItem($"{dirName}/test2.jpg"),
+					new FileIndexItem($"{dirName}/test2.dng")
+				});
+
+			var result = await query.GetObjectsByFilePathAsync(new List<string>{$"{dirName}/test1.jpg"},true);
+			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual($"{dirName}/test1.jpg", result[0].FilePath);
+			Assert.AreEqual($"{dirName}/test1.dng", result[1].FilePath);
+		}
+		
+		[TestMethod]
+		public async Task GetObjectsByFilePathAsync_notImplicitSet_cache_collectionTrue()
+		{
+			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
+				.GetService<ApplicationDbContext>(), _memoryCache) ;
+
+			var dirName = "/implicit_item_02";
+			await query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem($"{dirName}/test1.jpg"),
+				new FileIndexItem($"{dirName}/test1.dng"),
+				new FileIndexItem($"{dirName}/test2.jpg"),
+				new FileIndexItem($"{dirName}/test2.dng")
+			});
+
+			await query.GetObjectsByFilePathAsync(
+				new List<string>{$"{dirName}/test1.jpg"},true);
+
+			var cacheResult = query.CacheGetParentFolder(dirName);
+			
+			Assert.IsFalse(cacheResult.Item1);
+		}
+		
+		[TestMethod]
 		public async Task GetObjectsByFilePathAsync_SingleItem()
 		{
 			await _query.AddRangeAsync(new List<FileIndexItem>
@@ -43,7 +114,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_item2.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathAsync(
+			var result = await (_query as Query).GetObjectsByFilePathQueryAsync(
 				new List<string> {"/single_item1.jpg"});
 
 			Assert.AreEqual(1, result.Count);
@@ -63,7 +134,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/single_duplicate.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathAsync(
+			var result = await _query.GetObjectsByFilePathQueryAsync(
 				new List<string> {"/single_duplicate.jpg"});
 
 			Assert.AreEqual(2, result.Count);
@@ -87,7 +158,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			});
 			
-			var result = await _query.GetObjectsByFilePathAsync(
+			var result = await _query.GetObjectsByFilePathQueryAsync(
 				new List<string> {"/multiple_item_0.jpg", "/multiple_item_1.jpg",
 					"/multiple_item_2.jpg", "/multiple_item_3.jpg"});
 
@@ -114,7 +185,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/two_item_1.jpg")
 			});
 			
-			var result = await _query.GetObjectsByFilePathAsync(
+			var result = await _query.GetObjectsByFilePathQueryAsync(
 				new List<string> {"/two_item_0.jpg", "/two_item_1.jpg"});
 
 			Assert.AreEqual(2, result.Count);
@@ -145,7 +216,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			var result = await new Query(dbContextDisposed,
 					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
-				.GetObjectsByFilePathAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
+				.GetObjectsByFilePathQueryAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual("/disposed/single_item_disposed_1.jpg",result[0].FilePath);

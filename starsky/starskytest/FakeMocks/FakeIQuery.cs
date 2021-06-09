@@ -146,6 +146,21 @@ namespace starskytest.FakeMocks
 			return Task.FromResult(result);
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
+		{
+			if ( collections )
+			{
+				return GetObjectsByFilePathCollectionAsync(
+					inputFilePaths.ToList());
+			}
+			return GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
+		{
+			return GetObjectsByFilePathAsync(filePathList);
+		}
+
 		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
 		{
 			var result = new List<FileIndexItem>();
@@ -288,6 +303,11 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
+		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 		{
 			Console.WriteLine("CacheUpdateItem is called");
@@ -299,6 +319,11 @@ namespace starskytest.FakeMocks
 
 		public void RemoveCacheItem(FileIndexItem updateStatusContent)
 		{
+		}
+
+		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
+		{
+			throw new NotImplementedException();
 		}
 
 		public async Task AddParentItemsAsync(string subPath)

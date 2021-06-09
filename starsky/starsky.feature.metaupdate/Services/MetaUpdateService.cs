@@ -140,7 +140,7 @@ namespace starsky.feature.metaupdate.Services
 					exifUpdateFilePaths, comparedNamesList,true, true);
 
 				await ApplyOrGenerateUpdatedFileHash(newFileHashes, detailView);
-				_logger?.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
+				_logger.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
 			}
 			else
 			{

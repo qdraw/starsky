@@ -7,7 +7,6 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -26,7 +25,8 @@ namespace starsky.feature.metaupdate.Services
 		{
 			_query = query;
 			_appSettings = appSettings;
-			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
+			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(
+				SelectorStorage.StorageServices.SubPath);
 		}
 
 		public async Task<(List<FileIndexItem> fileIndexResultsList,
@@ -37,14 +37,18 @@ namespace starsky.feature.metaupdate.Services
 			// the result list
 			var fileIndexUpdateList = new List<FileIndexItem>();
 			
-			// Per file stored key = string[fileHash] item => List <string> FileIndexItem.name (e.g. Tags) that are changed
+			// Per file stored key = string[fileHash] item => List <string>
+			// FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 
-			var fileIndexItemsList = await GetObjectsByFilePath(inputFilePaths, collections);
-			foreach ( var fileIndexItem in fileIndexItemsList )
+			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
+				inputFilePaths.ToList(), collections);
+
+			foreach ( var fileIndexItem in resultFileIndexItemsList )
 			{
 				// Files that are not on disk
-				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == 
+				     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 				{
 					new StatusCodesHelper().ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -86,15 +90,6 @@ namespace starsky.feature.metaupdate.Services
 			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
 			
 			return (fileIndexUpdateList, changedFileIndexItemName);
-		}
-
-		private async Task<List<FileIndexItem>> GetObjectsByFilePath(string[] inputFilePaths, bool collections)
-		{
-			if ( collections )
-			{
-				return await _query.GetObjectsByFilePathCollectionAsync(inputFilePaths.ToList());
-			}
-			return await _query.GetObjectsByFilePathAsync(inputFilePaths.ToList());
 		}
 
 		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)

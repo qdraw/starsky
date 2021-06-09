@@ -55,8 +55,10 @@ namespace starsky.foundation.sync.SyncServices
 		{
 			var updatedList = await _synchronize.Sync(subPath, false);
 			_query.CacheUpdateItem(updatedList);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
+				updatedList,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			// so you can click on the button again
 			_cache.Remove(QueryCacheName + subPath);
 		}
 	}

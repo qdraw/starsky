@@ -129,7 +129,7 @@ namespace starsky.feature.rename.Services
 			// in the final step we going to update the database item to the new name
 			var toCheckList = fileIndexItems.Select(p => p.FilePath).ToList();
 			toCheckList.Add(toFileSubPath);
-			var checkOutput = _query.GetObjectsByFilePathAsync(toCheckList).Result;
+			var checkOutput =  await _query.GetObjectsByFilePathQueryAsync(toCheckList);
 			foreach ( var item in checkOutput )
 			{
 				await _query.RemoveItemAsync(item);
