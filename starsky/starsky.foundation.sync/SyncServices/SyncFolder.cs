@@ -11,6 +11,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -36,7 +37,8 @@ namespace starsky.foundation.sync.SyncServices
 			_logger = logger;
 		}
 
-		public async Task<List<FileIndexItem>> Folder(string inputSubPath)
+		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{
 			var subPaths = new List<string> {inputSubPath};	
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
@@ -53,7 +55,7 @@ namespace starsky.foundation.sync.SyncServices
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
+				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate);
 				allResults.AddRange(indexItems);
 
 				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems))
@@ -73,7 +75,8 @@ namespace starsky.foundation.sync.SyncServices
 		}
 	
 		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
-			IReadOnlyCollection<string> pathsOnDisk)
+			IReadOnlyCollection<string> pathsOnDisk,
+			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{
 			var fileIndexItemsOnlyFiles = fileIndexItems
 				.Where(p => p.IsDirectory == false).ToList();
@@ -88,7 +91,7 @@ namespace starsky.foundation.sync.SyncServices
 					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
 						_subPathStorage, _logger).SingleFile(subPathInFiles, 
-						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
+						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles), updateDelegate);
 					
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{

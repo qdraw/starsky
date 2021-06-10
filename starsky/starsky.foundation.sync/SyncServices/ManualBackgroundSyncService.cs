@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,13 +52,18 @@ namespace starsky.foundation.sync.SyncServices
 			return FileIndexItem.ExifStatus.Ok;
 		}
 
-		internal async Task BackgroundTask(string subPath)
+		private async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
-			var updatedList = await _synchronize.Sync(subPath, false);
-			_query.CacheUpdateItem(updatedList);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 				updatedList,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+		}
+
+		internal async Task BackgroundTask(string subPath)
+		{
+			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
+			_query.CacheUpdateItem(updatedList);
+			
 			// so you can click on the button again
 			_cache.Remove(QueryCacheName + subPath);
 		}

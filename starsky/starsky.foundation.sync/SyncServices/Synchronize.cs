@@ -36,7 +36,8 @@ namespace starsky.foundation.sync.SyncServices
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
-		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
+		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
@@ -51,9 +52,9 @@ namespace starsky.foundation.sync.SyncServices
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath);
+					return await _syncFolder.Folder(subPath,updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					var item = await _syncSingleFile.SingleFile(subPath);
+					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					return await _syncRemove.Remove(subPath);
