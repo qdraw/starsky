@@ -58,6 +58,13 @@ describe('Search -from upload - update tags', () => {
 
   it('update and overwrite first image after cache clear', () => {
     if (!config.isEnabled) return
+    cy.wait(500)
+
+    cy.request('POST', config.searchClearCache)
+
+    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
+    cy.visit(config.urlSearchFromUpload)
+    cy.wait('@search')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
       .should('contain.text', helloWorldText)
@@ -88,6 +95,13 @@ describe('Search -from upload - update tags', () => {
 
   it('update and add first image after cache clear', () => {
     if (!config.isEnabled) return
+
+    cy.wait(500)
+    cy.request('POST', config.searchClearCache)
+
+    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
+    cy.visit(config.urlSearchFromUpload)
+    cy.wait('@search')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
       .should('contain.text', secondAddedText)
