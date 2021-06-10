@@ -365,7 +365,6 @@ namespace starsky.foundation.database.Helpers
 		    string oldStringValue, string newStringValue, 
 		    List<string> differenceList, bool append)
         {
-	        // former check on not be / and return if that is the case;
 	        // ignore capitals
             if (string.IsNullOrEmpty(newStringValue) || 
                 string.Equals(oldStringValue, newStringValue, StringComparison.InvariantCultureIgnoreCase)) return;

@@ -104,7 +104,6 @@ namespace starsky.foundation.database.Query
 				catch ( MySqlProtocolException)
 				{
 					// Packet received out-of-order. Expected 1; got 2.
-					//await Task.Delay(10);
 					return await LocalQuery(new InjectServiceScope(_scopeFactory)
 						.Context());
 				}

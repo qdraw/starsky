@@ -104,7 +104,7 @@ namespace starsky.feature.metaupdate.Services
 				}
 
 				throw new ArgumentException($"Missing in key: {filePath}",
-					nameof(changedFileIndexItemName));
+					nameof(inputModel));
 
 			}
 
