@@ -115,15 +115,15 @@ namespace starsky.foundation.readmeta.Services
 				return ReadExifAndXmpFromFileDirect(subPath);
             
 			// Return values from IMemoryCache
-			var queryCacheName = CachePrefix + subPath;
+			var queryReadMetaCacheName = CachePrefix + subPath;
             
 			// Return Cached object if it exist
-			if (_cache.TryGetValue(queryCacheName, out var objectExifToolModel))
+			if (_cache.TryGetValue(queryReadMetaCacheName, out var objectExifToolModel))
 				return objectExifToolModel as FileIndexItem;
             
 			// Try to catch a new object
 			objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
-			_cache.Set(queryCacheName, objectExifToolModel, 
+			_cache.Set(queryReadMetaCacheName, objectExifToolModel, 
 				new TimeSpan(0,1,0));
 			return (FileIndexItem) objectExifToolModel;
 		}
@@ -140,9 +140,9 @@ namespace starsky.foundation.readmeta.Services
 			if (_cache == null || _appSettings?.AddMemoryCache == false) return;
 
 			var toUpdateObject = objectExifToolModel.Clone();
-			var queryCacheName = CachePrefix + fullFilePath;
+			var queryReadMetaCacheName = CachePrefix + fullFilePath;
 			RemoveReadMetaCache(fullFilePath);
-			_cache.Set(queryCacheName, toUpdateObject, 
+			_cache.Set(queryReadMetaCacheName, toUpdateObject, 
 				new TimeSpan(0,15,0));
 		}
 

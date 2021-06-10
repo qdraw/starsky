@@ -43,7 +43,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.QueryCacheName + "/test", string.Empty}}))
+					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}}))
 				.ManualSync("/test");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
 		}

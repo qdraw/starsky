@@ -103,15 +103,15 @@ namespace starsky.foundation.database.Query
 		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
             
 		    // Return values from IMemoryCache
-		    var queryCacheName = CachingDbName("hashList", fileHash);
+		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) 
+		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubpath) 
 		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
 
 		    cachedSubpath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(48,0,0));
+		    _cache.Set(queryHashListCacheName, cachedSubpath, new TimeSpan(48,0,0));
 		    return (string) cachedSubpath;
 		}
 

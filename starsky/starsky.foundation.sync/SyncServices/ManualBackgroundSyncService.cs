@@ -32,7 +32,7 @@ namespace starsky.foundation.sync.SyncServices
 			_cache = cache;
 		}
 
-		internal const string QueryCacheName = "ManualSync_";
+		internal const string ManualSyncCacheName = "ManualSync_";
 		
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
 		{
@@ -42,10 +42,10 @@ namespace starsky.foundation.sync.SyncServices
 				return FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			}
 
-			if (_cache.TryGetValue(QueryCacheName + subPath, out _))
+			if (_cache.TryGetValue(ManualSyncCacheName + subPath, out _))
 				return FileIndexItem.ExifStatus.OperationNotSupported;
 
-			_cache.Set(QueryCacheName + subPath, true, 
+			_cache.Set(ManualSyncCacheName + subPath, true, 
 				new TimeSpan(0,2,0));
 			
 			await Task.Factory.StartNew(() => BackgroundTask(fileIndexItem.FilePath));
@@ -66,7 +66,7 @@ namespace starsky.foundation.sync.SyncServices
 			_query.CacheUpdateItem(FilterBefore(updatedList));
 			
 			// so you can click on the button again
-			_cache.Remove(QueryCacheName + subPath);
+			_cache.Remove(ManualSyncCacheName + subPath);
 		}
 		
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)

@@ -44,6 +44,12 @@ namespace starsky.foundation.database.Query
 			}
 		}
 		
+		/// <summary>
+		/// QueryFolder Async without cache
+		/// </summary>
+		/// <param name="context">database context</param>
+		/// <param name="filePathList">list of paths</param>
+		/// <returns></returns>
 		private IOrderedQueryable<FileIndexItem> GetAllObjectsQuery(ApplicationDbContext context, List<string> filePathList)
 		{
 			var predicates = new List<Expression<Func<FileIndexItem,bool>>>();  
@@ -57,7 +63,7 @@ namespace starsky.foundation.database.Query
 			}
 				
 			var predicate = PredicateBuilder.OrLoop(predicates);
-					
+			
 			return context.FileIndex.Where(predicate).OrderBy(r => r.FileName);
 		}
 	}

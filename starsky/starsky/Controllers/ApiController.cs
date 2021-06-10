@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
@@ -23,11 +24,38 @@ namespace starsky.Controllers
             _appSettings = appSettings;
             _query = query;
         }
+	    
+	    /// <summary>
+	    /// Get Database Cache (only the cache)
+	    /// </summary>
+	    /// <param name="f">subPath (only direct so no dot;comma list)</param>
+	    /// <returns>redirect or if json enabled a status</returns>
+	    /// <response code="200">when json"</response>
+	    /// <response code="412">"cache disabled in config"</response>
+	    /// <response code="400">ignored, please check if the 'f' path exist or use a folder string to clear the cache</response>
+	    /// <response code="401">User unauthorized</response>
+	    [HttpGet("/api/list-cache")]
+	    public IActionResult ListCache(string f = "/")
+	    {
+		    //For folder paths only
+		    if (!_appSettings.AddMemoryCache)
+		    {
+			    Response.StatusCode = 412;
+			    return Json("cache disabled in config");
+		    }
+
+		    var (success, singleItem) = _query.CacheGetParentFolder(f);
+		    if ( !success || singleItem == null )
+			    return BadRequest(
+				    "ignored, please check if the 'f' path exist or use a folder string to get the cache");
+            
+		    return Json(singleItem);
+	    }
 
 	    /// <summary>
         /// Delete Database Cache (only the cache)
         /// </summary>
-        /// <param name="f">subPath</param>
+        /// <param name="f">subPath (only direct so no dot;comma list)</param>
         /// <returns>redirect or if json enabled a status</returns>
         /// <response code="200">when json is true, "cache successful cleared"</response>
         /// <response code="412">"cache disabled in config"</response>

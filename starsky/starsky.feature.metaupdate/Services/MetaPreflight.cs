@@ -90,7 +90,28 @@ namespace starsky.feature.metaupdate.Services
 
 			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
 			
+			// not needed directly but might be useful for the next api call
+			await Task.Factory.StartNew(() => AddParentCacheIfNotExist(fileIndexUpdateList));
+
 			return (fileIndexUpdateList, changedFileIndexItemName);
+		}
+
+		private async Task AddParentCacheIfNotExist(List<FileIndexItem> fileIndexUpdateList)
+		{
+			var parentDirectoryList =
+				new HashSet<string>(
+					fileIndexUpdateList.Select(p => p.ParentDirectory)).ToList();
+
+			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
+				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
+
+			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
+			foreach ( var directory in shouldAddParentDirectoriesToCache )
+			{
+				Console.WriteLine($"[[[ {directory} ]]]");
+				var byDirectory = databaseQueryResult.Where(p => p.ParentDirectory == directory).ToList();
+				_query.AddCacheParentItem(directory, byDirectory);
+			}
 		}
 
 		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
