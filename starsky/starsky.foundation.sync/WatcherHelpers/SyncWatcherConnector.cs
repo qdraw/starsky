@@ -61,7 +61,12 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			var filtered = FilterBefore(syncData);
-			if ( !filtered.Any() ) return syncData;
+			if ( !filtered.Any() )
+			{
+				Console.WriteLine(string.Concat(", ", syncData.Select(p => p.Status)));
+				Console.WriteLine(string.Concat(", ", syncData.Select(p => p.FilePath)));
+				return syncData;
+			}
 
 			// update users who are active right now
 			await _websockets.SendToAllAsync(JsonSerializer.Serialize(filtered,

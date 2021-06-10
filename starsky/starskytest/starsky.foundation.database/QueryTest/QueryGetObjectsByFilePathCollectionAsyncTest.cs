@@ -71,6 +71,48 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			
 			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/single_item2.jpg"));
 		}
+		
+		[TestMethod]
+		public async Task GetObjectsByFilePathCollectionAsync_SingleItem_LookAlikeStartsWithName()
+		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/2.jpg"),
+				new FileIndexItem("/2020.jpg")
+			});
+			
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
+				new List<string> {"/2.jpg"});
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("/2.jpg",result[0].FilePath);
+
+			await _query.RemoveItemAsync(result[0]);
+			
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/2020.jpg"));
+		}
+		
+				
+		[TestMethod]
+		public async Task GetObjectsByFilePathCollectionAsync_SingleItem_NoExtension()
+		{
+			await _query.AddRangeAsync(new List<FileIndexItem>
+			{
+				new FileIndexItem("/2"),
+				new FileIndexItem("/2020")
+			});
+			
+			var result = await _query.GetObjectsByFilePathCollectionQueryAsync(
+				new List<string> {"/2"});
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("/2",result[0].FilePath);
+
+			await _query.RemoveItemAsync(result[0]);
+			
+			await _query.RemoveItemAsync(await _query.GetObjectByFilePathAsync("/2020"));
+		}
+		
 
 		[TestMethod] 
 		public async Task GetObjectsByFilePathCollectionAsync_Single_ButDuplicate_Item()

@@ -271,6 +271,17 @@ namespace starsky.foundation.database.Models
 			/// File is in trash
 			/// </summary>
 			Deleted,
+			
+			/// <summary>
+			/// Everything is good but not changed
+			/// </summary>
+			OkAndSame,
+			
+			/// <summary>
+			/// File is in trash but not changed
+			/// </summary>
+			DeletedAndSame
+
 		}
 
 		/// <summary>

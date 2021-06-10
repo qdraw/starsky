@@ -57,9 +57,14 @@ namespace starsky.foundation.sync.SyncServices
 			}
 			
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( !isSame )
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 
-			return await UpdateItem(dbItem, dbItem.Size, subPath);
+			// to avoid resync
+			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			
+			return updatedDbItem;
 		}
 
 		/// <summary>
@@ -92,9 +97,14 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( !isSame )
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 
-			return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+			// to avoid resync
+			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			
+			return updatedDbItem;
 		}
 
 		/// <summary>
@@ -117,12 +127,13 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
 		}
 
-		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem)
+		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
+			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
 		{
 			if ( dbItem == null ) return null;
 			if ( dbItem.Tags.Contains("!delete!") )
 			{
-				dbItem.Status = FileIndexItem.ExifStatus.Deleted;
+				dbItem.Status = exifStatus;
 			}
 			return dbItem;
 		}
