@@ -16,6 +16,7 @@ describe('Search -from upload - update tags', () => {
     cy.sendAuthenticationHeader()
 
     // clean cache before running
+    cy.log(config.searchClearCache)
     cy.request('POST', config.searchClearCache)
     cy.request({
       method: 'POST',
