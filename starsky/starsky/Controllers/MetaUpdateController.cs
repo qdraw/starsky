@@ -72,9 +72,8 @@ namespace starsky.Controllers
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 				var updatedList = await _metaUpdateService
-					.Update(changedFileIndexItemName, 
-						fileIndexResultsList, inputModel, collections, append, rotateClock);
-				_logger.LogInformation("send to socket");
+					.Update(fileIndexResultsList, inputModel, collections, append, rotateClock);
+				_logger.LogInformation($"[UpdateController] send to socket {f}");
 				await _connectionsService.SendToAllAsync("[system] /api/update called", token);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
 					DefaultJsonSerializer.CamelCase), token);
@@ -144,19 +143,8 @@ namespace starsky.Controllers
 				
 				foreach ( var inputModel in resultsOkList )
 				{
-					// The differences are specified before update
-					var changedFileIndexItemName = new Dictionary<string, List<string>>
-					{
-						{ 
-							inputModel.FilePath, new List<string>
-							{
-								fieldName
-							} 
-						}
-					};
-					
 					await _metaUpdateService
-						.Update(changedFileIndexItemName,new List<FileIndexItem>{inputModel}, inputModel, 
+						.Update(new List<FileIndexItem>{inputModel}, inputModel, 
 							collections, false, 0);
 				}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -82,15 +83,35 @@ namespace starsky.foundation.database.Query
 		{
 			async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
 			{
-				return FormatOk(await context.FileIndex.Where(p => filePathList.Contains(p.FilePath)).ToListAsync());
+				var result = await context.FileIndex.Where(p =>
+					filePathList.Contains(p.FilePath)).ToListAsync();
+				return FormatOk(result);
 			}
 
 			try
 			{
 				return await LocalQuery(_context);
 			}
-			catch (ObjectDisposedException)
+			catch ( NullReferenceException )
 			{
+				// System.NullReferenceException: Object reference not set to an instance of an object.
+				// at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet()
+				try
+				{
+					return await LocalQuery(new InjectServiceScope(_scopeFactory)
+						.Context());
+				}
+				catch ( MySqlProtocolException)
+				{
+					// Packet received out-of-order. Expected 1; got 2.
+					//await Task.Delay(10);
+					return await LocalQuery(new InjectServiceScope(_scopeFactory)
+						.Context());
+				}
+			}
+			catch ( InvalidOperationException )
+			{
+				// System.InvalidOperationException or ObjectDisposedException: Cannot Open when State is Connecting.
 				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
 			}
 		}

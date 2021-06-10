@@ -65,45 +65,47 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
 		public async Task<List<FileIndexItem>> Update(
-			Dictionary<string, List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel,
 			bool collections, bool append, int rotateClock)
 		{
-			if ( changedFileIndexItemName == null )
-			{
-				changedFileIndexItemName = (await _metaPreflight.Preflight(inputModel,
+			// need to get again and check to know if its changed on the road
+			var (databaseFileIndexItems , changedFileIndexItemName )= 
+				(await _metaPreflight.Preflight(inputModel,
 					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
-					rotateClock)).changedFileIndexItemName;
-			}
+					rotateClock));
+				
 			var updatedItems = new List<FileIndexItem>();
-			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
-			                                                                || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
-			foreach ( var item in collectionsDetailViewList )
+			var preflightResultFilePathList = fileIndexResultsList
+				.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
+				            || p.Status == FileIndexItem.ExifStatus.Deleted)
+				.Select(p => p.FilePath).ToList();
+				
+			foreach ( var filePath in preflightResultFilePathList )
 			{
-				// need to recheck because this process is async, so in the meanwhile there are changes possible
-				var detailView = _query.SingleItem(item.FilePath, null, collections, false);
+				var fileIndexItem = databaseFileIndexItems.FirstOrDefault(p => p.FilePath == filePath);
 
-				if ( detailView != null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				if ( fileIndexItem != null && changedFileIndexItemName.ContainsKey(filePath) )
 				{
 					// used for tracking differences, in the database/ExifTool compare
-					var comparedNamesList = changedFileIndexItemName[item.FilePath];
+					var comparedNamesList = changedFileIndexItemName[filePath];
 
-					await UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
-					updatedItems.Add(detailView.FileIndexItem);
+					await UpdateWriteDiskDatabase(fileIndexItem, comparedNamesList, rotateClock);
+					updatedItems.Add(fileIndexItem);
 					continue;
 				}
 
-				if ( detailView == null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				if ( fileIndexItem == null && changedFileIndexItemName.ContainsKey(filePath) )
 				{
 					_telemetryService?.TrackException(
 						new InvalidDataException("detailView is missing for and NOT Saved: " +
-						                         item.FilePath));
+						                         filePath));
 					continue;
 				}
 
-				throw new ArgumentException($"Missing in key: {item.FilePath}",
+				throw new ArgumentException($"Missing in key: {filePath}",
 					nameof(changedFileIndexItemName));
+
 			}
 
 			return updatedItems;
@@ -117,57 +119,57 @@ namespace starsky.feature.metaupdate.Services
 		/// <summary>
 		/// Update ExifTool, Thumbnail, Database and if needed rotateClock
 		/// </summary>
-		/// <param name="detailView">output database object</param>
+		/// <param name="fileIndexItem">output database object</param>
 		/// <param name="comparedNamesList">name of fields updated by exifTool</param>
 		/// <param name="rotateClock">rotation value (if needed)</param>
-		private async Task UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
+		private async Task UpdateWriteDiskDatabase(FileIndexItem fileIndexItem, List<string> comparedNamesList, int rotateClock = 0)
 		{
 			// do rotation on thumbs
-			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
+			RotationThumbnailExecute(rotateClock, fileIndexItem);
 
-			if ( detailView.FileIndexItem.IsDirectory != true 
-			     && ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
+			if ( fileIndexItem.IsDirectory != true 
+			     && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 			{
 				// feature to exif update
 				var exifUpdateFilePaths = new List<string>
 				{
-					detailView.FileIndexItem.FilePath           
+					fileIndexItem.FilePath           
 				};
 				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
 				
 				// Do an Exif Sync for all files, including thumbnails
-				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(detailView.FileIndexItem, 
+				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(fileIndexItem, 
 					exifUpdateFilePaths, comparedNamesList,true, true);
 
-				await ApplyOrGenerateUpdatedFileHash(newFileHashes, detailView);
+				await ApplyOrGenerateUpdatedFileHash(newFileHashes, fileIndexItem);
 				_logger.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
 			}
 			else
 			{
-				await new FileIndexItemJsonParser(_iStorage).WriteAsync(detailView.FileIndexItem);
+				await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 			}
 
 			// Do a database sync + cache sync
-			await _query.UpdateItemAsync(detailView.FileIndexItem);
+			await _query.UpdateItemAsync(fileIndexItem);
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image
-			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
+			_readMeta.RemoveReadMetaCache(fileIndexItem.FilePath);		
 		}
 
-		internal async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, DetailView detailView)
+		internal async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, FileIndexItem fileIndexItem)
 		{
 			if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
 			{
-				detailView.FileIndexItem.FileHash = newFileHashes.FirstOrDefault();
-				_logger.LogInformation($"use fileHash from exiftool {detailView.FileIndexItem.FileHash}");
+				fileIndexItem.FileHash = newFileHashes.FirstOrDefault();
+				_logger.LogInformation($"use fileHash from exiftool {fileIndexItem.FileHash}");
 				return;
 			}
 			// when newFileHashes is null or string.empty
-			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(detailView.FileIndexItem.FilePath)).Key;
-			_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
-			detailView.FileIndexItem.FileHash = newFileHash;
+			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			_thumbnailStorage.FileMove(fileIndexItem.FileHash, newFileHash);
+			fileIndexItem.FileHash = newFileHash;
 		}
 
 		/// <summary>

@@ -140,7 +140,11 @@ namespace starskytest.Controllers
 			};
 			var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath,false,
 				false) as JsonResult;
-			if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
+			if ( jsonResult == null )
+			{
+				Console.WriteLine("json should not be null");
+				throw new NullReferenceException(nameof(jsonResult));
+			}
 			var fileModel = jsonResult.Value as List<FileIndexItem>;
 			//you could not test because exiftool is an external dependency
 

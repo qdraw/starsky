@@ -156,6 +156,42 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(FileIndexItem.Rotation.Horizontal, 
 				collectionsDetailView.FileIndexItem.Orientation);
 		}
+
+		[TestMethod]
+		public void Update_should_ignore_capital_compare()
+		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>
+			{
+				{ "/test.jpg", new List<string>() }
+			};
+			
+			var collectionsDetailView = new DetailView
+			{
+				FileIndexItem = new FileIndexItem
+				{
+					Status = FileIndexItem.ExifStatus.Ok,
+					Tags = "Value",
+					FileName = "test.jpg",
+					ParentDirectory = "/",
+					Orientation = FileIndexItem.Rotation.Horizontal
+				}
+			};
+
+			var statusModel = new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "VALUE", // <-- capitals that's the diff
+				FileName = "test.jpg",
+				ParentDirectory = "/"
+			};
+			
+			// Check for compare values
+			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
+				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView.FileIndexItem,
+					statusModel, false, 0);
+			
+			Assert.AreEqual(0,changedFileIndexItemName["/test.jpg"].Count);
+		}
 		
 		[TestMethod]
 		public void UpdateServiceTest_ShouldOverwrite()
