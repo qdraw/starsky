@@ -48,20 +48,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
 		}
 
-		[TestMethod]
-		public async Task BackgroundTask_expect_socket_output()
-		{
-			var fakeSocket = new FakeIWebSocketConnectionsService();
-			var items = new List<FileIndexItem> {new FileIndexItem("/test")};
-			await new ManualBackgroundSyncService(
-					new FakeISynchronize(items),
-					new FakeIQuery(items),
-					fakeSocket,
-					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.QueryCacheName + "/test", string.Empty}}))
-				.BackgroundTask("/test");
 
-			Assert.AreEqual(JsonSerializer.Serialize(items, 
-				DefaultJsonSerializer.CamelCase), fakeSocket.FakeSendToAllAsync[0]);
-		}
 	}
 }

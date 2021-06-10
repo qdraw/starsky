@@ -212,34 +212,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					null,false,false,0);
 			// expect exception
 		}
-
-		[TestMethod]
-		public void Update_Missing_DataInDbAndTrackException()
-		{
-			var changedFileIndexItemName = new Dictionary<string, List<string>>
-			{
-				{ 
-					"/test.jpg", new List<string>
-					{
-						nameof(FileIndexItem.Tags).ToLowerInvariant()
-					} 
-				},
-			};
-			var fileIndexResultList = new List<FileIndexItem>
-			{
-				new FileIndexItem("/_database_changed_afterwards.jpg") {Status = FileIndexItem.ExifStatus.Ok}
-			};
-			
-			var telemetry = new FakeTelemetryService();
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					null, telemetry)
-				.Update(changedFileIndexItemName, fileIndexResultList , 
-					new FileIndexItem("/_database_changed_afterwards.jpg"),
-					false,false,0);
-			
-			Assert.AreEqual("detailView is missing for and NOT Saved: /_database_changed_afterwards.jpg", 
-				telemetry.TrackedExceptions.LastOrDefault().Message);
-		}
 		
 		[TestMethod]
 		public void UpdateRotate()
