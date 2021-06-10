@@ -50,7 +50,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
 				.GetService<ApplicationDbContext>(),_memoryCache, new AppSettings{ AddMemoryCache = false}) ;
 
-			var result = _query.CacheGetParentFolder("/");
+			var result = queryNoCache.CacheGetParentFolder("/");
 			Assert.IsFalse(result.Item1);
 		}
 	}
