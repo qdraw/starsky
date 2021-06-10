@@ -66,6 +66,7 @@ namespace starsky.feature.metaupdate.Services
 					continue; 
 				}
 
+				
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
 					fileIndexItem, inputModel, append, rotateClock);
 						

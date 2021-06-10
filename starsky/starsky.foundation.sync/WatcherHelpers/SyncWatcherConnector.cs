@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.JsonConverter;
@@ -63,8 +64,6 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var filtered = FilterBefore(syncData);
 			if ( !filtered.Any() )
 			{
-				Console.WriteLine(string.Concat(", ", syncData.Select(p => p.Status)));
-				Console.WriteLine(string.Concat(", ", syncData.Select(p => p.FilePath)));
 				return syncData;
 			}
 

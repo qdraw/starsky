@@ -115,7 +115,7 @@ namespace starsky.foundation.sync.SyncServices
 			// to avoid resync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			
+			_logger.LogInformation($"[SingleFile] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
 			return updatedDbItem;
 		}
 

@@ -553,7 +553,11 @@ namespace starsky.foundation.database.Query
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
 
-			_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+			if ( skippedCacheItems.Any() )
+			{
+				_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+			}
+			
         }
 
         /// <summary>

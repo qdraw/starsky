@@ -38,7 +38,7 @@ namespace starsky.foundation.sync.SyncServices
 		}
 
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
-			ISynchronize.SocketUpdateDelegate updateDelegate)
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));

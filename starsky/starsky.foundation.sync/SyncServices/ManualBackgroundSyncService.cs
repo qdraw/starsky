@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,10 +63,19 @@ namespace starsky.foundation.sync.SyncServices
 		internal async Task BackgroundTask(string subPath)
 		{
 			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
-			_query.CacheUpdateItem(updatedList);
+			_query.CacheUpdateItem(FilterBefore(updatedList));
 			
 			// so you can click on the button again
 			_cache.Remove(QueryCacheName + subPath);
+		}
+		
+		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		{
+			return syncData.Where(p =>
+				p.Status == FileIndexItem.ExifStatus.Ok ||
+				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
+				p.Status == FileIndexItem.ExifStatus.Deleted ||
+				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
 		}
 	}
 }
