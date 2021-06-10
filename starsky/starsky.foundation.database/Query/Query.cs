@@ -300,14 +300,31 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
-	        // https://go.microsoft.com/fwlink/?linkid=2097913
-	        await Task.Delay(10);
-	        _logger?.LogInformation("Retry Exception", e);
-	        var context = new InjectServiceScope(_scopeFactory).Context();
-	        context.Attach(updateStatusContent).State = EntityState.Modified;
-	        await context.SaveChangesAsync();
-	        context.Attach(updateStatusContent).State = EntityState.Detached; 
+	        try
+	        {
+		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
+		        // https://go.microsoft.com/fwlink/?linkid=2097913
+		        await Task.Delay(5);
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        context.Attach(updateStatusContent).State = EntityState.Modified;
+		        await context.SaveChangesAsync();
+		        context.Attach(updateStatusContent).State = EntityState.Detached; 
+	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        _logger?.LogInformation("[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
+			        var context = new InjectServiceScope(_scopeFactory).Context();
+			        await context.SaveChangesAsync();
+		        }
+		        catch ( DbUpdateConcurrencyException retry2Exception)
+		        {
+			        _logger?.LogInformation(retry2Exception, 
+				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
+		        }
+	        }
         }
         
         /// <summary>
@@ -536,10 +553,7 @@ namespace starsky.foundation.database.Query
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
 
-			foreach ( var item in skippedCacheItems )
-			{
-				_logger?.LogInformation($"[CacheUpdateItem] skipped: {item}");
-			}
+			_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
         }
 
         /// <summary>

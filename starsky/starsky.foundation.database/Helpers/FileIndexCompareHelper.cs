@@ -366,9 +366,12 @@ namespace starsky.foundation.database.Helpers
 		    List<string> differenceList, bool append)
         {
 	        // former check on not be / and return if that is the case;
-            if (oldStringValue == newStringValue || string.IsNullOrEmpty(newStringValue)) return;
+	        // ignore capitals
+            if (string.IsNullOrEmpty(newStringValue) || 
+                string.Equals(oldStringValue, newStringValue, StringComparison.InvariantCultureIgnoreCase)) return;
             
-            if (propertyName == nameof(FileIndexItem.FileName) ) return;
+            if (propertyName == nameof(FileIndexItem.FileName) || 
+                propertyName == nameof(FileIndexItem.FilePath) ) return;
          
             var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
                         

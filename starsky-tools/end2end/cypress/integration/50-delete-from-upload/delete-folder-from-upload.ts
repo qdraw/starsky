@@ -44,7 +44,7 @@ describe('Delete folder from upload', () => {
     cy.visit(config.urlHome)
 
     cy.get('.item.item--select').click()
-    cy.get('[data-filepath="/starsky-end2end-test"] button').click()
+    cy.get('[data-filepath="/starsky-end2end-test"] button').click({ force: true })
 
     cy.get('.item.item--more').click()
     cy.get('[data-test=trash]').click()

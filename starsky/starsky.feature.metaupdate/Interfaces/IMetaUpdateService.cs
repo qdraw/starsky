@@ -9,7 +9,6 @@ namespace starsky.feature.metaupdate.Interfaces
 		/// <summary>
 		/// To Actual update the metadata
 		/// </summary>
-		/// <param name="changedFileIndexItemName">name of the item that is changed</param>
 		/// <param name="fileIndexResultsList">object that are changed</param>
 		/// <param name="inputModel"></param>
 		/// <param name="collections"></param>
@@ -17,7 +16,6 @@ namespace starsky.feature.metaupdate.Interfaces
 		/// <param name="rotateClock"></param>
 		/// <returns></returns>
 		Task<List<FileIndexItem>> Update(
-			Dictionary<string, List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel,
 			bool collections, bool append, int rotateClock);
