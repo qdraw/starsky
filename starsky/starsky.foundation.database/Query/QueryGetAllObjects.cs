@@ -34,6 +34,7 @@ namespace starsky.foundation.database.Query
 		/// <returns>list of all objects inside the folder</returns>
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
 		{
+			if ( !filePaths.Any() ) return new List<FileIndexItem>();
 			try
 			{
 				return FormatOk(await GetAllObjectsQuery(_context, filePaths).ToListAsync());

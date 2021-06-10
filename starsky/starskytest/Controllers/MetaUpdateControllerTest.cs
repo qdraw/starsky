@@ -157,9 +157,9 @@ namespace starskytest.Controllers
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
-				FileName = "345678765434567.jpg",
+				FileName = "ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg",
 				ParentDirectory = "/",
-				FileHash = "345678765434567"
+				FileHash = "ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool"
 			});
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
@@ -175,13 +175,13 @@ namespace starskytest.Controllers
 			};
 
 			var testElement = new FileIndexItem();
-			var notFoundResult = await controller.UpdateAsync(testElement, "/345678765434567.jpg",
+			var notFoundResult = await controller.UpdateAsync(testElement, "/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg",
 				false,false) as NotFoundObjectResult;
 			if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
 
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
-			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem("/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg").FileIndexItem);
 		}
 
 		[TestMethod]

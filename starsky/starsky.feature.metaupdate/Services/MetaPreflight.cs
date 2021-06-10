@@ -100,10 +100,11 @@ namespace starsky.feature.metaupdate.Services
 		{
 			var parentDirectoryList =
 				new HashSet<string>(
-					fileIndexUpdateList.Select(p => p.ParentDirectory)).ToList();
+					fileIndexUpdateList.Select(p => p.ParentDirectory).ToList());
 
 			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
 				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
+			if ( !shouldAddParentDirectoriesToCache.Any() ) return;
 
 			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
 			foreach ( var directory in shouldAddParentDirectoriesToCache )
