@@ -104,11 +104,8 @@ namespace starsky.foundation.database.Query
             if ( isSuccess ) return objectFileFolders;
             
             objectFileFolders = QueryDisplayFileFolders(subPath);
-            
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-	            subPath);
-            _cache.Set(queryCacheName, objectFileFolders, 
-	            new TimeSpan(1,0,0));
+
+            AddCacheParentItem(subPath, objectFileFolders);
             return objectFileFolders;
         }
 
