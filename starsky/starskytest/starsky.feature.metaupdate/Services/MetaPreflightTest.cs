@@ -71,7 +71,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg", "/test.dng"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes})));
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("/test.jpg"), 
@@ -95,7 +96,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/test.jpg", "/test.dng"}, 
-						new []{CreateAnImage.Bytes, CreateAnImage.Bytes})));
+						new []{CreateAnImage.Bytes, CreateAnImage.Bytes}))
+				,new FakeIWebLogger());
 			
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("/test.jpg"), 
@@ -110,7 +112,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		[ExpectedException(typeof(MissingFieldException))]
 		public void UpdateServiceTest_CompareAllLabelsAndRotation_NullMissingFieldException()
 		{
-			new MetaPreflight(null, null, null).
+			new MetaPreflight(null, null, null, null).
 				CompareAllLabelsAndRotation(null, null,
 					null, false, 0);
 			// ==>> MissingFieldException
@@ -143,7 +145,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 			
 			// Check for compare values
-			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
+			new MetaPreflight(_query, _appSettings, 
+					new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger())
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView.FileIndexItem,
 					statusModel, false, 0);
 			
@@ -186,7 +189,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 			
 			// Check for compare values
-			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
+			new MetaPreflight(_query, _appSettings, 
+					new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger())
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView.FileIndexItem,
 					statusModel, false, 0);
 			
@@ -222,7 +226,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 			
 			// Check for compare values
-			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
+			new MetaPreflight(_query, _appSettings, 
+					new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger())
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView.FileIndexItem,
 					statusModel, false, 0);
 			
@@ -246,7 +251,8 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			};
 			
 			// Rotate right; check if values are the same
-			new MetaPreflight(_query, _appSettings, new FakeSelectorStorage(_iStorageFake))
+			new MetaPreflight(_query, _appSettings, 
+					new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger())
 				.CompareAllLabelsAndRotation(changedFileIndexItemName, collectionsDetailView.FileIndexItem, 
 					collectionsDetailView.FileIndexItem, 
 					false, -1);
@@ -260,7 +266,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public async Task Preflight_NotFoundNotInIndex()
 		{
 			var metaPreflight = new MetaPreflight(new FakeIQuery(), new AppSettings(), 
-				new FakeSelectorStorage());
+				new FakeSelectorStorage(),new FakeIWebLogger());
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("test"), 
 				new[] {"test"}, true, true, 0);
@@ -279,7 +285,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings{ ReadOnlyFolders = new List<string>{"readonly"}}, new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/readonly/test.jpg"}, 
-						new []{CreateAnImage.Bytes, })));
+						new []{CreateAnImage.Bytes, })),new FakeIWebLogger());
 			
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("/readonly/test.jpg"), 
@@ -300,11 +306,12 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new AppSettings(), new FakeSelectorStorage(
 					new FakeIStorage(new List<string>(), 
 						new List<string>{"/deleted.jpg"}, 
-						new []{CreateAnImage.Bytes, })));
+						new []{CreateAnImage.Bytes, })),new FakeIWebLogger());
 			
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("/deleted.jpg"), 
-				new[] {"/deleted.jpg"}, true, true, 0);
+				new[] {"/deleted.jpg"}, 
+				true, true, 0);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, 
 				result.fileIndexResultsList.FirstOrDefault().Status);
@@ -315,7 +322,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void RotationCompare_DoNotRotate()
 		{
 			var metaPreflight = new MetaPreflight(_query, _appSettings,
-				new FakeSelectorStorage(_iStorageFake));
+				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
 
 			var rotationCompare = metaPreflight.RotationCompare(0, 
@@ -329,7 +336,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void RotationCompare_Plus1()
 		{
 			var metaPreflight = new MetaPreflight(_query, _appSettings,
-				new FakeSelectorStorage(_iStorageFake));
+				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
 			var rotationCompare = metaPreflight.RotationCompare(1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
@@ -343,7 +350,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		public void RotationCompare_Minus1()
 		{
 			var metaPreflight = new MetaPreflight(_query, _appSettings,
-				new FakeSelectorStorage(_iStorageFake));
+				new FakeSelectorStorage(_iStorageFake),new FakeIWebLogger());
 			var compareList = new List<string>();
 			var rotationCompare = metaPreflight.RotationCompare(-1, 
 				new FileIndexItem("/test.jpg"){Orientation = FileIndexItem.Rotation.Horizontal},
@@ -358,7 +365,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		{
 			var metaPreflight = new MetaPreflight(new FakeIQuery(
 					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(), 
-				new FakeSelectorStorage());
+				new FakeSelectorStorage(),new FakeIWebLogger());
 			
 			var result = await metaPreflight.Preflight(
 				new FileIndexItem("/test.jpg"), 
@@ -366,6 +373,57 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, 
 				result.fileIndexResultsList.FirstOrDefault().Status);
+		}
+
+		[TestMethod]
+		public async Task AddParentCacheIfNotExist_ignore_nothing()
+		{
+			var metaPreflight = new MetaPreflight(new FakeIQuery(
+					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(), 
+				new FakeSelectorStorage(),new FakeIWebLogger());
+
+			var result = await metaPreflight.AddParentCacheIfNotExist(
+				new List<FileIndexItem>());
+			Assert.AreEqual(0,result.Count);
+		}
+		
+		[TestMethod]
+		public async Task AddParentCacheIfNotExist_TriggerCacheSync()
+		{
+			var fakeContent =
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg")};
+
+			var fakeQuery = new FakeIQuery(fakeContent);
+			var metaPreflight = new MetaPreflight(fakeQuery, new AppSettings(), 
+				new FakeSelectorStorage(),new FakeIWebLogger());
+
+			await metaPreflight.AddParentCacheIfNotExist(
+				fakeContent);
+
+			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
+			
+			Assert.AreEqual(1,cacheGetParentFolder.Count);
+		}
+		
+		[TestMethod]
+		public async Task AddParentCacheIfNotExist_IgnoreWhenCacheExists()
+		{
+			var fakeContent =
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "test1"}};
+			var fakeContentCache =
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "__old_key__"}};
+			
+			var fakeQuery = new FakeIQuery(fakeContent,fakeContentCache);
+			var metaPreflight = new MetaPreflight(fakeQuery, new AppSettings(), 
+				new FakeSelectorStorage(),new FakeIWebLogger());
+
+			await metaPreflight.AddParentCacheIfNotExist(
+				fakeContent);
+
+			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
+			
+			Assert.AreEqual(1,cacheGetParentFolder.Count);
+			Assert.AreEqual("__old_key__",cacheGetParentFolder[0].FileHash);
 		}
 	}
 }

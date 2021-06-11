@@ -38,7 +38,8 @@ namespace starsky.foundation.database.Query
 		{
 			return input.Select(p =>
 			{
-				if ( p != null )
+				// status check for some referenced based code
+				if ( p != null && p.Status == FileIndexItem.ExifStatus.Default )
 				{
 					p.Status = FileIndexItem.ExifStatus.Ok;
 				}

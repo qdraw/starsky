@@ -106,7 +106,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
 					new FakeIWebLogger())
-				.Update(fileIndexResultsList, updateItem, false,false,0);
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
@@ -156,7 +156,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			new MetaUpdateService(_query,_exifTool, _readMeta, 
 					new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(), new FakeIWebLogger())
-				.Update(fileIndexResultsList, toUpdateItem, false,false,0);
+				.Update(null, fileIndexResultsList, toUpdateItem, false,false,0);
 			// Second one is null
 
 			// check for item (Referenced)
@@ -170,6 +170,11 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		[TestMethod]
 		public void Update_Write_GPX()
 		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>{
+			{
+				"/test.gpx", new List<string>{"Tags"}
+			}};
+
 			_iStorageFake.WriteStream(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
 			var updateItem = new FileIndexItem("/test.gpx")
 			{
@@ -185,7 +190,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 					new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(),  
 					new FakeIWebLogger())
-				.Update(fileIndexResultsList, updateItem,false,false,0);
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
 		}
@@ -194,6 +199,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		[ExpectedException(typeof(ArgumentException))]
 		public async Task Update_Exception_MissingInList()
 		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			var fileIndexResultList = new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
@@ -202,33 +208,18 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			await new MetaUpdateService(_query,_exifTool, _readMeta, 
 					new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
 					new FakeIWebLogger())
-				.Update(fileIndexResultList , 
+				.Update(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
 			// expect exception
-		}
-
-		[TestMethod]
-		public void Update_Missing_DataInDbAndTrackException()
-		{
-			var fileIndexResultList = new List<FileIndexItem>
-			{
-				new FileIndexItem("/_database_changed_afterwards.jpg") {Status = FileIndexItem.ExifStatus.Ok}
-			};
-			
-			var telemetry = new FakeTelemetryService();
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					null, telemetry)
-				.Update( fileIndexResultList , 
-					new FileIndexItem("/_database_changed_afterwards.jpg"),
-					false,false,0);
-			
-			Assert.AreEqual("detailView is missing for and NOT Saved: /_database_changed_afterwards.jpg", 
-				telemetry.TrackedExceptions.LastOrDefault().Message);
 		}
 		
 		[TestMethod]
 		public void UpdateRotate()
 		{
+			var changedFileIndexItemName = new Dictionary<string, List<string>>{
+			{
+				"/test.jpg", new List<string>{"orientation"}
+			}};
 			_iStorageFake.WriteStream(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
 			var updateItem = new FileIndexItem("/test.jpg")
 			{
@@ -244,7 +235,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(),  
 					null)
-				.Update(fileIndexResultsList, updateItem,false,
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
 					false,1);
 
 			// so there is something changed

@@ -63,10 +63,10 @@ namespace starsky.Controllers
 		/// <returns>report</returns>
 		internal async Task<HealthReport> CheckHealthAsyncWithTimeout(int timeoutTime = 15000)
 		{
-			const string cacheKey = "health";
+			const string healthControllerCacheKey = "health";
 			try
 			{
-				if ( _cache != null && _cache.TryGetValue(cacheKey, out var objectHealthStatus) && 
+				if ( _cache != null && _cache.TryGetValue(healthControllerCacheKey, out var objectHealthStatus) && 
 				     objectHealthStatus is HealthReport healthStatus && 
 				     healthStatus.Status == HealthStatus.Healthy )
 				{
@@ -76,7 +76,7 @@ namespace starsky.Controllers
 				var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
 				if (_cache != null && result.Status == HealthStatus.Healthy )
 				{
-					_cache.Set(cacheKey, result, new TimeSpan(0,1,30));
+					_cache.Set(healthControllerCacheKey, result, new TimeSpan(0,1,30));
 				}
 				return result;
 			}

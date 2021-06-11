@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.JsonConverter;
@@ -61,7 +62,10 @@ namespace starsky.foundation.sync.WatcherHelpers
 			}
 
 			var filtered = FilterBefore(syncData);
-			if ( !filtered.Any() ) return syncData;
+			if ( !filtered.Any() )
+			{
+				return syncData;
+			}
 
 			// update users who are active right now
 			await _websockets.SendToAllAsync(JsonSerializer.Serialize(filtered,

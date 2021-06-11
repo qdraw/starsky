@@ -49,8 +49,14 @@ namespace starsky.foundation.database.Query
 			foreach ( var path in filePathList )
 			{
 				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
+				if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
+				{
+					predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
+					                    && p.FileName == fileNameWithoutExtension);
+					continue;
+				}
 				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
-				                    && p.FileName.StartsWith(fileNameWithoutExtension) );
+				                    && p.FileName.StartsWith(fileNameWithoutExtension + ".")  );
 			}
 			
 			var predicate = PredicateBuilder.OrLoop(predicates);

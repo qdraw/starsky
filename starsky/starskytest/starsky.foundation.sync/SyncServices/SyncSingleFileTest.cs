@@ -64,8 +64,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
 			
-			await sync.SingleFile("/test.jpg");
-
+			var result = await sync.SingleFile("/test.jpg");
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			
 			// should add files to db
 			var detailView = fakeQuery.SingleItem("/test.jpg");
 			Assert.IsNotNull(detailView);
@@ -145,8 +146,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg");
+			var result = await sync.SingleFile("/test.jpg");
 
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result.Status);
+			
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
@@ -157,27 +160,34 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 
 		[TestMethod]
-		public async Task SingleFile_FileAlreadyExist_With_Changed_ByteSize()
+		public async Task SingleFile_FileAlreadyExist_WithSameFileHash_ShouldNotTrigger()
 		{
 			var (fileHash, _) = await new FileHash(_iStorageFake).GetHashCodeAsync("/test.jpg");
-
+			
 			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = fileHash,
-					Size = 82153441 // < wrong byte size
+					FileHash = fileHash
 				}
 			});
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg");
+
+
+			var isCalled = false;
+			Task TestTask(List<FileIndexItem> _)
+			{
+				isCalled = true;
+				return Task.CompletedTask;
+			}
 			
-			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
-			// checks if the byte size is updated
-			Assert.AreEqual(_iStorageFake.Info("/test.jpg").Size, fileIndexItem.Size);
+			await sync.SingleFile("/test.jpg",TestTask);
+
+			Assert.IsFalse(isCalled);
 		}
+		
 		
 		[TestMethod]
 		public async Task SingleFile_FileAlreadyExist_With_Same_ByteSize()
@@ -196,7 +206,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg");
+			
+			var result = await sync.SingleFile("/test.jpg");
+
+			Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result.Status);
 			
 			var fileIndexItem = fakeQuery.SingleItem("/test.jpg").FileIndexItem;
 
@@ -220,8 +233,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg");
+			var result = await sync.SingleFile("/test.jpg");
 
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
@@ -231,6 +246,32 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = detailView.FileIndexItem;
 			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+		}
+
+		[TestMethod]
+		public async Task SingleFile_FileAlreadyExist_With_Changed_FileHash_ShouldTriggerDelegate()
+		{
+			
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+				{
+					FileHash = "THIS_IS_THE_OLD_HASH",
+					Size = 99999999 // % % % that's not the right size % % %
+				}
+			});
+			var isCalled = false;
+			Task TestTask(List<FileIndexItem> _)
+			{
+				isCalled = true;
+				return Task.CompletedTask;
+			}
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new FakeIWebLogger());
+			await sync.SingleFile("/test.jpg",TestTask);
+			
+			Assert.IsTrue(isCalled);
 		}
 		
 		[TestMethod]
@@ -246,7 +287,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg",item);  // % % % % Enter item here % % % % % 
+			
+			var result = await sync.SingleFile("/test.jpg",item);  // % % % % Enter item here % % % % % 
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
 
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
@@ -257,6 +301,29 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = detailView.FileIndexItem;
 			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+		}
+		
+		[TestMethod]
+		public async Task SingleItem_DbItem_Updated_TriggerDelegate()
+		{
+			var item = new FileIndexItem("/test.jpg")
+			{
+				FileHash = "THIS_IS_THE_OLD_HASH",
+				Size = 99999999 // % % % that's not the right size % % %
+			};
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem> {item});
+			
+			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
+				_iStorageFake, new FakeIWebLogger());
+			
+			var isCalled = false;
+			Task TestTask(List<FileIndexItem> _)
+			{
+				isCalled = true;
+				return Task.CompletedTask;
+			}
+			await sync.SingleFile("/test.jpg",item, TestTask);  // % % % % Enter item here % % % % % 
+			Assert.IsTrue(isCalled);
 		}
 		
 		[TestMethod]
@@ -289,8 +356,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var sync = new SyncSingleFile(new AppSettings(), fakeQuery,
 				_iStorageFake, new FakeIWebLogger());
-			await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
-
+			var result= await sync.SingleFile("/test.jpg",null);  // % % % % Null value here % % % % % 
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
+			
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			

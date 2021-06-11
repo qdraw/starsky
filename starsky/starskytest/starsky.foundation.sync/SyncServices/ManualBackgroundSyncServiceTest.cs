@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -43,25 +44,74 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.QueryCacheName + "/test", string.Empty}}))
+					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}}))
 				.ManualSync("/test");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
 		}
 
 		[TestMethod]
-		public async Task BackgroundTask_expect_socket_output()
+		public async Task PushToSockets_ContainsValue()
 		{
-			var fakeSocket = new FakeIWebSocketConnectionsService();
-			var items = new List<FileIndexItem> {new FileIndexItem("/test")};
+			var socket = new FakeIWebSocketConnectionsService();
 			await new ManualBackgroundSyncService(
-					new FakeISynchronize(items),
-					new FakeIQuery(items),
-					fakeSocket,
-					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.QueryCacheName + "/test", string.Empty}}))
-				.BackgroundTask("/test");
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					socket,
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
 
-			Assert.AreEqual(JsonSerializer.Serialize(items, 
-				DefaultJsonSerializer.CamelCase), fakeSocket.FakeSendToAllAsync[0]);
+			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+		}
+		
+		
+		[TestMethod]
+		public void FilterBefore_OkShouldPass()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.Ok
+				}});
+
+			Assert.AreEqual(1,result.Count);
+			Assert.AreEqual("/test.jpg",result[0].FilePath);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_NotFoundShouldPass()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				}});
+
+			Assert.AreEqual(1,result.Count);
+			Assert.AreEqual("/test.jpg",result[0].FilePath);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_OperationNotSupportedShouldIgnore()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
+				}});
+
+			Assert.AreEqual(0,result.Count);
 		}
 	}
 }

@@ -11,6 +11,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.sync.Helpers;
+using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -34,8 +35,11 @@ namespace starsky.foundation.sync.SyncServices
 		/// </summary>
 		/// <param name="subPath">path</param>
 		/// <param name="dbItem">current item, can be null</param>
+		/// <param name="updateDelegate">push updates realtime to the user and avoid waiting</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath, FileIndexItem dbItem)
+		internal async Task<FileIndexItem> SingleFile(string subPath,
+			FileIndexItem dbItem,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// when item does not exist in db
 			if ( dbItem == null )
@@ -57,17 +61,27 @@ namespace starsky.foundation.sync.SyncServices
 			}
 			
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( !isSame )
+			{
+				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+			}
 
-			return await UpdateItem(dbItem, dbItem.Size, subPath);
+			// to avoid resync
+			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			
+			return updatedDbItem;
 		}
 
 		/// <summary>
 		/// Query the database and check if an single item has changed
 		/// </summary>
 		/// <param name="subPath">path</param>
+		/// <param name="updateDelegate">realtime updates, can be null to ignore</param>
 		/// <returns>updated item with status</returns>
-		internal async Task<FileIndexItem> SingleFile(string subPath)
+		internal async Task<FileIndexItem> SingleFile(string subPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// route with database check
 			_logger.LogInformation($"[SingleFile/db] {subPath}" );
@@ -92,9 +106,17 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
-			if ( isSame ) return updatedDbItem;
+			if ( !isSame )
+			{
+				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
+				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+			}
 
-			return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
+			// to avoid resync
+			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
+			_logger.LogInformation($"[SingleFile] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
+			return updatedDbItem;
 		}
 
 		/// <summary>
@@ -117,12 +139,13 @@ namespace starsky.foundation.sync.SyncServices
 			return new Tuple<bool, FileIndexItem>(fileHashTheSame,dbItem);
 		}
 
-		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem)
+		internal FileIndexItem AddDeleteStatus(FileIndexItem dbItem, 
+			FileIndexItem.ExifStatus exifStatus = FileIndexItem.ExifStatus.Deleted)
 		{
 			if ( dbItem == null ) return null;
 			if ( dbItem.Tags.Contains("!delete!") )
 			{
-				dbItem.Status = FileIndexItem.ExifStatus.Deleted;
+				dbItem.Status = exifStatus;
 			}
 			return dbItem;
 		}

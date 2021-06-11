@@ -41,8 +41,8 @@ namespace starsky.feature.geolookup.Services
 		{
 			if(_cache == null || string.IsNullOrWhiteSpace(path)) return;
 			
-			var queryCacheName = nameof(GeoCacheStatus) + path + type;
-			_cache.Set(queryCacheName, current, new TimeSpan(10,0,0));
+			var queryGeoCacheName = nameof(GeoCacheStatus) + path + type;
+			_cache.Set(queryGeoCacheName, current, new TimeSpan(10,0,0));
 		}
 
 	}

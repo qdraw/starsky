@@ -15,7 +15,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
@@ -33,7 +32,6 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
-		private readonly ITelemetryService _telemetryService;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -41,7 +39,7 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IWebLogger logger, ITelemetryService telemetryService = null)
+			IWebLogger logger)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -50,7 +48,6 @@ namespace starsky.feature.metaupdate.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
 			_logger = logger;
-			_telemetryService = telemetryService;
 		}
 
 		/// <summary>
@@ -65,47 +62,41 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
 		public async Task<List<FileIndexItem>> Update(
+			Dictionary<string,List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel,
-			bool collections, bool append, int rotateClock)
+			FileIndexItem inputModel, // only when changedFileIndexItemName = null
+			bool collections, bool append, // only when changedFileIndexItemName = null
+			int rotateClock) // <- this one is needed
 		{
-			// need to get again and check to know if its changed on the road
-			var (databaseFileIndexItems , changedFileIndexItemName )= 
-				(await _metaPreflight.Preflight(inputModel,
-					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
-					rotateClock));
-				
-			var updatedItems = new List<FileIndexItem>();
-			var preflightResultFilePathList = fileIndexResultsList
-				.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
-				            || p.Status == FileIndexItem.ExifStatus.Deleted)
-				.Select(p => p.FilePath).ToList();
-				
-			foreach ( var filePath in preflightResultFilePathList )
+			if ( changedFileIndexItemName == null )
 			{
-				var fileIndexItem = databaseFileIndexItems.FirstOrDefault(p => p.FilePath == filePath);
-
-				if ( fileIndexItem != null && changedFileIndexItemName.ContainsKey(filePath) )
+				changedFileIndexItemName = (await _metaPreflight.Preflight(inputModel,
+					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
+					rotateClock)).changedFileIndexItemName;
+			}
+			
+			var updatedItems = new List<FileIndexItem>();
+			var fileIndexItemList = fileIndexResultsList
+				.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
+				            || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+				
+			foreach ( var fileIndexItem in fileIndexItemList )
+			{
+				if (changedFileIndexItemName.ContainsKey(fileIndexItem.FilePath) )
 				{
 					// used for tracking differences, in the database/ExifTool compare
-					var comparedNamesList = changedFileIndexItemName[filePath];
+					var comparedNamesList = changedFileIndexItemName[fileIndexItem.FilePath];
 
 					await UpdateWriteDiskDatabase(fileIndexItem, comparedNamesList, rotateClock);
 					updatedItems.Add(fileIndexItem);
 					continue;
 				}
-
-				if ( fileIndexItem == null && changedFileIndexItemName.ContainsKey(filePath) )
-				{
-					_telemetryService?.TrackException(
-						new InvalidDataException("detailView is missing for and NOT Saved: " +
-						                         filePath));
-					continue;
-				}
-
-				throw new ArgumentException($"Missing in key: {filePath}",
-					nameof(inputModel));
-
+				
+				_logger.LogError($"Missing in key: {fileIndexItem.FilePath}",
+					new InvalidDataException($"changedFileIndexItemName: " +
+					                         $"{string.Join(",",changedFileIndexItemName)}"));
+				throw new ArgumentException($"Missing in key: {fileIndexItem.FilePath}",
+					nameof(changedFileIndexItemName));
 			}
 
 			return updatedItems;
@@ -142,7 +133,10 @@ namespace starsky.feature.metaupdate.Services
 					exifUpdateFilePaths, comparedNamesList,true, true);
 
 				await ApplyOrGenerateUpdatedFileHash(newFileHashes, fileIndexItem);
-				_logger.LogInformation($"[UpdateWriteDiskDatabase] exifResult: {exifResult}");
+				_logger.LogInformation(string.IsNullOrEmpty(exifResult)
+					? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
+					  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
+					: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
 			}
 			else
 			{
@@ -150,7 +144,8 @@ namespace starsky.feature.metaupdate.Services
 			}
 
 			// Do a database sync + cache sync
-			await _query.UpdateItemAsync(fileIndexItem);
+			// Clone to avoid reference when cache exist
+			await _query.UpdateItemAsync(fileIndexItem.Clone());
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache

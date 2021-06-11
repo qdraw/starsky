@@ -9,6 +9,7 @@ namespace starsky.feature.metaupdate.Interfaces
 		/// <summary>
 		/// To Actual update the metadata
 		/// </summary>
+		/// <param name="changedFileIndexItemName"></param>
 		/// <param name="fileIndexResultsList">object that are changed</param>
 		/// <param name="inputModel"></param>
 		/// <param name="collections"></param>
@@ -16,9 +17,11 @@ namespace starsky.feature.metaupdate.Interfaces
 		/// <param name="rotateClock"></param>
 		/// <returns></returns>
 		Task<List<FileIndexItem>> Update(
+			Dictionary<string,List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel,
-			bool collections, bool append, int rotateClock);
+			FileIndexItem inputModel, // only when changedFileIndexItemName = null
+			bool collections, bool append, // only when changedFileIndexItemName = null
+			int rotateClock);
 
 		void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList);
 	}
