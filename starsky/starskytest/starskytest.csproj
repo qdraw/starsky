@@ -51,6 +51,7 @@
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
         <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+        <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
         <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
         <ProjectReference Include="..\starskycore\starskycore.csproj" />

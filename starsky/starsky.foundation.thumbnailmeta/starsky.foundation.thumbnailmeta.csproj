@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>starsky.foundation.metathumbnail</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
+      <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MetadataExtractor" Version="2.4.3" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+    </ItemGroup>
+
+</Project>
