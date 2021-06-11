@@ -74,8 +74,8 @@ namespace starsky.foundation.sync.SyncServices
 			return syncData.Where(p =>
 				p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
-				p.Status == FileIndexItem.ExifStatus.Deleted ||
-				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
+				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing ||
+				p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
 		}
 	}
 }

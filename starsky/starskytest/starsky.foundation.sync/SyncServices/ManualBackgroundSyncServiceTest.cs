@@ -82,7 +82,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
-		public void FilterBefore_NotFoundShouldIgnore()
+		public void FilterBefore_NotFoundShouldPass()
 		{
 			var result=  new ManualBackgroundSyncService(
 					new FakeISynchronize(new List<FileIndexItem>()),
@@ -91,7 +91,24 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeMemoryCache(new Dictionary<string, object>()))
 				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
-					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				}});
+
+			Assert.AreEqual(1,result.Count);
+			Assert.AreEqual("/test.jpg",result[0].FilePath);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_OperationNotSupportedShouldIgnore()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.OperationNotSupported
 				}});
 
 			Assert.AreEqual(0,result.Count);
