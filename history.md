@@ -45,9 +45,14 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.9 _(Unreleased)_ - 2021-06-??
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
-- [x]   (Fixed) _Front-end_ Fix for keeps loading forever if use filelist (archive) fails  (issue #382 & PR #392)
+- [x]   (Fixed) _Front-end_ Fix for keeps loading forever if use fileList (archive) fails  (issue #382 & PR #392)
 - [x]   (Fixed) _Front-end_  Add retry/reload button in Application Exception page  (PR #392)
 - [x]   (Fixed) _Back-end_  Refactor Update validation to perform faster _(using a single query)_ (PR #394)
+- [x]   (Fixed) _Back-end_ Rename thumbnail before exifTool writes the file (PR #396)
+- [x]   (Fixed) _Back-end_ Issue where filePath is marked as change (PR #401)
+- [x]   (Fixed) _Back-end_ SolveConcurrencyException also fixed for disposed objects (PR #401)
+- [x]   (Fixed) _Back-end_ Skip socket push when item is not changed (Issue #399 & PR #402)
+- [x]   (Fixed) _Back-end_ When updating the tags fast, the tool isn't keep track _(now only works when cache is enabled)_ (PR #402)
 
 # version 0.4.8 - 2021-05-07
 - [x]   (Changed) _Front-end_ Make Archive UI more white & Dark mode UI fixes (PR #358)
