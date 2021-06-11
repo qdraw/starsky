@@ -15,10 +15,11 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIQuery : IQuery
 	{
-		public FakeIQuery(List<FileIndexItem> fakeContext = null)
+		public FakeIQuery(List<FileIndexItem> fakeContext = null, List<FileIndexItem> fakeCachedContent = null)
 		{
 			if ( fakeContext == null ) return;
 			_fakeContext = fakeContext;
+			_fakeCachedContent = fakeCachedContent;
 		}
 
 		public FakeIQuery(ApplicationDbContext context, 
@@ -28,8 +29,9 @@ namespace starskytest.FakeMocks
 		{
 		}
 		
-		private List<FileIndexItem> _fakeContext = new List<FileIndexItem>();
-		
+		private readonly List<FileIndexItem> _fakeContext = new List<FileIndexItem>();
+		private List<FileIndexItem> _fakeCachedContent = new List<FileIndexItem>();
+
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
 			return _fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
@@ -305,7 +307,9 @@ namespace starskytest.FakeMocks
 
 		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
 		{
-			throw new NotImplementedException();
+			_fakeCachedContent ??= new List<FileIndexItem>();
+			_fakeCachedContent.AddRange(items);
+			return true;
 		}
 
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
@@ -323,7 +327,14 @@ namespace starskytest.FakeMocks
 
 		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
 		{
-			throw new NotImplementedException();
+			if ( _fakeCachedContent == null )
+			{
+				return new Tuple<bool, List<FileIndexItem>>(false, new List<FileIndexItem>());
+			}
+			
+			var res =
+				_fakeCachedContent.Where(p => p.ParentDirectory == subPath).ToList();
+			return new Tuple<bool, List<FileIndexItem>>(res.Any(), res);
 		}
 
 		public async Task AddParentItemsAsync(string subPath)

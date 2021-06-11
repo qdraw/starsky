@@ -7,6 +7,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -20,11 +21,13 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
+		private readonly IWebLogger _logger;
 
-		public MetaPreflight(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
+		public MetaPreflight(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
+			_logger = logger;
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(
 				SelectorStorage.StorageServices.SubPath);
 		}
@@ -96,7 +99,7 @@ namespace starsky.feature.metaupdate.Services
 			return (fileIndexUpdateList, changedFileIndexItemName);
 		}
 
-		private async Task AddParentCacheIfNotExist(List<FileIndexItem> fileIndexUpdateList)
+		internal async Task<List<string>> AddParentCacheIfNotExist(List<FileIndexItem> fileIndexUpdateList)
 		{
 			var parentDirectoryList =
 				new HashSet<string>(
@@ -104,15 +107,18 @@ namespace starsky.feature.metaupdate.Services
 
 			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
 				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
-			if ( !shouldAddParentDirectoriesToCache.Any() ) return;
+			if ( !shouldAddParentDirectoriesToCache.Any() ) return new List<string>();
 
 			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
+			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " + 
+				string.Join(",", shouldAddParentDirectoriesToCache));
+			
 			foreach ( var directory in shouldAddParentDirectoriesToCache )
 			{
-				Console.WriteLine($"[[[ {directory} ]]]");
 				var byDirectory = databaseQueryResult.Where(p => p.ParentDirectory == directory).ToList();
 				_query.AddCacheParentItem(directory, byDirectory);
 			}
+			return shouldAddParentDirectoriesToCache; 
 		}
 
 		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
