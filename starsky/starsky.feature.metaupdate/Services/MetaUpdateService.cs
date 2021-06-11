@@ -15,7 +15,6 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
@@ -33,7 +32,6 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
-		private readonly ITelemetryService _telemetryService;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -41,7 +39,7 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IWebLogger logger, ITelemetryService telemetryService = null)
+			IWebLogger logger)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -50,7 +48,6 @@ namespace starsky.feature.metaupdate.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
 			_logger = logger;
-			_telemetryService = telemetryService;
 		}
 
 		/// <summary>
@@ -95,6 +92,9 @@ namespace starsky.feature.metaupdate.Services
 					continue;
 				}
 				
+				_logger.LogError($"Missing in key: {fileIndexItem.FilePath}",
+					new InvalidDataException($"changedFileIndexItemName: " +
+					                         $"{string.Join(",",changedFileIndexItemName)}"));
 				throw new ArgumentException($"Missing in key: {fileIndexItem.FilePath}",
 					nameof(changedFileIndexItemName));
 			}

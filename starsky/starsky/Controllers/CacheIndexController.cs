@@ -1,25 +1,19 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.worker.Services;
-using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.Controllers
 {
     [Authorize]
-    public class ApiController : Controller
+    public class CacheIndexController : Controller
     {
         private readonly IQuery _query;
         private readonly AppSettings _appSettings;
 
-	    public ApiController(
-            IQuery query, IExifTool exifTool, 
-            AppSettings appSettings, IBackgroundTaskQueue queue,
-			ISelectorStorage selectorStorage, IMemoryCache memoryCache)
+	    public CacheIndexController(
+            IQuery query, AppSettings appSettings)
         {
             _appSettings = appSettings;
             _query = query;
@@ -34,7 +28,7 @@ namespace starsky.Controllers
 	    /// <response code="412">"cache disabled in config"</response>
 	    /// <response code="400">ignored, please check if the 'f' path exist or use a folder string to clear the cache</response>
 	    /// <response code="401">User unauthorized</response>
-	    [HttpGet("/api/list-cache")]
+	    [HttpGet("/api/cache/list")]
 	    public IActionResult ListCache(string f = "/")
 	    {
 		    //For folder paths only
