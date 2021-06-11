@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -48,6 +49,52 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
 		}
 
+		[TestMethod]
+		public async Task PushToSockets_ContainsValue()
+		{
+			var socket = new FakeIWebSocketConnectionsService();
+			await new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					socket,
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
 
+			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
+		}
+		
+		
+		[TestMethod]
+		public void FilterBefore_OkShouldPass()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.Ok
+				}});
+
+			Assert.AreEqual(1,result.Count);
+			Assert.AreEqual("/test.jpg",result[0].FilePath);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_NotFoundShouldIgnore()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+				}});
+
+			Assert.AreEqual(0,result.Count);
+		}
 	}
 }

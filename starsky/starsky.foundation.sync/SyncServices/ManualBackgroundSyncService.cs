@@ -53,7 +53,7 @@ namespace starsky.foundation.sync.SyncServices
 			return FileIndexItem.ExifStatus.Ok;
 		}
 
-		private async Task PushToSockets(List<FileIndexItem> updatedList)
+		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 				updatedList,
