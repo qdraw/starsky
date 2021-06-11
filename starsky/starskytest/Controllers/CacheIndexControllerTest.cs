@@ -176,5 +176,49 @@ namespace starskytest.Controllers
 			var actionResult = controller.RemoveCache("/404page") as JsonResult;
 			Assert.AreEqual("cache disabled in config",actionResult.Value);
 		}
+		
+		[TestMethod]
+		public void ListCache_CacheDidNotExist()
+		{
+			// Act
+			var controller = new CacheIndexController(_query,_appSettings);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+	        
+			// Act, remove content from cache
+			var actionResult = controller.ListCache("/cacheDeleteTest2") as BadRequestObjectResult;
+			Assert.AreEqual("ignored, please check if the 'f' path " +
+			                "exist or use a folder string to get the cache", actionResult.Value);
+		}
+		
+		[TestMethod]
+		public void ListCache_CacheDisabled()
+		{
+			var controller = new CacheIndexController(_query,new AppSettings{AddMemoryCache = false});
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			
+			var actionResult = controller.ListCache("/404page") as JsonResult;
+			Assert.AreEqual("cache disabled in config",actionResult.Value);
+		}
+		
+		[TestMethod]
+		public void ListCache_GetCache()
+		{
+			// Act
+			var controller = new CacheIndexController(_query,_appSettings);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+	        
+			_query.AddCacheParentItem("/list-cache", new List<FileIndexItem>{new FileIndexItem
+			{
+				FileName = "cacheDeleteTest2",
+				ParentDirectory = "/list-cache",
+				IsDirectory = true
+			}});
+	        
+			// Act, remove content from cache
+			var actionResult = controller.ListCache("/list-cache") as JsonResult;
+			
+			Assert.IsNotNull(actionResult);
+			Assert.IsNotNull(actionResult.Value);
+		}
 	}
 }
