@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Helpers;
 using starskycore.Interfaces;
@@ -29,18 +30,30 @@ namespace starskytest.Models
 		                                   " <rdf:Description rdf:about=\'\'\n " + " xmlns:pdf=\'http://ns.adobe.com/pdf/1.3/\'>\n  " +
 		                                   "<pdf:Keywords>kamer</pdf:Keywords>\n </rdf:Description>\n</rdf:RDF>\n</x:xmpmeta>\n";
 
-		public Task<bool> WriteTagsAsync(string subPath, string command)
+		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
 			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
 
 			if ( subPath.EndsWith(".xmp") )
 			{
 				var stream = new PlainTextFileHelper().StringToStream(XmpInjection);
-				_iStorage.WriteStream(stream, subPath);
+				await _iStorage.WriteStreamAsync(stream, subPath);
+			}
+			return true;
+		}
+		
+		public async Task<KeyValuePair<bool,string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
+		{
+			Console.WriteLine("Fake ExifTool + " + subPath + " " + command);
+
+			if ( subPath.EndsWith(".xmp") )
+			{
+				var stream = new PlainTextFileHelper().StringToStream(XmpInjection);
+				await _iStorage.WriteStreamAsync(stream, subPath);
 			}
 			
-			
-			return Task.FromResult(true);
+			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(subPath)).Key;
+			return new KeyValuePair<bool, string>(true, newFileHash);
 		}
 
 		public Task<bool> WriteTagsThumbnailAsync(string fileHash, string command)

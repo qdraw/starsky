@@ -11,6 +11,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.SyncInterfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -22,9 +23,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IStorage _subPathStorage;
 		private readonly IConsole _console;
 		private readonly Duplicate _duplicate;
+		private readonly IWebLogger _logger;
 
 		public SyncFolder(AppSettings appSettings, IQuery query, 
-			ISelectorStorage selectorStorage, IConsole console)
+			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
@@ -32,9 +34,11 @@ namespace starsky.foundation.sync.SyncServices
 			_query = query;
 			_console = console;
 			_duplicate = new Duplicate(_query);
+			_logger = logger;
 		}
 
-		public async Task<List<FileIndexItem>> Folder(string inputSubPath)
+		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			var subPaths = new List<string> {inputSubPath};	
 			subPaths.AddRange(_subPathStorage.GetDirectoryRecursive(inputSubPath));
@@ -51,7 +55,7 @@ namespace starsky.foundation.sync.SyncServices
 				var pathsOnDisk = _subPathStorage.GetAllFilesInDirectory(subPath)
 					.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
-				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk);
+				var indexItems = await LoopOverFolder(fileIndexItems, pathsOnDisk, updateDelegate);
 				allResults.AddRange(indexItems);
 
 				var dirItems = (await CheckIfFolderExistOnDisk(fileIndexItems))
@@ -63,7 +67,7 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			// // remove the duplicates from a large list of folders
-			var folderList = await _query.GetObjectsByFilePathAsync(subPaths);
+			var folderList = await _query.GetObjectsByFilePathQueryAsync(subPaths);
 			await _duplicate.RemoveDuplicateAsync(folderList);
 				
 			allResults.Add(await AddParentFolder(inputSubPath));
@@ -71,7 +75,8 @@ namespace starsky.foundation.sync.SyncServices
 		}
 	
 		private async Task<List<FileIndexItem>> LoopOverFolder(IReadOnlyCollection<FileIndexItem> fileIndexItems, 
-			IReadOnlyCollection<string> pathsOnDisk)
+			IReadOnlyCollection<string> pathsOnDisk,
+			ISynchronize.SocketUpdateDelegate updateDelegate)
 		{
 			var fileIndexItemsOnlyFiles = fileIndexItems
 				.Where(p => p.IsDirectory == false).ToList();
@@ -85,8 +90,8 @@ namespace starsky.foundation.sync.SyncServices
 					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
 					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
-						_subPathStorage, _console).SingleFile(subPathInFiles, 
-						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles));
+						_subPathStorage, _logger).SingleFile(subPathInFiles, 
+						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles), updateDelegate);
 					
 					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{

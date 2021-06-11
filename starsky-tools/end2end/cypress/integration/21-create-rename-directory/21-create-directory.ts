@@ -137,7 +137,11 @@ describe('Create Rename Dir', () => {
 
     cy.wait(1000)
 
+    cy.intercept(config.url).as('url')
+
     cy.visit(config.url)
+
+    cy.wait('@url')
 
     // need to wait until the page is loaded
     cy

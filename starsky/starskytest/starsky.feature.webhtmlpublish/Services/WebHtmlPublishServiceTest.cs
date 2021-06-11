@@ -249,7 +249,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 
 		[TestMethod]
-		public void GenerateJpeg_Thumbnail_Test()
+		public async Task GenerateJpeg_Thumbnail_Test()
 		{
 			var appSettings = new AppSettings
 			{
@@ -281,7 +281,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
 
-			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(), 
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
 				Path.DirectorySeparatorChar.ToString());
 			
@@ -290,7 +290,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
-		public void GenerateJpeg_Large_Test()
+		public async Task GenerateJpeg_Large_Test()
 		{
 			var appSettings = new AppSettings
 			{
@@ -323,7 +323,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			var profiles = new PublishPreflight(appSettings, 
 				new ConsoleWrapper()).GetPublishProfileName("default");
 
-			var generateJpeg = service.GenerateJpeg(profiles.FirstOrDefault(), 
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(), 
 				new List<FileIndexItem> {new FileIndexItem("/test.jpg")},
 				Path.DirectorySeparatorChar.ToString());
 			

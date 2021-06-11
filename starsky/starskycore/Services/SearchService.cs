@@ -60,15 +60,15 @@ namespace starskycore.Services
                 return SkipSearchItems(SearchDirect(query),pageNumber);
 
             // Return values from IMemoryCache
-            var queryCacheName = "search-" + query;
+            var querySearchCacheName = "search-" + query;
             
             // Return Cached object if it exist
-            if (_cache.TryGetValue(queryCacheName, out var objectSearchModel))
+            if (_cache.TryGetValue(querySearchCacheName, out var objectSearchModel))
                 return SkipSearchItems(objectSearchModel, pageNumber);
             
             // Try to catch a new object
             objectSearchModel = SearchDirect(query);
-            _cache.Set(queryCacheName, objectSearchModel, new TimeSpan(0,10,0));
+            _cache.Set(querySearchCacheName, objectSearchModel, new TimeSpan(0,10,0));
             return SkipSearchItems(objectSearchModel, pageNumber);
         }
 	    

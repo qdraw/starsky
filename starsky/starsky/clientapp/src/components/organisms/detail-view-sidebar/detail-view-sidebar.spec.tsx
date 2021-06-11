@@ -9,10 +9,7 @@ import {
 } from "../../../interfaces/IConnectionDefault";
 import { IRelativeObjects, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
-import {
-  IFileIndexItem,
-  newIFileIndexItem
-} from "../../../interfaces/IFileIndexItem";
+import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { ClipboardHelper } from "../../../shared/clipboard-helper";
 import { parseDate, parseTime } from "../../../shared/date";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -360,7 +357,7 @@ describe("DetailViewSidebar", () => {
         {
           ...newIConnectionDefault(),
           statusCode: 200,
-          data: [newIFileIndexItem()]
+          data: [{ filePath: "/test.jpg" } as IFileIndexItem]
         }
       );
 

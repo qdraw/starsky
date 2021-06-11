@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -14,14 +15,12 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	[TestClass]
 	public class ExifToolCmdHelperTest
 	{
-		private AppSettings _appSettings;
+		private readonly AppSettings _appSettings;
 
 		public ExifToolCmdHelperTest()
 		{
-       
 			// get the service
 			_appSettings = new AppSettings();
-            
 		}
 
 		[TestMethod]
@@ -97,19 +96,56 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				new FakeIStorage(folderPaths, inputSubPaths, null);
 			var fakeExifTool = new FakeExifTool(storage,_appSettings);
 
-			var helperResult = new ExifToolCmdHelper(fakeExifTool, storage,storage,new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
+			var helperResult = new ExifToolCmdHelper(fakeExifTool, 
+				storage,storage,
+				new FakeReadMeta()).Update(updateModel, inputSubPaths, comparedNames);
             
 			Assert.AreEqual(true,helperResult.Contains("-GPSAltitude=\"-41"));
 			Assert.AreEqual(true,helperResult.Contains("gpsaltituderef#=\"1"));
 
 		}
 
-//        [TestMethod]
-//        public void ExifToolCmdHelper_Quoted()
-//        {
-//            var helperResult = new ExifToolCmdHelper(_appSettings, _exifTool).Quoted(null, "test");
-//            Assert.AreEqual("\"test\"",helperResult.ToString());
-//        }
+		[TestMethod]
+		public async Task CreateXmpFileIsNotExist_NotCreateFile_jpg()
+		{
+			var updateModel = new FileIndexItem
+			{
+				LocationAltitude = -41,
+			};
+			var folderPaths = new List<string>{"/"};
+
+			var inputSubPaths = new List<string>{"/test.jpg"};
+
+			var storage =
+				new FakeIStorage(folderPaths, inputSubPaths, null);
+			var fakeExifTool = new FakeExifTool(storage,_appSettings);
+			await new ExifToolCmdHelper(fakeExifTool, 
+				storage,storage,
+				new FakeReadMeta()).CreateXmpFileIsNotExist(updateModel, inputSubPaths);
+
+			Assert.IsFalse(storage.ExistFile("/test.xmp"));
+		}
+		
+        [TestMethod]
+        public async Task CreateXmpFileIsNotExist_CreateFile_dng()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        LocationAltitude = -41,
+	        };
+	        var folderPaths = new List<string>{"/"};
+
+	        var inputSubPaths = new List<string>{"/test.dng"};
+
+	        var storage =
+		        new FakeIStorage(folderPaths, inputSubPaths, null);
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+	        await new ExifToolCmdHelper(fakeExifTool, 
+		        storage,storage,
+		        new FakeReadMeta()).CreateXmpFileIsNotExist(updateModel, inputSubPaths);
+
+	        Assert.IsTrue(storage.ExistFile("/test.xmp"));
+        }
 
 	    
 

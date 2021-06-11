@@ -15,10 +15,11 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIQuery : IQuery
 	{
-		public FakeIQuery(List<FileIndexItem> fakeContext = null)
+		public FakeIQuery(List<FileIndexItem> fakeContext = null, List<FileIndexItem> fakeCachedContent = null)
 		{
 			if ( fakeContext == null ) return;
 			_fakeContext = fakeContext;
+			_fakeCachedContent = fakeCachedContent;
 		}
 
 		public FakeIQuery(ApplicationDbContext context, 
@@ -28,8 +29,9 @@ namespace starskytest.FakeMocks
 		{
 		}
 		
-		private List<FileIndexItem> _fakeContext = new List<FileIndexItem>();
-		
+		private readonly List<FileIndexItem> _fakeContext = new List<FileIndexItem>();
+		private List<FileIndexItem> _fakeCachedContent = new List<FileIndexItem>();
+
 		public List<FileIndexItem> GetAllFiles(string subPath)
 		{
 			return _fakeContext.Where(p => p.ParentDirectory == subPath && p.IsDirectory == false).ToList();
@@ -142,6 +144,33 @@ namespace starskytest.FakeMocks
 			foreach ( var filePath in filePathList )
 			{
 				result.AddRange(_fakeContext.Where(p=> p.FilePath == filePath));
+			}
+			return Task.FromResult(result);
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths, bool collections)
+		{
+			if ( collections )
+			{
+				return GetObjectsByFilePathCollectionAsync(
+					inputFilePaths.ToList());
+			}
+			return GetObjectsByFilePathAsync(inputFilePaths.ToList());
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(List<string> filePathList)
+		{
+			return GetObjectsByFilePathAsync(filePathList);
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFilePathCollectionAsync(List<string> filePathList)
+		{
+			var result = new List<FileIndexItem>();
+			foreach ( var path in filePathList )
+			{
+				var fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(path);
+				result.AddRange(_fakeContext.Where(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path) 
+					&& p.FileName.StartsWith(fileNameWithoutExtension)));
 			}
 			return Task.FromResult(result);
 		}
@@ -276,6 +305,13 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
+		public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+		{
+			_fakeCachedContent ??= new List<FileIndexItem>();
+			_fakeCachedContent.AddRange(items);
+			return true;
+		}
+
 		public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
 		{
 			Console.WriteLine("CacheUpdateItem is called");
@@ -287,6 +323,18 @@ namespace starskytest.FakeMocks
 
 		public void RemoveCacheItem(FileIndexItem updateStatusContent)
 		{
+		}
+
+		public Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath)
+		{
+			if ( _fakeCachedContent == null )
+			{
+				return new Tuple<bool, List<FileIndexItem>>(false, new List<FileIndexItem>());
+			}
+			
+			var res =
+				_fakeCachedContent.Where(p => p.ParentDirectory == subPath).ToList();
+			return new Tuple<bool, List<FileIndexItem>>(res.Any(), res);
 		}
 
 		public async Task AddParentItemsAsync(string subPath)

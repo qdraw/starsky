@@ -5,7 +5,8 @@ import WsCurrentStart, {
   FireOnError,
   FireOnMessage,
   FireOnOpen,
-  HandleKeepAliveMessage
+  HandleKeepAliveMessage,
+  parseJson
 } from "./ws-current-start";
 import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 
@@ -161,6 +162,24 @@ describe("WsCurrentStart", () => {
       var setKeepAliveTimeSpy = jest.fn();
       HandleKeepAliveMessage(setKeepAliveTimeSpy, { data: '{"data": 1}' });
       expect(setKeepAliveTimeSpy).toBeCalledTimes(0);
+    });
+  });
+
+  describe("parse Json", () => {
+    it("should skip system message", () => {
+      const result = parseJson("[system]");
+      expect(result).toBeNull();
+    });
+
+    it("should skip invalid json", () => {
+      console.error("next json error ->");
+      const result = parseJson("['''''83]");
+      expect(result).toBeNull();
+    });
+
+    it("should parse json", () => {
+      const result = parseJson("83");
+      expect(result).toBe(83);
     });
   });
 });

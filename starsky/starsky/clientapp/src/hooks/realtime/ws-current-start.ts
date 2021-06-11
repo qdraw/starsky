@@ -21,11 +21,21 @@ export const NewWebSocketService = (): WebSocketService => {
   return new WebSocketService(new UrlQuery().UrlRealtime());
 };
 
-function parseJson(data: string): any {
+/**
+ *
+ * @param data
+ * @returns
+ */
+export function parseJson(data: string): any {
+  if (data && data.startsWith("[system]")) {
+    console.log(data);
+    return null;
+  }
   try {
     return JSON.parse(data);
   } catch (error) {
     console.log(error);
+    return null;
   }
 }
 

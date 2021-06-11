@@ -17,6 +17,18 @@ export class FileListCache {
   private timeoutInMinutes = 3;
 
   /**
+   * Remove item by fileName
+   * @param path path
+   */
+  public CacheCleanByPath(path: string) {
+    this.GetAll().forEach((item) => {
+      if (item.name.includes(`f:${path}`)) {
+        sessionStorage.removeItem(item.name);
+      }
+    });
+  }
+
+  /**
    * Set entire list of for a folder
    * @param urlObject params of url
    * @param value object with data
@@ -105,7 +117,8 @@ export class FileListCache {
     return (
       this.cachePrefix +
       `c${urlObject.colorClass};l${urlObject.collections}` +
-      urlObject.f +
+      // should have f:
+      `f:${urlObject.f}` +
       `;s${!urlObject.sort ? SortType.fileName : urlObject.sort}`
     );
   }

@@ -14,7 +14,8 @@
 }
 
 .sidebar-selection li:nth-child(2n) {
-  background-color: #eceff1;
+  background-color: #f5f8fa;
+  /* lighter than Blue Gray 50 ECEFF1*/
 }
 
 @media (prefers-color-scheme: dark) {

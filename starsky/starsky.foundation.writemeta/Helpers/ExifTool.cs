@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
+using MetadataExtractor.Formats.Exif;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Services;
 using starsky.foundation.writemeta.Interfaces;
 using static Medallion.Shell.Shell;
 
@@ -18,16 +22,58 @@ namespace starsky.foundation.writemeta.Helpers
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
+		private readonly IWebLogger _logger;
 
-		public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings)
+		public ExifTool(IStorage sourceStorage, IStorage thumbnailStorage, AppSettings appSettings, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_iStorage = sourceStorage;
 			_thumbnailStorage = thumbnailStorage;
+			_logger = logger;
+		}
+		
+		/// <summary>
+		/// Write commands to ExifTool for ReadStream
+		/// </summary>
+		/// <param name="subPath">the location</param>
+		/// <param name="command">exifTool command line args</param>
+		/// <returns>true=success</returns>
+		public async Task<KeyValuePair<bool, string>> WriteTagsAndRenameThumbnailAsync(string subPath, string command)
+		{
+			var inputStream = _iStorage.ReadStream(subPath);
+			var oldFileHashCodeKeyPair = (await new FileHash(_iStorage).GetHashCodeAsync(subPath));
+			
+			var runner = new StreamToStreamRunner(_appSettings, inputStream);
+			var stream = await runner.RunProcessAsync(command);
+
+			var newHashCode =
+				await RenameThumbnailByStream(oldFileHashCodeKeyPair, stream);
+			
+			// Set stream to begin for use afterwards
+			stream.Seek(0, SeekOrigin.Begin);
+
+			// Need to Dispose for Windows
+			inputStream.Close();
+			return new KeyValuePair<bool, string>(await _iStorage.WriteStreamAsync(stream, subPath), newHashCode);
+		}
+		
+		internal async Task<string> RenameThumbnailByStream(
+			KeyValuePair<string, bool> oldFileHashCodeKeyPair, Stream stream)
+		{
+			if ( !oldFileHashCodeKeyPair.Value ) return string.Empty;
+			byte[] buffer = new byte[FileHash.MaxReadSize];
+			await stream.ReadAsync(buffer, 0, FileHash.MaxReadSize);
+			
+			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
+			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
+
+			_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
+			_logger.LogInformation("[ExifTool] rename   - " + oldFileHashCodeKeyPair.Key + " > " + newHashCode);
+			return newHashCode;
 		}
 
 		/// <summary>
-		/// Write commands to ExifTool for ReadStream (Does NOT work with mono/legacy)
+		/// Write commands to ExifTool for ReadStream
 		/// </summary>
 		/// <param name="subPath">the location</param>
 		/// <param name="command">exifTool command line args</param>
@@ -35,11 +81,12 @@ namespace starsky.foundation.writemeta.Helpers
 		public async Task<bool> WriteTagsAsync(string subPath, string command)
 		{
 			var inputStream = _iStorage.ReadStream(subPath);
+		
 			var runner = new StreamToStreamRunner(_appSettings, inputStream);
 			var stream = await runner.RunProcessAsync(command);
+
 			// Need to Dispose for Windows
 			inputStream.Close();
-			Console.Write("‘");
 			return await _iStorage.WriteStreamAsync(stream, subPath);
 		}
 

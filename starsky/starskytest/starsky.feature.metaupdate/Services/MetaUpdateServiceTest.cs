@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,7 +106,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
 					new FakeIWebLogger())
-				.Update(changedFileIndexItemName,fileIndexResultsList, updateItem, false,false,0);
+				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
@@ -155,7 +156,7 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			new MetaUpdateService(_query,_exifTool, _readMeta, 
 					new FakeSelectorStorage(_iStorageFake), 
 					new FakeMetaPreflight(), new FakeIWebLogger())
-				.Update(null,fileIndexResultsList, toUpdateItem, false,false,0);
+				.Update(null, fileIndexResultsList, toUpdateItem, false,false,0);
 			// Second one is null
 
 			// check for item (Referenced)
@@ -164,69 +165,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual("databaseItem",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
 
 			_query.RemoveItem(databaseItem);
-		}
-		
-		[TestMethod]
-		public void UpdateService_Update_DisabledCache()
-		{
-			_query.AddItem(new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "thisKeywordHasChanged",
-				FileName = "test.jpg",
-				Description = "noChanges",
-				ParentDirectory = "/",
-				Id = 100
-			});
-			
-			var changedFileIndexItemName = new Dictionary<string, List<string>>
-			{
-				{ 
-					"/test.jpg", new List<string>
-					{
-						nameof(FileIndexItem.Tags)
-					} 
-				},
-			};
-			
-			var fileIndexResultsList = new List<FileIndexItem>
-			{
-				new FileIndexItem
-				{
-					Status = FileIndexItem.ExifStatus.Ok,
-					Tags = "initial tags",
-					FileName = "test.jpg",
-					FileHash = "test.jpg",
-					ParentDirectory = "/",
-					Description = "keep",
-				}
-			};
-			
-			var updateItem = new FileIndexItem
-			{
-				Status = FileIndexItem.ExifStatus.Ok,
-				Tags = "?? only used when Caching is disabled",
-				FileName = "test.jpg",
-				FileHash = "test.jpg",
-				Description = "noChanges",
-				ParentDirectory = "/"
-			};
-			
-			var appSettings = new AppSettings{AddMemoryCache = false};
-			var readMetaWithNoCache = new ReadMeta(_iStorageFake,appSettings);
-			
-			new MetaUpdateService(_queryWithoutCache, _exifTool, readMetaWithNoCache, new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(),   
-					new FakeIWebLogger())
-				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
-
-			// db
-			Assert.AreEqual("thisKeywordHasChanged",_query.SingleItem("/test.jpg").FileIndexItem.Tags);
-			
-			Assert.AreEqual("noChanges",_query.SingleItem("/test.jpg").FileIndexItem.Description);
-
-			// need to reload again due tracking changes
-			_queryWithoutCache.RemoveItem(_queryWithoutCache.SingleItem("/test.jpg").FileIndexItem);
 		}
 
 		[TestMethod]
@@ -248,7 +186,9 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+			new MetaUpdateService(_query,_exifTool, _readMeta, 
+					new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),  
 					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
@@ -257,47 +197,20 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
-		public void Update_Exception_MissingInList()
+		public async Task Update_Exception_MissingInList()
 		{
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-
 			var fileIndexResultList = new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
 			};
 			
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+			await new MetaUpdateService(_query,_exifTool, _readMeta, 
+					new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
 					new FakeIWebLogger())
 				.Update(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
 			// expect exception
-		}
-
-		[TestMethod]
-		public void Update_Missing_DataInDbAndTrackException()
-		{
-			var changedFileIndexItemName = new Dictionary<string, List<string>>
-			{
-				{ 
-					"/test.jpg", new List<string>
-					{
-						nameof(FileIndexItem.Tags).ToLowerInvariant()
-					} 
-				},
-			};
-			var fileIndexResultList = new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
-			};
-			
-			var telemetry = new FakeTelemetryService();
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					null, telemetry)
-				.Update(changedFileIndexItemName, fileIndexResultList , 
-					null,false,false,0);
-			
-			Assert.AreEqual("detailView is missing for and NOT Saved: /test.jpg", 
-				telemetry.TrackedExceptions.LastOrDefault().Message);
 		}
 		
 		[TestMethod]
@@ -307,7 +220,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			{
 				"/test.jpg", new List<string>{"orientation"}
 			}};
-
 			_iStorageFake.WriteStream(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
 			var updateItem = new FileIndexItem("/test.jpg")
 			{
@@ -330,6 +242,21 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreNotEqual("test", updateItem.FileHash);
 
 			_query.RemoveItem(updateItem);
+		}
+
+		[TestMethod]
+		public async Task ApplyOrGenerateUpdatedFileHash_Should_Update_WhenNotNull()
+		{
+			var detailView = new DetailView
+			{
+				FileIndexItem = new FileIndexItem("/test.jpg")
+			};
+			await new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
+					new FakeMetaPreflight(),  
+					null)
+				.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView.FileIndexItem);
+			
+			Assert.IsNotNull(detailView.FileIndexItem.FileHash);
 		}
 	}
 }

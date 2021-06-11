@@ -26,17 +26,18 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, _console);
+			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, logger);
 			_syncRemove = new SyncRemove(appSettings, query);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
-		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true)
+		public async Task<List<FileIndexItem>> Sync(string subPath, bool recursive = true,
+			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// Prefix / for database
 			subPath = PathHelper.PrefixDbSlash(subPath);
@@ -45,15 +46,15 @@ namespace starsky.foundation.sync.SyncServices
 			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
-			_console.WriteLine($"Sync {subPath}");
+			_console.WriteLine($"[Synchronize] Sync {subPath}");
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath);
+					return await _syncFolder.Folder(subPath,updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
-					var item = await _syncSingleFile.SingleFile(subPath);
+					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
 					return await _syncRemove.Remove(subPath);

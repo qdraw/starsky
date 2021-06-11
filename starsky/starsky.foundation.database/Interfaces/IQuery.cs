@@ -85,12 +85,22 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
 
         /// <summary>
-        /// Get FirstOrDefault for that filePath list
+        /// Cached result that contain values
         /// </summary>
-        /// <param name="filePathList">subPath style list</param>
-        /// <returns>items</returns>
-        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> filePathList);
+        /// <param name="inputFilePaths">List of filePaths</param>
+        /// <param name="collections">enable implicit raw files with the same base name</param>
+        /// <returns></returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathAsync(List<string> inputFilePaths,
+	        bool collections);
 
+        /// <summary>
+        /// Query direct by filePaths (without cache)
+        /// </summary>
+        /// <param name="filePathList">List of filePaths</param>
+        /// <returns></returns>
+        Task<List<FileIndexItem>> GetObjectsByFilePathQueryAsync(
+	        List<string> filePathList);
+        
         FileIndexItem RemoveItem(FileIndexItem updateStatusContent);
         Task<FileIndexItem> RemoveItemAsync(FileIndexItem updateStatusContent);
 
@@ -130,7 +140,15 @@ namespace starsky.foundation.database.Interfaces
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
-        List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList);
+
+        /// <summary>
+        /// Update parent item with all data from child items
+        /// </summary>
+        /// <param name="directoryName">parent directory</param>
+        /// <param name="items">all items that are in this folder</param>
+        /// <returns>success or not</returns>
+        bool AddCacheParentItem(string directoryName,
+	        List<FileIndexItem> items);
         
         /// <summary>
         /// Cache API within Query to update cached items
@@ -150,6 +168,9 @@ namespace starsky.foundation.database.Interfaces
         /// </summary>
         /// <param name="updateStatusContent">item</param>
         void RemoveCacheItem(FileIndexItem updateStatusContent);
+
+        Tuple<bool, List<FileIndexItem>> CacheGetParentFolder(string subPath);
+        
         
         /// <summary>
         /// Add Sub Path Folder - Parent Folders
@@ -168,3 +189,4 @@ namespace starsky.foundation.database.Interfaces
         void Invoke(ApplicationDbContext applicationDbContext);
     }
 }
+

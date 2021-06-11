@@ -76,25 +76,37 @@ namespace starsky.foundation.database.Query
             return fileIndexItems;
         }
 
+        public Tuple<bool,List<FileIndexItem>> CacheGetParentFolder(string subPath)
+        {
+	        var fallbackResult = new Tuple<bool, List<FileIndexItem>>(false,
+		        new List<FileIndexItem>());
+	        if ( _cache == null || _appSettings?.AddMemoryCache == false )
+		        return fallbackResult;
+	        
+	        // Return values from IMemoryCache
+	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+		        subPath);
 
+	        // ReSharper disable once ConvertIfStatementToReturnStatement
+	        if (_cache.TryGetValue(queryCacheName, out var objectFileFolders))
+		        return new Tuple<bool, List<FileIndexItem>>(true,objectFileFolders as List<FileIndexItem>);
+	        
+	        return fallbackResult;
+        }
         
         private List<FileIndexItem> CacheQueryDisplayFileFolders(string subPath)
         {
             // The CLI programs uses no cache
             if( _cache == null || _appSettings?.AddMemoryCache == false) return QueryDisplayFileFolders(subPath);
-            
-            // Return values from IMemoryCache
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-                subPath);
 
-            if (_cache.TryGetValue(queryCacheName, out var objectFileFolders))
-                return objectFileFolders as List<FileIndexItem>;
+            var (isSuccess, objectFileFolders) = CacheGetParentFolder(subPath);
+
+            if ( isSuccess ) return objectFileFolders;
             
             objectFileFolders = QueryDisplayFileFolders(subPath);
-            
-            _cache.Set(queryCacheName, objectFileFolders, 
-	            new TimeSpan(1,0,0));
-            return (List<FileIndexItem>) objectFileFolders;
+
+            AddCacheParentItem(subPath, objectFileFolders);
+            return objectFileFolders;
         }
 
         internal List<FileIndexItem> QueryDisplayFileFolders(string subPath = "/")

@@ -425,7 +425,7 @@ namespace starsky.feature.import.Services
 		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
 		    {
 			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage));
-			    exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
+			    await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
 		    // Run Exiftool to Update for example colorClass

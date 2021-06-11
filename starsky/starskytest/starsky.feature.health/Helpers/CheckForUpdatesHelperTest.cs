@@ -214,7 +214,7 @@ namespace starskytest.starsky.feature.health.Helpers
 			await new CheckForUpdates(httpClientHelper, 
 				new AppSettings(),memoryCache).IsUpdateNeeded();
 
-			memoryCache.TryGetValue(CheckForUpdates.QueryCacheName, out var cacheResult);
+			memoryCache.TryGetValue(CheckForUpdates.QueryCheckForUpdatesCacheName, out var cacheResult);
 			var results = (( List<ReleaseModel> ) cacheResult);
 
 			Assert.IsNotNull(results);
@@ -232,7 +232,7 @@ namespace starskytest.starsky.feature.health.Helpers
 				.BuildServiceProvider();
 			var memoryCache = provider.GetService<IMemoryCache>();
 
-			memoryCache.Set(CheckForUpdates.QueryCacheName, new List<ReleaseModel>
+			memoryCache.Set(CheckForUpdates.QueryCheckForUpdatesCacheName, new List<ReleaseModel>
 			{
 				new ReleaseModel
 				{

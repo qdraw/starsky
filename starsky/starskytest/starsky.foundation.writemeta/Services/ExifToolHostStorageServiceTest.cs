@@ -8,7 +8,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.foundation.writemeta.Services
 {
 	[TestClass]
-	public class ExifToolHostStorageTest
+	public class ExifToolHostStorageServiceTest
 	{
 		[TestMethod]
 		[ExpectedException(typeof(System.ArgumentException))]
@@ -23,8 +23,26 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
+		}
+		
+		
+		[TestMethod]
+		[ExpectedException(typeof(System.ArgumentException))]
+		public async Task WriteTagsAndRenameThumbnailAsync_NotFound_Exception()
+		{
+			var appSettings = new AppSettings
+			{
+				ExifToolPath = "Z://Non-exist",
+			};
+
+			var fakeStorage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+			
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
+				.WriteTagsAndRenameThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 		
 		[TestMethod]
@@ -40,7 +58,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 				new List<string>{"/test.jpg"}, 
 				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
 			
-			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings)
+			await new ExifToolHostStorageService(new FakeSelectorStorage(fakeStorage), appSettings, new FakeIWebLogger())
 				.WriteTagsThumbnailAsync("/test.jpg","-Software=\"Qdraw 2.0\"");
 		}
 	}

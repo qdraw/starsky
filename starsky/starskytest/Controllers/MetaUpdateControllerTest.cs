@@ -127,12 +127,13 @@ namespace starskytest.Controllers
             
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 	        
-			var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+			var metaPreflight = new MetaPreflight(_query,_appSettings,
+				selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
 				selectorStorage, metaPreflight, new FakeIWebLogger());
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService());
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger());
 
 			var input = new FileIndexItem
 			{
@@ -140,7 +141,11 @@ namespace starskytest.Controllers
 			};
 			var jsonResult = await controller.UpdateAsync(input, createAnImage.DbPath,false,
 				false) as JsonResult;
-			if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
+			if ( jsonResult == null )
+			{
+				Console.WriteLine("json should not be null");
+				throw new NullReferenceException(nameof(jsonResult));
+			}
 			var fileModel = jsonResult.Value as List<FileIndexItem>;
 			//you could not test because exiftool is an external dependency
 
@@ -153,31 +158,32 @@ namespace starskytest.Controllers
 		{
 			await _query.AddItemAsync(new FileIndexItem
 			{
-				FileName = "345678765434567.jpg",
+				FileName = "ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg",
 				ParentDirectory = "/",
-				FileHash = "345678765434567"
+				FileHash = "ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool"
 			});
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-			var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+			var metaPreflight = new MetaPreflight(_query,
+				_appSettings,selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
 				selectorStorage, metaPreflight, new FakeIWebLogger());
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService())
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
 			var testElement = new FileIndexItem();
-			var notFoundResult = await controller.UpdateAsync(testElement, "/345678765434567.jpg",
+			var notFoundResult = await controller.UpdateAsync(testElement, "/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg",
 				false,false) as NotFoundObjectResult;
 			if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
 
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
-			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem("/ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool.jpg").FileIndexItem);
 		}
 
 		[TestMethod]
@@ -191,13 +197,14 @@ namespace starskytest.Controllers
 			});
 			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
 
-			var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+			var metaPreflight = new MetaPreflight(_query,
+				_appSettings,selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
 				metaPreflight, new FakeIWebLogger());
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 	        
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService())
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -224,12 +231,13 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test09.jpg"}));
 	        
-			var metaPreflight = new MetaPreflight(_query,_appSettings,selectorStorage);
+			var metaPreflight = new MetaPreflight(_query,
+				_appSettings,selectorStorage,new FakeIWebLogger());
 			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
 				metaPreflight, new FakeIWebLogger());
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage);
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
-				new FakeIWebSocketConnectionsService());
+				new FakeIWebSocketConnectionsService(), new FakeIWebLogger());
 
 			var jsonResult =  controller.Replace("/test09.jpg","Tags", "test", 
 				string.Empty) as JsonResult;
@@ -248,13 +256,16 @@ namespace starskytest.Controllers
 		{
 			var fakeFakeIWebSocketConnectionsService =
 				new FakeIWebSocketConnectionsService();
-			var controller = new MetaUpdateController(new FakeMetaPreflight(),new FakeIMetaUpdateService(), 
-				new FakeIMetaReplaceService(), new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+			var controller = new MetaUpdateController(new FakeMetaPreflight(),
+				new FakeIMetaUpdateService(), 
+				new FakeIMetaReplaceService(), new FakeIBackgroundTaskQueue(), 
+				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 			await controller.UpdateAsync(new FileIndexItem(), "/test09.jpg",
 				true);
 
-			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+			Assert.AreEqual(1,fakeFakeIWebSocketConnectionsService
+				.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 		}
         
 		[TestMethod]
@@ -267,7 +278,7 @@ namespace starskytest.Controllers
 				{
 					Status = FileIndexItem.ExifStatus.Ok
 				}}), 
-				new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+				new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 			controller.Replace("/test09.jpg", "tags", "test", "");
 
@@ -284,7 +295,7 @@ namespace starskytest.Controllers
 				{
 					Status = FileIndexItem.ExifStatus.OperationNotSupported
 				}}), 
-				new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService);
+				new FakeIBackgroundTaskQueue(), fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
 			controller.Replace("/test09.jpg", "tags", "test", "");
 

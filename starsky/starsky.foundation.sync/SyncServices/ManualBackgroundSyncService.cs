@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +32,7 @@ namespace starsky.foundation.sync.SyncServices
 			_cache = cache;
 		}
 
-		internal const string QueryCacheName = "ManualSync_";
+		internal const string ManualSyncCacheName = "ManualSync_";
 		
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
 		{
@@ -40,10 +42,10 @@ namespace starsky.foundation.sync.SyncServices
 				return FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			}
 
-			if (_cache.TryGetValue(QueryCacheName + subPath, out _))
+			if (_cache.TryGetValue(ManualSyncCacheName + subPath, out _))
 				return FileIndexItem.ExifStatus.OperationNotSupported;
 
-			_cache.Set(QueryCacheName + subPath, true, 
+			_cache.Set(ManualSyncCacheName + subPath, true, 
 				new TimeSpan(0,2,0));
 			
 			await Task.Factory.StartNew(() => BackgroundTask(fileIndexItem.FilePath));
@@ -51,13 +53,29 @@ namespace starsky.foundation.sync.SyncServices
 			return FileIndexItem.ExifStatus.Ok;
 		}
 
+		internal async Task PushToSockets(List<FileIndexItem> updatedList)
+		{
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
+				updatedList,
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+		}
+
 		internal async Task BackgroundTask(string subPath)
 		{
-			var updatedList = await _synchronize.Sync(subPath, false);
-			_query.CacheUpdateItem(updatedList);
-			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
-				DefaultJsonSerializer.CamelCase), CancellationToken.None);
-			_cache.Remove(QueryCacheName + subPath);
+			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
+			_query.CacheUpdateItem(FilterBefore(updatedList));
+			
+			// so you can click on the button again
+			_cache.Remove(ManualSyncCacheName + subPath);
+		}
+		
+		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
+		{
+			return syncData.Where(p =>
+				p.Status == FileIndexItem.ExifStatus.Ok ||
+				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
+				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing ||
+				p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
 		}
 	}
 }

@@ -31,7 +31,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 			_cache = cache;
 		}
 		
-		internal const string QueryCacheName = "CheckForUpdates";
+		internal const string QueryCheckForUpdatesCacheName = "CheckForUpdates";
 
 		/// <summary>
 		/// 
@@ -50,12 +50,12 @@ namespace starsky.feature.health.UpdateCheck.Services
 			if( _cache == null || _appSettings?.AddMemoryCache == false) 
 				return Parse(await QueryIsUpdateNeededAsync(),currentVersion);
 
-			if ( _cache.TryGetValue(QueryCacheName, out var cacheResult) )
+			if ( _cache.TryGetValue(QueryCheckForUpdatesCacheName, out var cacheResult) )
 				return Parse(( List<ReleaseModel> ) cacheResult, currentVersion);
 
 			cacheResult = await QueryIsUpdateNeededAsync();
 
-			_cache.Set(QueryCacheName, cacheResult, 
+			_cache.Set(QueryCheckForUpdatesCacheName, cacheResult, 
 			new TimeSpan(48,0,0));
 
 			return Parse(( List<ReleaseModel> ) cacheResult,currentVersion);

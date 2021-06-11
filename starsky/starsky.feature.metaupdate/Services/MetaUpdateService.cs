@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -13,11 +15,11 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.webtelemetry.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starsky.foundation.writemeta.JsonService;
 using ExifToolCmdHelper = starsky.foundation.writemeta.Helpers.ExifToolCmdHelper;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.feature.metaupdate.Services
 {
 	[Service(typeof(IMetaUpdateService), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -30,7 +32,6 @@ namespace starsky.feature.metaupdate.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IWebLogger _logger;
-		private readonly ITelemetryService _telemetryService;
 
 		public MetaUpdateService(
 			IQuery query,
@@ -38,7 +39,7 @@ namespace starsky.feature.metaupdate.Services
 			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IWebLogger logger, ITelemetryService telemetryService = null)
+			IWebLogger logger)
 		{
 			_query = query;
 			_exifTool = exifTool;
@@ -47,58 +48,54 @@ namespace starsky.feature.metaupdate.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_metaPreflight = metaPreflight;
 			_logger = logger;
-			_telemetryService = telemetryService;
 		}
 
 		/// <summary>
 		/// Run Update
 		/// </summary>
 		/// <param name="changedFileIndexItemName">Per file stored  string{fileHash},
-		/// List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
+		///     List*string*{FileIndexItem.name (e.g. Tags) that are changed}</param>
 		/// <param name="fileIndexResultsList">items stored in the database</param>
 		/// <param name="inputModel">(only used when cache is disabled)
-		/// This model is overwritten in the database and ExifTool</param>
+		///     This model is overwritten in the database and ExifTool</param>
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public List<FileIndexItem> Update(Dictionary<string, List<string>> changedFileIndexItemName, 
+		public async Task<List<FileIndexItem>> Update(
+			Dictionary<string,List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
-			FileIndexItem inputModel, 
-			bool collections, bool append, int rotateClock)
+			FileIndexItem inputModel, // only when changedFileIndexItemName = null
+			bool collections, bool append, // only when changedFileIndexItemName = null
+			int rotateClock) // <- this one is needed
 		{
 			if ( changedFileIndexItemName == null )
 			{
-				changedFileIndexItemName = _metaPreflight.Preflight(inputModel,
+				changedFileIndexItemName = (await _metaPreflight.Preflight(inputModel,
 					fileIndexResultsList.Select(p => p.FilePath).ToArray(), append, collections,
-					rotateClock).changedFileIndexItemName;
+					rotateClock)).changedFileIndexItemName;
 			}
+			
 			var updatedItems = new List<FileIndexItem>();
-			var collectionsDetailViewList = fileIndexResultsList.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
-			                                                                || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
-			foreach ( var item in collectionsDetailViewList )
+			var fileIndexItemList = fileIndexResultsList
+				.Where(p => p.Status == FileIndexItem.ExifStatus.Ok 
+				            || p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+				
+			foreach ( var fileIndexItem in fileIndexItemList )
 			{
-				// need to recheck because this process is async, so in the meanwhile there are changes possible
-				var detailView = _query.SingleItem(item.FilePath, null, collections, false);
-
-				if ( detailView != null && changedFileIndexItemName.ContainsKey(item.FilePath) )
+				if (changedFileIndexItemName.ContainsKey(fileIndexItem.FilePath) )
 				{
 					// used for tracking differences, in the database/ExifTool compare
-					var comparedNamesList = changedFileIndexItemName[item.FilePath];
+					var comparedNamesList = changedFileIndexItemName[fileIndexItem.FilePath];
 
-					UpdateWriteDiskDatabase(detailView, comparedNamesList, rotateClock);
-					updatedItems.Add(detailView.FileIndexItem);
+					await UpdateWriteDiskDatabase(fileIndexItem, comparedNamesList, rotateClock);
+					updatedItems.Add(fileIndexItem);
 					continue;
 				}
-
-				if ( detailView == null && changedFileIndexItemName.ContainsKey(item.FilePath) )
-				{
-					_telemetryService?.TrackException(
-						new InvalidDataException("detailView is missing for and NOT Saved: " +
-						                         item.FilePath));
-					continue;
-				}
-
-				throw new ArgumentException($"Missing in key: {item.FilePath}",
+				
+				_logger.LogError($"Missing in key: {fileIndexItem.FilePath}",
+					new InvalidDataException($"changedFileIndexItemName: " +
+					                         $"{string.Join(",",changedFileIndexItemName)}"));
+				throw new ArgumentException($"Missing in key: {fileIndexItem.FilePath}",
 					nameof(changedFileIndexItemName));
 			}
 
@@ -113,56 +110,61 @@ namespace starsky.feature.metaupdate.Services
 		/// <summary>
 		/// Update ExifTool, Thumbnail, Database and if needed rotateClock
 		/// </summary>
-		/// <param name="detailView">output database object</param>
+		/// <param name="fileIndexItem">output database object</param>
 		/// <param name="comparedNamesList">name of fields updated by exifTool</param>
 		/// <param name="rotateClock">rotation value (if needed)</param>
-		private void UpdateWriteDiskDatabase(DetailView detailView, List<string> comparedNamesList, int rotateClock = 0)
+		private async Task UpdateWriteDiskDatabase(FileIndexItem fileIndexItem, List<string> comparedNamesList, int rotateClock = 0)
 		{
-			var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
-					
-			// feature to exif update
-			var exifUpdateFilePaths = new List<string>
-			{
-				detailView.FileIndexItem.FilePath           
-			};
-			
 			// do rotation on thumbs
-			RotationThumbnailExecute(rotateClock, detailView.FileIndexItem);
+			RotationThumbnailExecute(rotateClock, fileIndexItem);
 
-			if ( detailView.FileIndexItem.IsDirectory != true 
-			     && ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem.FileName) )
+			if ( fileIndexItem.IsDirectory != true 
+			     && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
 			{
+				// feature to exif update
+				var exifUpdateFilePaths = new List<string>
+				{
+					fileIndexItem.FilePath           
+				};
+				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
+				
 				// Do an Exif Sync for all files, including thumbnails
-				var exifResult = exifTool.Update(detailView.FileIndexItem, 
-					exifUpdateFilePaths, comparedNamesList);
-				_logger?.LogInformation($"UpdateWriteDiskDatabase: {exifResult}");
+				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(fileIndexItem, 
+					exifUpdateFilePaths, comparedNamesList,true, true);
+
+				await ApplyOrGenerateUpdatedFileHash(newFileHashes, fileIndexItem);
+				_logger.LogInformation(string.IsNullOrEmpty(exifResult)
+					? $"[UpdateWriteDiskDatabase] ExifTool result is Nothing or " +
+					  $"Null for: path:{fileIndexItem.FilePath} {DateTime.UtcNow.ToShortTimeString()}"
+					: $"[UpdateWriteDiskDatabase] ExifTool result: {exifResult} path:{fileIndexItem.FilePath}");
 			}
 			else
 			{
-				new FileIndexItemJsonParser(_iStorage).Write(detailView.FileIndexItem);
+				await new FileIndexItemJsonParser(_iStorage).WriteAsync(fileIndexItem);
 			}
 
-			if ( detailView.FileIndexItem.IsDirectory != true )
-			{
-				// change thumbnail names after the original is changed
-				var newFileHash = new FileHash(_iStorage).GetHashCode(detailView.FileIndexItem.FilePath).Key;
-
-				if ( _thumbnailStorage.ExistFile(detailView.FileIndexItem.FileHash) )
-				{
-					_thumbnailStorage.FileMove(detailView.FileIndexItem.FileHash, newFileHash);
-				}
-				
-				// Update the hash in the database
-				detailView.FileIndexItem.FileHash = newFileHash;
-			}
-			
 			// Do a database sync + cache sync
-			_query.UpdateItem(detailView.FileIndexItem);
+			// Clone to avoid reference when cache exist
+			await _query.UpdateItemAsync(fileIndexItem.Clone());
 			
 			// > async > force you to read the file again
 			// do not include thumbs in MetaCache
 			// only the full path url of the source image
-			_readMeta.RemoveReadMetaCache(detailView.FileIndexItem.FilePath);		
+			_readMeta.RemoveReadMetaCache(fileIndexItem.FilePath);		
+		}
+
+		internal async Task ApplyOrGenerateUpdatedFileHash(List<string> newFileHashes, FileIndexItem fileIndexItem)
+		{
+			if ( !string.IsNullOrWhiteSpace(newFileHashes.FirstOrDefault()))
+			{
+				fileIndexItem.FileHash = newFileHashes.FirstOrDefault();
+				_logger.LogInformation($"use fileHash from exiftool {fileIndexItem.FileHash}");
+				return;
+			}
+			// when newFileHashes is null or string.empty
+			var newFileHash = (await new FileHash(_iStorage).GetHashCodeAsync(fileIndexItem.FilePath)).Key;
+			_thumbnailStorage.FileMove(fileIndexItem.FileHash, newFileHash);
+			fileIndexItem.FileHash = newFileHash;
 		}
 
 		/// <summary>

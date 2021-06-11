@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -15,6 +16,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Query
 {
@@ -101,15 +103,15 @@ namespace starsky.foundation.database.Query
 		    if( !IsCacheEnabled() ) return QueryGetItemByHash(fileHash);
             
 		    // Return values from IMemoryCache
-		    var queryCacheName = CachingDbName("hashList", fileHash);
+		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryCacheName, out var cachedSubpath) 
+		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubpath) 
 		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
 
 		    cachedSubpath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryCacheName, cachedSubpath, new TimeSpan(48,0,0));
+		    _cache.Set(queryHashListCacheName, cachedSubpath, new TimeSpan(48,0,0));
 		    return (string) cachedSubpath;
 		}
 
@@ -282,7 +284,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        var items =  await GetObjectsByFilePathAsync(updateStatusContentList
+			        var items =  await GetObjectsByFilePathQueryAsync(updateStatusContentList
 				        .Select(p => p.FilePath).ToList());
 			        _logger?.LogInformation($"double error UCL:{updateStatusContentList.Count} Count: {items.Count}", e);
 			        return updateStatusContentList;
@@ -298,14 +300,31 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-	        // InvalidOperationException: A second operation started on this context before a previous operation completed.
-	        // https://go.microsoft.com/fwlink/?linkid=2097913
-	        await Task.Delay(10);
-	        _logger?.LogInformation("Retry Exception", e);
-	        var context = new InjectServiceScope(_scopeFactory).Context();
-	        context.Attach(updateStatusContent).State = EntityState.Modified;
-	        await context.SaveChangesAsync();
-	        context.Attach(updateStatusContent).State = EntityState.Detached; 
+	        try
+	        {
+		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
+		        // https://go.microsoft.com/fwlink/?linkid=2097913
+		        await Task.Delay(5);
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        context.Attach(updateStatusContent).State = EntityState.Modified;
+		        await context.SaveChangesAsync();
+		        context.Attach(updateStatusContent).State = EntityState.Detached; 
+	        }
+	        catch ( DbUpdateConcurrencyException concurrencyException)
+	        {
+		        SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+		        try
+		        {
+			        _logger?.LogInformation("[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
+			        var context = new InjectServiceScope(_scopeFactory).Context();
+			        await context.SaveChangesAsync();
+		        }
+		        catch ( DbUpdateConcurrencyException retry2Exception)
+		        {
+			        _logger?.LogInformation(retry2Exception, 
+				        "[RetrySaveChangesAsync] save failed after DbUpdateConcurrencyException");
+		        }
+	        }
         }
         
         /// <summary>
@@ -466,6 +485,7 @@ namespace starsky.foundation.database.Query
 	    }
 
 	    /// <summary>
+	    /// Add child item to parent cache
 	    /// Private api within Query to add cached items
 	    /// Assumes that the parent directory already exist in the cache
 	    /// @see: AddCacheParentItem to add parent item
@@ -499,13 +519,19 @@ namespace starsky.foundation.database.Query
         {
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
+            var skippedCacheItems = new HashSet<string>();
 			foreach (var item in updateStatusContent.ToList())
 			{
 				// ToList() > Collection was modified; enumeration operation may not execute.
 				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
 					item.ParentDirectory);
-				
-				if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
+
+				if ( !_cache.TryGetValue(queryCacheName,
+					out var objectFileFolders) )
+				{
+					skippedCacheItems.Add(item.ParentDirectory);
+					continue;
+				}
 				
 				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
@@ -513,7 +539,7 @@ namespace starsky.foundation.database.Query
 				displayFileFolders = displayFileFolders.ToList();
 				
 				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
-				if (obj == null) return;
+				if (obj == null) continue;
 				displayFileFolders.Remove(obj);
 				// Add here item to cached index
 				displayFileFolders.Add(item);
@@ -526,6 +552,12 @@ namespace starsky.foundation.database.Query
 				_cache.Remove(queryCacheName);
 				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
 			}
+
+			if ( skippedCacheItems.Any() )
+			{
+				_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+			}
+			
         }
 
         /// <summary>
@@ -592,7 +624,7 @@ namespace starsky.foundation.database.Query
         /// </summary>
         /// <param name="directoryName">the path of the directory (there is no parent generation)</param>
         /// <param name="items">the items in the folder</param>
-        internal bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
+        public bool AddCacheParentItem(string directoryName, List<FileIndexItem> items)
         {
 	        // Add protection for disabled caching
 	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
