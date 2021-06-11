@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Xmp;
@@ -13,6 +14,7 @@ using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.storage.Interfaces;
 using Directory = MetadataExtractor.Directory;
 
+[assembly: InternalsVisibleTo("starsky.foundation.metathumbnail.Services")]
 namespace starsky.foundation.readmeta.Services
 {
 	public class ReadMetaExif
@@ -126,7 +128,7 @@ namespace starsky.foundation.readmeta.Services
                 }
                 
                 // Orientation of image
-                var orientation = GetOrientation(exifItem);
+                var orientation = GetOrientationFromExifItem(exifItem);
                 if (orientation != FileIndexItem.Rotation.DoNotChange)
                 {
                     item.Orientation = orientation;
@@ -227,7 +229,7 @@ namespace starsky.foundation.readmeta.Services
 			return ExtensionRolesHelper.ImageFormat.unknown;
 		}
 
-		private FileIndexItem.Rotation GetOrientation(MetadataExtractor.Directory exifItem)
+		public FileIndexItem.Rotation GetOrientationFromExifItem(Directory exifItem)
         {
             var tCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Orientation");
             if (tCounts < 1) return FileIndexItem.Rotation.DoNotChange;

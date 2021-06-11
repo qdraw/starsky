@@ -116,7 +116,9 @@ namespace starsky.feature.webhtmlpublish.Services
 			sourceImage.Mutate(x => x.DrawImage(overlayImage, new Point(xPoint, yPoint), 1F));
 
 			sourceImage.SaveAsJpeg(outputStream);
-			_hostFileSystem.WriteStream(outputStream, outputSubPath);
+			outputStream.Seek(0, SeekOrigin.Begin);
+
+			_hostFileSystem.WriteStreamAsync(outputStream, outputSubPath);
 		}
 	}
 }

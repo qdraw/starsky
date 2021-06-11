@@ -521,7 +521,7 @@ namespace starsky.foundation.database.Models
 		[JsonConverter(typeof(StringEnumConverter))]
 #endif
 		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
-
+		
 		/// <summary>
 		/// Exit Rotation values
 		/// </summary>

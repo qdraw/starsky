@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.readmeta.MetaThumbnail;
+using starsky.foundation.metathumbnail.Services;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -46,6 +46,25 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				.ReadExifFromFile2("/data/scripts/__starsky/2021_02_07 performance sneeuw/20210207_112755_DSC04053.jpg");
 			Console.WriteLine();
 		}
+		
+		[TestMethod]
+		public async Task Test3()
+		{
+			
+			await new ReadMetaThumbnail(new FakeSelectorStorage(new StorageHostFullPathFilesystem()), new FakeIWebLogger())
+				.ReadExifFromFile2("/data/scripts/__starsky/00_demo/20210530_140259_DSC03138.jpg");
+			Console.WriteLine();
+		}
+		
+		[TestMethod]
+		public async Task Test4()
+		{
+			
+			await new ReadMetaThumbnail(new FakeSelectorStorage(new StorageHostFullPathFilesystem()), new FakeIWebLogger())
+				.ReadExifFromFile2("/data/scripts/__starsky/00_demo/20201005_155330_DSC05634.jpg");
+			Console.WriteLine();
+		}
+		
 		
 	}
 }

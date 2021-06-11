@@ -1,27 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.readmeta.Models;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
-using Directory = MetadataExtractor.Directory;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
+using starsky.foundation.database.Models;
 using starsky.foundation.metathumbnail.Helpers;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.readmeta.MetaThumbnail
+namespace starsky.foundation.metathumbnail.Services
 {
 	public class ReadMetaThumbnail
 	{
@@ -34,7 +28,7 @@ namespace starsky.foundation.readmeta.MetaThumbnail
 			_logger = logger;
 		}
 
-		private (ExifThumbnailDirectory, int, int) GetExifMetaDirectories(string subPath)
+		private (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(string subPath)
 		{
 			using ( var stream = _iStorage.ReadStream(subPath) )
 			{
@@ -47,6 +41,9 @@ namespace starsky.foundation.readmeta.MetaThumbnail
 				var jpegTags = allExifItems.FirstOrDefault(p =>
 						p.Name == "JPEG")?.Tags;
 
+				var rotation = new ReadMetaExif(null).GetOrientationFromExifItem(
+					allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
+					
 				int.TryParse(
 					jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
 						.Description.Replace(" pixels",string.Empty), out var height);
@@ -54,7 +51,7 @@ namespace starsky.foundation.readmeta.MetaThumbnail
 				int.TryParse(
 					jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
 						.Description.Replace(" pixels",string.Empty), out var width);
-				return (exifThumbnailDir, width, height);
+				return (exifThumbnailDir, width, height, rotation);
 			}
 		}
 
@@ -94,10 +91,18 @@ namespace starsky.foundation.readmeta.MetaThumbnail
 			};
 		}
 
-		
+		private float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
+		{
+			float degrees = rotation switch
+			{
+				FileIndexItem.Rotation.Rotate180 => 180,
+				FileIndexItem.Rotation.Rotate90Cw => -90,
+				FileIndexItem.Rotation.Rotate270Cw => 270,
+				_ => 0
+			};
+			return degrees;
+		}
 
-		
- 
 		public async Task ReadExifFromFile2(string subPath)
 		{
 			var first50BytesStream = _iStorage.ReadStream(subPath,50);
@@ -108,35 +113,30 @@ namespace starsky.foundation.readmeta.MetaThumbnail
 				return;
 			}
 			
-			var (exifThumbnailDir, sourceWidth, sourceHeight) = GetExifMetaDirectories(subPath);
+			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = GetExifMetaDirectories(subPath);
 			var offsetData = GetOffset(exifThumbnailDir, subPath);
 			
 			
 			using (var thumbnailStream = new MemoryStream(offsetData.Data, offsetData.Index, offsetData.Count ))
+			using ( var smallImage = await Image.LoadAsync(thumbnailStream) )
+			using ( var outputStream  = new MemoryStream() )
 			{
-				// await _iStorage.WriteStreamAsync(thumbnailStream, "/temp/test.jpg");
 
+				var smallImageWidth = smallImage.Width;
+				var smallImageHeight = smallImage.Height;
+
+				var result = NewImageSize.NewImageSizeCalc(smallImageWidth,
+					smallImageHeight, sourceWidth, sourceHeight);
+
+				smallImage.Mutate(
+					i => i.Resize(smallImageWidth, smallImageHeight)
+						.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth, result.DestHeight)));
+
+					smallImage.Mutate(i => i.Rotate(RotateEnumToDegrees(rotation)));
 				
-				using ( var smallImage = Image.Load(thumbnailStream, out var format) )
-				{
-
-					var result = NewImageSize.NewImageSizeCalc(smallImage.Width,
-						smallImage.Height, sourceWidth, sourceHeight);
-
-
-					Console.WriteLine();
-				// 	
-				// 	// sourceWidth, sourceHeight
-				// 		
-				// 	// smallImage.Height
-				// 	// smallImage.Mutate(
-				// 	// 	i => i.Resize(width, height)
-				// 	// 		.Crop(new Rectangle(x, y, cropWidth, cropHeight)));
-				// 	//
-				// 	var outputStream = new MemoryStream();
-				// 		
-				// 	await smallImage.SaveAsync(outputStream, format);
-				}
+				await smallImage.SaveAsJpegAsync(outputStream);
+				
+				await _iStorage.WriteStreamAsync(outputStream, "/temp/test.jpg");
 			}
 
 		}
