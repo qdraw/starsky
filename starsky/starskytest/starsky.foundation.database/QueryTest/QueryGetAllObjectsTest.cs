@@ -136,7 +136,16 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/GetAllObjects_multi_02/test.jpg", items[1].FilePath);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, items[1].Status);
 		}
-		
+
+		[TestMethod]
+		public async Task GetAllObjectsAsync_NoParameters()
+		{
+			var query = new Query(null);
+
+			var result= await query.GetAllObjectsAsync(new List<string>());
+			Assert.AreEqual(0,result.Count);
+		}
+
 		[TestMethod]
 		public async Task GetAllObjectsAsync_DisposedItem()
 		{
