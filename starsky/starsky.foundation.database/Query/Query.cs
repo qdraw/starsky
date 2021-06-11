@@ -73,23 +73,13 @@ namespace starsky.foundation.database.Query
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
 		/// <returns>FileIndex-objects with database data</returns>
-		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(
+			string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
-			async Task<FileIndexItem> LocalQuery(ApplicationDbContext context)
-			{
-				return await context.FileIndex.FirstOrDefaultAsync(p => p.FilePath == filePath);
-			}
-			
-			try
-			{
-				return await LocalQuery(_context);
-			}
-			catch (ObjectDisposedException e)
-			{
-				_logger?.LogInformation("[GetObjectByFilePathAsync] catch-ed ObjectDisposedException", e);
-				return await LocalQuery(new InjectServiceScope(_scopeFactory).Context());
-			}
+
+			var paths = new List<string> {filePath};
+			return (await GetObjectsByFilePathQueryAsync(paths)).FirstOrDefault();
 		}
 	    
 		/// <summary>
