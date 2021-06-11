@@ -91,7 +91,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeMemoryCache(new Dictionary<string, object>()))
 				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
-					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				}});
 
 			Assert.AreEqual(0,result.Count);
