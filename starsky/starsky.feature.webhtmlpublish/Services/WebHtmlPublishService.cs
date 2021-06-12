@@ -66,7 +66,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    fileIndexItemsList = AddFileHashIfNotExist(fileIndexItemsList);
 			    
 		    PreGenerateThumbnail(fileIndexItemsList);
-		    var base64ImageArray = Base64DataUriList(fileIndexItemsList);
+		    var base64ImageArray = await Base64DataUriList(fileIndexItemsList);
 		    
 		    var copyContent = await Render(fileIndexItemsList, base64ImageArray, 
 			    publishProfileName, itemName, outputParentFullFilePathFolder, moveSourceFiles);
@@ -97,7 +97,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    /// Get base64 uri lists 
 	    /// </summary>
 	    /// <returns></returns>
-	    private string[] Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
+	    private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
 		    return new ToBase64DataUriList(_subPathStorage, _thumbnailStorage).Create(fileIndexItemsList.ToList());
 	    }

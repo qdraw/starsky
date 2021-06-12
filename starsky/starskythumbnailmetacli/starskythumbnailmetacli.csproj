@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <!-- SonarQube needs this -->
+        <ProjectGuid>{a0cce905-ae43-4d1b-a97a-2bcd2c010ed1}</ProjectGuid>
+        <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
+        <RootNamespace>starskythumbnailmetacli</RootNamespace>
+        <Version>0.4.9</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
+      <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+</Project>

@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
+
 namespace starsky.foundation.thumbnailgeneration.Interfaces
 {
 	public interface IThumbnailService
 	{
-		bool CreateThumb(string subPath);
-		bool CreateThumb(string subPath, string fileHash);
+		Task<bool> CreateThumb(string subPath);
+		Task<bool> CreateThumb(string subPath, string fileHash);
 	}
 }

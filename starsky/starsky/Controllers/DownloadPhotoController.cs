@@ -107,7 +107,7 @@ namespace starsky.Controllers
 			                .FileHash // not loading it from disk to make it faster
                 };
                 
-                var isCreateAThumb = new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                var isCreateAThumb = await new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
                 if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;

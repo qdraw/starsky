@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
+using starsky.foundation.metathumbnail.Const;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -23,8 +24,60 @@ namespace starsky.Controllers
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		}
-		
-        /// <summary>
+
+		/// <summary>
+		/// Get thumbnail with fallback to original source image.
+		/// Return source image when IsExtensionThumbnailSupported is true
+		/// </summary>
+		/// <param name="f">one single file</param>
+		/// <param name="isSingleItem">true = load original</param>
+		/// <param name="json">text as output</param>
+		/// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
+		/// <response code="200">returns content of the file or when json is true, "OK"</response>
+		/// <response code="204">thumbnail is corrupt</response>
+		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
+		/// <response code="404">item not found on disk</response>
+		/// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
+		/// <response code="209">"Thumbnail is not ready yet"</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpGet("/api/thumbnail/index/{f}")]
+		[ProducesResponseType(200)] // file
+		[ProducesResponseType(204)] // thumbnail is corrupt
+		[ProducesResponseType(
+			400)] // string (f) input not allowed to avoid path injection attacks
+		[ProducesResponseType(404)] // not found
+		[ProducesResponseType(210)] // raw
+		[ProducesResponseType(209)] // "Thumbnail is not ready yet"
+		[IgnoreAntiforgeryToken]
+		[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
+		[ResponseCache(Duration = 29030400)] // 4 weeks
+		public async Task<IActionResult> ThumbnailFromIndex(string f)
+		{
+			f = FilenamesHelper.GetFileNameWithoutExtension(f);
+			
+			// Restrict the fileHash to letters and digits only
+			// I/O function calls should not be vulnerable to path injection attacks
+			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+			{
+				return BadRequest();
+			}
+
+			if ( _thumbnailStorage.ExistFile(f + ThumbnailAppend.Text) )
+			{
+				var stream = _thumbnailStorage.ReadStream(f+ ThumbnailAppend.Text);
+				return File(stream, "image/jpeg");
+			}
+
+			if ( !_thumbnailStorage.ExistFile(f) )
+			{
+				return NotFound("hash not found");
+			}
+
+			var stream1000Px = _thumbnailStorage.ReadStream(f);
+			return File(stream1000Px, "image/jpeg");
+		}
+
+		/// <summary>
         /// Get thumbnail with fallback to original source image.
         /// Return source image when IsExtensionThumbnailSupported is true
         /// </summary>

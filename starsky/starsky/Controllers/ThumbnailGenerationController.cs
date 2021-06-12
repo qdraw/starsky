@@ -58,7 +58,7 @@ namespace starsky.Controllers
 		{
 			try
 			{
-				new Thumbnail(subPathStorage, thumbnailStorage).CreateThumb(subPath);
+				await new Thumbnail(subPathStorage, thumbnailStorage).CreateThumb(subPath);
 			}
 			catch ( UnauthorizedAccessException e )
 			{

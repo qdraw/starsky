@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -18,14 +19,14 @@ namespace starsky.feature.webhtmlpublish.Helpers
 			_thumbnailStorage = thumbnailStorage;
 		}
 		
-		public string[] Create(List<FileIndexItem> fileIndexList)
+		public async Task<string[]> Create(List<FileIndexItem> fileIndexList)
 		{
 			var base64ImageArray = new string[fileIndexList.Count];
 			for (var i = 0; i<fileIndexList.Count; i++)
 			{
 				var item = fileIndexList[i];
 
-				using ( var stream = new Thumbnail(_iStorage,_thumbnailStorage).ResizeThumbnail(
+				using ( var stream = await new Thumbnail(_iStorage,_thumbnailStorage).ResizeThumbnail(
 					item.FilePath, 4, null, true,
 					ExtensionRolesHelper.ImageFormat.png) )
 				{

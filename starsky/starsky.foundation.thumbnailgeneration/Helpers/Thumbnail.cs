@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
@@ -35,7 +36,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="subPath">folder subPath style</param>
 		/// <returns>fail/pass</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public bool CreateThumb(string subPath)
+		public async Task<bool> CreateThumb(string subPath)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
 			switch ( isFolderOrFile )
@@ -48,15 +49,15 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
 					foreach ( var singleSubPath in contentOfDir )
 					{
-						var fileHash = new FileHash(_iStorage).GetHashCode(singleSubPath).Key;
-						CreateThumb(singleSubPath, fileHash);
+						var result =  new FileHash(_iStorage).GetHashCode(subPath);
+						if ( result.Value ) await CreateThumb(singleSubPath, result.Key);
 					}
 					return true;
 				}
 				default:
 				{
-					var fileHash = new FileHash(_iStorage).GetHashCode(subPath).Key;
-					CreateThumb(subPath, fileHash);
+					var result =  new FileHash(_iStorage).GetHashCode(subPath);
+					if ( result.Value ) CreateThumb(subPath, result.Key);
 					return true;
 				}
 			}
@@ -68,7 +69,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <returns>true, if successful</returns>
-		public bool CreateThumb(string subPath, string fileHash)
+		public async Task<bool> CreateThumb(string subPath, string fileHash)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 			// FileType=supported + subPath=exit + fileHash=NOT exist
@@ -80,7 +81,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				return false;
 			
 			// run resize sync
-			ResizeThumbnail(subPath, 1000, fileHash);
+			await ResizeThumbnail(subPath, 1000, fileHash);
 			
 			// check if output any good
 			RemoveCorruptImage(fileHash);
@@ -88,7 +89,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			if ( ! _thumbnailStorage.ExistFile(fileHash) )
 			{
 				var stream = new PlainTextFileHelper().StringToStream("Thumbnail error");
-				_iStorage.WriteStream(stream, GetErrorLogItemFullPath(subPath));
+				await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
 				return false;
 			}
 			
@@ -118,7 +119,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return true;
 		}
 
-		public MemoryStream ResizeThumbnail(string subPath, 
+		public async Task<MemoryStream> ResizeThumbnail(string subPath, 
 			 int width, string thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
@@ -129,7 +130,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				// resize the image and save it to the output stream
 				using (var inputStream = _iStorage.ReadStream(subPath))
-				using (var image = Image.Load(inputStream))
+				using (var image = await Image.LoadAsync(inputStream))
 				{
 					
 					// Add orginal rotation to the image as json
@@ -149,11 +150,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						.Resize(width, 0)
 					);
 						
-					ResizeThumbnailImageFormat(image, imageFormat, outputStream);
+					await ResizeThumbnailImageFormat(image, imageFormat, outputStream);
 	
 					if ( !string.IsNullOrEmpty(thumbnailOutputHash) )
 					{
-						_thumbnailStorage.WriteStream(outputStream, thumbnailOutputHash);  
+						await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);  
 						outputStream.Dispose();
 						return null;
 					}
@@ -176,21 +177,21 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		internal void ResizeThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal async Task ResizeThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
 			
 			if (imageFormat == ExtensionRolesHelper.ImageFormat.png)
 			{
-				image.Save(outputStream, new PngEncoder{
+				await image.SaveAsync(outputStream, new PngEncoder{
 					ColorType = PngColorType.Rgb, 
 					CompressionLevel = PngCompressionLevel.Level9, 
 				});
 				return;
 			}
 
-			image.Save(outputStream, new JpegEncoder{
+			await image.SaveAsync(outputStream, new JpegEncoder{
 				Quality = 100,
 			});
 		}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Storage;
@@ -26,98 +27,98 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void CreateThumbTest_FileHash_FileHashNull()
+		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
-			new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			await new Thumbnail(_iStorage, _iStorage).CreateThumb(
 				"/notfound.jpg", null);
 			// expect ArgumentNullException
 		}
 
 		[TestMethod]
-		public void CreateThumbTest_FileHash_ImageSubPathNotFound()
+		public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
 		{
-			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			var isCreated = await new Thumbnail(_iStorage, _iStorage).CreateThumb(
 				"/notfound.jpg", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
 		[TestMethod]
-		public void CreateThumbTest_FileHash_WrongImageType()
+		public async Task CreateThumbTest_FileHash_WrongImageType()
 		{
-			var isCreated = new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			var isCreated =  await new Thumbnail(_iStorage, _iStorage).CreateThumb(
 				"/notfound.dng", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
 		[TestMethod]
-		public void CreateThumbTest_FileHash_ThumbnailAlreadyExist()
+		public async Task CreateThumbTest_FileHash_ThumbnailAlreadyExist()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 
-			var isCreated = new Thumbnail(storage, storage).CreateThumb(
+			var isCreated = await new Thumbnail(storage, storage).CreateThumb(
 				_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 
 		[TestMethod]
-		public void CreateThumbTest_1arg_ThumbnailAlreadyExist()
+		public async Task CreateThumbTest_1arg_ThumbnailAlreadyExist()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
-			var isCreated = new Thumbnail(storage, storage).CreateThumb(
+			var isCreated = await new Thumbnail(storage, storage).CreateThumb(
 				_fakeIStorageImageSubPath);
 			Assert.AreEqual(true,isCreated);
 		}
 
 		[TestMethod]
-		public void ResizeThumbnailToStream__HostDependency__JPEG_Test()
+		public async Task ResizeThumbnailToStream__HostDependency__JPEG_Test()
 		{
 			var newImage = new CreateAnImage();
 			var iStorage = new StorageHostFullPathFilesystem();
 
 			// string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
 			// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
-			var thumb = new Thumbnail(iStorage,iStorage).ResizeThumbnail(
+			var thumb = await new Thumbnail(iStorage,iStorage).ResizeThumbnail(
 				newImage.FullFilePath, 1, null, true);
 			Assert.AreEqual(true,thumb.CanRead);
 		}
         
 		[TestMethod]
-		public void ResizeThumbnailToStream__PNG_Test()
+		public async Task ResizeThumbnailToStream__PNG_Test()
 		{
-			var thumb = new Thumbnail(_iStorage,_iStorage).ResizeThumbnail(
+			var thumb = await new Thumbnail(_iStorage,_iStorage).ResizeThumbnail(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
 			Assert.AreEqual(true,thumb.CanRead);
 		}
 		
 		[TestMethod]
-		public void ResizeThumbnailToStream_CorruptImage()
+		public async Task ResizeThumbnailToStream_CorruptImage()
 		{
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			var result = new Thumbnail(storage, 
+			var result = await new Thumbnail(storage, 
 				storage).ResizeThumbnail("test",1);
 			Assert.IsNull(result);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void ResizeThumbnailImageFormat_NullInput()
+		public async Task ResizeThumbnailImageFormat_NullInput()
 		{
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			new Thumbnail(storage, 
+			await new Thumbnail(storage, 
 				storage).ResizeThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
 			// ArgumentNullException
 		}
