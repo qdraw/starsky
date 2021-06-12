@@ -234,6 +234,7 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="toPath">toFileFullPath</param>
 		public void FileMove(string fromPath, string toPath)
 		{
+			if ( fromPath == toPath) return;
 			File.Move(fromPath,toPath);
 		}
 		
