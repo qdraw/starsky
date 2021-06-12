@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,7 +10,9 @@ using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -22,11 +25,13 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 	{
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
+		private readonly IWebLogger _logger;
 
-		public Thumbnail(IStorage iStorage, IStorage thumbnailStorage)
+		public Thumbnail(IStorage iStorage, IStorage thumbnailStorage, IWebLogger logger)
 		{
 			_iStorage = iStorage;
 			_thumbnailStorage = thumbnailStorage;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -49,15 +54,15 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						.Where(ExtensionRolesHelper.IsExtensionExifToolSupported);
 					foreach ( var singleSubPath in contentOfDir )
 					{
-						var result =  new FileHash(_iStorage).GetHashCode(subPath);
+						var result =  await new FileHash(_iStorage).GetHashCodeAsync(subPath);
 						if ( result.Value ) await CreateThumb(singleSubPath, result.Key);
 					}
 					return true;
 				}
 				default:
 				{
-					var result =  new FileHash(_iStorage).GetHashCode(subPath);
-					if ( result.Value ) CreateThumb(subPath, result.Key);
+					var result =  await new FileHash(_iStorage).GetHashCodeAsync(subPath);
+					if ( result.Value ) await CreateThumb(subPath, result.Key);
 					return true;
 				}
 			}
@@ -81,8 +86,13 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				return false;
 			
 			// run resize sync
-			await ResizeThumbnail(subPath, 1000, fileHash);
-			
+			await ResizeThumbnailFromSourceImage(subPath, 2000, fileHash);
+
+			await (new List<int>{1000,300}).ForEachAsync(
+				async (size) 
+					=> await ResizeThumbnailFromSourceImage(subPath, size, fileHash + "@" + size),
+				10);
+
 			// check if output any good
 			RemoveCorruptImage(fileHash);
 			
@@ -119,56 +129,60 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return true;
 		}
 
-		public async Task<MemoryStream> ResizeThumbnail(string subPath, 
+		public async Task<MemoryStream> ResizeThumbnailFromSourceImage(string subPath, 
 			 int width, string thumbnailOutputHash = null,
 			bool removeExif = false,
 			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
 		{
 			var outputStream = new MemoryStream();
-				
+
 			try
 			{
 				// resize the image and save it to the output stream
 				using (var inputStream = _iStorage.ReadStream(subPath))
 				using (var image = await Image.LoadAsync(inputStream))
 				{
+					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
+					ImageSharpImageResize(image, width, removeExif);
+
+					// When thumbnailOutputHash is nothing return stream instead of writing down
+					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return outputStream;
 					
-					// Add orginal rotation to the image as json
-					if (image.Metadata.ExifProfile != null && !removeExif)
-					{
-						image.Metadata.ExifProfile.SetValue(ExifTag.Software, "Starsky");
-					}
-					
-					if (image.Metadata.ExifProfile != null && removeExif)
-					{
-						image.Metadata.ExifProfile = null;
-						image.Metadata.IccProfile = null;
-					}
-						
-					image.Mutate(x => x.AutoOrient());
-					image.Mutate(x => x
-						.Resize(width, 0)
-					);
-						
-					await ResizeThumbnailImageFormat(image, imageFormat, outputStream);
-	
-					if ( !string.IsNullOrEmpty(thumbnailOutputHash) )
-					{
-						await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);  
-						outputStream.Dispose();
-						return null;
-					}
+					// only when a hash exists
+					await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);
+					// Disposed in WriteStreamAsync
 				}
 	
 			}
 			catch (Exception ex)            
 			{
-				Console.WriteLine(subPath);
-				Console.WriteLine(ex);
+				var message = ex.Message;
+				if ( message.StartsWith("Image cannot be loaded") ) message = "Image cannot be loaded";
+				_logger.LogError($"[ResizeThumbnailFromSourceImage] Exception {subPath} {message}", ex);
+				
 				return null;
 			}
 			return outputStream;
-			
+		}
+
+		internal void ImageSharpImageResize(Image image, int width, bool removeExif)
+		{
+			// Add original rotation to the image as json
+			if (image.Metadata.ExifProfile != null && !removeExif)
+			{
+				image.Metadata.ExifProfile.SetValue(ExifTag.Software, "Starsky");
+			}
+					
+			if (image.Metadata.ExifProfile != null && removeExif)
+			{
+				image.Metadata.ExifProfile = null;
+				image.Metadata.IccProfile = null;
+			}
+						
+			image.Mutate(x => x.AutoOrient());
+			image.Mutate(x => x
+				.Resize(width, 0)
+			);
 		}
 
 		/// <summary>
@@ -177,7 +191,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		internal async Task ResizeThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal async Task SaveThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
 			MemoryStream outputStream)
 		{
 			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
@@ -225,7 +239,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						.Rotate(rotateMode));
 					
 					// Image<Rgba32> image, ExtensionRolesHelper.ImageFormat imageFormat, MemoryStream outputStream
-					ResizeThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream);
+					SaveThumbnailImageFormat(image, ExtensionRolesHelper.ImageFormat.jpg, stream);
 					_thumbnailStorage.WriteStream(stream, fileHash);
 				}
 			}

@@ -177,7 +177,8 @@ namespace starsky.feature.metaupdate.Services
 		{
 			// Do orientation
 			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
-				new Thumbnail(_iStorage,_thumbnailStorage).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
+				new Thumbnail(_iStorage,_thumbnailStorage,
+					_logger).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 	}
 }

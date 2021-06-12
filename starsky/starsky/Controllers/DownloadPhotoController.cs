@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
@@ -18,12 +19,14 @@ namespace starsky.Controllers
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
-		
-		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage)
+		private readonly IWebLogger _logger;
+
+		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -107,7 +110,8 @@ namespace starsky.Controllers
 			                .FileHash // not loading it from disk to make it faster
                 };
                 
-                var isCreateAThumb = await new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
+                var isCreateAThumb = await new Thumbnail(_iStorage,
+	                _thumbnailStorage,_logger).CreateThumb(searchItem.FilePath, searchItem.FileHash);
                 if (!isCreateAThumb)
                 {
                     Response.StatusCode = 500;

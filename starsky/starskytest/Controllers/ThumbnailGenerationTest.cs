@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.storage.Services;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -38,8 +39,7 @@ namespace starskytest.Controllers
 			var thumbStorage = new FakeIStorage();
 
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
-				new FakeTelemetryService());
+			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue, new FakeIWebLogger());
 
 			var json = controller.ThumbnailGeneration("/") as JsonResult;
 			var result = json.Value as string;
@@ -47,22 +47,25 @@ namespace starskytest.Controllers
 
 			await controller.WorkItem("/", storage, thumbStorage);
 
-			Assert.AreEqual(1, thumbStorage.GetAllFilesInDirectoryRecursive("/").Count());
+			var folder = thumbStorage.GetAllFilesInDirectoryRecursive(
+				"/").ToList();
+			Assert.AreEqual(1, folder.Count(p => !p.Contains("@")));
 		}
 
 		[TestMethod]
 		public async Task TestFailing()
 		{
-			var message = "reading not allowed";
+			var message = "[ThumbnailGenerationController] reading not allowed";
+			
 			var storage = new FakeIStorage(new UnauthorizedAccessException(message));
 			var selectorStorage = new FakeSelectorStorage(storage);
 
-			var telemetry = new FakeTelemetryService();
+			var telemetry = new FakeIWebLogger();
 			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
 				telemetry);
 			await controller.WorkItem("/", storage, storage);
 
-			Assert.AreEqual(message,telemetry.TrackedExceptions.FirstOrDefault().Message);
+			Assert.IsTrue(telemetry.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
@@ -16,14 +17,14 @@ namespace starsky.Controllers
 	{
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly ITelemetryService _telemetryService;
+		private readonly IWebLogger _logger;
 
 		public ThumbnailGenerationController(ISelectorStorage selectorStorage,
-			IBackgroundTaskQueue queue, ITelemetryService telemetryService = null)
+			IBackgroundTaskQueue queue, IWebLogger logger)
 		{
 			_selectorStorage = selectorStorage;
 			_bgTaskQueue = queue;
-			_telemetryService = telemetryService;
+			_logger = logger;
 		}
 		
 		/// <summary>
@@ -58,12 +59,11 @@ namespace starsky.Controllers
 		{
 			try
 			{
-				await new Thumbnail(subPathStorage, thumbnailStorage).CreateThumb(subPath);
+				await new Thumbnail(subPathStorage, thumbnailStorage, _logger).CreateThumb(subPath);
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				Console.WriteLine(e);
-				_telemetryService?.TrackException(e);
+				_logger.LogError($"[ThumbnailGenerationController] {e.Message}", e);
 			}
 		}
 	}

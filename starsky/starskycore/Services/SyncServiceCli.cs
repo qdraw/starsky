@@ -2,6 +2,7 @@ using System;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
@@ -57,11 +58,11 @@ namespace starskycore.Services
 				{
 					// If single file => create thumbnail
 					var fileHash = new FileHash(storage).GetHashCode(subPath).Key;
-					new Thumbnail(storage,thumbnailStorage).CreateThumb(subPath,fileHash); // <= this uses subPath
+					new Thumbnail(storage,thumbnailStorage, new WebLogger()).CreateThumb(subPath,fileHash); // <= this uses subPath
 				}
 				else
 				{
-					new Thumbnail(storage, thumbnailStorage).CreateThumb(subPath);
+					new Thumbnail(storage, thumbnailStorage, new WebLogger()).CreateThumb(subPath);
 				}
                 
 				console.WriteLine("Thumbnail Done!");

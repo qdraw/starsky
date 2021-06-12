@@ -70,7 +70,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = controller.DownloadSidecar("/test.xmp") as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
@@ -85,7 +85,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query, selectorStorage)
+			var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -102,7 +102,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query, selectorStorage)
+			var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -120,7 +120,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 			
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult = await controller.DownloadPhoto(fileIndexItem.FilePath) as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
@@ -136,7 +136,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 	        
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
@@ -152,7 +152,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
 
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 			// Run once
@@ -177,7 +177,7 @@ namespace starskytest.Controllers
 			var selectorStorage = new FakeSelectorStorage();
 			
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
 			Assert.AreNotEqual(null,actionResult);
 			Assert.AreEqual(404,actionResult.StatusCode);
@@ -196,7 +196,7 @@ namespace starskytest.Controllers
 			
 
 			// Act
-			var controller = new DownloadPhotoController(_query,selectorStorage);
+			var controller = new DownloadPhotoController(_query,selectorStorage, new FakeIWebLogger());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath)  as NotFoundObjectResult;
 		

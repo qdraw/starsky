@@ -33,10 +33,10 @@ namespace starsky.feature.export.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
-		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
 		public ExportService(IQuery query, AppSettings appSettings, 
-			ISelectorStorage selectorStorage, IConsole console)
+			ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_query = query;
@@ -44,7 +44,7 @@ namespace starsky.feature.export.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_statusCodeHelper = new StatusCodesHelper();
-			_console = console;
+			_logger = logger;
 		}
 
 		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
@@ -123,7 +123,7 @@ namespace starsky.feature.export.Services
 			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 			await _hostFileSystemStorage.
 				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
-			if(_appSettings.Verbose) _console.WriteLine("Zip done: " + doneFileFullPath);
+			if(_appSettings.Verbose) _logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
 		}
 		
 		/// <summary>
@@ -144,7 +144,7 @@ namespace starsky.feature.export.Services
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_iStorage, _thumbnailStorage).CreateThumb(item.FilePath, item.FileHash);
+					new Thumbnail(_iStorage, _thumbnailStorage, _logger).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				

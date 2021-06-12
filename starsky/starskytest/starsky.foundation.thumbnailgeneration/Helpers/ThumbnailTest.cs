@@ -29,7 +29,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[ExpectedException(typeof(ArgumentNullException))]
 		public async Task CreateThumbTest_FileHash_FileHashNull()
 		{
-			await new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
 				"/notfound.jpg", null);
 			// expect ArgumentNullException
 		}
@@ -37,7 +37,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_ImageSubPathNotFound()
 		{
-			var isCreated = await new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			var isCreated = await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
 				"/notfound.jpg", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -45,7 +45,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[TestMethod]
 		public async Task CreateThumbTest_FileHash_WrongImageType()
 		{
-			var isCreated =  await new Thumbnail(_iStorage, _iStorage).CreateThumb(
+			var isCreated =  await new Thumbnail(_iStorage, _iStorage, new FakeIWebLogger()).CreateThumb(
 				"/notfound.dng", _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -57,7 +57,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 
-			var isCreated = await new Thumbnail(storage, storage).CreateThumb(
+			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
 				_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
@@ -69,7 +69,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
-			var isCreated = await new Thumbnail(storage, storage).CreateThumb(
+			var isCreated = await new Thumbnail(storage, 
+				storage, new FakeIWebLogger()).CreateThumb(
 				_fakeIStorageImageSubPath);
 			Assert.AreEqual(true,isCreated);
 		}
@@ -82,7 +83,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 			// string subPath, int width, string outputHash = null,bool removeExif = false,ExtensionRolesHelper.ImageFormat
 			// imageFormat = ExtensionRolesHelper.ImageFormat.jpg
-			var thumb = await new Thumbnail(iStorage,iStorage).ResizeThumbnail(
+			var thumb = await new Thumbnail(iStorage,
+				iStorage, new FakeIWebLogger()).ResizeThumbnailFromSourceImage(
 				newImage.FullFilePath, 1, null, true);
 			Assert.AreEqual(true,thumb.CanRead);
 		}
@@ -90,7 +92,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		[TestMethod]
 		public async Task ResizeThumbnailToStream__PNG_Test()
 		{
-			var thumb = await new Thumbnail(_iStorage,_iStorage).ResizeThumbnail(
+			var thumb = await new Thumbnail(_iStorage,
+				_iStorage, new FakeIWebLogger()).ResizeThumbnailFromSourceImage(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
 			Assert.AreEqual(true,thumb.CanRead);
@@ -105,7 +108,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {new byte[0]});
 
 			var result = await new Thumbnail(storage, 
-				storage).ResizeThumbnail("test",1);
+				storage,
+				new FakeIWebLogger()).ResizeThumbnailFromSourceImage("test",1);
 			Assert.IsNull(result);
 		}
 
@@ -119,7 +123,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {new byte[0]});
 
 			await new Thumbnail(storage, 
-				storage).ResizeThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
+				storage, new FakeIWebLogger()).
+				SaveThumbnailImageFormat(null,ExtensionRolesHelper.ImageFormat.bmp, null);
 			// ArgumentNullException
 		}
 		
@@ -132,7 +137,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {new byte[0]});
 
 			var result = new Thumbnail(storage, 
-				storage).RemoveCorruptImage("test");
+				storage, new FakeIWebLogger()).RemoveCorruptImage("test");
 			Assert.IsTrue(result);
 		}
 		
@@ -144,7 +149,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"test"}, 
 				new List<byte[]> {CreateAnImage.Bytes});
 
-			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			var result = new Thumbnail(
+				storage, storage, 
+				new FakeIWebLogger()).RemoveCorruptImage("test");
 			Assert.IsFalse(result);
 		}
 		
@@ -156,14 +163,17 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> (), 
 				new List<byte[]> {CreateAnImage.Bytes});
 
-			var result = new Thumbnail(storage, storage).RemoveCorruptImage("test");
+			var result = new Thumbnail(storage, 
+				storage, new FakeIWebLogger()).RemoveCorruptImage("test");
 			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
 		public void RotateThumbnail_NotFound()
 		{
-			var result = new Thumbnail(_iStorage, _iStorage).RotateThumbnail("not-found",0, 3);
+			var result = new Thumbnail(_iStorage, 
+				_iStorage, new FakeIWebLogger())
+				.RotateThumbnail("not-found",0, 3);
 			Assert.IsFalse(result);
 		}
 
@@ -175,7 +185,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"/test.jpg"}, 
 				new List<byte[]> {CreateAnImage.Bytes});
 			
-			var result = new Thumbnail(storage, storage).RotateThumbnail("/test.jpg",-1, 3);
+			var result = new Thumbnail(storage, 
+				storage, new FakeIWebLogger())
+				.RotateThumbnail("/test.jpg",-1, 3);
 			
 			Assert.IsTrue(result);
 		}
@@ -188,7 +200,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			var result = new Thumbnail(storage, storage).RotateThumbnail("test", 1);
+			var result = new Thumbnail(storage, 
+					storage, new FakeIWebLogger()).
+				RotateThumbnail("test", 1);
 			Assert.IsFalse(result);
 		}
 		

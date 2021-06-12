@@ -13,14 +13,14 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		[ExpectedException(typeof(FileNotFoundException))]
 		public async Task NotFound()
 		{
-			await new ThumbnailService(new FakeSelectorStorage()).CreateThumb("/not-found");
+			await new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger()).CreateThumb("/not-found");
 			// expect exception not found
 		}
 		
 		[TestMethod]
 		public async Task NotFoundNonExistingHash()
 		{
-			var result = await new ThumbnailService(new FakeSelectorStorage())
+			var result = await new ThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger())
 				.CreateThumb("/not-found","non-existing-hash");
 			Assert.IsFalse(result);
 		}

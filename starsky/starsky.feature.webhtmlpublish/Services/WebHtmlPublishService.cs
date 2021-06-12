@@ -39,10 +39,11 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly CopyPublishedContent _copyPublishedContent;
 	    private readonly ToCreateSubfolder _toCreateSubfolder;
 	    private readonly Thumbnail _thumbnailService;
+	    private readonly IWebLogger _logger;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
 			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifToolHostStorage, 
-		    IOverlayImage overlayImage, IConsole console)
+		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -56,7 +57,8 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
-		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage);
+		    _logger = logger;
+		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger);
 	    }
 	    
 	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
@@ -99,7 +101,8 @@ namespace starsky.feature.webhtmlpublish.Services
 	    /// <returns></returns>
 	    private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
-		    return new ToBase64DataUriList(_subPathStorage, _thumbnailStorage).Create(fileIndexItemsList.ToList());
+		    return new ToBase64DataUriList(_subPathStorage, 
+			    _thumbnailStorage,_logger).Create(fileIndexItemsList.ToList());
 	    }
 	    
 	    public async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
