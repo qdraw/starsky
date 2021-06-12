@@ -86,11 +86,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				return false;
 			
 			// run resize sync
-			await ResizeThumbnailFromSourceImage(subPath, 2000, fileHash);
+			await ResizeThumbnailFromSourceImage(subPath, 2000, $"{fileHash}@2000");
 
 			await (new List<int>{1000,300}).ForEachAsync(
 				async (size) 
-					=> await ResizeThumbnailFromSourceImage(subPath, size, fileHash + "@" + size),
+					=> await ResizeThumbnailFromThumbnailImage(subPath, size, fileHash + "@" + size),
 				10);
 
 			// check if output any good
@@ -129,6 +129,43 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			return true;
 		}
 
+		public async Task<MemoryStream> ResizeThumbnailFromThumbnailImage(string subPath, 
+			int width, string thumbnailOutputHash = null,
+			bool removeExif = false,
+			ExtensionRolesHelper.ImageFormat imageFormat = ExtensionRolesHelper.ImageFormat.jpg)
+		{
+			var outputStream = new MemoryStream();
+
+			try
+			{
+				// resize the image and save it to the output stream
+				using (var inputStream = _thumbnailStorage.ReadStream(subPath))
+				using (var image = await Image.LoadAsync(inputStream))
+				{
+					ImageSharpImageResize(image, width, removeExif);
+					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
+
+					// When thumbnailOutputHash is nothing return stream instead of writing down
+					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return outputStream;
+					
+					// only when a hash exists
+					await _thumbnailStorage.WriteStreamAsync(outputStream, thumbnailOutputHash);
+					// Disposed in WriteStreamAsync
+				}
+	
+			}
+			catch (Exception ex)            
+			{
+				var message = ex.Message;
+				if ( message.StartsWith("Image cannot be loaded") ) message = "Image cannot be loaded";
+				_logger.LogError($"[ResizeThumbnailFromThumbnailImage] Exception {subPath} {message}", ex);
+				
+				return null;
+			}
+			return outputStream;
+		}
+		
+		
 		public async Task<MemoryStream> ResizeThumbnailFromSourceImage(string subPath, 
 			 int width, string thumbnailOutputHash = null,
 			bool removeExif = false,
@@ -142,8 +179,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				using (var inputStream = _iStorage.ReadStream(subPath))
 				using (var image = await Image.LoadAsync(inputStream))
 				{
-					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
 					ImageSharpImageResize(image, width, removeExif);
+					await SaveThumbnailImageFormat(image, imageFormat, outputStream);
 
 					// When thumbnailOutputHash is nothing return stream instead of writing down
 					if ( string.IsNullOrEmpty(thumbnailOutputHash) ) return outputStream;
