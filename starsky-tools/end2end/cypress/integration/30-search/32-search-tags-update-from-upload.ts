@@ -50,7 +50,9 @@ describe('Search -from upload - update tags', () => {
 
     cy.get('[data-name=tags]').type(helloWorldText)
 
+    cy.intercept('/starsky/api/update').as('update')
     cy.get('[data-test=overwrite]').click()
+    cy.wait('@update')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
       .should('have.text', helloWorldText)
@@ -87,7 +89,9 @@ describe('Search -from upload - update tags', () => {
 
     cy.get('[data-name=tags]').type(secondAddedText)
 
+    cy.intercept('/starsky/api/update').as('update')
     cy.get('[data-test=add]').click()
+    cy.wait('@update')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
       .should('contain.text', ', ' + secondAddedText)
