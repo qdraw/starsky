@@ -425,5 +425,50 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			Assert.AreEqual(1,cacheGetParentFolder.Count);
 			Assert.AreEqual("__old_key__",cacheGetParentFolder[0].FileHash);
 		}
+
+		[TestMethod]
+		public async Task AddParentCacheIfNotExist_ShouldMergeContent()
+		{
+			var fakeQueryContent =
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg"){FileHash = "test1"},
+					new FileIndexItem("/test2.jpg"){FileHash = "test2"},
+					new FileIndexItem("/test3.jpg"){FileHash = "test3"},
+					new FileIndexItem("/test/test.jpg"){FileHash = "test4"},
+
+				};
+			
+			var fakeUpdatedContent =
+				new List<FileIndexItem>
+				{
+					new FileIndexItem("/test.jpg")
+					{
+						Tags = "updated", 
+						FileHash = "test1"
+					},
+					new FileIndexItem("/test3.jpg")
+					{
+						Tags = "updated", 
+						FileHash = "test3"
+					},
+					new FileIndexItem("/test/test.jpg")
+					{
+						Tags = "updated", 
+						FileHash = "test4"
+					},
+				};
+			
+			var fakeQuery = new FakeIQuery(fakeQueryContent);
+			var metaPreflight = new MetaPreflight(fakeQuery, new AppSettings(), 
+				new FakeSelectorStorage(),new FakeIWebLogger());
+
+			await metaPreflight.AddParentCacheIfNotExist(fakeUpdatedContent);
+
+			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
+			
+			Assert.AreEqual(3,cacheGetParentFolder.Count);
+			Assert.AreEqual("updated",cacheGetParentFolder[0].Tags);
+		}
 	}
 }
