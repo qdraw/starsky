@@ -174,6 +174,8 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("test3.jpg", all.FirstOrDefault(
 				p => p.FileName == "test3.jpg").FileName );
 			
+			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
+			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
 			
 			var renameFs = await new RenameService(_query,_iStorageSubPath).Rename("/dir1", "/dir2");
 			// check if files are moved in the database
@@ -185,7 +187,6 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual("/dir2",selectFile3.ParentDirectory);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
 			
-			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
 
 			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
 		}
