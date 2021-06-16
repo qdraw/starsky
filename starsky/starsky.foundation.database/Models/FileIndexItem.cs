@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -63,7 +62,6 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[Column(Order = 2)]
 		[MaxLength(380)]
-		[SuppressMessage("ReSharper", "ValueParameterNotUsed")]
 		public string FilePath
 		{
 			get
