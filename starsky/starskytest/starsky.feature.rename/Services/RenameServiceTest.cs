@@ -175,7 +175,11 @@ namespace starskytest.starsky.feature.rename.Services
 				p => p.FileName == "test3.jpg").FileName );
 			
 			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
-			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
+
+			if ( new StorageHostFullPathFilesystem().ExistFolder(dir2FullDirPath) )
+			{
+				new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
+			}
 			
 			var renameFs = await new RenameService(_query,_iStorageSubPath).Rename("/dir1", "/dir2");
 			// check if files are moved in the database

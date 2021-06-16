@@ -83,9 +83,11 @@ namespace starsky.foundation.database.Models
 		/// <param name="value">The value.</param>
 		public void SetFilePath(string value)
 		{
+			var parentPath = FilenamesHelper.GetParentPath(value);
+			if ( string.IsNullOrEmpty(parentPath)) parentPath = "/";
 			// Home has no parentDirectory and filename slash
-			_parentDirectory = value == "/" ? null : FilenamesHelper.GetParentPath(value);
-	        
+			if ( value != "/" ) _parentDirectory = parentPath;
+			
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
 			_fileName = PathHelper.RemovePrefixDbSlash(_fileName);

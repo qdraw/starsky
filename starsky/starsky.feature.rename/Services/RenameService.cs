@@ -445,6 +445,8 @@ namespace starsky.feature.rename.Services
 			_query.RemoveCacheParentItem(inputParentSubFolder);
 
 			var toParentSubFolder = FilenamesHelper.GetParentPath(toFileSubPath);
+			if ( string.IsNullOrEmpty(toParentSubFolder) ) toParentSubFolder = "/";
+			
 			// clear cache (to FileSubPath parents)
 			_query.RemoveCacheParentItem(toParentSubFolder);
 			
