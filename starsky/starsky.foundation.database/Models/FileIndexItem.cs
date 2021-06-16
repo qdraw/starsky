@@ -66,12 +66,15 @@ namespace starsky.foundation.database.Models
 		[SuppressMessage("ReSharper", "ValueParameterNotUsed")]
 		public string FilePath
 		{
-			get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
-			set
+			get
 			{
-				// For legacy reasons
-				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
-			} 
+				if ( string.IsNullOrEmpty(FilePathPrivate)  )
+				{
+					return "/";
+				}
+				return FilePathPrivate;
+			}
+			set => SetFilePath(value);
 		}
 
 		/// <summary>
@@ -86,6 +89,8 @@ namespace starsky.foundation.database.Models
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
 			_fileName = PathHelper.RemovePrefixDbSlash(_fileName);
+			
+			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
 		}
 
 		/// <summary>
@@ -114,6 +119,8 @@ namespace starsky.foundation.database.Models
 					return;
 				}
 				_fileName = value;
+				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) +
+				                  PathHelper.PrefixDbSlash(value);
 			}
 		}
 
@@ -166,6 +173,8 @@ namespace starsky.foundation.database.Models
 					return;
 				}
 				_parentDirectory = value;
+				FilePathPrivate = PathHelper.RemoveLatestSlash(value) +
+				                  PathHelper.PrefixDbSlash(FileName);
 			}
 		}
 

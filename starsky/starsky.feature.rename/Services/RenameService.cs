@@ -190,7 +190,7 @@ namespace starsky.feature.rename.Services
 			for (var i = 0; i < inputFileSubPaths.Count; i++)
 			{
 				var inputFileSubPath = PathHelper.RemoveLatestSlash(inputFileSubPaths[i]);
-				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(inputFileSubPath);
+				inputFileSubPaths[i] = PathHelper.PrefixDbSlash(PathHelper.RemovePrefixDbSlash(inputFileSubPath));
 
 				var detailView = _query.SingleItem(inputFileSubPaths[i], null, collections, false);
 				if ( detailView == null )
@@ -439,12 +439,12 @@ namespace starsky.feature.rename.Services
 				});
 				return; //next
 			}
-					
+			
 			// from/input cache should be cleared
-			var inputParentSubFolder = Breadcrumbs.BreadcrumbHelper(inputFileSubPath).LastOrDefault();
+			var inputParentSubFolder = FilenamesHelper.GetParentPath(inputFileSubPath);
 			_query.RemoveCacheParentItem(inputParentSubFolder);
 
-			var toParentSubFolder = Breadcrumbs.BreadcrumbHelper(toFileSubPath).LastOrDefault();
+			var toParentSubFolder = FilenamesHelper.GetParentPath(toFileSubPath);
 			// clear cache (to FileSubPath parents)
 			_query.RemoveCacheParentItem(toParentSubFolder);
 			
