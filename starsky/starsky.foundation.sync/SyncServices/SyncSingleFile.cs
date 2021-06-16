@@ -89,7 +89,10 @@ namespace starsky.foundation.sync.SyncServices
 			ISynchronize.SocketUpdateDelegate updateDelegate = null)
 		{
 			// route with database check
-			_logger.LogInformation($"[SingleFile/db] {subPath}" );
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+			{
+				_logger.LogInformation($"[SingleFile/db] {subPath}" );
+			}
 
 			// Sidecar files are updated but ignored by the process
 			await UpdateSidecarFile(subPath);
@@ -120,7 +123,7 @@ namespace starsky.foundation.sync.SyncServices
 			// to avoid resync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
-			_logger.LogInformation($"[SingleFile] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
+			_logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
 			return updatedDbItem;
 		}
 

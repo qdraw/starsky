@@ -29,10 +29,10 @@ namespace starsky.foundation.sync.Helpers
 		public async Task Sync(string[] args)
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 
 			if (new ArgsHelper().NeedHelp(args))
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Sync;
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
