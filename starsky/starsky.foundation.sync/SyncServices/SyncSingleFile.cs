@@ -21,9 +21,11 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IQuery _query;
 		private readonly NewItem _newItem;
 		private readonly IWebLogger _logger;
+		private readonly AppSettings _appSettings;
 
 		public SyncSingleFile(AppSettings appSettings, IQuery query, IStorage subPathStorage, IWebLogger logger)
 		{
+			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
 			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
@@ -48,7 +50,10 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			// Route without database check
-			_logger.LogInformation($"[SingleFile/no-db] {subPath}" );
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+			{
+				_logger.LogInformation($"[SingleFile/no-db] {subPath}" );
+			}
 			
 			// Sidecar files are updated but ignored by the process
 			await UpdateSidecarFile(subPath);
