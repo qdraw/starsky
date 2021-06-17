@@ -6,7 +6,7 @@
         <ProjectGuid>{a030c158-2f79-4317-a9f9-bdd46d66d1d8}</ProjectGuid>
         <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
-        <Version>0.4.9</Version>
+        <Version>0.4.10</Version>
     </PropertyGroup>
     
     <ItemGroup>
