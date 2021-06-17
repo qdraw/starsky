@@ -37,6 +37,8 @@ namespace starsky.foundation.sync.SyncServices
 		public async Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
 		{
 			var fileIndexItem = await _query.GetObjectByFilePathAsync(subPath);
+			// on a new database ->
+			if ( subPath == "/" && fileIndexItem == null) fileIndexItem = new FileIndexItem();
 			if ( fileIndexItem == null )
 			{
 				return FileIndexItem.ExifStatus.NotFoundNotInIndex;
