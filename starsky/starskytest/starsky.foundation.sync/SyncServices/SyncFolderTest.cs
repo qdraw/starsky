@@ -321,14 +321,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			await syncFolder.Folder("/DuplicateFolder");
 
-			var allFolders = _query.GetAllFolders();
+			var allFolders = _query.GetAllFolders().Where(p => p.FilePath == "/DuplicateFolder");
 			if ( allFolders == null )
 			{
 				throw new NullReferenceException(
 					"all folder should not be null");
 			}
 			
-			Assert.AreEqual("/", allFolders.FirstOrDefault(p => p.FilePath == "/")?.FilePath);
+			Assert.AreEqual("/DuplicateFolder", allFolders.FirstOrDefault(p => p.FilePath == "/DuplicateFolder")?.FilePath);
 			Assert.AreEqual(1, allFolders.Count(p => p.FilePath == "/DuplicateFolder"));
 
 		}

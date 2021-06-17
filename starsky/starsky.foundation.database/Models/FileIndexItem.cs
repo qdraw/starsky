@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -63,15 +62,17 @@ namespace starsky.foundation.database.Models
 		/// </value>
 		[Column(Order = 2)]
 		[MaxLength(380)]
-		[SuppressMessage("ReSharper", "ValueParameterNotUsed")]
 		public string FilePath
 		{
-			get { return PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName); }
-			set
+			get
 			{
-				// For legacy reasons
-				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
-			} 
+				if ( string.IsNullOrEmpty(FilePathPrivate)  )
+				{
+					return "/";
+				}
+				return FilePathPrivate;
+			}
+			set => SetFilePath(value);
 		}
 
 		/// <summary>
@@ -80,12 +81,16 @@ namespace starsky.foundation.database.Models
 		/// <param name="value">The value.</param>
 		public void SetFilePath(string value)
 		{
+			var parentPath = FilenamesHelper.GetParentPath(value);
+			if ( string.IsNullOrEmpty(parentPath)) parentPath = "/";
 			// Home has no parentDirectory and filename slash
-			_parentDirectory = value == "/" ? null : FilenamesHelper.GetParentPath(value);
-	        
+			if ( value != "/" ) _parentDirectory = parentPath;
+			
 			_fileName = PathHelper.GetFileName(value);
 			// filenames are without starting slash
 			_fileName = PathHelper.RemovePrefixDbSlash(_fileName);
+			
+			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) + PathHelper.PrefixDbSlash(FileName);
 		}
 
 		/// <summary>
@@ -114,6 +119,8 @@ namespace starsky.foundation.database.Models
 					return;
 				}
 				_fileName = value;
+				FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory) +
+				                  PathHelper.PrefixDbSlash(value);
 			}
 		}
 
@@ -166,6 +173,8 @@ namespace starsky.foundation.database.Models
 					return;
 				}
 				_parentDirectory = value;
+				FilePathPrivate = PathHelper.RemoveLatestSlash(value) +
+				                  PathHelper.PrefixDbSlash(FileName);
 			}
 		}
 

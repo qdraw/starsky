@@ -458,6 +458,17 @@ namespace starskytest.Models
 			Assert.AreEqual("test.jpg", item.FileName);
 			Assert.AreEqual("/", item.ParentDirectory);
 		}
+		
+		[TestMethod]
+		public void SetFilePath_slashSlashTestFile()
+		{
+			var item = new FileIndexItem();
+			item.SetFilePath("//test.jpg");
+		    
+			Assert.AreEqual("test.jpg", item.FileName);
+			Assert.AreEqual("/", item.ParentDirectory);
+			Assert.AreEqual("/test.jpg", item.FilePath);
+		}
 	    
 		[TestMethod]
 		public void SetFilePath_subFolderTestFile()

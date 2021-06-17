@@ -26,6 +26,18 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		}
 		
 		[TestMethod]
+		public async Task HomeIsAlwaysFound()
+		{
+			var result = await new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()))
+				.ManualSync("/");
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
+		}
+		
+		[TestMethod]
 		public async Task ObjectStarted()
 		{
 			var result = await new ManualBackgroundSyncService(

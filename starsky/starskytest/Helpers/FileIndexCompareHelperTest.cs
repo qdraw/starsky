@@ -132,7 +132,7 @@ namespace starskytest.Helpers
 			var source = new FileIndexItem {FilePath = "/test"};
 			var update = new FileIndexItem {FilePath = "/ignore"};
 			FileIndexCompareHelper.Compare(source, update);
-			Assert.AreEqual("/",source.FilePath);
+			Assert.AreEqual("/test",source.FilePath);
 		}
 	    
 	    

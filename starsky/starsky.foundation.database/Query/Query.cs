@@ -755,7 +755,8 @@ namespace starsky.foundation.database.Query
 				    {
 					    IsDirectory = true,
 					    AddToDatabase = DateTime.UtcNow,
-					    ColorClass = ColorClassParser.Color.None
+					    ColorClass = ColorClassParser.Color.None,
+					    Software = pathShouldExist == "/" ? "Root object" : string.Empty
 				    });
 			    }
 		    }

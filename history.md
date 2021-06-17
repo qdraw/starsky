@@ -43,7 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.9 _(Unreleased)_ - 2021-06-??
+# version 0.4.10 _(Unreleased)_ - 2021-06-??
+- [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application
+
+# version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
 - [x]   (Fixed) _Front-end_ Fix for keeps loading forever if use fileList (archive) fails  (issue #382 & PR #392)
 - [x]   (Fixed) _Front-end_  Add retry/reload button in Application Exception page  (PR #392)
