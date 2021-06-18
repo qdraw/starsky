@@ -26,6 +26,14 @@ const useFetch = (url: string, method: "get" | "post"): IConnectionDefault => {
   return data;
 };
 
+/**
+ * From useFetch internal
+ * @param url - where to look for
+ * @param method - GET, POST
+ * @param mounted - is the component mounted
+ * @param abortController - cancel request
+ * @param setData - where to set the date when received
+ */
 export const fetchContent = async (
   url: string,
   method: "get" | "post",
