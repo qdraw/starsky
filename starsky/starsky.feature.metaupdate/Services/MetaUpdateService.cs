@@ -116,7 +116,7 @@ namespace starsky.feature.metaupdate.Services
 		private async Task UpdateWriteDiskDatabase(FileIndexItem fileIndexItem, List<string> comparedNamesList, int rotateClock = 0)
 		{
 			// do rotation on thumbs
-			RotationThumbnailExecute(rotateClock, fileIndexItem);
+			await RotationThumbnailExecute(rotateClock, fileIndexItem);
 
 			if ( fileIndexItem.IsDirectory != true 
 			     && ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) )
@@ -173,11 +173,11 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="rotateClock">-1 or 1</param>
 		/// <param name="fileIndexItem">object contains fileHash</param>
 		/// <returns>updated image</returns>
-		private void RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
+		private async Task RotationThumbnailExecute(int rotateClock, FileIndexItem fileIndexItem)
 		{
 			// Do orientation
 			if(FileIndexItem.IsRelativeOrientation(rotateClock)) 
-				new Thumbnail(_iStorage,_thumbnailStorage,
+				await new Thumbnail(_iStorage,_thumbnailStorage,
 					_logger).RotateThumbnail(fileIndexItem.FileHash,rotateClock);
 		}
 	}

@@ -85,6 +85,13 @@ namespace starsky.foundation.storage.Services
 			{
 				var code = await CalculateMd5Async(fullFileName)
 					.TimeoutAfter(timeoutInMilliseconds);
+
+				if ( string.IsNullOrEmpty(code) ) {
+					return new KeyValuePair<string, bool>(
+						Base32.Encode(
+						GenerateRandomBytes(27)
+						) + "_T", false);
+				}
 				return new KeyValuePair<string, bool>(code, true);
 			}
 			catch ( TimeoutException )
@@ -141,8 +148,8 @@ namespace starsky.foundation.storage.Services
 		/// <returns>Task with a md5 hash</returns>
 		private async Task<string> CalculateMd5Async(string fullFilePath)
 		{
-			using ( var stream =
-				_iStorage.ReadStream(fullFilePath, MaxReadSize) ) 
+			if ( !_iStorage.ExistFile(fullFilePath) ) return string.Empty;
+			using ( var stream = _iStorage.ReadStream(fullFilePath, MaxReadSize) ) 
 			{
 				return await CalculateHashAsync(stream);
 			}

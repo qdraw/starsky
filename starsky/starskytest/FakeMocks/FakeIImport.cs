@@ -37,7 +37,7 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public async Task<List<ImportIndexItem>> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
+		public Task<List<ImportIndexItem>> Preflight(List<string> inputFileFullPaths, ImportSettingsModel importSettings)
 		{
 			var results = new List<ImportIndexItem>();
 			foreach ( var inputFileFullPath in inputFileFullPaths )
@@ -72,7 +72,7 @@ namespace starskytest.FakeMocks
 					FileHash = "FAKE"
 				});
 			}
-			return results;
+			return Task.FromResult(results);
 		}
 
 

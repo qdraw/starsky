@@ -72,7 +72,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var isCreated = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger()).CreateThumb(
 				_fakeIStorageImageSubPath);
-			Assert.AreEqual(true,isCreated);
+			Assert.AreEqual(false,isCreated[0].Item2);
 		}
 
 		[TestMethod]
@@ -169,23 +169,23 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 
 		[TestMethod]
-		public void RotateThumbnail_NotFound()
+		public async Task RotateThumbnail_NotFound()
 		{
-			var result = new Thumbnail(_iStorage, 
+			var result = await new Thumbnail(_iStorage, 
 				_iStorage, new FakeIWebLogger())
 				.RotateThumbnail("not-found",0, 3);
 			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
-		public void RotateThumbnail_Rotate()
+		public async Task RotateThumbnail_Rotate()
 		{
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"/test.jpg"}, 
 				new List<byte[]> {CreateAnImage.Bytes});
 			
-			var result = new Thumbnail(storage, 
+			var result = await new Thumbnail(storage, 
 				storage, new FakeIWebLogger())
 				.RotateThumbnail("/test.jpg",-1, 3);
 			
@@ -193,14 +193,14 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public void RotateThumbnail_Corrupt()
+		public async Task RotateThumbnail_Corrupt()
 		{
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			var result = new Thumbnail(storage, 
+			var result = await new Thumbnail(storage, 
 					storage, new FakeIWebLogger()).
 				RotateThumbnail("test", 1);
 			Assert.IsFalse(result);

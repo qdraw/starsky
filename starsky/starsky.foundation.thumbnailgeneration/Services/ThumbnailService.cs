@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -21,7 +22,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			_thumbnail = new Thumbnail(iStorage, thumbnailStorage,logger);
 		}
 
-		public Task<bool> CreateThumb(string subPath)
+		public Task<List<(string, bool)>> CreateThumb(string subPath)
 		{
 			return _thumbnail.CreateThumb(subPath);
 		}

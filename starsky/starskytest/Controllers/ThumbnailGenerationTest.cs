@@ -30,6 +30,14 @@ namespace starskytest.Controllers
 
 		}
 
+		// [TestMethod]
+		// public async Task Thumbnail_1()
+		// {
+		// 	var json = await controller.ThumbnailGeneration("/") as JsonResult;
+		// 	var result = json.Value as string;
+		// 	Assert.IsNotNull(result);
+		// }
+
 		[TestMethod]
 		public async Task ThumbnailGenerationTest_CheckIfGenerated()
 		{
@@ -39,16 +47,14 @@ namespace starskytest.Controllers
 			var thumbStorage = new FakeIStorage();
 
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue, new FakeIWebLogger());
-
-			var json = controller.ThumbnailGeneration("/") as JsonResult;
-			var result = json.Value as string;
-			Assert.IsNotNull(result);
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
 
 			await controller.WorkItem("/", storage, thumbStorage);
 
 			var folder = thumbStorage.GetAllFilesInDirectoryRecursive(
 				"/").ToList();
+			
 			Assert.AreEqual(1, folder.Count(p => !p.Contains("@")));
 		}
 
@@ -60,12 +66,13 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage(new UnauthorizedAccessException(message));
 			var selectorStorage = new FakeSelectorStorage(storage);
 
-			var telemetry = new FakeIWebLogger();
-			var controller = new ThumbnailGenerationController(selectorStorage, _bgTaskQueue,
-				telemetry);
+			var webLogger = new FakeIWebLogger();
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
+				webLogger, new FakeIWebSocketConnectionsService());
+			
 			await controller.WorkItem("/", storage, storage);
 
-			Assert.IsTrue(telemetry.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
+			Assert.IsTrue(webLogger.TrackedExceptions.FirstOrDefault().Item2.Contains(message));
 		}
 	}
 }
