@@ -27,7 +27,7 @@ And ready :)
 Example to set values before testing:
 
 ```sh
-export CYPRESS_BASE_URL="https://starskydemo.herokuapp.com"  
+export CYPRESS_BASE_URL="https://demostarsky.herokuapp.com"  
 export cypress_name="no-create-account"
 export cypress_AUTH_USER="demo@qdraw.nl"
 export cypress_AUTH_PASS="demo@qdraw.nl"
