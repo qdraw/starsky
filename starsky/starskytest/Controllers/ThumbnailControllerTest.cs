@@ -221,7 +221,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ApiController_FloatingDatabaseFileTest_API_Test()
 		{
-			var item = _query.AddItem(new FileIndexItem
+			var item = await _query.AddItemAsync(new FileIndexItem
 			{
 				ParentDirectory = "/fakeImage/",
 				FileName = "fake.jpg",
