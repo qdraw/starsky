@@ -102,6 +102,7 @@ namespace starsky.Controllers
         public async Task<IActionResult> Thumbnail(
             string f, 
             bool isSingleItem = false, 
+            bool enableDownloadFilename = false,
             bool json = false)
         {
             // f is Hash
@@ -118,8 +119,22 @@ namespace starsky.Controllers
 	        {
 		        return BadRequest();
 	        }
+
+	        IActionResult ReturnResult(string append)
+	        {
+		        // When using the api to check using javascript
+		        // use the cached version of imageFormat, otherwise you have to check if it deleted
+		        if (json) return Json("OK");
+
+		        // thumbs are always in jpeg
+		        var stream = _thumbnailStorage.ReadStream(f + append);
+		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
+		        return enableDownloadFilename ? 
+			        File(stream, "image/jpeg", f + ".jpg") : 
+			        File(stream, "image/jpeg");
+	        }
 	        
-            if (_thumbnailStorage.ExistFile(f))
+            if (_thumbnailStorage.ExistFile(f + "@2000"))
             {
                 // When a file is corrupt show error
                 var stream = _thumbnailStorage.ReadStream(f,50);
@@ -129,17 +144,14 @@ namespace starsky.Controllers
 	                SetExpiresResponseHeadersToZero();
 	                return NoContent(); // 204
                 }
-
-                // When using the api to check using javascript
-                // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (json) return Json("OK");
-
-                // thumbs are always in jpeg
-                stream = _thumbnailStorage.ReadStream(f);
-                Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
-                return File(stream, "image/jpeg", f + ".jpg");
+                return ReturnResult("@2000");
             }
-            
+
+            if ( _thumbnailStorage.ExistFile(f) )
+            {
+	            return ReturnResult(string.Empty);
+            }
+
             // Cached view of item
             var sourcePath = _query.GetSubPathByHash(f);
             if ( sourcePath == null )

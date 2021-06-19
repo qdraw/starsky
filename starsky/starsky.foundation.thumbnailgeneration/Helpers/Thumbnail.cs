@@ -97,9 +97,6 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						$"{fileHash}@{size}"),
 				10);
 
-			// For backwards compatibility 
-			_thumbnailStorage.FileMove($"{fileHash}@1000", fileHash);
-			
 			// check if output any good
 			RemoveCorruptImage(fileHash);
 			
@@ -129,10 +126,10 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the fileHash file</param>
 		internal bool RemoveCorruptImage(string fileHash)
 		{
-			if (!_thumbnailStorage.ExistFile(fileHash)) return false;
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash,160));
+			if (!_thumbnailStorage.ExistFile(fileHash+ "@2000")) return false;
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash+ "@2000",160));
 			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
-			_thumbnailStorage.FileDelete(fileHash);
+			_thumbnailStorage.FileDelete(fileHash+ "@2000");
 			return true;
 		}
 
