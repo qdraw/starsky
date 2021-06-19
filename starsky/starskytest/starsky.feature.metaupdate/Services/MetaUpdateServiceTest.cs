@@ -117,6 +117,51 @@ namespace starskytest.starsky.feature.metaupdate.Services
 
 			_query.RemoveItem(item0);
 		}
+		
+		[TestMethod]
+		public void UpdateService_Update_toDelete()
+		{
+			_query.AddItem(new FileIndexItem
+			{
+				Status = FileIndexItem.ExifStatus.Ok,
+				Tags = "",
+				FileName = "test_delete.jpg",
+				Description = "noChanges",
+				ParentDirectory = "/delete"
+			});
+
+			var item0 = _query.GetObjectByFilePath("/delete/test_delete.jpg");
+			item0.Tags = "!delete!";
+			
+			var changedFileIndexItemName = new Dictionary<string, List<string>>
+			{
+				{ 
+					"/delete/test_delete.jpg", new List<string>
+					{
+						nameof(FileIndexItem.Tags)
+					} 
+				},
+			};
+		
+			var fileIndexResultsList = new List<FileIndexItem>
+			{
+				item0
+			};
+
+			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
+					new FakeIWebLogger())
+				.Update(changedFileIndexItemName, fileIndexResultsList, null, false,false,0);
+
+			// Deleted status is done in the Preflight stage
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,fileIndexResultsList[0].Status);
+
+			// db
+			Assert.AreEqual("!delete!",_query.GetObjectByFilePath("/delete/test_delete.jpg").Tags);
+			
+			Assert.AreEqual("noChanges",_query.GetObjectByFilePath("/delete/test_delete.jpg").Description);
+
+			_query.RemoveItem(item0);
+		}
 
 		
 		[TestMethod]
