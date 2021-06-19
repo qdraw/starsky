@@ -61,12 +61,12 @@ namespace starsky.foundation.storage.Storage
 			}
 		}
 
-		public static string GetAppend(string fileHash, int size)
+		public static string Combine(string fileHash, int size)
 		{
-			return GetAppend(fileHash, GetSize(size));
+			return Combine(fileHash, GetSize(size));
 		}
 
-		public static string GetAppend(string fileHash, ThumbnailSize size)
+		public static string Combine(string fileHash, ThumbnailSize size)
 		{
 			return fileHash + GetAppend(size);
 		}

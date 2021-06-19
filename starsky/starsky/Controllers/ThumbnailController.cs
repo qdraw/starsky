@@ -120,36 +120,37 @@ namespace starsky.Controllers
 		        return BadRequest();
 	        }
 
-	        IActionResult ReturnResult(string append)
+	        IActionResult ReturnResult(ThumbnailSize size)
 	        {
 		        // When using the api to check using javascript
 		        // use the cached version of imageFormat, otherwise you have to check if it deleted
 		        if (json) return Json("OK");
 
 		        // thumbs are always in jpeg
-		        var stream = _thumbnailStorage.ReadStream(f + append);
+		        var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,size));
 		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
+		        
 		        return enableDownloadFilename ? 
 			        File(stream, "image/jpeg", f + ".jpg") : 
 			        File(stream, "image/jpeg");
 	        }
 	        
-            if (_thumbnailStorage.ExistFile(f + "@2000"))
+            if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge)))
             {
                 // When a file is corrupt show error
-                var stream = _thumbnailStorage.ReadStream(f,50);
+                var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge),50);
                 var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
                 if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
                 {
 	                SetExpiresResponseHeadersToZero();
 	                return NoContent(); // 204
                 }
-                return ReturnResult("@2000");
+                return ReturnResult(ThumbnailSize.ExtraLarge);
             }
 
-            if ( _thumbnailStorage.ExistFile(f) )
+            if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)) )
             {
-	            return ReturnResult(string.Empty);
+	            return ReturnResult(ThumbnailSize.Large);
             }
 
             // Cached view of item

@@ -82,26 +82,37 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
-			     !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(fileHash) ) return false;
+			     !_iStorage.ExistFile(subPath) || 
+			     _thumbnailStorage.ExistFile(
+				     ThumbnailNameHelper.Combine(fileHash,
+					     ThumbnailSize.Large)) ||
+			     _thumbnailStorage.ExistFile(
+				     ThumbnailNameHelper.Combine(fileHash,
+					     ThumbnailSize.ExtraLarge)) )
+			{
+				return false;
+			}
 
 			// File is already tested
 			if( _iStorage.ExistFile( GetErrorLogItemFullPath(subPath)) )
 				return false;
 			
 			// run resize sync
-			var largeThumbnailHash = $"{fileHash}@2000";
-			await ResizeThumbnailFromSourceImage(subPath, 2000, largeThumbnailHash);
+			var largeThumbnailHash = ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge);
+			await ResizeThumbnailFromSourceImage(subPath, 
+				ThumbnailNameHelper.GetSize(ThumbnailSize.ExtraLarge), 
+				largeThumbnailHash );
 
-			await (new List<int>{1000,300}).ForEachAsync(
+			await (new List<ThumbnailSize>{ThumbnailSize.Small,ThumbnailSize.Large}).ForEachAsync(
 				async (size) 
-					=> await ResizeThumbnailFromThumbnailImage(largeThumbnailHash, size, 
-						$"{fileHash}@{size}"),
+					=> await ResizeThumbnailFromThumbnailImage(largeThumbnailHash, ThumbnailNameHelper.GetSize(size), 
+						ThumbnailNameHelper.Combine(fileHash, size)),
 				10);
 
 			// check if output any good
 			RemoveCorruptImage(fileHash);
 			
-			if ( ! _thumbnailStorage.ExistFile(fileHash) )
+			if ( ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)) )
 			{
 				var stream = new PlainTextFileHelper().StringToStream("Thumbnail error");
 				await _iStorage.WriteStreamAsync(stream, GetErrorLogItemFullPath(subPath));
@@ -127,11 +138,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the fileHash file</param>
 		internal bool RemoveCorruptImage(string fileHash)
 		{
-			if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge))) return false;
+			if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge))) return false;
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(
-				ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge),160));
+				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge),160));
 			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
-			_thumbnailStorage.FileDelete(ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge));
+			_thumbnailStorage.FileDelete(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge));
 			return true;
 		}
 

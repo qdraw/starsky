@@ -15,6 +15,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
@@ -85,7 +86,8 @@ namespace starskytest.Controllers
 			// Arrange
 			var storage = ArrangeStorage();
 			var plainTextStream = new PlainTextFileHelper().StringToStream("CorruptImage");
-			await storage.WriteStreamAsync(plainTextStream, "hash-corrupt-image");
+			await storage.WriteStreamAsync(plainTextStream, ThumbnailNameHelper.Combine(
+				"hash-corrupt-image", ThumbnailSize.ExtraLarge));
 
 			await _query.AddItemAsync(new FileIndexItem("/test2.jpg"){FileHash= "hash-corrupt-image"});
 
@@ -93,7 +95,8 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
   
-			var actionResult = await controller.Thumbnail("hash-corrupt-image", false, true) as NoContentResult;
+			var actionResult = await controller.Thumbnail("hash-corrupt-image", 
+				false, true, true) as NoContentResult;
 			Assert.AreEqual(204,actionResult.StatusCode);
                
 			// remove files + database item
