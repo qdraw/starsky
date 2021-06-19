@@ -60,7 +60,9 @@ describe('Search -from upload - update tags', () => {
 
   it('update and overwrite first image after cache clear', () => {
     if (!config.isEnabled) return
-    cy.wait(500)
+
+    // need to wait for backend
+    cy.wait(3000)
 
     cy.request('POST', config.searchClearCache)
 
@@ -100,8 +102,10 @@ describe('Search -from upload - update tags', () => {
   it('update and add first image after cache clear', () => {
     if (!config.isEnabled) return
 
-    cy.wait(500)
     cy.request('POST', config.searchClearCache)
+
+    // need to wait for backend
+    cy.wait(3000)
 
     cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
     cy.visit(config.urlSearchFromUpload)
@@ -128,7 +132,9 @@ describe('Search -from upload - update tags', () => {
 
     cy.get('[data-name=tags]').type(cleanText)
 
+    cy.intercept('/starsky/api/update').as('update')
     cy.get('[data-test=overwrite]').click()
+    cy.wait('@update')
 
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
       .should('contain.text', cleanText)
