@@ -17,6 +17,7 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.thumbnailgeneration.Helpers
@@ -126,10 +127,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="fileHash">the fileHash file</param>
 		internal bool RemoveCorruptImage(string fileHash)
 		{
-			if (!_thumbnailStorage.ExistFile(fileHash+ "@2000")) return false;
-			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(fileHash+ "@2000",160));
+			if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge))) return false;
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(
+				ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge),160));
 			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
-			_thumbnailStorage.FileDelete(fileHash+ "@2000");
+			_thumbnailStorage.FileDelete(ThumbnailNameHelper.GetAppend(fileHash,ThumbnailSize.ExtraLarge));
 			return true;
 		}
 

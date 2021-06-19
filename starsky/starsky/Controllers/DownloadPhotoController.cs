@@ -98,7 +98,8 @@ namespace starsky.Controllers
 	            return NotFound("ThumbnailTempFolder not found");
             }
 
-            if (!_thumbnailStorage.ExistFile(fileIndexItem.FileHash + "@2000"))
+            if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.GetAppend(
+	            fileIndexItem.FileHash,ThumbnailSize.ExtraLarge)))
             {
                 var isSuccess = await new Thumbnail(_iStorage,
 	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
@@ -111,7 +112,8 @@ namespace starsky.Controllers
                 }
             }
 
-            var thumbnailFs = _thumbnailStorage.ReadStream(fileIndexItem.FileHash + "@2000");
+            var thumbnailFs = _thumbnailStorage.ReadStream(
+	            ThumbnailNameHelper.GetAppend(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge));
             return File(thumbnailFs, "image/jpeg");
 
         }
