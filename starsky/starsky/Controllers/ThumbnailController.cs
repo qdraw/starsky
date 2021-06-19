@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.metathumbnail.Const;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -42,7 +41,7 @@ namespace starsky.Controllers
 		[IgnoreAntiforgeryToken]
 		[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
 		[ResponseCache(Duration = 29030400)] // 4 weeks
-		public async Task<IActionResult> ThumbnailFromIndex(string f)
+		public IActionResult ThumbnailFromIndex(string f)
 		{
 			f = FilenamesHelper.GetFileNameWithoutExtension(f);
 			
@@ -59,9 +58,9 @@ namespace starsky.Controllers
 				return File(stream, "image/jpeg");
 			}
 
-			if ( _thumbnailStorage.ExistFile(f + ThumbnailAppend.Text) )
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta) )  )
 			{
-				var stream = _thumbnailStorage.ReadStream(f+ ThumbnailAppend.Text);
+				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta));
 				return File(stream, "image/jpeg");
 			}
 
@@ -102,7 +101,6 @@ namespace starsky.Controllers
         public async Task<IActionResult> Thumbnail(
             string f, 
             bool isSingleItem = false, 
-            bool enableDownloadFilename = false,
             bool json = false)
         {
             // f is Hash
@@ -129,10 +127,7 @@ namespace starsky.Controllers
 		        // thumbs are always in jpeg
 		        var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,size));
 		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
-		        
-		        return enableDownloadFilename ? 
-			        File(stream, "image/jpeg", f + ".jpg") : 
-			        File(stream, "image/jpeg");
+		        return File(stream, "image/jpeg");
 	        }
 	        
             if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge)))

@@ -5,14 +5,12 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Const;
 using starsky.foundation.metathumbnail.Helpers;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
-
 
 namespace starsky.foundation.metathumbnail.Services
 {
@@ -61,7 +59,7 @@ namespace starsky.foundation.metathumbnail.Services
 				
 					await smallImage.SaveAsJpegAsync(outputStream);
 				
-					await _thumbnailStorage.WriteStreamAsync(outputStream, fileHash + ThumbnailAppend.Text);
+					await _thumbnailStorage.WriteStreamAsync(outputStream, ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta));
 					_logger.LogInformation($"[WriteAndCropFile] fileHash: {fileHash} is written");
 				}
 

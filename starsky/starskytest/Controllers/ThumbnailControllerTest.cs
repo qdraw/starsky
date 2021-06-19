@@ -96,7 +96,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
   
 			var actionResult = await controller.Thumbnail("hash-corrupt-image", 
-				false, true, true) as NoContentResult;
+				false, true) as NoContentResult;
 			Assert.AreEqual(204,actionResult.StatusCode);
                
 			// remove files + database item
@@ -129,7 +129,7 @@ namespace starskytest.Controllers
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Thumbnail(createAnImage.FileHash,true,true, true) as JsonResult;
+			var actionResult = await controller.Thumbnail(createAnImage.FileHash,true,true) as JsonResult;
 			
 			// Thumbnail exist
 			Assert.AreNotEqual(actionResult,null);

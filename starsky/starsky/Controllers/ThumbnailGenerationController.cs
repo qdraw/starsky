@@ -79,7 +79,7 @@ namespace starsky.Controllers
 
 				if ( !result.Any() ) return;
 
-				_connectionsService.SendToAllAsync(JsonSerializer.Serialize(
+				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					result,
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			}

@@ -2,7 +2,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
-using starsky.foundation.metathumbnail.Const;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -92,7 +91,7 @@ namespace starsky.foundation.metathumbnail.Services
 				fileHash = result.Key;
 			}
 
-			if ( !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(fileHash + ThumbnailAppend.Text) )
+			if ( !_iStorage.ExistFile(subPath) || _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta)) )
 			{
 				return false;
 			}
