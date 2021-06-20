@@ -214,7 +214,7 @@ namespace starsky.foundation.writemeta.Helpers
 				fileHashes.Add((await _exifTool.WriteTagsAndRenameThumbnailAsync(path, command)).Value);
 			}
 
-			if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )
+			if ( !string.IsNullOrEmpty(updateModel.FileHash) && _thumbnailStorage.ExistFile(updateModel.FileHash) )
 			{
 				await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 			}

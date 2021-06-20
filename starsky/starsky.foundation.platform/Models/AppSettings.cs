@@ -435,7 +435,12 @@ namespace starsky.foundation.platform.Models
 		public bool AddSwaggerExport { get; set; } = false;
 
 		public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
-	    
+
+		/// <summary>
+		/// Set Meta Thumbnails on import
+		/// </summary>
+		public bool MetaThumbnailOnImport { get; set; } = true;
+		
 		private string _webftp; 
 		public string WebFtp
 		{

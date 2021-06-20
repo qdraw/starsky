@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,21 @@ namespace starsky.foundation.metathumbnail.Services
 			_writeMetaThumbnail = writeMetaThumbnail;
 			_logger = logger;
 		}
-		
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="subPathsAndHash"></param>
+		/// <returns></returns>
+		public async Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
+		{
+			await subPathsAndHash
+				.ForEachAsync(async item => 
+						await AddMetaThumbnail(item.Item1, item.Item2),
+					_appSettings.MaxDegreesOfParallelism);
+			return true;
+		}
+
 		/// <summary>
 		///  This feature is used to crawl over directories and add this to the thumbnail-folder
 		///  Or File
@@ -80,7 +95,7 @@ namespace starsky.foundation.metathumbnail.Services
 				return false;
 			}
 
-			if ( fileHash == null )
+			if ( string.IsNullOrEmpty(fileHash) )
 			{
 				var result = (await  new FileHash(_iStorage).GetHashCodeAsync(subPath));
 				if ( !result.Value )

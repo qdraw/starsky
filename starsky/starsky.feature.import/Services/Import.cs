@@ -11,6 +11,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -48,6 +49,7 @@ namespace starsky.feature.import.Services
 		private readonly IQuery _query;
 		
 		private readonly IConsole _console;
+		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
 		public Import(
 			ISelectorStorage selectorStorage,
@@ -55,7 +57,8 @@ namespace starsky.feature.import.Services
 			IImportQuery importQuery,
 			IExifTool exifTool,
 			IQuery query,
-			IConsole console)
+			IConsole console,
+			IMetaExifThumbnailService metaExifThumbnailService)
 		{
 			_importQuery = importQuery;
 			
@@ -68,6 +71,7 @@ namespace starsky.feature.import.Services
             _exifTool = exifTool;
             _query = query;
             _console = console;
+            _metaExifThumbnailService = metaExifThumbnailService;
 		}
 
 		/// <summary>
@@ -372,13 +376,25 @@ namespace starsky.feature.import.Services
 			var directoriesContent = ParentFoldersDictionary(preflightItemList);
 			if ( importSettings.IndexMode ) await CreateParentFolders(directoriesContent);
 
-			var importIndexItemsIEnumerable = await preflightItemList.AsEnumerable()
+			var importIndexItemsList = (await preflightItemList.AsEnumerable()
 				.ForEachAsync(
 					async (preflightItem) 
 						=> await Importer(preflightItem, importSettings),
-					_appSettings.MaxDegreesOfParallelism);
+					_appSettings.MaxDegreesOfParallelism)).ToList();
 
-			return importIndexItemsIEnumerable.ToList();
+			if (importSettings.IndexMode) await CreateMataThumbnail(importIndexItemsList);
+			
+			return importIndexItemsList;
+		}
+
+		private async Task CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+			importIndexItemsList)
+		{
+			if ( !_appSettings.MetaThumbnailOnImport ) return;
+			var items = importIndexItemsList
+				.Where(p => p.Status == ImportStatus.Ok)
+				.Select(p => (p.FilePath, p.FileHash));
+			await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
 		/// <summary>

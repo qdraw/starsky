@@ -8,6 +8,7 @@ using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Helpers;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -19,11 +20,13 @@ namespace starsky.foundation.metathumbnail.Services
 	{
 		private readonly IWebLogger _logger;
 		private readonly IStorage _thumbnailStorage;
+		private readonly AppSettings _appSettings;
 
-		public WriteMetaThumbnail(ISelectorStorage selectorStorage, IWebLogger logger)
+		public WriteMetaThumbnail(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings)
 		{
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_logger = logger;
+			_appSettings = appSettings;
 		}
 
 		public async Task<bool> WriteAndCropFile(string fileHash, 
@@ -60,7 +63,11 @@ namespace starsky.foundation.metathumbnail.Services
 					await smallImage.SaveAsJpegAsync(outputStream);
 				
 					await _thumbnailStorage.WriteStreamAsync(outputStream, ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.TinyMeta));
-					_logger.LogInformation($"[WriteAndCropFile] fileHash: {fileHash} is written");
+					if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+					{
+						_logger.LogInformation($"[WriteAndCropFile] fileHash: {fileHash} is written");
+					}
+					
 				}
 
 				return true;
