@@ -7,6 +7,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -43,7 +44,10 @@ namespace starsky.feature.metaupdate.Services
 			// Per file stored key = string[fileHash] item => List <string>
 			// FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-
+			
+			// Prefill cache to avoid fast updating issues
+			await AddParentCacheIfNotExist(inputFilePaths);
+			
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths.ToList(), collections);
 
@@ -68,7 +72,6 @@ namespace starsky.feature.metaupdate.Services
 						fileIndexUpdateList);
 					continue; 
 				}
-
 				
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
 					fileIndexItem, inputModel, append, rotateClock);
@@ -87,23 +90,23 @@ namespace starsky.feature.metaupdate.Services
 				// Clone to not change after update
 				fileIndexUpdateList.Add(fileIndexItem);
 			}
-			
+
 			// update database cache and cloned due reference
 			_query.CacheUpdateItem(fileIndexUpdateList);
 
 			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
-			
-			// not needed directly but might be useful for the next api call
-			await Task.Factory.StartNew(() => AddParentCacheIfNotExist(fileIndexUpdateList));
 
 			return (fileIndexUpdateList, changedFileIndexItemName);
 		}
 	
-		internal async Task<List<string>> AddParentCacheIfNotExist(List<FileIndexItem> fileIndexUpdateList)
+		internal async Task<List<string>> AddParentCacheIfNotExist(IEnumerable<string> updatedPaths)
 		{
-			var parentDirectoryList =
-				new HashSet<string>(
-					fileIndexUpdateList.Select(p => p.ParentDirectory).ToList());
+			var parentDirectoryList = new HashSet<string>();
+
+			foreach ( var path in updatedPaths )
+			{
+				parentDirectoryList.Add(FilenamesHelper.GetParentPath(path));
+			}
 
 			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
 				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
@@ -113,24 +116,10 @@ namespace starsky.feature.metaupdate.Services
 			
 			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " + 
 				string.Join(",", shouldAddParentDirectoriesToCache));
-
-			// Merge to make sure that the updates are applied to the cache
-			var mergedQueryResultAndUpdated = new List<FileIndexItem>();
-			foreach ( var dbQueryItem in databaseQueryResult )
-			{
-				var item = fileIndexUpdateList.FirstOrDefault(p =>
-					p.FilePath == dbQueryItem.FilePath);
-				if ( item == null )
-				{
-					mergedQueryResultAndUpdated.Add(dbQueryItem);
-					continue;
-				}
-				mergedQueryResultAndUpdated.Add(item);
-			}
 			
 			foreach ( var directory in shouldAddParentDirectoriesToCache )
 			{
-				var byDirectory = mergedQueryResultAndUpdated.Where(p => p.ParentDirectory == directory).ToList();
+				var byDirectory = databaseQueryResult.Where(p => p.ParentDirectory == directory).ToList();
 				_query.AddCacheParentItem(directory, byDirectory);
 			}
 			return shouldAddParentDirectoriesToCache; 
