@@ -80,7 +80,7 @@ namespace starskytest.Controllers
 			_iSync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper());
+				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), new FakeIMetaExifThumbnailService());
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();

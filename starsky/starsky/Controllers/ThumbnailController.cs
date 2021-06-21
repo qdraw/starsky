@@ -33,12 +33,11 @@ namespace starsky.Controllers
 		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
 		/// <response code="404">item not found on disk</response>
 		/// <response code="401">User unauthorized</response>
-		[HttpGet("/api/thumbnail/index/{f}")]
+		[HttpGet("/api/thumbnail/small/{f}")]
 		[ProducesResponseType(200)] // file
 		[ProducesResponseType(
 			400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
-		[IgnoreAntiforgeryToken]
 		[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
 		[ResponseCache(Duration = 29030400)] // 4 weeks
 		public IActionResult ThumbnailFromIndex(string f)

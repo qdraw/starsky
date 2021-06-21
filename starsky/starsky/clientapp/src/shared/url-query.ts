@@ -256,7 +256,7 @@ export class UrlQuery {
     issingleitem: boolean
   ): string => {
     if (!issingleitem) {
-      return this.prefix + "/api/thumbnail/index/" + fileHash + ".jpg";
+      return this.prefix + "/api/thumbnail/small/" + fileHash + ".jpg";
     }
     return (
       this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true"

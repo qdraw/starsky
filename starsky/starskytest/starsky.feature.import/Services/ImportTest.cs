@@ -57,7 +57,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(
 				new List<string> {"/test.jpg"},
@@ -76,7 +76,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(
 				new List<string> {"/color_class_winner.jpg"},
@@ -96,7 +96,7 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(
 				new List<string> {"/color_class_winner.jpg"}, // <- in this test we change it
@@ -124,7 +124,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{FakeCreateAn.CreateAnImageNoExif.Bytes}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Preflight(
 				new List<string> {"/2020-04-27 11:07:00.jpg"},
@@ -149,7 +149,7 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, 
 				new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Preflight(
 				new List<string> {"/test.jpg"},
@@ -173,7 +173,7 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(new FakeSelectorStorage(storage), 
 				appSettings,
 				new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings), null, _console);
+				new FakeExifTool(storage, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(
 				new List<string> {"/test.unknown"},
@@ -190,8 +190,8 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings{Verbose = true};
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
 				new FakeIImportQuery(new List<string>{_exampleHash}),
-
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console,
+				new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -206,7 +206,8 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings,
 				new FakeIImportQuery(new List<string>{_exampleHash}),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+				new FakeExifTool(_iStorageFake, appSettings), null, _console,
+				new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Preflight(new List<string> {"/test.jpg"},
 				new ImportSettingsModel
@@ -222,8 +223,10 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_NonExist()
 		{
 			var appSettings = new AppSettings{Verbose = true};
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
+				appSettings, new FakeIImportQuery(),
+				new FakeExifTool(_iStorageFake, appSettings), null, _console,
+				new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Preflight(new List<string> {"/non-exist.jpg"},
 				new ImportSettingsModel());
@@ -236,8 +239,10 @@ namespace starskytest.starsky.feature.import.Services
 		public async Task Preflight_SingleImage_NonExistDirectory()
 		{
 			var appSettings = new AppSettings();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings), null, _console);
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
+				appSettings, new FakeIImportQuery(),
+				new FakeExifTool(_iStorageFake, appSettings), null, _console,
+				new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Preflight(new List<string> {"/non-exist"},
 				new ImportSettingsModel());
@@ -253,7 +258,8 @@ namespace starskytest.starsky.feature.import.Services
 			var importService = new Import(
 				new FakeSelectorStorage(_iStorageDirectoryRecursive), 
 				appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null,  _console);
+				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), 
+				null,  _console, new FakeIMetaExifThumbnailService());
 			
 			var importIndexItems = await importService.Preflight(
 				new List<string> {"/"},
@@ -288,7 +294,8 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings();
 			var importService = new Import(new FakeSelectorStorage(_iStorageDirectoryRecursive), appSettings, 
 				new FakeIImportQuery(),
-				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), null,  _console);
+				new FakeExifTool(_iStorageDirectoryRecursive, appSettings), 
+				null,  _console, new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Preflight(new List<string> {"/test"},
 				new ImportSettingsModel{RecursiveDirectory = false});
@@ -367,7 +374,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnImage.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console);
+				new FakeExifTool(storage, appSettings),query,_console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{DeleteAfter = true});
@@ -382,7 +389,7 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings{Verbose = true};
 			var storage = new FakeIStorage(new List<string>{"/"});
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings), null, _console);
+				new FakeExifTool(storage, appSettings), null, _console, new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(
 				new List<string> {"/"},
@@ -403,8 +410,9 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console);
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng");
+				new FakeExifTool(storage, appSettings),query,_console, new FakeIMetaExifThumbnailService());
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+				"/test.dng");
 
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
@@ -428,7 +436,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console);
+				new FakeExifTool(storage, appSettings),query,_console,new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
@@ -451,8 +459,9 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"/test.dng","/test.xmp"},
 				new List<byte[]>{CreateAnPng.Bytes,CreateAnXmp.Bytes});
 			
-			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console);
+			var importService = new Import(new FakeSelectorStorage(storage), 
+				appSettings, new FakeIImportQuery(), new FakeExifTool(storage, appSettings),query,
+				_console,new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
@@ -481,7 +490,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnPng.Bytes});
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query,_console);
+				new FakeExifTool(storage, appSettings),query,_console, new FakeIMetaExifThumbnailService());
 
 			await importService.Importer(new List<string> {"/test.dng"},
 				new ImportSettingsModel());
@@ -514,7 +523,8 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console)
+				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console,
+				new FakeIMetaExifThumbnailService())
 			{
 				MaxTryGetDestinationPath = 0
 			};
@@ -537,7 +547,8 @@ namespace starskytest.starsky.feature.import.Services
 
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,
 				new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console);
+				new FakeExifTool(storage, appSettings), new FakeIQuery(), _console, 
+				new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -554,8 +565,10 @@ namespace starskytest.starsky.feature.import.Services
 		{
 			var appSettings = new AppSettings();
 			var query = new FakeIQuery();
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), 
+				appSettings, new FakeIImportQuery(),
+				new FakeExifTool(_iStorageFake, appSettings),query, _console, 
+				new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -573,7 +586,8 @@ namespace starskytest.starsky.feature.import.Services
 			var appSettings = new AppSettings();
 			var query = new FakeIQuery();
 			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, appSettings),query, _console);
+				new FakeExifTool(_iStorageFake, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 			
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel{
@@ -594,7 +608,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnImage.Bytes}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query, _console);
+				new FakeExifTool(storage, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -616,7 +631,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnImage.Bytes}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query, _console);
+				new FakeExifTool(storage, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -636,7 +652,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{CreateAnImage.Bytes}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings, new FakeIImportQuery(),
-				new FakeExifTool(storage, appSettings),query, _console);
+				new FakeExifTool(storage, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 		
 			await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -660,7 +677,8 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
-				new FakeExifTool(storage, appSettings),query, _console);
+				new FakeExifTool(storage, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 			
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel());
@@ -685,7 +703,8 @@ namespace starskytest.starsky.feature.import.Services
 			);
 			
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,null,
-				new FakeExifTool(storage, appSettings),null, _console);
+				new FakeExifTool(storage, appSettings),null, _console,
+				new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new List<string> {"/test.jpg"},
 				new ImportSettingsModel {IndexMode = false});
@@ -709,7 +728,8 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>{new byte[0], new byte[0], new byte[0], new byte[0]}
 			);
 			var importService = new Import(new FakeSelectorStorage(storage), appSettings,importQuery,
-				new FakeExifTool(storage, appSettings),query, _console);
+				new FakeExifTool(storage, appSettings),query, _console,
+				new FakeIMetaExifThumbnailService());
 			
 			var duplicatesExampleList = new List<ImportIndexItem>
 			{
@@ -753,8 +773,9 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task InternalImporter_IgnoreWrongInput()
 		{
-			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(), new FakeIImportQuery(),
-				new FakeExifTool(_iStorageFake, new AppSettings()),new FakeIQuery(), _console);
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService());
 
 			var result = await importService.Importer(new ImportIndexItem {Status = ImportStatus.FileError},
 				new ImportSettingsModel());
