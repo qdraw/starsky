@@ -52,6 +52,24 @@ namespace starskytest.Services
 		}
 		
 		[TestMethod]
+		public async Task ReplaceServiceTest_NotFoundOnDiskButFoundInDatabase()
+		{
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "only-found-in-db.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, test"
+			}); 
+			
+			var output = await _metaReplace.Replace("/only-found-in-db.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,output[0].Status);
+			
+			await _query.RemoveItemAsync(item1);
+		}
+		
+		[TestMethod]
 		public async Task ReplaceServiceTest_ToDeleteStatus()
 		{
 			var item1 = await _query.AddItemAsync(new FileIndexItem
