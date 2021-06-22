@@ -107,7 +107,8 @@ namespace starsky.feature.metaupdate.Services
 			var fileIndexResultList = new List<FileIndexItem>();
 			foreach ( var fileIndexItem in fileIndexUpdatedList )
 			{
-
+				// Status Ok is already set
+				
 				// Deleted is allowed but the status need be updated
 				if ((fileIndexItem.Status == FileIndexItem.ExifStatus.Ok) && 
 				    new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) == 
