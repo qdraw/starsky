@@ -375,56 +375,6 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				result.fileIndexResultsList.FirstOrDefault().Status);
 		}
 
-		[TestMethod]
-		public async Task AddParentCacheIfNotExist_ignore_nothing()
-		{
-			var metaPreflight = new MetaPreflight(new FakeIQuery(
-					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}), new AppSettings(), 
-				new FakeSelectorStorage(),new FakeIWebLogger());
-
-			var result = await metaPreflight.AddParentCacheIfNotExist(
-				new List<string>());
-			Assert.AreEqual(0,result.Count);
-		}
-		
-		[TestMethod]
-		public async Task AddParentCacheIfNotExist_TriggerCacheSync()
-		{
-			var fakeContent =
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg")};
-
-			var fakeQuery = new FakeIQuery(fakeContent);
-			var metaPreflight = new MetaPreflight(fakeQuery, new AppSettings(), 
-				new FakeSelectorStorage(),new FakeIWebLogger());
-
-			await metaPreflight.AddParentCacheIfNotExist(
-				fakeContent.Select(p => p.FilePath));
-
-			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
-			
-			Assert.AreEqual(1,cacheGetParentFolder.Count);
-		}
-		
-		[TestMethod]
-		public async Task AddParentCacheIfNotExist_IgnoreWhenCacheExists()
-		{
-			var fakeContent =
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "test1"}};
-			var fakeContentCache =
-				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "__old_key__"}};
-			
-			var fakeQuery = new FakeIQuery(fakeContent,fakeContentCache);
-			var metaPreflight = new MetaPreflight(fakeQuery, new AppSettings(), 
-				new FakeSelectorStorage(),new FakeIWebLogger());
-
-			await metaPreflight.AddParentCacheIfNotExist(
-				fakeContent.Select(p => p.FilePath));
-
-			var (_, cacheGetParentFolder) = fakeQuery.CacheGetParentFolder("/");
-			
-			Assert.AreEqual(1,cacheGetParentFolder.Count);
-			Assert.AreEqual("__old_key__",cacheGetParentFolder[0].FileHash);
-		}
 
 	}
 }

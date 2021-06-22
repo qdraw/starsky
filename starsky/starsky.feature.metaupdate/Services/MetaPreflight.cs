@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.feature.metaupdate.Helpers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -46,7 +47,7 @@ namespace starsky.feature.metaupdate.Services
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
 			
 			// Prefill cache to avoid fast updating issues
-			await AddParentCacheIfNotExist(inputFilePaths);
+			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
 			
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths.ToList(), collections);
@@ -97,49 +98,9 @@ namespace starsky.feature.metaupdate.Services
 			// update database cache and cloned due reference
 			_query.CacheUpdateItem(fileIndexUpdateList);
 
-			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
+			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
 			return (fileIndexUpdateList, changedFileIndexItemName);
-		}
-	
-		internal async Task<List<string>> AddParentCacheIfNotExist(IEnumerable<string> updatedPaths)
-		{
-			var parentDirectoryList = new HashSet<string>();
-
-			foreach ( var path in updatedPaths )
-			{
-				parentDirectoryList.Add(FilenamesHelper.GetParentPath(path));
-			}
-
-			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
-				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
-			if ( !shouldAddParentDirectoriesToCache.Any() ) return new List<string>();
-
-			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
-			
-			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " + 
-				string.Join(",", shouldAddParentDirectoriesToCache));
-			
-			foreach ( var directory in shouldAddParentDirectoriesToCache )
-			{
-				var byDirectory = databaseQueryResult.Where(p => p.ParentDirectory == directory).ToList();
-				_query.AddCacheParentItem(directory, byDirectory);
-			}
-			return shouldAddParentDirectoriesToCache; 
-		}
-
-		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
-		{
-			foreach (var subPath in inputFilePaths)
-			{
-				// when item is not in the database
-				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
-				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-				}
-			}
 		}
 
 		/// <summary>

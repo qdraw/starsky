@@ -4,12 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using starsky.feature.metaupdate.Helpers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -24,17 +26,20 @@ namespace starsky.feature.metaupdate.Services
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
+		private readonly IWebLogger _logger;
 
-		/// <summary>Do a sync of files using a subPath</summary>
+		/// <summary>Replace meta content</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
 		/// <param name="selectorStorage">storage abstraction</param>
-		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
+		/// <param name="logger">web logger</param>
+		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_statusCodeHelper = new StatusCodesHelper(_appSettings);
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -65,6 +70,9 @@ namespace starsky.feature.metaupdate.Services
 			// the result list
 			var fileIndexUpdatedList = new List<FileIndexItem>();
 
+			// Prefill cache to avoid fast updating issues
+			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			
 			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths.ToList(), collections);
 			
@@ -93,7 +101,7 @@ namespace starsky.feature.metaupdate.Services
 
 			fileIndexUpdatedList = SearchAndReplace(fileIndexUpdatedList, fieldName, search, replace);
 
-			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdatedList);
+			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdatedList);
 
 			var fileIndexResultList = new List<FileIndexItem>();
 			foreach ( var fileIndexItem in fileIndexUpdatedList )
@@ -116,20 +124,6 @@ namespace starsky.feature.metaupdate.Services
 			}
 			
 			return fileIndexResultList;
-		}
-
-		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
-		{
-			foreach (var subPath in inputFilePaths)
-			{
-				// when item is not in the database
-				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
-				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-				}
-			}
 		}
 		
 		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 

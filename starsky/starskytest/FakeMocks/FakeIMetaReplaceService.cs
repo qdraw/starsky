@@ -22,7 +22,8 @@ namespace starskytest.FakeMocks
 		public Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace,
 			bool collections)
 		{
-			return Task.FromResult(new MetaReplaceService(null, null, null).SearchAndReplace(
+			return Task.FromResult(new MetaReplaceService(null, null, 
+				null, new FakeIWebLogger()).SearchAndReplace(
 				_input.Where(p => p.FilePath == f).ToList(), fieldName, search,
 				replace));
 		}
