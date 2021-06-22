@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.feature.metaupdate.Services;
 using starsky.foundation.database.Models;
@@ -18,12 +19,13 @@ namespace starskytest.FakeMocks
 			}
 		}
 		
-		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace,
+		public Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace,
 			bool collections)
 		{
-			return new MetaReplaceService(null, null, null).SearchAndReplace(
+			return Task.FromResult(new MetaReplaceService(null, null, 
+				null, new FakeIWebLogger()).SearchAndReplace(
 				_input.Where(p => p.FilePath == f).ToList(), fieldName, search,
-				replace);
+				replace));
 		}
 	}
 }

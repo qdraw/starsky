@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using starsky.feature.metaupdate.Helpers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -43,7 +45,10 @@ namespace starsky.feature.metaupdate.Services
 			// Per file stored key = string[fileHash] item => List <string>
 			// FileIndexItem.name (e.g. Tags) that are changed
 			var changedFileIndexItemName = new Dictionary<string, List<string>>();
-
+			
+			// Prefill cache to avoid fast updating issues
+			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			
 			var resultFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths.ToList(), collections);
 
@@ -68,14 +73,16 @@ namespace starsky.feature.metaupdate.Services
 						fileIndexUpdateList);
 					continue; 
 				}
-
 				
 				CompareAllLabelsAndRotation(changedFileIndexItemName,
 					fileIndexItem, inputModel, append, rotateClock);
 						
 				// this one is good :)
-				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-					
+				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				}
+				
 				// Deleted is allowed but the status need be updated
 				if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
 				      == FileIndexItem.ExifStatus.Deleted) )
@@ -87,67 +94,13 @@ namespace starsky.feature.metaupdate.Services
 				// Clone to not change after update
 				fileIndexUpdateList.Add(fileIndexItem);
 			}
-			
+
 			// update database cache and cloned due reference
 			_query.CacheUpdateItem(fileIndexUpdateList);
 
-			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdateList);
-			
-			// not needed directly but might be useful for the next api call
-			await Task.Factory.StartNew(() => AddParentCacheIfNotExist(fileIndexUpdateList));
+			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
 			return (fileIndexUpdateList, changedFileIndexItemName);
-		}
-	
-		internal async Task<List<string>> AddParentCacheIfNotExist(List<FileIndexItem> fileIndexUpdateList)
-		{
-			var parentDirectoryList =
-				new HashSet<string>(
-					fileIndexUpdateList.Select(p => p.ParentDirectory).ToList());
-
-			var shouldAddParentDirectoriesToCache = parentDirectoryList.Where(parentDirectory => 
-				!_query.CacheGetParentFolder(parentDirectory).Item1).ToList();
-			if ( !shouldAddParentDirectoriesToCache.Any() ) return new List<string>();
-
-			var databaseQueryResult = await _query.GetAllObjectsAsync(shouldAddParentDirectoriesToCache);
-			
-			_logger.LogInformation("[AddParentCacheIfNotExist] files added to cache " + 
-				string.Join(",", shouldAddParentDirectoriesToCache));
-
-			// Merge to make sure that the updates are applied to the cache
-			var mergedQueryResultAndUpdated = new List<FileIndexItem>();
-			foreach ( var dbQueryItem in databaseQueryResult )
-			{
-				var item = fileIndexUpdateList.FirstOrDefault(p =>
-					p.FilePath == dbQueryItem.FilePath);
-				if ( item == null )
-				{
-					mergedQueryResultAndUpdated.Add(dbQueryItem);
-					continue;
-				}
-				mergedQueryResultAndUpdated.Add(item);
-			}
-			
-			foreach ( var directory in shouldAddParentDirectoriesToCache )
-			{
-				var byDirectory = mergedQueryResultAndUpdated.Where(p => p.ParentDirectory == directory).ToList();
-				_query.AddCacheParentItem(directory, byDirectory);
-			}
-			return shouldAddParentDirectoriesToCache; 
-		}
-
-		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
-		{
-			foreach (var subPath in inputFilePaths)
-			{
-				// when item is not in the database
-				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
-				{
-					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-				}
-			}
 		}
 
 		/// <summary>
