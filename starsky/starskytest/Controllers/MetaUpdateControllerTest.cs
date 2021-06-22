@@ -187,9 +187,9 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void Replace_SourceImageMissingOnDisk_WithFakeExifTool()
+		public async Task Replace_SourceImageMissingOnDisk_WithFakeExifTool()
 		{
-			_query.AddItem(new FileIndexItem
+			await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "345678765434567.jpg",
 				ParentDirectory = "/",
@@ -209,19 +209,19 @@ namespace starskytest.Controllers
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 
-			var notFoundResult = controller.Replace( "/345678765434567.jpg", "test", "search", 
+			var notFoundResult = await controller.Replace( "/345678765434567.jpg", "test", "search", 
 				string.Empty) as NotFoundObjectResult;
 			if ( notFoundResult == null ) throw new NullReferenceException(nameof(notFoundResult));
 
 			Assert.AreEqual(404,notFoundResult.StatusCode);
 
-			_query.RemoveItem(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
+			await _query.RemoveItemAsync(_query.SingleItem("/345678765434567.jpg").FileIndexItem);
 		}
         
 		[TestMethod]
-		public void Replace_AllDataIncluded_WithFakeExifTool()
+		public async Task Replace_AllDataIncluded_WithFakeExifTool()
 		{
-			var item = _query.AddItem(new FileIndexItem
+			var item = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test09.jpg",
 				ParentDirectory = "/",
@@ -239,7 +239,7 @@ namespace starskytest.Controllers
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
 				new FakeIWebSocketConnectionsService(), new FakeIWebLogger());
 
-			var jsonResult =  controller.Replace("/test09.jpg","Tags", "test", 
+			var jsonResult =  await controller.Replace("/test09.jpg","Tags", "test", 
 				string.Empty) as JsonResult;
 			if ( jsonResult == null ) throw new NullReferenceException(nameof(jsonResult));
 			var fileModel = jsonResult.Value as List<FileIndexItem>;
@@ -248,7 +248,7 @@ namespace starskytest.Controllers
 			Assert.AreNotEqual(null,fileModel.FirstOrDefault()?.Tags);
 			Assert.AreEqual("7", fileModel.FirstOrDefault()?.Tags);
 
-			_query.RemoveItem(item);
+			await _query.RemoveItemAsync(item);
 		}
 
 		[TestMethod]

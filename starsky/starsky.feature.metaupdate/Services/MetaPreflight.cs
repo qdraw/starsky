@@ -77,8 +77,11 @@ namespace starsky.feature.metaupdate.Services
 					fileIndexItem, inputModel, append, rotateClock);
 						
 				// this one is good :)
-				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-					
+				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				}
+				
 				// Deleted is allowed but the status need be updated
 				if (( new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) 
 				      == FileIndexItem.ExifStatus.Deleted) )

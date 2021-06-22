@@ -107,8 +107,9 @@ namespace starsky.Controllers
 		{
 			// for debug
 			stopwatch.Stop();
-			_logger.LogInformation($"[{name}] f: {f} response collections: " +
-			                       $"{collections} duration: {DateTime.UtcNow} {stopwatch.Elapsed.TotalMilliseconds}");
+			_logger.LogInformation($"[{name}] f: {f} Stopwatch response collections: " +
+			                       $"{collections} {DateTime.UtcNow} duration: {stopwatch.Elapsed.TotalMilliseconds} ms or:" +
+			                       $" {stopwatch.Elapsed.TotalSeconds} sec");
 		}
 
 		/// <summary>
@@ -119,7 +120,7 @@ namespace starsky.Controllers
 		/// <param name="search">text to search for</param>
 		/// <param name="replace">replace [search] with this text</param>
 		/// <param name="collections">enable collections</param>
-		/// <returns>list of changed files</returns>
+		/// <returns>list of changed files (IActionResult Replace)</returns>
 		/// <response code="200">Initialized replace job</response>
 		/// <response code="404">item(s) not found</response>
 		/// <response code="401">User unauthorized</response>
@@ -127,53 +128,44 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(List<FileIndexItem>),200)]
 		[ProducesResponseType(typeof(List<FileIndexItem>),404)]
 		[Produces("application/json")]
-		public IActionResult Replace(string f, string fieldName, string search,
+		public async Task<IActionResult> Replace(string f, string fieldName, string search,
 			string replace, bool collections = true)
 		{
 			var stopwatch = StartUpdateReplaceStopWatch();
 
-			var fileIndexResultsList = _metaReplaceService
+			var fileIndexResultsList = await _metaReplaceService
 				.Replace(f, fieldName, search, replace, collections);
 		    
+			var resultsOkOrDeleteList = fileIndexResultsList.Where(
+				p => p.Status == FileIndexItem.ExifStatus.Ok || 
+				     p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+			
+			var changedFileIndexItemName = resultsOkOrDeleteList.
+				ToDictionary(item => item.FilePath, item => new List<string> {fieldName});
+
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var resultsOkList =
-					fileIndexResultsList.Where(p => p.Status
-					                                == FileIndexItem.ExifStatus.Ok).ToList();
-				
-				foreach ( var inputModel in resultsOkList )
-				{
-					await _metaUpdateService
-						.Update(null, new List<FileIndexItem>{inputModel},
-							inputModel, collections, false, 0);
-				}
+				await _metaUpdateService
+					.Update(changedFileIndexItemName, resultsOkOrDeleteList,
+						null, collections, false, 0);
 
-				if ( resultsOkList.Any() )
+				if ( resultsOkOrDeleteList.Any() )
 				{
-					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkList,
+					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkOrDeleteList,
 						DefaultJsonSerializer.CamelCase), token);
 				}
-
 			});
 
 			StopUpdateReplaceStopWatch("replace", f, collections, stopwatch);
 			
 			// When all items are not found
-			if (fileIndexResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if (!resultsOkOrDeleteList.Any())
 			{
 				return NotFound(fileIndexResultsList);
 			}
-
-			// Clone an new item in the list to display
-			var returnNewResultList = new List<FileIndexItem>();
-			foreach ( var clonedItem in fileIndexResultsList.Select(item => item.Clone()) )
-			{
-				clonedItem.FileHash = null;
-				returnNewResultList.Add(clonedItem);
-			}
 			
-			return Json(returnNewResultList);
+			return Json(fileIndexResultsList);
 		}
 	}
 }

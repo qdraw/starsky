@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -44,7 +45,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="replace"></param>
 		/// <param name="fieldName"></param>
 		/// <param name="collections"></param>
-		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace, bool collections)
+		public async Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
 			// when you search for nothing, your fast done
 			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>
@@ -62,62 +63,75 @@ namespace starsky.feature.metaupdate.Services
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
 			// the result list
-			var fileIndexResultsList = new List<FileIndexItem>();
+			var fileIndexUpdatedList = new List<FileIndexItem>();
 
+			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
+				inputFilePaths.ToList(), collections);
+			
 			// to collect
-			foreach ( var subPath in inputFilePaths )
+			foreach ( var fileIndexItem in queryFileIndexItemsList )
 			{
-				var detailView = _query.SingleItem(subPath, null, collections, false);
-				
-				if ( detailView?.FileIndexItem == null )
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) // folder deleted
 				{
-					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-					continue;
-				}
-				
-				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
-						fileIndexResultsList);
+						fileIndexUpdatedList);
 					continue; 
 				}
 				
 				// Dir is readonly / don't edit
-				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
-						fileIndexResultsList);
+						fileIndexUpdatedList);
 					continue; 
 				}
-
-				// current item is also ok
-				if ( detailView.FileIndexItem.Status == FileIndexItem.ExifStatus.Default )
-				{
-					detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-				}
-				
-				// Now Add Collection based images
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
-				foreach ( var item in collectionSubPathList )
-				{
-					var itemDetailView = _query.SingleItem(item, null, 
-						false, false).FileIndexItem;
-					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
-					fileIndexResultsList.Add(itemDetailView);
-				}
-
+				fileIndexUpdatedList.Add(fileIndexItem);
 			}
 
-			fileIndexResultsList = SearchAndReplace(fileIndexResultsList, fieldName, search, replace);
+			fileIndexUpdatedList = SearchAndReplace(fileIndexUpdatedList, fieldName, search, replace);
 
-			return fileIndexResultsList;
+			AddNotFoundInIndexStatus(inputFilePaths, fileIndexUpdatedList);
+
+			var fileIndexResultList = new List<FileIndexItem>();
+			foreach ( var fileIndexItem in fileIndexUpdatedList )
+			{
+				// current item is also ok
+				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
+				}
+				
+				// Deleted is allowed but the status need be updated
+				if ((fileIndexItem.Status == FileIndexItem.ExifStatus.Ok) && 
+				    new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) == 
+				    FileIndexItem.ExifStatus.Deleted)
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
+				}
+				
+				fileIndexResultList.Add(fileIndexItem);
+			}
+			
+			return fileIndexResultList;
 		}
 
+		private void AddNotFoundInIndexStatus(string[] inputFilePaths, List<FileIndexItem> fileIndexResultsList)
+		{
+			foreach (var subPath in inputFilePaths)
+			{
+				// when item is not in the database
+				if ( fileIndexResultsList.All(p => p.FilePath != subPath) )
+				{
+					new StatusCodesHelper().ReturnExifStatusError(new FileIndexItem(subPath), 
+						FileIndexItem.ExifStatus.NotFoundNotInIndex,
+						fileIndexResultsList);
+				}
+			}
+		}
+		
 		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
 			string fieldName, string search, string replace)
 		{
