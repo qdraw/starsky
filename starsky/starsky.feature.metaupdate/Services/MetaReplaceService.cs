@@ -73,6 +73,7 @@ namespace starsky.feature.metaupdate.Services
 			// Prefill cache to avoid fast updating issues
 			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
 			
+			// Assumes that this give status Ok back by default
 			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
 				inputFilePaths.ToList(), collections);
 			
@@ -106,12 +107,7 @@ namespace starsky.feature.metaupdate.Services
 			var fileIndexResultList = new List<FileIndexItem>();
 			foreach ( var fileIndexItem in fileIndexUpdatedList )
 			{
-				// current item is also ok
-				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
-				{
-					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-				}
-				
+
 				// Deleted is allowed but the status need be updated
 				if ((fileIndexItem.Status == FileIndexItem.ExifStatus.Ok) && 
 				    new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) == 
