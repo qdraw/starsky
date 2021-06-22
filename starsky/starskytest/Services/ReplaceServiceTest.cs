@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,50 +18,92 @@ namespace starskytest.Services
 	public class ReplaceServiceTest
 	{
 		
-		private MetaReplaceService _metaReplace;
+		private readonly MetaReplaceService _metaReplace;
 		private readonly Query _query;
-		private readonly IMemoryCache _memoryCache;
-		private FakeIStorage _iStorage;
+		private readonly FakeIStorage _iStorage;
 
 		public ReplaceServiceTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			_memoryCache = provider.GetService<IMemoryCache>();
+			var memoryCache = provider.GetService<IMemoryCache>();
             
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase(nameof(MetaReplaceService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext,_memoryCache);
+			_query = new Query(dbContext,memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
-				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg"});
+				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng"});
 			_metaReplace = new MetaReplaceService(_query,new AppSettings{ ReadOnlyFolders = new List<string>{"/readonly"}},
-				new FakeSelectorStorage(_iStorage));
+				new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
 
 		}
-		
-		// todo: not found
 
 		[TestMethod]
-		public void ReplaceServiceTest_replaceString()
+		public async Task ReplaceServiceTest_NotFound()
 		{
-	
-			var item1 = _query.AddItem(new FileIndexItem
+			var output = await _metaReplace.Replace("/not-found.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,output[0].Status);
+		}
+		
+		[TestMethod]
+		public async Task ReplaceServiceTest_NotFoundOnDiskButFoundInDatabase()
+		{
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "only-found-in-db.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, test"
+			}); 
+			
+			var output = await _metaReplace.Replace("/only-found-in-db.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,output[0].Status);
+			
+			await _query.RemoveItemAsync(item1);
+		}
+		
+		[TestMethod]
+		public async Task ReplaceServiceTest_ToDeleteStatus()
+		{
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test2.jpg",
+				ParentDirectory = "/",
+				Tags = "test1, test"
+			}); 
+			
+			var output = await _metaReplace.Replace("/test2.jpg",
+				nameof(FileIndexItem.Tags),"test1","!delete!",false);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,output[0].Status);
+			Assert.AreEqual("!delete!, test",output[0].Tags);
+
+			await _query.RemoveItemAsync(item1);
+		}
+
+		[TestMethod]
+		public async Task ReplaceServiceTest_replaceString()
+		{
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _metaReplace.Replace("/test2.jpg",
+			var output = await _metaReplace.Replace("/test2.jpg",
 				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item1);
 		}
 
 		[TestMethod]
@@ -74,30 +117,63 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReplaceServiceTest_replaceStringMultipleItems()
+		public async Task ReplaceServiceTest_replaceStringMultipleItems()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/",
 				Tags = "!delete!"
 			});
 			
-			var item1 = _query.AddItem(new FileIndexItem
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
-			var output = _metaReplace.Replace("/test2.jpg;/test.jpg",
+			
+			var output = await _metaReplace.Replace("/test2.jpg;/test.jpg",
 				nameof(FileIndexItem.Tags),"!delete!",string.Empty,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 
-			Assert.AreEqual(string.Empty,output[1].Tags);
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg").Tags);
+			Assert.AreEqual("test1, test",output.FirstOrDefault(p => p.FilePath == "/test2.jpg").Tags);
 
-			_query.RemoveItem(item0);
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
+		}
+		
+		
+		[TestMethod]
+		public async Task ReplaceServiceTest_replaceStringMultipleItemsCollections()
+		{
+			var item0 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test.jpg",
+				ParentDirectory = "/",
+				Tags = "!delete!"
+			});
+			
+			var item1 = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "test.dng",
+				ParentDirectory = "/",
+				Tags = "!delete!"
+			}); 
+			
+			var output = await _metaReplace.Replace("/test.jpg",
+				nameof(FileIndexItem.Tags),"!delete!",string.Empty,true);
+			
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
+			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[1].Status);
+
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.jpg").Tags);
+			Assert.AreEqual(string.Empty,output.FirstOrDefault(p => p.FilePath == "/test.dng").Tags);
+
+			await _query.RemoveItemAsync(item0);
+			await _query.RemoveItemAsync(item1);
 		}
 
 		[TestMethod]
@@ -118,50 +194,50 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
-		public void ReplaceServiceTest_replaceSearchNull()
+		public async Task ReplaceServiceTest_replaceSearchNull()
 		{
 			// When you search for nothing, there is nothing to replace 
-			var output = _metaReplace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), 
+			var output = await _metaReplace.Replace("/nothing.jpg", nameof(FileIndexItem.Tags), 
 				null, "test", false);
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,output[0].Status);
 		}
 
 
 		[TestMethod]
-		public void ReplaceServiceTest_replace_LowerCaseTagName()
+		public async Task ReplaceServiceTest_replace_LowerCaseTagName()
 		{
-			var item1 = _query.AddItem(new FileIndexItem
+			var item1 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test2.jpg",
 				ParentDirectory = "/",
 				Tags = "test1, !delete!, test"
 			}); 
 			
-			var output = _metaReplace.Replace("/test2.jpg",
+			var output = await _metaReplace.Replace("/test2.jpg",
 				nameof(FileIndexItem.Tags).ToLowerInvariant(),"!delete!",string.Empty,false);
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,output[0].Status);
 			Assert.AreEqual("test1, test",output[0].Tags);
 			
-			_query.RemoveItem(item1);
+			await _query.RemoveItemAsync(item1);
 		}
 
 		[TestMethod]
-		public void ReplaceServiceTest_Readonly()
+		public async Task ReplaceServiceTest_Readonly()
 		{
-			var item0 = _query.AddItem(new FileIndexItem
+			var item0 = await _query.AddItemAsync(new FileIndexItem
 			{
 				FileName = "test.jpg",
 				ParentDirectory = "/readonly",
 				Tags = "!delete!"
 			});
 			
-			var output = _metaReplace.Replace("/readonly/test.jpg",
+			var output = await _metaReplace.Replace("/readonly/test.jpg",
 				nameof(FileIndexItem.Tags),"!delete!",null,false);
 			
 			Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly, output.FirstOrDefault().Status);
 			
-			_query.RemoveItem(item0);
+			await _query.RemoveItemAsync(item0);
 		}
 
 		[TestMethod]

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using starsky.feature.metaupdate.Helpers;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -23,17 +26,20 @@ namespace starsky.feature.metaupdate.Services
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _iStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
+		private readonly IWebLogger _logger;
 
-		/// <summary>Do a sync of files using a subPath</summary>
+		/// <summary>Replace meta content</summary>
 		/// <param name="query">Starsky IQuery interface to do calls on the database</param>
 		/// <param name="appSettings">Settings of the application</param>
 		/// <param name="selectorStorage">storage abstraction</param>
-		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage)
+		/// <param name="logger">web logger</param>
+		public MetaReplaceService(IQuery query, AppSettings appSettings, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_appSettings = appSettings;
 			if ( selectorStorage != null ) _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_statusCodeHelper = new StatusCodesHelper(_appSettings);
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -44,7 +50,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="replace"></param>
 		/// <param name="fieldName"></param>
 		/// <param name="collections"></param>
-		public List<FileIndexItem> Replace(string f, string fieldName, string search, string replace, bool collections)
+		public async Task<List<FileIndexItem>> Replace(string f, string fieldName, string search, string replace, bool collections)
 		{
 			// when you search for nothing, your fast done
 			if ( string.IsNullOrEmpty(search) ) return new List<FileIndexItem>
@@ -62,62 +68,61 @@ namespace starsky.feature.metaupdate.Services
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f);
 
 			// the result list
-			var fileIndexResultsList = new List<FileIndexItem>();
+			var fileIndexUpdatedList = new List<FileIndexItem>();
 
+			// Prefill cache to avoid fast updating issues
+			await new AddParentCacheIfNotExist(_query,_logger).AddParentCacheIfNotExistAsync(inputFilePaths);
+			
+			// Assumes that this give status Ok back by default
+			var queryFileIndexItemsList = await _query.GetObjectsByFilePathAsync(
+				inputFilePaths.ToList(), collections);
+			
 			// to collect
-			foreach ( var subPath in inputFilePaths )
+			foreach ( var fileIndexItem in queryFileIndexItemsList )
 			{
-				var detailView = _query.SingleItem(subPath, null, collections, false);
-				
-				if ( detailView?.FileIndexItem == null )
+				if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted ) // folder deleted
 				{
-					_statusCodeHelper.ReturnExifStatusError(new FileIndexItem(subPath), 
-						FileIndexItem.ExifStatus.NotFoundNotInIndex,
-						fileIndexResultsList);
-					continue;
-				}
-				
-				if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.NotFoundSourceMissing,
-						fileIndexResultsList);
+						fileIndexUpdatedList);
 					continue; 
 				}
 				
 				// Dir is readonly / don't edit
-				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(detailView) 
+				if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem) 
 				     == FileIndexItem.ExifStatus.ReadOnly)
 				{
-					_statusCodeHelper.ReturnExifStatusError(detailView.FileIndexItem, 
+					_statusCodeHelper.ReturnExifStatusError(fileIndexItem, 
 						FileIndexItem.ExifStatus.ReadOnly,
-						fileIndexResultsList);
+						fileIndexUpdatedList);
 					continue; 
 				}
-
-				// current item is also ok
-				if ( detailView.FileIndexItem.Status == FileIndexItem.ExifStatus.Default )
-				{
-					detailView.FileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
-				}
-				
-				// Now Add Collection based images
-				var collectionSubPathList = detailView.GetCollectionSubPathList(detailView.FileIndexItem, collections, subPath);
-				foreach ( var item in collectionSubPathList )
-				{
-					var itemDetailView = _query.SingleItem(item, null, 
-						false, false).FileIndexItem;
-					itemDetailView.Status = FileIndexItem.ExifStatus.Ok;
-					fileIndexResultsList.Add(itemDetailView);
-				}
-
+				fileIndexUpdatedList.Add(fileIndexItem);
 			}
 
-			fileIndexResultsList = SearchAndReplace(fileIndexResultsList, fieldName, search, replace);
+			fileIndexUpdatedList = SearchAndReplace(fileIndexUpdatedList, fieldName, search, replace);
 
-			return fileIndexResultsList;
+			AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdatedList);
+
+			var fileIndexResultList = new List<FileIndexItem>();
+			foreach ( var fileIndexItem in fileIndexUpdatedList )
+			{
+				// Status Ok is already set
+				
+				// Deleted is allowed but the status need be updated
+				if ((fileIndexItem.Status == FileIndexItem.ExifStatus.Ok) && 
+				    new StatusCodesHelper(_appSettings).IsDeletedStatus(fileIndexItem) == 
+				    FileIndexItem.ExifStatus.Deleted)
+				{
+					fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
+				}
+				
+				fileIndexResultList.Add(fileIndexItem);
+			}
+			
+			return fileIndexResultList;
 		}
-
+		
 		public List<FileIndexItem> SearchAndReplace(List<FileIndexItem> fileIndexResultsList, 
 			string fieldName, string search, string replace)
 		{

@@ -17,7 +17,6 @@ namespace starskytest.FakeMocks
 
 		public void UpdateReadMetaCache(IEnumerable<FileIndexItem> returnNewResultList)
 		{
-			throw new System.NotImplementedException();
 		}
 	}
 }
