@@ -256,12 +256,15 @@ namespace starskytest.Controllers
 		{
 			var fakeFakeIWebSocketConnectionsService =
 				new FakeIWebSocketConnectionsService();
-			var controller = new MetaUpdateController(new FakeMetaPreflight(),
+			
+			var controller = new MetaUpdateController(
+				new FakeMetaPreflight(),
 				new FakeIMetaUpdateService(), 
-				new FakeIMetaReplaceService(), new FakeIBackgroundTaskQueue(), 
+				new FakeIMetaReplaceService(), 
+				new FakeIBackgroundTaskQueue(), 
 				fakeFakeIWebSocketConnectionsService, new FakeIWebLogger());
 
-			await controller.UpdateAsync(new FileIndexItem(), "/test09.jpg",
+			await controller.UpdateAsync(new FileIndexItem{ Status =  FileIndexItem.ExifStatus.Ok}, "/test09.jpg",
 				true);
 
 			Assert.AreEqual(1,fakeFakeIWebSocketConnectionsService
@@ -282,7 +285,7 @@ namespace starskytest.Controllers
 
 			controller.Replace("/test09.jpg", "tags", "test", "");
 
-			Assert.AreEqual(1, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
+			Assert.AreEqual(2, fakeFakeIWebSocketConnectionsService.FakeSendToAllAsync.Count);
 		}
         
 		[TestMethod]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,13 +72,9 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				var updatedList = await _metaUpdateService
+				await _metaUpdateService
 					.Update(changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
-				_logger.LogInformation($"[UpdateController] send to socket {f}");
-				await _connectionsService.SendToAllAsync("[system] /api/update called", token);
-				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(updatedList, 
-					DefaultJsonSerializer.CamelCase), token);
 			});
 			
 			// When all items are not found
@@ -93,6 +90,11 @@ namespace starsky.Controllers
 
 			StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
 
+			_logger.LogInformation($"[UpdateController] send to socket {f}");
+			await _connectionsService.SendToAllAsync("[system] /api/update called",CancellationToken.None);
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(fileIndexResultsList, 
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
+			
 			return Json(returnNewResultList);
 		}
 
@@ -149,12 +151,6 @@ namespace starsky.Controllers
 				await _metaUpdateService
 					.Update(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
-
-				if ( resultsOkOrDeleteList.Any() )
-				{
-					await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkOrDeleteList,
-						DefaultJsonSerializer.CamelCase), token);
-				}
 			});
 
 			StopUpdateReplaceStopWatch("replace", f, collections, stopwatch);
@@ -164,6 +160,10 @@ namespace starsky.Controllers
 			{
 				return NotFound(fileIndexResultsList);
 			}
+			
+			await _connectionsService.SendToAllAsync("[system] /api/replace called",CancellationToken.None);
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkOrDeleteList,
+				DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			return Json(fileIndexResultsList);
 		}
