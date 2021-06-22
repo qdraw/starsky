@@ -58,23 +58,26 @@ describe('Search -from upload - update tags', () => {
       .should('have.text', helloWorldText)
   })
 
-  it('update and overwrite first image after cache clear', () => {
-    if (!config.isEnabled) return
+  it('update and overwrite first image after cache clear',
+    {
+      retries: 4
+    }, () => {
+      if (!config.isEnabled) return
 
-    // need to wait for backend
-    cy.wait(3000)
+      // need to wait for backend
+      cy.wait(1000)
 
-    cy.request('POST', config.searchClearCache)
+      cy.request('POST', config.searchClearCache)
 
-    cy.wait(100)
+      cy.wait(50)
 
-    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-    cy.visit(config.urlSearchFromUpload)
-    cy.wait('@search')
+      cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
+      cy.visit(config.urlSearchFromUpload)
+      cy.wait('@search')
 
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
-      .should('contain.text', helloWorldText)
-  })
+      cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
+        .should('contain.text', helloWorldText)
+    })
 
   it('append text to first image', () => {
     if (!config.isEnabled) return
@@ -101,23 +104,26 @@ describe('Search -from upload - update tags', () => {
       .should('contain.text', ', ' + secondAddedText)
   })
 
-  it('update and add first image after cache clear', () => {
-    if (!config.isEnabled) return
+  it('update and add first image after cache clear',
+    {
+      retries: 4
+    }, () => {
+      if (!config.isEnabled) return
 
-    // need to wait for backend
-    cy.wait(3000)
+      // need to wait for backend
+      cy.wait(1000)
 
-    cy.request('POST', config.searchClearCache)
+      cy.request('POST', config.searchClearCache)
 
-    cy.wait(100)
+      cy.wait(50)
 
-    cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
-    cy.visit(config.urlSearchFromUpload)
-    cy.wait('@search')
+      cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
+      cy.visit(config.urlSearchFromUpload)
+      cy.wait('@search')
 
-    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
-      .should('contain.text', secondAddedText)
-  })
+      cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] .tags`)
+        .should('contain.text', secondAddedText)
+    })
 
   it('clean text afterwards to something different', () => {
     if (!config.isEnabled) return
