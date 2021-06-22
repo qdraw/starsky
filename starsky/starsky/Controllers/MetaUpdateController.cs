@@ -90,6 +90,7 @@ namespace starsky.Controllers
 
 			StopUpdateReplaceStopWatch("update", f,collections, stopwatch);
 
+			// Push direct to socket when update or replace to avoid undo after a second
 			_logger.LogInformation($"[UpdateController] send to socket {f}");
 			await _connectionsService.SendToAllAsync("[system] /api/update called",CancellationToken.None);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(fileIndexResultsList, 
@@ -161,6 +162,7 @@ namespace starsky.Controllers
 				return NotFound(fileIndexResultsList);
 			}
 			
+			// Push direct to socket when update or replace to avoid undo after a second
 			await _connectionsService.SendToAllAsync("[system] /api/replace called",CancellationToken.None);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(resultsOkOrDeleteList,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);
