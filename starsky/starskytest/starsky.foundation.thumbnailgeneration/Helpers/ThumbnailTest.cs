@@ -93,7 +93,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var thumb = await new Thumbnail(iStorage,
 				iStorage, new FakeIWebLogger()).ResizeThumbnailFromSourceImage(
 				newImage.FullFilePath, 1, null, true);
-			Assert.AreEqual(true,thumb.CanRead);
+			Assert.AreEqual(true,thumb.Item1.CanRead);
 		}
         
 		[TestMethod]
@@ -103,7 +103,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_iStorage, new FakeIWebLogger()).ResizeThumbnailFromSourceImage(
 				_fakeIStorageImageSubPath, 1, null, true,
 				ExtensionRolesHelper.ImageFormat.png);
-			Assert.AreEqual(true,thumb.CanRead);
+			Assert.AreEqual(true,thumb.Item1.CanRead);
 		}
 		
 		[TestMethod]

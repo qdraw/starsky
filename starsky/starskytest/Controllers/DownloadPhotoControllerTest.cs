@@ -56,10 +56,10 @@ namespace starskytest.Controllers
 		private IStorage ArrangeStorage()
 		{
 			var folderPaths = new List<string>{"/"};
-			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp"};
+			var inputSubPaths = new List<string>{"/test.jpg","/test.xmp", "/corrupt.jpg"};
 			var storage =
 				new FakeIStorage(folderPaths, inputSubPaths, 
-					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,FakeCreateAn.CreateAnXmp.Bytes});
+					new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes,FakeCreateAn.CreateAnXmp.Bytes, new byte[0]});
 			return storage;
 		}
 
@@ -126,6 +126,68 @@ namespace starskytest.Controllers
 			Assert.AreNotEqual(null,actionResult);
 
 			await actionResult.FileStream.DisposeAsync();
+		}
+		
+		[TestMethod]
+		public async Task DownloadPhoto_WrongInputNotFound()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			// Act
+			var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = await controller.DownloadPhoto("?isthumbnail") as NotFoundObjectResult;
+			
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
+		}
+				
+		[TestMethod]
+		public async Task DownloadPhotoCorrupt()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			var item = await _query.AddItemAsync(new FileIndexItem
+			{
+				FileName = "corrupt.jpg",
+				ParentDirectory = "/",
+				FileHash = "hash"
+			});
+			
+			// Act
+			var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			
+			var actionResult = await controller.DownloadPhoto("/corrupt.jpg") as JsonResult;
+			Assert.AreNotEqual(null,actionResult);
+
+			Assert.AreEqual(500,controller.Response.StatusCode);
+
+			await _query.RemoveItemAsync(item);
+		}
+		
+						
+		[TestMethod]
+		public async Task DownloadPhoto_NotFound()
+		{
+			// Arrange
+			var selectorStorage = new FakeSelectorStorage(ArrangeStorage());
+			
+			// Act
+			var controller = new DownloadPhotoController(_query, selectorStorage, new FakeIWebLogger())
+			{
+				ControllerContext = {HttpContext = new DefaultHttpContext()}
+			};
+			var actionResult = await controller.DownloadPhoto("/not-found.jpg") as NotFoundObjectResult;
+			
+			Assert.AreNotEqual(null,actionResult);
+			Assert.AreEqual(404,actionResult.StatusCode);
 		}
 		
 		[TestMethod]
