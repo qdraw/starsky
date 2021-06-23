@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -15,13 +16,19 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
+using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.worker.Services;
+using starsky.foundation.writemeta.Interfaces;
+using starskycore.Models;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starskytest.Models;
 
 namespace starskytest.Controllers
 {
@@ -95,6 +102,38 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(ImportStatus.FileError, list.FirstOrDefault().Status);
 		}
+		
+		[TestMethod]
+		public async Task ImportPostBackgroundTask_NotFound()
+		{
+
+			var services = new ServiceCollection();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<AppSettings>();
+			services.AddSingleton<IImportQuery, FakeIImportQuery>();
+			services.AddSingleton<IExifTool, FakeExifTool>();
+			services.AddSingleton<IQuery, FakeIQuery>();
+			services.AddSingleton<IImport, FakeIImport>();
+			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			
+			var importController = new ImportController(null, new AppSettings(),
+				null, null, new FakeSelectorStorage(),
+				scopeFactory);
+			
+			var result = await importController.ImportPostBackgroundTask(
+				new List<string>{"/test"}, new ImportSettingsModel());
+
+			Assert.AreEqual(1,result.Count );
+			Assert.AreEqual(ImportStatus.NotFound, result[0].Status);
+
+		}
+
 
 		[TestMethod]
 		public async Task FromUrl_PathInjection()

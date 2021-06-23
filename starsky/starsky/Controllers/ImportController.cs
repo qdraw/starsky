@@ -79,35 +79,7 @@ namespace starsky.Controllers
 			// Import files >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				List<ImportIndexItem> importedFiles;
-	            
-				using ( var scope = _scopeFactory.CreateScope() )
-				{
-					var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
-					var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
-					var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
-					var query = scope.ServiceProvider.GetRequiredService<IQuery>();
-					var console = scope.ServiceProvider.GetRequiredService<IConsole>();
-					var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
-
-					importedFiles = await new Import(selectorStorage,_appSettings,
-						importQuery, exifTool, query,console, 
-						metaExifThumbnailService).Importer(tempImportPaths, importSettings);
-				}
-	            
-				if ( _appSettings.Verbose )
-				{
-					foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
-					{
-						Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
-					}
-				}
-                
-				// Remove source files
-				foreach ( var toDelPath in tempImportPaths )
-				{
-					_hostFileSystemStorage.FileDelete(toDelPath);
-				}
+				await ImportPostBackgroundTask(tempImportPaths, importSettings);
 			});
             
 			// When all items are already imported
@@ -124,6 +96,43 @@ namespace starsky.Controllers
 			}
 
 			return Json(fileIndexResultsList);
+		}
+
+		internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(List<string> tempImportPaths,
+			ImportSettingsModel importSettings)
+		{
+			List<ImportIndexItem> importedFiles;
+	            
+			using ( var scope = _scopeFactory.CreateScope() )
+			{
+				var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
+				var importQuery = scope.ServiceProvider.GetRequiredService<IImportQuery>();
+				var exifTool = scope.ServiceProvider.GetRequiredService<IExifTool>();
+				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
+				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
+				var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
+
+				// use of IImport direct does not work
+				importedFiles = await new Import(selectorStorage,_appSettings,
+					importQuery, exifTool, query,console, 
+					metaExifThumbnailService).Importer(tempImportPaths, importSettings);
+			}
+	            
+			if ( _appSettings.Verbose )
+			{
+				foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
+				{
+					Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
+				}
+			}
+                
+			// Remove source files
+			foreach ( var toDelPath in tempImportPaths )
+			{
+				_hostFileSystemStorage.FileDelete(toDelPath);
+			}
+
+			return importedFiles;
 		}
 		
 		/// <summary>
