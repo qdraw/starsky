@@ -374,7 +374,9 @@ namespace starskytest.Controllers
 			
 			await controller.Mkdir("/test_dir");
 			
-			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test_dir"));
+			var value = socket.FakeSendToAllAsync.FirstOrDefault(p =>
+				!p.StartsWith("[system]"));
+			Assert.IsTrue(value.Contains("/test_dir"));
 		}
 		
 		[TestMethod]

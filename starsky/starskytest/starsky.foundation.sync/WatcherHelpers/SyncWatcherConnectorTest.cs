@@ -81,8 +81,10 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
 
-			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count);
-			Assert.IsTrue(websockets.FakeSendToAllAsync[0].Contains("filePath\":\"/test\""));
+			Assert.AreEqual(1, websockets.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
+			var value = websockets.FakeSendToAllAsync.FirstOrDefault(p =>
+					!p.StartsWith("[system]"));
+			Assert.IsTrue(value.Contains("filePath\":\"/test\""));
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
 
