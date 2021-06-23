@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,6 +22,20 @@ namespace starskytest.starsky.foundation.storage.Storage
 			_thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 			_fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
 
+		}
+
+		[TestMethod]
+		public void CombinePathShouldEndWithTestJpg()
+		{
+			var result = _thumbnailStorage.CombinePath("test.jpg");
+			Assert.IsTrue(result.EndsWith("test.jpg"));
+		}
+		
+		[TestMethod]
+		public void CombinePathShouldEndWithTestJpg2()
+		{
+			var result = _thumbnailStorage.CombinePath("test");
+			Assert.IsTrue(result.EndsWith("test.jpg"));
 		}
 		
 		[TestMethod]

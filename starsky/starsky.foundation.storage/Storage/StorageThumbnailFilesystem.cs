@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -19,7 +21,7 @@ namespace starsky.foundation.storage.Storage
 			_appSettings = appSettings;
 		}
 
-		private string CombinePath(string fileHash)
+		internal string CombinePath(string fileHash)
 		{
 			// ReSharper disable once ConvertIfStatementToReturnStatement
 			if ( fileHash.EndsWith(".jpg") )
