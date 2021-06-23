@@ -9,7 +9,7 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 	{
 	
 		[TestMethod]
-		public void Test1()
+		public void NewImageSize_Horizontal()
 		{
 			var sourceWidth = 4240;
 			var sourceHeight = 2832;
@@ -25,7 +25,25 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 			
 			Assert.AreEqual(0, rNewImageSizeCalc.DestX);
 			Assert.AreEqual(7, rNewImageSizeCalc.DestY);
+		}
+		
+		[TestMethod]
+		public void NewImageSize_Portrait()
+		{
+			var sourceWidth = 2832 ;
+			var sourceHeight = 4240;
 
+			var smallWidth = 120 ;
+			var smallHeight = 160;
+
+			var rNewImageSizeCalc = NewImageSize.NewImageSizeCalc(smallWidth, 
+				smallHeight, sourceWidth, sourceHeight);
+			
+			Assert.AreEqual(160 , rNewImageSizeCalc.DestHeight);
+			Assert.AreEqual(106, rNewImageSizeCalc.DestWidth);
+			
+			Assert.AreEqual(7, rNewImageSizeCalc.DestX);
+			Assert.AreEqual(0, rNewImageSizeCalc.DestY);
 		}
 	}
 }
