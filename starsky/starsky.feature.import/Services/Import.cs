@@ -382,19 +382,20 @@ namespace starsky.feature.import.Services
 						=> await Importer(preflightItem, importSettings),
 					_appSettings.MaxDegreesOfParallelism)).ToList();
 
-			if (importSettings.IndexMode) await CreateMataThumbnail(importIndexItemsList);
+			await CreateMataThumbnail(importIndexItemsList,importSettings);
 			
 			return importIndexItemsList;
 		}
 
-		private async Task CreateMataThumbnail(IEnumerable<ImportIndexItem> 
-			importIndexItemsList)
+		internal async Task<bool> CreateMataThumbnail(IEnumerable<ImportIndexItem> 
+			importIndexItemsList, ImportSettingsModel importSettings)
 		{
-			if ( !_appSettings.MetaThumbnailOnImport ) return;
+			if ( !_appSettings.MetaThumbnailOnImport || !importSettings.IndexMode) return false;
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => (p.FilePath, p.FileHash));
-			await _metaExifThumbnailService.AddMetaThumbnail(items);
+				.Select(p => (p.FilePath, p.FileHash)).ToList();
+			if ( !items.Any() ) return false;
+			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
 
 		/// <summary>

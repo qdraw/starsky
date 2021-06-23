@@ -467,7 +467,8 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			
 			Assert.AreEqual(1, result.Count);
-			var expectedFilePath = GetExpectedFilePath(storage, appSettings, "/test.dng").Replace(".dng",".xmp");
+			var expectedFilePath = GetExpectedFilePath(storage, appSettings, 
+				"/test.dng").Replace(".dng",".xmp");
 
 			var stream = storage.ReadStream(expectedFilePath);
 
@@ -781,5 +782,81 @@ namespace starskytest.starsky.feature.import.Services
 				new ImportSettingsModel());
 			Assert.AreEqual(ImportStatus.FileError, result.Status);
 		}
+
+		[TestMethod]
+		public async Task CreateMataThumbnail_SkipWhenAppSettings()
+		{
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings{ MetaThumbnailOnImport = false},
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService());
+
+			var result = await importService.CreateMataThumbnail(null,
+				new ImportSettingsModel());
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public async Task CreateMataThumbnail_SkipWhenIndexIsOff()
+		{
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,new FakeIMetaExifThumbnailService());
+
+			var result = await importService.CreateMataThumbnail(null,
+				new ImportSettingsModel{IndexMode = false});
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public async Task CreateMataThumbnail_SuccessReturnTrue()
+		{
+			var fakeExifThumbnailService = new FakeIMetaExifThumbnailService();
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,fakeExifThumbnailService);
+
+			var result = await importService.CreateMataThumbnail(new List<ImportIndexItem>
+				{
+					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok}
+				},
+				new ImportSettingsModel());
+			
+			Assert.IsTrue(result);
+		}
+				
+		[TestMethod]
+		public async Task CreateMataThumbnail_NotAnyOkResults()
+		{
+			var fakeExifThumbnailService = new FakeIMetaExifThumbnailService();
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,fakeExifThumbnailService);
+
+			await importService.CreateMataThumbnail(new List<ImportIndexItem>
+				{
+					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.FileError}
+				},
+				new ImportSettingsModel());
+
+			Assert.AreEqual(0, fakeExifThumbnailService.Input.Count);
+		}
+		
+		[TestMethod]
+		public async Task CreateMataThumbnail_ShouldGiveBack()
+		{
+			var fakeExifThumbnailService = new FakeIMetaExifThumbnailService();
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), new AppSettings(),
+				new FakeIImportQuery(), new FakeExifTool(_iStorageFake, new AppSettings()),
+				new FakeIQuery(), _console,fakeExifThumbnailService);
+
+			await importService.CreateMataThumbnail(new List<ImportIndexItem>
+				{
+					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok}
+				},
+				new ImportSettingsModel());
+			
+			Assert.IsTrue(fakeExifThumbnailService.Input.Any(p => p.Item1 == "/test.jpg"));
+		}
+
 	}
 }
