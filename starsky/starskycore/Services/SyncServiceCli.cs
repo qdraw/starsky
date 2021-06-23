@@ -58,11 +58,11 @@ namespace starskycore.Services
 				{
 					// If single file => create thumbnail
 					var fileHash = new FileHash(storage).GetHashCode(subPath).Key;
-					new Thumbnail(storage,thumbnailStorage, new WebLogger()).CreateThumb(subPath,fileHash); // <= this uses subPath
+					new Thumbnail(storage,thumbnailStorage, new WebLogger()).CreateThumb(subPath,fileHash).ConfigureAwait(false); // <= this uses subPath
 				}
 				else
 				{
-					new Thumbnail(storage, thumbnailStorage, new WebLogger()).CreateThumb(subPath);
+					new Thumbnail(storage, thumbnailStorage, new WebLogger()).CreateThumb(subPath).ConfigureAwait(false);
 				}
                 
 				console.WriteLine("Thumbnail Done!");
