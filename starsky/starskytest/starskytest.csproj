@@ -95,6 +95,10 @@
         <Content Include="..\build.vstest.runsettings">
             <Link>build.vstest.runsettings</Link>
         </Content>
+        <None Remove="FakeCreateAn\CreateAnImageThumbnail\poppy.jpg" />
+        <Content Include="FakeCreateAn\CreateAnImageWithThumbnail\poppy.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
