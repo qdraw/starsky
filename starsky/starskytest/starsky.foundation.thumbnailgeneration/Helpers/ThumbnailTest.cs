@@ -107,17 +107,31 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 		}
 		
 		[TestMethod]
-		public async Task ResizeThumbnailToStream_CorruptImage()
+		public async Task ResizeThumbnailToStream_CorruptImage_MemoryStream()
 		{
 			var storage = new FakeIStorage(
 				new List<string> {"/"}, 
 				new List<string> {"test"}, 
 				new List<byte[]> {new byte[0]});
 
-			var result = await new Thumbnail(storage, 
+			var result = (await new Thumbnail(storage, 
 				storage,
-				new FakeIWebLogger()).ResizeThumbnailFromSourceImage("test",1);
+				new FakeIWebLogger()).ResizeThumbnailFromSourceImage("test",1)).Item1;
 			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		public async Task ResizeThumbnailToStream_CorruptImage_Status()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
+
+			var result = (await new Thumbnail(storage, 
+				storage,
+				new FakeIWebLogger()).ResizeThumbnailFromSourceImage("test",1)).Item2;
+			Assert.IsFalse(result);
 		}
 
 		[TestMethod]
