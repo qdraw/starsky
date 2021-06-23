@@ -69,17 +69,30 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				}
 			}
 		}
-
+		
 		/// <summary>
 		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
 		/// </summary>
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
 		/// <returns>true, if successful</returns>
-		public async Task<bool> CreateThumb(string subPath, string fileHash)
+		public Task<bool> CreateThumb(string subPath, string fileHash)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
-			
+
+			return CreateThumbInternal(subPath, fileHash);
+		}
+		
+
+		/// <summary>
+		/// Private use => CreateThumb
+		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
+		/// </summary>
+		/// <param name="subPath">relative path to find the file in the storage folder</param>
+		/// <param name="fileHash">the base32 hash of the subPath file</param>
+		/// <returns>true, if successful</returns>
+		private async Task<bool> CreateThumbInternal(string subPath, string fileHash)
+		{
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
 			     !_iStorage.ExistFile(subPath) || 
@@ -252,11 +265,26 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// <param name="image">Rgba32 image</param>
 		/// <param name="imageFormat">Files ImageFormat</param>
 		/// <param name="outputStream">input stream to save</param>
-		internal async Task SaveThumbnailImageFormat(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
+		internal Task SaveThumbnailImageFormat(Image image,
+			ExtensionRolesHelper.ImageFormat imageFormat,
 			MemoryStream outputStream)
 		{
-			if ( outputStream == null ) throw new ArgumentNullException(nameof(outputStream));
-			
+			if ( outputStream == null )
+				throw new ArgumentNullException(nameof(outputStream));
+
+			return SaveThumbnailImageFormatInternal(image, imageFormat, outputStream);
+		}
+
+		/// <summary>
+		/// Private: use => SaveThumbnailImageFormat
+		/// Used in ResizeThumbnailToStream to save based on the input settings
+		/// </summary>
+		/// <param name="image">Rgba32 image</param>
+		/// <param name="imageFormat">Files ImageFormat</param>
+		/// <param name="outputStream">input stream to save</param>
+		private async Task SaveThumbnailImageFormatInternal(Image image, ExtensionRolesHelper.ImageFormat imageFormat, 
+			MemoryStream outputStream)
+		{
 			if (imageFormat == ExtensionRolesHelper.ImageFormat.png)
 			{
 				await image.SaveAsync(outputStream, new PngEncoder{
