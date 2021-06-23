@@ -69,20 +69,21 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Create a Thumbnail file to load it faster in the UI. Use FileIndexItem or database style path, Feature used by the cli tool
 		/// </summary>
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
+		/// <param name="skipExtraLarge">skip the extra large variant</param>
 		/// <returns>true, if successful</returns>
-		public Task<bool> CreateThumb(string subPath, string fileHash)
+		public Task<bool> CreateThumb(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			if ( string.IsNullOrWhiteSpace(fileHash) ) throw new ArgumentNullException(nameof(fileHash));
 
-			return CreateThumbInternal(subPath, fileHash);
+			return CreateThumbInternal(subPath, fileHash, skipExtraLarge);
 		}
-		
+
 
 		/// <summary>
 		/// Private use => CreateThumb
@@ -90,8 +91,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// </summary>
 		/// <param name="subPath">relative path to find the file in the storage folder</param>
 		/// <param name="fileHash">the base32 hash of the subPath file</param>
+		/// <param name="skipExtraLarge">skip the extra large image</param>
 		/// <returns>true, if successful</returns>
-		private async Task<bool> CreateThumbInternal(string subPath, string fileHash)
+		private async Task<bool> CreateThumbInternal(string subPath, string fileHash, bool skipExtraLarge = false)
 		{
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
@@ -109,34 +111,47 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			// File is already tested
 			if( _iStorage.ExistFile( GetErrorLogItemFullPath(subPath)) )
 				return false;
+
+			var thumbnailToSourceSize = ThumbnailSize.ExtraLarge;
+			if ( skipExtraLarge )
+			{
+				thumbnailToSourceSize = ThumbnailSize.Large;
+			}
 			
 			// run resize sync
-			var largeThumbnailHash = ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge);
+			var largeThumbnailHash = ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize);
 			var (_, resizeSuccess, resizeMessage) = (await ResizeThumbnailFromSourceImage(subPath, 
-				ThumbnailNameHelper.GetSize(ThumbnailSize.ExtraLarge), 
+				ThumbnailNameHelper.GetSize(thumbnailToSourceSize), 
 				largeThumbnailHash ));
 
-			if ( !resizeSuccess )
+			// check if output any good
+			RemoveCorruptImage(fileHash);
+
+			if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)) )
 			{
-				_logger.LogError($"[ResizeThumbnailFromSourceImage] output is null for subPath {subPath}");
+				_logger.LogError($"[ResizeThumbnailFromSourceImage] output is null or corrupt for subPath {subPath}");
 				await WriteErrorMessageToBlockLog(subPath, resizeMessage);
 				return false;
 			}
+
+			var thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>
+				{
+					ThumbnailSize.Small, ThumbnailSize.Large
+				};
+
+			if ( skipExtraLarge )
+			{
+				thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>
+				{
+					ThumbnailSize.Small
+				};
+			}
 			
-			await (new List<ThumbnailSize>{ThumbnailSize.Small,ThumbnailSize.Large}).ForEachAsync(
+			await (thumbnailFromThumbnailUpdateList).ForEachAsync(
 				async (size) 
 					=> await ResizeThumbnailFromThumbnailImage(largeThumbnailHash, ThumbnailNameHelper.GetSize(size), 
 						ThumbnailNameHelper.Combine(fileHash, size)),
 				10);
-
-			// check if output any good
-			RemoveCorruptImage(fileHash);
-			
-			if ( ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)) )
-			{
-				await WriteErrorMessageToBlockLog(subPath, "corrupt");
-				return false;
-			}
 
 			Console.Write(".");
 			return true;
