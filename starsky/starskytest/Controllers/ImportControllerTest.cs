@@ -92,7 +92,7 @@ namespace starskytest.Controllers
 
 			var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 				_appSettings,
-				_bgTaskQueue, null, fakeStorageSelector, _scopeFactory)
+				_bgTaskQueue, null, fakeStorageSelector, _scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -120,26 +120,51 @@ namespace starskytest.Controllers
 
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			
-			
+
 			var importController = new ImportController(null, new AppSettings(),
 				null, null, new FakeSelectorStorage(),
-				scopeFactory);
+				scopeFactory, new FakeIWebLogger());
 			
 			var result = await importController.ImportPostBackgroundTask(
 				new List<string>{"/test"}, new ImportSettingsModel());
 
 			Assert.AreEqual(1,result.Count );
 			Assert.AreEqual(ImportStatus.NotFound, result[0].Status);
-
 		}
 
+		[TestMethod]
+		public async Task ImportPostBackgroundTask_NotFound_Logger_Contain1()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<AppSettings>();
+			services.AddSingleton<IImportQuery, FakeIImportQuery>();
+			services.AddSingleton<IExifTool, FakeExifTool>();
+			services.AddSingleton<IQuery, FakeIQuery>();
+			services.AddSingleton<IImport, FakeIImport>();
+			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+
+			var logger = new FakeIWebLogger();
+			var importController = new ImportController(null, new AppSettings(),
+				null, null, new FakeSelectorStorage(),
+				scopeFactory, logger);
+			
+			await importController.ImportPostBackgroundTask(
+				new List<string>{"/test"}, new ImportSettingsModel(), true);
+
+			Assert.AreEqual(1,logger.TrackedInformation.Count );
+		}
 
 		[TestMethod]
 		public async Task FromUrl_PathInjection()
 		{
 			var importController = new ImportController(_import, _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory)
+				_bgTaskQueue, null, new FakeSelectorStorage(new FakeIStorage()), _scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -166,7 +191,7 @@ namespace starskytest.Controllers
 
 			var importController = new ImportController(_import, _appSettings,
 				_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()),
-				_scopeFactory) {ControllerContext = RequestWithFile(),};
+				_scopeFactory, new FakeIWebLogger()) {ControllerContext = RequestWithFile(),};
 			// download.geoNames is in the FakeHttpMessageHandler always a 404
 			var actionResult =
 				await importController.FromUrl("https://download.geonames.org", "example.tiff",
@@ -193,7 +218,7 @@ namespace starskytest.Controllers
 			var importController = new ImportController(
 				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
 				_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider),
-				_scopeFactory) {ControllerContext = RequestWithFile(),};
+				_scopeFactory, new FakeIWebLogger()) {ControllerContext = RequestWithFile(),};
 
 			var actionResult =
 				await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null) as
@@ -213,7 +238,8 @@ namespace starskytest.Controllers
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 			var importController = new ImportController(
 				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), _scopeFactory)
+				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), 
+				_scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};
@@ -241,7 +267,8 @@ namespace starskytest.Controllers
 
 			var importController = new ImportController(
 				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), _scopeFactory)
+				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider),
+				_scopeFactory, new FakeIWebLogger())
 			{
 				ControllerContext = RequestWithFile(),
 			};

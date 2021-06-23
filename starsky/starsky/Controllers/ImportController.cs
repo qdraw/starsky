@@ -38,11 +38,12 @@ namespace starsky.Controllers
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IWebLogger _logger;
 
 		public ImportController(IImport import, AppSettings appSettings,
 			IBackgroundTaskQueue queue, 
 			IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
-			IServiceScopeFactory scopeFactory)
+			IServiceScopeFactory scopeFactory, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_import = import;
@@ -52,6 +53,7 @@ namespace starsky.Controllers
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_scopeFactory = scopeFactory;
+			_logger = logger;
 		}
         
 		/// <summary>
@@ -79,7 +81,7 @@ namespace starsky.Controllers
 			// Import files >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				await ImportPostBackgroundTask(tempImportPaths, importSettings);
+				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.Verbose);
 			});
             
 			// When all items are already imported
@@ -99,7 +101,7 @@ namespace starsky.Controllers
 		}
 
 		internal async Task<List<ImportIndexItem>> ImportPostBackgroundTask(List<string> tempImportPaths,
-			ImportSettingsModel importSettings)
+			ImportSettingsModel importSettings, bool isVerbose = false)
 		{
 			List<ImportIndexItem> importedFiles;
 	            
@@ -118,11 +120,13 @@ namespace starsky.Controllers
 					metaExifThumbnailService).Importer(tempImportPaths, importSettings);
 			}
 	            
-			if ( _appSettings.Verbose )
+			if (isVerbose)
 			{
-				foreach (var file in importedFiles.Where(p => p.Status == ImportStatus.Ok))
+				foreach (var file in importedFiles)
 				{
-					Console.WriteLine($">> import => {file.FileIndexItem.FilePath}");
+					_logger.LogInformation(
+							$"[ImportPostBackgroundTask] import {file.Status} " +
+							$"=> {file.FilePath} ~ {file.FileIndexItem?.FilePath}");
 				}
 			}
                 
