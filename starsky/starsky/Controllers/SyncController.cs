@@ -89,7 +89,7 @@ namespace starsky.Controllers
 	        if (syncResultsList.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 		        Response.StatusCode = 409; // A conflict, Directory already exist
 	        
-	        await SyncMessageToSocket(syncResultsList);
+	        await SyncMessageToSocket(syncResultsList,"Mkdir");
 
 	        return Json(syncResultsList);
         }
@@ -99,12 +99,15 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="syncResultsList">SyncViewModel</param>
         /// <returns>Completed send of Socket SendToAllAsync </returns>
-        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList)
+        private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, string name = "")
         {
 	        var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)
 	        {
 		        Status = t.Status, IsDirectory = true
 	        }).ToList();
+
+	        await _connectionsService.SendToAllAsync($"[system] {name}",
+		        CancellationToken.None);
 	        await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(list,
 		        DefaultJsonSerializer.CamelCase), CancellationToken.None);
         }
