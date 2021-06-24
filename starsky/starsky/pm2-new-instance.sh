@@ -27,8 +27,7 @@ esac
 ARGUMENTS=("$@")
 
 for ((i = 1; i <= $#; i++ )); do
-  if [ $i -gt 1 ]; then
-    PREV=$(($i-2))
+
     CURRENT=$(($i-1))
 
     if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
@@ -36,9 +35,27 @@ for ((i = 1; i <= $#; i++ )); do
         echo "--name pm2name"
         echo "--runtime linux-arm"
         echo "(or:) --runtime linux-arm64"
-        echo "(optional) --appinsights true - to ask for app insights keys"
         echo "(optional) --port 4823"
+        echo "(optional) --anywhere (to allow access from anywhere, defaults to false)"
+        echo "(optional) --appinsights - to ask for app insights keys"
     fi
+
+    # When true, allow access from anywhere not only localhost
+    # defaults to false
+    # only used on creation, when enabled you need to manual remove a pm2 instance
+    if [[ ${ARGUMENTS[CURRENT]} == "--anywhere" ]];
+    then
+        ANYWHERE=true
+    fi
+
+    if [[ ${ARGUMENTS[CURRENT]} == "--appinsights" ]];
+    then
+        USEAPPINSIGHTS=true
+    fi
+
+  if [ $i -gt 1 ]; then
+    PREV=$(($i-2))
+    CURRENT=$(($i-1))
 
     if [[ ${ARGUMENTS[PREV]} == "--name" ]];
     then
@@ -55,10 +72,6 @@ for ((i = 1; i <= $#; i++ )); do
         PORT="${ARGUMENTS[CURRENT]}"
     fi
 
-    if [[ ${ARGUMENTS[PREV]} == "--appinsights" ]];
-    then
-        USEAPPINSIGHTS="${ARGUMENTS[CURRENT]}"
-    fi
   fi
 done
 
@@ -66,7 +79,16 @@ done
 
 # settings
 echo "run with the following parameters "
-echo "--name " $PM2NAME " --runtime" $RUNTIME "--port" $PORT " --appinsights" $USEAPPINSIGHTS
+
+if [ "$ANYWHERE" = true ] ; then
+    ANYWHERESTATUSTEXT="--anywhere $ANYWHERE"
+fi
+if [ "$USEAPPINSIGHTS" = true ] ; then
+    USEAPPINSIGHTSSTATUSTEXT="--appinsights $USEAPPINSIGHTS"
+fi
+
+echo "--name" $PM2NAME " --runtime" $RUNTIME "--port" $PORT $USEAPPINSIGHTSSTATUSTEXT $ANYWHERESTATUSTEXT
+
 
 cd "$(dirname "$0")"
 
@@ -119,7 +141,11 @@ fi
 
 # new settings:
 
-export ASPNETCORE_URLS="http://localhost:"$PORT"/"
+HOSTNAME="localhost"
+if [ "$ANYWHERE" = true ] ; then
+    HOSTNAME="*"
+fi
+export ASPNETCORE_URLS="http://"$HOSTNAME":"$PORT"/"
 export ASPNETCORE_ENVIRONMENT="Production"
 
 # only asked with --appinsights true parameter
@@ -283,13 +309,21 @@ if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
 
     echo "check if service exist >"
     SHOULDSCRIPTPATH=$(pwd)"/starsky"
-    SCRIPTPATH=$(pm2 describe $PM2NAME | grep "script path" | grep -oP '\s│\K[^|]+' | sed 's/..$//' | xargs)
+    # this is what is actualy is:
+    SCRIPTPATHWITHFLUFF=$(pm2 describe $PM2NAME | grep "script path")
+    # removes text script path
+    SCRIPTPATHWITHFLUFF2=${SCRIPTPATHWITHFLUFF##*script path }
+    # replace |
+    SCRIPTPATHWITHFLUFF3="${SCRIPTPATHWITHFLUFF2//\│/}"
+    # remove space at beginning
+    SCRIPTPATH=${SCRIPTPATHWITHFLUFF3##*( )}
     echo "<"
 
     echo "new config: ""$SCRIPTPATH"
     echo "path in pm2 config: ""$SHOULDSCRIPTPATH"
 
-    if [ ! -z "$SCRIPTPATH" ] && [ "$SCRIPTPATH" != "$SHOULDSCRIPTPATH" ]; then
+    # contains in needed because the string does not match 100%
+    if [[ $SCRIPTPATH != *"$SHOULDSCRIPTPATH"* ]]; then
         echo "remove pm2 instance due script path on a different location "
         echo "script path:" $SCRIPTPATH
         echo "should script path: " $SHOULDSCRIPTPATH
@@ -297,6 +331,8 @@ if [ -f starsky ] && [[ $ISIMPORTEROK -eq 0 ]]; then
         pm2 save --force
         # now the service does not exist anymore
         HASDESCRIBE=1
+    else
+        echo "skip removal of pm2 service because the path is the same"
     fi
 
     if [ "${HASDESCRIBE}" -ne 0 ]; then
