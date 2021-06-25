@@ -43,5 +43,45 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.IsTrue(result);
 			Assert.IsTrue(storage.ExistFile(ThumbnailNameHelper.Combine("test",ThumbnailSize.TinyMeta)));
 		}
+
+		[TestMethod]
+		public void RotateEnumToDegrees_Horizontal()
+		{
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
+				new FakeIWebLogger(), new AppSettings());
+
+			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Horizontal);
+			Assert.AreEqual(0,result,0.00001);
+		}
+		
+		[TestMethod]
+		public void RotateEnumToDegrees_180()
+		{
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
+				new FakeIWebLogger(), new AppSettings());
+
+			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate180);
+			Assert.AreEqual(180,result,0.00001);
+		}
+		
+		[TestMethod]
+		public void RotateEnumToDegrees_90()
+		{
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
+				new FakeIWebLogger(), new AppSettings());
+
+			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate90Cw);
+			Assert.AreEqual(90,result,0.00001);
+		}
+		
+		[TestMethod]
+		public void RotateEnumToDegrees_270()
+		{
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
+				new FakeIWebLogger(), new AppSettings());
+
+			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.Rotate270Cw);
+			Assert.AreEqual(270,result,0.00001);
+		}
 	}
 }

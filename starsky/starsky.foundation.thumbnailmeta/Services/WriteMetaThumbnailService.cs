@@ -82,7 +82,7 @@ namespace starsky.foundation.metathumbnail.Services
 			
 		}
 		
-		private float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
+		internal float RotateEnumToDegrees(FileIndexItem.Rotation rotation)
 		{
 			switch ( rotation )
 			{
