@@ -63,6 +63,43 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
+		
+		[TestMethod]
+		public async Task CreateThumbTest_FileHash_SkipExtraLarge()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{_fakeIStorageImageSubPath}, 
+				new List<byte[]>{CreateAnImage.Bytes});
+
+			var fileHash = "test_hash";
+			
+			// skip xtra large
+			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
+				_fakeIStorageImageSubPath, fileHash, true);
+			Assert.AreEqual(true,isCreated);
+
+			Assert.AreEqual(true, storage.ExistFile(fileHash));
+			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
+			Assert.AreEqual(false, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+		}
+		
+		[TestMethod]
+		public async Task CreateThumbTest_FileHash_IncludeExtraLarge()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{_fakeIStorageImageSubPath}, 
+				new List<byte[]>{CreateAnImage.Bytes});
+
+			var fileHash = "test_hash";
+			// include xtra large
+			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
+				_fakeIStorageImageSubPath, fileHash);
+			Assert.AreEqual(true,isCreated);
+
+			Assert.AreEqual(true, storage.ExistFile(fileHash));
+			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
+			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+		}
 
 		[TestMethod]
 		public async Task CreateThumbTest_1arg_ThumbnailAlreadyExist()
@@ -158,7 +195,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {new byte[0]});
 
 			var result = new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).RemoveCorruptImage("test");
+				storage, new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.Large);
 			Assert.IsTrue(result);
 		}
 		
@@ -172,7 +209,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 			var result = new Thumbnail(
 				storage, storage, 
-				new FakeIWebLogger()).RemoveCorruptImage("test");
+				new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.Large);
 			Assert.IsFalse(result);
 		}
 		
@@ -185,7 +222,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {CreateAnImage.Bytes});
 
 			var result = new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).RemoveCorruptImage("test");
+				storage, new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.Large);
 			Assert.IsFalse(result);
 		}
 

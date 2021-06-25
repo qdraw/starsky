@@ -125,9 +125,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				largeThumbnailHash ));
 
 			// check if output any good
-			RemoveCorruptImage(fileHash);
+			RemoveCorruptImage(fileHash, thumbnailToSourceSize);
 
-			if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, ThumbnailSize.ExtraLarge)) )
+			if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
 			{
 				_logger.LogError($"[ResizeThumbnailFromSourceImage] output is null or corrupt for subPath {subPath}");
 				await WriteErrorMessageToBlockLog(subPath, resizeMessage);
@@ -171,18 +171,20 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			       + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath)) 
 			       + ".log";
 		}
-		
+
 		/// <summary>
 		/// Check if the image has the right first bytes, if not remove
 		/// </summary>
 		/// <param name="fileHash">the fileHash file</param>
-		internal bool RemoveCorruptImage(string fileHash)
+		/// <param name="thumbnailToSourceSize">size of output thumbnail Large/ExtraLarge</param>
+		internal bool RemoveCorruptImage(string fileHash,
+			ThumbnailSize thumbnailToSourceSize)
 		{
-			if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge))) return false;
+			if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash,thumbnailToSourceSize))) return false;
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(_thumbnailStorage.ReadStream(
-				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge),160));
+				ThumbnailNameHelper.Combine(fileHash,thumbnailToSourceSize),160));
 			if ( imageFormat != ExtensionRolesHelper.ImageFormat.unknown ) return false;
-			_thumbnailStorage.FileDelete(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge));
+			_thumbnailStorage.FileDelete(ThumbnailNameHelper.Combine(fileHash,thumbnailToSourceSize));
 			return true;
 		}
 

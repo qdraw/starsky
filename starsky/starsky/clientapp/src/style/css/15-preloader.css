@@ -5,7 +5,7 @@
   width: 100%;
   top: 0px;
   left: 0px;
-  background-color: rgba(96, 125, 139, 0.7);
+  background-color: rgba(96, 125, 139, 1);
   z-index: 410;
 }
 
@@ -30,7 +30,7 @@
   display: block;
   width: 100px;
   height: 100px;
-  background-color: rgba(120, 144, 156, 0.5);
+  background-color: rgba(120, 144, 156, 0.7);
   /* 607D8B */
   mask-image: url("../images/preloader-fancy.svg");
   mask-size: contain;
