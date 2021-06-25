@@ -176,7 +176,7 @@ namespace starskytest.Controllers
 				ColorClass = ColorClassParser.Color.Winner, // 1
 			}});
 
-			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath};
+			var appSettings = new AppSettings {TempFolder = _createAnImage.BasePath, Verbose = true};
 			
 			var export = new ExportService(fakeQuery,appSettings,storageSelector, new FakeIWebLogger());
 			var controller = new ExportController(
