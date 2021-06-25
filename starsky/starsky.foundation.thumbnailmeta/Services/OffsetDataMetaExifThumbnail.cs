@@ -1,6 +1,7 @@
-using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
@@ -11,7 +12,9 @@ using starsky.foundation.readmeta.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using Directory = MetadataExtractor.Directory;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.metathumbnail.Services
 {
 	[Service(typeof(IOffsetDataMetaExifThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -26,7 +29,14 @@ namespace starsky.foundation.metathumbnail.Services
 			_logger = logger;
 		}
 
-		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(string subPath)
+		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation)
+			GetExifMetaDirectories(string subPath)
+		{
+			var (allExifItems,exifThumbnailDir) = ReadExifMetaDirectories(subPath);
+			return ParseMetaThumbnail(allExifItems, exifThumbnailDir, subPath);
+		}
+		
+		internal (List<Directory>, ExifThumbnailDirectory) ReadExifMetaDirectories(string subPath)
 		{
 			using ( var stream = _iStorage.ReadStream(subPath) )
 			{
@@ -36,31 +46,38 @@ namespace starsky.foundation.metathumbnail.Services
 					allExifItems.FirstOrDefault(p =>
 						p.Name == "Exif Thumbnail") as ExifThumbnailDirectory;
 
-				if ( exifThumbnailDir == null )
-				{
-					return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
-				}
-				
-				var jpegTags = allExifItems.FirstOrDefault(p =>
-						p.Name == "JPEG")?.Tags;
-
-				var rotation = new ReadMetaExif(null).GetOrientationFromExifItem(
-					allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
-					
-				int.TryParse(
-					jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
-						.Description.Replace(" pixels",string.Empty), out var height);
-				
-				int.TryParse(
-					jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
-						.Description.Replace(" pixels",string.Empty), out var width);
-				
-				if ( height == 0||  width == 0)
-				{
-					_logger.LogInformation($"[] ${subPath} has no height or width {width}x{height} ");
-				}
-				return (exifThumbnailDir, width, height, rotation);
+				return ( allExifItems,  exifThumbnailDir);
 			}
+		}
+		
+		internal (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(List<Directory> allExifItems, 
+			ExifThumbnailDirectory exifThumbnailDir, string reference = null)
+		{
+
+			if ( exifThumbnailDir == null )
+			{
+				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
+			}
+				
+			var jpegTags = allExifItems.FirstOrDefault(p =>
+				p.Name == "JPEG")?.Tags;
+
+			var rotation = new ReadMetaExif(null).GetOrientationFromExifItem(
+				allExifItems.FirstOrDefault(p => p.Name == "Exif IFD0"));
+					
+			int.TryParse(
+				jpegTags?.FirstOrDefault(p => p.Name == "Image Height")?
+					.Description.Replace(" pixels",string.Empty), out var height);
+				
+			int.TryParse(
+				jpegTags?.FirstOrDefault(p => p.Name == "Image Width")?
+					.Description.Replace(" pixels",string.Empty), out var width);
+				
+			if ( height == 0||  width == 0)
+			{
+				_logger.LogInformation($"[] ${reference} has no height or width {width}x{height} ");
+			}
+			return (exifThumbnailDir, width, height, rotation);
 		}
 
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory exifThumbnailDir, string subPath)
