@@ -195,7 +195,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<byte[]> {new byte[0]});
 
 			var result = new Thumbnail(storage, 
-				storage, new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.Large);
+				storage, new FakeIWebLogger()).RemoveCorruptImage("test", ThumbnailSize.ExtraLarge);
 			Assert.IsTrue(result);
 		}
 		
