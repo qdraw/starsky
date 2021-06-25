@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var logger = new FakeIWebLogger();
 			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
 					new OffsetDataMetaExifThumbnail(selectorStorage, logger), 
-					new WriteMetaThumbnail(selectorStorage, logger, new AppSettings()), logger)
+					new WriteMetaThumbnailService(selectorStorage, logger, new AppSettings()), logger)
 					.AddMetaThumbnail("/no_thumbnail.jpg","anything");
 
 			Assert.IsFalse(result);
@@ -51,7 +51,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var logger = new FakeIWebLogger();
 			var result = await new MetaExifThumbnailService(new AppSettings(), selectorStorage, 
 					new OffsetDataMetaExifThumbnail(selectorStorage, logger), 
-					new WriteMetaThumbnail(selectorStorage, logger, new AppSettings()), logger)
+					new WriteMetaThumbnailService(selectorStorage, logger, new AppSettings()), logger)
 				.AddMetaThumbnail("/poppy.jpg","/meta_image");
 			
 			Assert.IsTrue(result);

@@ -16,13 +16,13 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.metathumbnail.Services
 {
 	[Service(typeof(IWriteMetaThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class WriteMetaThumbnail : IWriteMetaThumbnail
+	public class WriteMetaThumbnailService : IWriteMetaThumbnail
 	{
 		private readonly IWebLogger _logger;
 		private readonly IStorage _thumbnailStorage;
 		private readonly AppSettings _appSettings;
 
-		public WriteMetaThumbnail(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings)
+		public WriteMetaThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger, AppSettings appSettings)
 		{
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_logger = logger;
