@@ -82,7 +82,7 @@ namespace starsky.foundation.metathumbnail.Services
 
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory exifThumbnailDir, string subPath)
 		{
-			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false};
+			if ( exifThumbnailDir == null )  return new OffsetModel {Success = false, Reason = "ExifThumbnailDirectory null"};
 
 			long thumbnailOffset = long.Parse(exifThumbnailDir.GetDescription(
 				ExifThumbnailDirectory.TagThumbnailOffset).Split(' ')[0]);
@@ -101,7 +101,7 @@ namespace starsky.foundation.metathumbnail.Services
 			if ( thumbnailLength <= maxIssue35Offset + 1 )
 			{
 				_logger.LogInformation($"[ParseOffsetData] thumbnailLength : {thumbnailLength} {maxIssue35Offset + 1}");
-				return new OffsetModel {Success = false};
+				return new OffsetModel {Success = false, Reason = "offsetLength"};
 			}
 			
 			int issue35Offset = 0;

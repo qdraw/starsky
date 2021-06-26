@@ -13,7 +13,5 @@ namespace starsky.foundation.readmeta.Models
 		public bool Success { get; set; }
 		public string Reason { get; set; }
 		public byte[] Data { get; set; }
-		public int SourceHeight { get; set; }
-		public int SourceWidth { get; set; }
 	}
 }

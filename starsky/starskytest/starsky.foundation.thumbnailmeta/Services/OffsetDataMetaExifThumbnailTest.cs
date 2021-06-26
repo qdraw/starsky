@@ -86,8 +86,8 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				new FakeIWebLogger()).ParseOffsetData(thumbnailDirectory, "/test.jpg");
 
 			Assert.IsFalse(offsetData.Success);
+			Assert.IsNotNull(offsetData.Reason);
 		}
-		
 				
 		[TestMethod]
 		public void ParseOffsetData_Success()
