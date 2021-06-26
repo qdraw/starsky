@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using MetadataExtractor.Formats.Exif;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.metathumbnail.Services;
@@ -44,6 +46,44 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(0, width);
 			Assert.AreEqual(0, height);
 			Assert.AreEqual(rotation, FileIndexItem.Rotation.DoNotChange);
+		}
+		
+		[TestMethod]
+		public void ParseOffsetData_TagThumbnailLengthWrongData()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{new CreateAnImageWithThumbnail().Bytes});
+			
+			var (_,  thumbnailDirectory) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
+
+			// overwrite to set an wrong value
+			thumbnailDirectory.Set(ExifThumbnailDirectory.TagThumbnailLength,1);
+
+			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseOffsetData(thumbnailDirectory, "/test.jpg");
+
+			Assert.IsFalse(offsetData.Success);
+		}
+		
+				
+		[TestMethod]
+		public void ParseOffsetData_Success()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.jpg"},
+				new List<byte[]>{new CreateAnImageWithThumbnail().Bytes});
+			
+			var (_,  thumbnailDirectory) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
+
+			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseOffsetData(thumbnailDirectory, "/test.jpg");
+
+			Assert.IsTrue(offsetData.Success);
 		}
 	}
 }
