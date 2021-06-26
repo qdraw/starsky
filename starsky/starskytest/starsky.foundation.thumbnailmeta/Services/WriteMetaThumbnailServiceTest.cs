@@ -15,13 +15,28 @@ namespace starskytest.starsky.foundation.readmeta.Services
 	public class WriteMetaThumbnailServiceTest
 	{
 		[TestMethod]
-		public async Task WriteAndCropFile_Fail()
+		public async Task WriteAndCropFile_Fail_BufferNull()
 		{
 			var storage = new FakeIStorage(new List<string>(),
 				new List<string> {"/test.jpg"}, new byte[0][]);
 			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
 				new FakeIWebLogger(), new AppSettings());
 			var result = await service.WriteAndCropFile("/test.jpg", new OffsetModel(), 0, 0,
+				FileIndexItem.Rotation.Horizontal);
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public async Task WriteAndCropFile_Fail_ImageCantBeLoaded()
+		{
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string> {"/test.jpg"}, new byte[0][]);
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(storage),
+				new FakeIWebLogger(), new AppSettings());
+			var result = await service.WriteAndCropFile("/test.jpg", new OffsetModel
+				{
+					Data = new byte[10]
+				}, 0, 0,
 				FileIndexItem.Rotation.Horizontal);
 			Assert.IsFalse(result);
 		}
