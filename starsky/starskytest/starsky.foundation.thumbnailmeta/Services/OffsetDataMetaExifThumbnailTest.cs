@@ -49,6 +49,26 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		}
 		
 		[TestMethod]
+		public void ParseMetaThumbnail_CheckJpeg_Success()
+		{
+			var storage = new FakeIStorage(
+				new List<string>{"/"}, 
+				new List<string>{"/test.png","/test.jpg"},
+				new List<byte[]>{CreateAnPng.Bytes, new CreateAnImageWithThumbnail().Bytes});
+
+			var (allExifItems,  thumbnailDirectory) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
+			
+			var (exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+				new FakeIWebLogger()).ParseMetaThumbnail(allExifItems, thumbnailDirectory);
+			
+			Assert.AreEqual(thumbnailDirectory,exifThumbnailDirectory);
+			Assert.AreEqual(150, width);
+			Assert.AreEqual(100, height);
+			Assert.AreEqual(rotation, FileIndexItem.Rotation.Horizontal);
+		}
+		
+		[TestMethod]
 		public void ParseOffsetData_TagThumbnailLengthWrongData()
 		{
 			var storage = new FakeIStorage(
