@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -28,7 +29,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			_selectorStorage = selectorStorage;
 		}
 		
-		public void Thumbnail(string[] args)
+		public async Task Thumbnail(string[] args)
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
@@ -60,12 +61,12 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
 				{
 					// If single file => create thumbnail
-					var fileHash = new FileHash(storage).GetHashCode(subPath).Key;
-					_thumbnailService.CreateThumb(subPath, fileHash); // <= this uses subPath
+					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath)).Key;
+					await _thumbnailService.CreateThumb(subPath, fileHash); // <= this uses subPath
 				}
 				else
 				{
-					_thumbnailService.CreateThumb(subPath);
+					await _thumbnailService.CreateThumb(subPath);
 				}
 				_console.WriteLine("Thumbnail Done!");
 			}
