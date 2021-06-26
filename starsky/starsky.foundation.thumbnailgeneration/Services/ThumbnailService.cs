@@ -22,13 +22,26 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			_thumbnail = new Thumbnail(iStorage, thumbnailStorage,logger);
 		}
 
+		/// <summary>
+		/// Create an Thumbnail based on the default sizes
+		/// </summary>
+		/// <param name="subPath">path on disk (subPath) based</param>
+		/// <returns>true if success</returns>
 		public Task<List<(string, bool)>> CreateThumb(string subPath)
 		{
+			// Async method:
 			return _thumbnail.CreateThumb(subPath);
 		}
 
+		/// <summary>
+		/// Create an Thumbnail based on the default sizes
+		/// </summary>
+		/// <param name="subPath">path on disk (subPath) based</param>
+		/// <param name="fileHash">output name</param>
+		/// <returns>true if success</returns>
 		public Task<bool> CreateThumb(string subPath, string fileHash)
 		{
+			// Async method:
 			return _thumbnail.CreateThumb(subPath, fileHash);
 		}
 	}

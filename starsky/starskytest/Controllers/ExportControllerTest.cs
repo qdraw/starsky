@@ -100,26 +100,6 @@ namespace starskytest.Controllers
 			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 
-		private FileIndexItem InsertSearchData(bool delete = false)
-		{
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
-			var fileHashCode = new FileHash(iStorage).GetHashCode(_createAnImage.DbPath).Key;
-			if ( string.IsNullOrEmpty(_query.GetSubPathByHash(fileHashCode)) )
-			{
-				var isDelete = string.Empty;
-				if ( delete ) isDelete = "!delete!";
-				_query.AddItem(new FileIndexItem
-				{
-					FileName = _createAnImage.FileName,
-					ParentDirectory = "/",
-					FileHash = fileHashCode,
-					ColorClass = ColorClassParser.Color.Winner, // 1
-					Tags = isDelete
-				});
-			}
-			return _query.GetObjectByFilePath(_createAnImage.DbPath);
-		}
-
 		[TestMethod]
 		public void ExportController_CreateZipNotFound()
 		{
@@ -216,7 +196,7 @@ namespace starskytest.Controllers
 
 
 		[TestMethod]
-		public void ExportControllerTest__ThumbTrue_CreateListToExport()
+		public async Task ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var selectorStorage = new FakeSelectorStorage(storage);
@@ -231,25 +211,24 @@ namespace starskytest.Controllers
 				Status = FileIndexItem.ExifStatus.Ok
 			};
 
-			_query.AddItem(item);
+			await _query.AddItemAsync(item);
 
 			var fileIndexResultsList = new List<FileIndexItem> { item };
 
-			var filePaths = export.CreateListToExport(fileIndexResultsList, true);
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, true);
 
 			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
 		}
 
 		
 		[TestMethod]
-		public void ExportControllerTest__ThumbFalse_CreateListToExport()
+		public async Task ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
 			var storage = new StorageSubPathFilesystem(_appSettings);
 			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
 			var selectorStorage = new FakeSelectorStorage(storage);
 
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
-			var controller = new ExportController( _bgTaskQueue, selectorStorage, export);
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -261,11 +240,11 @@ namespace starskytest.Controllers
 				Status = FileIndexItem.ExifStatus.Ok
 			};
 
-			_query.AddItem(item);
+			await _query.AddItemAsync(item);
 
 			var fileIndexResultsList = new List<FileIndexItem> { item };
 			
-			var filePaths = export.CreateListToExport(fileIndexResultsList,false);
+			var filePaths = await export.CreateListToExport(fileIndexResultsList,false);
 
 			Assert.AreEqual(true, filePaths.FirstOrDefault().Contains(item.FileName));
 
@@ -312,8 +291,8 @@ namespace starskytest.Controllers
 			Assert.AreEqual("file.jpg",fileNames.FirstOrDefault());
 			
 			// This is a strange one: 
-			// We use thumb as base32 filehashes but export 
-			// as file.jpg or the nice orginal name
+			// We use thumb as base32 fileHashes but export 
+			// as file.jpg or the nice original name
 		}
 
 		[TestMethod]

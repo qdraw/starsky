@@ -114,7 +114,7 @@ namespace starsky.feature.export.Services
 		public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail, 
 			string zipOutputFileName)
 		{
-			var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
+			var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
 			var fileNames = FilePathToFileName(filePaths, thumbnail);
 
 			new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipOutputFileName);
@@ -132,7 +132,7 @@ namespace starsky.feature.export.Services
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
 		/// <returns>list of file paths</returns>
-		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
+		public async Task<List<string>> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
 
@@ -144,7 +144,7 @@ namespace starsky.feature.export.Services
 					item.FileHash + ".jpg");
 
 				if ( thumbnail )
-					new Thumbnail(_iStorage, _thumbnailStorage, _logger).CreateThumb(item.FilePath, item.FileHash);
+					await new Thumbnail(_iStorage, _thumbnailStorage, _logger).CreateThumb(item.FilePath, item.FileHash);
 
 				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
 				
