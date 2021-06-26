@@ -263,6 +263,20 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				RotateThumbnail("test", 1);
 			Assert.IsFalse(result);
 		}
+
+		[TestMethod]
+		public async Task ResizeThumbnailFromThumbnailImage_CorruptInput()
+		{
+			var storage = new FakeIStorage(
+				new List<string> {"/"}, 
+				new List<string> {"test"}, 
+				new List<byte[]> {new byte[0]});
+
+			var result = await new Thumbnail(storage, 
+					storage, new FakeIWebLogger()).
+				ResizeThumbnailFromThumbnailImage("test", 1);
+			Assert.IsNull(result);
+		}
 		
 	}
 }
