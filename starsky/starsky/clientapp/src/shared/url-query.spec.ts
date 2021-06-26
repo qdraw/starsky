@@ -184,6 +184,18 @@ describe("url-query", () => {
     });
   });
 
+  describe("UrlThumbnailImage", () => {
+    it("should contain hash_test (issingleitem false)", () => {
+      var test = urlQuery.UrlThumbnailImage("hash_test", false);
+      expect(test).toContain("hash_test");
+    });
+
+    it("should contain hash_test (issingleitem true)", () => {
+      var test = urlQuery.UrlThumbnailImage("hash_test", true);
+      expect(test).toContain("hash_test");
+    });
+  });
+
   describe("UrlRealtime", () => {
     const { location } = window;
     /**
