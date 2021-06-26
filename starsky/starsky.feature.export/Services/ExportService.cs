@@ -139,26 +139,43 @@ namespace starsky.feature.export.Services
 			foreach ( var item in fileIndexResultsList.Where(p => 
 				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
 			{
-				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
-				var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder,
-					item.FileHash + ".jpg");
-
 				if ( thumbnail )
-					await new Thumbnail(_iStorage, _thumbnailStorage, _logger).CreateThumb(item.FilePath, item.FileHash);
-
-				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
-				
-				
-				// when there is .xmp sidecar file
-				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) 
-				                && _iStorage.ExistFile(
-					                ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
 				{
-					filePaths.Add(
-						_appSettings.DatabasePathToFilePath(
-							ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
-					);
+					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
+						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large));
+
+					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
+						.CreateThumb(item.FilePath, item.FileHash, true);
+					
+					filePaths.Add(sourceThumb);
+					continue;
 				}
+
+				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath, false);
+
+				if ( !_hostFileSystemStorage.ExistFile(sourceFile) )
+				{
+					continue;
+				}
+				
+				// the jpeg file for example
+				filePaths.Add(sourceFile);
+				
+				// when there is .xmp sidecar file (but only when file is a RAW file, ignored when for example jpeg)
+				if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
+				     !_iStorage.ExistFile(
+					     ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						     item.FilePath)) ) continue;
+				
+				var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
+					ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						item.FilePath), false);
+
+				if ( !_hostFileSystemStorage.ExistFile(xmpFileFullPath) )
+				{
+					continue;
+				}
+				filePaths.Add(xmpFileFullPath);
 			}
 			return filePaths;
 		}

@@ -33,11 +33,10 @@ namespace starsky.foundation.storage.Storage
 			{
 				case StorageServices.SubPath:
 					return services.First(o => o.GetType() == typeof(StorageSubPathFilesystem));
-				case StorageServices.Thumbnail:
-					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
 				case StorageServices.HostFilesystem:
 					return services.First(o => o.GetType() == typeof(StorageHostFullPathFilesystem));
-
+				case StorageServices.Thumbnail:
+					return services.First(o => o.GetType() == typeof(StorageThumbnailFilesystem));
 				default:
 					throw new ArgumentOutOfRangeException(nameof(storageServices), storageServices, null);
 			}

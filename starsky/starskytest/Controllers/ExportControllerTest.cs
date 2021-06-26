@@ -23,6 +23,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -42,6 +43,7 @@ namespace starskytest.Controllers
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly ServiceProvider _serviceProvider;
 
 		public ExportControllerTest()
 		{
@@ -88,16 +90,16 @@ namespace starskytest.Controllers
 			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
 			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
+			services.AddSingleton<ISelectorStorage, SelectorStorage>();
+			services.AddSingleton<IStorage, StorageSubPathFilesystem>();
+			services.AddSingleton<IStorage, StorageHostFullPathFilesystem>();
+			services.AddSingleton<IStorage, StorageThumbnailFilesystem>();
+
 			// build the service
-			var serviceProvider = services.BuildServiceProvider();
+			_serviceProvider = services.BuildServiceProvider();
 			// get the service
-			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
-
-			// inject fake exiftool
-			new FakeExifTool(new FakeIStorage(),_appSettings );
-
-			serviceProvider.GetRequiredService<IReadMeta>();
-			serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_appSettings = _serviceProvider.GetRequiredService<AppSettings>();
+			
 		}
 
 		[TestMethod]
@@ -198,8 +200,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbTrue_CreateListToExport()
 		{
-			var storage = new StorageSubPathFilesystem(_appSettings);
-			var selectorStorage = new FakeSelectorStorage(storage);
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
 			
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 
@@ -207,7 +208,7 @@ namespace starskytest.Controllers
 			{
 				FileName = "testFile.jpg",
 				ParentDirectory = "/",
-				FileHash = "FileHash",
+				FileHash = _createAnImage.FileName,
 				Status = FileIndexItem.ExifStatus.Ok
 			};
 
@@ -219,15 +220,49 @@ namespace starskytest.Controllers
 
 			Assert.AreEqual(true,filePaths.FirstOrDefault().Contains(item.FileHash));
 		}
+		
+		[TestMethod]
+		public async Task ExportControllerTest__ThumbFalse_AddXmpFile_CreateListToExport()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
+			{
+				_appSettings.DatabasePathToFilePath("/test.dng", false), 
+				_appSettings.DatabasePathToFilePath("/test.xmp", false),
+				"/test.dng",
+				"/test.xmp"
+			});
+			
+			var selectorStorage = new FakeSelectorStorage(storage);
+
+			var fileIndexResultsList = new List<FileIndexItem>
+			{
+				new FileIndexItem
+				{
+					FileName = "test.dng",
+					ParentDirectory = "/",
+					FileHash = "FileHash",
+					Status = FileIndexItem.ExifStatus.Ok
+				}
+			};
+			var fakeQuery = new FakeIQuery(fileIndexResultsList);
+			
+			var export = new ExportService(fakeQuery,_appSettings,selectorStorage, new FakeIWebLogger());
+
+			var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
+
+			Assert.AreEqual(true,filePaths[0].Contains("test.dng"));
+			Assert.AreEqual(true,filePaths[1].Contains("test.xmp"));
+		}
 
 		
 		[TestMethod]
 		public async Task ExportControllerTest__ThumbFalse_CreateListToExport()
 		{
-			var storage = new StorageSubPathFilesystem(_appSettings);
-			var hostFileSystemStorage = new StorageHostFullPathFilesystem();
-			var selectorStorage = new FakeSelectorStorage(storage);
-
+			var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
+			var hostFileSystemStorage =
+				selectorStorage.Get(SelectorStorage.StorageServices
+					.HostFilesystem);
+			
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 
 			var createAnImageNoExif = new CreateAnImageNoExif();
