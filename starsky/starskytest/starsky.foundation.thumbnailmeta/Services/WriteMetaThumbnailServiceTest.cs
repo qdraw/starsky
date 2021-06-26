@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -69,6 +70,16 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			Assert.AreEqual(0,result,0.00001);
 		}
 		
+		[TestMethod]
+		public void RotateEnumToDegrees_Default()
+		{
+			var service = new WriteMetaThumbnailService(new FakeSelectorStorage(),
+				new FakeIWebLogger(), new AppSettings());
+
+			var result = service.RotateEnumToDegrees(FileIndexItem.Rotation.DoNotChange);
+			Assert.AreEqual(0,result,0.00001);
+		}
+
 		[TestMethod]
 		public void RotateEnumToDegrees_180()
 		{

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.database.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
@@ -47,8 +48,9 @@ namespace starskytest.Controllers
 			var thumbStorage = new FakeIStorage();
 
 			var selectorStorage = new FakeSelectorStorage(storage);
-			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
-				new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
+					new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
+				), new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
 
 			await controller.WorkItem("/", storage, thumbStorage);
 
@@ -56,6 +58,43 @@ namespace starskytest.Controllers
 				"/").ToList();
 			
 			Assert.AreEqual(1, folder.Count(p => !p.Contains("@")));
+		}
+		
+		[TestMethod]
+		public async Task ThumbnailGenerationTest_CheckIfGenerated_Socket_Success()
+		{
+			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var thumbStorage = new FakeIStorage();
+
+			var socket = new FakeIWebSocketConnectionsService();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
+				new List<FileIndexItem>{new FileIndexItem("/test.jpg")}
+			), new FakeIWebLogger(), socket);
+
+			await controller.WorkItem("/", storage, thumbStorage);
+
+			Assert.AreEqual(1, socket.FakeSendToAllAsync.Count);
+		}
+		
+		[TestMethod]
+		public async Task ThumbnailGenerationTest_CheckIfGenerated_Socket_NoResultsInDatabase()
+		{
+			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"},
+				new List<byte[]> {CreateAnImage.Bytes});
+
+			var thumbStorage = new FakeIStorage();
+
+			var socket = new FakeIWebSocketConnectionsService();
+			var selectorStorage = new FakeSelectorStorage(storage);
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(
+				new List<FileIndexItem>()), new FakeIWebLogger(), socket);
+
+			await controller.WorkItem("/", storage, thumbStorage);
+
+			Assert.AreEqual(0, socket.FakeSendToAllAsync.Count);
 		}
 
 		[TestMethod]
