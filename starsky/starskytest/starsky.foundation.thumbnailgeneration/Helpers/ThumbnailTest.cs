@@ -59,8 +59,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 				new List<string>{_fakeIStorageImageSubPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 
-			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
-				_fakeIStorageImageSubPath, _fakeIStorageImageSubPath);
+			var isCreated = await new Thumbnail(storage, storage, 
+				new FakeIWebLogger()).CreateThumb( _fakeIStorageImageSubPath, 
+				_fakeIStorageImageSubPath);
 			Assert.AreEqual(false,isCreated);
 		}
 		
@@ -74,13 +75,16 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			var fileHash = "test_hash";
 			
 			// skip xtra large
-			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
+			var isCreated = await new Thumbnail(storage, 
+				storage, new FakeIWebLogger()).CreateThumb(
 				_fakeIStorageImageSubPath, fileHash, true);
 			Assert.AreEqual(true,isCreated);
 
 			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
-			Assert.AreEqual(false, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+			Assert.AreEqual(true, storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
+			Assert.AreEqual(false, storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
 		}
 		
 		[TestMethod]
@@ -92,13 +96,16 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 
 			var fileHash = "test_hash";
 			// include xtra large
-			var isCreated = await new Thumbnail(storage, storage, new FakeIWebLogger()).CreateThumb(
+			var isCreated = await new Thumbnail(storage, 
+				storage, new FakeIWebLogger()).CreateThumb(
 				_fakeIStorageImageSubPath, fileHash);
 			Assert.AreEqual(true,isCreated);
 
 			Assert.AreEqual(true, storage.ExistFile(fileHash));
-			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
-			Assert.AreEqual(true, storage.ExistFile(ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
+			Assert.AreEqual(true, storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.Small)));
+			Assert.AreEqual(true, storage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash,ThumbnailSize.ExtraLarge)));
 		}
 
 		[TestMethod]

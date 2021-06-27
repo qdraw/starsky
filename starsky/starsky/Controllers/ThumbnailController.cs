@@ -78,6 +78,7 @@ namespace starsky.Controllers
 		
 		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
 		{
+			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
 			var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size),50);
 			var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
 			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
@@ -95,7 +96,6 @@ namespace starsky.Controllers
 			
 			// thumbs are always in jpeg
 			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
-			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
 			return File(stream, "image/jpeg");
 		}
 		

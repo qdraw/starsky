@@ -241,7 +241,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task ApiController_Thumbnail1_NonExistingFile_API_Test()
+		public async Task Thumbnail1_NonExistingFile_API_Test()
 		{
 			var storage = ArrangeStorage();
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -249,6 +249,25 @@ namespace starskytest.Controllers
 			var actionResult = await controller.Thumbnail("404filehash", false, true) as NotFoundObjectResult;
 			var thumbnailAnswer = actionResult.StatusCode;
 			Assert.AreEqual(404,thumbnailAnswer);
+		}
+		
+				
+		[TestMethod]
+		public async Task Thumbnail_GetLargeResult()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
+			{
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta),
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small),
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large)
+			});
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			await controller.Thumbnail("test", true, false, false);
+			
+			controller.Response.Headers.TryGetValue("x-image-size", out var value ); 
+			Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
 		}
 		
 				
