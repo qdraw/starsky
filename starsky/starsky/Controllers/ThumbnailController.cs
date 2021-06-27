@@ -75,6 +75,27 @@ namespace starsky.Controllers
 			Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Large.ToString()));
 			return File(streamDefaultThumbnail, "image/jpeg");
 		}
+		
+		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
+		{
+			var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size),50);
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
+			{
+				SetExpiresResponseHeadersToZero();
+				return NoContent(); // 204
+			}
+			
+			// When using the api to check using javascript
+			// use the cached version of imageFormat, otherwise you have to check if it deleted
+			if (json) return Json("OK");
+
+			// thumbs are always in jpeg
+			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
+			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
+			return File(stream, "image/jpeg");
+		}
+		
 
 		/// <summary>
         /// Get thumbnail with fallback to original source image.
@@ -104,7 +125,8 @@ namespace starsky.Controllers
         public async Task<IActionResult> Thumbnail(
             string f, 
             bool isSingleItem = false, 
-            bool json = false)
+            bool json = false,
+            ThumbnailSize preferredSize = ThumbnailSize.ExtraLarge)
         {
             // f is Hash
             // isSingleItem => detailView
@@ -120,35 +142,22 @@ namespace starsky.Controllers
 	        {
 		        return BadRequest();
 	        }
-
-	        IActionResult ReturnResult(ThumbnailSize size)
-	        {
-		        // When using the api to check using javascript
-		        // use the cached version of imageFormat, otherwise you have to check if it deleted
-		        if (json) return Json("OK");
-
-		        // thumbs are always in jpeg
-		        var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,size));
-		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
-		        return File(stream, "image/jpeg");
-	        }
 	        
-            if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge)))
+	        // preferredSize defaults to Extra Large
+            if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, preferredSize)))
             {
-                // When a file is corrupt show error
-                var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, ThumbnailSize.ExtraLarge),50);
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
-                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-                {
-	                SetExpiresResponseHeadersToZero();
-	                return NoContent(); // 204
-                }
-                return ReturnResult(ThumbnailSize.ExtraLarge);
+                return ReturnThumbnailResult(f, json, preferredSize);
             }
 
-            if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, ThumbnailSize.Large)) )
+            var altSize = ThumbnailSize.Large;
+            if ( preferredSize == ThumbnailSize.Large )
             {
-	            return ReturnResult(ThumbnailSize.Large);
+	            altSize = ThumbnailSize.ExtraLarge;
+            }
+
+            if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize)) )
+            {
+	            return ReturnThumbnailResult(f, json, altSize);
             }
 
             // Cached view of item
