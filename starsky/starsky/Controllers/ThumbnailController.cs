@@ -107,6 +107,7 @@ namespace starsky.Controllers
         /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="isSingleItem">true = load original</param>
         /// <param name="json">text as output</param>
+        /// <param name="extraLarge">give preference to extraLarge over large image</param> 
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="204">thumbnail is corrupt</response>
