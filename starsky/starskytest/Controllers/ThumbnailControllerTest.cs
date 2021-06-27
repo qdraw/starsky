@@ -253,7 +253,7 @@ namespace starskytest.Controllers
 		
 				
 		[TestMethod]
-		public async Task Thumbnail_GetLargeResult()
+		public async Task Thumbnail_GetLargeFirstChoiceResult()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
@@ -270,6 +270,21 @@ namespace starskytest.Controllers
 			Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
 		}
 		
+		[TestMethod]
+		public async Task Thumbnail_GetExtraLargeSecondChoiceResult()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
+			{
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.ExtraLarge)
+			});
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			await controller.Thumbnail("test", true, false, false);
+			
+			controller.Response.Headers.TryGetValue("x-image-size", out var value ); 
+			Assert.AreEqual(ThumbnailSize.ExtraLarge.ToString(), value.ToString());
+		}
 				
 		[TestMethod]
 		public async Task ByZoomFactor_NonExistingFile_API_Test()
