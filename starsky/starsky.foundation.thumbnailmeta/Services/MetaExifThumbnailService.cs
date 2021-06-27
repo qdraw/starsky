@@ -22,25 +22,25 @@ namespace starsky.foundation.metathumbnail.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
 		private readonly IOffsetDataMetaExifThumbnail _offsetDataMetaExifThumbnail;
-		private readonly IWriteMetaThumbnail _writeMetaThumbnail;
+		private readonly IWriteMetaThumbnailService _writeMetaThumbnailService;
 		private readonly AppSettings _appSettings;
 
 		public MetaExifThumbnailService(AppSettings appSettings, ISelectorStorage selectorStorage, 
 			IOffsetDataMetaExifThumbnail offsetDataMetaExifThumbnail, 
-			IWriteMetaThumbnail writeMetaThumbnail, IWebLogger logger)
+			IWriteMetaThumbnailService writeMetaThumbnailService, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_offsetDataMetaExifThumbnail = offsetDataMetaExifThumbnail;
-			_writeMetaThumbnail = writeMetaThumbnail;
+			_writeMetaThumbnailService = writeMetaThumbnailService;
 			_logger = logger;
 		}
 
 		/// <summary>
-		/// 
+		/// Run for list that contains subPath and FileHash at once
 		/// </summary>
-		/// <param name="subPathsAndHash"></param>
+		/// <param name="subPathsAndHash">(subPath, FileHash)</param>
 		/// <returns></returns>
 		public async Task<bool> AddMetaThumbnail(IEnumerable<(string, string)> subPathsAndHash)
 		{
@@ -48,6 +48,7 @@ namespace starsky.foundation.metathumbnail.Services
 				.ForEachAsync(async item => 
 						await AddMetaThumbnail(item.Item1, item.Item2),
 					_appSettings.MaxDegreesOfParallelism);
+
 			return true;
 		}
 
@@ -61,10 +62,12 @@ namespace starsky.foundation.metathumbnail.Services
 		public async Task<bool> AddMetaThumbnail(string subPath)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
+			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 			switch ( isFolderOrFile )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-					throw new FileNotFoundException("should enter some valid dir or file");
+					_logger.LogError($"[AddMetaThumbnail] folder or file not found {subPath}");
+					return false;
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
 				{
 					var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
@@ -117,7 +120,7 @@ namespace starsky.foundation.metathumbnail.Services
 				ParseOffsetData(exifThumbnailDir,subPath);
 			if ( !offsetData.Success ) return false;
 
-			return await _writeMetaThumbnail.WriteAndCropFile(fileHash, offsetData, sourceWidth,
+			return await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
 				sourceHeight, rotation, subPath);
 		}
 	}

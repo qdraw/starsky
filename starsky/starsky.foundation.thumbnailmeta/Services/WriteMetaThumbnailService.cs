@@ -15,8 +15,8 @@ using starsky.foundation.storage.Storage;
 
 namespace starsky.foundation.metathumbnail.Services
 {
-	[Service(typeof(IWriteMetaThumbnail), InjectionLifetime = InjectionLifetime.Scoped)]
-	public class WriteMetaThumbnailService : IWriteMetaThumbnail
+	[Service(typeof(IWriteMetaThumbnailService), InjectionLifetime = InjectionLifetime.Scoped)]
+	public class WriteMetaThumbnailService : IWriteMetaThumbnailService
 	{
 		private readonly IWebLogger _logger;
 		private readonly IStorage _thumbnailStorage;
