@@ -31,13 +31,19 @@ namespace starskytest.Controllers
 
 		}
 
-		// [TestMethod]
-		// public async Task Thumbnail_1()
-		// {
-		// 	var json = await controller.ThumbnailGeneration("/") as JsonResult;
-		// 	var result = json.Value as string;
-		// 	Assert.IsNotNull(result);
-		// }
+		[TestMethod]
+		public async Task ThumbnailGeneration_Endpoint()
+		{
+			var selectorStorage = new FakeSelectorStorage(new FakeIStorage(new List<string>{"/"}));
+			var controller = new ThumbnailGenerationController(selectorStorage, new FakeIQuery(), 
+				new FakeIWebLogger(), new FakeIWebSocketConnectionsService());
+			
+			var json = await controller.ThumbnailGeneration("/") as JsonResult;
+			var result = json.Value as string;
+			
+			Assert.IsNotNull(result);
+			Assert.AreEqual("Job started", result);
+		}
 
 		[TestMethod]
 		public async Task ThumbnailGenerationTest_CheckIfGenerated()
@@ -98,7 +104,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task TestFailing()
+		public async Task WorkItem_TestFailing()
 		{
 			var message = "[ThumbnailGenerationController] reading not allowed";
 			
