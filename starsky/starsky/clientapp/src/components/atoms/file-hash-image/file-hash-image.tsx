@@ -59,7 +59,6 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         window.innerWidth > 1000
       )
     );
-    console.log(window.innerWidth > 1000);
   }, [props.fileHash]);
 
   return (
