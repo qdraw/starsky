@@ -100,7 +100,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    var skipExtraLarge = ShouldSkipExtraLarge(publishProfileName);
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge == true);
+			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge);
 		    }
 	    }
 
