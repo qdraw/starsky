@@ -75,7 +75,49 @@ namespace starsky.Controllers
 			Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Large.ToString()));
 			return File(streamDefaultThumbnail, "image/jpeg");
 		}
-		
+
+
+		/// <summary>
+		/// Get overview of what exists by name
+		/// </summary>
+		/// <param name="f">one single fileHash (NOT path)</param>
+		/// <returns>thumbnail or status (IActionResult ThumbnailFromIndex)</returns>
+		/// <response code="200">returns content of the file</response>
+		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
+		/// <response code="404">no thumbnails yet</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpGet("/api/thumbnail/list-sizes/{f}")]
+		[ProducesResponseType(200)] // file
+		[ProducesResponseType(
+			400)] // string (f) input not allowed to avoid path injection attacks
+		[ProducesResponseType(404)] // not found
+		public IActionResult ListSizesByHash(string f)
+		{
+			// For serving jpeg files
+			f = FilenamesHelper.GetFileNameWithoutExtension(f);
+	        
+			// Restrict the fileHash to letters and digits only
+			// I/O function calls should not be vulnerable to path injection attacks
+			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+			{
+				return BadRequest();
+			}
+			
+			var data = new { 
+				TinyMeta = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta)),
+				Small = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small)),
+				Large = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large)),
+				ExtraLarge = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.ExtraLarge))
+			};
+
+			if ( data.TinyMeta || data.Small || data.Large || data.ExtraLarge )
+				return Json(data);
+			
+			var sourcePath = _query.GetSubPathByHash(f);
+			if ( sourcePath != null ) return Json(data);
+			return NotFound("not in index");
+		}
+
 		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
 		{
 			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
