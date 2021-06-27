@@ -101,11 +101,13 @@ namespace starsky.Controllers
             if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
 	            fileIndexItem.FileHash,ThumbnailSize.ExtraLarge)))
             {
-                var isSuccess = await new Thumbnail(_iStorage,
+                await new Thumbnail(_iStorage,
 	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
 	                fileIndexItem.FileHash);
-
-                if ( !isSuccess )
+                
+                if ( !_thumbnailStorage.ExistFile(
+	                ThumbnailNameHelper.Combine(fileIndexItem.FileHash,
+		                ThumbnailSize.ExtraLarge)) )
                 {
 	                Response.StatusCode = 500;
 	                return Json("Thumbnail generation failed");
