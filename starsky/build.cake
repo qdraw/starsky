@@ -64,7 +64,7 @@ var publishProjectNames = new List<string>{
     "starskythumbnailcli",
     "starskywebftpcli",
     "starskywebhtmlcli",
-    "starskythumbnailmetacli"
+    "starskythumbnailmetacli",
     "starsky"
 }; // ignore starskycore + features/foundations
 
