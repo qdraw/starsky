@@ -48,6 +48,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string (PR #412)
 - [x]   (Fixed) _Back-end_ Fix fast updating items to update the cache before update (PR #412)
 - [x]   (Change) _Back-end_ Push direct to socket when update or replace to avoid undo after a second (PR #412)
+- [x]   (Change) _Back-end_ Add 2000 px and 300 px size for thumbnails to match better with larger and smaller screens (PR #380)
+- [x]   (Change) _Back-end_ Add Meta Thumbnail (150px) to get faster archive and search pages (PR #380)
+- [x]   (Change) _Back-end_ Use 2000 px image in overlay (Publish) when available 
+- [x]   (Change) _Back-end_ Start  api/thumbnail-generation in different thread instead of que
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
