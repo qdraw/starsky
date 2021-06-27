@@ -177,7 +177,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        {
 		        Tags = "tags",
 		        Description = "Description",
-		        FileHash = "_hash_test"
+		        FileHash = "_hash_test" // < - - - - include here
 	        };
 	        var comparedNames = new List<string>{
 		        nameof(FileIndexItem.Tags).ToLowerInvariant(),
