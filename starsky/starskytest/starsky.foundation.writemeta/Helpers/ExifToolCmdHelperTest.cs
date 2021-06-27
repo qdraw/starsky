@@ -169,5 +169,29 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.IsTrue(helperResult.Item1.Contains("tags"));
 			Assert.IsTrue(helperResult.Item1.Contains("Description"));
         }
+        
+        [TestMethod]
+        public async Task UpdateAsync_ShouldUpdate_IncludeFileHash()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        Tags = "tags",
+		        Description = "Description",
+		        FileHash = "_hash_test"
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.Tags).ToLowerInvariant(),
+		        nameof(FileIndexItem.Description).ToLowerInvariant(),
+	        };
+
+	        var storage = new FakeIStorage(new List<string>{"/"},new List<string>{"/test.jpg"},new List<byte[]>());
+
+	        var fakeExifTool = new FakeExifTool(storage,_appSettings);
+	        var helperResult = (await new ExifToolCmdHelper(fakeExifTool, storage,storage ,
+		        new FakeReadMeta()).UpdateAsync(updateModel, comparedNames, true));
+			
+	        Assert.IsTrue(helperResult.Item1.Contains("tags"));
+	        Assert.IsTrue(helperResult.Item1.Contains("Description"));
+        }
 	}
 }
