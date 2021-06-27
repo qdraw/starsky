@@ -121,9 +121,9 @@ namespace starsky.Controllers
 				_query.RemoveCacheParentItem(subPath);
 			 
 				var deleteStatus = _iHostStorage.FileDelete(tempImportPaths[i]);
-				_logger.LogInformation($"delete {tempFileStream} is {deleteStatus}");
+				_logger.LogInformation($"delete {tempImportPaths[i]} is {deleteStatus}");
 
-				_metaExifThumbnailService.AddMetaThumbnail(subPath,
+				await _metaExifThumbnailService.AddMetaThumbnail(subPath,
 					fileIndexResultsList[i].FileIndexItem.FileHash);
 			}
 
@@ -257,7 +257,7 @@ namespace starsky.Controllers
 				importedList.Add(subPath);
 				
 				var deleteStatus = _iHostStorage.FileDelete(tempImportSinglePath);
-				_logger.LogInformation($"delete {tempFileStream} is {deleteStatus}");
+				_logger.LogInformation($"delete {tempImportSinglePath} is {deleteStatus}");
 			}
 			
 			if ( !importedList.Any() )
