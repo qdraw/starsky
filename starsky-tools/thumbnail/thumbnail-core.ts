@@ -189,7 +189,7 @@ export class Query {
 	public async checkIfSingleFileNeedsToBeDownloaded(hashItem: string): Promise<boolean> {
 
 		var downloadFileRequestOptions = this.requestOptions();;
-		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/' + hashItem;
+		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/list-sizes/' + hashItem;
 		downloadFileRequestOptions.method = "GET";
 
 		downloadFileRequestOptions.params = {
@@ -244,11 +244,34 @@ export class Query {
 
 	}
 
+	public async resizer(size: number, sourceFilePath: string, targetPath: string): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+				jimp.read(sourceFilePath)
+				.then(image => {
+
+					image.resize(size, jimp.AUTO);
+					image.quality(80);
+
+					image.write(targetPath, () => {
+						process.stdout.write("≈");
+						resolve(true);
+					});
+
+				})
+				.catch(err => {
+					console.error(err);
+					resolve(false);
+				});
+		});
+	}
+		
+
 	public async resizeImage(fileHash: string): Promise<boolean> {
 
 		var sourceFilePath = path.join(this.getSourceTempFolder(), fileHash + ".jpg");
-		var targetFilePath = path.join(this.getTempFolder(), fileHash + ".jpg");
-
+		var targetExtraLargeFilePath = path.join(this.getTempFolder(), fileHash + "@2000.jpg");
+		var targetLargeFilePath = path.join(this.getTempFolder(), fileHash + ".jpg");
+		var targetSmallFilePath = path.join(this.getTempFolder(), fileHash + "@300.jpg");
 
 		return new Promise<boolean>((resolve, reject) => {
 
@@ -276,22 +299,16 @@ export class Query {
 					// 	resolve(false);
 					// });
 
-					jimp.read(sourceFilePath)
-						.then(image => {
-
-							image.resize(1000, jimp.AUTO);
-							image.quality(80);
-
-							image.write(targetFilePath, () => {
-								process.stdout.write("≈");
-								resolve(true);
-							});
-
-						})
-						.catch(err => {
-							console.error(err);
-							resolve(false);
-						});
+					if (!await this.resizer(2000, sourceFilePath, targetExtraLargeFilePath)) {
+						resolve(false);
+					}
+					if (!await this.resizer(1000, targetExtraLargeFilePath, targetLargeFilePath)) {
+						resolve(false);
+					}
+					if (!await this.resizer(300, targetLargeFilePath, targetSmallFilePath)) {
+						resolve(false);
+					}
+					resolve(true);
 				}
 			});
 		});

@@ -69,7 +69,6 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 		const axiosResponses = await Promise.all(fileHashList.map(queueAxios.wrap(
 			async (fileHash: string) => {
 				if (await query.checkIfSingleFileNeedsToBeDownloaded(fileHash)) {
-					await query.downloadBinarySingleFile(fileHash);
 					return fileHash;
 				}
 			}
@@ -86,6 +85,7 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 		const queueResizeChain = new TaskQueue(Promise, query.MAX_SIMULTANEOUS_DOWNLOADS);
 		await Promise.all(filteredAxiosResponses.map(queueResizeChain.wrap(
 			async (fileHash: string) => {
+				await query.downloadBinarySingleFile(fileHash);
 				if (await query.resizeImage(fileHash)) {
 					if (await query.uploadTempFile(fileHash)) {
 						return fileHash; // return isn't working good

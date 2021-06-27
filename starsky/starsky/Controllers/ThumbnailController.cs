@@ -82,15 +82,19 @@ namespace starsky.Controllers
 		/// </summary>
 		/// <param name="f">one single fileHash (NOT path)</param>
 		/// <returns>thumbnail or status (IActionResult ThumbnailFromIndex)</returns>
-		/// <response code="200">returns content of the file</response>
+		/// <response code="200">ok view content to see whats ready</response>
+		/// <response code="202">Thumbnail is not ready yet</response>
 		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
 		/// <response code="404">no thumbnails yet</response>
 		/// <response code="401">User unauthorized</response>
 		[HttpGet("/api/thumbnail/list-sizes/{f}")]
 		[ProducesResponseType(200)] // file
+		[ProducesResponseType(202)] // thumbnail can be generated "Thumbnail is not ready yet"
+		[ProducesResponseType(210)] // raw
 		[ProducesResponseType(
 			400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
+
 		public IActionResult ListSizesByHash(string f)
 		{
 			// For serving jpeg files
@@ -110,12 +114,25 @@ namespace starsky.Controllers
 				ExtraLarge = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.ExtraLarge))
 			};
 
-			if ( data.TinyMeta || data.Small || data.Large || data.ExtraLarge )
+			// Success has all items (except tinyMeta)
+			if (data.Small && data.Large && data.ExtraLarge )
 				return Json(data);
 			
 			var sourcePath = _query.GetSubPathByHash(f);
-			if ( sourcePath != null ) return Json(data);
-			return NotFound("not in index");
+			var isThumbnailSupported =
+				ExtensionRolesHelper.IsExtensionThumbnailSupported(sourcePath);
+			switch ( isThumbnailSupported  )
+			{
+				case true when !string.IsNullOrEmpty(sourcePath):
+					Response.StatusCode = 202;
+					return Json(data);
+				case false when !string.IsNullOrEmpty(sourcePath):
+					Response.StatusCode = 210; // A conflict, that the thumb is not generated yet
+					return Json("Thumbnail is not supported; for example you try to view a raw or video file");
+				default:
+					return NotFound("not in index");
+			}
+
 		}
 
 		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
@@ -152,19 +169,19 @@ namespace starsky.Controllers
         /// <param name="extraLarge">give preference to extraLarge over large image</param> 
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
-        /// <response code="204">thumbnail is corrupt</response>
-        /// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
+		/// <response code="202">thumbnail can be generated, Thumbnail is not ready yet</response>
+		/// <response code="204">thumbnail is corrupt</response>
+		/// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
+		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
         /// <response code="404">item not found on disk</response>
-        /// <response code="210">Conflict, you did try get for example a thumbnail of a raw file</response>
-        /// <response code="209">"Thumbnail is not ready yet"</response>
         /// <response code="401">User unauthorized</response>
         [HttpGet("/api/thumbnail/{f}")]
         [ProducesResponseType(200)] // file
+        [ProducesResponseType(202)] // thumbnail can be generated "Thumbnail is not ready yet"
         [ProducesResponseType(204)] // thumbnail is corrupt
-		[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
-        [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        [ProducesResponseType(209)] // "Thumbnail is not ready yet"
+        [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
+        [ProducesResponseType(404)] // not found
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
         [ResponseCache(Duration = 29030400)] // 4 weeks
