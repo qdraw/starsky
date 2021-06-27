@@ -142,7 +142,7 @@ namespace starsky.feature.export.Services
 				if ( thumbnail )
 				{
 					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
-						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large));
+						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large, true));
 
 					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
 						.CreateThumb(item.FilePath, item.FileHash, true);

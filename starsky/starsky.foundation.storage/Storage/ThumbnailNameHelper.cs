@@ -66,8 +66,9 @@ namespace starsky.foundation.storage.Storage
 			return Combine(fileHash, GetSize(size));
 		}
 
-		public static string Combine(string fileHash, ThumbnailSize size)
+		public static string Combine(string fileHash, ThumbnailSize size, bool appendExtension = false)
 		{
+			if ( appendExtension ) return fileHash + GetAppend(size) + ".jpg";
 			return fileHash + GetAppend(size);
 		}
 
