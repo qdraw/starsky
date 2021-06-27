@@ -87,11 +87,17 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return fileIndexItemsList;
 	    }
 
-	    internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList, string publishProfileName)
+	    internal bool ShouldSkipExtraLarge(string publishProfileName)
 	    {
 		    var skipExtraLarge = _publishPreflight?.GetPublishProfileName(publishProfileName)?
 			    .All(p => p.SourceMaxWidth <= 1999);
-			    
+		    return skipExtraLarge == true;
+
+	    }
+
+	    internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList, string publishProfileName)
+	    {
+		    var skipExtraLarge = ShouldSkipExtraLarge(publishProfileName);
 		    foreach ( var item in fileIndexItemsList )
 		    {
 			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge == true);

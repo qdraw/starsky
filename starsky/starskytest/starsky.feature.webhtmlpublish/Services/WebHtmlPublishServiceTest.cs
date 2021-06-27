@@ -181,7 +181,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
-				new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes});
+				new List<byte[]>{CreateAnImageNoExif.Bytes});
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(null,selectorStorage,null,
@@ -190,13 +190,57 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			{
 				new FileIndexItem("/test.jpg")
 				{
-					FileHash = "test"
-					
+					FileHash = "test_hash_01"
 				}
 			}.AsEnumerable();
-			Assert.IsNotNull(service);
+			
 			await service.PreGenerateThumbnail(input,"");
-			// should not crash
+
+			Assert.IsTrue(storage.ExistFile("test_hash_01"));
+		}
+		
+		[TestMethod]
+		public void ShouldSkipExtraLarge_IncludeXtraLarge()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{new byte[10]});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>{
+				{
+					new AppSettingsPublishProfiles
+					{
+						SourceMaxWidth = 2000
+					}
+				}}),
+				selectorStorage,null,
+				null,null,null, new FakeIWebLogger());
+			
+			var result = service.ShouldSkipExtraLarge("");
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void ShouldSkipExtraLarge_SkipExtraLarge()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test.jpg"}, 
+				new List<byte[]>{new byte[10]});
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new FakeIPublishPreflight(new List<AppSettingsPublishProfiles>{
+				{
+					new AppSettingsPublishProfiles
+					{
+						SourceMaxWidth = 1000
+					}
+				}}),
+				selectorStorage,null,
+				null,null,null, new FakeIWebLogger());
+			
+			var result = service.ShouldSkipExtraLarge("");
+			Assert.IsTrue(result);
 		}
 		
 		[TestMethod]
