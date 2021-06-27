@@ -313,6 +313,7 @@ namespace starsky.foundation.storage.Storage
 
 			async Task<bool> LocalRun()
 			{
+				stream.Seek(0, SeekOrigin.Begin);
 				using (var fileStream = new FileStream(path, FileMode.Create, 
 					FileAccess.Write, FileShare.Read, 4096, 
 					FileOptions.Asynchronous | FileOptions.SequentialScan))

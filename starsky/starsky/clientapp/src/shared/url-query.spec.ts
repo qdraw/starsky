@@ -184,6 +184,33 @@ describe("url-query", () => {
     });
   });
 
+  describe("UrlThumbnailImage", () => {
+    it("should contain hash_test (issingleitem false)", () => {
+      var test = urlQuery.UrlThumbnailImage("hash_test", false);
+      expect(test).toContain("hash_test");
+    });
+
+    it("should contain hash_test (issingleitem true)", () => {
+      var test = urlQuery.UrlThumbnailImage("hash_test", true);
+      expect(test).toContain("hash_test");
+    });
+  });
+
+  describe("UrlThumbnailImageLargeOrExtraLarge", () => {
+    it("should contain hash_test (large false)", () => {
+      var test = urlQuery.UrlThumbnailImageLargeOrExtraLarge(
+        "hash_test",
+        false
+      );
+      expect(test).toContain("hash_test");
+    });
+
+    it("should contain hash_test (large true)", () => {
+      var test = urlQuery.UrlThumbnailImageLargeOrExtraLarge("hash_test", true);
+      expect(test).toContain("hash_test");
+    });
+  });
+
   describe("UrlRealtime", () => {
     const { location } = window;
     /**

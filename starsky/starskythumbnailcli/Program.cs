@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -12,7 +13,7 @@ namespace starskythumbnailcli
 {
 	public static class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
@@ -37,7 +38,7 @@ namespace starskythumbnailcli
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
 			// Help and other Command Line Tools args are included in the ThumbnailCLI
-			new ThumbnailCli( appSettings, console, thumbnailService, thumbnailCleaner, selectorStorage).Thumbnail(args);
+			await new ThumbnailCli( appSettings, console, thumbnailService, thumbnailCleaner, selectorStorage).Thumbnail(args);
 		}
 	}
 }

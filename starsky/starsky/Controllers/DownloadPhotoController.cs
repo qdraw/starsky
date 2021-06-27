@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
@@ -18,12 +19,14 @@ namespace starsky.Controllers
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
-		
-		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage)
+		private readonly IWebLogger _logger;
+
+		public DownloadPhotoController(IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_query = query;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -72,51 +75,47 @@ namespace starsky.Controllers
             if (f.Contains("?isthumbnail")) return NotFound("please use &isthumbnail = "+
                                                             "instead of ?isthumbnail= ");
 
-            var singleItem = _query.SingleItem(f);
-            if ( singleItem == null)
+            var fileIndexItem = await _query.GetObjectByFilePathAsync(f);
+            if ( fileIndexItem == null)
             {
 	            return NotFound("not in index " + f);
             }
 
-            if (!_iStorage.ExistFile(singleItem.FileIndexItem.FilePath))
-                return NotFound($"source image missing {singleItem.FileIndexItem.FilePath}" );
+            if (!_iStorage.ExistFile(fileIndexItem.FilePath))
+                return NotFound($"source image missing {fileIndexItem.FilePath}" );
 
             // Return full image
             if (!isThumbnail)
             {
 	            if ( cache ) CacheControlOverwrite.SetExpiresResponseHeaders(Request);
-	            var fs = _iStorage.ReadStream(singleItem.FileIndexItem.FilePath);
-                // Return the right mime type (enableRangeProcessing = needed for safari and mp4)
-                return File(fs, MimeHelper.GetMimeTypeByFileName(singleItem.FileIndexItem.FilePath),true);
+	            var fs = _iStorage.ReadStream(fileIndexItem.FilePath);
+	            // Return the right mime type (enableRangeProcessing = needed for safari and mp4)
+	            return File(fs, MimeHelper.GetMimeTypeByFileName(fileIndexItem.FilePath),true);
             }
 
             if (!_thumbnailStorage.ExistFolder("/"))
             {
 	            return NotFound("ThumbnailTempFolder not found");
             }
-            
-            // Return Thumbnail
-            var existThumbnailFile = _thumbnailStorage.ExistFile(singleItem.FileIndexItem.FileHash);
 
-            if (!existThumbnailFile)
+            if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
+	            fileIndexItem.FileHash,ThumbnailSize.ExtraLarge)))
             {
-                var searchItem = new FileIndexItem(singleItem.FileIndexItem.FilePath)
+                var isSuccess = await new Thumbnail(_iStorage,
+	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
+	                fileIndexItem.FileHash);
+
+                if ( !isSuccess )
                 {
-	                FileHash =
-		                singleItem.FileIndexItem
-			                .FileHash // not loading it from disk to make it faster
-                };
-                
-                var isCreateAThumb = new Thumbnail(_iStorage,_thumbnailStorage).CreateThumb(searchItem.FilePath, searchItem.FileHash);
-                if (!isCreateAThumb)
-                {
-                    Response.StatusCode = 500;
-                    return Json("Thumbnail generation failed");
+	                Response.StatusCode = 500;
+	                return Json("Thumbnail generation failed");
                 }
             }
-            
-            var thumbnailFs = _thumbnailStorage.ReadStream(singleItem.FileIndexItem.FileHash);
+
+            var thumbnailFs = _thumbnailStorage.ReadStream(
+	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge));
             return File(thumbnailFs, "image/jpeg");
+
         }
 	}
 }

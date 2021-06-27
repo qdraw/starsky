@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -23,14 +25,89 @@ namespace starsky.Controllers
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		}
+
+		/// <summary>
+		/// Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))
+		/// </summary>
+		/// <param name="f">one single fileHash (NOT path)</param>
+		/// <returns>thumbnail or status (IActionResult ThumbnailFromIndex)</returns>
+		/// <response code="200">returns content of the file</response>
+		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
+		/// <response code="404">item not found on disk</response>
+		/// <response code="401">User unauthorized</response>
+		[HttpGet("/api/thumbnail/small/{f}")]
+		[ProducesResponseType(200)] // file
+		[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
+		[ProducesResponseType(404)] // not found
+		[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
+		[ResponseCache(Duration = 29030400)] // 4 weeks
+		public IActionResult ThumbnailSmallOrTinyMeta(string f)
+		{
+			f = FilenamesHelper.GetFileNameWithoutExtension(f);
+			
+			// Restrict the fileHash to letters and digits only
+			// I/O function calls should not be vulnerable to path injection attacks
+			if (!Regex.IsMatch(f, "^[a-zA-Z0-9_-]+$") )
+			{
+				return BadRequest();
+			}
+			
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small)) )
+			{
+				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small) );
+				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Small.ToString()));
+				return File(stream, "image/jpeg");
+			}
+
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta) )  )
+			{
+				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta));
+				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.TinyMeta.ToString()));
+				return File(stream, "image/jpeg");
+			}
+
+			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large)) )
+			{
+				return NotFound("hash not found");
+			}
+
+			var streamDefaultThumbnail = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large));
+			Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Large.ToString()));
+			return File(streamDefaultThumbnail, "image/jpeg");
+		}
 		
-        /// <summary>
+		private IActionResult ReturnThumbnailResult(string f, bool json, ThumbnailSize size)
+		{
+			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
+			var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f, size),50);
+			var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
+			if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
+			{
+				SetExpiresResponseHeadersToZero();
+				return NoContent(); // 204
+			}
+			
+			// When using the api to check using javascript
+			// use the cached version of imageFormat, otherwise you have to check if it deleted
+			if (json) return Json("OK");
+
+			stream = _thumbnailStorage.ReadStream(
+					ThumbnailNameHelper.Combine(f, size));
+			
+			// thumbs are always in jpeg
+			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
+			return File(stream, "image/jpeg");
+		}
+		
+
+		/// <summary>
         /// Get thumbnail with fallback to original source image.
         /// Return source image when IsExtensionThumbnailSupported is true
         /// </summary>
-        /// <param name="f">one single file</param>
+        /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="isSingleItem">true = load original</param>
         /// <param name="json">text as output</param>
+        /// <param name="extraLarge">give preference to extraLarge over large image</param> 
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
         /// <response code="204">thumbnail is corrupt</response>
@@ -52,7 +129,8 @@ namespace starsky.Controllers
         public async Task<IActionResult> Thumbnail(
             string f, 
             bool isSingleItem = false, 
-            bool json = false)
+            bool json = false,
+            bool extraLarge = true)
         {
             // f is Hash
             // isSingleItem => detailView
@@ -68,28 +146,25 @@ namespace starsky.Controllers
 	        {
 		        return BadRequest();
 	        }
+
+	        var preferredSize = ThumbnailSize.ExtraLarge;
+	        var altSize = ThumbnailSize.Large;
+	        if ( !extraLarge )
+	        {
+		        preferredSize = ThumbnailSize.Large;
+		        altSize = ThumbnailSize.ExtraLarge;
+	        }
 	        
-            if (_thumbnailStorage.ExistFile(f))
+            if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, preferredSize)))
             {
-                // When a file is corrupt show error
-                var stream = _thumbnailStorage.ReadStream(f,50);
-                var imageFormat = ExtensionRolesHelper.GetImageFormat(stream);
-                if ( imageFormat == ExtensionRolesHelper.ImageFormat.unknown )
-                {
-	                SetExpiresResponseHeadersToZero();
-	                return NoContent(); // 204
-                }
-
-                // When using the api to check using javascript
-                // use the cached version of imageFormat, otherwise you have to check if it deleted
-                if (json) return Json("OK");
-
-                // thumbs are always in jpeg
-                stream = _thumbnailStorage.ReadStream(f);
-                Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(f + ".jpg"));
-                return File(stream, "image/jpeg", f + ".jpg");
+                return ReturnThumbnailResult(f, json, preferredSize);
             }
-            
+
+            if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize)) )
+            {
+	            return ReturnThumbnailResult(f, json, altSize);
+            }
+
             // Cached view of item
             var sourcePath = _query.GetSubPathByHash(f);
             if ( sourcePath == null )
@@ -138,7 +213,7 @@ namespace starsky.Controllers
         /// Get zoomed in image by fileHash.
         /// At the moment this is the source image
         /// </summary>
-        /// <param name="f">one single file</param>
+        /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="z">zoom factor? </param>
         /// <returns>Image</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>

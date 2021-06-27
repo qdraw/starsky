@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starskytest.FakeMocks
@@ -7,17 +8,18 @@ namespace starskytest.FakeMocks
 	public class FakeIThumbnailService : IThumbnailService
 	{
 		public List<Tuple<string, string>> Inputs { get; set; } = new List<Tuple<string, string>>();
-		
-		public bool CreateThumb(string subPath)
+
+
+		public Task<List<(string, bool)>> CreateThumb(string subPath)
 		{
 			Inputs.Add(new Tuple<string, string>(subPath, null));
-			return true;
+			return Task.FromResult(new List<(string, bool)>{(subPath, true)});
 		}
 
-		public bool CreateThumb(string subPath, string fileHash)
+		public Task<bool> CreateThumb(string subPath, string fileHash)
 		{
 			Inputs.Add(new Tuple<string, string>(subPath, fileHash));
-			return true;
+			return Task.FromResult(true);
 		}
 	}
 }

@@ -13,6 +13,8 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
+using starsky.foundation.metathumbnail.Interfaces;
+using starsky.foundation.metathumbnail.Services;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
@@ -38,10 +40,12 @@ namespace starsky.Controllers
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
+		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
 		public UploadController(IImport import, AppSettings appSettings, 
 			ISelectorStorage selectorStorage, IQuery query, 
-			IWebSocketConnectionsService connectionsService, IWebLogger logger)
+			IWebSocketConnectionsService connectionsService, IWebLogger logger, 
+			IMetaExifThumbnailService metaExifThumbnailService)
 		{
 			_appSettings = appSettings;
 			_import = import;
@@ -51,6 +55,7 @@ namespace starsky.Controllers
 			_iHostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_connectionsService = connectionsService;
 			_logger = logger;
+			_metaExifThumbnailService = metaExifThumbnailService;
 		}
 
 		/// <summary>
@@ -116,7 +121,10 @@ namespace starsky.Controllers
 				_query.RemoveCacheParentItem(subPath);
 			 
 				var deleteStatus = _iHostStorage.FileDelete(tempImportPaths[i]);
-				_logger.LogInformation($"delete {tempFileStream} is {deleteStatus}");
+				_logger.LogInformation($"delete {tempImportPaths[i]} is {deleteStatus}");
+
+				await _metaExifThumbnailService.AddMetaThumbnail(subPath,
+					fileIndexResultsList[i].FileIndexItem.FileHash);
 			}
 
 			// send all uploads as list
@@ -247,6 +255,9 @@ namespace starsky.Controllers
 				await _iStorage.WriteStreamAsync(tempFileStream, subPath);
 				await tempFileStream.DisposeAsync();
 				importedList.Add(subPath);
+				
+				var deleteStatus = _iHostStorage.FileDelete(tempImportSinglePath);
+				_logger.LogInformation($"delete {tempImportSinglePath} is {deleteStatus}");
 			}
 			
 			if ( !importedList.Any() )

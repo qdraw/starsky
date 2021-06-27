@@ -39,10 +39,11 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly CopyPublishedContent _copyPublishedContent;
 	    private readonly ToCreateSubfolder _toCreateSubfolder;
 	    private readonly Thumbnail _thumbnailService;
+	    private readonly IWebLogger _logger;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
 			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifToolHostStorage, 
-		    IOverlayImage overlayImage, IConsole console)
+		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
 	    {
 		    _publishPreflight = publishPreflight;
 		    _subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -56,7 +57,8 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _toCreateSubfolder = new ToCreateSubfolder(_hostFileSystemStorage);
 		    _copyPublishedContent = new CopyPublishedContent(_appSettings, _toCreateSubfolder, 
 			    selectorStorage);
-		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage);
+		    _logger = logger;
+		    _thumbnailService = new Thumbnail(_subPathStorage,_thumbnailStorage,_logger);
 	    }
 	    
 	    public async Task<Dictionary<string, bool>> RenderCopy(List<FileIndexItem> fileIndexItemsList,
@@ -65,8 +67,8 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    fileIndexItemsList = AddFileHashIfNotExist(fileIndexItemsList);
 			    
-		    PreGenerateThumbnail(fileIndexItemsList);
-		    var base64ImageArray = Base64DataUriList(fileIndexItemsList);
+		    await PreGenerateThumbnail(fileIndexItemsList, publishProfileName);
+		    var base64ImageArray = await Base64DataUriList(fileIndexItemsList);
 		    
 		    var copyContent = await Render(fileIndexItemsList, base64ImageArray, 
 			    publishProfileName, itemName, outputParentFullFilePathFolder, moveSourceFiles);
@@ -85,11 +87,20 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return fileIndexItemsList;
 	    }
 
-	    internal void PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList)
+	    internal bool ShouldSkipExtraLarge(string publishProfileName)
 	    {
+		    var skipExtraLarge = _publishPreflight?.GetPublishProfileName(publishProfileName)?
+			    .All(p => p.SourceMaxWidth <= 1999);
+		    return skipExtraLarge == true;
+
+	    }
+
+	    internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList, string publishProfileName)
+	    {
+		    var skipExtraLarge = ShouldSkipExtraLarge(publishProfileName);
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    _thumbnailService.CreateThumb(item.FilePath, item.FileHash);
+			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge);
 		    }
 	    }
 
@@ -97,9 +108,10 @@ namespace starsky.feature.webhtmlpublish.Services
 	    /// Get base64 uri lists 
 	    /// </summary>
 	    /// <returns></returns>
-	    private string[] Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
+	    private Task<string[]> Base64DataUriList(IEnumerable<FileIndexItem> fileIndexItemsList)
 	    {
-		    return new ToBase64DataUriList(_subPathStorage, _thumbnailStorage).Create(fileIndexItemsList.ToList());
+		    return new ToBase64DataUriList(_subPathStorage, 
+			    _thumbnailStorage,_logger).Create(fileIndexItemsList.ToList());
 	    }
 	    
 	    public async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
@@ -228,13 +240,20 @@ namespace starsky.feature.webhtmlpublish.Services
 				    item.FilePath, profile);
                         
 			    // for less than 1000px
-			    if (profile.SourceMaxWidth <= 1000)
+			    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+				    Combine(item.FileHash, ThumbnailSize.Large)))
 			    {
 				    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
 			    }
+			    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+				    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
+			    {
+				    _overlayImage.ResizeOverlayImageThumbnails(
+					    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
+			    }
 			    else
 			    {
-				    // Thumbs are 1000 px (and larger)
+				    // Thumbs are 2000 px (and larger)
 				    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
 			    }
                             

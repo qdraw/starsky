@@ -192,6 +192,15 @@ namespace starsky.foundation.writemeta.Helpers
 			return UpdateAsync(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware, renameThumbnail);
 		}
 
+		/// <summary>
+		/// Update Async with ExifTool
+		/// </summary>
+		/// <param name="updateModel">data</param>
+		/// <param name="inputSubPaths">paths</param>
+		/// <param name="comparedNames">changed</param>
+		/// <param name="includeSoftware">overwrite Starsky name</param>
+		/// <param name="renameThumbnail">update name</param>
+		/// <returns>Tuple (command, hash)</returns>
 		public async Task<ValueTuple<string,List<string>>> UpdateAsync(FileIndexItem updateModel, 
 			List<string> inputSubPaths, List<string> comparedNames, bool includeSoftware, bool renameThumbnail)
 		{
@@ -214,7 +223,7 @@ namespace starsky.foundation.writemeta.Helpers
 				fileHashes.Add((await _exifTool.WriteTagsAndRenameThumbnailAsync(path, command)).Value);
 			}
 
-			if (  _thumbnailStorage.ExistFile(updateModel.FileHash) )
+			if ( !string.IsNullOrEmpty(updateModel.FileHash) && _thumbnailStorage.ExistFile(updateModel.FileHash) )
 			{
 				await _exifTool.WriteTagsThumbnailAsync(updateModel.FileHash, command);
 			}

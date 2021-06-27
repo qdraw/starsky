@@ -28,6 +28,10 @@ if [ -f starskythumbnailcli ]; then
     chmod +rwx ./starskythumbnailcli
 fi
 
+if [ -f starskythumbnailmetacli ]; then
+    chmod +rwx ./starskythumbnailmetacli
+fi
+
 if [ -f starskywebftpcli ]; then
     chmod +rwx ./starskywebftpcli
 fi

@@ -7,6 +7,16 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIPublishPreflight : IPublishPreflight
 	{
+		private readonly List<AppSettingsPublishProfiles> _input = new List<AppSettingsPublishProfiles>();
+
+		public FakeIPublishPreflight(List<AppSettingsPublishProfiles> input = null)
+		{
+			if ( input != null )
+			{
+				_input = input;
+			}
+		}
+		
 		public IEnumerable<string> GetAllPublishProfileNames()
 		{
 			Console.WriteLine("GetAllPublishProfileNames -> mocking data with test");
@@ -21,7 +31,7 @@ namespace starskytest.FakeMocks
 
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)
 		{
-			throw new System.NotImplementedException();
+			return _input;
 		}
 	}
 }

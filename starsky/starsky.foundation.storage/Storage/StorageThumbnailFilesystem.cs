@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.storage.Storage
 {
 	[Service(typeof(IStorage), InjectionLifetime = InjectionLifetime.Scoped)]
@@ -18,6 +20,16 @@ namespace starsky.foundation.storage.Storage
 		{
 			_appSettings = appSettings;
 		}
+
+		internal string CombinePath(string fileHash)
+		{
+			// ReSharper disable once ConvertIfStatementToReturnStatement
+			if ( fileHash.EndsWith(".jpg") )
+			{
+				return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+			}
+			return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash + ".jpg");
+		}
 		
 		/// <summary>
 		/// 
@@ -26,8 +38,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public bool ExistFile(string path)
 		{
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().ExistFile(filePath);
+			return new StorageHostFullPathFilesystem().ExistFile(CombinePath(path));
 		}
 
 		public bool ExistFolder(string path)
@@ -48,8 +59,8 @@ namespace starsky.foundation.storage.Storage
 
 		public void FileMove(string fromPath, string toPath)
 		{
-			var oldThumbPath = _appSettings.ThumbnailTempFolder + fromPath + ".jpg";
-			var newThumbPath = _appSettings.ThumbnailTempFolder + toPath + ".jpg";
+			var oldThumbPath = CombinePath(fromPath);
+			var newThumbPath = CombinePath(toPath);
 
 			var hostFilesystem = new StorageHostFullPathFilesystem();
 
@@ -65,8 +76,8 @@ namespace starsky.foundation.storage.Storage
 
 		public void FileCopy(string fromPath, string toPath)
 		{
-			var oldThumbPath = _appSettings.ThumbnailTempFolder + fromPath + ".jpg";
-			var newThumbPath = _appSettings.ThumbnailTempFolder + toPath + ".jpg";
+			var oldThumbPath = CombinePath(fromPath);
+			var newThumbPath = CombinePath(toPath);
 
 			var hostFilesystem = new StorageHostFullPathFilesystem();
 
@@ -84,7 +95,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( !ExistFile(path) ) return false;
 
-			var thumbPath = _appSettings.ThumbnailTempFolder + path + ".jpg";
+			var thumbPath = CombinePath(path);
 			var hostFilesystem = new StorageHostFullPathFilesystem();
 			return hostFilesystem.FileDelete(thumbPath);
 		}
@@ -124,8 +135,7 @@ namespace starsky.foundation.storage.Storage
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 
-			var filePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().ReadStream(filePath, maxRead);
+			return new StorageHostFullPathFilesystem().ReadStream(CombinePath(path), maxRead);
 		}
 
 		/// <summary>
@@ -137,7 +147,7 @@ namespace starsky.foundation.storage.Storage
 		public bool WriteStream(Stream stream, string path)
 		{
 			return new StorageHostFullPathFilesystem()
-				.WriteStream(stream, Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg"));
+				.WriteStream(stream, CombinePath(path));
 		}
 
 		public bool WriteStreamOpenOrCreate(Stream stream, string path)
@@ -147,8 +157,7 @@ namespace starsky.foundation.storage.Storage
 
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			var fullFilePath = Path.Combine(_appSettings.ThumbnailTempFolder, path + ".jpg");
-			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, fullFilePath);
+			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, CombinePath(path));
 		}
 
 		public StorageInfo Info(string path)

@@ -33,10 +33,10 @@ namespace starsky.feature.export.Services
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly StatusCodesHelper _statusCodeHelper;
-		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
 		public ExportService(IQuery query, AppSettings appSettings, 
-			ISelectorStorage selectorStorage, IConsole console)
+			ISelectorStorage selectorStorage, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_query = query;
@@ -44,7 +44,7 @@ namespace starsky.feature.export.Services
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 			_hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 			_statusCodeHelper = new StatusCodesHelper();
-			_console = console;
+			_logger = logger;
 		}
 
 		public Tuple<string, List<FileIndexItem>> Preflight(string[] inputFilePaths, 
@@ -114,7 +114,7 @@ namespace starsky.feature.export.Services
 		public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail, 
 			string zipOutputFileName)
 		{
-			var filePaths = CreateListToExport(fileIndexResultsList, thumbnail);
+			var filePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
 			var fileNames = FilePathToFileName(filePaths, thumbnail);
 
 			new Zipper().CreateZip(_appSettings.TempFolder,filePaths,fileNames,zipOutputFileName);
@@ -123,7 +123,7 @@ namespace starsky.feature.export.Services
 			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 			await _hostFileSystemStorage.
 				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
-			if(_appSettings.Verbose) _console.WriteLine("Zip done: " + doneFileFullPath);
+			if(_appSettings.Verbose) _logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
 		}
 		
 		/// <summary>
@@ -132,33 +132,50 @@ namespace starsky.feature.export.Services
 		/// <param name="fileIndexResultsList">the items</param>
 		/// <param name="thumbnail">add the thumbnail or the source image</param>
 		/// <returns>list of file paths</returns>
-		public List<string> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
+		public async Task<List<string>> CreateListToExport(List<FileIndexItem> fileIndexResultsList, bool thumbnail)
 		{
 			var filePaths = new List<string>();
 
 			foreach ( var item in fileIndexResultsList.Where(p => 
 				p.Status == FileIndexItem.ExifStatus.Ok).ToList() )
 			{
-				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath);
-				var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder,
-					item.FileHash + ".jpg");
-
 				if ( thumbnail )
-					new Thumbnail(_iStorage, _thumbnailStorage).CreateThumb(item.FilePath, item.FileHash);
-
-				filePaths.Add(thumbnail ? sourceThumb : sourceFile); // has:notHas
-				
-				
-				// when there is .xmp sidecar file
-				if ( !thumbnail && ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) 
-				                && _iStorage.ExistFile(
-					                ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath)))
 				{
-					filePaths.Add(
-						_appSettings.DatabasePathToFilePath(
-							ExtensionRolesHelper.ReplaceExtensionWithXmp(item.FilePath))
-					);
+					var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder, 
+						ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.Large, true));
+
+					await new Thumbnail(_iStorage, _thumbnailStorage, _logger)
+						.CreateThumb(item.FilePath, item.FileHash, true);
+					
+					filePaths.Add(sourceThumb);
+					continue;
 				}
+
+				var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath, false);
+
+				if ( !_hostFileSystemStorage.ExistFile(sourceFile) )
+				{
+					continue;
+				}
+				
+				// the jpeg file for example
+				filePaths.Add(sourceFile);
+				
+				// when there is .xmp sidecar file (but only when file is a RAW file, ignored when for example jpeg)
+				if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
+				     !_iStorage.ExistFile(
+					     ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						     item.FilePath)) ) continue;
+				
+				var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
+					ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						item.FilePath), false);
+
+				if ( !_hostFileSystemStorage.ExistFile(xmpFileFullPath) )
+				{
+					continue;
+				}
+				filePaths.Add(xmpFileFullPath);
 			}
 			return filePaths;
 		}

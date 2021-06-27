@@ -51,6 +51,7 @@
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
         <ProjectReference Include="..\starsky.foundation.thumbnailgeneration\starsky.foundation.thumbnailgeneration.csproj" />
+        <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
         <ProjectReference Include="..\starskyadmincli\starskyadmincli.csproj" />
         <ProjectReference Include="..\starskycore\starskycore.csproj" />
@@ -59,6 +60,7 @@
         <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
         <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
+        <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj" />
         <ProjectReference Include="..\starskywebftpcli\starskywebftpcli.csproj" />
         <ProjectReference Include="..\starskywebhtmlcli\starskywebhtmlcli.csproj" />
         <ProjectReference Include="..\starsky\starsky.csproj" />
@@ -93,6 +95,10 @@
     <ItemGroup>
         <Content Include="..\build.vstest.runsettings">
             <Link>build.vstest.runsettings</Link>
+        </Content>
+        <None Remove="FakeCreateAn\CreateAnImageThumbnail\poppy.jpg" />
+        <Content Include="FakeCreateAn\CreateAnImageWithThumbnail\poppy.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
 
