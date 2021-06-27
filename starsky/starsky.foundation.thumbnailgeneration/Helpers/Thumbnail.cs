@@ -100,10 +100,14 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			     !_iStorage.ExistFile(subPath) || 
 			     _thumbnailStorage.ExistFile(
 				     ThumbnailNameHelper.Combine(fileHash,
-					     ThumbnailSize.Large)) ||
-			     _thumbnailStorage.ExistFile(
-				     ThumbnailNameHelper.Combine(fileHash,
-					     ThumbnailSize.ExtraLarge)) )
+					     ThumbnailSize.Large)) )
+			{
+				return false;
+			}
+
+			if ( !skipExtraLarge && _thumbnailStorage.ExistFile(
+				ThumbnailNameHelper.Combine(fileHash,
+					ThumbnailSize.ExtraLarge))  )
 			{
 				return false;
 			}

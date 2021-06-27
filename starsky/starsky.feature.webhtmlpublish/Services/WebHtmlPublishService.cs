@@ -67,7 +67,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    {
 		    fileIndexItemsList = AddFileHashIfNotExist(fileIndexItemsList);
 			    
-		    PreGenerateThumbnail(fileIndexItemsList);
+		    await PreGenerateThumbnail(fileIndexItemsList, publishProfileName);
 		    var base64ImageArray = await Base64DataUriList(fileIndexItemsList);
 		    
 		    var copyContent = await Render(fileIndexItemsList, base64ImageArray, 
@@ -87,11 +87,14 @@ namespace starsky.feature.webhtmlpublish.Services
 		    return fileIndexItemsList;
 	    }
 
-	    internal void PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList)
+	    internal async Task PreGenerateThumbnail(IEnumerable<FileIndexItem> fileIndexItemsList, string publishProfileName)
 	    {
+		    var skipExtraLarge = _publishPreflight?.GetPublishProfileName(publishProfileName)?
+			    .All(p => p.SourceMaxWidth <= 1999);
+			    
 		    foreach ( var item in fileIndexItemsList )
 		    {
-			    _thumbnailService.CreateThumb(item.FilePath, item.FileHash);
+			    await _thumbnailService.CreateThumb(item.FilePath, item.FileHash, skipExtraLarge == true);
 		    }
 	    }
 
@@ -231,13 +234,20 @@ namespace starsky.feature.webhtmlpublish.Services
 				    item.FilePath, profile);
                         
 			    // for less than 1000px
-			    if (profile.SourceMaxWidth <= 1000)
+			    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+				    Combine(item.FileHash, ThumbnailSize.Large)))
 			    {
 				    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
 			    }
+			    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+				    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
+			    {
+				    _overlayImage.ResizeOverlayImageThumbnails(
+					    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
+			    }
 			    else
 			    {
-				    // Thumbs are 1000 px (and larger)
+				    // Thumbs are 2000 px (and larger)
 				    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
 			    }
                             

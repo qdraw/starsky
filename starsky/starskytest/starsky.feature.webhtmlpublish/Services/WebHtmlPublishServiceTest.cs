@@ -177,7 +177,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		}
 		
 		[TestMethod]
-		public void PreGenerateThumbnail_Test()
+		public async Task PreGenerateThumbnail_Test()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg"}, 
@@ -195,7 +195,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				}
 			}.AsEnumerable();
 			Assert.IsNotNull(service);
-			service.PreGenerateThumbnail(input);
+			await service.PreGenerateThumbnail(input,"");
 			// should not crash
 		}
 		

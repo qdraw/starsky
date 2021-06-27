@@ -21,7 +21,7 @@ namespace starskytest.FakeMocks
 
 		public List<AppSettingsPublishProfiles> GetPublishProfileName(string publishProfileName)
 		{
-			throw new System.NotImplementedException();
+			return new List<AppSettingsPublishProfiles>();
 		}
 	}
 }
