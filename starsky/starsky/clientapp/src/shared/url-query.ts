@@ -251,6 +251,21 @@ export class UrlQuery {
     return this.prefix + "/api/delete";
   };
 
+  public UrlThumbnailImageLargeOrExtraLarge = (
+    fileHash: string,
+    extraLarge = true
+  ): string => {
+    if (!extraLarge) {
+      return (
+        this.prefix +
+        "/api/thumbnail/" +
+        fileHash +
+        ".jpg?issingleitem=true&extraLarge=false"
+      );
+    }
+    return this.UrlThumbnailImage(fileHash, true);
+  };
+
   public UrlThumbnailImage = (
     fileHash: string,
     issingleitem: boolean

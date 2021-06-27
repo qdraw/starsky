@@ -46,11 +46,20 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
   }, [props.fileHash, props.orientation]);
 
   const [imageUrl, setImageUrl] = React.useState(
-    new UrlQuery().UrlThumbnailImage(props.fileHash, true)
+    new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+      props.fileHash,
+      window.innerWidth > 1000
+    )
   );
 
   useEffect(() => {
-    setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+    setImageUrl(
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+        props.fileHash,
+        window.innerWidth > 1000
+      )
+    );
+    console.log(window.innerWidth > 1000);
   }, [props.fileHash]);
 
   return (
@@ -65,7 +74,12 @@ const FileHashImage: React.FunctionComponent<IFileHashImageProps> = (props) => {
         if (props.onWheelCallback) props.onWheelCallback(z);
       }}
       onResetCallback={() => {
-        setImageUrl(new UrlQuery().UrlThumbnailImage(props.fileHash, true));
+        setImageUrl(
+          new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+            props.fileHash,
+            window.innerWidth > 1000
+          )
+        );
         if (props.onResetCallback) props.onResetCallback();
       }}
       src={imageUrl}

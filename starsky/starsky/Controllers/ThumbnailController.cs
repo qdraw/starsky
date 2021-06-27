@@ -90,6 +90,9 @@ namespace starsky.Controllers
 			// use the cached version of imageFormat, otherwise you have to check if it deleted
 			if (json) return Json("OK");
 
+			stream = _thumbnailStorage.ReadStream(
+					ThumbnailNameHelper.Combine(f, size));
+			
 			// thumbs are always in jpeg
 			Response.Headers.Add("x-filename", new StringValues(FilenamesHelper.GetFileName(f + ".jpg")));
 			Response.Headers.Add("x-image-size", new StringValues(size.ToString()));
@@ -126,7 +129,7 @@ namespace starsky.Controllers
             string f, 
             bool isSingleItem = false, 
             bool json = false,
-            ThumbnailSize preferredSize = ThumbnailSize.ExtraLarge)
+            bool extraLarge = true)
         {
             // f is Hash
             // isSingleItem => detailView
@@ -142,17 +145,18 @@ namespace starsky.Controllers
 	        {
 		        return BadRequest();
 	        }
+
+	        var preferredSize = ThumbnailSize.ExtraLarge;
+	        var altSize = ThumbnailSize.Large;
+	        if ( !extraLarge )
+	        {
+		        preferredSize = ThumbnailSize.Large;
+		        altSize = ThumbnailSize.ExtraLarge;
+	        }
 	        
-	        // preferredSize defaults to Extra Large
             if (_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, preferredSize)))
             {
                 return ReturnThumbnailResult(f, json, preferredSize);
-            }
-
-            var altSize = ThumbnailSize.Large;
-            if ( preferredSize == ThumbnailSize.Large )
-            {
-	            altSize = ThumbnailSize.ExtraLarge;
             }
 
             if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f, altSize)) )
