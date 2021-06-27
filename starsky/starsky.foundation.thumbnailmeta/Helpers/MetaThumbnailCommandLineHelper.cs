@@ -28,10 +28,10 @@ namespace starsky.foundation.metathumbnail.Helpers
 		public async Task CommandLineAsync(string[] args)
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.MetaThumbnail;
 
 			if (new ArgsHelper().NeedHelp(args))
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Thumbnail;
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}

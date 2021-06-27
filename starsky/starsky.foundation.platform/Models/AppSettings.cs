@@ -122,7 +122,11 @@ namespace starsky.foundation.platform.Models
 			/// <summary>
 			/// Thumbnail Generator CLI
 			/// </summary>
-			Thumbnail = 7
+			Thumbnail = 7,
+			/// <summary>
+			/// Meta Thumbnail Generator CLI
+			/// </summary>
+			MetaThumbnail = 8
 		}
 		
 		/// <summary>

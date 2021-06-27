@@ -213,6 +213,10 @@ if [ -f starskythumbnailcli ]; then
     chmod +rwx ./starskythumbnailcli
 fi
 
+if [ -f starskythumbnailmetacli ]; then
+    chmod +rwx ./starskythumbnailmetacli
+fi
+
 if [ -f starskywebftpcli ]; then
     chmod +rwx ./starskywebftpcli
 fi
@@ -283,6 +287,7 @@ if [[ $ISIMPORTEROK -eq 0 ]]; then
   ln -sfn $DIRNAME"/starskyimportercli" ~/bin/starskyimportercli
   ln -sfn $DIRNAME"/starskysynchronizecli" ~/bin/starskysynchronizecli
   ln -sfn $DIRNAME"/starskythumbnailcli" ~/bin/starskythumbnailcli
+  ln -sfn $DIRNAME"/starskythumbnailmetacli" ~/bin/starskythumbnailmetacli
   ln -sfn $DIRNAME"/starskywebftpcli" ~/bin/starskywebftpcli
   ln -sfn $DIRNAME"/starskywebhtmlcli" ~/bin/starskywebhtmlcli
   ln -sfn $DIRNAME"/starskyadmincli" ~/bin/starskyadmincli
