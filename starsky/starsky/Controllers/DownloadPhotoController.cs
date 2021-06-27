@@ -107,7 +107,7 @@ namespace starsky.Controllers
                 
                 if ( !_thumbnailStorage.ExistFile(
 	                ThumbnailNameHelper.Combine(fileIndexItem.FileHash,
-		                ThumbnailSize.ExtraLarge)) )
+		                ThumbnailSize.Large)) )
                 {
 	                Response.StatusCode = 500;
 	                return Json("Thumbnail generation failed");
@@ -115,7 +115,7 @@ namespace starsky.Controllers
             }
 
             var thumbnailFs = _thumbnailStorage.ReadStream(
-	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge));
+	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large));
             return File(thumbnailFs, "image/jpeg");
 
         }
