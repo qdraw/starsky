@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -25,9 +27,9 @@ namespace starsky.Controllers
 		}
 
 		/// <summary>
-		/// Get thumbnail for index pages (300 px)
+		/// Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))
 		/// </summary>
-		/// <param name="f">one single file</param>
+		/// <param name="f">one single fileHash (NOT path)</param>
 		/// <returns>thumbnail or status (IActionResult ThumbnailFromIndex)</returns>
 		/// <response code="200">returns content of the file</response>
 		/// <response code="400">string (f) input not allowed to avoid path injection attacks</response>
@@ -35,12 +37,11 @@ namespace starsky.Controllers
 		/// <response code="401">User unauthorized</response>
 		[HttpGet("/api/thumbnail/small/{f}")]
 		[ProducesResponseType(200)] // file
-		[ProducesResponseType(
-			400)] // string (f) input not allowed to avoid path injection attacks
+		[ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
 		[ProducesResponseType(404)] // not found
 		[AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
 		[ResponseCache(Duration = 29030400)] // 4 weeks
-		public IActionResult ThumbnailFromIndex(string f)
+		public IActionResult ThumbnailSmallOrTinyMeta(string f)
 		{
 			f = FilenamesHelper.GetFileNameWithoutExtension(f);
 			
@@ -51,24 +52,27 @@ namespace starsky.Controllers
 				return BadRequest();
 			}
 			
-			if ( _thumbnailStorage.ExistFile(f + "@300") )
+			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small)) )
 			{
-				var stream = _thumbnailStorage.ReadStream(f+ "@300");
+				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small) );
+				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Small.ToString()));
 				return File(stream, "image/jpeg");
 			}
 
 			if ( _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta) )  )
 			{
 				var stream = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta));
+				Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.TinyMeta.ToString()));
 				return File(stream, "image/jpeg");
 			}
 
-			if ( !_thumbnailStorage.ExistFile(f) )
+			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large)) )
 			{
 				return NotFound("hash not found");
 			}
 
-			var streamDefaultThumbnail = _thumbnailStorage.ReadStream(f);
+			var streamDefaultThumbnail = _thumbnailStorage.ReadStream(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large));
+			Response.Headers.TryAdd("x-image-size", new StringValues(ThumbnailSize.Large.ToString()));
 			return File(streamDefaultThumbnail, "image/jpeg");
 		}
 
@@ -76,7 +80,7 @@ namespace starsky.Controllers
         /// Get thumbnail with fallback to original source image.
         /// Return source image when IsExtensionThumbnailSupported is true
         /// </summary>
-        /// <param name="f">one single file</param>
+        /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="isSingleItem">true = load original</param>
         /// <param name="json">text as output</param>
         /// <returns>thumbnail or status (IActionResult Thumbnail)</returns>
@@ -195,7 +199,7 @@ namespace starsky.Controllers
         /// Get zoomed in image by fileHash.
         /// At the moment this is the source image
         /// </summary>
-        /// <param name="f">one single file</param>
+        /// <param name="f">one single fileHash (NOT path)</param>
         /// <param name="z">zoom factor? </param>
         /// <returns>Image</returns>
         /// <response code="200">returns content of the file or when json is true, "OK"</response>
