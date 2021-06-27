@@ -99,7 +99,7 @@ namespace starsky.Controllers
             }
 
             if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
-	            fileIndexItem.FileHash,ThumbnailSize.ExtraLarge)))
+	            fileIndexItem.FileHash,ThumbnailSize.Large)))
             {
                 await new Thumbnail(_iStorage,
 	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 
@@ -117,7 +117,6 @@ namespace starsky.Controllers
             var thumbnailFs = _thumbnailStorage.ReadStream(
 	            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large));
             return File(thumbnailFs, "image/jpeg");
-
         }
 	}
 }
