@@ -61,8 +61,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
 				{
 					// If single file => create thumbnail
-					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath)).Key;
-					await _thumbnailService.CreateThumb(subPath, fileHash); // <= this uses subPath
+					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath));
+					if ( fileHash.Value ) 
+					{
+						await _thumbnailService.CreateThumb(subPath, fileHash.Key); // <= this uses subPath
+					}
 				}
 				else
 				{

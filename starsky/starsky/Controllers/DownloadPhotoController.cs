@@ -97,9 +97,17 @@ namespace starsky.Controllers
             {
 	            return NotFound("ThumbnailTempFolder not found");
             }
+            
+            var data = new { 
+	            Small = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Small)),
+	            Large = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large)),
+	            ExtraLarge = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge))
+            };
 
-            if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
-	            fileIndexItem.FileHash,ThumbnailSize.Large)))
+            if (!data.Small || !data.Large || !data.ExtraLarge)
             {
                 await new Thumbnail(_iStorage,
 	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 

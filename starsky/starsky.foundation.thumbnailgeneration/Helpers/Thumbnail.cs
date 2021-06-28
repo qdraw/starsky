@@ -97,17 +97,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		{
 			// FileType=supported + subPath=exit + fileHash=NOT exist
 			if ( !ExtensionRolesHelper.IsExtensionThumbnailSupported(subPath) ||
-			     !_iStorage.ExistFile(subPath) || 
-			     _thumbnailStorage.ExistFile(
-				     ThumbnailNameHelper.Combine(fileHash,
-					     ThumbnailSize.Large)) )
-			{
-				return false;
-			}
-
-			if ( !skipExtraLarge && _thumbnailStorage.ExistFile(
-				ThumbnailNameHelper.Combine(fileHash,
-					ThumbnailSize.ExtraLarge))  )
+			     !_iStorage.ExistFile(subPath) )
 			{
 				return false;
 			}
@@ -117,43 +107,54 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				return false;
 
 			var thumbnailToSourceSize = ThumbnailSize.ExtraLarge;
-			if ( skipExtraLarge )
-			{
-				thumbnailToSourceSize = ThumbnailSize.Large;
-			}
-			
-			// run resize sync
+			if ( skipExtraLarge ) thumbnailToSourceSize = ThumbnailSize.Large;
+
 			var largeThumbnailHash = ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize);
-			var (_, resizeSuccess, resizeMessage) = (await ResizeThumbnailFromSourceImage(subPath, 
-				ThumbnailNameHelper.GetSize(thumbnailToSourceSize), 
-				largeThumbnailHash ));
 
-			// check if output any good
-			RemoveCorruptImage(fileHash, thumbnailToSourceSize);
-
-			if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
+			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
+				fileHash,thumbnailToSourceSize)) )
 			{
-				_logger.LogError($"[ResizeThumbnailFromSourceImage] output is null or corrupt for subPath {subPath}");
-				await WriteErrorMessageToBlockLog(subPath, resizeMessage);
-				return false;
+				// run resize sync
+				var (_, resizeSuccess, resizeMessage) = (await ResizeThumbnailFromSourceImage(subPath, 
+					ThumbnailNameHelper.GetSize(thumbnailToSourceSize), 
+					largeThumbnailHash ));
+
+				// check if output any good
+				RemoveCorruptImage(fileHash, thumbnailToSourceSize);
+
+				if ( !resizeSuccess || ! _thumbnailStorage.ExistFile(
+					ThumbnailNameHelper.Combine(fileHash, thumbnailToSourceSize)) )
+				{
+					_logger.LogError($"[ResizeThumbnailFromSourceImage] " +
+					                 $"output is null or corrupt for subPath {subPath}");
+					await WriteErrorMessageToBlockLog(subPath, resizeMessage);
+					return false;
+				}
+				Console.Write(".");
 			}
 
-			var thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>
-				{
-					ThumbnailSize.Small, ThumbnailSize.Large
-				};
-
-			if ( skipExtraLarge )
+			var thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>();
+			void Add(ThumbnailSize size)
 			{
-				thumbnailFromThumbnailUpdateList = new List<ThumbnailSize>
+				if ( !_thumbnailStorage.ExistFile(
+					ThumbnailNameHelper.Combine(
+						fileHash, size))
+				)
 				{
-					ThumbnailSize.Small
-				};
+					thumbnailFromThumbnailUpdateList.Add(size);
+				}
 			}
-			
-			await (thumbnailFromThumbnailUpdateList).ForEachAsync(
-				async (size) 
-					=> await ResizeThumbnailFromThumbnailImage(largeThumbnailHash, ThumbnailNameHelper.GetSize(size), 
+			new List<ThumbnailSize>
+			{
+				ThumbnailSize.Small, 
+				ThumbnailSize.Large // <- will be false when skipExtraLarge = true
+			}.ForEach(Add);
+
+			await ( thumbnailFromThumbnailUpdateList ).ForEachAsync(
+				async (size)
+					=> await ResizeThumbnailFromThumbnailImage(
+						largeThumbnailHash,
+						ThumbnailNameHelper.GetSize(size),
 						ThumbnailNameHelper.Combine(fileHash, size)),
 				10);
 
