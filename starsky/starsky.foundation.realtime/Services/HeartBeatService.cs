@@ -48,8 +48,9 @@ namespace starsky.foundation.realtime.Services
 				{
 					cancellationToken.ThrowIfCancellationRequested();
 				}
-				catch (AggregateException e )
+				catch (OperationCanceledException e )
 				{
+					Console.WriteLine("catch-ed exception ->");
 					Console.WriteLine(e);
 				}
 			}
