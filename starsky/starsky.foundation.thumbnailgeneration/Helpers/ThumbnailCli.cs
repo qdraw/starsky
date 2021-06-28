@@ -46,7 +46,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				subPath = new StructureService(_selectorStorage.Get(
+						SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
 			}
 
