@@ -79,9 +79,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				_console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
 				_thumbnailCleaner.CleanAllUnusedFiles();
+				_console.WriteLine("Done!");
 			}
 
-			_console.WriteLine("Done!");
 		}
 	}
 }

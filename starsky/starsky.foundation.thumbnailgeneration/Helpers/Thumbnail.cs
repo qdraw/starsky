@@ -159,7 +159,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				10);
 
 			Console.Write(".");
-			return true;
+			return thumbnailFromThumbnailUpdateList.Any();
 		}
 
 		private async Task WriteErrorMessageToBlockLog(string subPath, string resizeMessage)
