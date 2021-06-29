@@ -345,7 +345,7 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
-                          .Append("-v=normal")
+                          .Append("-v=normal") // v=normal is to show test names
                           .Append("--logger trx")
                           .Append("--collect:\"XPlat Code Coverage\"")
                           .Append("--settings build.vstest.runsettings")
