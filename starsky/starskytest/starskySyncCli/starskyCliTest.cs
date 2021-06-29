@@ -13,6 +13,9 @@ namespace starskytest.starskySyncCli
 		[TestMethod]
 		public void SyncV1CliHelpVerbose()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var args = new List<string> {
 				"-h","-v"
 			}.ToArray();
@@ -25,6 +28,9 @@ namespace starskytest.starskySyncCli
 		[Timeout(5000)]
 		public void SyncV1CliHelpTest()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var newImage = new CreateAnImage();
 			var args = new List<string> {"-h","-v","-c","test","-d", "InMemoryDatabase", 
 				"-b", newImage.BasePath, "--thumbnailtempfolder", 
@@ -39,6 +45,9 @@ namespace starskytest.starskySyncCli
 		[Timeout(5000)]
 		public void SyncV1Cli_StarskyCliSubPathOneImage()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var newImage = new CreateAnImage();
 			var args = new List<string> {
 				"-v",
