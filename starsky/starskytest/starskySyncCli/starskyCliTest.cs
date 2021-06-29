@@ -42,7 +42,7 @@ namespace starskytest.starskySyncCli
         
 		[ExcludeFromCoverage]
 		[TestMethod]
-		[Timeout(5000)]
+		[Timeout(10000)]
 		public void SyncV1Cli_StarskyCliSubPathOneImage()
 		{
 			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
@@ -56,7 +56,8 @@ namespace starskytest.starskySyncCli
 				"-d", "InMemoryDatabase", 
 				"-b", newImage.BasePath, 
 				"--thumbnailtempfolder", newImage.BasePath, 
-				"--exiftoolpath", newImage.FullFilePath 
+				"--exiftoolpath", newImage.FullFilePath,
+				"-s", newImage.DbPath
 			}.ToArray();
 
 			Console.WriteLine("SyncV1Cli_StarskyCliSubPathOneImage -->");
