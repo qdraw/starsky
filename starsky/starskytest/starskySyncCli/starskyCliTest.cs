@@ -50,6 +50,7 @@ namespace starskytest.starskySyncCli
 				"--exiftoolpath", newImage.FullFilePath 
 			}.ToArray();
 
+			Console.WriteLine("SyncV1Cli_StarskyCliSubPathOneImage -->");
 			Console.WriteLine("-->");
 			foreach (var arg in args)
 			{
@@ -58,6 +59,7 @@ namespace starskytest.starskySyncCli
             
 			Program.Main(args);
 			Console.WriteLine("<--");
+			Console.WriteLine("<-- SyncV1Cli_StarskyCliSubPathOneImage");
 			Assert.IsNotNull(args);
 		}
         

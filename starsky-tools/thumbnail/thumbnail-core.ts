@@ -1,13 +1,26 @@
-
-import { AxiosError, AxiosRequestConfig, AxiosResponse, default as axios, default as Axios } from 'axios';
-import { TaskQueue } from 'cwait';
-import * as fs from 'fs';
-import jimp from 'jimp';
-import * as path from 'path';
+import {
+	AxiosError,
+	AxiosRequestConfig,
+	AxiosResponse,
+	default as axios,
+	default as Axios,
+} from "axios";
+import { TaskQueue } from "cwait";
+import * as fs from "fs";
+import jimp from "jimp";
+import * as path from "path";
 import { IResults } from "./IResults";
 
-var execFile = require('child_process').execFile;
-var exiftool = require('dist-exiftool');
+var execFile = require("child_process").execFile;
+var exiftool = require("dist-exiftool");
+
+export interface ISizes {
+	ok: boolean;
+	small: boolean;
+	large: boolean;
+	extraLarge: boolean;
+	fileHash: string;
+}
 
 export class Parser {
 	public parseRanges(args: string[]): string[] {
@@ -31,14 +44,19 @@ export class Parser {
 				queries.push("-Datetime>0 -ImageFormat:jpg -!delete");
 				continue;
 			}
-			queries.push("-Datetime>" + index + " -Datetime<" + (index - 1) + " -ImageFormat:jpg -!delete")
+			queries.push(
+				"-Datetime>" +
+					index +
+					" -Datetime<" +
+					(index - 1) +
+					" -ImageFormat:jpg -!delete"
+			);
 		}
 		return queries;
 	}
 }
 
 export class Files {
-
 	public RemoveOldFiles() {
 		this.cleanFolder(path.join(__dirname, "temp"));
 		this.cleanFolder(path.join(__dirname, "source_temp"));
@@ -54,17 +72,15 @@ export class Files {
 						return console.error(err);
 					}
 					now = new Date().getTime();
-					endTime = new Date(stat.ctime).getTime() + (3600000 * 5); // 5 hours
+					endTime = new Date(stat.ctime).getTime() + 3600000 * 5; // 5 hours
 					if (now > endTime && stat.isFile) {
-						fs.unlink(path.join(folderPath, file), () => { });
+						fs.unlink(path.join(folderPath, file), () => {});
 					}
 				});
 			});
 		});
 	}
 }
-
-
 
 export class Query {
 	base_url: string;
@@ -85,18 +101,17 @@ export class Query {
 			url: this.base_url,
 			method: "GET",
 			headers: {
-				'User-Agent': 'MS FrontPage Express',
-				'Authorization': 'Basic ' + this.access_token,
+				"User-Agent": "MS FrontPage Express",
+				Authorization: "Basic " + this.access_token,
 			},
-		}
-	};
+		};
+	}
 
 	public async isImportOrDirectSearch(searchQuery: string): Promise<any> {
 		if (searchQuery === "IMPORT") {
 			var filePathList: Array<string> = await this.isImportIndex();
 			return await this.searchIndexList(filePathList, true);
-		}
-		else {
+		} else {
 			return this.searchIndexList([searchQuery], false);
 		}
 	}
@@ -109,22 +124,26 @@ export class Query {
 		return path.join(__dirname, "temp");
 	}
 
-	public async searchIndexList(filePathList: Array<string>, isFilePath: boolean = false): Promise<Array<string>> {
-
+	public async searchIndexList(
+		filePathList: Array<string>,
+		isFilePath: boolean = false
+	): Promise<Array<string>> {
 		const urls = Array<AxiosRequestConfig>();
 
-		filePathList.forEach(element => {
+		filePathList.forEach((element) => {
 			if (isFilePath) {
-				urls.push(this.searchRequestOptions(`-filePath:"${element}"`))
-			}
-			else {
-				urls.push(this.searchRequestOptions(element))
+				urls.push(this.searchRequestOptions(`-filePath:"${element}"`));
+			} else {
+				urls.push(this.searchRequestOptions(element));
 			}
 		});
 
 		const queue = new TaskQueue(Promise, this.MAX_SIMULTANEOUS_DOWNLOADS);
-		const axiosResponses = await Promise.all(urls.map(queue.wrap(async (url: AxiosRequestConfig) =>
-			await axios.request(url))));
+		const axiosResponses = await Promise.all(
+			urls.map(
+				queue.wrap(async (url: AxiosRequestConfig) => await axios.request(url))
+			)
+		);
 
 		var fileHashList = Array<string>();
 
@@ -133,18 +152,20 @@ export class Query {
 			// To Display the query as is
 			if (!isFilePath) {
 				if (response.data.searchFor === undefined) {
-					console.log('<<< FATAL ERROR: >>> \n the field searchFor is missing in the API');
+					console.log(
+						"<<< FATAL ERROR: >>> \n the field searchFor is missing in the API"
+					);
 					return;
 				}
 				process.stdout.write("¶øπ¶ ");
-				response.data.searchFor.forEach(search => {
+				response.data.searchFor.forEach((search) => {
 					process.stdout.write(search + ", ");
 				});
 				process.stdout.write(" ¶πø¶\n");
 			}
 			if (response.data.searchCount >= 1) {
-				response.data.fileIndexItems.forEach(fileIndexItem => {
-					if (fileIndexItem.imageFormat === 'jpg') {
+				response.data.fileIndexItems.forEach((fileIndexItem) => {
+					if (fileIndexItem.imageFormat === "jpg") {
 						fileHashList.push(fileIndexItem.fileHash);
 					}
 				});
@@ -155,29 +176,33 @@ export class Query {
 
 		// SUPPORT FOR PAGINATION
 		for (let index = 0; index < lastPageNumberList.length; index++) {
-
 			const lastPageNumber = lastPageNumberList[index];
 
 			if (lastPageNumber >= 1) {
-
 				var multiPageUrls = Array<AxiosRequestConfig>();
 				for (let lpIndex = 1; lpIndex <= lastPageNumber; lpIndex++) {
-					multiPageUrls.push(this.searchRequestOptions(filePathList[index], lpIndex))
+					multiPageUrls.push(
+						this.searchRequestOptions(filePathList[index], lpIndex)
+					);
 				}
 
 				const axiosMultiResponses = await Promise.all(
-					multiPageUrls.map(queue.wrap(async (url: AxiosRequestConfig) =>
-						await axios.request(url)))
+					multiPageUrls.map(
+						queue.wrap(
+							async (url: AxiosRequestConfig) => await axios.request(url)
+						)
+					)
 				);
 
-				axiosMultiResponses.forEach((multiPageResponse: AxiosResponse<IResults>) => {
-
-					multiPageResponse.data.fileIndexItems.forEach(fileIndexItem => {
-						if (fileIndexItem.imageFormat === 'jpg') {
-							fileHashList.push(fileIndexItem.fileHash);
-						}
-					});
-				});
+				axiosMultiResponses.forEach(
+					(multiPageResponse: AxiosResponse<IResults>) => {
+						multiPageResponse.data.fileIndexItems.forEach((fileIndexItem) => {
+							if (fileIndexItem.imageFormat === "jpg") {
+								fileHashList.push(fileIndexItem.fileHash);
+							}
+						});
+					}
+				);
 			}
 		}
 		// END SUPPORT FOR PAGINATION
@@ -185,70 +210,101 @@ export class Query {
 		return fileHashList;
 	}
 
-
-	public async checkIfSingleFileNeedsToBeDownloaded(hashItem: string): Promise<boolean> {
-
-		var downloadFileRequestOptions = this.requestOptions();;
-		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/list-sizes/' + hashItem;
+	public async checkIfSingleFileNeedsToBeDownloaded(
+		hashItem: string
+	): Promise<ISizes> {
+		var downloadFileRequestOptions = this.requestOptions();
+		downloadFileRequestOptions.url =
+			this.base_url + "api/thumbnail/list-sizes/" + hashItem;
 		downloadFileRequestOptions.method = "GET";
 
 		downloadFileRequestOptions.params = {
-			json: 'true'
-		}
+			json: "true",
+		};
+
+		const defaultFail = {
+			fileHash: hashItem,
+			ok: false,
+			small: false,
+			large: false,
+			extraLarge: false,
+		} as ISizes;
 
 		return await axios(downloadFileRequestOptions)
 			.then(function (response: AxiosResponse) {
+				if (
+					response.status !== 210 &&
+					response.status !== 202 &&
+					response.status !== 200 &&
+					response.status !== 404
+				) {
+					console.log(response);
+				}
 
 				if (response.status === 202) {
 					process.stdout.write("•");
-					return true;
+					return {
+						ok: true,
+						small: response.data.small,
+						large: response.data.large,
+						extraLarge: response.data.extraLarge,
+						fileHash: hashItem,
+					} as ISizes;
 				}
 				process.stdout.write("≠");
 
-				return false;
-			}).catch(function (err: AxiosError) {
-				console.log('checkIfSingleFileNeedsToBeDownloaded ==> ', err.response.status, err.config.url)
-				return false;
+				return defaultFail;
+			})
+			.catch(function (err: AxiosError) {
+				console.log(
+					"checkIfSingleFileNeedsToBeDownloaded ==> ",
+					err.response.status,
+					err.config.url
+				);
+				return defaultFail;
 			});
-
 	}
 
 	public downloadBinarySingleFile(hashItem: string): Promise<boolean> {
-
 		this.getRights();
 
 		var downloadFileRequestOptions = this.requestOptions();
-		downloadFileRequestOptions.url = this.base_url + 'api/thumbnail/' + hashItem;
-		downloadFileRequestOptions.responseType = 'stream'
+		downloadFileRequestOptions.url =
+			this.base_url + "api/thumbnail/" + hashItem;
+		downloadFileRequestOptions.responseType = "stream";
 		downloadFileRequestOptions.method = "GET";
 		downloadFileRequestOptions.params = {
 			f: hashItem,
-			issingleitem: 'true'
-		}
+			issingleitem: "true",
+		};
 
 		var filePath = path.join(this.getSourceTempFolder(), hashItem + ".jpg");
 
 		return new Promise((resolve, reject) => {
-			Axios(downloadFileRequestOptions).then((response: AxiosResponse) => {
-				const writer = fs.createWriteStream(filePath)
+			Axios(downloadFileRequestOptions)
+				.then((response: AxiosResponse) => {
+					const writer = fs.createWriteStream(filePath);
 
-				response.data.pipe(writer);
+					response.data.pipe(writer);
 
-				writer.on('finish', resolve) // not able to return bool
-				writer.on('error', resolve)
-
-			}).catch(function (thrown) {
-				resolve(false);
-			});
-		})
-
+					writer.on("finish", resolve); // not able to return bool
+					writer.on("error", resolve);
+				})
+				.catch(function (thrown) {
+					resolve(false);
+				});
+		});
 	}
 
-	public async resizer(size: number, sourceFilePath: string, targetPath: string): Promise<boolean> {
+	public async resizer(
+		size: number,
+		sourceFilePath: string,
+		targetPath: string
+	): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-				jimp.read(sourceFilePath)
-				.then(image => {
-
+			jimp
+				.read(sourceFilePath)
+				.then((image) => {
 					image.resize(size, jimp.AUTO);
 					image.quality(80);
 
@@ -256,27 +312,34 @@ export class Query {
 						process.stdout.write("≈");
 						resolve(true);
 					});
-
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.error(err);
 					resolve(false);
 				});
 		});
 	}
-		
 
 	public async resizeImage(fileHash: string): Promise<boolean> {
-
-		var sourceFilePath = path.join(this.getSourceTempFolder(), fileHash + ".jpg");
-		var targetExtraLargeFilePath = path.join(this.getTempFolder(), fileHash + "@2000.jpg");
-		var targetLargeFilePath = path.join(this.getTempFolder(), fileHash + ".jpg");
-		var targetSmallFilePath = path.join(this.getTempFolder(), fileHash + "@300.jpg");
+		var sourceFilePath = path.join(
+			this.getSourceTempFolder(),
+			fileHash + ".jpg"
+		);
+		var targetExtraLargeFilePath = path.join(
+			this.getTempFolder(),
+			fileHash + "@2000.jpg"
+		);
+		var targetLargeFilePath = path.join(
+			this.getTempFolder(),
+			fileHash + ".jpg"
+		);
+		var targetSmallFilePath = path.join(
+			this.getTempFolder(),
+			fileHash + "@300.jpg"
+		);
 
 		return new Promise<boolean>((resolve, reject) => {
-
 			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
-
 				// Very important!!
 				if (err !== null) {
 					process.stdout.write("†");
@@ -284,7 +347,6 @@ export class Query {
 				}
 
 				if (err === null) {
-
 					// // Sharp example code
 					// sharp(sourceFilePath)
 					// 	.rotate()
@@ -299,58 +361,74 @@ export class Query {
 					// 	resolve(false);
 					// });
 
-					if (!await this.resizer(2000, sourceFilePath, targetExtraLargeFilePath)) {
+					if (
+						!(await this.resizer(
+							2000,
+							sourceFilePath,
+							targetExtraLargeFilePath
+						))
+					) {
 						resolve(false);
 					}
-					if (!await this.resizer(1000, targetExtraLargeFilePath, targetLargeFilePath)) {
+					if (
+						!(await this.resizer(
+							1000,
+							targetExtraLargeFilePath,
+							targetLargeFilePath
+						))
+					) {
 						resolve(false);
 					}
-					if (!await this.resizer(300, targetLargeFilePath, targetSmallFilePath)) {
+					if (
+						!(await this.resizer(300, targetLargeFilePath, targetSmallFilePath))
+					) {
 						resolve(false);
 					}
 					resolve(true);
 				}
 			});
 		});
-
 	}
 
 	private copyExifTool(sourceFilePath, targetFilePath, fileHash, callback) {
-
 		fs.stat(targetFilePath, (err, stats) => {
 			if (err || stats.size <= 50) return callback(fileHash);
 
 			// '-overwrite_original',
-			execFile(exiftool, ['-TagsFromFile', sourceFilePath, targetFilePath, '-Orientation=',], (error, stdout, stderr) => {
-				if (error) {
-					console.error(`exec error: ${error}`);
-					return;
+			execFile(
+				exiftool,
+				["-TagsFromFile", sourceFilePath, targetFilePath, "-Orientation="],
+				(error, stdout, stderr) => {
+					if (error) {
+						console.error(`exec error: ${error}`);
+						return;
+					}
+					// console.log(`stdout: ${stdout}`);
+					if (stderr !== "") console.log(`stderr: ${stderr}`);
+					process.stdout.write("~");
+					return callback(fileHash);
 				}
-				// console.log(`stdout: ${stdout}`);
-				if (stderr !== "") console.log(`stderr: ${stderr}`);
-				process.stdout.write("~");
-				return callback(fileHash);
-			});
-
+			);
 		});
 	}
 
-	public searchRequestOptions(searchQuery: string, pageNumber = 0): AxiosRequestConfig {
-
+	public searchRequestOptions(
+		searchQuery: string,
+		pageNumber = 0
+	): AxiosRequestConfig {
 		var indexRequestOptions: AxiosRequestConfig = this.requestOptions();
 		indexRequestOptions.url = this.base_url + "api/search";
 		indexRequestOptions.params = {
 			t: searchQuery,
-			json: 'true',
-			p: pageNumber
+			json: "true",
+			p: pageNumber,
 		};
 		return indexRequestOptions;
 	}
 
 	public async isImportIndex(): Promise<Array<string>> {
-
 		var importRequestOptions = this.requestOptions();
-		importRequestOptions.url = this.base_url + 'api/import/history/';
+		importRequestOptions.url = this.base_url + "api/import/history/";
 
 		// TODO REFACTOR@@@@
 		const ops = [];
@@ -360,95 +438,102 @@ export class Query {
 		let allQueryResult: Array<AxiosResponse> = await axios.all(ops);
 		var returnBaseQueryList = new Array<string>();
 
-		allQueryResult.forEach(oneQuery => {
-
+		allQueryResult.forEach((oneQuery) => {
 			console.log(oneQuery.data.length);
 
 			for (let index = 0; index < oneQuery.data.length; index++) {
 				const item = oneQuery.data[index];
-				if (item === undefined || item === null || item.fileHash.length !== 26) continue;
+				if (item === undefined || item === null || item.fileHash.length !== 26)
+					continue;
 				returnBaseQueryList.push(item.filePath);
 			}
-
 		});
 
 		return returnBaseQueryList;
-
 	}
 
 	private ensureExistsFolder(path, mask, cb) {
-		if (typeof mask == 'function') { // allow the `mask` parameter to be optional
+		if (typeof mask == "function") {
+			// allow the `mask` parameter to be optional
 			cb = mask;
-			mask = parseInt('0777', 8);
+			mask = parseInt("0777", 8);
 		}
 		fs.mkdir(path, mask, function (err) {
 			if (err) {
-				if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
+				if (err.code == "EEXIST") cb(null);
+				// ignore the error if the folder already exists
 				else cb(err); // something else went wrong
 			} else cb(null); // successfully created folder
 		});
 	}
 
-
-
 	private getRights() {
-		this.ensureExistsFolder(this.getSourceTempFolder(), parseInt('0744', 8), function (err) {
-			if (err) console.log(err);// handle folder creation error
-		});
-		this.ensureExistsFolder(this.getTempFolder(), parseInt('0744', 8), function (err) {
-			if (err) console.log(err);// handle folder creation error
-		});
+		this.ensureExistsFolder(
+			this.getSourceTempFolder(),
+			parseInt("0744", 8),
+			function (err) {
+				if (err) console.log(err); // handle folder creation error
+			}
+		);
+		this.ensureExistsFolder(
+			this.getTempFolder(),
+			parseInt("0744", 8),
+			function (err) {
+				if (err) console.log(err); // handle folder creation error
+			}
+		);
 	}
 
 	public async uploadTempFile(fileHash: string): Promise<boolean> {
-
 		var uploadRequestOptions = this.requestOptions();
-		uploadRequestOptions.url = this.base_url + 'api/import/thumbnail/';
+		uploadRequestOptions.url = this.base_url + "api/import/thumbnail/";
 		uploadRequestOptions.method = "POST";
 
-		var fileHashLocation = path.join(this.getTempFolder(), fileHash + ".jpg");
-		uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
-
-
-		uploadRequestOptions.headers['Content-Type'] = 'image/jpeg';
-		uploadRequestOptions.headers['filename'] = fileHash + ".jpg";
+		uploadRequestOptions.headers["Content-Type"] = "image/jpeg";
+		uploadRequestOptions.headers["filename"] = fileHash + ".jpg";
 
 		return new Promise<boolean>((resolve, reject) => {
+			for (const fileName of [
+				fileHash + "@300.jpg",
+				fileHash + ".jpg",
+				fileHash + "@2000.jpg",
+			]) {
+				var fileHashLocation = path.join(this.getTempFolder(), fileName);
+				uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
 
-			fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
-				if (err) {
-					console.log(">>== skip: " + fileHash);
-					resolve(false);
-				}
-
-				fs.stat(fileHashLocation, (err, stats) => {
-					if (err || stats.size <= 50) {
-						console.log(">>== skip * err:: " + err + "~  stats size:", stats.size);
-						return resolve(false);
+				fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
+					if (err) {
+						console.log(">>== skip: " + fileHash);
+						resolve(false);
 					}
 
-					Axios(uploadRequestOptions).then((response: AxiosResponse) => {
-
-						//console.log("upload > ", response.status, response.data, fileHash);
-						process.stdout.write("∑");
-						resolve(false);
-					}).catch(function (thrown: AxiosError) {
-						var errorMessage = 'upload failed: ' + thrown.config.url + " ";
-						if (thrown && thrown.response && thrown.response.status) {
-							errorMessage += thrown.response.status
+					fs.stat(fileHashLocation, (err, stats) => {
+						if (err || stats.size <= 50) {
+							console.log(
+								">>== skip * err:: " + err + "~  stats size:",
+								stats.size
+							);
+							return resolve(false);
 						}
-						console.log(errorMessage);
-						resolve(false);
+
+						Axios(uploadRequestOptions)
+							.then((response: AxiosResponse) => {
+								process.stdout.write("∑");
+								resolve(false);
+							})
+							.catch(function (thrown: AxiosError) {
+								var errorMessage = "upload failed: " + thrown.config.url + " ";
+								if (thrown && thrown.response && thrown.response.status) {
+									errorMessage += thrown.response.status;
+								}
+								console.log(errorMessage);
+								resolve(false);
+							});
 					});
 				});
-
-
-			});
-
+			}
 		});
-
 	}
-
 
 	public deleteSourceTempFolder(fileHashList: string[]) {
 		this.removeContentOfDirectory(this.getSourceTempFolder(), fileHashList);
@@ -458,14 +543,22 @@ export class Query {
 		this.removeContentOfDirectory(this.getTempFolder(), fileHashList);
 	}
 
-	private removeContentOfDirectory(dirPath: string, fileHashList: string[]) {
-
-		fileHashList.forEach(element => {
-			var location = path.join(dirPath, element);
-			fs.unlink(location, () => {
-			})
-		});
-
+	public deleteSourceTempFile(fileHash: string) {
+		const location = path.join(this.getSourceTempFolder(), fileHash);
+		fs.unlink(location, () => {});
 	}
 
+	public deleteTempFile(fileHash: string) {
+		const location = path.join(this.getTempFolder(), fileHash);
+		// todo remove alt sizes
+
+		fs.unlink(location, () => {});
+	}
+
+	private removeContentOfDirectory(dirPath: string, fileHashList: string[]) {
+		fileHashList.forEach((element) => {
+			var location = path.join(dirPath, element);
+			fs.unlink(location, () => {});
+		});
+	}
 }
