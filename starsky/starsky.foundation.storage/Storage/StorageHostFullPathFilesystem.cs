@@ -313,7 +313,16 @@ namespace starsky.foundation.storage.Storage
 
 			async Task<bool> LocalRun()
 			{
-				stream.Seek(0, SeekOrigin.Begin);
+				try
+				{
+					stream.Seek(0, SeekOrigin.Begin);
+				}
+				catch (NotSupportedException e)
+				{
+					// When using a webStream to save
+					_logger.LogInformation("[WriteStreamAsync] catch-ed NotSupportedException", e);
+				}
+				
 				using (var fileStream = new FileStream(path, FileMode.Create, 
 					FileAccess.Write, FileShare.Read, 4096, 
 					FileOptions.Asynchronous | FileOptions.SequentialScan))

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
@@ -21,15 +22,17 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IQuery _query;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IMemoryCache _cache;
+		private readonly IWebLogger _logger;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
 			IWebSocketConnectionsService connectionsService, 
-			IMemoryCache cache)
+			IMemoryCache cache , IWebLogger logger)
 		{
 			_synchronize = synchronize;
 			_connectionsService = connectionsService;
 			_query = query;
 			_cache = cache;
+			_logger = logger;
 		}
 
 		internal const string ManualSyncCacheName = "ManualSync_";
@@ -64,11 +67,15 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task BackgroundTask(string subPath)
 		{
+			_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
+			                       $"{DateTime.Now.ToShortTimeString()}");
 			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
 			_query.CacheUpdateItem(FilterBefore(updatedList));
 			
 			// so you can click on the button again
 			_cache.Remove(ManualSyncCacheName + subPath);
+			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
+			                       $"{DateTime.Now.ToShortTimeString()}");
 		}
 		
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
