@@ -319,6 +319,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch (NotSupportedException e)
 				{
+					// When using a webStream to save
 					_logger.LogInformation("[WriteStreamAsync] catch-ed NotSupportedException", e);
 				}
 				
