@@ -11,7 +11,7 @@ namespace starskytest.starskySyncCli
 	public class StarskyCliTest
 	{
 		[TestMethod]
-		public void StarskyCliHelpVerbose()
+		public void SyncV1CliHelpVerbose()
 		{
 			var args = new List<string> {
 				"-h","-v"
@@ -22,7 +22,8 @@ namespace starskytest.starskySyncCli
         
 		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyCliHelpTest()
+		[Timeout(5000)]
+		public void SyncV1CliHelpTest()
 		{
 			var newImage = new CreateAnImage();
 			var args = new List<string> {"-h","-v","-c","test","-d", "InMemoryDatabase", 
@@ -35,7 +36,8 @@ namespace starskytest.starskySyncCli
         
 		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyCliTest_StarskyCliSubPathOneImage()
+		[Timeout(5000)]
+		public void SyncV1Cli_StarskyCliSubPathOneImage()
 		{
 			var newImage = new CreateAnImage();
 			var args = new List<string> {
