@@ -20,7 +20,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.ManualSync("/test");
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result);
 		}
@@ -32,7 +32,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.ManualSync("/");
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
 		}
@@ -44,7 +44,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.ManualSync("/test");
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
 		}
@@ -56,7 +56,10 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(new List<FileIndexItem>{new FileIndexItem("/test")}),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>{{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}}))
+					new FakeMemoryCache(new Dictionary<string, object>
+					{
+						{ManualBackgroundSyncService.ManualSyncCacheName + "/test", string.Empty}
+					}), new FakeIWebLogger())
 				.ManualSync("/test");
 			Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result);
 		}
@@ -69,7 +72,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					socket,
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.PushToSockets(new List<FileIndexItem>{new FileIndexItem("/test.jpg")});
 
 			Assert.IsTrue(socket.FakeSendToAllAsync[0].Contains("/test.jpg"));
@@ -83,7 +86,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.Ok
@@ -100,7 +103,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
@@ -117,7 +120,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeISynchronize(new List<FileIndexItem>()),
 					new FakeIQuery(),
 					new FakeIWebSocketConnectionsService(),
-					new FakeMemoryCache(new Dictionary<string, object>()))
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
 				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
 				{
 					Status = FileIndexItem.ExifStatus.OperationNotSupported
