@@ -167,9 +167,9 @@ namespace starsky.Controllers
 			    
 				var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
 				
-				_logger.LogInformation($"[Import/Thumbnail] {tempImportSinglePath} - {thumbToUpperCase}" );
+				_logger.LogInformation($"[Import/Thumbnail] - {thumbToUpperCase}" );
 
-				if ( fileNameWithoutExtension.Length != 26 )
+				if ( ThumbnailNameHelper.GetSize(thumbToUpperCase) == ThumbnailSize.Unknown )
 				{
 					continue;
 				}

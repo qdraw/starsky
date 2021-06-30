@@ -34,12 +34,12 @@ namespace starsky.foundation.http.Streaming
 	        // file without base64 encoding; return slug based url
 	        if (Base64Helper.TryParse(request.Headers["filename"]).Length == 0)
 		        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(request.Headers["filename"]),
-			               true, false) + Path.GetExtension(request.Headers["filename"]);
+			               true, false, true) + Path.GetExtension(request.Headers["filename"]);
             
 	        var requestHeadersBytes = Base64Helper.TryParse(request.Headers["filename"]);
 	        var requestHeaders = Encoding.ASCII.GetString(requestHeadersBytes);
 	        return appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(requestHeaders),
-		               true, false) + Path.GetExtension(requestHeaders);
+		               true, false, true) + Path.GetExtension(requestHeaders);
         }
         
         public static async Task<List<string>> StreamFile(this HttpRequest request, 

@@ -255,6 +255,34 @@ namespace starskytest.Controllers
 			Assert.AreEqual("01234567890123456789123456", list.FirstOrDefault());
 			Assert.IsFalse(existFileInTempFolder);
 		}
+		
+		[TestMethod]
+		public async Task Import_Thumbnail_Ok_SmallSize()
+		{
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
+			var importController = new ImportController(
+				new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
+				_bgTaskQueue, null, new FakeSelectorStorage(storageProvider), 
+				_scopeFactory, new FakeIWebLogger())
+			{
+				ControllerContext = RequestWithFile(),
+			};
+			importController.Request.Headers["filename"] =
+				"01234567890123456789123456@300.jpg"; // len() 26
+
+			var actionResult = await importController.Thumbnail() as JsonResult;
+			var list = actionResult.Value as List<string>;
+			var existFileInTempFolder =
+				storageProvider.ExistFile(
+					_appSettings.TempFolder + "01234567890123456789123456@300.jpg");
+
+			Assert.AreEqual("01234567890123456789123456@300", list.FirstOrDefault());
+			Assert.IsFalse(existFileInTempFolder);
+		}
 
 		[TestMethod]
 		public async Task Import_Thumbnail_WrongInputName()

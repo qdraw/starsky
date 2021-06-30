@@ -490,7 +490,6 @@ export class Query {
 		uploadRequestOptions.method = "POST";
 
 		uploadRequestOptions.headers["Content-Type"] = "image/jpeg";
-		uploadRequestOptions.headers["filename"] = fileHash + ".jpg";
 
 		return new Promise<boolean>((resolve, reject) => {
 			for (const fileName of [
@@ -500,6 +499,8 @@ export class Query {
 			]) {
 				var fileHashLocation = path.join(this.getTempFolder(), fileName);
 				uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
+
+				uploadRequestOptions.headers["filename"] = fileName;
 
 				fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
 					if (err) {
