@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starskycore.Helpers;
 
@@ -107,7 +108,7 @@ namespace starsky.Controllers
 				return BadRequest();
 			}
 			
-			var data = new { 
+			var data = new ThumbnailSizesExistStatusModel{ 
 				TinyMeta = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.TinyMeta)),
 				Small = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Small)),
 				Large = _thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large)),
