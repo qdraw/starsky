@@ -110,16 +110,20 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 					queueResizeChain.wrap(async (sizes: ISizes) => {
 						await query.downloadBinarySingleFile(sizes.fileHash);
 						if (await query.resizeImage(sizes.fileHash)) {
-							if (await query.uploadTempFile(sizes.fileHash)) {
-								query.deleteSourceTempFile(sizes.fileHash);
-								query.deleteTempFile(sizes.fileHash);
+							await query.uploadTempFile(sizes.fileHash);
+							
+							// and clean it afterwards
+							query.deleteSourceTempFile(sizes.fileHash);
+							query.deleteTempFile(sizes.fileHash);
 
-								return sizes; // return isn't working good
-								// resizeChain> [undefined,und..]
-							}
+							return sizes; // return isn't working good
+							// resizeChain> [undefined,und..]
 						} else {
 							// continue if a single file fails e.g. RangeError: Array buffer allocation failed
 							process.stdout.write(">>> image has failed: " + sizes.fileHash);
+							/// remove everything if its failed
+							query.deleteSourceTempFile(sizes.fileHash);
+							query.deleteTempFile(sizes.fileHash);
 							return sizes;
 						}
 					})

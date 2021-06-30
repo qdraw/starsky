@@ -3,7 +3,7 @@ import {
 	AxiosRequestConfig,
 	AxiosResponse,
 	default as axios,
-	default as Axios,
+	default as Axios
 } from "axios";
 import { TaskQueue } from "cwait";
 import * as fs from "fs";
@@ -485,54 +485,60 @@ export class Query {
 	}
 
 	public async uploadTempFile(fileHash: string): Promise<boolean> {
-		var uploadRequestOptions = this.requestOptions();
+		return new Promise<boolean>((resolve, reject) => {
+
+			this.uploadAxios(fileHash + "@300.jpg", fileHash,(status1)=> {
+				this.uploadAxios(fileHash + ".jpg", fileHash,(status2)=> {
+					this.uploadAxios(	fileHash + "@2000.jpg", fileHash,(status3)=> {
+						resolve(status1 && status2 && status3)
+					})
+				})
+			})
+		});
+	}
+
+	private uploadAxios(fileName: string, fileHash: string, next: Function) {
+
+		const uploadRequestOptions = this.requestOptions();
 		uploadRequestOptions.url = this.base_url + "api/import/thumbnail/";
 		uploadRequestOptions.method = "POST";
 
 		uploadRequestOptions.headers["Content-Type"] = "image/jpeg";
+		
+		const fileHashLocation = path.join(this.getTempFolder(), fileName);
+		uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
 
-		return new Promise<boolean>((resolve, reject) => {
-			for (const fileName of [
-				fileHash + "@300.jpg",
-				fileHash + ".jpg",
-				fileHash + "@2000.jpg",
-			]) {
-				var fileHashLocation = path.join(this.getTempFolder(), fileName);
-				uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
+		uploadRequestOptions.headers["filename"] = fileName;
 
-				uploadRequestOptions.headers["filename"] = fileName;
-
-				fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
-					if (err) {
-						console.log(">>== skip: " + fileHash);
-						resolve(false);
-					}
-
-					fs.stat(fileHashLocation, (err, stats) => {
-						if (err || stats.size <= 50) {
-							console.log(
-								">>== skip * err:: " + err + "~  stats size:",
-								stats.size
-							);
-							return resolve(false);
-						}
-
-						Axios(uploadRequestOptions)
-							.then((response: AxiosResponse) => {
-								process.stdout.write("∑");
-								resolve(false);
-							})
-							.catch(function (thrown: AxiosError) {
-								var errorMessage = "upload failed: " + thrown.config.url + " ";
-								if (thrown && thrown.response && thrown.response.status) {
-									errorMessage += thrown.response.status;
-								}
-								console.log(errorMessage);
-								resolve(false);
-							});
-					});
-				});
+		fs.access(fileHashLocation, fs.constants.F_OK, (err) => {
+			if (err) {
+				console.log(">>== skip: " + fileHash);
+				next(false);
 			}
+
+			fs.stat(fileHashLocation, (err, stats) => {
+				if (err || stats.size <= 50) {
+					console.log(
+						">>== skip * err:: " + err + "~  stats size:",
+						stats.size
+					);
+					return next(false);
+				}
+
+				Axios(uploadRequestOptions)
+					.then((response: AxiosResponse) => {
+						process.stdout.write("∑");
+						next(true);
+					})
+					.catch(function (thrown: AxiosError) {
+						var errorMessage = "upload failed: " + thrown.config.url + " ";
+						if (thrown && thrown.response && thrown.response.status) {
+							errorMessage += thrown.response.status;
+						}
+						console.log(errorMessage);
+						next(false);
+					});
+			});
 		});
 	}
 
@@ -545,15 +551,25 @@ export class Query {
 	}
 
 	public deleteSourceTempFile(fileHash: string) {
-		const location = path.join(this.getSourceTempFolder(), fileHash);
+		// 1 size stored here
+		const location = path.join(this.getSourceTempFolder(), fileHash + ".jpg");
 		fs.unlink(location, () => {});
 	}
 
 	public deleteTempFile(fileHash: string) {
-		const location = path.join(this.getTempFolder(), fileHash);
-		// todo remove alt sizes
+		const location1000px = path.join(this.getTempFolder(), fileHash + ".jpg");
+		const location300px = path.join(this.getTempFolder(), fileHash + "@300.jpg");
+		const location2000px = path.join(this.getTempFolder(), fileHash + "@2000.jpg");
 
-		fs.unlink(location, () => {});
+		if (fs.existsSync(location1000px)) {
+   		fs.unlink(location1000px, () => {});
+  	}
+		if (fs.existsSync(location300px)) {
+   		fs.unlink(location300px, () => {});
+  	}
+		if (fs.existsSync(location2000px)) {
+   		fs.unlink(location2000px, () => {});
+  	}
 	}
 
 	private removeContentOfDirectory(dirPath: string, fileHashList: string[]) {

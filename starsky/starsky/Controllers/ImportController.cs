@@ -192,6 +192,12 @@ namespace starsky.Controllers
 
 			for ( var i = 0; i < tempImportPaths.Count; i++ )
 			{
+				if ( ! _hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
+				{
+					_logger.LogInformation($"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
+					continue;
+				}
+				
 				await _thumbnailStorage.WriteStreamAsync(
 					_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 				// Remove from temp folder to avoid long list of files
