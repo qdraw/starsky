@@ -501,6 +501,16 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public void ListSizesByHash_InputBadRequest()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(_query,storageSelector);;
+			var actionResult = controller.ListSizesByHash("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
 		public void ListSizesByHash_IgnoreRaw()
 		{
 			var item = _query.AddItem(new FileIndexItem("/test123.arw")
