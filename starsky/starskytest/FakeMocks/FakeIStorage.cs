@@ -152,14 +152,23 @@ namespace starskytest.FakeMocks
 
 		public IEnumerable<string> GetAllFilesInDirectory(string subPath)
 		{
-			subPath = PathHelper.RemoveLatestSlash(subPath);
+			if ( subPath == null )
+			{
+				// for thumbnails
+				return _outputSubPathFiles.Where(p => !p.StartsWith("/"));
+			}
+			
+			var path = PathHelper.RemoveLatestSlash(subPath);
+			
 			// non recruisive
-			if ( subPath != string.Empty && !ExistFolder(subPath) )
+			if ( path != string.Empty && !ExistFolder(path) )
 			{
 				return new List<string>();
 			}
 
-			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(subPath, p)).AsEnumerable();
+
+
+			return _outputSubPathFiles.Where(p => CheckAndFixParentFiles(path, p)).AsEnumerable();
 		}
 
 		public IEnumerable<string> GetAllFilesInDirectoryRecursive(string subPath)

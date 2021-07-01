@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -86,7 +88,49 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			new StorageHostFullPathFilesystem().FolderDelete(existFullDir);
 		}
 
+		[TestMethod]
+		public void ThumbnailCleanerTest_Cleaner_WithDifferentSizes()
+		{
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string>
+				{
+					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large),
+					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.ExtraLarge),
+					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta),
+					ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta),
+					ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge),
+					ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta),
+					ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large),
+					ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge),
+				});
 
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg"){FileHash = "exist"}
+			});
+			
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, new AppSettings());
+
+			thumbnailCleaner.CleanAllUnusedFiles();
+
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta)));
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge)));
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large)));
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta)));
+			
+			Assert.IsFalse(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta)));
+			Assert.IsFalse(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.ExtraLarge)));
+			Assert.IsFalse(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)));
+			Assert.IsFalse(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge)));
+		}
 
 	}
 }

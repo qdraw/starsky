@@ -98,7 +98,8 @@ namespace starsky.Controllers
         /// Update other users with a message from SyncViewModel
         /// </summary>
         /// <param name="syncResultsList">SyncViewModel</param>
-        /// <returns>Completed send of Socket SendToAllAsync </returns>
+        /// <param name="name">optional debug name</param>
+        /// <returns>Completed send of Socket SendToAllAsync</returns>
         private async Task SyncMessageToSocket(IEnumerable<SyncViewModel> syncResultsList, string name = "")
         {
 	        var list = syncResultsList.Select(t => new FileIndexItem(t.FilePath)

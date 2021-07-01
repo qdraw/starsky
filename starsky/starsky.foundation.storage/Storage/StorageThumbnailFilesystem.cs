@@ -91,6 +91,11 @@ namespace starsky.foundation.storage.Storage
 			hostFilesystem.FileCopy(oldThumbPath,newThumbPath);
 		}
 
+		/// <summary>
+		/// Delete single file
+		/// </summary>
+		/// <param name="path">fileHash</param>
+		/// <returns>true when success</returns>
 		public bool FileDelete(string path)
 		{
 			if ( !ExistFile(path) ) return false;
