@@ -9,6 +9,7 @@ using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
@@ -31,11 +32,12 @@ namespace starsky.Controllers
 		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
 		private readonly IGeoLocationWrite _geoLocationWrite;
+		private readonly IWebLogger _logger;
 
 		public GeoController(AppSettings appSettings, IBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
 			IGeoLocationWrite geoLocationWrite,
-			IMemoryCache memoryCache = null )
+			IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_bgTaskQueue = queue;
@@ -44,6 +46,7 @@ namespace starsky.Controllers
 			_readMeta = new ReadMeta(_iStorage);
 			_geoLocationWrite = geoLocationWrite;
 			_cache = memoryCache;
+			_logger = logger;
 		}
 
 		
@@ -152,9 +155,10 @@ namespace starsky.Controllers
 				.ToList() )
 			{
 				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
-				_thumbnailStorage.FileMove(item.FileHash, newThumb);
+				if ( item.FileHash == newThumb) continue;
+				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash, newThumb);
 				if ( _appSettings.Verbose )
-					Console.WriteLine("thumb + `" + item.FileHash + "`" + newThumb);
+					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
 			}
 
 			return fileIndexList;

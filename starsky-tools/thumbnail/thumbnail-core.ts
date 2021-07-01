@@ -3,7 +3,7 @@ import {
 	AxiosRequestConfig,
 	AxiosResponse,
 	default as axios,
-	default as Axios
+	default as Axios,
 } from "axios";
 import { TaskQueue } from "cwait";
 import * as fs from "fs";
@@ -486,25 +486,23 @@ export class Query {
 
 	public async uploadTempFile(fileHash: string): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-
-			this.uploadAxios(fileHash + "@300.jpg", fileHash,(status1)=> {
-				this.uploadAxios(fileHash + ".jpg", fileHash,(status2)=> {
-					this.uploadAxios(	fileHash + "@2000.jpg", fileHash,(status3)=> {
-						resolve(status1 && status2 && status3)
-					})
-				})
-			})
+			this.uploadAxios(fileHash + "@300.jpg", fileHash, (status1) => {
+				this.uploadAxios(fileHash + ".jpg", fileHash, (status2) => {
+					this.uploadAxios(fileHash + "@2000.jpg", fileHash, (status3) => {
+						resolve(status1 && status2 && status3);
+					});
+				});
+			});
 		});
 	}
 
 	private uploadAxios(fileName: string, fileHash: string, next: Function) {
-
 		const uploadRequestOptions = this.requestOptions();
 		uploadRequestOptions.url = this.base_url + "api/import/thumbnail/";
 		uploadRequestOptions.method = "POST";
 
 		uploadRequestOptions.headers["Content-Type"] = "image/jpeg";
-		
+
 		const fileHashLocation = path.join(this.getTempFolder(), fileName);
 		uploadRequestOptions.data = fs.createReadStream(fileHashLocation);
 
@@ -531,11 +529,20 @@ export class Query {
 						next(true);
 					})
 					.catch(function (thrown: AxiosError) {
-						var errorMessage = "upload failed: " + thrown.config.url + " ";
+						let statusCode = 0;
 						if (thrown && thrown.response && thrown.response.status) {
-							errorMessage += thrown.response.status;
+							statusCode = thrown.response.status;
 						}
+						const errorMessage =
+							"upload failed: " + thrown.config.url + " " + statusCode;
 						console.log(errorMessage);
+						if (statusCode === 405 || statusCode === 502) {
+							console.log("¢");
+							setTimeout(() => {
+								next(false);
+							}, 5000);
+							return;
+						}
 						next(false);
 					});
 			});
@@ -558,18 +565,24 @@ export class Query {
 
 	public deleteTempFile(fileHash: string) {
 		const location1000px = path.join(this.getTempFolder(), fileHash + ".jpg");
-		const location300px = path.join(this.getTempFolder(), fileHash + "@300.jpg");
-		const location2000px = path.join(this.getTempFolder(), fileHash + "@2000.jpg");
+		const location300px = path.join(
+			this.getTempFolder(),
+			fileHash + "@300.jpg"
+		);
+		const location2000px = path.join(
+			this.getTempFolder(),
+			fileHash + "@2000.jpg"
+		);
 
 		if (fs.existsSync(location1000px)) {
-   		fs.unlink(location1000px, () => {});
-  	}
+			fs.unlink(location1000px, () => {});
+		}
 		if (fs.existsSync(location300px)) {
-   		fs.unlink(location300px, () => {});
-  	}
+			fs.unlink(location300px, () => {});
+		}
 		if (fs.existsSync(location2000px)) {
-   		fs.unlink(location2000px, () => {});
-  	}
+			fs.unlink(location2000px, () => {});
+		}
 	}
 
 	private removeContentOfDirectory(dirPath: string, fileHashList: string[]) {

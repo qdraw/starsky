@@ -148,7 +148,9 @@ namespace starsky.feature.geolookup.Services
 				.ToList() )
 			{
 				var newThumb = (await new FileHash(_iStorage).GetHashCodeAsync(item.FilePath)).Key;
-				_thumbnailStorage.FileMove(item.FileHash, newThumb);
+				if ( item.FileHash == newThumb ) continue;
+				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
+					item.FileHash, newThumb);
 				if ( _appSettings.Verbose )
 					_console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
 			}

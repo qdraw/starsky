@@ -8,6 +8,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Interfaces;
 using static Medallion.Shell.Shell;
 
@@ -67,14 +68,10 @@ namespace starsky.foundation.writemeta.Helpers
 			var newHashCode = await FileHash.CalculateHashAsync(new MemoryStream(buffer));
 			if ( string.IsNullOrEmpty(newHashCode)) return string.Empty;
 
-			if ( oldFileHashCodeKeyPair.Key != newHashCode )
-			{
-				_thumbnailStorage.FileMove(oldFileHashCodeKeyPair.Key, newHashCode);
-			}
-			else
-			{
-				_logger.LogInformation("[ExifTool] rename  - " + oldFileHashCodeKeyPair.Key + " > " + newHashCode);
-			}
+			if ( oldFileHashCodeKeyPair.Key == newHashCode ) return newHashCode;
+			
+			new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
+				oldFileHashCodeKeyPair.Key, newHashCode);
 			return newHashCode;
 		}
 
