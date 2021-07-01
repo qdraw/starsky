@@ -36,10 +36,10 @@ namespace starskyAdminCli
 			appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 			
 			var userManager = serviceProvider.GetService<IUserManager>();
+			appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 
 			if (new ArgsHelper().NeedHelp(args))
 			{
-				appSettings.ApplicationType = AppSettings.StarskyAppType.Admin;
 				new ArgsHelper(appSettings).NeedHelpShowDialog();
 				return;
 			}

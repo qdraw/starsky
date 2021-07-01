@@ -6,6 +6,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
 using starsky.Helpers;
@@ -97,9 +98,17 @@ namespace starsky.Controllers
             {
 	            return NotFound("ThumbnailTempFolder not found");
             }
+            
+            var data = new ThumbnailSizesExistStatusModel{ 
+	            Small = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Small)),
+	            Large = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.Large)),
+	            ExtraLarge = _thumbnailStorage.ExistFile(
+		            ThumbnailNameHelper.Combine(fileIndexItem.FileHash,ThumbnailSize.ExtraLarge))
+            };
 
-            if (!_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(
-	            fileIndexItem.FileHash,ThumbnailSize.Large)))
+            if (!data.Small || !data.Large || !data.ExtraLarge)
             {
                 await new Thumbnail(_iStorage,
 	                _thumbnailStorage,_logger).CreateThumb(fileIndexItem.FilePath, 

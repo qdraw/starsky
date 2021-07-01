@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.database.Data;
@@ -15,9 +14,9 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Helpers;
-using starsky.foundation.thumbnailgeneration.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -415,6 +414,126 @@ namespace starskytest.Controllers
 			
 			controller.Response.Headers.TryGetValue("x-image-size", out var value ); 
 			Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
+		}
+		
+		[TestMethod]
+		public void ListSizesByHash_NotFound()
+		{
+			// Arrange
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string> {"01234567890123456789123456"});
+
+			// Check if exist
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.ListSizesByHash("01234567890123456789123456") as NotFoundObjectResult;
+			
+			Assert.AreNotEqual(actionResult,null);
+			Assert.AreEqual(404, actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public void ListSizesByHash_ExpectLarge()
+		{
+			var item = _query.AddItem(new FileIndexItem("/test123.jpg")
+			{
+				FileHash = "01234567890123456789123456"
+			});
+			
+			// Arrange
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string> {"01234567890123456789123456"});
+
+			// Check if exist
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.ListSizesByHash("01234567890123456789123456") as JsonResult;
+			
+			// Thumbnail exist
+			Assert.AreNotEqual(actionResult,null);
+			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
+
+			Assert.AreEqual(202, controller.Response.StatusCode);
+			Assert.AreEqual(true,thumbnailAnswer.Large);
+			Assert.AreEqual(false,thumbnailAnswer.ExtraLarge);
+			Assert.AreEqual(false,thumbnailAnswer.TinyMeta);
+
+			_query.RemoveItem(item);
+		}
+		
+		[TestMethod]
+		public void ListSizesByHash_AllExist_exceptTinyMeta()
+		{
+			var hash = "01234567890123456789123456";
+			var item = _query.AddItem(new FileIndexItem("/test123.jpg")
+			{
+				FileHash = hash
+			});
+			
+			// Arrange
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string> {
+					ThumbnailNameHelper.Combine(hash, ThumbnailSize.Large),
+					ThumbnailNameHelper.Combine(hash, ThumbnailSize.Small),
+					ThumbnailNameHelper.Combine(hash, ThumbnailSize.ExtraLarge),
+				});
+
+			// Check if exist
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.ListSizesByHash(hash) as JsonResult;
+			
+			// Thumbnail exist
+			Assert.AreNotEqual(actionResult,null);
+			var thumbnailAnswer = actionResult.Value as ThumbnailSizesExistStatusModel;
+
+			Assert.AreEqual(200, controller.Response.StatusCode);
+			Assert.AreEqual(true,thumbnailAnswer.Large);
+			Assert.AreEqual(true,thumbnailAnswer.ExtraLarge);
+			Assert.AreEqual(true,thumbnailAnswer.Small);
+			// > TinyMeta is optional and not needed
+			Assert.AreEqual(false,thumbnailAnswer.TinyMeta);
+
+			_query.RemoveItem(item);
+		}
+		
+		[TestMethod]
+		public void ListSizesByHash_InputBadRequest()
+		{
+			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
+			
+			var controller = new ThumbnailController(_query,storageSelector);;
+			var actionResult = controller.ListSizesByHash("../") as BadRequestResult;
+			Assert.AreEqual(400,actionResult.StatusCode);
+		}
+		
+		[TestMethod]
+		public void ListSizesByHash_IgnoreRaw()
+		{
+			var item = _query.AddItem(new FileIndexItem("/test123.arw")
+			{
+				FileHash = "91234567890123456789123451"
+			});
+			
+			// Arrange
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string> {"91234567890123456789123451"});
+
+			// Check if exist
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			var actionResult = controller.ListSizesByHash("91234567890123456789123451") as JsonResult;
+			
+			// Thumbnail exist
+			Assert.AreNotEqual(actionResult,null);
+
+			Assert.AreEqual(210, controller.Response.StatusCode);
+
+			_query.RemoveItem(item);
 		}
 	}
 }

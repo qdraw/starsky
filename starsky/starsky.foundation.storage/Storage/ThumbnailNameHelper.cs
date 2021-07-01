@@ -1,9 +1,16 @@
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace starsky.foundation.storage.Storage
 {
 	public enum ThumbnailSize
 	{
+		/// <summary>
+		/// Should not use this one
+		/// </summary>
+		Unknown,
+		
 		/// <summary>
 		/// 150px
 		/// </summary>
@@ -22,9 +29,12 @@ namespace starsky.foundation.storage.Storage
 		/// <summary>
 		/// 2000px
 		/// </summary>
-		ExtraLarge
+		ExtraLarge,
 	}
 	
+	/// <summary>
+	/// ThumbnailNamesHelper
+	/// </summary>
 	public static class ThumbnailNameHelper
 	{
 		public static int GetSize(ThumbnailSize size)
@@ -55,10 +65,31 @@ namespace starsky.foundation.storage.Storage
 				case 1000:
 					return ThumbnailSize.Large ;
 				case 2000:
-					return ThumbnailSize.ExtraLarge ;
+					return ThumbnailSize.ExtraLarge;
 				default:
-					throw new ArgumentOutOfRangeException(nameof(size), size, null);
+					return ThumbnailSize.Unknown;
 			}
+		}
+		
+		public static ThumbnailSize GetSize(string fileName)
+		{
+			var fileNameWithoutExtension =
+				fileName.Replace(".jpg", string.Empty);
+
+			var afterAtString = Regex.Match(fileNameWithoutExtension, "@\\d+")
+				.Value.Replace("@", string.Empty);
+			
+			if ( fileNameWithoutExtension.Replace($"@{afterAtString}", string.Empty).Length != 26 )
+			{
+				return ThumbnailSize.Unknown;
+			}
+			
+			if ( string.IsNullOrEmpty(afterAtString))
+				return ThumbnailSize.Large;
+			
+			int.TryParse(afterAtString, NumberStyles.Number, 
+				CultureInfo.InvariantCulture, out var afterAt);
+			return GetSize(afterAt);
 		}
 
 		public static string Combine(string fileHash, int size)

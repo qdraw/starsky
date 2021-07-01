@@ -46,7 +46,8 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
 			if (getSubPathRelative != null)
 			{
-				subPath = new StructureService(_selectorStorage.Get(SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
+				subPath = new StructureService(_selectorStorage.Get(
+						SelectorStorage.StorageServices.SubPath), _appSettings.Structure)
 					.ParseSubfolders(getSubPathRelative);
 			}
 
@@ -61,8 +62,11 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
 				{
 					// If single file => create thumbnail
-					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath)).Key;
-					await _thumbnailService.CreateThumb(subPath, fileHash); // <= this uses subPath
+					var fileHash = (await new FileHash(storage).GetHashCodeAsync(subPath));
+					if ( fileHash.Value ) 
+					{
+						await _thumbnailService.CreateThumb(subPath, fileHash.Key); // <= this uses subPath
+					}
 				}
 				else
 				{
@@ -75,9 +79,9 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			{
 				_console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
 				_thumbnailCleaner.CleanAllUnusedFiles();
+				_console.WriteLine("Done!");
 			}
 
-			_console.WriteLine("Done!");
 		}
 	}
 }

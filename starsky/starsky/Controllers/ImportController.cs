@@ -166,8 +166,10 @@ namespace starsky.Controllers
 				var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tempImportSinglePath);
 			    
 				var thumbToUpperCase = fileNameWithoutExtension.ToUpperInvariant();
+				
+				_logger.LogInformation($"[Import/Thumbnail] - {thumbToUpperCase}" );
 
-				if ( fileNameWithoutExtension.Length != 26 )
+				if ( ThumbnailNameHelper.GetSize(thumbToUpperCase) == ThumbnailSize.Unknown )
 				{
 					continue;
 				}
@@ -190,6 +192,12 @@ namespace starsky.Controllers
 
 			for ( var i = 0; i < tempImportPaths.Count; i++ )
 			{
+				if ( ! _hostFileSystemStorage.ExistFile(tempImportPaths[i]) )
+				{
+					_logger.LogInformation($"[Import/Thumbnail] ERROR {tempImportPaths[i]} does not exist");
+					continue;
+				}
+				
 				await _thumbnailStorage.WriteStreamAsync(
 					_hostFileSystemStorage.ReadStream(tempImportPaths[i]), thumbnailNames[i]);
 				// Remove from temp folder to avoid long list of files

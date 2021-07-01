@@ -70,6 +70,7 @@ namespace starskytest.starsky.foundation.worker
 
 		// https://stackoverflow.com/a/51224556
 		[TestMethod]
+		[Timeout(5000)]
 		public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
@@ -107,6 +108,7 @@ namespace starskytest.starsky.foundation.worker
 		}
 
 		[TestMethod]
+		[Timeout(5000)]
 		public async Task BackgroundQueuedHostedServiceTestHandleException()
 		{
 			IServiceCollection services = new ServiceCollection();

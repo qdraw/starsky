@@ -230,6 +230,21 @@ namespace starskytest.starsky.foundation.platform.Models
 		}
 		
 		[TestMethod]
+		public void GenerateSlug_AllowAt_DisabledByDefault()
+		{
+			var slug = new AppSettings().GenerateSlug("test@123");
+			Assert.AreEqual("test123", slug);
+		}
+		
+		[TestMethod]
+		public void GenerateSlug_AllowAt_Enabled()
+		{
+			var slug = new AppSettings().GenerateSlug("test@123", 
+				false, true, true);
+			Assert.AreEqual("test@123", slug);
+		}
+		
+		[TestMethod]
 		public void GenerateSlug_Trim()
 		{
 			var slug = new AppSettings().GenerateSlug("   abc   ");

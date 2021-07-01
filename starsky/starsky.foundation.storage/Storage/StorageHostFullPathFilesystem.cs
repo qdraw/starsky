@@ -317,10 +317,9 @@ namespace starsky.foundation.storage.Storage
 				{
 					stream.Seek(0, SeekOrigin.Begin);
 				}
-				catch (NotSupportedException e)
+				catch (NotSupportedException)
 				{
-					// When using a webStream to save
-					_logger.LogInformation("[WriteStreamAsync] catch-ed NotSupportedException", e);
+					// HttpConnection.ContentLengthReadStream does not support this
 				}
 				
 				using (var fileStream = new FileStream(path, FileMode.Create, 

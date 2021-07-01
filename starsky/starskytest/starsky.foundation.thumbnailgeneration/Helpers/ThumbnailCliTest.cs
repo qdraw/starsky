@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			await thumbnailService.Thumbnail(new string[0]);
 			
-			Assert.AreEqual("Done!", fakeConsole.WrittenLines[0]);
+			Assert.AreEqual(0, fakeConsole.WrittenLines.Count);
 		}
 		
 		[TestMethod]

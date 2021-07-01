@@ -41,11 +41,13 @@
 <body>
 <div id="root"></div>
     <div class="technical-maintenance">
-        <h1>Service down</h1>
-        <p>
+        <h1 id="info-title">There are temporary problems </h1>
+        <p id="info-text">
             The application is not responding at the moment <br/>
             Starsky is temporarily unavailable. <br/>
             We apologize for the inconvenience.<br/><br/>
+        </p>
+        <p>
             <button class="btn btn--default" id="reload">Reload the application to try it again</button> <br/>
         </p>
     </div>
@@ -54,6 +56,17 @@
             window.location.reload()
         }
         document.querySelector("#reload").addEventListener("click",reload );
+
+        var isDutch = navigator.language.toLowerCase().startsWith("nl") === true;
+        
+        if (isDutch) {
+            document.querySelector("#info-title").innerHTML = "Er zijn tijdelijke problemen";
+            document.querySelector("#reload").innerHTML = "Herhaal de app om het opnieuw te proberen";
+            document.querySelector("#info-text").innerHTML = "De applicatie reageert momenteel niet <br/>\n" +
+                "             Starsky is tijdelijk niet beschikbaar. <br/>\n" +
+                "             Onze excuses voor het ongemak.<br/><br/> ";
+
+        }
     </script>
 
 </body>

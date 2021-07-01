@@ -11,8 +11,11 @@ namespace starskytest.starskySyncCli
 	public class StarskyCliTest
 	{
 		[TestMethod]
-		public void StarskyCliHelpVerbose()
+		public void SyncV1CliHelpVerbose()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var args = new List<string> {
 				"-h","-v"
 			}.ToArray();
@@ -22,8 +25,12 @@ namespace starskytest.starskySyncCli
         
 		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyCliHelpTest()
+		[Timeout(5000)]
+		public void SyncV1CliHelpTest()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var newImage = new CreateAnImage();
 			var args = new List<string> {"-h","-v","-c","test","-d", "InMemoryDatabase", 
 				"-b", newImage.BasePath, "--thumbnailtempfolder", 
@@ -35,8 +42,12 @@ namespace starskytest.starskySyncCli
         
 		[ExcludeFromCoverage]
 		[TestMethod]
-		public void StarskyCliTest_StarskyCliSubPathOneImage()
+		[Timeout(10000)]
+		public void SyncV1Cli_StarskyCliSubPathOneImage()
 		{
+			Environment.SetEnvironmentVariable("app__databaseType","InMemoryDatabase");
+			Environment.SetEnvironmentVariable("app__databaseConnection", "env_test");
+			
 			var newImage = new CreateAnImage();
 			var args = new List<string> {
 				"-v",
@@ -45,9 +56,11 @@ namespace starskytest.starskySyncCli
 				"-d", "InMemoryDatabase", 
 				"-b", newImage.BasePath, 
 				"--thumbnailtempfolder", newImage.BasePath, 
-				"--exiftoolpath", newImage.FullFilePath 
+				"--exiftoolpath", newImage.FullFilePath,
+				"-s", newImage.DbPath
 			}.ToArray();
 
+			Console.WriteLine("SyncV1Cli_StarskyCliSubPathOneImage -->");
 			Console.WriteLine("-->");
 			foreach (var arg in args)
 			{
@@ -56,6 +69,7 @@ namespace starskytest.starskySyncCli
             
 			Program.Main(args);
 			Console.WriteLine("<--");
+			Console.WriteLine("<-- SyncV1Cli_StarskyCliSubPathOneImage");
 			Assert.IsNotNull(args);
 		}
         
