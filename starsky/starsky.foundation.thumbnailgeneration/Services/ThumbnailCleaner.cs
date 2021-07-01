@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
@@ -25,15 +26,24 @@ namespace starsky.foundation.thumbnailgeneration.Services
 	
 		public void CleanAllUnusedFiles()
 		{
-			if (! _thumbnailStorage.ExistFolder("/") ) throw new DirectoryNotFoundException("Thumbnail folder not found");
+			if ( !_thumbnailStorage.ExistFolder("/") )
+			{
+				throw new DirectoryNotFoundException("Thumbnail folder not found");
+			}
 
-			var allThumbnailFiles = _thumbnailStorage.GetAllFilesInDirectory("/").ToList();
+			var allThumbnailFiles = _thumbnailStorage.GetAllFilesInDirectory(null).ToList();
 			if(_appSettings.Verbose) Console.WriteLine(allThumbnailFiles.Count);
 			
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{
 				var fileHash = Path.GetFileNameWithoutExtension(thumbnailFile);
-				var itemByHash = _query.GetSubPathByHash(fileHash);
+				var fileHashWithoutSize = Regex.Match(fileHash, "^.*(?=(@))").Value;
+				if ( string.IsNullOrEmpty(fileHashWithoutSize)  )
+				{
+					fileHashWithoutSize = fileHash;
+				}
+				
+				var itemByHash = _query.GetSubPathByHash(fileHashWithoutSize);
 				if (itemByHash != null ) continue;
 
 				_thumbnailStorage.FileDelete(fileHash);
