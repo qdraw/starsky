@@ -99,6 +99,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta),
 					ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta),
 					ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge),
+					ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta),
 					ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large),
 					ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge),
 				});
@@ -118,6 +119,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge)));
 			Assert.IsTrue(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large)));
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta)));
 			
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta)));

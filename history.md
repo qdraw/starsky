@@ -54,6 +54,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Start /api/thumbnail-generation in different thread instead of que (PR #380)
 - [x]   (Added) _Back-end_ Add API "/api/thumbnail/list-sizes/{HashHere}" to check if the multiple sizes are there 
 - [x]   (Change) _Back-end_ Update thumbnail starsky-tools to use list-sizes API
+- [x]   (Change) _Back-end_ Add support for multiple sizes for the Thumbnail cleaner 
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
