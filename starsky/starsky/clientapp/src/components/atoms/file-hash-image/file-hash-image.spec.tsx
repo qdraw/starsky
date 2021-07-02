@@ -274,7 +274,7 @@ describe("FileHashImage", () => {
     component.update();
 
     expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImage("hash", true)
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
   });
 
@@ -320,7 +320,7 @@ describe("FileHashImage", () => {
     component.update();
 
     expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImage("hash", true)
+      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
     expect(onResetCallbackSpy).toBeCalled();
   });

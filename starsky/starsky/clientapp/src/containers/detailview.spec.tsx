@@ -98,7 +98,7 @@ describe("DetailView", () => {
         image.simulate("load");
       });
       expect(image.props().src).toBe(
-        new UrlQuery().UrlThumbnailImage(
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
           contextProvider.state.fileIndexItem.fileHash,
           true
         )
