@@ -92,13 +92,21 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 			);
 
 			// Filter before send it to the up chain
-			var filteredAxiosResponses: Array<ISizes> = axiosResponses.filter(
+			let filteredAxiosResponses1: Array<ISizes> = axiosResponses.filter(
 				function (el) {
 					return el != undefined;
 				}
 			);
 
-			process.stdout.write("% " + filteredAxiosResponses.length + " %");
+			// Remove duplicate values to avoid issues that the file is deleted
+			let filteredAxiosResponses = Object.values(
+				filteredAxiosResponses1.reduce(
+					(acc, cur) => Object.assign(acc, { [cur.fileHash]: cur }),
+					{}
+				)
+			);
+
+			process.stdout.write("%` " + filteredAxiosResponses.length + " %");
 
 			// Up chain
 			const queueResizeChain = new TaskQueue(
@@ -111,7 +119,6 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 						await query.downloadBinarySingleFile(sizes.fileHash);
 						if (await query.resizeImage(sizes.fileHash)) {
 							await query.uploadTempFile(sizes.fileHash);
-							
 							// and clean it afterwards
 							query.deleteSourceTempFile(sizes.fileHash);
 							query.deleteTempFile(sizes.fileHash);

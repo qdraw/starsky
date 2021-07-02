@@ -307,7 +307,6 @@ export class Query {
 					process.stdout.write("†");
 					resolve(false);
 				}
-
 				jimp
 					.read(sourceFilePath)
 					.then((image) => {
@@ -320,7 +319,9 @@ export class Query {
 						});
 					})
 					.catch((err) => {
+						console.log("image failed: catched error -->");
 						console.error(err);
+						console.log("<--");
 						resolve(false);
 					});
 			});
