@@ -31,24 +31,23 @@ namespace starskytest.FakeMocks
 				sourceFilePath, profile);
 		}
 
-		public async Task ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,
+		public async Task<bool> ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			
-			await ResizeOverlayImageLarge(itemFileHash, outputFullFilePath, profile);
+			return await ResizeOverlayImageLarge(itemFileHash, outputFullFilePath, profile);
 		}
 
-		public async Task ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath,
+		public async Task<bool> ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
 			if ( itemFilePath == "/corrupt.jpg" || itemFilePath == "corrupt")
 			{
 				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes),
 					outputFullFilePath);
-				return;
+				return true;
 			}
 			
-			await _storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
+			return await _storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
 				outputFullFilePath);
 		}
 	}

@@ -9,7 +9,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 		string FilePathOverlayImage(string outputParentFullFilePathFolder,
 			string sourceFilePath, AppSettingsPublishProfiles profile);
 
-		Task ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile);
-		Task ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile);
+		Task<bool> ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile);
+		Task<bool> ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile);
 	}
 }
