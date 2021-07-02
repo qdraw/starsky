@@ -270,6 +270,24 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
+		public async Task Thumbnail_IgnoreAtInInF()
+		{
+			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
+			{
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta),
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.Small),
+				ThumbnailNameHelper.Combine("test", ThumbnailSize.Large)
+			});
+			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+
+			await controller.Thumbnail("test@2000", true, false, false);
+			
+			controller.Response.Headers.TryGetValue("x-image-size", out var value ); 
+			Assert.AreEqual(ThumbnailSize.Large.ToString(), value.ToString());
+		}
+		
+		[TestMethod]
 		public async Task Thumbnail_GetExtraLargeSecondChoiceResult()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>

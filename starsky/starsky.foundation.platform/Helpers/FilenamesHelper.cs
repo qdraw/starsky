@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 
 namespace starsky.foundation.platform.Helpers
@@ -45,7 +46,8 @@ namespace starsky.foundation.platform.Helpers
 		public static string GetFileNameWithoutExtension(string filePath)
 		{
 			var fileName = GetFileName(filePath);
-			return  Regex.Replace(fileName, "\\.[a-zA-Z0-9]{1,4}$", string.Empty );
+			return  Regex.Replace(fileName, "\\.[a-zA-Z0-9]{1,4}$", string.Empty, 
+				RegexOptions.None, TimeSpan.FromSeconds(1) );
 		}
 		
 		/// <summary>

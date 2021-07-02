@@ -263,7 +263,12 @@ export class UrlQuery {
         ".jpg?issingleitem=true&extraLarge=false"
       );
     }
-    return this.UrlThumbnailImage(fileHash, true);
+    return (
+      this.prefix +
+      "/api/thumbnail/" +
+      fileHash +
+      "@2000.jpg?issingleitem=true&extraLarge=true"
+    );
   };
 
   public UrlThumbnailImage = (

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -199,6 +200,11 @@ namespace starsky.Controllers
 
 	        // For serving jpeg files
 	        f = FilenamesHelper.GetFileNameWithoutExtension(f);
+	        
+	        // Get the text before at (@) so replace @2000 with nothing to match  fileHash
+	        var beforeAt = Regex.Match(f, ".*(?=@)", RegexOptions.None, 
+		        TimeSpan.FromSeconds(1)).Value;
+	        if ( !string.IsNullOrEmpty(beforeAt) ) f = beforeAt;
 	        
 	        // Restrict the fileHash to letters and digits only
 	        // I/O function calls should not be vulnerable to path injection attacks
