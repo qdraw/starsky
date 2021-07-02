@@ -37,7 +37,7 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				if ( !status )
 				{
 					// blank 1px x 1px image
-					base64ImageArray[i] = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
+					base64ImageArray[i] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAA" +
 					                      "C1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 					// no need to dispose here
 					continue;
