@@ -90,6 +90,7 @@
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="FakeCreateAn\CreateAnImageCurrupt" />
         <Folder Include="starsky.feature.health\Helpers" />
     </ItemGroup>
     <ItemGroup>
@@ -98,6 +99,11 @@
         </Content>
         <None Remove="FakeCreateAn\CreateAnImageThumbnail\poppy.jpg" />
         <Content Include="FakeCreateAn\CreateAnImageWithThumbnail\poppy.jpg">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Compile Remove="FakeCreateAn\CreateAnImageCorrupt\CreateAnImageWithThumbnail.cs" />
+        <None Remove="FakeCreateAn\CreateAnImageCorrupt\corrupt.jpg" />
+        <Content Include="FakeCreateAn\CreateAnImageCorrupt\corrupt.jpg">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
