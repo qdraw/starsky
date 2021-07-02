@@ -302,6 +302,11 @@ export class Query {
 		targetPath: string
 	): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
+			if (!fs.existsSync(sourceFilePath)) {
+				console.log(`file does not exist ${sourceFilePath} size: ${size}`);
+				resolve(false);
+			}
+
 			jimp
 				.read(sourceFilePath)
 				.then((image) => {
