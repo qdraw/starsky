@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -10,9 +11,11 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Exceptions;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -28,7 +31,7 @@ namespace starsky.feature.webhtmlpublish.Services
     public class WebHtmlPublishService : IWebHtmlPublishService
     {
         private readonly AppSettings _appSettings;
-        private readonly IExifTool _exifToolHostStorage;
+        private readonly IExifTool _exifTool;
 	    private readonly IStorage _subPathStorage;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly IStorage _hostFileSystemStorage;
@@ -42,7 +45,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IWebLogger _logger;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
-			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifToolHostStorage, 
+			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool, 
 		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
 	    {
 		    _publishPreflight = publishPreflight;
@@ -50,7 +53,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
             _appSettings = appSettings;
-            _exifToolHostStorage = exifToolHostStorage;
+            _exifTool = exifTool;
 		    _console = console;
 		    _overlayImage = overlayImage;
 		    _publishManifest = new PublishManifest(_hostFileSystemStorage, new PlainTextFileHelper());
@@ -238,28 +241,19 @@ namespace starsky.feature.webhtmlpublish.Services
 		    {
 			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, 
 				    item.FilePath, profile);
-                        
-			    // for less than 1000px
-			    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
-				    Combine(item.FileHash, ThumbnailSize.Large)))
+
+			    async Task<bool> ResizerLocal()
 			    {
-				    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+				    return await Resizer(outputPath, profile, item);
 			    }
-			    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
-				    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
+
+			    try
 			    {
-				    _overlayImage.ResizeOverlayImageThumbnails(
-					    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
+				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(3), 2);
 			    }
-			    else
+			    catch ( AggregateException e )
 			    {
-				    // Thumbs are 2000 px (and larger)
-				    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
-			    }
-                            
-			    if ( profile.MetaData )
-			    {
-				    await MetaData(item, outputPath);
+				    _logger.LogError("[ResizerLocal] catch-ed exception: ", e);
 			    }
 		    }
 
@@ -268,8 +262,45 @@ namespace starsky.feature.webhtmlpublish.Services
 			    item => profile.Copy);
 	    }
 
+	    private async Task<bool> Resizer(string outputPath, AppSettingsPublishProfiles profile, 
+		    FileIndexItem item)
+	    {
+		    // for less than 1000px
+		    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+			    Combine(item.FileHash, ThumbnailSize.Large)))
+		    {
+			    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+		    }
+		    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+			    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
+		    {
+			    _overlayImage.ResizeOverlayImageThumbnails(
+				    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
+		    }
+		    else if ( _subPathStorage.ExistFile(item.FilePath))
+		    {
+			    // Thumbs are 2000 px (and larger)
+			    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
+		    }
+		    
+		    if ( profile.MetaData )
+		    {
+			    await MetaData(item, outputPath);
+		    }
+		    			    
+		    var imageFormat = ExtensionRolesHelper.GetImageFormat(_hostFileSystemStorage.ReadStream(outputPath,160));
+		    if ( imageFormat == ExtensionRolesHelper.ImageFormat.jpg )
+			    return true;
+		    
+		    _hostFileSystemStorage.FileDelete(outputPath);
+		    
+		    throw new DecodingException("[WebHtmlPublishService] image output is not valid");
+	    }
+
 	    private async Task MetaData(FileIndexItem item, string outputPath)
 	    {
+		    if ( !_subPathStorage.ExistFile(item.FilePath) )  return;
+		    
 		    // Write the metadata to the new created file
 		    var comparedNames = FileIndexCompareHelper.Compare(
 			    new FileIndexItem(), item);
@@ -282,7 +313,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
 
 		    // Write it back
-		    await new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
+		    await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			    _thumbnailStorage, null).UpdateAsync(item, 
 			    new List<string> {outputPath}, comparedNames, 
 			    false, false);

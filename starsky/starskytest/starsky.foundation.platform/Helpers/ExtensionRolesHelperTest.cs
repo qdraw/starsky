@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
 using starskytest.FakeCreateAn;
+using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 
 namespace starskytest.starsky.foundation.platform.Helpers
 {
@@ -70,6 +71,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		{
 			var fileType = ExtensionRolesHelper.GetImageFormat(new byte[] {255, 216, 255, 225});
 			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.jpg);
+		}
+		
+		[TestMethod]
+		public void Files_GetImageFormat_corrupt_Test()
+		{
+			var fileType = ExtensionRolesHelper.GetImageFormat(new CreateAnImageCorrupt().Bytes);
+			Assert.AreEqual(fileType,ExtensionRolesHelper.ImageFormat.unknown);
 		}
         
 		[TestMethod]
