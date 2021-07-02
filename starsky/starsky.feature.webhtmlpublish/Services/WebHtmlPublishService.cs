@@ -10,6 +10,7 @@ using starsky.feature.webhtmlpublish.ViewModels;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
@@ -238,34 +239,51 @@ namespace starsky.feature.webhtmlpublish.Services
 		    {
 			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, 
 				    item.FilePath, profile);
-                        
-			    // for less than 1000px
-			    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
-				    Combine(item.FileHash, ThumbnailSize.Large)))
-			    {
-				    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
-			    }
-			    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
-				    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
-			    {
-				    _overlayImage.ResizeOverlayImageThumbnails(
-					    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
-			    }
-			    else
-			    {
-				    // Thumbs are 2000 px (and larger)
-				    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
-			    }
-                            
-			    if ( profile.MetaData )
-			    {
-				    await MetaData(item, outputPath);
-			    }
+
+			    if ( await Resizer(outputPath, profile, item) ) continue;
+			    
+			    await Task.Delay(1000);
+			    var secondResult = await Resizer(outputPath, profile, item);
+			    _logger.LogError($"[GenerateJpeg] failed and retry {item.FilePath} with result: {secondResult}");
 		    }
 
 		    return fileIndexItemsList.ToDictionary(item =>
 			    _overlayImage.FilePathOverlayImage(item.FilePath, profile), 
 			    item => profile.Copy);
+	    }
+
+	    private async Task<bool> Resizer(string outputPath, AppSettingsPublishProfiles profile, 
+		    FileIndexItem item)
+	    {
+		    // for less than 1000px
+		    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+			    Combine(item.FileHash, ThumbnailSize.Large)))
+		    {
+			    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+		    }
+		    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
+			    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
+		    {
+			    _overlayImage.ResizeOverlayImageThumbnails(
+				    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
+		    }
+		    else if ( _subPathStorage.ExistFile(item.FilePath))
+		    {
+			    // Thumbs are 2000 px (and larger)
+			    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
+		    }
+		    else
+		    {
+			    return false;
+		    }
+		    
+		    if ( profile.MetaData )
+		    {
+			    await MetaData(item, outputPath);
+		    }
+		    			    
+		    var imageFormat = ExtensionRolesHelper.GetImageFormat(_hostFileSystemStorage.ReadStream(outputPath,160));
+		    return imageFormat == ExtensionRolesHelper.ImageFormat.jpg;
 	    }
 
 	    private async Task MetaData(FileIndexItem item, string outputPath)
