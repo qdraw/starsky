@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
@@ -30,23 +31,24 @@ namespace starskytest.FakeMocks
 				sourceFilePath, profile);
 		}
 
-		public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,
+		public async Task ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			ResizeOverlayImageLarge(itemFileHash, outputFullFilePath, profile);
+			
+			await ResizeOverlayImageLarge(itemFileHash, outputFullFilePath, profile);
 		}
 
-		public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath,
+		public async Task ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
 			if ( itemFilePath == "/corrupt.jpg" || itemFilePath == "corrupt")
 			{
-				_storage.WriteStream(new MemoryStream(new CreateAnImageCorrupt().Bytes),
+				await _storage.WriteStreamAsync(new MemoryStream(new CreateAnImageCorrupt().Bytes),
 					outputFullFilePath);
 				return;
 			}
 			
-			_storage.WriteStream(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
+			await _storage.WriteStreamAsync(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
 				outputFullFilePath);
 		}
 	}
