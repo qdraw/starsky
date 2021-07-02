@@ -233,7 +233,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    }
 
 	    internal async Task<Dictionary<string, bool>> GenerateJpeg(AppSettingsPublishProfiles profile, 
-		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder)
+		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder, int delay = 10)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
 
@@ -249,10 +249,14 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			    try
 			    {
-				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(3), 2);
+				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(delay), 4);
 			    }
 			    catch ( AggregateException e )
 			    {
+				    foreach ( var exception in e.InnerExceptions )
+				    {
+					    _logger.LogError("[ResizerLocal] " + exception.Message, exception);
+				    }
 				    _logger.LogError("[ResizerLocal] catch-ed exception: ", e);
 			    }
 		    }
