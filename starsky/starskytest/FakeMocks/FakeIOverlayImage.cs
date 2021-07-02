@@ -1,9 +1,11 @@
+using System.IO;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 
 namespace starskytest.FakeMocks
 {
@@ -31,14 +33,20 @@ namespace starskytest.FakeMocks
 		public void ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			_storage.WriteStream(new PlainTextFileHelper().StringToStream("not 0 bytes"),
-				outputFullFilePath);
+			ResizeOverlayImageLarge(itemFileHash, outputFullFilePath, profile);
 		}
 
 		public void ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath,
 			AppSettingsPublishProfiles profile)
 		{
-			_storage.WriteStream(new PlainTextFileHelper().StringToStream("not 0 bytes"),
+			if ( itemFilePath == "/corrupt.jpg" || itemFilePath == "corrupt")
+			{
+				_storage.WriteStream(new MemoryStream(new CreateAnImageCorrupt().Bytes),
+					outputFullFilePath);
+				return;
+			}
+			
+			_storage.WriteStream(new MemoryStream(FakeCreateAn.CreateAnImageNoExif.Bytes),
 				outputFullFilePath);
 		}
 	}

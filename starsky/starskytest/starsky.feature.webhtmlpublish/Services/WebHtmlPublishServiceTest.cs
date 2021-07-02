@@ -314,6 +314,99 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				},
 				Verbose = true
 			};
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string>{"fileHash"}, 		
+				new List<byte[]>{CreateAnImage.Bytes});
+			
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
+					new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper(), new FakeIWebLogger());
+			
+			var profiles = new PublishPreflight(appSettings, 
+				new ConsoleWrapper()).GetPublishProfileName("default");
+
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(), 
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "fileHash"}},
+				Path.DirectorySeparatorChar.ToString());
+			
+			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+		}
+		
+		
+		[TestMethod]
+		public async Task GenerateJpeg_Thumbnail_CorruptOutput_Test()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{
+						"default",
+						new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								Path = "index.html",
+								MetaData = true,
+							}
+						}
+					}
+				},
+				Verbose = true
+			};
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string>{"corrupt"}, 		
+				new List<byte[]>{CreateAnImage.Bytes});
+			
+			var selectorStorage = new FakeSelectorStorage(storage);
+			
+			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
+					new ConsoleWrapper()), selectorStorage, appSettings,
+				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+				new ConsoleWrapper(), new FakeIWebLogger());
+			
+			var profiles = new PublishPreflight(appSettings, 
+				new ConsoleWrapper()).GetPublishProfileName("default");
+
+			var generateJpeg = await service.GenerateJpeg(profiles.FirstOrDefault(), 
+				new List<FileIndexItem> {new FileIndexItem("/test.jpg"){FileHash = "fileHash"}},
+				Path.DirectorySeparatorChar.ToString());
+			
+			// should not output file due corrupt output of image generation
+			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
+			
+			// removed in script due corrupt output
+			Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+		}
+		
+		[TestMethod]
+		public async Task GenerateJpeg_Large_NotFound_Test()
+		{
+			var appSettings = new AppSettings
+			{
+				PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
+				{
+					{
+						"default",
+						new List<AppSettingsPublishProfiles>
+						{
+							new AppSettingsPublishProfiles
+							{
+								ContentType = TemplateContentType.Jpeg,
+								Path = "index.html",
+								MetaData = false,
+								SourceMaxWidth = 1001
+							}
+						}
+					}
+				},
+				Verbose = true
+			};
 			var storage = new FakeIStorage();
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
@@ -330,7 +423,7 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				Path.DirectorySeparatorChar.ToString());
 			
 			Assert.IsTrue(generateJpeg.ContainsKey("test.jpg"));
-			Assert.IsTrue(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
+			Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.jpg"));
 		}
 		
 		[TestMethod]
@@ -356,7 +449,10 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 				},
 				Verbose = true
 			};
-			var storage = new FakeIStorage();
+			var storage = new FakeIStorage(new List<string>(),
+				new List<string>{"/test.jpg"}, 		
+				new List<byte[]>{CreateAnImage.Bytes});
+
 			var selectorStorage = new FakeSelectorStorage(storage);
 			
 			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, 
