@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,6 +15,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
+using starsky.foundation.storage.Exceptions;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -29,7 +31,7 @@ namespace starsky.feature.webhtmlpublish.Services
     public class WebHtmlPublishService : IWebHtmlPublishService
     {
         private readonly AppSettings _appSettings;
-        private readonly IExifTool _exifToolHostStorage;
+        private readonly IExifTool _exifTool;
 	    private readonly IStorage _subPathStorage;
 	    private readonly IStorage _thumbnailStorage;
 	    private readonly IStorage _hostFileSystemStorage;
@@ -43,7 +45,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    private readonly IWebLogger _logger;
 
 	    public WebHtmlPublishService(IPublishPreflight publishPreflight, ISelectorStorage 
-			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifToolHostStorage, 
+			    selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool, 
 		    IOverlayImage overlayImage, IConsole console, IWebLogger logger)
 	    {
 		    _publishPreflight = publishPreflight;
@@ -51,7 +53,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		    _hostFileSystemStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
             _appSettings = appSettings;
-            _exifToolHostStorage = exifToolHostStorage;
+            _exifTool = exifTool;
 		    _console = console;
 		    _overlayImage = overlayImage;
 		    _publishManifest = new PublishManifest(_hostFileSystemStorage, new PlainTextFileHelper());
@@ -240,11 +242,19 @@ namespace starsky.feature.webhtmlpublish.Services
 			    var outputPath = _overlayImage.FilePathOverlayImage(outputParentFullFilePathFolder, 
 				    item.FilePath, profile);
 
-			    if ( await Resizer(outputPath, profile, item) ) continue;
-			    
-			    await Task.Delay(1000);
-			    var secondResult = await Resizer(outputPath, profile, item);
-			    _logger.LogError($"[GenerateJpeg] failed and retry {item.FilePath} with result: {secondResult}");
+			    async Task<bool> ResizerLocal()
+			    {
+				    return await Resizer(outputPath, profile, item);
+			    }
+
+			    try
+			    {
+				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(3), 2);
+			    }
+			    catch ( AggregateException e )
+			    {
+				    _logger.LogError("[ResizerLocal] catch-ed exception: ", e);
+			    }
 		    }
 
 		    return fileIndexItemsList.ToDictionary(item =>
@@ -272,10 +282,6 @@ namespace starsky.feature.webhtmlpublish.Services
 			    // Thumbs are 2000 px (and larger)
 			    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
 		    }
-		    else
-		    {
-			    return false;
-		    }
 		    
 		    if ( profile.MetaData )
 		    {
@@ -283,11 +289,18 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
 		    			    
 		    var imageFormat = ExtensionRolesHelper.GetImageFormat(_hostFileSystemStorage.ReadStream(outputPath,160));
-		    return imageFormat == ExtensionRolesHelper.ImageFormat.jpg;
+		    if ( imageFormat == ExtensionRolesHelper.ImageFormat.jpg )
+			    return true;
+		    
+		    _hostFileSystemStorage.FileDelete(outputPath);
+		    
+		    throw new DecodingException("[WebHtmlPublishService] image output is not valid");
 	    }
 
 	    private async Task MetaData(FileIndexItem item, string outputPath)
 	    {
+		    if ( !_subPathStorage.ExistFile(item.FilePath) )  return;
+		    
 		    // Write the metadata to the new created file
 		    var comparedNames = FileIndexCompareHelper.Compare(
 			    new FileIndexItem(), item);
@@ -300,7 +313,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    }
 
 		    // Write it back
-		    await new ExifToolCmdHelper(_exifToolHostStorage, _hostFileSystemStorage,
+		    await new ExifToolCmdHelper(_exifTool, _hostFileSystemStorage,
 			    _thumbnailStorage, null).UpdateAsync(item, 
 			    new List<string> {outputPath}, comparedNames, 
 			    false, false);

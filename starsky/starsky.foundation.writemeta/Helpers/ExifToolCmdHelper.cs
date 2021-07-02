@@ -215,6 +215,7 @@ namespace starsky.foundation.writemeta.Helpers
 			var fileHashes = new List<string>();
 			foreach ( var path in subPathsList.Where(path => _iStorage.ExistFile(path)) )
 			{
+				// to rename to filename of the thumbnail to the new hash
 				if (!renameThumbnail )
 				{
 					await _exifTool.WriteTagsAsync(path, command);
