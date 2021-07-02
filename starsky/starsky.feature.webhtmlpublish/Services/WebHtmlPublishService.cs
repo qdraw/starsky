@@ -253,11 +253,11 @@ namespace starsky.feature.webhtmlpublish.Services
 			    }
 			    catch ( AggregateException e )
 			    {
+				    _logger.LogError("[ResizerLocal] Skip due errors: (catch-ed exception) " + item.FilePath);
 				    foreach ( var exception in e.InnerExceptions )
 				    {
 					    _logger.LogError("[ResizerLocal] " + exception.Message, exception);
 				    }
-				    _logger.LogError("[ResizerLocal] catch-ed exception: ", e);
 			    }
 		    }
 
