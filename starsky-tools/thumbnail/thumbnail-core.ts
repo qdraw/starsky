@@ -302,26 +302,28 @@ export class Query {
 		targetPath: string
 	): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
-			if (!fs.existsSync(sourceFilePath)) {
-				console.log(`file does not exist ${sourceFilePath} size: ${size}`);
-				resolve(false);
-			}
-
-			jimp
-				.read(sourceFilePath)
-				.then((image) => {
-					image.resize(size, jimp.AUTO);
-					image.quality(80);
-
-					image.write(targetPath, () => {
-						process.stdout.write("≈");
-						resolve(true);
-					});
-				})
-				.catch((err) => {
-					console.error(err);
+			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
+				if (err !== null) {
+					process.stdout.write("†");
 					resolve(false);
-				});
+				}
+
+				jimp
+					.read(sourceFilePath)
+					.then((image) => {
+						image.resize(size, jimp.AUTO);
+						image.quality(80);
+
+						image.write(targetPath, () => {
+							process.stdout.write("≈");
+							resolve(true);
+						});
+					})
+					.catch((err) => {
+						console.error(err);
+						resolve(false);
+					});
+			});
 		});
 	}
 
