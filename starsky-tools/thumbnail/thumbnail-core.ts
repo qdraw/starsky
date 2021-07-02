@@ -232,6 +232,11 @@ export class Query {
 
 		return await axios(downloadFileRequestOptions)
 			.then(function (response: AxiosResponse) {
+				if (!response) {
+					console.log("download failed for: " + hashItem);
+					return defaultFail;
+				}
+
 				if (
 					response.status !== 210 &&
 					response.status !== 202 &&
@@ -256,11 +261,13 @@ export class Query {
 				return defaultFail;
 			})
 			.catch(function (err: AxiosError) {
-				console.log(
-					"checkIfSingleFileNeedsToBeDownloaded ==> ",
-					err.response.status,
-					err.config.url
-				);
+				let errorMessage =
+					"checkIfSingleFileNeedsToBeDownloaded ==> " + err.config.url + " - ";
+				if (err.response) {
+					errorMessage += err.response.status;
+				}
+				console.log(errorMessage);
+
 				return defaultFail;
 			});
 	}
