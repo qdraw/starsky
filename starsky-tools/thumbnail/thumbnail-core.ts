@@ -331,7 +331,7 @@ export class Query {
 				jimp
 					.read(sourceFilePath)
 					.then((image) => {
-						image.resize(size, jimp.AUTO);
+						image.resize(size, jimp.AUTO, jimp.RESIZE_BICUBIC);
 						image.quality(80);
 
 						image.write(targetPath, () => {
