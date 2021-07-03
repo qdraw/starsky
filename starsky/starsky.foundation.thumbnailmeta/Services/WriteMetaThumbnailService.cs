@@ -48,13 +48,13 @@ namespace starsky.foundation.metathumbnail.Services
 						smallImageHeight, sourceWidth, sourceHeight);
 
 					smallImage.Mutate(
-						i => i.Resize(smallImageWidth, smallImageHeight)
+						i => i.Resize(smallImageWidth, smallImageHeight, KnownResamplers.Lanczos3)
 							.Crop(new Rectangle(result.DestX, result.DestY, result.DestWidth, result.DestHeight)));
 
 					var larger = (int) Math.Round(result.DestWidth * 1.2, 0);
 
 					smallImage.Mutate(
-						i => i.Resize(larger,0,KnownResamplers.Lanczos3));
+						i => i.Resize(larger,0, KnownResamplers.Lanczos3));
 
 					var rotate = RotateEnumToDegrees(rotation);
 					smallImage.Mutate(

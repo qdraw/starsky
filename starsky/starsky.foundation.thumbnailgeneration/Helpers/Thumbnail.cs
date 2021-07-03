@@ -292,7 +292,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 						
 			image.Mutate(x => x.AutoOrient());
 			image.Mutate(x => x
-				.Resize(width, height)
+				.Resize(width, height, KnownResamplers.Lanczos3)
 			);
 		}
 
@@ -359,7 +359,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 				using ( var stream = new MemoryStream() )
 				{
 					image.Mutate(x => x
-						.Resize(width, height)
+						.Resize(width, height, KnownResamplers.Lanczos3)
 					);
 					image.Mutate(x => x
 						.Rotate(rotateMode));

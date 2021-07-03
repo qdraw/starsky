@@ -132,11 +132,11 @@ namespace starsky.feature.webhtmlpublish.Services
 			sourceImage.Mutate(x => x.AutoOrient());
 
 			sourceImage.Mutate(x => x
-				.Resize(profile.SourceMaxWidth, 0)
+				.Resize(profile.SourceMaxWidth, 0, KnownResamplers.Lanczos3)
 			);
 
 			overlayImage.Mutate(x => x
-				.Resize(profile.OverlayMaxWidth, 0)
+				.Resize(profile.OverlayMaxWidth, 0, KnownResamplers.Lanczos3)
 			);
 
 			int xPoint = sourceImage.Width - overlayImage.Width;
