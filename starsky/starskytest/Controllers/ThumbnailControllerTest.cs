@@ -103,7 +103,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_NonExistingFile_API_Test()
+		public void Thumbnail_NonExistingFile_API_Test()
 		{
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -166,7 +166,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_IgnoreRawFile()
+		public void Thumbnail_IgnoreRawFile()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
@@ -183,7 +183,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_ShowOriginalImage_API_Test()
+		public void Thumbnail_ShowOriginalImage_API_Test()
 		{
 			var createAnImage = InsertSearchData();
 			var storage = ArrangeStorage();
@@ -203,7 +203,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Thumbnail_IsMissing_ButOriginalExist_butNoIsSingleItemFlag_API_Test()
+		public void Thumbnail_IsMissing_ButOriginalExist_butNoIsSingleItemFlag_API_Test()
 		{
 			// Photo exist in database but " + "isSingleItem flag is Missing
 			var createAnImage = InsertSearchData();
@@ -304,7 +304,7 @@ namespace starskytest.Controllers
 		}
 				
 		[TestMethod]
-		public async Task ByZoomFactor_NonExistingFile_API_Test()
+		public void ByZoomFactor_NonExistingFile_API_Test()
 		{
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage());
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -314,7 +314,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task ByZoomFactor_InputBadRequest()
+		public void ByZoomFactor_InputBadRequest()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
@@ -324,7 +324,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task ByZoomFactor_IgnoreRawFile()
+		public void ByZoomFactor_IgnoreRawFile()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
