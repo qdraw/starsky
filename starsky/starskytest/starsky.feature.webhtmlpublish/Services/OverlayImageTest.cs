@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Helpers;
@@ -54,34 +55,34 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void ResizeOverlayImageThumbnails_null()
+		public async Task ResizeOverlayImageThumbnails_null()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings());
 			
-			overlayImage.ResizeOverlayImageThumbnails(null,null, new AppSettingsPublishProfiles());
+			await overlayImage.ResizeOverlayImageThumbnails(null,null, new AppSettingsPublishProfiles());
 			// > ArgumentNullException
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void ResizeOverlayImageLarge_null_exception()
+		public async Task ResizeOverlayImageLarge_null_exception()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings());
 			
-			overlayImage.ResizeOverlayImageLarge(null,null, new AppSettingsPublishProfiles());
+			await overlayImage.ResizeOverlayImageLarge(null,null, new AppSettingsPublishProfiles());
 			// > ArgumentNullException
 		}
 		
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
-		public void ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
+		public async Task ResizeOverlayImageThumbnails_itemFileHash_Not_Found()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageThumbnails("non-exist.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1
@@ -91,12 +92,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
-		public void ResizeOverlayImageThumbnails_overlay_image_missing()
+		public async Task ResizeOverlayImageThumbnails_overlay_image_missing()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageThumbnails("test.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1
@@ -106,12 +107,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
-		public void ResizeOverlayImageLarge_File_Not_Found()
+		public async Task ResizeOverlayImageLarge_File_Not_Found()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
+			await overlayImage.ResizeOverlayImageLarge("non-exist.jpg", 
 				"/out.jpg", new AppSettingsPublishProfiles
 				{
 					SourceMaxWidth = 100,
@@ -122,12 +123,12 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 		
 		[TestMethod]
 		[ExpectedException(typeof(FileNotFoundException))]
-		public void ResizeOverlayImageLarge_overlay_image_missing()
+		public async Task ResizeOverlayImageLarge_overlay_image_missing()
 		{
 			var overlayImage =
 				new OverlayImage(_selectorStorage, new AppSettings{ ThumbnailTempFolder = "/"});
 			
-			overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg", new AppSettingsPublishProfiles
+			await overlayImage.ResizeOverlayImageLarge("/test.jpg", "/out.jpg", new AppSettingsPublishProfiles
 			{
 				SourceMaxWidth = 100,
 				OverlayMaxWidth = 1

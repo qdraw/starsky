@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.Services;
@@ -41,7 +44,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		public void ThumbnailCleanerTest_DirectoryNotFoundException()
 		{
 			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
-			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings).CleanAllUnusedFiles();
+			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings, new FakeIWebLogger()).CleanAllUnusedFiles();
 		}
 		
 		[TestMethod]
@@ -73,7 +76,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			};
 			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 			
-			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings);
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings, new FakeIWebLogger());
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
@@ -109,7 +112,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				new FileIndexItem("/test.jpg"){FileHash = "exist"}
 			});
 			
-			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, new AppSettings());
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+				new AppSettings(), new FakeIWebLogger());
 
 			thumbnailCleaner.CleanAllUnusedFiles();
 
@@ -130,6 +134,27 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)));
 			Assert.IsFalse(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge)));
+		}
+	
+		[TestMethod]
+		public void ThumbnailCleanerTest_CatchException()
+		{
+			var fakeStorage = new FakeIStorage(new List<string> {"/"},
+				new List<string>
+				{
+					ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large),
+				});
+
+			var fakeQuery = new FakeIQueryException(new Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException());
+			
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+				new AppSettings(), new FakeIWebLogger());
+
+			thumbnailCleaner.CleanAllUnusedFiles();
+
+			// the file is there even the connection is crashed
+			Assert.IsTrue(fakeStorage.ExistFile(
+				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large)));
 		}
 
 	}

@@ -273,18 +273,18 @@ namespace starsky.feature.webhtmlpublish.Services
 		    if (profile.SourceMaxWidth <= 1000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
 			    Combine(item.FileHash, ThumbnailSize.Large)))
 		    {
-			    _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
+			    await _overlayImage.ResizeOverlayImageThumbnails(item.FileHash, outputPath, profile);
 		    }
 		    else if ( profile.SourceMaxWidth <= 2000 && _thumbnailStorage.ExistFile(ThumbnailNameHelper.
 			    Combine(item.FileHash, ThumbnailSize.ExtraLarge)) )
 		    {
-			    _overlayImage.ResizeOverlayImageThumbnails(
+			    await _overlayImage.ResizeOverlayImageThumbnails(
 				    ThumbnailNameHelper.Combine(item.FileHash, ThumbnailSize.ExtraLarge), outputPath, profile);
 		    }
 		    else if ( _subPathStorage.ExistFile(item.FilePath))
 		    {
 			    // Thumbs are 2000 px (and larger)
-			    _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
+			    await _overlayImage.ResizeOverlayImageLarge(item.FilePath, outputPath, profile);
 		    }
 		    
 		    if ( profile.MetaData )
