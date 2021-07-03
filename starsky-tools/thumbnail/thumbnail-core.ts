@@ -298,6 +298,20 @@ export class Query {
 					writer.on("error", resolve);
 				})
 				.catch(function (thrown) {
+					let statusCode = 0;
+					if (thrown && thrown.response && thrown.response.status) {
+						statusCode = thrown.response.status;
+					}
+					const errorMessage =
+						"download has failed: " + thrown.config.url + " " + statusCode;
+					console.log(errorMessage);
+					if (statusCode === 403 || statusCode === 502) {
+						process.stdout.write("~ µ ~");
+						setTimeout(() => {
+							resolve(false);
+						}, 15000);
+						return;
+					}
 					resolve(false);
 				});
 		});
@@ -552,10 +566,10 @@ export class Query {
 							"upload failed: " + thrown.config.url + " " + statusCode;
 						console.log(errorMessage);
 						if (statusCode === 405 || statusCode === 502) {
-							console.log("¢");
+							process.stdout.write("~ ¢ ~");
 							setTimeout(() => {
 								next(false);
-							}, 5000);
+							}, 15000);
 							return;
 						}
 						next(false);

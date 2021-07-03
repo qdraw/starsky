@@ -166,7 +166,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
               callback={setPublishProfileName}
             ></Select>
             <button
-              disabled={!itemName}
+              disabled={!itemName || !publishProfileName}
               onClick={postZip}
               className="btn btn--default"
               data-test="publish"
