@@ -70,7 +70,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_InputBadRequest()
+		public void Thumbnail_InputBadRequest()
 		{
 			var storageSelector = new FakeSelectorStorage(ArrangeStorage());
 			
@@ -240,7 +240,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public async Task Thumbnail1_NonExistingFile_API_Test()
+		public void Thumbnail1_NonExistingFile_API_Test()
 		{
 			var storage = ArrangeStorage();
 			var controller = new ThumbnailController(_query,new FakeSelectorStorage(storage));
@@ -252,7 +252,7 @@ namespace starskytest.Controllers
 		
 				
 		[TestMethod]
-		public async Task Thumbnail_GetLargeFirstChoiceResult()
+		public void Thumbnail_GetLargeFirstChoiceResult()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
@@ -270,7 +270,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_IgnoreAtInInF()
+		public void Thumbnail_IgnoreAtInInF()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
@@ -288,7 +288,7 @@ namespace starskytest.Controllers
 		}
 		
 		[TestMethod]
-		public async Task Thumbnail_GetExtraLargeSecondChoiceResult()
+		public void Thumbnail_GetExtraLargeSecondChoiceResult()
 		{
 			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>
 			{
