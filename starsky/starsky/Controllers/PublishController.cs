@@ -87,6 +87,8 @@ namespace starsky.Controllers
 				if ( !force ) return Conflict($"name {slugItemName} exist");
 				ForceCleanPublishFolderAndZip(location);
 			}
+			
+			// todo: check if overlay image path: WebHtmlPublish/EmbeddedViews/default.png or something else exists
 
 			// Creating Publish is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
