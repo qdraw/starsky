@@ -57,7 +57,7 @@ namespace starsky.Controllers
 			// Creating a zip is a background task
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				_export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
+				await _export.CreateZip(fileIndexResultsList, thumbnail, zipOutputName);
 			});
 			
 			// for the rest api
@@ -77,7 +77,7 @@ namespace starsky.Controllers
 		[HttpGet("/api/export/zip/{f}.zip")]
 		[ProducesResponseType(200)] // "zip file"
 		[ProducesResponseType(206)] // "Not Ready"
-		public async Task<IActionResult> Status(string f, bool json = false)
+		public ActionResult Status(string f, bool json = false)
 		{
 			var (status, sourceFullPath) = _export.StatusIsReady(f);
 			switch ( status )

@@ -332,7 +332,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 			}
 
 			await image.SaveAsync(outputStream, new JpegEncoder{
-				Quality = 100,
+				Quality = 90,
 			});
 		}
 		
@@ -340,7 +340,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		/// Rotate an image, by rotating the pixels and resize the thumbnail.Please do not apply any orientation exif-tag on this file
 		/// </summary>
 		/// <param name="fileHash"></param>
-		/// <param name="orientation">-1 > Rotage -90degrees, anything else 90 degrees</param>
+		/// <param name="orientation">-1 > Rotate -90degrees, anything else 90 degrees</param>
 		/// <param name="width">to resize, default 1000</param>
 		/// <param name="height">to resize, default keep ratio (0)</param>
 		/// <returns>Is successful? // private feature</returns>

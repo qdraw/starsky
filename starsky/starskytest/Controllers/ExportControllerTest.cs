@@ -182,7 +182,7 @@ namespace starskytest.Controllers
 			var sourceFullPath = Path.Join(appSettings.TempFolder,zipHash) + ".zip";
 			await fakeStorage.WriteStreamAsync(new StorageHostFullPathFilesystem().ReadStream(sourceFullPath), sourceFullPath);
 
-			var actionResult2zip = await controller.Status(zipHash,true) as JsonResult;
+			var actionResult2zip = controller.Status(zipHash,true) as JsonResult;
 			Assert.AreNotEqual(actionResult2zip, null);
 
 			var resultValue = ( string ) actionResult2zip.Value;
@@ -339,7 +339,7 @@ namespace starskytest.Controllers
 			var controller = new ExportController( _bgTaskQueue, selectorStorage, export);
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
-			var actionResult = await controller.Status("____fail", true) as NotFoundObjectResult;
+			var actionResult = controller.Status("____fail", true) as NotFoundObjectResult;
 			Assert.AreEqual(404, actionResult.StatusCode);
 		}
 	}

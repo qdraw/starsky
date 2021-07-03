@@ -187,7 +187,7 @@ namespace starsky.Controllers
         [IgnoreAntiforgeryToken]
         [AllowAnonymous] // <=== ALLOW FROM EVERYWHERE
         [ResponseCache(Duration = 29030400)] // 4 weeks
-        public async Task<IActionResult> Thumbnail(
+        public IActionResult Thumbnail(
             string f, 
             bool isSingleItem = false, 
             bool json = false,
@@ -292,7 +292,7 @@ namespace starsky.Controllers
         [ProducesResponseType(400)] // string (f) input not allowed to avoid path injection attacks
         [ProducesResponseType(404)] // not found
         [ProducesResponseType(210)] // raw
-        public async Task<IActionResult> ByZoomFactor(
+        public IActionResult ByZoomFactor(
 	        string f,
 	        int z = 0)
         {
