@@ -117,6 +117,16 @@ namespace starsky.feature.webhtmlpublish.Services
 			    _thumbnailStorage,_logger).Create(fileIndexItemsList.ToList());
 	    }
 	    
+	    /// <summary>
+	    /// Render output of Publish action
+	    /// </summary>
+	    /// <param name="fileIndexItemsList">which items need to be published</param>
+	    /// <param name="base64ImageArray">list of base64 hashes for html pages</param>
+	    /// <param name="publishProfileName">name of profile</param>
+	    /// <param name="itemName">output publish item name</param>
+	    /// <param name="outputParentFullFilePathFolder">path on host disk where to publish to</param>
+	    /// <param name="moveSourceFiles">include source files (false by default)</param>
+	    /// <returns></returns>
 	    public async Task<Dictionary<string,bool>> Render(List<FileIndexItem> fileIndexItemsList,
 		    string[] base64ImageArray, string publishProfileName, string itemName, 
 		    string outputParentFullFilePathFolder, bool moveSourceFiles = false)
@@ -232,8 +242,17 @@ namespace starsky.feature.webhtmlpublish.Services
 		    };
 	    }
 
+	    /// <summary>
+	    /// Generate loop of Jpeg images with overlay image
+	    /// With Retry included
+	    /// </summary>
+	    /// <param name="profile">contains sizes</param>
+	    /// <param name="fileIndexItemsList">list of items to generate jpeg for</param>
+	    /// <param name="outputParentFullFilePathFolder">outputParentFullFilePathFolder</param>
+	    /// <param name="delay">when failed output, has default value</param>
+	    /// <returns></returns>
 	    internal async Task<Dictionary<string, bool>> GenerateJpeg(AppSettingsPublishProfiles profile, 
-		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder, int delay = 10)
+		    IReadOnlyCollection<FileIndexItem> fileIndexItemsList, string outputParentFullFilePathFolder, int delay = 6)
 	    {
 		    _toCreateSubfolder.Create(profile,outputParentFullFilePathFolder);
 
@@ -249,7 +268,7 @@ namespace starsky.feature.webhtmlpublish.Services
 
 			    try
 			    {
-				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(delay), 4);
+				    await RetryHelper.DoAsync(ResizerLocal, TimeSpan.FromSeconds(delay));
 			    }
 			    catch ( AggregateException e )
 			    {
@@ -266,6 +285,14 @@ namespace starsky.feature.webhtmlpublish.Services
 			    item => profile.Copy);
 	    }
 
+	    /// <summary>
+	    /// Resize image with overlay
+	    /// </summary>
+	    /// <param name="outputPath">absolute path of output on host disk</param>
+	    /// <param name="profile">size of output, overlay size, must contain metaData </param>
+	    /// <param name="item">database item with filePath</param>
+	    /// <returns>true when success</returns>
+	    /// <exception cref="DecodingException">when output is not valid</exception>
 	    private async Task<bool> Resizer(string outputPath, AppSettingsPublishProfiles profile, 
 		    FileIndexItem item)
 	    {
@@ -301,6 +328,11 @@ namespace starsky.feature.webhtmlpublish.Services
 		    throw new DecodingException("[WebHtmlPublishService] image output is not valid");
 	    }
 
+	    /// <summary>
+	    /// Copy the metaData over the output path
+	    /// </summary>
+	    /// <param name="item">all the meta data</param>
+	    /// <param name="outputPath">absolute path on host disk</param>
 	    private async Task MetaData(FileIndexItem item, string outputPath)
 	    {
 		    if ( !_subPathStorage.ExistFile(item.FilePath) )  return;
@@ -350,7 +382,7 @@ namespace starsky.feature.webhtmlpublish.Services
 	    }
 
 	    /// <summary>
-	    /// 
+	    /// Generate Zip on Host
 	    /// </summary>
 	    /// <param name="fullFileParentFolderPath">One folder deeper than where the folder </param>
 	    /// <param name="itemName">blog item name</param>

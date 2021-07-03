@@ -57,7 +57,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Add support for multiple sizes for the Thumbnail cleaner 
 - [x]   (Fixed) _Back-end_ Set fallback image of ToBase64DataUriList when generation failed, instead of exception (PR #418)
 - [x]   (Fixed) _Back-end_ Publish retry when output is corrupt (PR #418)
-- [x]   (Fixed) _Front-end_  Fix check when no results are returned in publish modal
+- [x]   (Fixed) _Front-end_  Fix check when no results are returned in publish modal (hotfix)
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
