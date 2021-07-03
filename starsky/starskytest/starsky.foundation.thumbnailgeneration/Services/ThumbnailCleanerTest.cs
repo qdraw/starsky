@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		public void ThumbnailCleanerTest_DirectoryNotFoundException()
 		{
 			var appsettings = new AppSettings {ThumbnailTempFolder = "\""};
-			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings).CleanAllUnusedFiles();
+			new ThumbnailCleaner(new FakeIStorage(), _query,appsettings, new FakeIWebLogger()).CleanAllUnusedFiles();
 		}
 		
 		[TestMethod]
@@ -73,7 +73,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			};
 			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
 			
-			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings);
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings, new FakeIWebLogger());
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
@@ -109,7 +109,8 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				new FileIndexItem("/test.jpg"){FileHash = "exist"}
 			});
 			
-			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, new AppSettings());
+			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
+				new AppSettings(), new FakeIWebLogger());
 
 			thumbnailCleaner.CleanAllUnusedFiles();
 
