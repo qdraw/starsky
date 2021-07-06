@@ -98,7 +98,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns>true when success</returns>
 		public bool FileDelete(string path)
 		{
-			if ( !ExistFile(path) ) return false;
+			if (string.IsNullOrEmpty(path) || !ExistFile(path) ) return false;
 
 			var thumbPath = CombinePath(path);
 			var hostFilesystem = new StorageHostFullPathFilesystem();
