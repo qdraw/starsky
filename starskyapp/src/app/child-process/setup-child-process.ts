@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as getFreePort from "get-port";
 import * as path from "path";
 import * as readline from "readline";
+import logger from "../logger/logger";
 import { isPackaged } from "../os-info/is-packaged";
 import { childProcessPath } from "./child-process-path";
 import { electronCacheLocation } from "./electron-cache-location";
@@ -40,8 +41,8 @@ export async function setupChildProcess() {
     app__Verbose: !isPackaged() ? "true" : "false"
   };
 
-  console.log("env settings ->");
-  console.log(env);
+  logger.info("env settings ->");
+  logger.info(env);
 
   const appStarskyPath = childProcessPath();
   try {
@@ -56,7 +57,7 @@ export async function setupChildProcess() {
   });
 
   starskyChild.stdout.on("data", function (data) {
-    console.log(data.toString());
+    logger.info(data.toString());
     fs.appendFile(
       path.join(tempFolder, "child.log"),
       data.toString(),
@@ -65,7 +66,7 @@ export async function setupChildProcess() {
   });
 
   starskyChild.stderr.on("data", function (data) {
-    console.log("stderr: " + data.toString());
+    logger.warn(data.toString());
     fs.appendFile(
       path.join(tempFolder, "child.log"),
       "stderr: " + data.toString(),
@@ -97,7 +98,7 @@ export async function setupChildProcess() {
   process.stdin.on("keypress", (str, key) => {
     if (key.ctrl && key.name === "c") {
       kill();
-      console.log("===> end of starsky");
+      logger.info("=> (pressed ctrl & c) to the end of starsky");
       setTimeout(() => {
         process.exit(0);
       }, 400);
@@ -106,7 +107,7 @@ export async function setupChildProcess() {
 
   app.on("before-quit", function (event) {
     event.preventDefault();
-    console.log("----> end");
+    logger.info("=> end default");
     kill();
     setTimeout(() => {
       process.exit(0);
