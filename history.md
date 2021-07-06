@@ -58,9 +58,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Set fallback image of ToBase64DataUriList when generation failed, instead of exception (PR #418)
 - [x]   (Fixed) _Back-end_ Publish retry when output is corrupt (PR #418)
 - [x]   (Fixed) _Front-end_  Fix check when no results are returned in publish modal (hotfix)
-- [x]   (Changed) _Front-end_ Change default option to load smaller images (isSingleItem to alwaysLoadImage) (PR #420)
 - [x]   (Fixed) _Tools_ Change image resampler in starsky-tools to bicubic for sharper output (hotfix 20210703)
 - [x]   (Fixed) _Back-end_ Change image resampler in .NET to Lanczos3 for sharper output (hotfix 20210703)
+- [x]   (Changed) _Front-end_ Change default option to load smaller images (isSingleItem to alwaysLoadImage) (PR #420)
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
