@@ -28,7 +28,7 @@ describe("ListImageTest", () => {
       element.find("img").filterWhere((item) => {
         return (
           item.prop("src") ===
-          new UrlQuery().UrlThumbnailImage("test.jpg", true)
+          new UrlQuery().UrlThumbnailImage("test.jpg", false)
         );
       })
     ).toHaveLength(1);

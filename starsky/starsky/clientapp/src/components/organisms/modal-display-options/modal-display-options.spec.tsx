@@ -81,20 +81,20 @@ describe("ModalDisplayOptions", () => {
         expect(globalHistory.location.search).toBe("?collections=true");
       });
 
-      it("toggle-slow-files", () => {
+      it("toggle-slow-files should set localStorage", () => {
         modal
           .find('[data-test="toggle-slow-files"] input')
           .first()
           .simulate("change");
 
-        expect(localStorage.getItem("issingleitem")).toBe("false");
+        expect(localStorage.getItem("alwaysLoadImage")).toBe("true");
 
         modal
           .find('[data-test="toggle-slow-files"] input')
           .last()
           .simulate("change");
 
-        expect(localStorage.getItem("issingleitem")).toBe("true");
+        expect(localStorage.getItem("alwaysLoadImage")).toBe("false");
       });
 
       it("toggle-sockets", () => {

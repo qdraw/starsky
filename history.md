@@ -52,12 +52,15 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Add Meta Thumbnail (150px) to get faster archive and search pages (PR #380)
 - [x]   (Change) _Back-end_ Use 2000 px image in overlay (Publish) when available  (PR #380)
 - [x]   (Change) _Back-end_ Start /api/thumbnail-generation in different thread instead of que (PR #380)
-- [x]   (Added) _Back-end_ Add API "/api/thumbnail/list-sizes/{HashHere}" to check if the multiple sizes are there 
-- [x]   (Change) _Back-end_ Update thumbnail starsky-tools to use list-sizes API
-- [x]   (Change) _Back-end_ Add support for multiple sizes for the Thumbnail cleaner 
+- [x]   (Added) _Back-end_ Add API "/api/thumbnail/list-sizes/{HashHere}" to check if the multiple sizes are there (PR #414)
+- [x]   (Change) _Back-end_ Update thumbnail starsky-tools to use list-sizes API (PR #414)
+- [x]   (Change) _Back-end_ Add support for multiple sizes for the Thumbnail cleaner (PR #419)
 - [x]   (Fixed) _Back-end_ Set fallback image of ToBase64DataUriList when generation failed, instead of exception (PR #418)
 - [x]   (Fixed) _Back-end_ Publish retry when output is corrupt (PR #418)
 - [x]   (Fixed) _Front-end_  Fix check when no results are returned in publish modal (hotfix)
+- [x]   (Fixed) _Tools_ Change image resampler in starsky-tools to bicubic for sharper output (hotfix 20210703)
+- [x]   (Fixed) _Back-end_ Change image resampler in .NET to Lanczos3 for sharper output (hotfix 20210703)
+- [x]   (Changed) _Front-end_ Change default option to load smaller images (isSingleItem to alwaysLoadImage) (PR #420)
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)

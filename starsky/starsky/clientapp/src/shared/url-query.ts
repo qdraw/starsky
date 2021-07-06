@@ -273,14 +273,14 @@ export class UrlQuery {
 
   public UrlThumbnailImage = (
     fileHash: string,
-    issingleitem: boolean
+    alwaysLoadImage: boolean
   ): string => {
-    if (!issingleitem) {
-      return this.prefix + "/api/thumbnail/small/" + fileHash + ".jpg";
+    if (alwaysLoadImage) {
+      return (
+        this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true"
+      );
     }
-    return (
-      this.prefix + "/api/thumbnail/" + fileHash + ".jpg?issingleitem=true"
-    );
+    return this.prefix + "/api/thumbnail/small/" + fileHash + ".jpg";
   };
 
   /**
