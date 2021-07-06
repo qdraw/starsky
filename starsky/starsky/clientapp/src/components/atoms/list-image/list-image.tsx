@@ -21,8 +21,8 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
 
   const [src, setSrc] = useState(props.fileHash);
 
-  const [issingleitem] = useState(
-    localStorage.getItem("issingleitem") !== "false"
+  const [alwaysLoadImage] = useState(
+    localStorage.getItem("alwaysLoadImage") === "true"
   );
 
   // Reset Loading after changing page
@@ -57,13 +57,13 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
       setSrc(EmptyImage); // 26 bytes
       return;
     }
-    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, issingleitem));
+    setSrc(new UrlQuery().UrlThumbnailImage(props.fileHash, alwaysLoadImage));
   }, [
     props.fileHash,
     history.location.search,
     historyLocation,
     isLoading,
-    issingleitem
+    alwaysLoadImage
   ]);
 
   if (

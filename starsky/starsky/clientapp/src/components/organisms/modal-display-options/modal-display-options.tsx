@@ -32,11 +32,11 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     "Verberg raw bestanden",
     "Hide Raw files"
   );
-  const MessageSwitchButtonIsSingleItemOn = language.text(
+  const MessageSwitchButtonIsSingleItemOff = language.text(
     "Alles inladen",
     "Load everything"
   );
-  const MessageSwitchButtonIsSingleItemOff = language.text(
+  const MessageSwitchButtonIsSingleItemOn = language.text(
     "Klein inladen",
     "Small loading"
   );
@@ -72,18 +72,19 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
     history.navigate(new URLPath().IUrlToString(urlObject), { replace: true });
   }
 
-  const [isSingleItem, setIsSingleItem] = React.useState(
-    localStorage.getItem("issingleitem") === "false"
+  const [isAlwaysLoadImage, setIsAlwaysLoadImage] = React.useState(
+    localStorage.getItem("alwaysLoadImage") === "true"
   );
 
   function toggleSlowFiles() {
-    setIsSingleItem(!isSingleItem);
-    localStorage.setItem("issingleitem", isSingleItem.toString());
+    localStorage.setItem("alwaysLoadImage", (!isAlwaysLoadImage).toString());
+    setIsAlwaysLoadImage(!isAlwaysLoadImage);
   }
 
   const [isUseSockets, setUseSockets] = React.useState(
     localStorage.getItem("use-sockets") === "false"
   );
+
   function toggleSockets() {
     setUseSockets(!isUseSockets);
     if (isUseSockets) {
@@ -128,7 +129,7 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
       <div className="modal content--subheader">
         <SwitchButton
           data-test="toggle-slow-files"
-          isOn={isSingleItem}
+          isOn={isAlwaysLoadImage}
           isEnabled={true}
           leftLabel={MessageSwitchButtonIsSingleItemOn}
           rightLabel={MessageSwitchButtonIsSingleItemOff}
