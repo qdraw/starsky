@@ -197,12 +197,6 @@ describe("ipc bridge", () => {
 
     it("update valid url", async () => {
       jest.spyOn(logger, "default").mockRestore();
-      jest.spyOn(logger, "default").mockImplementation(() => {
-        return {
-          warn: jest.fn(),
-          info: jest.fn()
-        };
-      });
 
       jest
         .spyOn(appConfig, "set")
@@ -332,7 +326,11 @@ describe("ipc bridge", () => {
       expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
-        location: "https://nonexitingdomain.com"
+        location: "https://nonexitingdomain.com",
+        reason: {
+          error: undefined,
+          statusCode: 999
+        }
       });
     });
   });
