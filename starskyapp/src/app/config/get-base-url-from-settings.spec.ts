@@ -1,7 +1,13 @@
 import * as appConfig from "electron-settings";
+import * as logger from "../logger/logger";
 import { GetBaseUrlFromSettings } from "./get-base-url-from-settings";
 
 describe("GetBaseUrlFromSettings", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return null;
+    });
+  });
   describe("GetBaseUrlFromSettings", () => {
     it("nothing saved", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {

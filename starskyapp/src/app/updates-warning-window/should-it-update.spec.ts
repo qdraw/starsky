@@ -1,4 +1,5 @@
 import * as appConfig from "electron-settings";
+import * as logger from "../logger/logger";
 import * as GetNetRequest from "../net-request/get-net-request";
 import {
   isPolicyDisabled,
@@ -18,6 +19,12 @@ jest.mock("electron", () => {
 });
 
 describe("SkipDisplayOfUpdate", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return null;
+    });
+  });
+
   describe("SkipDisplayOfUpdate", () => {
     it("should skip 1 second ago checked, it should be ignored", async () => {
       jest.spyOn(appConfig, "get").mockImplementationOnce(() => {

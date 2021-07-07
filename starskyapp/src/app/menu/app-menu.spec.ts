@@ -1,4 +1,5 @@
 import { Menu, shell } from "electron";
+import * as logger from "../logger/logger";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as createSettingsWindow from "../settings-window/create-settings-window";
 import AppMenu from "./app-menu";
@@ -27,6 +28,12 @@ jest.mock("electron", () => {
 });
 
 describe("menu", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return null;
+    });
+  });
+
   describe("AppMenu", () => {
     it("it should inherit from template", () => {
       const buildFromTemplateSpy = jest.spyOn(Menu, "buildFromTemplate");

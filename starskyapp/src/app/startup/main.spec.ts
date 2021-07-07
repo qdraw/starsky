@@ -3,6 +3,7 @@ import * as setupChildProcess from "../child-process/setup-child-process";
 import * as MakeTempPath from "../config/temp-path";
 import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
+import * as logger from "../logger/logger";
 import * as createMainWindow from "../main-window/create-main-window";
 import * as restoreMainWindow from "../main-window/restore-main-window";
 import * as AppMenu from "../menu/app-menu";
@@ -19,7 +20,8 @@ jest.mock("electron", () => {
       getPath: () => "tmp",
       getLocale: () => "en",
       on: () => "en",
-      quit: () => "en"
+      quit: () => "en",
+      getName: () => "test"
     },
     ipcMain: {
       on: () => "en"
@@ -59,6 +61,10 @@ describe("main", () => {
     jest.spyOn(app, "on").mockImplementation((name: any, func) => {
       onState[name.replace(/-/gi, "")] = func;
       console.log(name.replace(/-/gi, ""), func);
+      return null;
+    });
+
+    jest.spyOn(logger, "default").mockImplementation(() => {
       return null;
     });
 

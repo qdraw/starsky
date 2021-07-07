@@ -9,6 +9,7 @@ import {
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
 import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
+import * as logger from "../logger/logger";
 import * as createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
@@ -34,6 +35,11 @@ jest.mock("electron", () => {
 });
 
 describe("ipc bridge", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return null;
+    });
+  });
   describe("LocationIsRemoteCallback", () => {
     it("getting with null input (LocationIsRemoteCallback)", async () => {
       const event = { reply: jest.fn() } as any;

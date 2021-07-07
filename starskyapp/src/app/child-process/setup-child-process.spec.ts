@@ -12,7 +12,8 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
+      getName: () => "test"
     },
     net: {
       request: () => {}
@@ -21,6 +22,8 @@ jest.mock("electron", () => {
 });
 
 describe("setupChildProcess", () => {
+  beforeEach(() => {});
+
   describe("setupChildProcess", () => {
     it("getting with null input", async () => {
       const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };

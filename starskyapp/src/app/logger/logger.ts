@@ -1,32 +1,42 @@
-import * as winston from 'winston';
+import * as winston from "winston";
 import { MakeTempPath } from "../config/temp-path";
 
 const currentDate = new Date();
-var today = currentDate.toISOString().split('T')[0]
+var today = currentDate.toISOString().split("T")[0];
 
-const logger = winston.createLogger({
-  levels: {
-    info: 2,
-    warn: 3,
-  },
+const winstonLogger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  defaultMeta: { service: "app" },
   transports: [
-    new(winston.transports.Console)({
-      level: "info",
+    new winston.transports.Console({
+      level: "info"
     }),
-    new(winston.transports.Console)({
-      level: "warn",
+    new winston.transports.Console({
+      level: "warn"
     }),
-    new (winston.transports.File)({ 
-      filename: `${today}_info.log`,
+    new winston.transports.File({
       dirname: MakeTempPath(),
-      level: "info",
-    }),
-    new (winston.transports.File)({ 
-      filename: `${today}_warn.log`,  
-      dirname: MakeTempPath(),
-      level: "warn",
+      filename: `${today}_combined.log`
     })
   ]
-})
+});
+
+class logger {
+  static info(message: any, ...meta: any[]) {
+    if (!winstonLogger || !winstonLogger.info) {
+      console.log(message, meta);
+      return;
+    }
+    winstonLogger.info(message, meta);
+  }
+  static warn(message: any, ...meta: any[]) {
+    try {
+      winstonLogger.warn(message, meta);
+    } catch (error) {
+      console.log(message, meta);
+    }
+  }
+}
 
 export default logger;

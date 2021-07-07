@@ -1,5 +1,6 @@
 import * as BrowserWindow from "electron";
 import * as appConfig from "electron-settings";
+import * as logger from "../logger/logger";
 import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import * as shouldItUpdate from "./should-it-update";
 import createCheckForUpdatesContainerWindow, {
@@ -40,6 +41,12 @@ jest.mock("electron", () => {
 });
 
 describe("create main window", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return null;
+    });
+  });
+
   describe("checkForUpdatesWindow", () => {
     it("should call browserWindow", async () => {
       jest
