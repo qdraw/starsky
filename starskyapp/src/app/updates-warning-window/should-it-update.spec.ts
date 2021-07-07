@@ -21,7 +21,10 @@ jest.mock("electron", () => {
 describe("SkipDisplayOfUpdate", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        info: jest.fn(),
+        warn: jest.fn()
+      };
     });
   });
 

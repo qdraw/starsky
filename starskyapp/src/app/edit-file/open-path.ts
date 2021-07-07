@@ -2,6 +2,7 @@ import * as childProcess from "child_process";
 import { shell } from "electron";
 import * as appConfig from "electron-settings";
 import DefaultImageApplicationSetting from "../config/default-image-application-settings";
+import logger from "../logger/logger";
 import OsBuildKey from "../os-info/os-build-key";
 import { IsApplicationRunning } from "./is-application-running";
 
@@ -36,8 +37,7 @@ export async function openPath(fullFilePath: string): Promise<void> {
       resolve();
       return;
     }
-
-    console.log("open default", fullFilePath);
+    logger.info("open default", fullFilePath);
     shell.openPath(fullFilePath).then((_) => {
       resolve();
     });

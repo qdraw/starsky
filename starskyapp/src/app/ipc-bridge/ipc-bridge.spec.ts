@@ -37,7 +37,10 @@ jest.mock("electron", () => {
 describe("ipc bridge", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        warn: jest.fn(),
+        info: jest.fn()
+      };
     });
   });
   describe("LocationIsRemoteCallback", () => {
@@ -193,6 +196,14 @@ describe("ipc bridge", () => {
     });
 
     it("update valid url", async () => {
+      jest.spyOn(logger, "default").mockRestore();
+      jest.spyOn(logger, "default").mockImplementation(() => {
+        return {
+          warn: jest.fn(),
+          info: jest.fn()
+        };
+      });
+
       jest
         .spyOn(appConfig, "set")
         .mockReset()

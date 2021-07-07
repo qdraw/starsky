@@ -30,7 +30,10 @@ jest.mock("electron", () => {
 describe("menu", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        info: jest.fn(),
+        warn: jest.fn()
+      };
     });
   });
 

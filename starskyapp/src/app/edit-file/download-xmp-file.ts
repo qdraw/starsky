@@ -2,6 +2,7 @@ import * as path from "path";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
+import logger from "../logger/logger";
 import { downloadNetRequest } from "../net-request/download-net-request";
 import { GetParentDiskPath } from "./get-parent-disk-path";
 
@@ -27,11 +28,13 @@ export async function downloadXmpFile(
     "." +
     ext;
 
-  console.log(sideCarSubPath);
+  logger.info(sideCarSubPath);
 
   await downloadNetRequest(
     `${
-      (await GetBaseUrlFromSettings()).location
+      (
+        await GetBaseUrlFromSettings()
+      ).location
     }${new UrlQuery().DownloadSidecarFile(sideCarSubPath)}`,
     session,
     sidecarFileOnDisk

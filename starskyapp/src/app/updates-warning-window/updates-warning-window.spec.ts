@@ -43,7 +43,10 @@ jest.mock("electron", () => {
 describe("create main window", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        warn: jest.fn(),
+        info: jest.fn()
+      };
     });
   });
 
@@ -167,6 +170,11 @@ describe("create main window", () => {
     });
 
     it("should reject when shouldItUpdate fails", (done) => {
+      jest.spyOn(logger, "default").mockImplementation(() => {
+        return {
+          warn: jest.fn()
+        };
+      });
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));

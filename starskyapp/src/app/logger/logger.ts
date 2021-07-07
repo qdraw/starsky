@@ -25,6 +25,7 @@ const winstonLogger = winston.createLogger({
 class logger {
   static info(message: any, ...meta: any[]) {
     if (!winstonLogger || !winstonLogger.info) {
+      // keep console log here
       console.log(message, meta);
       return;
     }
@@ -34,6 +35,7 @@ class logger {
     try {
       winstonLogger.warn(message, meta);
     } catch (error) {
+      // keep console log here
       console.log(message, meta);
     }
   }

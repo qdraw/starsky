@@ -65,7 +65,10 @@ describe("main", () => {
     });
 
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        info: jest.fn(),
+        warn: jest.fn()
+      };
     });
 
     require("./main");

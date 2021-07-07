@@ -7,6 +7,7 @@ export function TempPath(): string {
   try {
     return path.join(app.getPath("temp"), app.getName());
   } catch (error) {
+    // keep console.log here
     console.log("no temp path => ");
     return null;
   }

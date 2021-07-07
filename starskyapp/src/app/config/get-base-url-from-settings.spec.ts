@@ -5,7 +5,10 @@ import { GetBaseUrlFromSettings } from "./get-base-url-from-settings";
 describe("GetBaseUrlFromSettings", () => {
   beforeAll(() => {
     jest.spyOn(logger, "default").mockImplementation(() => {
-      return null;
+      return {
+        info: jest.fn(),
+        warn: jest.fn()
+      };
     });
   });
   describe("GetBaseUrlFromSettings", () => {
