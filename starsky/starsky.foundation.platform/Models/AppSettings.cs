@@ -547,7 +547,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Watch the fileSystem for changes
 		/// </summary>
-		public bool UseDiskWatcher { get; set; } = false;
+		public bool UseDiskWatcher { get; set; } = true;
 	    
 		/// <summary>
 		/// Check if there are updates
