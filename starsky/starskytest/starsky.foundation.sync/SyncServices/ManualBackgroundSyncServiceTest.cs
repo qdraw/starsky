@@ -128,5 +128,21 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.AreEqual(0,result.Count);
 		}
+		
+		[TestMethod]
+		public void FilterBefore_ShouldIgnoreHome()
+		{
+			var result=  new ManualBackgroundSyncService(
+					new FakeISynchronize(new List<FileIndexItem>()),
+					new FakeIQuery(),
+					new FakeIWebSocketConnectionsService(),
+					new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				.FilterBefore(new List<FileIndexItem>{new FileIndexItem("/")
+				{
+					Status = FileIndexItem.ExifStatus.Ok
+				}});
+
+			Assert.AreEqual(0,result.Count);
+		}
 	}
 }

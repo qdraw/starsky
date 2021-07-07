@@ -80,11 +80,12 @@ namespace starsky.foundation.sync.SyncServices
 		
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
-			return syncData.Where(p =>
+			return syncData.Where(p => (
 				p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing ||
-				p.Status == FileIndexItem.ExifStatus.Deleted).ToList();
+				p.Status == FileIndexItem.ExifStatus.Deleted) && 
+			    p.FilePath != "/" ).ToList();
 		}
 	}
 }

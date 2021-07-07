@@ -47,8 +47,7 @@ export async function setupChildProcess() {
   const appStarskyPath = childProcessPath();
   try {
     fs.chmodSync(appStarskyPath, 0o755);
-  } catch (error) {
-  }
+  } catch (error) {}
 
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
@@ -89,7 +88,6 @@ export async function setupChildProcess() {
     setRawMode(false);
     if (!starskyChild) return;
     starskyChild.stdin.end();
-    // starskyChild.stdin.pause();
     starskyChild.kill();
   }
 
