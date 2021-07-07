@@ -61,6 +61,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Tools_ Change image resampler in starsky-tools to bicubic for sharper output (hotfix 20210703)
 - [x]   (Fixed) _Back-end_ Change image resampler in .NET to Lanczos3 for sharper output (hotfix 20210703)
 - [x]   (Changed) _Front-end_ Change default option to load smaller images (isSingleItem to alwaysLoadImage) (PR #420)
+- [x]   (Changed) _Front-end_ Upgrade npm packages in clientapp (PR #421)
+- [x]   (Changed) _Tools_ Upgrade npm packages in starsky-tools/thumbnail (PR #422)
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
