@@ -8,11 +8,9 @@ import {
 import { TaskQueue } from "cwait";
 import * as fs from "fs";
 import jimp from "jimp";
+import { rotate } from "jpeg-autorotate";
 import * as path from "path";
 import { IResults } from "./IResults";
-
-var execFile = require("child_process").execFile;
-var exiftool = require("dist-exiftool");
 
 export interface ISizes {
 	ok: boolean;
@@ -317,34 +315,93 @@ export class Query {
 		});
 	}
 
+	public jimpResizer(
+		buffer: Buffer,
+		size: number,
+		resolveAction: (value: boolean | PromiseLike<boolean>) => void,
+		targetPath: string
+	) {
+		jimp
+			.read(buffer)
+			.then((image) => {
+				image.resize(size, jimp.AUTO, jimp.RESIZE_BICUBIC);
+				image.quality(80);
+
+				image.write(targetPath, () => {
+					process.stdout.write("≈");
+					resolveAction(true);
+				});
+			})
+			.catch((err) => {
+				console.log("image failed: catched error -->");
+				console.error(err);
+				console.log("<--");
+				resolveAction(false);
+			});
+	}
+
+	public async resizerNoRotate(
+		size: number,
+		sourceFilePath: string,
+		targetPath: string
+	): Promise<boolean> {
+		const jimpResizer = this.jimpResizer;
+		return new Promise<boolean>((resolve, reject) => {
+			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
+				if (err !== null) {
+					process.stdout.write("†");
+					resolve(false);
+					return;
+				}
+
+				fs.readFile(sourceFilePath, function read(err, data) {
+					if (err) {
+						process.stdout.write("÷");
+						resolve(false);
+						return;
+					}
+					jimpResizer(data, size, resolve, targetPath);
+				});
+			});
+		});
+	}
+
 	public async resizer(
 		size: number,
 		sourceFilePath: string,
 		targetPath: string
 	): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
+			const jimpResizer = this.jimpResizer;
 			fs.access(sourceFilePath, fs.constants.F_OK, async (err) => {
 				if (err !== null) {
 					process.stdout.write("†");
 					resolve(false);
+					return;
 				}
-				jimp
-					.read(sourceFilePath)
-					.then((image) => {
-						image.resize(size, jimp.AUTO, jimp.RESIZE_BICUBIC);
-						image.quality(80);
 
-						image.write(targetPath, () => {
-							process.stdout.write("≈");
-							resolve(true);
-						});
-					})
-					.catch((err) => {
-						console.log("image failed: catched error -->");
-						console.error(err);
-						console.log("<--");
+				fs.readFile(sourceFilePath, function read(err, data) {
+					if (err) {
+						process.stdout.write("÷");
 						resolve(false);
-					});
+						return;
+					}
+
+					rotate(data, { quality: 80 })
+						.then((jodata) => {
+							jimpResizer(jodata.buffer, size, resolve, targetPath);
+						})
+						.catch((err) => {
+							if (
+								err.code !== "correct_orientation" &&
+								err.code !== "no_orientation"
+							) {
+								console.log("--auto-rotate error but still trying to resize");
+								console.log(err);
+							}
+							jimpResizer(data, size, resolve, targetPath);
+						});
+				});
 			});
 		});
 	}
@@ -400,7 +457,7 @@ export class Query {
 						resolve(false);
 					}
 					if (
-						!(await this.resizer(
+						!(await this.resizerNoRotate(
 							1000,
 							targetExtraLargeFilePath,
 							targetLargeFilePath
@@ -409,35 +466,17 @@ export class Query {
 						resolve(false);
 					}
 					if (
-						!(await this.resizer(300, targetLargeFilePath, targetSmallFilePath))
+						!(await this.resizerNoRotate(
+							300,
+							targetLargeFilePath,
+							targetSmallFilePath
+						))
 					) {
 						resolve(false);
 					}
 					resolve(true);
 				}
 			});
-		});
-	}
-
-	private copyExifTool(sourceFilePath, targetFilePath, fileHash, callback) {
-		fs.stat(targetFilePath, (err, stats) => {
-			if (err || stats.size <= 50) return callback(fileHash);
-
-			// '-overwrite_original',
-			execFile(
-				exiftool,
-				["-TagsFromFile", sourceFilePath, targetFilePath, "-Orientation="],
-				(error, stdout, stderr) => {
-					if (error) {
-						console.error(`exec error: ${error}`);
-						return;
-					}
-					// console.log(`stdout: ${stdout}`);
-					if (stderr !== "") console.log(`stderr: ${stderr}`);
-					process.stdout.write("~");
-					return callback(fileHash);
-				}
-			);
 		});
 	}
 
