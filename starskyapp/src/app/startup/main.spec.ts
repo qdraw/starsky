@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import * as setupChildProcess from "../child-process/setup-child-process";
+import * as MakeLogsPath from "../config/logs-path";
 import * as MakeTempPath from "../config/temp-path";
 import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
 import * as ipcBridge from "../ipc-bridge/ipc-bridge";
@@ -53,6 +54,10 @@ describe("main", () => {
     jest
       .spyOn(MakeTempPath, "MakeTempPath")
       .mockImplementationOnce(() => "test");
+    jest
+      .spyOn(MakeLogsPath, "MakeLogsPath")
+      .mockImplementationOnce(() => "test");
+
     jest
       .spyOn(SetupFileWatcher, "SetupFileWatcher")
       .mockImplementationOnce(() => Promise.resolve());

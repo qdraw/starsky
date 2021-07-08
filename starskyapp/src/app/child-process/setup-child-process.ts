@@ -43,6 +43,9 @@ export async function setupChildProcess() {
 
   logger.info("env settings ->");
   logger.info(env);
+  logger.info(
+    "app data folder -> " + path.join(app.getPath("appData"), "starsky")
+  );
 
   const appStarskyPath = childProcessPath();
   try {
@@ -57,20 +60,10 @@ export async function setupChildProcess() {
 
   starskyChild.stdout.on("data", function (data) {
     logger.info(data.toString());
-    fs.appendFile(
-      path.join(tempFolder, "child.log"),
-      data.toString(),
-      function (err) {}
-    );
   });
 
   starskyChild.stderr.on("data", function (data) {
     logger.warn(data.toString());
-    fs.appendFile(
-      path.join(tempFolder, "child.log"),
-      "stderr: " + data.toString(),
-      function (err) {}
-    );
   });
 
   readline.emitKeypressEvents(process.stdin);

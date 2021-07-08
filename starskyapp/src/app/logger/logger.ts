@@ -1,8 +1,9 @@
 import * as winston from "winston";
-import { MakeTempPath } from "../config/temp-path";
+import { electronCacheLocation } from "../child-process/electron-cache-location";
+import path = require("path");
 
 const currentDate = new Date();
-var today = currentDate.toISOString().split("T")[0];
+var today = currentDate.toISOString().split("T")[0].replace(/-/gi, "");
 
 const winstonLogger = winston.createLogger({
   level: "info",
@@ -16,8 +17,8 @@ const winstonLogger = winston.createLogger({
       level: "warn"
     }),
     new winston.transports.File({
-      dirname: MakeTempPath(),
-      filename: `${today}_combined.log`
+      dirname: path.join(electronCacheLocation(), "logs"),
+      filename: `${today}_app_combined.log`
     })
   ]
 });
