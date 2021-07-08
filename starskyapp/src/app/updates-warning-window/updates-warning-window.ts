@@ -2,6 +2,7 @@ import { BrowserWindow } from "electron";
 import * as appConfig from "electron-settings";
 import * as path from "path";
 import { UpdatePolicyLastCheckedDateSettings } from "../config/update-policy-settings.const";
+import logger from "../logger/logger";
 import { isPackaged } from "../os-info/is-packaged";
 import { windowStateKeeper } from "../window-state-keeper/window-state-keeper";
 import {
@@ -31,7 +32,10 @@ async function createCheckForUpdatesContainerWindow(
             resolve(shouldItUpdate);
           })
           .catch((error) => {
-            console.log(error);
+            // fails for some random reason
+            try {
+              logger.warn(error);
+            } catch (error) {}
             reject(error);
           }),
       intervalSpeed

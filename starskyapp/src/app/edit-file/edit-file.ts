@@ -2,6 +2,7 @@ import { BrowserWindow } from "electron";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
 import { createErrorWindow } from "../error-window/create-error-window";
+import logger from "../logger/logger";
 import { GetNetRequest } from "../net-request/get-net-request";
 import { createParentFolders } from "./create-parent-folders";
 import { downloadBinary } from "./download-binary";
@@ -18,8 +19,8 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
   try {
     result = await GetNetRequest(url, fromMainWindow.webContents.session);
   } catch (error) {
-    console.log("error");
-    console.log(error);
+    logger.warn("GetNetRequest error");
+    logger.warn(error);
     return;
   }
 
@@ -42,8 +43,8 @@ export async function EditFile(fromMainWindow: BrowserWindow) {
     await openPath(filePathOnDisk);
   } catch (error) {
     createErrorWindow(error);
-    console.log("error");
-    console.log(error);
+    logger.warn("openPath error");
+    logger.warn(error);
   }
 }
 

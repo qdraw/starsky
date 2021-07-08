@@ -9,6 +9,7 @@ import {
 import { UpdatePolicyIpcKey } from "../config/update-policy-ipc-key.const";
 import * as fileSelectorWindow from "../file-selector-window/file-selector-window";
 import * as SetupFileWatcher from "../file-watcher/setup-file-watcher";
+import * as logger from "../logger/logger";
 import * as createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import {
@@ -34,6 +35,14 @@ jest.mock("electron", () => {
 });
 
 describe("ipc bridge", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return {
+        warn: jest.fn(),
+        info: jest.fn()
+      };
+    });
+  });
   describe("LocationIsRemoteCallback", () => {
     it("getting with null input (LocationIsRemoteCallback)", async () => {
       const event = { reply: jest.fn() } as any;
@@ -187,6 +196,8 @@ describe("ipc bridge", () => {
     });
 
     it("update valid url", async () => {
+      jest.spyOn(logger, "default").mockRestore();
+
       jest
         .spyOn(appConfig, "set")
         .mockReset()
@@ -315,7 +326,11 @@ describe("ipc bridge", () => {
       expect(event.reply).toBeCalledWith(LocationUrlIpcKey, {
         isLocal: false,
         isValid: false,
-        location: "https://nonexitingdomain.com"
+        location: "https://nonexitingdomain.com",
+        reason: {
+          error: undefined,
+          statusCode: 999
+        }
       });
     });
   });

@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import { setupChildProcess } from "../child-process/setup-child-process";
+import { MakeLogsPath } from "../config/logs-path";
 import { MakeTempPath } from "../config/temp-path";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
 import ipcBridge from "../ipc-bridge/ipc-bridge";
@@ -13,6 +14,7 @@ import { willNavigateSecurity } from "./will-navigate-security";
 
 app.allowRendererProcessReuse = true;
 
+MakeLogsPath();
 ipcBridge();
 defaultAppSettings();
 setupChildProcess();

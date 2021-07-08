@@ -3,6 +3,7 @@ import { FileExtensions } from "../../shared/file-extensions";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
 import { GetBaseUrlFromSettings } from "../config/get-base-url-from-settings";
 import UrlQuery from "../config/url-query";
+import logger from "../logger/logger";
 import { downloadNetRequest } from "../net-request/download-net-request";
 import { GetParentDiskPath } from "./get-parent-disk-path";
 
@@ -20,7 +21,7 @@ export async function downloadBinary(
     fileName
   );
 
-  console.log("fileOnDisk > " + fileOnDisk);
+  logger.info("fileOnDisk > " + fileOnDisk);
 
   await downloadNetRequest(
     `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(

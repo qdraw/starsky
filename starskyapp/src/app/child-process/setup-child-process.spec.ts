@@ -3,6 +3,7 @@ import { app } from "electron";
 import * as fs from "fs";
 import * as getPort from "get-port";
 import * as readline from "readline";
+import logger from "../logger/logger";
 import { setupChildProcess } from "./setup-child-process";
 
 jest.mock("electron", () => {
@@ -11,7 +12,8 @@ jest.mock("electron", () => {
       getVersion: () => "99.99.99",
       getPath: () => "tmp",
       getLocale: () => "en",
-      on: () => "en"
+      on: () => "en",
+      getName: () => "test"
     },
     net: {
       request: () => {}
@@ -20,6 +22,8 @@ jest.mock("electron", () => {
 });
 
 describe("setupChildProcess", () => {
+  beforeEach(() => {});
+
   describe("setupChildProcess", () => {
     it("getting with null input", async () => {
       const spawnSpy = { stdout: { on: jest.fn() }, stderr: { on: jest.fn() } };
@@ -43,8 +47,7 @@ describe("setupChildProcess", () => {
         .mockImplementationOnce(() => null);
 
       jest.spyOn(app, "on").mockImplementationOnce((event) => {
-        console.log(event);
-
+        logger.info(event);
         return null;
       });
       await setupChildProcess();

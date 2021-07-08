@@ -12,8 +12,6 @@ export function checkForUpdates(
       }
     })
       .then((versionResponse) => {
-        console.log(versionResponse);
-
         if (versionResponse.status === 200) {
           resolve();
           return;

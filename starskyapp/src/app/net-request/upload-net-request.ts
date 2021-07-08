@@ -1,5 +1,6 @@
 import { net, Session } from "electron";
 import * as fs from "fs";
+import logger from "../logger/logger";
 
 export function uploadNetRequest(
   url: string,
@@ -11,7 +12,7 @@ export function uploadNetRequest(
     if (url.startsWith("[object ")) {
       throw new Error("please await promise first");
     }
-    console.log("> run upload " + url);
+    logger.info("> run upload " + url);
 
     const request = net.request({
       useSessionCookies: true,
@@ -27,20 +28,21 @@ export function uploadNetRequest(
     // Reading response from API
     let body = "";
     request.on("response", (response) => {
-      if (response.statusCode !== 200)
-        console.log(
+      if (response.statusCode !== 200) {
+        logger.info(
           `upload: ${response.statusCode} HEADERS: ${JSON.stringify(
             response.headers
           )} - ${toSubPath} `
         );
-
-      if (response.statusCode !== 200) return;
+        // and end:
+        return;
+      }
 
       response.on("data", (chunk) => {
         body += chunk.toString();
       });
       response.on("end", () => {
-        console.log(`BODY: ${body}`);
+        logger.info(`BODY: ${body}`);
       });
     });
 
@@ -48,6 +50,7 @@ export function uploadNetRequest(
     fs.readFile(fullFilePath, function (err, data) {
       // skip error for now
       if (err) {
+        logger.info("skip due missing file: " + fullFilePath);
         reject(err);
         return;
       }
@@ -55,13 +58,15 @@ export function uploadNetRequest(
       request.write(data);
       request.end();
       request.on("finish", () => {
-        console.log("--finish doUploadRequest");
+        logger.info("--finish doUploadRequest " + fullFilePath);
         fs.promises.stat(fullFilePath).then((stat) => {
           fs.promises.writeFile(fullFilePath + ".info", stat.size.toString());
         });
         resolve();
       });
       request.on("error", (err) => {
+        logger.info("error doUploadRequest " + fullFilePath);
+        logger.info(err);
         reject(err);
       });
     });

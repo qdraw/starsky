@@ -1,4 +1,5 @@
 import { net } from "electron";
+import logger from "../logger/logger";
 
 export interface IGetNetRequestResponse {
   data?: any;
@@ -22,8 +23,6 @@ export function GetNetRequest(
 
     let body = "";
     request.on("response", (response) => {
-      // console.log(`HEADERS: ${JSON.stringify(response.headers)}`);
-
       response.on("data", (chunk) => {
         body += chunk.toString();
       });
@@ -46,7 +45,8 @@ export function GetNetRequest(
             statusCode: response.statusCode
           } as IGetNetRequestResponse);
         } catch (error) {
-          console.log(error);
+          logger.warn("GetNetRequest error");
+          logger.warn(error);
           reject({
             error: error.toString(),
             statusCode: response.statusCode
@@ -56,7 +56,7 @@ export function GetNetRequest(
     });
 
     request.on("error", (error) => {
-      console.log(error);
+      logger.info(error);
       reject({ error: error, statusCode: 999 });
     });
 

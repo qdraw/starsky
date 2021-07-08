@@ -1,12 +1,13 @@
 import * as appConfig from "electron-settings";
 import RememberUrl from "../config/remember-url-settings.const";
+import logger from "../logger/logger";
 import createMainWindow from "./create-main-window";
 
 export async function restoreMainWindow(): Promise<void> {
   const rememberUrls = await getRememberUrl();
 
-  console.log("rememberUrls");
-  console.log(rememberUrls);
+  logger.info("[restoreMainWindow] rememberUrls");
+  logger.info(rememberUrls);
 
   // remove the config and set it when the new windows open, so the id's are matching
 

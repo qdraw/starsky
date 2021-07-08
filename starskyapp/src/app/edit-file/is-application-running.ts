@@ -1,4 +1,5 @@
 import * as childProcess from "child_process";
+import logger from "../logger/logger";
 
 export const IsApplicationRunning = (query: string) => {
   return new Promise(function (resolve, reject) {
@@ -40,7 +41,8 @@ export const IsApplicationRunning = (query: string) => {
     });
 
     starskyChild.stderr.on("data", function (data) {
-      console.log("stderr: " + data.toString());
+      logger.info("IsApplicationRunning");
+      logger.info("stderr: " + data.toString());
       reject();
     });
   });

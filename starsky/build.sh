@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Windows 64 bits: 'win7-x64'
+# Mac: 'osx.10.12-x64'
+# ARM64: 'linux-arm64'
+# Raspberry Pi: 'linux-arm'
+# Windows 32 bits: 'win7-x86'
+
 # >>>>>>>>>>>                RUN FIRST!!    >>>
 # dotnet new tool-manifest
 # dotnet tool install Cake.Tool

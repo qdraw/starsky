@@ -1,5 +1,6 @@
 import * as BrowserWindow from "electron";
 import * as appConfig from "electron-settings";
+import * as logger from "../logger/logger";
 import * as windowStateKeeper from "../window-state-keeper/window-state-keeper";
 import * as shouldItUpdate from "./should-it-update";
 import createCheckForUpdatesContainerWindow, {
@@ -40,6 +41,15 @@ jest.mock("electron", () => {
 });
 
 describe("create main window", () => {
+  beforeAll(() => {
+    jest.spyOn(logger, "default").mockImplementation(() => {
+      return {
+        warn: jest.fn(),
+        info: jest.fn()
+      };
+    });
+  });
+
   describe("checkForUpdatesWindow", () => {
     it("should call browserWindow", async () => {
       jest
@@ -160,6 +170,11 @@ describe("create main window", () => {
     });
 
     it("should reject when shouldItUpdate fails", (done) => {
+      jest.spyOn(logger, "default").mockImplementation(() => {
+        return {
+          warn: jest.fn()
+        };
+      });
       jest
         .spyOn(windowStateKeeper, "windowStateKeeper")
         .mockImplementationOnce(() => Promise.resolve(mockWindowStateKeeper));

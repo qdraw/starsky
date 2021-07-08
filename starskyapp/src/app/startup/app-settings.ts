@@ -1,4 +1,5 @@
 import * as appConfig from "electron-settings";
+import logger from "../logger/logger";
 
 function defaultAppSettings(): string {
   appConfig.configure({
@@ -7,7 +8,7 @@ function defaultAppSettings(): string {
   });
 
   const appPath = appConfig.file();
-  console.log("app-settings path :> \n" + appPath);
+  logger.info("app-settings path :> \n" + appPath);
   return appPath;
 }
 

@@ -1,5 +1,6 @@
 import { net } from "electron";
 import * as fs from "fs";
+import logger from "../logger/logger";
 
 export function downloadNetRequest(
   url: string,
@@ -22,14 +23,8 @@ export function downloadNetRequest(
     request.setHeader("Accept", "/*");
 
     request.on("response", (response) => {
-      // console.log(
-      //   `${url} statusCode ${response.statusCode} - HEADERS: ${JSON.stringify(
-      //     response.headers
-      //   )}`
-      // );
-
       if (response.statusCode !== 200) {
-        console.log(response.statusCode);
+        logger.info(response.statusCode);
         reject(response.statusCode);
         return;
       }

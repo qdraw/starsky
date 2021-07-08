@@ -23,6 +23,7 @@ import UrlQuery from "../config/url-query";
 import { ipRegex, urlRegex } from "../config/url-regex";
 import { fileSelectorWindow } from "../file-selector-window/file-selector-window";
 import { SetupFileWatcher } from "../file-watcher/setup-file-watcher";
+import logger from "../logger/logger";
 import createMainWindow from "../main-window/create-main-window";
 import { mainWindows } from "../main-window/main-windows.const";
 import { GetNetRequest } from "../net-request/get-net-request";
@@ -130,9 +131,8 @@ export async function LocationUrlCallback(
         isLocal: false
       } as IlocationUrlSettings;
 
-      console.log("response >");
-
-      console.log(response);
+      logger.info("ipc-bridge response >");
+      logger.info(response);
 
       var locationOk = response.statusCode == 200 || response.statusCode == 503;
       if (locationOk) {
@@ -145,8 +145,8 @@ export async function LocationUrlCallback(
         }, 100);
       }
 
-      console.log("locationOk >");
-      console.log(locationOk);
+      logger.info("ipc-bridge locationOk >");
+      logger.info(locationOk);
 
       responseSettings.isValid = locationOk;
 
@@ -155,7 +155,8 @@ export async function LocationUrlCallback(
       event.reply(LocationUrlIpcKey, {
         isValid: false,
         isLocal: false,
-        location: args
+        location: args,
+        reason: error
       } as IlocationUrlSettings);
     }
     return;
