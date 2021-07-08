@@ -1,6 +1,9 @@
 import * as os from "os";
 import * as path from "path";
-
+/**
+ * App Data folder
+ * @returns AppData
+ */
 export function electronCacheLocation() {
   switch (process.platform) {
     case "darwin":

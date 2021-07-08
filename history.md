@@ -66,6 +66,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added)   _App_ Add logging to app and write it to disk (PR #423)
 - [x]   (Fixed) _Back-end_ Fix issue where sync with empty database adds a folder with only / to view (PR #423)
 - [x]   (Changed)  _Back-end_ Enable useDiskWatcher by default, so file changes are picked up directly (PR #423)
+- [x]   (Added)  _App_ Logs are stored by default in AppData or Application Support or .config folder (PR #423)
 
 # version 0.4.9 - 2021-06-17
 - [x]   (Fixed) _Front-end_ Show error when update fails in archive list (PR #391)
