@@ -159,7 +159,7 @@ npm install --save @types/node
 > Note:
 > `@types/storybook__react`is deprecated but needed to build devDependencies
 
-> @types/node 15.x is used instead of 12.x
+> @types/node 16.x is used instead of 12.x
 
 Remove this package
 
