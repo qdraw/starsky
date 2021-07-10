@@ -114,7 +114,7 @@ namespace starsky.Controllers
 
 				var writeStatus =
 					await _iStorage.WriteStreamAsync(tempFileStream, subPath);
-				_logger.LogInformation($"write {tempFileStream} is {writeStatus}");
+				_logger.LogInformation($"write {subPath} is {writeStatus}");
 				await tempFileStream.DisposeAsync();
 				
 				// clear directory cache
