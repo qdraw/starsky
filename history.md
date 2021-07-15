@@ -44,7 +44,7 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.11 _(Unreleased)_ - 2021-06-??
-- nothing yet
+- [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
 
 # version 0.4.10 - 2021-06-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)

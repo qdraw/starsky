@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <!--         Condition=" '$(TargetFramework)' == 'netcoreapp3.1' " -->
-        <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.17</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <!-- SonarQube needs this -->
         <ProjectGuid>{b3342a3e-64e1-442f-b4f7-f7a718508aac}</ProjectGuid>
@@ -19,13 +19,13 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
     <ItemGroup>
-        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.15.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.13" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.13" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.13" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.17" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.17" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.17" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-        <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
-        <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.2.5" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.5" />
         <PackageReference Include="coverlet.collector" Version="3.0.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

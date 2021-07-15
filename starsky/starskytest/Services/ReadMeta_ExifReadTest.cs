@@ -24,6 +24,10 @@ namespace starskytest.Services
 			tagName = null;
 			return false;
 		}
+
+		public MockDirectory(Dictionary<int, string> tagNameMap) : base(tagNameMap)
+		{
+		}
 	}
 
 	[TestClass]
@@ -34,7 +38,7 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetObjectNameNull()
 		{
-			var t = new ReadMetaExif(null).GetObjectName(new MockDirectory());
+			var t = new ReadMetaExif(null).GetObjectName(new MockDirectory(null));
 			Assert.AreEqual( string.Empty,t);
 		}
 
@@ -243,7 +247,7 @@ namespace starskytest.Services
 		// https://github.com/drewnoakes/metadata-extractor-dotnet/blob/master/MetadataExtractor.Tests/DirectoryExtensionsTest.cs
 		private static Directory BuildDirectory(IEnumerable<object> values)
 		{
-			var directory = new MockDirectory();
+			var directory = new MockDirectory(null);
 
 			foreach (var pair in Enumerable.Range(1, int.MaxValue).Zip(values, Tuple.Create))
 				directory.Set(pair.Item1, pair.Item2);
