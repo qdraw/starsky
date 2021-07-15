@@ -62,6 +62,13 @@ async function createMainWindow(
 
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
+    newWindow.webContents.executeJavaScript(
+      'for (const item of document.querySelectorAll("[data-filepath]")) {' +
+        'item.ondragstart = (event) => { window.electron.startDrag("drag-and-drop.md")}' +
+        "}",
+      true
+    );
+
     saveRememberUrl(newWindow);
   });
 

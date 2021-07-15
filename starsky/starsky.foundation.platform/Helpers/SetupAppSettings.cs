@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.json.Services;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 
@@ -31,6 +34,29 @@ namespace starsky.foundation.platform.Helpers
 			// to remove spaces and other signs, check help to get your name
 			var appSettingsMachine =
 				$"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
+			
+			var orderPathsList = new List<string>
+			{
+				Path.Combine(appSettings.BaseDirectoryProject, "appsettings.patch.json"),
+				Path.Combine(appSettings.BaseDirectoryProject, appSettingsMachine + "patch.json"),
+				Path.Combine(appSettings.BaseDirectoryProject, "appsettings.json"),
+				Path.Combine(appSettings.BaseDirectoryProject, appSettingsMachine + "json"),
+			};
+
+			for ( var i = 0; i < orderPathsList.Count; i++ )
+			{
+				if ( !File.Exists(orderPathsList[i]) )
+				{
+					orderPathsList[i] = null;
+				}
+			}
+			var orderPathsListFiltered = orderPathsList.Where(p => !string.IsNullOrEmpty(p)).ToList();
+
+			for ( int i = 1; i < orderPathsListFiltered.Count; i++ )
+			{
+				JsonMerge.Merge()
+			}
+
 
 			builder
 				.SetBasePath(appSettings.BaseDirectoryProject)
