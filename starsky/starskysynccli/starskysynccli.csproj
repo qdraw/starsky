@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{47d7c0fd-cee7-494c-85c2-df63234e0e5b}</ProjectGuid>
-        <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.17</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.4.11</Version>
         <RootNamespace>starskysynccli</RootNamespace>

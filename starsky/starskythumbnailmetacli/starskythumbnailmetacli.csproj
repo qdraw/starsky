@@ -5,7 +5,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{a0cce905-ae43-4d1b-a97a-2bcd2c010ed1}</ProjectGuid>
-        <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.17</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailmetacli</RootNamespace>
         <Version>0.4.11</Version>
     </PropertyGroup>
