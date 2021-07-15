@@ -25,7 +25,7 @@ namespace starskytest.Services
 			return false;
 		}
 
-		public MockDirectory(Dictionary<int, string>? tagNameMap) : base(tagNameMap)
+		public MockDirectory(Dictionary<int, string> tagNameMap) : base(tagNameMap)
 		{
 		}
 	}
