@@ -7,7 +7,7 @@
         <ProjectGuid>{67e3fb34-1ca8-4a28-a0e0-00ff61821002}</ProjectGuid>
         <RuntimeFrameworkVersion>3.1.13</RuntimeFrameworkVersion>
         <RootNamespace>starskythumbnailcli</RootNamespace>
-        <Version>0.4.10</Version>
+        <Version>0.4.11</Version>
     </PropertyGroup>
 
     <ItemGroup>

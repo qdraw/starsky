@@ -43,7 +43,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.10 _(Unreleased)_ - 2021-06-??
+# version 0.4.11 _(Unreleased)_ - 2021-06-??
+- nothing yet
+
+# version 0.4.10 - 2021-06-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)
 - [x]   (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string (PR #412)
 - [x]   (Fixed) _Back-end_ Fix fast updating items to update the cache before update (PR #412)
