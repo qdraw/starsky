@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>starsky.importer</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>sh</string>
+      <string>-c</string>
+      <string>/opt/starsky/starsky-importer.sh</string>
+    </array>
+    <key>WatchPaths</key>
+    <array>
+       <string>/Volumes/</string>
+    </array>
+    <key>StartOnMount</key>
+    <true/>
+    <key>StandardErrorPath</key>
+    <string>/opt/starsky/z-log-starsky-importer.error.log</string>
+    <key>StandardOutPath</key>
+    <string>/opt/starsky/z-log-starsky-importer.out.log</string>
+  </dict>
+</plist>
