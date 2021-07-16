@@ -131,7 +131,7 @@ namespace starsky.Controllers
 					geoIndexGpx
 						.LoopFolder(fileIndexList);
 					
-				if ( _appSettings.Verbose ) Console.Write("¬");
+				if ( _appSettings.IsVerbose() ) Console.Write("¬");
 					
 				geoLocationWrite
 					.LoopFolder(toMetaFilesUpdate, false);
@@ -157,7 +157,7 @@ namespace starsky.Controllers
 				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
 				if ( item.FileHash == newThumb) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash, newThumb);
-				if ( _appSettings.Verbose )
+				if ( _appSettings.IsVerbose() )
 					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
 			}
 

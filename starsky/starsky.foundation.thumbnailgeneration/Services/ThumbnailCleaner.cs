@@ -35,7 +35,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 			}
 
 			var allThumbnailFiles = _thumbnailStorage.GetAllFilesInDirectory(null).ToList();
-			if(_appSettings.Verbose) _logger.LogInformation($"Total files in thumb dir: {allThumbnailFiles.Count}");
+			if(_appSettings.IsVerbose()) _logger.LogInformation($"Total files in thumb dir: {allThumbnailFiles.Count}");
 			
 			foreach ( var thumbnailFile in allThumbnailFiles )
 			{

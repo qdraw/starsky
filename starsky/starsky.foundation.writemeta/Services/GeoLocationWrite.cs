@@ -39,7 +39,7 @@ namespace starsky.foundation.writemeta.Services
             {
                 if (!ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
 
-				if ( _appSettings.Verbose ) Console.Write(" 👟 ");
+				if ( _appSettings.IsVerbose() ) Console.Write(" 👟 ");
 
                 var comparedNamesList = new List<string>
                 {
@@ -60,7 +60,7 @@ namespace starsky.foundation.writemeta.Services
 		                _thumbnailStorage, 
 		                new ReadMeta(_iStorage)).Update(metaFileItem, comparedNamesList);
 	            
-	            if ( _appSettings.Verbose ) Console.Write($"GeoLocationWrite: {metaFileItem.FilePath} ");
+	            if ( _appSettings.IsVerbose() ) Console.Write($"GeoLocationWrite: {metaFileItem.FilePath} ");
             }
 
         }

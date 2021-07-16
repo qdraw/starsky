@@ -123,7 +123,7 @@ namespace starsky.feature.export.Services
 			var doneFileFullPath = Path.Combine(_appSettings.TempFolder,zipOutputFileName) + ".done";
 			await _hostFileSystemStorage.
 				WriteStreamAsync(new PlainTextFileHelper().StringToStream("OK"), doneFileFullPath);
-			if(_appSettings.Verbose) _logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
+			if(_appSettings.IsVerbose()) _logger.LogInformation("[CreateZip] Zip done: " + doneFileFullPath);
 		}
 		
 		/// <summary>

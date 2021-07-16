@@ -38,7 +38,6 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- enable UseDiskWatcher as default
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references

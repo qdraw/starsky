@@ -64,7 +64,7 @@ namespace starsky.Helpers
 		/// <exception cref="ArgumentNullException">swaggerJsonText = null</exception>
 		public bool Add03AppExport(AppSettings appSettings, ISelectorStorage selectorStorage, ISwaggerProvider swaggerProvider)
 		{
-			if ( !appSettings.AddSwagger || !appSettings.AddSwaggerExport ) return false;
+			if ( appSettings.AddSwagger != true || appSettings.AddSwaggerExport != true ) return false;
 			
 			var swaggerJsonText = GenerateSwagger(swaggerProvider, appSettings.Name);
 			if ( string.IsNullOrEmpty(swaggerJsonText) ) throw new ArgumentException("swaggerJsonText = null", nameof(swaggerProvider));

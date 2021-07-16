@@ -67,7 +67,7 @@ namespace starsky.foundation.database.Helpers
 		public void BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
-			if ( _console != null && _appSettings.Verbose ) 
+			if ( _console != null && _appSettings.IsVerbose() ) 
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}

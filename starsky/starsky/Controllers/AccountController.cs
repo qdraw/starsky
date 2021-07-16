@@ -239,7 +239,7 @@ namespace starsky.Controllers
         private bool IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return !_appSettings.IsAccountRegisterOpen && _userManager.AllUsers().Any();
+	        return _appSettings.IsAccountRegisterOpen != true && _userManager.AllUsers().Any();
         }
         
         /// <summary>

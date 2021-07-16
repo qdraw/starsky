@@ -57,7 +57,7 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
-				if (_appSettings.Verbose) _console.WriteLine(isFolderOrFile.ToString());
+				if (_appSettings.IsVerbose()) _console.WriteLine(isFolderOrFile.ToString());
                 
 				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
 				{

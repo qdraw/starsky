@@ -108,7 +108,7 @@ namespace starsky.foundation.writemeta.Helpers
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.Verbose ) Console.WriteLine($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
+			if ( _appSettings.IsVerbose() ) Console.WriteLine($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
 			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;

@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Extensions;
@@ -45,6 +49,45 @@ namespace starsky.foundation.platform.Helpers
 			builder = SetLocalAppData(builder);
 
 			return builder.Build();
+		}
+
+		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
+		{
+			// to remove spaces and other signs, check help to get your name
+			var appSettingsMachine =
+				$"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
+			
+			var paths = new List<string>
+			{
+				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
+				Path.Combine(baseDirectoryProject, "appsettings.json"),
+				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
+				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
+				Environment.GetEnvironmentVariable("app__AppSettingsPath")
+			};
+
+			var appSettingsList = new List<AppSettings>();
+
+			foreach ( var path in paths.Where(File.Exists) )
+			{
+				using ( var openStream = File.OpenRead(path) )
+				{
+					var appSettings = await JsonSerializer.DeserializeAsync<AppSettings>(openStream);
+					appSettingsList.Add(appSettings);
+				}
+			}
+
+			if ( !appSettingsList.Any() ) return new AppSettings();
+
+			var appSetting = appSettingsList.FirstOrDefault();
+			
+			for ( int i = 1; i < appSettingsList.Count; i++ )
+			{
+				var currentAppSetting = appSettingsList[i];
+				AppSettingsCompareHelper.Compare(appSetting, currentAppSetting);
+			}
+
+			return appSetting;
 		}
 
 		/// <summary>

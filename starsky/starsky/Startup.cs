@@ -239,7 +239,7 @@ namespace starsky
 	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        app.UseForwardedHeaders();
 	        
-	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection )
+	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection == true )
 	        {
 		        app.UseHttpsRedirection();
 	        }

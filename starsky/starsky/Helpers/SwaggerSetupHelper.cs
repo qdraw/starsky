@@ -47,7 +47,7 @@ namespace starsky.Helpers
 		{
 			// Use swagger only when enabled, default false
 			// recommend to disable in production
-			if ( _appSettings == null || !_appSettings.AddSwagger ) return;
+			if ( _appSettings == null || _appSettings.AddSwagger != true ) return;
 
 			app.UseSwagger(); // registers the two documents in separate routes
 			app.UseSwaggerUI(options =>

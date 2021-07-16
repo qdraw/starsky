@@ -76,8 +76,11 @@ namespace starsky.feature.webhtmlpublish.Helpers
 
 			var itemName = _publishPreflight.GetNameConsole(inputFullPath,args);
 
-			if(_appSettings.Verbose) _console.WriteLine("Name: " + itemName);
-			if(_appSettings.Verbose) _console.WriteLine("inputPath " + inputFullPath);
+			if ( _appSettings.IsVerbose() )
+			{
+				_console.WriteLine("Name: " + itemName);
+				_console.WriteLine("inputPath " + inputFullPath);
+			}
 
 			// used in this session to find the photos back
 			// outside the webRoot of iStorage

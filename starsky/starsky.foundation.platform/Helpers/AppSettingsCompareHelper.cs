@@ -28,9 +28,9 @@ namespace starsky.foundation.platform.Helpers
 	            // only for when TransferObject is Nullable<bool> and AppSettings is bool
 	            var propertyInfoFromA = propertiesA.FirstOrDefault(p => p.Name == propertyB.Name);
 	            if ( propertyInfoFromA == null ) continue;
-	            if (propertyInfoFromA.PropertyType == typeof(bool) && propertyB.PropertyType == typeof(bool?))
+	            if (propertyInfoFromA.PropertyType == typeof(bool?) && propertyB.PropertyType == typeof(bool?))
 	            {
-		            var oldBoolValue = (bool)propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var oldBoolValue = (bool?)propertyInfoFromA.GetValue(sourceIndexItem, null);
 		            var newBoolValue = (bool?)propertyB.GetValue(updateObject, null);
 		            CompareBool(propertyB.Name, sourceIndexItem, oldBoolValue, newBoolValue, differenceList);
 	            }
@@ -135,7 +135,7 @@ namespace starsky.foundation.platform.Helpers
 	    /// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>
 	    /// <param name="differenceList">list of different values</param>
-        private static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool oldBoolValue, 
+        private static void CompareBool(string propertyName, AppSettings sourceIndexItem, bool? oldBoolValue, 
 		    bool? newBoolValue, List<string> differenceList)
         {
 	        if ( newBoolValue == null ) return;

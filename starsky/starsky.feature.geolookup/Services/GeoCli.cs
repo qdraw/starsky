@@ -151,7 +151,7 @@ namespace starsky.feature.geolookup.Services
 				if ( item.FileHash == newThumb ) continue;
 				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(
 					item.FileHash, newThumb);
-				if ( _appSettings.Verbose )
+				if ( _appSettings.IsVerbose() )
 					_console.WriteLine("thumb+ `" + item.FileHash + "`" + newThumb);
 			}
 			

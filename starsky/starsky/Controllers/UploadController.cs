@@ -246,7 +246,7 @@ namespace starsky.Controllers
 				var subPath = PathHelper.AddSlash(parentDirectory) + fileName;
 				if ( parentDirectory == "/" ) subPath = parentDirectory + fileName;
 
-				if ( !_appSettings.UseDiskWatcher )
+				if ( _appSettings.UseDiskWatcher == false )
 				{
 					await new SyncSingleFile(_appSettings, _query, 
 						_iStorage, _logger).UpdateSidecarFile(subPath);

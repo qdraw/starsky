@@ -231,7 +231,7 @@ namespace starsky.feature.webhtmlpublish.Services
 		    await _hostFileSystemStorage.WriteStreamAsync(stream, 
 			    Path.Combine(outputParentFullFilePathFolder, currentProfile.Path));
 
-		    _console.Write(_appSettings.Verbose ? embeddedResult +"\n" : "•");
+		    _console.Write(_appSettings.IsVerbose() ? embeddedResult +"\n" : "•");
 
 		    return new Dictionary<string, bool>
 		    {

@@ -163,7 +163,12 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
-		public bool Verbose { get; set; }
+		public bool? Verbose { get; set; }
+
+		public bool IsVerbose()
+		{
+			return Verbose == true;
+		}
 
 		// Used in the webhtmlcli to store the log item name
 		// used for the url
@@ -430,24 +435,24 @@ namespace starsky.foundation.platform.Models
 		}
         
 		// C# 6+ required for this
-		public bool AddMemoryCache { get; set; } = true;
+		public bool? AddMemoryCache { get; set; } = true;
         
 		/// <summary>
 		/// Display swagger pages
 		/// </summary>
-		public bool AddSwagger { get; set; } = false;
+		public bool? AddSwagger { get; set; } = false;
 
 		/// <summary>
 		/// Export swagger pages (use AddSwagger and AddSwaggerExport to export)
 		/// </summary>	    
-		public bool AddSwaggerExport { get; set; } = false;
+		public bool? AddSwaggerExport { get; set; } = false;
 
 		public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
 
 		/// <summary>
 		/// Set Meta Thumbnails on import
 		/// </summary>
-		public bool MetaThumbnailOnImport { get; set; } = true;
+		public bool? MetaThumbnailOnImport { get; set; }
 		
 		private string _webftp; 
 		public string WebFtp
@@ -497,7 +502,7 @@ namespace starsky.foundation.platform.Models
 		/// Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)
 		/// This setting is by default false. The only 2 build-in exceptions are when there are no accounts or you already logged in
 		/// </summary>
-		public bool IsAccountRegisterOpen { get; set; } = false;
+		public bool? IsAccountRegisterOpen { get; set; }
 
 		/// <summary>
 		/// When a new account is created, which Account Role is assigned 
@@ -537,22 +542,22 @@ namespace starsky.foundation.platform.Models
 		/// You should enable this when going to production
 		/// Ignored in Debug/Develop mode
 		/// </summary>
-		public bool UseHttpsRedirection { get; set; } = false;
+		public bool? UseHttpsRedirection { get; set; } = false;
 
 		/// <summary>
 		/// Use WebSockets to update the UI realtime
 		/// </summary>
-		public bool UseRealtime { get; set; } = true;
+		public bool? UseRealtime { get; set; } = true;
 
 		/// <summary>
 		/// Watch the fileSystem for changes
 		/// </summary>
-		public bool UseDiskWatcher { get; set; } = true;
+		public bool? UseDiskWatcher { get; set; } = true;
 	    
 		/// <summary>
 		/// Check if there are updates
 		/// </summary>
-		public bool CheckForUpdates { get; set; } = true;
+		public bool? CheckForUpdates { get; set; } = true;
 
 		/// <summary>
 		/// Ignore the directories when running sync
@@ -711,7 +716,7 @@ namespace starsky.foundation.platform.Models
 				throw  new ArgumentException("The 'DatabaseConnection' field is null or empty");
 
 			if(DatabaseType != DatabaseTypeList.Sqlite) return connectionString; // mysql does not need this
-			if(Verbose) Console.WriteLine(connectionString);            
+			if(IsVerbose()) Console.WriteLine(connectionString);            
 
 			if(!connectionString.Contains("Data Source=")) throw 
 				new ArgumentException("missing Data Source in connection string");

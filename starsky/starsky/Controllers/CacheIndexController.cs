@@ -32,7 +32,7 @@ namespace starsky.Controllers
 	    public IActionResult ListCache(string f = "/")
 	    {
 		    //For folder paths only
-		    if (!_appSettings.AddMemoryCache)
+		    if (_appSettings.AddMemoryCache == false)
 		    {
 			    Response.StatusCode = 412;
 			    return Json("cache disabled in config");
@@ -65,7 +65,7 @@ namespace starsky.Controllers
         public IActionResult RemoveCache(string f = "/")
         {
             //For folder paths only
-            if (!_appSettings.AddMemoryCache)
+            if (_appSettings.AddMemoryCache == false)
             {
 				Response.StatusCode = 412;
 				return Json("cache disabled in config");

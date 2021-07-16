@@ -31,7 +31,7 @@ namespace starskycore.Services
                 {
                     // photo
                     Console.Write("+");
-                    if(_appSettings.Verbose) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
+                    if(_appSettings.IsVerbose()) Console.WriteLine("\nAddFileToDatabase: " + singleFolderDbStyle);
 
                     // Check the headers of a file to match a type
                     var imageFormat = ExtensionRolesHelper.GetImageFormat(
