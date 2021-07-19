@@ -45,7 +45,7 @@ namespace starsky
         public Startup(IHostEnvironment hostEnvironment = null)
 		{
 			_hostEnvironment = hostEnvironment;
-			_configuration = SetupAppSettings.AppSettingsToBuilder();
+			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
 		}
 
         // This method gets called by the runtime. Use this method to add services to the container.

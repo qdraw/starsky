@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -55,9 +56,11 @@ namespace starsky.Controllers
 		public async Task<IActionResult> UpdateAppSettings(AppSettingsTransferObject appSettingTransferObject  )
 		{
 			if ( !string.IsNullOrEmpty(appSettingTransferObject.StorageFolder) && 
-			     !_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
+			     (!_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) || 
+			      !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__storageFolder")) ) )
 			{
-				return NotFound("location on disk not found");
+				return NotFound(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__storageFolder")) ? 
+					"You should use env variable to update" : "Location on disk not found");
 			}
 			
 			// To update current session

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.webftppublish.FtpAbstractions.Interfaces;
 using starsky.feature.webftppublish.Helpers;
 using starsky.foundation.injection;
@@ -11,13 +12,13 @@ namespace starskywebftpcli
 {
 	public static class Program
 	{
-		public static void Main(string[] args)
+		public static async Task Main(string[] args)
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
 			
 			// Setup AppSettings
-			var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
+			var services = await SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
 
 			// Inject services
 			new RegisterDependencies().Configure(services);

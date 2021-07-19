@@ -21,7 +21,7 @@ namespace starskythumbnailcli
 			var services = new ServiceCollection();
 
 			// Setup AppSettings
-			services = SetupAppSettings.FirstStepToAddSingleton(services);
+			services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
 			// Inject services
 			new RegisterDependencies().Configure(services);

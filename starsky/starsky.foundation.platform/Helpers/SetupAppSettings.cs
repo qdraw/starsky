@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Extensions;
+using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -15,10 +16,10 @@ namespace starsky.foundation.platform.Helpers
 {
 	public static class SetupAppSettings
 	{
-		public static ServiceCollection FirstStepToAddSingleton(ServiceCollection services)
+		public static async Task<ServiceCollection> FirstStepToAddSingleton(ServiceCollection services)
 		{
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-			var configurationRoot = AppSettingsToBuilder();
+			var configurationRoot = await AppSettingsToBuilder();
 			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
 			return services;
 		}
@@ -27,36 +28,32 @@ namespace starsky.foundation.platform.Helpers
 		/// Default appSettings.json to builder
 		/// </summary>
 		/// <returns>ConfigBuilder</returns>
-		public static IConfigurationRoot AppSettingsToBuilder()
+		public static async Task<IConfigurationRoot> AppSettingsToBuilder()
 		{
 			var appSettings = new AppSettings();
 			var builder = new ConfigurationBuilder();
-		    
-			// to remove spaces and other signs, check help to get your name
-			var appSettingsMachine =
-				$"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
+
+			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(settings);
 
 			builder
-				.SetBasePath(appSettings.BaseDirectoryProject)
-				.AddJsonFile("appsettings.patch.json",true)
-				.AddJsonFile(appSettingsMachine + "patch.json", optional: true)
-				.AddJsonFile("appsettings.json",true)
-				.AddJsonFile(appSettingsMachine + "json", optional: true)
+				.AddJsonStream(new MemoryStream(utf8Bytes))
 				// overwrite envs
 				// current dir gives problems on linux arm
 				.AddEnvironmentVariables();
 
-			builder = SetLocalAppData(builder);
-
 			return builder.Build();
+		}
+
+		internal static string AppSettingsMachineNameWithDot()
+		{
+			// to remove spaces and other signs, check help to get your name
+			return $"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
 		}
 
 		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
 		{
-			// to remove spaces and other signs, check help to get your name
-			var appSettingsMachine =
-				$"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
-			
+			var appSettingsMachine = AppSettingsMachineNameWithDot();
 			var paths = new List<string>
 			{
 				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
@@ -72,8 +69,15 @@ namespace starsky.foundation.platform.Helpers
 			{
 				using ( var openStream = File.OpenRead(path) )
 				{
-					var appSettings = await JsonSerializer.DeserializeAsync<AppSettings>(openStream);
-					appSettingsList.Add(appSettings);
+					var appSettings = await JsonSerializer.DeserializeAsync<AppContainerAppSettings>(openStream, new JsonSerializerOptions
+					{
+						PropertyNameCaseInsensitive = true,
+						Converters =
+						{
+							new JsonBoolQuotedConverter(),
+						},
+					});
+					appSettingsList.Add(appSettings.App);
 				}
 			}
 
@@ -81,7 +85,7 @@ namespace starsky.foundation.platform.Helpers
 
 			var appSetting = appSettingsList.FirstOrDefault();
 			
-			for ( int i = 1; i < appSettingsList.Count; i++ )
+			for ( var i = 1; i < appSettingsList.Count; i++ )
 			{
 				var currentAppSetting = appSettingsList[i];
 				AppSettingsCompareHelper.Compare(appSetting, currentAppSetting);
@@ -108,26 +112,6 @@ namespace starsky.foundation.platform.Helpers
             
 			return serviceProvider.GetRequiredService<AppSettings>();
 		}
-	
-		/// <summary>
-		/// In the OS there is a folder to read and write,
-		/// when you replace the entire application settings should not be overwritten
-		/// Only if env variable app__AppSettingsPath exist
-		/// </summary>
-		/// <param name="builder">ConfigBuilder</param>
-		/// <returns>Set the env variable `app__AppSettingsPath` to enable this feature</returns>
-		private static ConfigurationBuilder SetLocalAppData(ConfigurationBuilder builder)
-		{
-			var appSettingsPath = Environment.GetEnvironmentVariable("app__AppSettingsPath");
-			
-			if ( appSettingsPath == null || !File.Exists(appSettingsPath))
-			{
-				// defaults to appsettings.patch.json
-				return builder;
-			}
 
-			builder.AddJsonFile(appSettingsPath, false, true);
-			return builder;
-		}
 	}
 }
