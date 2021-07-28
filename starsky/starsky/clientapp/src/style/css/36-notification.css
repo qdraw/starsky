@@ -14,7 +14,7 @@
   margin-right: 10px;
   padding-bottom: 10px;
   display: flex;
-  z-index: 7;
+  z-index: 501;
 }
 
 .notification a {
