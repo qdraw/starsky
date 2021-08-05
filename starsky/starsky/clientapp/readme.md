@@ -187,7 +187,10 @@ Used when running `npm start`
 This is added to the `package.json`
 
 ```json
+"postbuild": "npm run lint",
 "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+"lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
+"format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
 "upgrade": "echo 'check readme.md 20210311  v4.0.3'"
