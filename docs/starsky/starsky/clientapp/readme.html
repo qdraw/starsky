@@ -152,10 +152,13 @@ npm install --save @types/node</code></pre>
 "homepage": "/starsky/",</code></pre>
 <h4 id="npm-run-testci-is-used-by-the-build-script-to-run-all-tests-and-eslint"><code>npm run test:ci</code> is used by the build-script to run all tests and ESlint</h4>
 <p>This is added to the <code>package.json</code></p>
-<pre><code class="json language-json">"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+<pre><code class="json language-json">"postbuild": "npm run lint",
+"lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 0",
+"lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
+"format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.html 20210311  v4.0.3'"</code></pre>
+"upgrade": "echo 'check readme.md 20210311  v4.0.3'"</code></pre>
 <h3 id="collectcoveragefrom-and-coveragereporters">collectCoverageFrom and coverageReporters</h3>
 <p>With jest <code>collectCoverageFrom</code> and <code>coverageReporters</code> are used to get the right output</p>
 <pre><code class="json language-json">"jest": {
