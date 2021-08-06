@@ -34,14 +34,16 @@ namespace starsky.foundation.platform.Helpers
 			var builder = new ConfigurationBuilder();
 
 			var settings = await MergeJsonFiles(appSettings.BaseDirectoryProject);
-			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(settings);
+			
+			// Make sure is wrapped in a AppContainer app
+			var utf8Bytes = JsonSerializer.SerializeToUtf8Bytes(new AppContainerAppSettings{ App = settings});
 
 			builder
 				.AddJsonStream(new MemoryStream(utf8Bytes))
 				// overwrite envs
 				// current dir gives problems on linux arm
 				.AddEnvironmentVariables();
-
+				
 			return builder.Build();
 		}
 

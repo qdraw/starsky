@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -38,8 +39,14 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettings_StorageFolder()
 		{
-			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage());
-			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject {Verbose = true, StorageFolder = "test"}) as JsonResult;
+			var storage = new FakeIStorage(new List<string> { "test" });
+			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			
+			var controller = new AppSettingsController(new AppSettings(), new FakeSelectorStorage(storage));
+			var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject
+			{
+				Verbose = true, StorageFolder = "test"
+			}) as JsonResult;
 			var result = actionResult.Value as AppSettings;
 			Assert.IsTrue(result.Verbose);
 			Assert.AreEqual(PathHelper.AddBackslash("test"),result.StorageFolder);
@@ -48,21 +55,19 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task UpdateAppSettingsTest_StorageFolder_JsonCheck()
 		{
-			var storageProvider = new FakeSelectorStorage();
+			var storage = new FakeIStorage(new List<string> { "test" });
+			Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+			
 			var appSettings = new AppSettings
 			{
 				AppSettingsPath = $"{Path.DirectorySeparatorChar}temp{Path.DirectorySeparatorChar}appsettings.json"
 			};
-			var controller = new AppSettingsController(appSettings, storageProvider);
+			var controller = new AppSettingsController(appSettings, new FakeSelectorStorage(storage));
 			await controller.UpdateAppSettings(
 				new AppSettingsTransferObject
 				{
 					Verbose = true, StorageFolder = "test"
 				});
-
-			var storage =
-				storageProvider.Get(SelectorStorage.StorageServices
-					.HostFilesystem);
 
 			Assert.IsTrue(storage.ExistFile(appSettings.AppSettingsPath));
 
