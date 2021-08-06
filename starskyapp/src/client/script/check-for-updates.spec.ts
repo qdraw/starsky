@@ -21,7 +21,7 @@ describe("reload redirect", () => {
   it("status success", async () => {
     mockFetch(200);
     const result = await checkForUpdates("t", "1");
-    expect(result).toBeUndefined();
+    expect(result).toBe(200);
   });
 
   it("status upgrade", async () => {
@@ -35,31 +35,32 @@ describe("reload redirect", () => {
     ).toBe("block");
 
     document.body.innerHTML = "";
-    expect(result).toBeUndefined();
+    expect(result).toBe(400);
   });
 
-  it("non valid status", async (done) => {
+  it("non valid status", async () => {
     mockFetch(500);
     jest.spyOn(window, "alert").mockImplementationOnce(() => {});
 
-    checkForUpdates("t", "1")
-      .then(() => {
-        throw new Error("should fail");
-      })
-      .catch(() => {
-        done();
-      });
+    let errorMessage = null;
+    try {
+      await checkForUpdates("t", "1");
+    } catch (error) {
+      errorMessage = error;
+    }
+    expect(errorMessage).toBeUndefined();
   });
 
-  it("reject from api", async (done) => {
+  it("reject from api", async () => {
     mockFetchReject();
     jest.spyOn(window, "alert").mockImplementationOnce(() => {});
-    checkForUpdates("t", "1")
-      .then(() => {
-        throw new Error("should fail");
-      })
-      .catch(() => {
-        done();
-      });
+
+    let errorMessage = null;
+    try {
+      await checkForUpdates("t", "1");
+    } catch (error) {
+      errorMessage = error;
+    }
+    expect(errorMessage).toBeUndefined();
   });
 });
