@@ -158,16 +158,17 @@ describe("main", () => {
     expect(restoreMainWindowSpy).toBeCalledTimes(1);
   });
 
+  let originalPlatform = process.platform;
   describe("platform", () => {
     beforeAll(function () {
-      this.originalPlatform = process.platform;
+      originalPlatform = process.platform;
       Object.defineProperty(process, "platform", {
         value: "MockOS"
       });
     });
     afterAll(function () {
       Object.defineProperty(process, "platform", {
-        value: this.originalPlatform
+        value: originalPlatform
       });
     });
 
