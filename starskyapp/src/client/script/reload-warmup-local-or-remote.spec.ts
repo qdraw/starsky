@@ -85,7 +85,7 @@ describe("reload redirect", () => {
 
       const checkForUpdatesSpy = jest
         .spyOn(checkForUpdates, "checkForUpdates")
-        .mockImplementationOnce(() => Promise.resolve());
+        .mockImplementationOnce(() => Promise.resolve(200));
 
       warmupLocalOrRemote();
       expect(window.api.send).toHaveBeenNthCalledWith(

@@ -3,7 +3,7 @@ import UrlQuery from "../../app/config/url-query";
 export function checkForUpdates(
   domainUrl: string,
   apiVersion: string
-): Promise<void> {
+): Promise<number> {
   return new Promise(function (resolve, reject) {
     fetch(domainUrl + new UrlQuery().HealthVersionApi(apiVersion), {
       method: "POST",
@@ -13,7 +13,7 @@ export function checkForUpdates(
     })
       .then((versionResponse) => {
         if (versionResponse.status === 200) {
-          resolve();
+          resolve(200);
           return;
         }
 
@@ -34,7 +34,7 @@ export function checkForUpdates(
           if (preloaderElement) {
             preloaderElement.style.display = "none";
           }
-          resolve();
+          resolve(400);
           return;
         }
 

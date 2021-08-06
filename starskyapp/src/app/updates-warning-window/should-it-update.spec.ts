@@ -101,14 +101,13 @@ describe("SkipDisplayOfUpdate", () => {
         .spyOn(GetNetRequest, "GetNetRequest")
         .mockImplementationOnce(() => Promise.reject());
 
-      shouldItUpdate()
-        .catch((result) => {
-          expect(result).toBeUndefined();
-          done();
-        })
-        .then(() => {
-          new Error("should return catch");
-        });
+      let errorMessage = null;
+      try {
+        await shouldItUpdate();
+      } catch (error) {
+        errorMessage = error;
+      }
+      expect(errorMessage).toBeUndefined();
     });
   });
 });
