@@ -24,7 +24,7 @@
     "@types/jest": "^26.0.24",
     "@types/node": "^16.4.13",
     "electron": "^13.1.8",
-    "electron-builder": "^22.11.7",
+    "electron-builder": "^22.11.3",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.4",
