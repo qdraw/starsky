@@ -96,7 +96,7 @@ describe("SkipDisplayOfUpdate", () => {
       const result = await shouldItUpdate();
       expect(result).toBeFalsy();
     });
-    it("no connection", async (done) => {
+    it("no connection", async () => {
       jest
         .spyOn(GetNetRequest, "GetNetRequest")
         .mockImplementationOnce(() => Promise.reject());
