@@ -25,12 +25,12 @@ const winstonLogger = winston.createLogger({
 
 class logger {
   static info(message: any, ...meta: any[]) {
-    if (!winstonLogger || !winstonLogger.info) {
+    try {
+      winstonLogger.info(message, meta);
+    } catch (error) {
       // keep console log here
       console.log(message, meta);
-      return;
     }
-    winstonLogger.info(message, meta);
   }
   static warn(message: any, ...meta: any[]) {
     try {
