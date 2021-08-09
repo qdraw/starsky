@@ -67,7 +67,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public async Task MergeJsonFiles_DefaultFile()
 		{
 			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
-			_hostStorage.FolderDelete(testDir);
+			if ( _hostStorage.ExistFolder(testDir) )
+			{
+				_hostStorage.FolderDelete(testDir);
+			}
 			_hostStorage.CreateDirectory(testDir);
 
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
@@ -83,7 +86,10 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public async Task MergeJsonFiles_StackPatchFile()
 		{
 			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
-			_hostStorage.FolderDelete(testDir);
+			if ( _hostStorage.ExistFolder(testDir) )
+			{
+				_hostStorage.FolderDelete(testDir);
+			}
 			_hostStorage.CreateDirectory(testDir);
 
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
