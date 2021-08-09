@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
-			Assert.AreEqual("/data/test" + Path.DirectorySeparatorChar, result.StorageFolder);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 		}
 		
 		[TestMethod]
@@ -102,7 +102,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				" }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
 			
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
-			Assert.AreEqual("/data/test"+ Path.DirectorySeparatorChar, result.StorageFolder);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 		}
 				
@@ -125,7 +125,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Environment.SetEnvironmentVariable("app__AppSettingsPath", Path.Combine(testDir, "appsettings_ref_patch.json"));
 			
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
-			Assert.AreEqual("/data/test"+ Path.DirectorySeparatorChar, result.StorageFolder);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 			
 			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
