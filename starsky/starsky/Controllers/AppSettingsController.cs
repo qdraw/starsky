@@ -55,12 +55,17 @@ namespace starsky.Controllers
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
 		public async Task<IActionResult> UpdateAppSettings(AppSettingsTransferObject appSettingTransferObject  )
 		{
-			if ( !string.IsNullOrEmpty(appSettingTransferObject.StorageFolder) && 
-			     (!_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) || 
-			      !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__storageFolder")) ) )
+			if ( !string.IsNullOrEmpty(appSettingTransferObject.StorageFolder))
 			{
-				return NotFound(string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__storageFolder")) ? 
-					"You should use env variable to update" : "Location on disk not found");
+				if ( !_appSettings.StorageFolderAllowEdit )
+				{
+					Response.StatusCode = 403;
+					return Content("There is an Environment variable set so you can't update it here");
+				}
+				if (!_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
+				{
+					return NotFound("Location on disk not found");
+				}
 			}
 			
 			// To update current session

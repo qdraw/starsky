@@ -6,6 +6,7 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import { INavigateState } from "../../../interfaces/INavigateState";
 import { Language } from "../../../shared/language";
 import { URLPath } from "../../../shared/url-path";
+import { UrlQuery } from "../../../shared/url-query";
 import FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import ListImageViewSelectContainer from "../list-image-view-select-container/list-image-view-select-container";
@@ -16,6 +17,7 @@ interface ItemListProps {
   colorClassUsage: Array<number>;
   pageType?: PageType;
   iconList?: boolean;
+  subPath?: string;
 }
 /**
  * A list with links to the items
@@ -31,6 +33,10 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
   const MessageNoPhotosInFolder = language.text(
     "Er zijn geen foto's in deze map",
     "There are no photos in this folder"
+  );
+  const MessageNewUserNoPhotosInFolder = language.text(
+    "Nieuw? Stel je schijflocatie in de instellingen. ",
+    "New? Set your drive location in the settings. "
   );
   const MessageItemsOutsideFilter = language.text(
     "Er zijn meer items, maar deze vallen buiten je filters. Om alles te zien klik op 'Herstel Filter'",
@@ -71,17 +77,26 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
 
   return (
     <div className={props.iconList ? "folder" : "folder-flat"} ref={folderRef}>
-      {props.pageType !== PageType.Loading ? (
-        items.length === 0 ? (
-          props.colorClassUsage.length >= 1 ? (
-            <div className="warning-box warning-box--left">
-              {MessageItemsOutsideFilter}
-            </div>
-          ) : (
-            <div className="warning-box">{MessageNoPhotosInFolder}</div>
-          )
-        ) : null
+      {props.pageType !== PageType.Loading &&
+      props.subPath !== "/" &&
+      items.length === 0 ? (
+        props.colorClassUsage.length >= 1 ? (
+          <div className="warning-box warning-box--left">
+            {MessageItemsOutsideFilter}
+          </div>
+        ) : (
+          <div className="warning-box">{MessageNoPhotosInFolder}</div>
+        )
       ) : null}
+
+      {props.pageType !== PageType.Loading &&
+      items.length === 0 &&
+      props.subPath === "/" ? (
+        <a className="warning-box" href={new UrlQuery().UrlPreferencesPage()}>
+          {MessageNewUserNoPhotosInFolder} {MessageNoPhotosInFolder}
+        </a>
+      ) : null}
+
       {items.map((item) => (
         <ListImageViewSelectContainer
           item={item}

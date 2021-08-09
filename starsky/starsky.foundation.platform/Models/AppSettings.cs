@@ -163,6 +163,13 @@ namespace starsky.foundation.platform.Models
 			}
 		}
 
+		/// <summary>
+		/// Allow overwrite this name in AppSettingsController
+		/// </summary>
+		public bool StorageFolderAllowEdit =>
+			string.IsNullOrEmpty(
+				Environment.GetEnvironmentVariable("app__storageFolder"));
+
 		public bool? Verbose { get; set; }
 
 		public bool IsVerbose()
