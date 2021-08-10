@@ -113,6 +113,30 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 		}
+		
+		[TestMethod]
+		public async Task MergeJsonFiles_StackMachineNamePatchFile()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
+			if ( _hostStorage.ExistFolder(testDir) )
+			{
+				_hostStorage.FolderDelete(testDir);
+			}
+			_hostStorage.CreateDirectory(testDir);
+
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n   " +
+				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+			
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+				" }\n}\n"), Path.Combine(testDir, $"{SetupAppSettings.AppSettingsMachineNameWithDot()}json"));
+			
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
+			Assert.AreEqual(false, result.AddSwagger);
+		}
 				
 		[TestMethod]
 		public async Task MergeJsonFiles_StackFromEnv()
