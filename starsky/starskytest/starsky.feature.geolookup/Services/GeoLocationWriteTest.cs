@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starskycore.Interfaces;
@@ -21,9 +22,7 @@ namespace starskytest.starskyGeoCore.Services
 		{
 			// get the service
 			_appSettings = new AppSettings();
-	        
 			_exifTool = new FakeExifTool(new FakeIStorage(),_appSettings );
-
 		}
 
 		[TestMethod]
@@ -43,9 +42,37 @@ namespace starskytest.starskyGeoCore.Services
 					LocationCountry = "country"
 				}
 			};
+			var console = new FakeConsoleWrapper();
+
 			var fakeIStorage = new FakeIStorage();
-			new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage)).LoopFolder(metaFilesInDirectory, true);
+			new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage),console).LoopFolder(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
+			Assert.AreEqual(0,console.WrittenLines.Count);
+		}
+
+		[TestMethod]
+		public void GeoLocationWriteLoopFolderTest_verbose()
+		{
+			var metaFilesInDirectory = new List<FileIndexItem>
+			{
+				new FileIndexItem
+				{
+					FileName = "test.jpg", //<= used to check
+					ParentDirectory = "/",
+					Latitude = 1,
+					Longitude = 1,
+					LocationAltitude = 1,
+					LocationCity = "city",
+					LocationState = "state",
+					LocationCountry = "country"
+				}
+			};
+			var console = new FakeConsoleWrapper();
+			new GeoLocationWrite(new AppSettings{Verbose = true}, _exifTool, new FakeSelectorStorage(),console)
+				.LoopFolder(metaFilesInDirectory, 
+				true);
+
+			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("GeoLocationWrite"));
 		}
 	}
 }
