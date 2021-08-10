@@ -69,9 +69,9 @@ function getSamplePhotos {
   starskysynchronizecli=($(find $SOURCE_DIR -type f -name "starskysynchronizecli.csproj"))
   dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -v
 
-  echo "run meta thumbnailer"
-  starskythumbnailmetacli=($(find $SOURCE_DIR -type f -name "starskythumbnailmetacli.csproj"))
-  dotnet run --project ${starskythumbnailmetacli[0]} --configuration Release -- --basepath $STORAGE_FOLDER -v
+  echo "run thumbnailer"
+  starskythumbnailcli=($(find $SOURCE_DIR -type f -name "starskythumbnailcli.csproj"))
+  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER -v -t true
 }
 
 function start_pushd {
