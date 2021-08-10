@@ -83,7 +83,12 @@ namespace starsky.foundation.writemeta.Services
 			string[] getChecksumsFromTextFile)
 		{
 
-			if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return true;
+			if ( _hostFileSystemStorage.ExistFile(
+				ExeExifToolUnixFullFilePath()) )
+			{
+				_logger.LogInformation($"[DownloadForUnix] ExifTool skip: {ExeExifToolWindowsFullFilePath()}");
+				return true;
+			}
 			
 			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
 			var unixDownloaded = await _httpClientHelper.Download(
@@ -107,28 +112,30 @@ namespace starsky.foundation.writemeta.Services
 					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
-
+			
+			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.IsVerbose() ) Console.WriteLine($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
+			if ( _appSettings.IsVerbose() ) _logger.LogInformation($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
 			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
 			
 			if (! _hostFileSystemStorage.ExistFile("/bin/chmod") )
 			{
-				Console.WriteLine("WARNING: /bin/chmod does not exist");
+				_logger.LogError("[RunChmodOnExifToolUnixExe] WARNING: /bin/chmod does not exist");
 				return true;
 			}
 			
 			// command.run does not care about the $PATH
 			var result = await Command.Run("/bin/chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
 			if ( result.Success ) return true;
-			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			
+			_logger.LogError($"command failed with exit code {result.ExitCode}: {result.StandardError}");
 			return false;
 		}
 
