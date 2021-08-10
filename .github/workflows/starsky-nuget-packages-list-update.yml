@@ -1,4 +1,4 @@
-name: Docs Update
+name: Nuget packages list update
 on:
   push:
     branches:
