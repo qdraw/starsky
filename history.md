@@ -44,10 +44,10 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.4.11 _(Unreleased)_ - 2021-08-??
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
-- [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear
-- [x]   (Fixed) _Back-end_ Change how appSettings are read to merge patch files
-- [x]   (Security) _Front-end_ Upgrade npm packages for clientapp/starskyapp
-- [x]   (Changed) _Back-end_ Config order is documented in verbose help (add: -h -v to cli apps) 
+- [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear (PR #429)
+- [x]   (Fixed) _Back-end_ Change how appSettings are read to merge patch files (PR #429) 
+- [x]   (Security) _Front-end_ Upgrade npm packages for clientapp/starskyapp (PR #431)
+- [x]   (Changed) _Back-end_ Config order is documented in verbose help (add: -h -v to cli apps)  (PR #432)
 
 # version 0.4.10 - 2021-07-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)
