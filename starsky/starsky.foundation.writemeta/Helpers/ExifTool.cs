@@ -154,7 +154,7 @@ namespace starsky.foundation.writemeta.Helpers
 				//	await cmd.StandardInput.PipeFromAsync(_src).ConfigureAwait(false) await
 				// cmd.StandardOutput.BaseStream.CopyToAsync(ms).ConfigureAwait(false)
 					
-				if ( _appSettings.Verbose ) _logger.LogInformation($"[RunProcessAsync] ~ exifTool {optionsArgs} " +
+				if ( _appSettings.IsVerbose() ) _logger.LogInformation($"[RunProcessAsync] ~ exifTool {optionsArgs} " +
 					$"run with result: {result.Success} ~ ");
 	
 				ms.Seek(0, SeekOrigin.Begin);

@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -54,19 +55,32 @@ namespace starsky.Controllers
 		[Permission(UserManager.AppPermissions.AppSettingsWrite)]
 		public async Task<IActionResult> UpdateAppSettings(AppSettingsTransferObject appSettingTransferObject  )
 		{
+			if ( !string.IsNullOrEmpty(appSettingTransferObject.StorageFolder))
+			{
+				if ( !_appSettings.StorageFolderAllowEdit )
+				{
+					Response.StatusCode = 403;
+					return Content("There is an Environment variable set so you can't update it here");
+				}
+				if (!_hostStorage.ExistFolder(appSettingTransferObject.StorageFolder) )
+				{
+					return NotFound("Location on disk not found");
+				}
+			}
+			
+			// To update current session
 			AppSettingsCompareHelper.Compare(_appSettings, appSettingTransferObject);
 			
 			// should not forget app: prefix
-			var json = JsonSerializer.Serialize(new { app = _appSettings }, new JsonSerializerOptions
+			var jsonOutput = JsonSerializer.Serialize(new { app = appSettingTransferObject }, new JsonSerializerOptions
 			{
 				WriteIndented = true, 
 				Converters =
 				{
 					new JsonBoolQuotedConverter(),
-				}
+				},
+				IgnoreNullValues = true
 			});
-			
-			var jsonOutput = json.Replace(new AppSettings().BaseDirectoryProject, "{AssemblyDirectory}");
 
 			await _hostStorage.WriteStreamAsync(
 				new PlainTextFileHelper().StringToStream(jsonOutput),

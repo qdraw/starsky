@@ -45,7 +45,7 @@ namespace starsky
         public Startup(IHostEnvironment hostEnvironment = null)
 		{
 			_hostEnvironment = hostEnvironment;
-			_configuration = SetupAppSettings.AppSettingsToBuilder();
+			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
 		}
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -239,7 +239,7 @@ namespace starsky
 	        // Enable X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 	        app.UseForwardedHeaders();
 	        
-	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection )
+	        if ( !env.IsDevelopment() &&  _appSettings.UseHttpsRedirection == true )
 	        {
 		        app.UseHttpsRedirection();
 	        }

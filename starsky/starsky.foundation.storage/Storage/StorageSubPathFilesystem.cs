@@ -227,7 +227,7 @@ namespace starsky.foundation.storage.Storage
 		{
 			if ( ! ExistFile(path) ) return Stream.Null;
 			
-			if ( _appSettings.Verbose ) Console.WriteLine(path);
+			if ( _appSettings.IsVerbose() ) Console.WriteLine(path);
 
 			Stream LocalGet()
 			{

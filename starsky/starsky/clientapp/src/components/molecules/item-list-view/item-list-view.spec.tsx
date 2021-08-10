@@ -67,6 +67,32 @@ describe("ItemListView", () => {
       expect(component.text()).toBe("no content");
     });
 
+    it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
+      var component = shallow(
+        <ItemListView
+          iconList={true}
+          fileIndexItems={[]}
+          subPath="/"
+          colorClassUsage={[]}
+        />
+      );
+      expect(component.text()).toBe(
+        "New? Set your drive location in the settings.  There are no photos in this folder"
+      );
+    });
+
+    it("text should be: There are no photos in this folder", () => {
+      var component = shallow(
+        <ItemListView
+          iconList={true}
+          fileIndexItems={[]}
+          subPath="/test"
+          colorClassUsage={[]}
+        />
+      );
+      expect(component.text()).toBe("There are no photos in this folder");
+    });
+
     it("you did select a different colorclass but there a no items with this colorclass", () => {
       var component = shallow(
         <ItemListView

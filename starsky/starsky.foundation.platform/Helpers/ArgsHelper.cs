@@ -278,7 +278,7 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("--verbose or -v == verbose, more detailed info");
 			_console.WriteLine("  use -v -help to show settings: ");
 			
-			if (!_appSettings.Verbose) return;
+			if (!_appSettings.IsVerbose()) return;
 			
 			_console.WriteLine(string.Empty);
 			_console.WriteLine("AppSettings:");
@@ -472,7 +472,7 @@ namespace starsky.foundation.platform.Helpers
 				if ( currentDirectory != _appSettings.BaseDirectoryProject )
 				{
 					path = currentDirectory;
-					if ( _appSettings.Verbose ) Console.WriteLine($">> currentDirectory: {currentDirectory}");
+					if ( _appSettings.IsVerbose() ) Console.WriteLine($">> currentDirectory: {currentDirectory}");
 				}
 			}
 			
@@ -585,7 +585,7 @@ namespace starsky.foundation.platform.Helpers
 				}
 			}
 			
-			if (_appSettings.Verbose) Console.WriteLine(">> GetThumbnail " + isThumbnail);
+			if (_appSettings.IsVerbose()) Console.WriteLine(">> GetThumbnail " + isThumbnail);
 			return isThumbnail;
 		}
 	 
@@ -606,7 +606,7 @@ namespace starsky.foundation.platform.Helpers
 				}
 			}
 			
-			if (_appSettings.Verbose) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
+			if (_appSettings.IsVerbose()) Console.WriteLine(">> isOrphanFolderCheck " + isOrphanFolderCheck);
 			return isOrphanFolderCheck;
 		}
 	 

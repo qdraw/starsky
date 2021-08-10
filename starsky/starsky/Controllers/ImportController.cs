@@ -81,7 +81,7 @@ namespace starsky.Controllers
 			// Import files >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.Verbose);
+				await ImportPostBackgroundTask(tempImportPaths, importSettings, _appSettings.IsVerbose());
 			});
             
 			// When all items are already imported

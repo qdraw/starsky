@@ -21,7 +21,7 @@ namespace starskycore.Services
         {
             foreach (var itemLocal in localSubFolderDbStyle)
             {
-                if(_appSettings.Verbose) Console.WriteLine("CheckMd5Hash: (path): " + itemLocal);
+                if(_appSettings.IsVerbose()) Console.WriteLine("CheckMd5Hash: (path): " + itemLocal);
 
                 var dbItem = databaseFileList.FirstOrDefault(p => p.FilePath == itemLocal);
                 if (dbItem != null)
@@ -29,7 +29,7 @@ namespace starskycore.Services
                     // Check if Hash is changed
 	                var localHash = new FileHash(_subPathStorage).GetHashCode(itemLocal).Key;
 
-                    if(_appSettings.Verbose) Console.WriteLine("localHash: " + localHash);
+                    if(_appSettings.IsVerbose()) Console.WriteLine("localHash: " + localHash);
 
                     if (localHash != dbItem.FileHash)
                     {

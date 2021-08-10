@@ -48,7 +48,7 @@ namespace starsky.feature.import.Services
             
 			var inputPathListFormArgs = new ArgsHelper(_appSettings).GetPathListFormArgs(args);
 			
-			if ( _appSettings.Verbose ) foreach ( var inputPath in inputPathListFormArgs )
+			if ( _appSettings.IsVerbose() ) foreach ( var inputPath in inputPathListFormArgs )
 			{
 				_console.WriteLine($">> import: {inputPath}");
 			}
@@ -60,7 +60,7 @@ namespace starsky.feature.import.Services
 					ColorClass = new ArgsHelper().GetColorClass(args),
 				};
 
-			if ( _appSettings.Verbose ) 
+			if ( _appSettings.IsVerbose() ) 
 			{
 				_console.WriteLine($"Options: DeleteAfter: {importSettings.DeleteAfter}, " +
 				                  $"RecursiveDirectory {importSettings.RecursiveDirectory}, " +

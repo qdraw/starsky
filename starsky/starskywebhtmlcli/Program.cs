@@ -17,7 +17,7 @@ namespace starskywebhtmlcli
 	        // Use args in application
 	        new ArgsHelper().SetEnvironmentByArgs(args);
 	        var services = new ServiceCollection();
-	        services = SetupAppSettings.FirstStepToAddSingleton(services);
+	        services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
 	        // Inject services
 	        new RegisterDependencies().Configure(services);

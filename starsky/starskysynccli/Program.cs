@@ -21,7 +21,7 @@ namespace starskysynccli
 	        new ArgsHelper().SetEnvironmentByArgs(args);
 
 	        // Setup AppSettings
-	        var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection());
+	        var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection()).Result;
 
 	        // Inject services
 	        new RegisterDependencies().Configure(services);

@@ -38,15 +38,17 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- enable UseDiskWatcher as default
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.11 _(Unreleased)_ - 2021-06-??
+# version 0.4.11 _(Unreleased)_ - 2021-08-??
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
+- [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear
+- [x]   (Fixed) _Back-end_ Change how appSettings are read to merge patch files
+- [x]   (Security) _Front-end_ Upgrade npm packages for clientapp/starskyapp
 
-# version 0.4.10 - 2021-06-15
+# version 0.4.10 - 2021-07-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)
 - [x]   (Fixed) _Back-end_ Change Replace to use a single database query and update to empty string (PR #412)
 - [x]   (Fixed) _Back-end_ Fix fast updating items to update the cache before update (PR #412)

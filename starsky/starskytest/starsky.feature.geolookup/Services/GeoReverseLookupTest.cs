@@ -6,6 +6,7 @@ using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
+using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -36,8 +37,11 @@ namespace starskytest.starsky.feature.geolookup.Services
 			                     "3713682\tBuenos Aires\tBuenos Aires\tBuenos Aires\t8.41384\t-81.4844\tP\tPPLA2\tPA\t\t12\t\t\t\t400\t\t336\tAmerica/Panama\t2017-08-16\r\n" +
 			                     "6691831\tVatican City\tVatican City\tCitta del Vaticano,Città del Vaticano,Ciudad del Vaticano,Etat de la Cite du Vatican,Staat Vatikanstadt,Staat der Vatikanstadt,Vatican,Vatican City,Vatican City State,Vaticano,Vatikan,Vatikanas,Vatikanstaden,Vatikanstadt,batikan,batikan si,État de la Cité du Vatican,Ватикан,바티칸,바티칸 시\t41.90268\t12.45414\tP\tPPLC\tVA\tIT\t\t\t\t\t829\t55\t61\tEurope/Vatican\t2018-08-17\n";
 
-			new PlainTextFileHelper().WriteFile(Path.Combine(_appSettings.TempFolder, "cities1000.txt"),mockCities1000);
 
+			new StorageHostFullPathFilesystem().WriteStream(
+				new PlainTextFileHelper().StringToStream(mockCities1000),
+				Path.Combine(_appSettings.TempFolder, "cities1000.txt"));
+			
 			// Mockup data to:
 			// map the state and country
 
@@ -47,8 +51,9 @@ namespace starskytest.starsky.feature.geolookup.Services
 			                       "NL.03\tGelderland\tGelderland\t2755634\r\n" +
 			                       "AR.07\tBuenos Aires F.D.\tBuenos Aires F.D.\t3433955\r\n";
 
-			new PlainTextFileHelper().WriteFile(Path.Combine(_appSettings.TempFolder, "admin1CodesASCII.txt"), admin1CodesASCII);
-
+			new StorageHostFullPathFilesystem().WriteStream(
+				new PlainTextFileHelper().StringToStream(admin1CodesASCII),
+				Path.Combine(_appSettings.TempFolder, "admin1CodesASCII.txt"));
 		}
 
 		[TestMethod]

@@ -40,7 +40,7 @@ namespace starsky.feature.health.UpdateCheck.Services
 		/// <returns></returns>
 		public async Task<KeyValuePair<UpdateStatus, string>> IsUpdateNeeded(string currentVersion = "")
 		{
-			if (_appSettings == null || !_appSettings.CheckForUpdates ) 
+			if (_appSettings == null || _appSettings.CheckForUpdates == false ) 
 				return new KeyValuePair<UpdateStatus, string>(UpdateStatus.Disabled,"");
 
 			currentVersion = string.IsNullOrWhiteSpace(currentVersion)

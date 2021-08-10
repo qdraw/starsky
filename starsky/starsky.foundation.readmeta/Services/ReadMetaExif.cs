@@ -302,7 +302,7 @@ namespace starsky.foundation.readmeta.Services
 
 	    private void DisplayAllExif(List<Directory> allExifItems)
         {
-	        if(_appSettings == null || !_appSettings.Verbose) return;
+	        if(_appSettings == null || !_appSettings.IsVerbose()) return;
 	        
             foreach (var exifItem in allExifItems) {
                 foreach (var tag in exifItem.Tags) Console.WriteLine($"[{exifItem.Name}] {tag.Name} = {tag.Description}");

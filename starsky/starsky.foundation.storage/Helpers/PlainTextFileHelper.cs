@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +32,6 @@ namespace starsky.foundation.storage.Helpers
 		    return result;  
 	    }
 
-
 	    /// <summary>
 	    /// String (UTF8) to Stream
 	    /// </summary>
@@ -45,23 +43,5 @@ namespace starsky.foundation.storage.Helpers
 		    MemoryStream stream = new MemoryStream(byteArray);
 		    return stream;
 	    }
-
-        /// <summary>
-        /// [Obsolete] Write and create a new plain text file to the filesystem
-        /// </summary>
-        /// <param name="fullFilePath">path on filesystem</param>
-        /// <param name="writeString">content of the file</param>
-        [Obsolete("Has a direct dependency on the filesystem",false)]
-        public virtual void WriteFile(string fullFilePath, string writeString)
-        {
-            if (File.Exists(fullFilePath)) return;
-            
-            // Create a file to write to.
-            using (StreamWriter sw = File.CreateText(fullFilePath)) 
-            {
-                sw.WriteLine(writeString);
-            }
-        }
-
     }
 }

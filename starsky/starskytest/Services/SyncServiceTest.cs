@@ -139,7 +139,9 @@ namespace starskytest.Services
 		public void SyncServiceAddSubPathFolderTest()
 		{
 			// For the parent folders
+#pragma warning disable 618
 			_syncService.AddSubPathFolder("/temp/dir/dir2/");
+#pragma warning restore 618
 			var output = new List<string> {"/temp/dir"};
 			var input = _query.DisplayFileFolders("/temp").Select(item => item.FilePath).ToList();
             
@@ -350,7 +352,7 @@ namespace starskytest.Services
 		public void SyncServiceOrphanFolderTest()
 		{
 			var newImage = new CreateAnImage();
-			_appSettings.StorageFolder = _query.SubPathSlashRemove(newImage.BasePath);
+			_appSettings.StorageFolder = PathHelper.RemoveLatestSlash(newImage.BasePath);
             
 			// Add Image
 			_query.AddItem(new FileIndexItem

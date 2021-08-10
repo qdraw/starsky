@@ -33,9 +33,9 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <returns>Task/nothing</returns>
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
 		{
-			_logger.LogInformation((_appSettings.UseDiskWatcher ? $"UseDiskWatcher is enabled" 
+			_logger.LogInformation((_appSettings.UseDiskWatcher != false ? $"UseDiskWatcher is enabled" 
 				: "UseDiskWatcher is disabled" ) + $" on {Environment.MachineName}");
-			if ( !_appSettings.UseDiskWatcher ) return Task.CompletedTask;
+			if ( _appSettings.UseDiskWatcher == false ) return Task.CompletedTask;
 
 			_diskWatcher.Watcher(_appSettings.StorageFolder);
 			return Task.CompletedTask;

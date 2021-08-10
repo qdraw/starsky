@@ -25,7 +25,7 @@ namespace starskySyncNetFrameworkCli
 
 			// Setup AppSettings
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-			var configurationRoot = SetupAppSettings.AppSettingsToBuilder();
+			var configurationRoot = await SetupAppSettings.AppSettingsToBuilder();
 			services.ConfigurePoCo<AppSettings>(configurationRoot.GetSection("App"));
 
 			// Inject services

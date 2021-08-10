@@ -17,8 +17,8 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
     "The AppSettings may only be modified by Administrators. These settings are applied for the entire application"
   );
   const MessageChangeNeedReSync = language.text(
-    "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren en daarnaast de app te herstarten",
-    "You have changed this setting, now you need to perform a full sync and also restart the app"
+    "Je hebt deze instelling veranderd, nu dien je een volledige sync uit te voeren. Ga naar de hoofdmap, het meer-menu en klik op handmatig synchroniseren.",
+    "You have changed this setting, now you need to perform a full sync. Go to the root folder, the more menu and click on manual sync."
   );
 
   var permissionsData = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
@@ -30,23 +30,30 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
       if (
         !permissionsData ||
         !permissionsData.data ||
+        !permissionsData.data.includes ||
         permissionsData.statusCode !== 200
-      )
+      ) {
         return false;
-
+      }
       return permissionsData.data.includes("AppSettingsWrite");
     }
     setIsEnabled(permissions());
   }, [permissionsData]);
 
-  async function changeSetting(value: string, name?: string) {
+  const [storageFolderNotFound, setStorageFolderNotFound] = useState(false);
+
+  async function changeSetting(value: string, name?: string): Promise<number> {
     var bodyParams = new URLSearchParams();
     bodyParams.set(name ? name : "", value);
-    await FetchPost(new UrlQuery().UrlApiAppSettings(), bodyParams.toString());
+    const result = await FetchPost(
+      new UrlQuery().UrlApiAppSettings(),
+      bodyParams.toString()
+    );
+    return result?.statusCode;
   }
 
   var appSettings = useFetch(new UrlQuery().UrlApiAppSettings(), "get")
-    .data as IAppSettings | null;
+    ?.data as IAppSettings | null;
 
   const [verbose, setIsVerbose] = useState(appSettings?.verbose);
   const [storageFolder, setStorageFolder] = useState(
@@ -83,16 +90,38 @@ export const PreferencesAppSettings: React.FunctionComponent<any> = (_) => {
         <h4>Storage Folder</h4>
         <FormControl
           name="storageFolder"
-          onBlur={(e) => {
+          onBlur={async (e) => {
+            const resultStatusCode = await changeSetting(
+              e.target.innerText,
+              "storageFolder"
+            );
             setStorageFolder(e.target.innerText);
-            changeSetting(e.target.innerText, "storageFolder");
+            setStorageFolderNotFound(resultStatusCode === 404);
           }}
-          contentEditable={enabled}
+          contentEditable={
+            enabled && appSettings?.storageFolderAllowEdit === true
+          }
         >
           {storageFolder}
         </FormControl>
-        {storageFolder !== appSettings?.storageFolder ? (
-          <div className="warning-box">{MessageChangeNeedReSync}</div>
+
+        {storageFolderNotFound ? (
+          <div className="warning-box" data-test="storage-not-found">
+            Directory not found so not saved
+          </div>
+        ) : null}
+
+        {storageFolder !== appSettings?.storageFolder &&
+        !storageFolderNotFound ? (
+          <div className="warning-box" data-test="storage-changed">
+            {MessageChangeNeedReSync}
+          </div>
+        ) : null}
+
+        {appSettings?.storageFolderAllowEdit !== true ? (
+          <div className="warning-box" data-test="storage-env">
+            You should update the Environment variable app__storageFolder
+          </div>
         ) : null}
       </div>
     </div>

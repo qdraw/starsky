@@ -1,3 +1,4 @@
+import { act } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -83,11 +84,12 @@ describe("PreferencesAppSettings", () => {
       var component = mount(<PreferencesAppSettings />);
 
       expect(component.find('[data-name="storageFolder"]').text()).toBe("test");
-
-      component.unmount();
+      act(() => {
+        component.unmount();
+      });
     });
 
-    it("change storageFolder", () => {
+    it("change storageFolder", async () => {
       var permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
@@ -96,7 +98,8 @@ describe("PreferencesAppSettings", () => {
         statusCode: 200,
         data: {
           verbose: true,
-          storageFolder: "test"
+          storageFolder: "test",
+          storageFolderAllowEdit: true
         }
       } as IConnectionDefault;
 
@@ -120,15 +123,74 @@ describe("PreferencesAppSettings", () => {
       var component = mount(<PreferencesAppSettings />);
 
       var storageFolderForm = component.find('[data-name="storageFolder"]');
-
       (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
-      storageFolderForm.first().simulate("blur");
+
+      // need to await here
+      await act(async () => {
+        await storageFolderForm.first().simulate("blur");
+      });
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlApiAppSettings(),
         "storageFolder=12345"
       );
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("change storageFolder failed", async () => {
+      var permissions = {
+        statusCode: 200,
+        data: ["AppSettingsWrite"]
+      } as IConnectionDefault;
+      var appSettings = {
+        statusCode: 200,
+        data: {
+          verbose: true,
+          storageFolder: "test",
+          storageFolderAllowEdit: true
+        }
+      } as IConnectionDefault;
+
+      // usage ==> import * as useFetch from '../../../hooks/use-fetch';
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings)
+        .mockImplementationOnce(() => permissions)
+        .mockImplementationOnce(() => appSettings);
+
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { ...newIConnectionDefault(), statusCode: 404 }
+      );
+      var fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      var component = mount(<PreferencesAppSettings />);
+
+      const storageFolderForm = component.find('[data-name="storageFolder"]');
+      (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
+
+      // need to await here
+      await act(async () => {
+        await storageFolderForm.first().simulate("blur");
+      });
+
+      expect(fetchPostSpy).toBeCalled();
+      expect(fetchPostSpy).toBeCalledWith(
+        new UrlQuery().UrlApiAppSettings(),
+        "storageFolder=12345"
+      );
+
+      component.update();
+
+      expect(component.exists('[data-test="storage-not-found"]')).toBeTruthy();
+      component.unmount();
     });
 
     it("toggle verbose", () => {

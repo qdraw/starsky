@@ -52,7 +52,7 @@ namespace starskycore.Services
 
 				var isFolderOrFile = storage.IsFolderOrFile(subPath);
 
-				if (appSettings.Verbose) console.WriteLine(isFolderOrFile.ToString());
+				if (appSettings.IsVerbose()) console.WriteLine(isFolderOrFile.ToString());
                 
 				if (isFolderOrFile == FolderOrFileModel.FolderOrFileTypeList.File)
 				{

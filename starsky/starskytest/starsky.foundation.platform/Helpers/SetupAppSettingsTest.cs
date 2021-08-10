@@ -1,9 +1,11 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 
@@ -21,7 +23,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-		public void SetLocalAppData_ShouldRead()
+		public async Task SetLocalAppData_ShouldRead()
 		{
 			var appDataFolderFullPath =
 				Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "setup_app_settings_test");
@@ -33,9 +35,9 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				new PlainTextFileHelper().StringToStream(
 					"{\n \"app\" :{\n   \"isAccountRegisterOpen\": \"true\"\n }\n}\n");
 
-			_hostStorage.WriteStream(example, path);
+			await _hostStorage.WriteStreamAsync(example, path);
 			Environment.SetEnvironmentVariable("app__AppSettingsPath", path);
-			var builder = SetupAppSettings.AppSettingsToBuilder();
+			var builder = await SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
 			var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, builder);
 			
@@ -48,11 +50,11 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		}
 		
 		[TestMethod]
-		public void SetLocalAppData_ShouldTakeDefault()
+		public async Task SetLocalAppData_ShouldTakeDefault()
 		{
 			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
 			
-			var builder = SetupAppSettings.AppSettingsToBuilder();
+			var builder = await SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
 			var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, builder);
 			
@@ -60,6 +62,81 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(expectedPath, appSettings.AppSettingsPath);
 			Assert.IsFalse(appSettings.IsAccountRegisterOpen);
 		}
-		
+
+		[TestMethod]
+		public async Task MergeJsonFiles_DefaultFile()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
+			if ( _hostStorage.ExistFolder(testDir) )
+			{
+				_hostStorage.FolderDelete(testDir);
+			}
+			_hostStorage.CreateDirectory(testDir);
+
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n   " +
+				" \"StorageFolder\": \"/data/test\"\n " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
+		}
+
+		[TestMethod]
+		public async Task MergeJsonFiles_NoFileFound()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_not_found");
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(result.Verbose, new AppSettings().Verbose);
+		}
+
+		[TestMethod]
+		public async Task MergeJsonFiles_StackPatchFile()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
+			if ( _hostStorage.ExistFolder(testDir) )
+			{
+				_hostStorage.FolderDelete(testDir);
+			}
+			_hostStorage.CreateDirectory(testDir);
+
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n   " +
+				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+			
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
+			
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
+			Assert.AreEqual(false, result.AddSwagger);
+		}
+				
+		[TestMethod]
+		public async Task MergeJsonFiles_StackFromEnv()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_test");
+			_hostStorage.FolderDelete(testDir);
+			_hostStorage.CreateDirectory(testDir);
+
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n   " +
+				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
+			
+			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
+				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+				" }\n}\n"), Path.Combine(testDir, "appsettings_ref_patch.json"));
+			
+			Environment.SetEnvironmentVariable("app__AppSettingsPath", Path.Combine(testDir, "appsettings_ref_patch.json"));
+			
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
+			Assert.AreEqual(false, result.AddSwagger);
+			
+			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
+		}
 	}
 }

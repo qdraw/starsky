@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.database.Data;
@@ -14,7 +15,7 @@ namespace starskyAdminCli
 {
 	internal static class Program
 	{
-		internal static void Main(string[] args)
+		internal static async Task Main(string[] args)
 		{
 			// Use args in application
 			new ArgsHelper().SetEnvironmentByArgs(args);
@@ -22,7 +23,7 @@ namespace starskyAdminCli
 			var services = new ServiceCollection();
 
 			// Setup AppSettings
-			services = SetupAppSettings.FirstStepToAddSingleton(services);
+			services = await SetupAppSettings.FirstStepToAddSingleton(services);
 
 			// Inject services
 			new RegisterDependencies().Configure(services);
@@ -44,7 +45,7 @@ namespace starskyAdminCli
 				return;
 			}
 			
-			RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>()).ConfigureAwait(false);
+			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>());
 			new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 		}

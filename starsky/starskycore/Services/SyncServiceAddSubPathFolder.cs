@@ -35,7 +35,7 @@ namespace starskycore.Services
         {
             foreach (var itemSubpath in GetListOfSubpaths(subPath))
             {
-                if(_appSettings.Verbose) Console.WriteLine("AddSubPathFolder: " + itemSubpath);
+                if(_appSettings.IsVerbose()) Console.WriteLine("AddSubPathFolder: " + itemSubpath);
 
                 if (_query.GetObjectByFilePath(itemSubpath) != null) continue;
                 
