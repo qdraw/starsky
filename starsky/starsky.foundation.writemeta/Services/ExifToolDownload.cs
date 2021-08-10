@@ -49,6 +49,10 @@ namespace starsky.foundation.writemeta.Services
 			{
 				return await StartDownloadForUnix();
 			}
+
+			var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
+				: ExeExifToolUnixFullFilePath();
+			_logger.LogInformation($"[DownloadExifTool] {debugPath}");
 			
 			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows) return true;
@@ -84,11 +88,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 
 			if ( _hostFileSystemStorage.ExistFile(
-				ExeExifToolUnixFullFilePath()) )
-			{
-				_logger.LogInformation($"[DownloadForUnix] ExifTool skip: {ExeExifToolWindowsFullFilePath()}");
-				return true;
-			}
+				ExeExifToolUnixFullFilePath()) ) return true;
 			
 			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
 			var unixDownloaded = await _httpClientHelper.Download(
@@ -184,11 +184,7 @@ namespace starsky.foundation.writemeta.Services
 			string[] getChecksumsFromTextFile)
 		{
 			if ( _hostFileSystemStorage.ExistFile(
-				ExeExifToolWindowsFullFilePath()) )
-			{
-				_logger.LogInformation($"[DownloadForWindows] ExifTool skip: {ExeExifToolWindowsFullFilePath()}");
-				return true;
-			}
+				ExeExifToolWindowsFullFilePath()) ) return true;
 
 			var zipArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.zip");
 			var windowsExifToolFolder = Path.Combine(_appSettings.TempFolder, "exiftool-windows");
