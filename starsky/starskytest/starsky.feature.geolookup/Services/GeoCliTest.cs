@@ -11,6 +11,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
 
@@ -41,8 +42,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(new FakeIGeoReverseLookup(), new FakeIGeoLocationWrite(),
 				new FakeSelectorStorage(new FakeIStorage(new List<string>{})), new AppSettings(),
-				console, httpClientHelper,
-				new FakeIGeoFileDownload());
+				console, new FakeIGeoFileDownload(), new FakeExifToolDownload());
 			await geoCli.CommandLineAsync(new List<string> {"-p",}.ToArray());
 
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("not found"));
@@ -70,8 +70,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(geoLookup, geoWrite,
 				new FakeSelectorStorage(storage), appSettings,
-				console, httpClientHelper,
-				new FakeIGeoFileDownload());
+				console, new FakeIGeoFileDownload(), new FakeExifToolDownload());
 			await geoCli.CommandLineAsync(new List<string> {"-g", "0"}.ToArray());
 
 			Assert.AreEqual(appSettings.StorageFolder, relativeParentFolder + Path.DirectorySeparatorChar);
@@ -97,8 +96,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(geoLookup, geoWrite,
 				new FakeSelectorStorage(storage), appSettings,
-				console, httpClientHelper,
-				new FakeIGeoFileDownload());
+				console, new FakeIGeoFileDownload(), new FakeExifToolDownload());
 			await geoCli.CommandLineAsync(new List<string> {"-p", "/test"}.ToArray());
 
 			Assert.AreEqual(appSettings.StorageFolder, "/test" + Path.DirectorySeparatorChar);
@@ -125,8 +123,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 			var console = new FakeConsoleWrapper();
 			var geoCli = new GeoCli(geoLookup, geoWrite,
 				new FakeSelectorStorage(storage), new AppSettings(),
-				console, httpClientHelper,
-				new FakeIGeoFileDownload());
+				console, new FakeIGeoFileDownload(), new FakeExifToolDownload());
 			await geoCli.CommandLineAsync(new List<string> {"-p",}.ToArray());
 
 			Assert.AreEqual(1, geoLookup.Count);

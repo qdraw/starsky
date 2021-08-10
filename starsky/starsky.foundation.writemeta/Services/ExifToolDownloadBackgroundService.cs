@@ -33,8 +33,8 @@ namespace starsky.foundation.writemeta.Services
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
-				await new ExifToolDownload(httpClientHelper, appSettings,console).DownloadExifTool(appSettings.IsWindows);
+				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+				await new ExifToolDownload(httpClientHelper, appSettings, logger).DownloadExifTool(appSettings.IsWindows);
 			}
 		}
 	}

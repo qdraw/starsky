@@ -8,29 +8,32 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
+using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.writemeta.Helpers
+namespace starsky.foundation.writemeta.Services
 {
-	public class ExifToolDownload
+	[Service(typeof(IExifToolDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class ExifToolDownload : IExifToolDownload
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;
 		private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
-		private readonly IConsole _console;
+		private readonly IWebLogger _logger;
 
 		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
 		
-		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IConsole console)
+		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
 			_hostFileSystemStorage = new StorageHostFullPathFilesystem();
-			_console = console;
+			_logger = logger;
 		}
 
 		public async Task<bool> DownloadExifTool(bool isWindows)
@@ -176,7 +179,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( _hostFileSystemStorage.ExistFile(
 				ExeExifToolWindowsFullFilePath()) )
 			{
-				_console.WriteLine($"[DownloadForWindows] ExifTool skip: {ExeExifToolWindowsFullFilePath()}");
+				_logger.LogInformation($"[DownloadForWindows] ExifTool skip: {ExeExifToolWindowsFullFilePath()}");
 				return true;
 			}
 
@@ -201,7 +204,7 @@ namespace starsky.foundation.writemeta.Helpers
 			MoveFileIfExist(Path.Combine(windowsExifToolFolder, "exiftool(-k).exe"),
 				Path.Combine(windowsExifToolFolder, "exiftool.exe"));
 
-			_console.WriteLine($"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
+			_logger.LogInformation($"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 				"exiftool.exe"));
 		}

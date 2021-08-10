@@ -23,15 +23,14 @@ namespace starskytest.starsky.feature.import.Services
 		[TestMethod]
 		public async Task ImporterCli_CheckIfExifToolIsCalled()
 		{
-			var fakeHttpProvider = new FakeIHttpProvider();
-			var httpClientHelper = new HttpClientHelper(fakeHttpProvider, null);
+			var fakeExifToolDownload = new FakeExifToolDownload();
 			
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			await new ImportCli( 
 				new FakeIImport(new FakeSelectorStorage()), new AppSettings{TempFolder = "/___not___found_"},
-				fakeConsole, httpClientHelper).Importer(new List<string>().ToArray());
+				fakeConsole, fakeExifToolDownload).Importer(new List<string>().ToArray());
 
-			Assert.IsTrue(fakeHttpProvider.UrlCalled[0].Contains("exiftool"));
+			Assert.IsTrue(fakeExifToolDownload.Called.Any());
 		}
 
 		[TestMethod]
@@ -40,7 +39,7 @@ namespace starskytest.starsky.feature.import.Services
 			var fakeConsole = new FakeConsoleWrapper(new List<string>());
 			await new ImportCli( 
 				new FakeIImport(new FakeSelectorStorage()), new AppSettings(),
-				fakeConsole, _httpClientHelper).Importer(new List<string>().ToArray());
+				fakeConsole, new FakeExifToolDownload()).Importer(new List<string>().ToArray());
 			
 			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Starksy Importer Cli ~ Help"));
 		}
@@ -54,7 +53,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>(new byte[0][]));
 			
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
-				new AppSettings(), fakeConsole,_httpClientHelper).Importer(
+				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
 				new List<string>{"-p", "/test"}.ToArray());
 			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
 		}
@@ -68,7 +67,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>(new byte[0][]));
 			
 			var cli = new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
-				new AppSettings {Verbose = true}, fakeConsole,_httpClientHelper);
+				new AppSettings {Verbose = true}, fakeConsole, new FakeExifToolDownload());
 				
 			// verbose is entered here 
 			await cli.Importer(new List<string>{"-p", "/test", "-v", "true"}.ToArray());
@@ -85,7 +84,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<byte[]>(new byte[0][]));
         	
 			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
-					new AppSettings{Verbose = false}, fakeConsole,_httpClientHelper)
+					new AppSettings{Verbose = false}, fakeConsole, new FakeExifToolDownload())
 				.Importer(new List<string>{"-p", "/test"}.ToArray());
 			Assert.IsTrue(fakeConsole.WrittenLines.LastOrDefault().Contains("Failed"));
 		}

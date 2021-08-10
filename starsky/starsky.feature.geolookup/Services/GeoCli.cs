@@ -16,6 +16,7 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 
 namespace starsky.feature.geolookup.Services
 {
@@ -23,17 +24,17 @@ namespace starsky.feature.geolookup.Services
 	{
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;
-		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly IGeoReverseLookup _geoReverseLookup;
 		private readonly IGeoLocationWrite _geoLocationWrite;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IReadMeta _readMeta;
 		private readonly IGeoFileDownload _geoFileDownload;
+		private readonly IExifToolDownload _exifToolDownload;
 
 		public GeoCli(IGeoReverseLookup geoReverseLookup, 
 			IGeoLocationWrite geoLocationWrite, ISelectorStorage selectorStorage, AppSettings appSettings, IConsole console, 
-			IHttpClientHelper httpClientHelper, IGeoFileDownload geoFileDownload)
+			IGeoFileDownload geoFileDownload, IExifToolDownload exifToolDownload)
 		{
 			_geoReverseLookup = geoReverseLookup;
 			_geoLocationWrite = geoLocationWrite;
@@ -42,7 +43,7 @@ namespace starsky.feature.geolookup.Services
 			_readMeta = new ReadMeta(_iStorage, _appSettings);
 			_appSettings = appSettings;
 			_console = console;
-			_httpClientHelper = httpClientHelper;
+			_exifToolDownload = exifToolDownload;
 			_geoFileDownload = geoFileDownload;
 		}
 		
@@ -56,8 +57,8 @@ namespace starsky.feature.geolookup.Services
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			// Download ExifTool 
-			await new ExifToolDownload(_httpClientHelper, _appSettings,_console)
-				.DownloadExifTool(_appSettings.IsWindows);
+			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
+			
 			// Geo cities1000 download
 			_geoFileDownload.Download();
 			

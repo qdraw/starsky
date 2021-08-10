@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.writemeta.Services
 			services.AddSingleton<IHttpClientHelper, HttpClientHelper>();
 			services.AddSingleton<IHttpProvider, FakeIHttpProvider>();
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-			services.AddSingleton<IConsole, FakeConsoleWrapper>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
