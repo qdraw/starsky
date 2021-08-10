@@ -81,7 +81,15 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 		}
-		
+
+		[TestMethod]
+		public async Task MergeJsonFiles_NoFileFound()
+		{
+			var testDir = Path.Combine(new AppSettings().BaseDirectoryProject, "_not_found");
+			var result = await SetupAppSettings.MergeJsonFiles(testDir);
+			Assert.AreEqual(result.Verbose, new AppSettings().Verbose);
+		}
+
 		[TestMethod]
 		public async Task MergeJsonFiles_StackPatchFile()
 		{
