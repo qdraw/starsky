@@ -75,7 +75,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
 				"{\n  \"app\": {\n   " +
-				" \"StorageFolder\": \"/data/test/\"\n " +
+				" \"StorageFolder\": \"/data/test\"\n " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
@@ -94,7 +94,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
 				"{\n  \"app\": {\n   " +
-				" \"StorageFolder\": \"/data/test/\",\n \"addSwagger\": \"true\" " +
+				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 			
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
@@ -115,7 +115,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
 				"{\n  \"app\": {\n   " +
-				" \"StorageFolder\": \"/data/test/\",\n \"addSwagger\": \"true\" " +
+				" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 			
 			await _hostStorage.WriteStreamAsync(new PlainTextFileHelper().StringToStream(
