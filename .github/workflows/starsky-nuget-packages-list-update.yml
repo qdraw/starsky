@@ -27,7 +27,7 @@ jobs:
       with:
         author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
-        message: "[DocsUpdateBot] Auto commited nugetpackages list "
+        message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
         add: "starsky/nuget-packages-list.json"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
