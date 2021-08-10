@@ -47,6 +47,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear
 - [x]   (Fixed) _Back-end_ Change how appSettings are read to merge patch files
 - [x]   (Security) _Front-end_ Upgrade npm packages for clientapp/starskyapp
+- [x]   (Changed) _Back-end_ Config order is documented in verbose help (add: -h -v to cli apps) 
 
 # version 0.4.10 - 2021-07-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)

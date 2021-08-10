@@ -53,18 +53,22 @@ namespace starsky.foundation.platform.Helpers
 			return $"appsettings.{Environment.MachineName.ToLowerInvariant()}."; // dot here
 		}
 
-		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
+		private static List<string> Order(string baseDirectoryProject)
 		{
 			var appSettingsMachine = AppSettingsMachineNameWithDot();
-			var paths = new List<string>
+			return new List<string>
 			{
-				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
 				Path.Combine(baseDirectoryProject, "appsettings.json"),
-				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
 				Path.Combine(baseDirectoryProject, "appsettings.patch.json"),
+				Path.Combine(baseDirectoryProject, appSettingsMachine + "json"),
+				Path.Combine(baseDirectoryProject, appSettingsMachine + "patch.json"),
 				Environment.GetEnvironmentVariable("app__AppSettingsPath")
 			};
+		}
 
+		internal static async Task<AppSettings> MergeJsonFiles(string baseDirectoryProject)
+		{
+			var paths = Order(baseDirectoryProject);
 			var appSettingsList = new List<AppSettings>();
 
 			foreach ( var path in paths.Where(File.Exists) )

@@ -303,11 +303,13 @@ namespace starsky.foundation.platform.Helpers
 			
 			var machineName = Environment.MachineName.ToLowerInvariant();
 			
-			_console.WriteLine("Config is read in this order: \n" +
-			                   $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}\n" +
-			                   $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".patch.json")}  ");
-			_console.WriteLine($"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}\n" +
-			                   $"4. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")} ");
+			_console.WriteLine("Config is read in this order: (latest is applied over lower numbers)");
+			_console.WriteLine( $"1. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.json")}");
+			_console.WriteLine( $"2. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings.patch.json")}");
+			_console.WriteLine( $"3. {Path.Combine(_appSettings.BaseDirectoryProject, "appsettings." + machineName + ".json")}");
+			_console.WriteLine( $"4. {Path.Combine(_appSettings.BaseDirectoryProject,  "appsettings." + machineName + ".patch.json")}");
+			_console.WriteLine( $"5. Environment variable: app__AppSettingsPath: {Environment.GetEnvironmentVariable("app__AppSettingsPath")}");
+			_console.WriteLine("6. Specific environment variables for example app__storageFolder");
 			
 			switch ( _appSettings.ApplicationType )
 			{
