@@ -13,6 +13,7 @@ if [[ ! $(cat /proc/1/sched | head -n 1 | grep init) ]]; then {
 SOURCE_DIR=/app
 APPLICATION_DIR=/app/starsky/out/
 STORAGE_FOLDER=/app/starsky/out/storageFolder
+THUMBNAILTEMPFOLDER=/app/starsky/out/thumbnailTempFolder
 
 function makeDemoUser {
   starskyadmincli=($(find $SOURCE_DIR -type f -name "starskyadmincli.csproj"))
@@ -71,7 +72,7 @@ function getSamplePhotos {
 
   echo "run thumbnailer"
   starskythumbnailcli=($(find $SOURCE_DIR -type f -name "starskythumbnailcli.csproj"))
-  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER -v -t true
+  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -v -t true
 }
 
 function start_pushd {

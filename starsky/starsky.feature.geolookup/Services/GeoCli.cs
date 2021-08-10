@@ -56,7 +56,7 @@ namespace starsky.feature.geolookup.Services
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			// Download ExifTool 
-			await new ExifToolDownload(_httpClientHelper, _appSettings)
+			await new ExifToolDownload(_httpClientHelper, _appSettings,_console)
 				.DownloadExifTool(_appSettings.IsWindows);
 			// Geo cities1000 download
 			_geoFileDownload.Download();

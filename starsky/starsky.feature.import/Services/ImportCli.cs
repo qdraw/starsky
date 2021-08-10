@@ -35,7 +35,7 @@ namespace starsky.feature.import.Services
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
-			await new ExifToolDownload(_httpClientHelper, _appSettings)
+			await new ExifToolDownload(_httpClientHelper, _appSettings,_console)
 				.DownloadExifTool(_appSettings.IsWindows);
 			
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
