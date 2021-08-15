@@ -17,7 +17,7 @@ namespace starskytest.starsky.feature.import.Services
 
 		public ImportCliTest()
 		{
-			_httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), null);
+			_httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger());
 		}
 
 		[TestMethod]

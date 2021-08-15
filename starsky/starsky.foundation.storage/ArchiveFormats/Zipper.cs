@@ -17,6 +17,7 @@ namespace starsky.foundation.storage.ArchiveFormats
 		/// <returns></returns>
 		public void ExtractZip( string zipInputFullPath, string storeZipFolderFullPath)
 		{
+			if ( !File.Exists(zipInputFullPath) ) return;
 			// todo: implement this comma separated list  >> string matchExtensions = "*" 
 			// Ensures that the last character on the extraction path
 			// is the directory separator char. 

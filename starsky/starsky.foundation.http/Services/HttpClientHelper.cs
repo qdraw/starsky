@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
@@ -23,10 +24,10 @@ namespace starsky.foundation.http.Services
 	    /// </summary>
 	    /// <param name="httpProvider">IHttpProvider</param>
 	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
-	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory)
+	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
 	    {
 		    _httpProvider = httpProvider;
-		    
+		    _logger = logger;
 		    if ( serviceScopeFactory == null )  return;
 
 		    using ( var scope = serviceScopeFactory.CreateScope() )
@@ -41,6 +42,8 @@ namespace starsky.foundation.http.Services
 	    /// Http Provider
 	    /// </summary>
 	    private readonly IHttpProvider _httpProvider;
+	    
+	    private readonly IWebLogger _logger;
 
 		/// <summary>
 		/// This domains are only allowed domains to download from (and https only)
@@ -86,15 +89,24 @@ namespace starsky.foundation.http.Services
 
             Uri sourceUri = new Uri(sourceHttpUrl);
 
-            Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+            _logger.LogInformation("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
-            if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return false;
+            if ( !AllowedDomains.Contains(sourceUri.Host) ||
+                 sourceUri.Scheme != "https" )
+            {
+	            _logger.LogInformation("HttpClientHelper > " + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);
+	            return false;
+            }
             
             using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
             using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
             {
-                if (response.StatusCode != HttpStatusCode.OK) return false;
+	            if ( response.StatusCode != HttpStatusCode.OK )
+	            {
+		            _logger.LogInformation("HttpClientHelper > " + response.StatusCode + " ~ " + sourceHttpUrl);
+		            return false;
+	            }
 
                 await _storage.WriteStreamAsync(streamToReadFrom, fullLocalPath);
                 return true;

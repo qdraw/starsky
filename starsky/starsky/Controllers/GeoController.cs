@@ -33,11 +33,12 @@ namespace starsky.Controllers
 		private readonly IStorage _iStorage;
 		private readonly IGeoLocationWrite _geoLocationWrite;
 		private readonly IWebLogger _logger;
+		private readonly IGeoFileDownload _geoFileDownload;
 
 		public GeoController(AppSettings appSettings, IBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
 			IGeoLocationWrite geoLocationWrite,
-			IMemoryCache memoryCache, IWebLogger logger)
+			IMemoryCache memoryCache, IWebLogger logger, IGeoFileDownload geoFileDownload)
 		{
 			_appSettings = appSettings;
 			_bgTaskQueue = queue;
@@ -47,6 +48,7 @@ namespace starsky.Controllers
 			_geoLocationWrite = geoLocationWrite;
 			_cache = memoryCache;
 			_logger = logger;
+			_geoFileDownload = geoFileDownload;
 		}
 
 		
@@ -99,7 +101,7 @@ namespace starsky.Controllers
 			{
 				GeoBackgroundTask(
 					new GeoIndexGpx(_appSettings, _iStorage, _cache),
-					new GeoReverseLookup(_appSettings, new GeoFileDownload(_appSettings), _cache), 
+					new GeoReverseLookup(_appSettings, _geoFileDownload, _cache), 
 					_geoLocationWrite,
 					f, index,
 					overwriteLocationNames);

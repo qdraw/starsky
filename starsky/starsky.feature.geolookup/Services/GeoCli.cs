@@ -60,7 +60,7 @@ namespace starsky.feature.geolookup.Services
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			
 			// Geo cities1000 download
-			_geoFileDownload.Download();
+			await _geoFileDownload.Download();
 			
 			if ( new ArgsHelper().NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1

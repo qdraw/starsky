@@ -1,8 +1,10 @@
 using System.IO;
-using NGeoNames;
+using System.Threading.Tasks;
 using starsky.feature.geolookup.Interfaces;
+using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Storage;
 
 namespace starsky.feature.geolookup.Services
@@ -11,26 +13,38 @@ namespace starsky.feature.geolookup.Services
 	public class GeoFileDownload : IGeoFileDownload
 	{
 		private readonly AppSettings _appSettings;
-		
+		private readonly IHttpClientHelper _httpClientHelper;
+
 		public const string CountryName = "cities1000";
 		private const long MinimumSizeInBytes = 7000000; // 7 MB
 		
-		public GeoFileDownload(AppSettings appSettings)
+		public GeoFileDownload(AppSettings appSettings, IHttpClientHelper httpClientHelper)
 		{
 			_appSettings = appSettings;
+			_httpClientHelper = httpClientHelper;
 		}
-		
-		public void Download()
-		{
-			var downloader = GeoFileDownloader.CreateGeoFileDownloader();
 
+		private const string BaseUrl =
+			"https://download.geonames.org/export/dump/";
+		private const string MirrorUrl = "https://qdraw.nl/special/geonames/";
+		
+		public async Task Download()
+		{
 			RemoveFailedDownload();
 	        
 			if(!new StorageHostFullPathFilesystem().ExistFile(
 				Path.Combine(_appSettings.TempFolder,CountryName + ".txt")) )
 			{
-				downloader.DownloadFile(CountryName + ".zip", _appSettings.TempFolder);    
-				// Zip file will be automatically extracted
+				var outputZip = Path.Combine(_appSettings.TempFolder,
+					CountryName + ".zip");
+				var baseResult = await _httpClientHelper.Download(
+					BaseUrl + CountryName + ".zip",outputZip);
+				if ( !baseResult )
+				{
+					await _httpClientHelper.Download(
+						MirrorUrl + CountryName + ".zip",outputZip);
+				}
+				new Zipper().ExtractZip(outputZip, _appSettings.TempFolder);
 			}
 
 			if(!new StorageHostFullPathFilesystem().ExistFile(
@@ -38,7 +52,16 @@ namespace starsky.feature.geolookup.Services
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
-				downloader.DownloadFile("admin1CodesASCII.txt", _appSettings.TempFolder);
+				//downloader.DownloadFile("admin1CodesASCII.txt", _appSettings.TempFolder);
+				var outputFile = Path.Combine(_appSettings.TempFolder,
+					"admin1CodesASCII.txt");
+				var baseResult = await _httpClientHelper.Download(
+					BaseUrl + "admin1CodesASCII.txt",outputFile);
+				if ( !baseResult )
+				{
+					await _httpClientHelper.Download(
+						MirrorUrl + "admin1CodesASCII.txt",outputFile);
+				}
 			}
 		}
 		
