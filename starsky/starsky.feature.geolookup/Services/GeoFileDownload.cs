@@ -50,7 +50,6 @@ namespace starsky.feature.geolookup.Services
 			{
 				// code for the second administrative division,
 				// a county in the US, see file admin2Codes.txt; varchar(80)
-				//downloader.DownloadFile("admin1CodesASCII.txt", _appSettings.TempFolder);
 				var outputFile = Path.Combine(_appSettings.TempFolder,
 					"admin1CodesASCII.txt");
 				var baseResult = await _httpClientHelper.Download("https://" +
