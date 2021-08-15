@@ -25,8 +25,8 @@ namespace starsky.feature.geolookup.Services
 		}
 
 		private const string BaseUrl =
-			"https://download.geonames.org/export/dump/";
-		private const string MirrorUrl = "https://qdraw.nl/special/geonames/";
+			"download.geonames.org/export/dump/";
+		private const string MirrorUrl = "qdraw.nl/special/geonames/";
 		
 		public async Task Download()
 		{
@@ -37,12 +37,10 @@ namespace starsky.feature.geolookup.Services
 			{
 				var outputZip = Path.Combine(_appSettings.TempFolder,
 					CountryName + ".zip");
-				var baseResult = await _httpClientHelper.Download(
-					BaseUrl + CountryName + ".zip",outputZip);
+				var baseResult = await _httpClientHelper.Download( "https://" +  BaseUrl + CountryName + ".zip",outputZip);
 				if ( !baseResult )
 				{
-					await _httpClientHelper.Download(
-						MirrorUrl + CountryName + ".zip",outputZip);
+					await _httpClientHelper.Download("https://" + MirrorUrl + CountryName + ".zip",outputZip);
 				}
 				new Zipper().ExtractZip(outputZip, _appSettings.TempFolder);
 			}
@@ -55,11 +53,11 @@ namespace starsky.feature.geolookup.Services
 				//downloader.DownloadFile("admin1CodesASCII.txt", _appSettings.TempFolder);
 				var outputFile = Path.Combine(_appSettings.TempFolder,
 					"admin1CodesASCII.txt");
-				var baseResult = await _httpClientHelper.Download(
+				var baseResult = await _httpClientHelper.Download("https://" +
 					BaseUrl + "admin1CodesASCII.txt",outputFile);
 				if ( !baseResult )
 				{
-					await _httpClientHelper.Download(
+					await _httpClientHelper.Download("https://" +
 						MirrorUrl + "admin1CodesASCII.txt",outputFile);
 				}
 			}
