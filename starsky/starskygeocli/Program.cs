@@ -40,11 +40,11 @@ namespace starskyGeoCli
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
 			var console = serviceProvider.GetRequiredService<IConsole>();
-			var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
+			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 
 			// Help and other Command Line Tools args are included in the Geo tools 
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
-				appSettings, console, httpClientHelper, geoFileDownload).CommandLineAsync(args);
+				appSettings, console, geoFileDownload, exifToolDownload).CommandLineAsync(args);
 		}
 	}
 }

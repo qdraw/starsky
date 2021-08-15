@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace starsky.feature.geolookup.Interfaces
 {
 	public interface IGeoFileDownload
 	{
-		void Download();
+		Task Download();
 	}
 }

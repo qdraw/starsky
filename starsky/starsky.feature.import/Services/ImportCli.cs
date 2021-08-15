@@ -7,6 +7,8 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Helpers;
+using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.writemeta.Services;
 using starskycore.Models;
 
 namespace starsky.feature.import.Services
@@ -16,14 +18,14 @@ namespace starsky.feature.import.Services
 		private readonly IImport _importService;
 		private readonly AppSettings _appSettings;
 		private readonly IConsole _console;
-		private readonly IHttpClientHelper _httpClientHelper;
+		private readonly IExifToolDownload _exifToolDownload;
 
-		public ImportCli(IImport importService, AppSettings appSettings, IConsole console, IHttpClientHelper httpClientHelper)
+		public ImportCli(IImport importService, AppSettings appSettings, IConsole console, IExifToolDownload exifToolDownload)
 		{
 			_importService = importService;
 			_appSettings = appSettings;
 			_console = console;
-			_httpClientHelper = httpClientHelper;
+			_exifToolDownload = exifToolDownload;
 		}
 		
 		/// <summary>
@@ -35,8 +37,7 @@ namespace starsky.feature.import.Services
 		{
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
-			await new ExifToolDownload(_httpClientHelper, _appSettings)
-				.DownloadExifTool(_appSettings.IsWindows);
+			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
 			
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
 				.GetPathFormArgs(args,false).Length <= 1)

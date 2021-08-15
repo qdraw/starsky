@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.writemeta.Helpers;
 
@@ -32,7 +33,8 @@ namespace starsky.foundation.writemeta.Services
 			{
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var httpClientHelper = scope.ServiceProvider.GetRequiredService<IHttpClientHelper>();
-				await new ExifToolDownload(httpClientHelper, appSettings).DownloadExifTool(appSettings.IsWindows);
+				var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+				await new ExifToolDownload(httpClientHelper, appSettings, logger).DownloadExifTool(appSettings.IsWindows);
 			}
 		}
 	}

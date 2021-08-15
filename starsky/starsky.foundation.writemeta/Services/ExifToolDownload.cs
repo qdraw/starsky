@@ -8,26 +8,32 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Medallion.Shell;
 using starsky.foundation.http.Interfaces;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.writemeta.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.writemeta.Helpers
+namespace starsky.foundation.writemeta.Services
 {
-	public class ExifToolDownload
+	[Service(typeof(IExifToolDownload), InjectionLifetime = InjectionLifetime.Singleton)]
+	public class ExifToolDownload : IExifToolDownload
 	{
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly AppSettings _appSettings;
 		private readonly StorageHostFullPathFilesystem _hostFileSystemStorage;
+		private readonly IWebLogger _logger;
 
 		private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
 		
-		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings)
+		public ExifToolDownload(IHttpClientHelper httpClientHelper, AppSettings appSettings, IWebLogger logger)
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
 			_hostFileSystemStorage = new StorageHostFullPathFilesystem();
+			_logger = logger;
 		}
 
 		public async Task<bool> DownloadExifTool(bool isWindows)
@@ -43,6 +49,10 @@ namespace starsky.foundation.writemeta.Helpers
 			{
 				return await StartDownloadForUnix();
 			}
+
+			var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
+				: ExeExifToolUnixFullFilePath();
+			_logger.LogInformation($"[DownloadExifTool] {debugPath}");
 			
 			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows) return true;
@@ -77,7 +87,8 @@ namespace starsky.foundation.writemeta.Helpers
 			string[] getChecksumsFromTextFile)
 		{
 
-			if ( _hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return true;
+			if ( _hostFileSystemStorage.ExistFile(
+				ExeExifToolUnixFullFilePath()) ) return true;
 			
 			var tarGzArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.tar.gz");
 			var unixDownloaded = await _httpClientHelper.Download(
@@ -101,28 +112,30 @@ namespace starsky.foundation.writemeta.Helpers
 					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
-
+			
+			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.IsVerbose() ) Console.WriteLine($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
+			if ( _appSettings.IsVerbose() ) _logger.LogInformation($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
 			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;
 			
 			if (! _hostFileSystemStorage.ExistFile("/bin/chmod") )
 			{
-				Console.WriteLine("WARNING: /bin/chmod does not exist");
+				_logger.LogError("[RunChmodOnExifToolUnixExe] WARNING: /bin/chmod does not exist");
 				return true;
 			}
 			
 			// command.run does not care about the $PATH
 			var result = await Command.Run("/bin/chmod","0755", ExeExifToolUnixFullFilePath()).Task; 
 			if ( result.Success ) return true;
-			await Console.Error.WriteLineAsync($"command failed with exit code {result.ExitCode}: {result.StandardError}");
+			
+			_logger.LogError($"command failed with exit code {result.ExitCode}: {result.StandardError}");
 			return false;
 		}
 
@@ -170,7 +183,8 @@ namespace starsky.foundation.writemeta.Helpers
 		private async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
 			string[] getChecksumsFromTextFile)
 		{
-			if ( _hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ) return true;
+			if ( _hostFileSystemStorage.ExistFile(
+				ExeExifToolWindowsFullFilePath()) ) return true;
 
 			var zipArchiveFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool.zip");
 			var windowsExifToolFolder = Path.Combine(_appSettings.TempFolder, "exiftool-windows");
@@ -193,6 +207,7 @@ namespace starsky.foundation.writemeta.Helpers
 			MoveFileIfExist(Path.Combine(windowsExifToolFolder, "exiftool(-k).exe"),
 				Path.Combine(windowsExifToolFolder, "exiftool.exe"));
 
+			_logger.LogInformation($"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 			return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 				"exiftool.exe"));
 		}

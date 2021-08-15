@@ -14,6 +14,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.writemeta.Interfaces;
 
 namespace starskyImporterNetFrameworkCli
 {
@@ -54,9 +55,9 @@ namespace starskyImporterNetFrameworkCli
 
 			var import = serviceProvider.GetService<IImport>();
 			var console = serviceProvider.GetRequiredService<IConsole>();
-			var httpClientHelper = serviceProvider.GetRequiredService<IHttpClientHelper>();
+			var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
 
-			await new ImportCli(import, appSettings, console, httpClientHelper).Importer(args);
+			await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
 		}
 	}
 }

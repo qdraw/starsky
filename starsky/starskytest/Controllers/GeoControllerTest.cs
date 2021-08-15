@@ -103,7 +103,7 @@ namespace starskytest.Controllers
 
 			var controller = new GeoController(_appSettings, _bgTaskQueue, 
 				new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -118,7 +118,7 @@ namespace starskytest.Controllers
 
 			var controller = new GeoController(_appSettings, _bgTaskQueue, 
 				new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -137,7 +137,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(storage);
 			
 			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
-				new FakeIGeoLocationWrite(), _memoryCache, new FakeIWebLogger())
+				new FakeIGeoLocationWrite(), _memoryCache, new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -154,7 +154,7 @@ namespace starskytest.Controllers
 			var storage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(storage);
 			var controller = new GeoController(_appSettings, _bgTaskQueue, 
-				storageSelector, new FakeIGeoLocationWrite(), null, new FakeIWebLogger())
+				storageSelector, new FakeIGeoLocationWrite(), null, new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -170,7 +170,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(storage);
 			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
 				new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -191,7 +191,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(storage);
 			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
 				new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -219,7 +219,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(storage);
 			var controller = new GeoController(_appSettings, _bgTaskQueue, 
 				storageSelector, new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger())
+				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};

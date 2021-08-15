@@ -31,7 +31,7 @@ namespace starskytest.Helpers
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			// use only whitelisted domains
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -52,7 +52,7 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -73,7 +73,7 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			// http is not used anymore
 			var path = Path.Combine(new AppSettings().TempFolder, "pathToNOTdownload.txt");
@@ -95,7 +95,7 @@ namespace starskytest.Helpers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			// there is an file written
 			var path = Path.Combine(new CreateAnImage().BasePath, "file.txt");
@@ -121,7 +121,7 @@ namespace starskytest.Helpers
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			var storageProvider = serviceProvider.GetRequiredService<IStorage>();
 
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 			
@@ -141,7 +141,7 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			// http is not used anymore
 			var output = await httpClientHelper.ReadString("http://qdraw.nl");
@@ -161,7 +161,7 @@ namespace starskytest.Helpers
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory);
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
 
 			var output = await httpClientHelper.ReadString("https://download.geonames.org/404");
 			Assert.AreEqual(false,output.Key);
@@ -171,7 +171,7 @@ namespace starskytest.Helpers
 		[ExpectedException(typeof(EndOfStreamException))]
 		public async Task HttpClientHelper_Download_NoStorage()
 		{
-			await new HttpClientHelper(new FakeIHttpProvider(), null).Download("t","T");
+			await new HttpClientHelper(new FakeIHttpProvider(), null, new FakeIWebLogger()).Download("t","T");
 		}
 	}
 }
