@@ -12,7 +12,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 	public class WebSocketConnectionsServiceTest 
 	{
 		[TestMethod]
-		public async Task SendToAllAsync()
+		public async Task SendToAllAsync_success()
 		{
 			var service = new WebSocketConnectionsService(new FakeIWebLogger());
 			var fakeSocket = new FakeWebSocket();
@@ -21,6 +21,18 @@ namespace starskytest.starsky.foundation.realtime.Services
 			await service.SendToAllAsync("test", CancellationToken.None);
 			
 			Assert.IsTrue(fakeSocket.FakeSendItems.LastOrDefault().StartsWith("test"));
+		}
+		
+		[TestMethod]
+		public async Task SendToAllAsync_ExceptionDueNoContent()
+		{
+			var logger = new FakeIWebLogger();
+			var service = new WebSocketConnectionsService(logger);
+			var fakeSocket = new FakeWebSocket();
+			service.AddConnection(new WebSocketConnection(fakeSocket));
+
+			await service.SendToAllAsync(null, CancellationToken.None);
+			Assert.AreEqual(1,logger.TrackedInformation.Count);
 		}
 	}
 }
