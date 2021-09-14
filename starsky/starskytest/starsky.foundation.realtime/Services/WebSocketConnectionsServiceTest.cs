@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.realtime.Services
 		[TestMethod]
 		public async Task SendToAllAsync()
 		{
-			var service = new WebSocketConnectionsService();
+			var service = new WebSocketConnectionsService(new FakeIWebLogger());
 			var fakeSocket = new FakeWebSocket();
 			service.AddConnection(new WebSocketConnection(fakeSocket));
 

@@ -21,7 +21,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		public void NullOptions()
 		{
 			var _ = new WebSocketConnectionsMiddleware(null,
-				null, new WebSocketConnectionsService());
+				null, new WebSocketConnectionsService(new FakeIWebLogger()));
 			// expect exception
 		}
 		
@@ -39,7 +39,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 		{
 			var httpContext = new DefaultHttpContext();
 			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
-				new WebSocketConnectionsOptions(), new WebSocketConnectionsService());
+				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			Assert.AreEqual(400,httpContext.Response.StatusCode);
 		}
@@ -50,7 +50,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			var httpContext = new FakeWebSocketHttpContext();
 
 			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
-				new WebSocketConnectionsOptions(), new WebSocketConnectionsService());
+				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
@@ -68,7 +68,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 			var httpContext = new FakeWebSocketHttpContext(false);
 
 			var disabledWebSocketsMiddleware = new WebSocketConnectionsMiddleware(null,
-				new WebSocketConnectionsOptions(), new WebSocketConnectionsService());
+				new WebSocketConnectionsOptions(), new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 			
 			var socketManager = httpContext.WebSockets as FakeWebSocketManager;
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.realtime.Middleware
 				new WebSocketConnectionsOptions
 				{
 					AllowedOrigins = new HashSet<string>{"google"}
-				}, new WebSocketConnectionsService());
+				}, new WebSocketConnectionsService(new FakeIWebLogger()));
 			await disabledWebSocketsMiddleware.Invoke(httpContext);
 
 			Assert.AreEqual(403,httpContext.Response.StatusCode);

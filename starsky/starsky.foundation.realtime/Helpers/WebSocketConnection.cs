@@ -38,6 +38,12 @@ namespace starsky.foundation.realtime.Helpers
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Need to check for WebSocketException
+		/// </summary>
+		/// <param name="message">message</param>
+		/// <param name="cancellationToken">cancel token</param>
+		/// <returns>Task</returns>
 		public Task SendAsync(string message, CancellationToken cancellationToken)
 		{
 			byte[] bytes = Encoding.ASCII.GetBytes(message);
