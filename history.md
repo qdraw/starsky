@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ When new, make more clear how to setup storageFolder path (PR #429)
 - [x]   (Fixed) _Back-end_ When download.geonames.org is down pick mirror (PR #434)
 - [x]   (Added) _Back-end_ more logging for exiftool downloader (PR #434)
+- [x]   (Added) _Back-end_ Fix websocket exception issues (PR #442 Issue #440 #436)
 
 # version 0.4.10 - 2021-07-15
 - [x]   (Fixed) _Back-end_ Performance change, FileIndexItem uses less memory in the application (PR #410)
