@@ -38,9 +38,19 @@ namespace starsky.foundation.realtime.Helpers
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// Need to check for WebSocketException
+		/// </summary>
+		/// <param name="message">message</param>
+		/// <param name="cancellationToken">cancel token</param>
+		/// <returns>Task</returns>
 		public Task SendAsync(string message, CancellationToken cancellationToken)
 		{
-			byte[] bytes = Encoding.ASCII.GetBytes(message);
+			if ( string.IsNullOrWhiteSpace(message) )
+			{
+				throw new WebSocketException("no content in message");
+			}
+			var bytes = Encoding.ASCII.GetBytes(message);
 			return _webSocket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancellationToken);
 		}
 

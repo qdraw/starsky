@@ -43,18 +43,21 @@ namespace starsky.foundation.realtime.Middleware
 					}
                     
 					WebSocketConnection webSocketConnection = new WebSocketConnection(webSocket, _options.ReceivePayloadBufferSize);
-					webSocketConnection.NewConnection += async (sender, message) =>
+
+					async void OnWebSocketConnectionOnNewConnection(object sender, EventArgs message)
 					{
 						await Task.Delay(150);
 						try
 						{
 							await webSocketConnection.SendAsync("{\"welcome\": true}", CancellationToken.None);
 						}
-						catch (WebSocketException)
+						catch ( WebSocketException )
 						{
 							// if the client is closing the socket the wrong way
 						}
-					};
+					}
+
+					webSocketConnection.NewConnection += OnWebSocketConnectionOnNewConnection;
 
 					_connectionsService.AddConnection(webSocketConnection);
 
