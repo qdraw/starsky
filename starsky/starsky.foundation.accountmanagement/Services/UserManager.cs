@@ -358,7 +358,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return new ChangeSecretResult(success: true);
 		}
 
-		private string CredentialCacheKey(CredentialType credentialType, string identifier)
+		internal string CredentialCacheKey(CredentialType credentialType, string identifier)
 		{
 			return "credential_" + credentialType.Id + "_" + identifier;
 		}
@@ -369,7 +369,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="credentialType">email</param>
 		/// <param name="identifier">the id</param>
 		/// <returns>Credential data object</returns>
-		private Credential CachedCredential(CredentialType credentialType, string identifier)
+		internal Credential CachedCredential(CredentialType credentialType, string identifier)
 		{
 			var key = CredentialCacheKey(credentialType, identifier);
 	        

@@ -176,6 +176,37 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 			Assert.IsTrue(userManager.PreflightValidate("dont@mail.me", "123456789012345", "123456789012345"));
 		}
-		
+
+		[TestMethod]
+		public async Task CachedCredential_CheckCache()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var credType = new CredentialType { Id = 1 };
+
+			_memoryCache.Remove(userManager.CredentialCacheKey(credType,"test123456"));
+
+			// We encrypt secret values
+			_dbContext.Credentials.Add(new Credential{ Id = 6, Identifier = "test123456", Secret = "hashed_secret", CredentialType = credType});
+			await _dbContext.SaveChangesAsync();
+			
+			// set cache with values
+			userManager.CachedCredential(credType,
+				"test123456");
+
+			// Update Database
+			var cred =
+				_dbContext.Credentials.FirstOrDefault(p =>
+					p.Identifier == "test123456");
+			cred.Identifier = "test1234567";
+			_dbContext.Credentials.Update(cred);
+			await _dbContext.SaveChangesAsync();
+
+			// check cache again
+			var result= userManager.CachedCredential(credType,
+				"test123456");
+			
+			Assert.IsNotNull(result);
+			Assert.AreEqual("hashed_secret", result.Secret);
+		}
 	}
 }
