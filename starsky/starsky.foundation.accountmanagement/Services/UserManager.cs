@@ -220,7 +220,7 @@ namespace starsky.foundation.accountmanagement.Services
 		        
 				_dbContext.Users.Add(user);
 				await _dbContext.SaveChangesAsync();
-				AddUserToCache(user);
+				await AddUserToCache(user);
 
 				// to get the Id
 				user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Created == createdDate);
