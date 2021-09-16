@@ -45,7 +45,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		public async Task<IActionResult> Status()
 		{
-			if ( ! (await _userManager.AllUsers()).Any() )
+			if ( ! (await _userManager.AllUsersAsync()).Any() )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
@@ -112,7 +112,7 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
-            ValidateResult validateResult = await _userManager.Validate("Email", model.Email, model.Password);
+            ValidateResult validateResult = await _userManager.ValidateAsync("Email", model.Email, model.Password);
 
             if (!validateResult.Success)
             {
@@ -189,7 +189,7 @@ namespace starsky.Controllers
 
 	        // Re-check password
 	        var validateResult = await 
-		        _userManager.Validate("Email", credential.Identifier, model.Password);
+		        _userManager.ValidateAsync("Email", credential.Identifier, model.Password);
 	        if ( !validateResult.Success )
 	        {
 		        return Unauthorized("Password is not correct");
@@ -246,7 +246,7 @@ namespace starsky.Controllers
         private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsers()).Any();
+	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Any();
         }
         
         /// <summary>
@@ -262,7 +262,7 @@ namespace starsky.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> RegisterStatus()
         {
-	        if ( !(await _userManager.AllUsers()).Any() ) Response.StatusCode = 202;
+	        if ( !(await _userManager.AllUsersAsync()).Any() ) Response.StatusCode = 202;
 	        if ( !await IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");

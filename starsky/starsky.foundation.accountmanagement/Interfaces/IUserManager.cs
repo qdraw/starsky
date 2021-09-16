@@ -56,7 +56,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
 
     public interface IUserManager
     {
-	    Task<List<User>> AllUsers();
+	    Task<List<User>> AllUsersAsync();
 	    
         Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 	        string identifier, string secret);
@@ -66,7 +66,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
         void RemoveFromRole(User user, string roleCode);
         void RemoveFromRole(User user, Role role);
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
-        Task<ValidateResult> Validate(string credentialTypeCode,
+        Task<ValidateResult> ValidateAsync(string credentialTypeCode,
 	        string identifier, string secret);
         Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
         void SignOut(HttpContext httpContext);

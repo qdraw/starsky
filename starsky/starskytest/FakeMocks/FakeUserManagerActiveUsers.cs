@@ -28,7 +28,7 @@ namespace starskytest.FakeMocks
 		public Credential Credentials { get; set; }
 		public Role Role { get; set; }
 
-		public Task<List<User>> AllUsers()
+		public Task<List<User>> AllUsersAsync()
 		{
 			return Task.FromResult(new List<User>{CurrentUser});
 		}
@@ -70,18 +70,29 @@ namespace starskytest.FakeMocks
 		}
 
 #pragma warning disable 1998
-		public async Task<ValidateResult> Validate(string credentialTypeCode, string identifier, string secret)
+		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
 #pragma warning restore 1998
 		{
-			// this user is rejected
-			if(identifier == "reject") return new ValidateResult{Success = false};
-			
-			return new ValidateResult{Success = true, Error = ValidateResultError.CredentialTypeNotFound};
+			return identifier switch
+			{
+				// this user is rejected
+				"reject" => new ValidateResult
+				{
+					Success = false,
+					Error = ValidateResultError.CredentialNotFound
+				},
+				"lockout" => new ValidateResult
+				{
+					Success = false, 
+					Error = ValidateResultError.Lockout
+				},
+				_ => new ValidateResult { Success = true }
+			};
 		}
 
 		public Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
-			throw new System.NotImplementedException();
+			return Task.CompletedTask;
 		}
 
 		public void SignOut(HttpContext httpContext)

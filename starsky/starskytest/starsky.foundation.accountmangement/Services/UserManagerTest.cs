@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			var result = await userManager.Validate("email", "test", "test");
+			var result = await userManager.ValidateAsync("email", "test", "test");
 			Assert.AreEqual(false, result.Success);
 		}
 		
@@ -47,7 +47,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			await userManager.SignUpAsync("user01", "email", "test@google.com", "pass");
 
-			var result = await userManager.Validate("email", "test@google.com", "----");
+			var result = await userManager.ValidateAsync("email", "test@google.com", "----");
 			Assert.AreEqual(false, result.Success);
 		}
 		
@@ -58,7 +58,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
-			var result = await userManager.Validate("email", "login@mail.us", "pass");
+			var result = await userManager.ValidateAsync("email", "login@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
 		}
 		
@@ -80,7 +80,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 			await userManager.SignUpAsync("user02", "email", "dont@mail.us", "pass");
 			
-			var result = await userManager.Validate("email", "dont@mail.us", null);
+			var result = await userManager.ValidateAsync("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
 		}
 		
@@ -90,7 +90,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser"});
 
-			var user = (await userManager.AllUsers()).FirstOrDefault(p => p.Name == "cachedUser");
+			var user = (await userManager.AllUsersAsync()).FirstOrDefault(p => p.Name == "cachedUser");
 			Assert.IsNotNull(user);
 		}
 		
@@ -105,7 +105,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			
 			Assert.AreEqual(true, result.Success);
 			
-			var user = (await userManager.AllUsers()).FirstOrDefault(p => p.Name == "to_remove");
+			var user = (await userManager.AllUsersAsync()).FirstOrDefault(p => p.Name == "to_remove");
 			Assert.IsNull(user);
 		}
 		

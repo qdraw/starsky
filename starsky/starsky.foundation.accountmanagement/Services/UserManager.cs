@@ -121,7 +121,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// Return the number of users in the database
 		/// </summary>
 		/// <returns></returns>
-		public async Task<List<User>> AllUsers()
+		public async Task<List<User>> AllUsersAsync()
 		{
 			List<User> allUsers;
 			if (IsCacheEnabled() && _cache.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult))
@@ -145,7 +145,7 @@ namespace starsky.foundation.accountmanagement.Services
 		internal async Task AddUserToCache(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = await AllUsers();
+			var allUsers = await AllUsersAsync();
 			if ( allUsers.Any(p => p.Id == user.Id) )
 			{
 				var indexOf = allUsers.IndexOf(allUsers.Find(p => p.Id == user.Id));
@@ -165,7 +165,7 @@ namespace starsky.foundation.accountmanagement.Services
 		private async Task RemoveUserFromCacheAsync(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = await AllUsers();
+			var allUsers = await AllUsersAsync();
 			allUsers.Remove(user);
 			_cache.Set("UserManager_AllUsers", allUsers, 
 				new TimeSpan(99,0,0));
@@ -442,7 +442,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="identifier">email</param>
 		/// <param name="secret">password</param>
 		/// <returns>status</returns>
-		public async Task<ValidateResult> Validate(string credentialTypeCode,
+		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode,
 			string identifier, string secret)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
@@ -465,7 +465,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
 			
-			var userData = (await AllUsers()).FirstOrDefault(p => p.Id == credential.UserId);
+			var userData = (await AllUsersAsync()).FirstOrDefault(p => p.Id == credential.UserId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);

@@ -120,9 +120,7 @@ namespace starskytest.Controllers
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			httpContext.RequestServices = _serviceProvider;
- 
-			var schemeProvider = _serviceProvider.GetRequiredService<IAuthenticationSchemeProvider>();
-
+			
 			AccountController controller = new AccountController(_userManager,_appSettings,_antiForgery, _selectorStorage);
 			controller.ControllerContext.HttpContext = httpContext;
 
@@ -176,7 +174,43 @@ namespace starskytest.Controllers
 			// And clean afterwards
 			var itemWithId = _dbContext.Users.FirstOrDefault(p => p.Name == newAccount.Name);
 			_dbContext.Users.Remove(itemWithId);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
+		}
+
+		[TestMethod]
+		public async Task LoginPost_LockOutStatusCode()
+		{
+			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			
+			await controller.LoginPost(new LoginViewModel{Email = "lockout",
+				Password = "t1"});
+			
+			Assert.AreEqual(423,controller.Response.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task LoginPost_RejectStatusCode()
+		{
+			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			
+			await controller.LoginPost(new LoginViewModel{Email = "reject",
+				Password = "t1"});
+			
+			Assert.AreEqual(401,controller.Response.StatusCode);
+		}
+		
+		[TestMethod]
+		public async Task LoginPost_FailedSignIn()
+		{
+			AccountController controller = new AccountController(new FakeUserManagerActiveUsers(),_appSettings,_antiForgery, _selectorStorage);
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			
+			await controller.LoginPost(new LoginViewModel{Email = "e500",
+				Password = "t1"});
+			
+			Assert.AreEqual(500,controller.Response.StatusCode);
 		}
 
 		[TestMethod]
