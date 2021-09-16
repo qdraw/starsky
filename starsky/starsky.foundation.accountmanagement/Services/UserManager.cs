@@ -162,7 +162,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <summary>
 		/// Remove one user from cache
 		/// </summary>
-		private async Task RemoveUserFromCache(User user)
+		private async Task RemoveUserFromCacheAsync(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = await AllUsers();
@@ -193,7 +193,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
 		/// <returns></returns>
-		public async Task<SignUpResult> SignUp(string name,
+		public async Task<SignUpResult> SignUpAsync(string name,
 			string credentialTypeCode, string identifier, string secret)
 		{
 			var credentialType = AddDefaultCredentialType(credentialTypeCode);
@@ -341,17 +341,26 @@ namespace starsky.foundation.accountmanagement.Services
 				return new ChangeSecretResult(success: false, error: ChangeSecretResultError.CredentialNotFound);
 			}
             
-			byte[] salt = Pbkdf2Hasher.GenerateRandomSalt();
-			string hash = Pbkdf2Hasher.ComputeHash(secret, salt);
+			var salt = Pbkdf2Hasher.GenerateRandomSalt();
+			var hash = Pbkdf2Hasher.ComputeHash(secret, salt);
             
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			_dbContext.Credentials.Update(credential);
 			_dbContext.SaveChanges();
             
-			// todo: reset cache
+			if ( IsCacheEnabled() )
+			{
+				_cache.Set(CredentialCacheKey(credentialType, identifier), 
+					credential,new TimeSpan(99,0,0));
+			}
             
 			return new ChangeSecretResult(success: true);
+		}
+
+		private string CredentialCacheKey(CredentialType credentialType, string identifier)
+		{
+			return "credential_" + credentialType.Id + "_" + identifier;
 		}
 
 		/// <summary>
@@ -362,7 +371,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <returns>Credential data object</returns>
 		private Credential CachedCredential(CredentialType credentialType, string identifier)
 		{
-			var key = "credential_" + credentialType.Id + "_" + identifier;
+			var key = CredentialCacheKey(credentialType, identifier);
 	        
 			// Add caching for credentialType
 			if (IsCacheEnabled() && _cache.TryGetValue(key, 
@@ -550,7 +559,7 @@ namespace starsky.foundation.accountmanagement.Services
 			_dbContext.UserRoles.Remove(userRole);
 			await _dbContext.SaveChangesAsync();
 	        
-			RemoveUserFromCache(user);
+			await RemoveUserFromCacheAsync(user);
 	        
 			return new ValidateResult{Success = true};
 		}

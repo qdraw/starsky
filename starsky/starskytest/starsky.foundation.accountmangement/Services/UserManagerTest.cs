@@ -45,7 +45,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 
-			await userManager.SignUp("user01", "email", "test@google.com", "pass");
+			await userManager.SignUpAsync("user01", "email", "test@google.com", "pass");
 
 			var result = await userManager.Validate("email", "test@google.com", "----");
 			Assert.AreEqual(false, result.Success);
@@ -56,7 +56,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
-			await userManager.SignUp("user01", "email", "login@mail.us", "pass");
+			await userManager.SignUpAsync("user01", "email", "login@mail.us", "pass");
 
 			var result = await userManager.Validate("email", "login@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
@@ -67,7 +67,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			userManager.SignUp("user01", "email", "dont@mail.us", "pass123456789");
+			userManager.SignUpAsync("user01", "email", "dont@mail.us", "pass123456789");
 
 			var result = userManager.ChangeSecret("email", "dont@mail.us", "pass123456789");
 			
@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public async Task UserManager_NoPassword_ExistingAccount()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
-			await userManager.SignUp("user02", "email", "dont@mail.us", "pass");
+			await userManager.SignUpAsync("user02", "email", "dont@mail.us", "pass");
 			
 			var result = await userManager.Validate("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
@@ -99,7 +99,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
-			await userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			await userManager.SignUpAsync("to_remove", "email", "to_remove@mail.us", "pass123456789");
 
 			var result = await userManager.RemoveUser("email", "to_remove@mail.us");
 			
@@ -113,7 +113,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public void AddToRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUp("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
+			userManager.SignUpAsync("AddToRole", "email", "AddToRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "AddToRole@mail.us");
 			
@@ -133,7 +133,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public void RemoveFromRole()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.SignUp("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
+			userManager.SignUpAsync("RemoveFromRole", "email", "RemoveFromRole@mail.us", "pass123456789");
 			
 			var user = userManager.GetUser("email", "RemoveFromRole@mail.us");
 			
@@ -149,7 +149,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public void GetUser()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
-			userManager.SignUp("GetUser", "email", "GetUser@mail.us", "pass123456789");
+			userManager.SignUpAsync("GetUser", "email", "GetUser@mail.us", "pass123456789");
 
 			var user = userManager.GetUser("email", "GetUser@mail.us");
 

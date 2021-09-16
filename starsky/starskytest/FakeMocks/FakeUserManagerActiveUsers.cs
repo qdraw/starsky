@@ -38,7 +38,7 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public Task<SignUpResult> SignUp(string name, string credentialTypeCode,
+		public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 			string identifier, string secret)
 		{
 			return Task.FromResult(new SignUpResult());

@@ -58,7 +58,7 @@ namespace starsky.foundation.accountmanagement.Interfaces
     {
 	    Task<List<User>> AllUsers();
 	    
-        Task<SignUpResult> SignUp(string name, string credentialTypeCode,
+        Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 	        string identifier, string secret);
         
         void AddToRole(User user, string roleCode);

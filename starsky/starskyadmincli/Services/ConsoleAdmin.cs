@@ -49,7 +49,7 @@ namespace starskyAdminCli.Services
 					return;
 				}
 				
-				await _userManager.SignUp(string.Empty, "email", userName, password);
+				await _userManager.SignUpAsync(string.Empty, "email", userName, password);
 				_console.WriteLine($"User {userName} is created");
 				return;
 			}

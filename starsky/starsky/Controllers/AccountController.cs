@@ -229,7 +229,7 @@ namespace starsky.Controllers
 	        
             if (ModelState.IsValid && model.ConfirmPassword == model.Password)
             {
-                _userManager.SignUp(model.Name, "email", model.Email, model.Password );
+                await _userManager.SignUpAsync(model.Name, "email", model.Email, model.Password );
                 return Json("Account Created");
             }
 
