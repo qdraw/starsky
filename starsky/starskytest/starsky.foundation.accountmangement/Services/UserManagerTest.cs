@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -175,6 +176,15 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 			Assert.IsTrue(userManager.PreflightValidate("dont@mail.me", "123456789012345", "123456789012345"));
+		}
+
+		[TestMethod]
+		public void GetCurrentUserId_NotLoggedIn()
+		{
+			var context = new DefaultHttpContext();
+			var currentUserId = new UserManager(_dbContext, new AppSettings(), _memoryCache)
+				.GetCurrentUserId(context);
+			Assert.AreEqual(-1, currentUserId);
 		}
 
 		[TestMethod]
