@@ -284,30 +284,30 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 			var credType = new CredentialType { Id = 1 };
 
-			_memoryCache.Remove(userManager.CredentialCacheKey(credType,"test123456"));
+			_memoryCache.Remove(userManager.CredentialCacheKey(credType,"test_cache_add"));
 
-			// We encrypt secret values
-			_dbContext.Credentials.Add(new Credential{ Id = 6, Identifier = "test123456", Secret = "hashed_secret", CredentialType = credType});
-			await _dbContext.SaveChangesAsync();
-			
-			// set cache with values
+			await userManager.SignUpAsync("test", "email", "test_cache_add",
+				"secret");
+
+			// set cache with values 
 			userManager.CachedCredential(credType,
-				"test123456");
+				"test_cache_add");
 
 			// Update Database
 			var cred =
 				_dbContext.Credentials.FirstOrDefault(p =>
-					p.Identifier == "test123456");
-			cred.Identifier = "test1234567";
+					p.Identifier == "test_cache_add");
+			cred.Identifier = "test_cache_add_1";
+			var expectSecret = cred.Secret;
 			_dbContext.Credentials.Update(cred);
 			await _dbContext.SaveChangesAsync();
 
 			// check cache again
 			var result= userManager.CachedCredential(credType,
-				"test123456");
+				"test_cache_add");
 			
 			Assert.IsNotNull(result);
-			Assert.AreEqual("hashed_secret", result.Secret);
+			Assert.AreEqual(expectSecret, result.Secret);
 		}
 	}
 }
