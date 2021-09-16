@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.metaupdate.Services;
+using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models.Account;
@@ -33,12 +35,100 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 
 		[TestMethod]
-		public async Task UserManager_Test_Non_Exist_Account()
+		public async Task ValidateAsync_CredentialType_NotFound()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			var result = await userManager.ValidateAsync("email", "test", "test");
+			var result = await userManager.ValidateAsync("not-found", "test", "test");
+			
 			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.CredentialTypeNotFound);
+		}
+		
+		[TestMethod]
+		public async Task ValidateAsync_Credential_NotFound()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
+			{
+				_dbContext.CredentialTypes.Add(
+					new CredentialType { Code = "email" });
+				await _dbContext.SaveChangesAsync();
+			}
+			
+			var result = await userManager.ValidateAsync("email", "test", "test");
+			
+			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.CredentialNotFound);
+		}
+		
+		[TestMethod]
+		public async Task ValidateAsync_User_NotFound()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			if ( !_dbContext.CredentialTypes.Any(p => p.Code == "email") )
+			{
+				_dbContext.CredentialTypes.Add(
+					new CredentialType { Code = "email" });
+				await _dbContext.SaveChangesAsync();
+			}
+
+			var credentialTypesCode = _dbContext.CredentialTypes.FirstOrDefault();
+
+			_dbContext.Credentials.Add(new Credential
+			{
+				Identifier = "test_0005",
+				CredentialTypeId = credentialTypesCode.Id,
+				Secret = "t5cJrj735BKTx6bNw2snWzkKb5lsXDSreT9Fpz5YLJw=", // "pass123456789"
+				Extra = "0kp9rQX22yeGPl3FSyZFlg=="
+			});
+			await _dbContext.SaveChangesAsync();
+
+			var result = await userManager.ValidateAsync(credentialTypesCode.Code, "test_0005", "pass123456789");
+			
+			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.UserNotFound);
+		}
+		
+		[TestMethod]
+		public async Task ValidateAsync_LockoutEnabled()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+
+			await userManager.SignUpAsync("lockout@google.com", "email", "lockout@google.com", "pass");
+
+			var userObject = _dbContext.Users.FirstOrDefault(p =>
+				p.Name == "lockout@google.com");
+			
+			userObject.LockoutEnabled = true;
+			userObject.LockoutEnd = DateTime.UtcNow.AddDays(1);
+			await _dbContext.SaveChangesAsync();
+
+			var result = await userManager.ValidateAsync("email", "lockout@google.com", "--does not matter--");
+			
+			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.Lockout);
+		}
+				
+		[TestMethod]
+		public async Task ValidateAsync_LockoutExpired()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+
+			await userManager.SignUpAsync("lockout2@google.com", "email", "lockout2@google.com", "pass");
+
+			var userObject = _dbContext.Users.FirstOrDefault(p =>
+				p.Name == "lockout2@google.com");
+			
+			userObject.LockoutEnabled = true;
+			userObject.LockoutEnd = DateTime.UtcNow.AddDays(-2);
+			await _dbContext.SaveChangesAsync();
+
+			var result = await userManager.ValidateAsync("email", "lockout2@google.com", "pass");
+			
+			Assert.AreEqual(true, result.Success);
 		}
 		
 		[TestMethod]
@@ -50,6 +140,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			var result = await userManager.ValidateAsync("email", "test@google.com", "----");
 			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.SecretNotValid);
 		}
 		
 		[TestMethod]
