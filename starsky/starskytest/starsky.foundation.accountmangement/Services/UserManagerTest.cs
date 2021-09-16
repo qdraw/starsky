@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +45,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 
-			userManager.SignUp("user01", "email", "test@google.com", "pass");
+			await userManager.SignUp("user01", "email", "test@google.com", "pass");
 
 			var result = await userManager.Validate("email", "test@google.com", "----");
 			Assert.AreEqual(false, result.Success);
@@ -57,7 +56,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
-			userManager.SignUp("user01", "email", "login@mail.us", "pass");
+			await userManager.SignUp("user01", "email", "login@mail.us", "pass");
 
 			var result = await userManager.Validate("email", "login@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
@@ -79,34 +78,34 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		public async Task UserManager_NoPassword_ExistingAccount()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
-			userManager.SignUp("user02", "email", "dont@mail.us", "pass");
+			await userManager.SignUp("user02", "email", "dont@mail.us", "pass");
 			
 			var result = await userManager.Validate("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
 		}
 		
 		[TestMethod]
-		public void UserManager_AllUsers_testCache()
+		public async Task UserManager_AllUsers_testCache()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
-			userManager.AddUserToCache(new User{Name = "cachedUser"});
+			await userManager.AddUserToCache(new User{Name = "cachedUser"});
 
-			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "cachedUser");
+			var user = (await userManager.AllUsers()).FirstOrDefault(p => p.Name == "cachedUser");
 			Assert.IsNotNull(user);
 		}
 		
 		[TestMethod]
-		public void UserManager_RemoveUser()
+		public async Task UserManager_RemoveUser()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
-			userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
+			await userManager.SignUp("to_remove", "email", "to_remove@mail.us", "pass123456789");
 
-			var result = userManager.RemoveUser("email", "to_remove@mail.us");
+			var result = await userManager.RemoveUser("email", "to_remove@mail.us");
 			
 			Assert.AreEqual(true, result.Success);
 			
-			var user = userManager.AllUsers().FirstOrDefault(p => p.Name == "to_remove");
+			var user = (await userManager.AllUsers()).FirstOrDefault(p => p.Name == "to_remove");
 			Assert.IsNull(user);
 		}
 		

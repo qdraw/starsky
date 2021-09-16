@@ -43,9 +43,9 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
 		[Produces("application/json")]
-		public IActionResult Status()
+		public async Task<IActionResult> Status()
 		{
-			if ( !_userManager.AllUsers().Any() )
+			if ( ! (await _userManager.AllUsers()).Any() )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
@@ -219,9 +219,9 @@ namespace starsky.Controllers
         [Produces("application/json")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-	        if ( IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        if ( await IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
 	        {
 		        Response.StatusCode = 403;
 		        return Json("Account Register page is closed");
@@ -243,10 +243,10 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="userIdentityIsAuthenticated"></param>
         /// <returns></returns>
-        private bool IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+        private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return _appSettings.IsAccountRegisterOpen != true && _userManager.AllUsers().Any();
+	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsers()).Any();
         }
         
         /// <summary>
@@ -260,10 +260,10 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
         [Produces("application/json")]
-        public IActionResult RegisterStatus()
+        public async Task<IActionResult> RegisterStatus()
         {
-	        if ( !_userManager.AllUsers().Any() ) Response.StatusCode = 202;
-	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        if ( !(await _userManager.AllUsers()).Any() ) Response.StatusCode = 202;
+	        if ( !await IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }

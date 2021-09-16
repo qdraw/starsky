@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
@@ -113,23 +114,25 @@ namespace starsky.foundation.accountmanagement.Services
 			return credentialType;
 		}
 
+
+		private const string AllUsersCacheKey = "UserManager_AllUsers";
+		
 		/// <summary>
 		/// Return the number of users in the database
 		/// </summary>
 		/// <returns></returns>
-		public List<User> AllUsers()
+		public async Task<List<User>> AllUsers()
 		{
-			List<User> allUsers; 
-		    
-			if (IsCacheEnabled() && _cache.TryGetValue("UserManager_AllUsers", out var objectAllUsersResult))
+			List<User> allUsers;
+			if (IsCacheEnabled() && _cache.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult))
 			{
 				allUsers = ( List<User> ) objectAllUsersResult;
 			}
 			else
 			{
-				allUsers = _dbContext.Users.ToList();
+				allUsers = await _dbContext.Users.ToListAsync();
 				if(IsCacheEnabled())
-					_cache.Set("UserManager_AllUsers", allUsers, 
+					_cache.Set(AllUsersCacheKey, allUsers, 
 						new TimeSpan(99,0,0));
 			}
 
@@ -139,23 +142,30 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <summary>
 		/// Add one user to cached value
 		/// </summary>
-		internal void AddUserToCache(User user)
+		internal async Task AddUserToCache(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = AllUsers();
-			if(allUsers.Contains(user)) return;
-			allUsers.Add(user);
-			_cache.Set("UserManager_AllUsers", allUsers, 
+			var allUsers = await AllUsers();
+			if ( allUsers.Any(p => p.Id == user.Id) )
+			{
+				var indexOf = allUsers.IndexOf(allUsers.Find(p => p.Id == user.Id));
+				allUsers[indexOf] = user;
+			}
+			else
+			{
+				allUsers.Add(user);
+			}
+			_cache.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 	    
 		/// <summary>
 		/// Remove one user from cache
 		/// </summary>
-		private void RemoveUserFromCache(User user)
+		private async Task RemoveUserFromCache(User user)
 		{
 			if ( !IsCacheEnabled() ) return;
-			var allUsers = AllUsers();
+			var allUsers = await AllUsers();
 			allUsers.Remove(user);
 			_cache.Set("UserManager_AllUsers", allUsers, 
 				new TimeSpan(99,0,0));
@@ -183,7 +193,8 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
 		/// <returns></returns>
-		public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
+		public async Task<SignUpResult> SignUp(string name,
+			string credentialTypeCode, string identifier, string secret)
 		{
 			var credentialType = AddDefaultCredentialType(credentialTypeCode);
 			var roles = AddDefaultRoles();
@@ -208,11 +219,11 @@ namespace starsky.foundation.accountmanagement.Services
 				};
 		        
 				_dbContext.Users.Add(user);
-				_dbContext.SaveChanges();
+				await _dbContext.SaveChangesAsync();
 				AddUserToCache(user);
 
 				// to get the Id
-				user = _dbContext.Users.FirstOrDefault(p => p.Created == createdDate);
+				user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Created == createdDate);
 		        
 				if ( user == null ) throw new AggregateException("user should not be null");
 			}
@@ -225,7 +236,7 @@ namespace starsky.foundation.accountmanagement.Services
 				return new SignUpResult(success: false, error: SignUpResultError.CredentialTypeNotFound);
 			}
 
-			var credential = _dbContext.Credentials.FirstOrDefault(p => p.Identifier == identifier);
+			var credential = await _dbContext.Credentials.FirstOrDefaultAsync(p => p.Identifier == identifier);
 			if ( credential != null ) return new SignUpResult(user: user, success: true);
 
 			// Check if credential not already exist
@@ -241,7 +252,7 @@ namespace starsky.foundation.accountmanagement.Services
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
 			_dbContext.Credentials.Add(credential);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 
 			return new SignUpResult(user: user, success: true);
 		}
@@ -445,13 +456,13 @@ namespace starsky.foundation.accountmanagement.Services
 				return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
 			}
 			
-			var userData = AllUsers().FirstOrDefault(p => p.Id == credential.UserId);
+			var userData = (await AllUsers()).FirstOrDefault(p => p.Id == credential.UserId);
 			if ( userData == null )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.UserNotFound);
 			}
 
-			if ( userData.LockoutEnabled && userData.LockoutEnd >= DateTime.UtcNow)
+			if ( userData.LockoutEnabled && userData.LockoutEnd >= DateTime.UtcNow )
 			{
 				return new ValidateResult(success: false, error: ValidateResultError.Lockout);
 			}
@@ -460,32 +471,44 @@ namespace starsky.foundation.accountmanagement.Services
 			byte[] salt = Convert.FromBase64String(credential.Extra);
 			string hashedPassword = Pbkdf2Hasher.ComputeHash(secret, salt);
 
-			void ResetFailedCount()
-			{
-				userData.AccessFailedCount = 0;
-				userData.LockoutEnabled = true;
-				userData.LockoutEnd = DateTime.UtcNow.AddHours(1);
-			}
-			
 			if ( credential.Secret == hashedPassword )
 			{
-				if ( userData.AccessFailedCount >= 0 )
-				{
-					ResetFailedCount();
-					await _dbContext.SaveChangesAsync();
-				}
-				return new ValidateResult(userData, true);
+				return await ResetAndSuccess(userData.AccessFailedCount, credential.UserId, userData);
 			}
 
-			userData = await _dbContext.Users.FindAsync(credential.UserId);
+			return await SetLockIfFailedCountIsToHigh(credential.UserId);
+		}
+
+		private async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User userData )
+		{
+			if ( accessFailedCount < 0 )
+				return new ValidateResult(userData, true);
+			
+			userData = await _dbContext.Users.FindAsync(userId);
+			userData.LockoutEnabled = false;
+			userData.AccessFailedCount = 0;
+			userData.LockoutEnd = DateTime.MinValue;
+			await _dbContext.SaveChangesAsync();
+			await AddUserToCache(userData);
+			
+			return new ValidateResult(userData, true);
+		}
+
+		private async Task<ValidateResult> SetLockIfFailedCountIsToHigh(int userId)
+		{
+			var errorReason = ValidateResultError.SecretNotValid;
+			var userData = await _dbContext.Users.FindAsync(userId);
 			userData.AccessFailedCount++;
 			if ( userData.AccessFailedCount >= 3 )
 			{
-				ResetFailedCount();
+				userData.LockoutEnabled = true;
+				userData.AccessFailedCount = 0;
+				errorReason = ValidateResultError.Lockout;
+				userData.LockoutEnd = DateTime.UtcNow.AddHours(1);
 			}
 			await _dbContext.SaveChangesAsync();
-
-			return new ValidateResult(success: false, error: ValidateResultError.SecretNotValid);
+			await AddUserToCache(userData);
+			return new ValidateResult(success: false, error: errorReason);
 		}
         
 		public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
@@ -509,14 +532,15 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="credentialTypeCode">default: email</param>
 		/// <param name="identifier">email address</param>
 		/// <returns>status</returns>
-		public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+		public async Task<ValidateResult> RemoveUser(string credentialTypeCode,
+			string identifier)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
 			Credential credential = _dbContext.Credentials.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
-			var user = _dbContext.Users.FirstOrDefault(p => p.Id == credential.UserId);
+			var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
-			var userRole = _dbContext.UserRoles.FirstOrDefault(p => p.UserId == credential.UserId);
+			var userRole = await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);
 	        
 			if(userRole == null || user == null || credential == null) return new 
 				ValidateResult{Success = false, Error = ValidateResultError.CredentialNotFound};
@@ -524,7 +548,7 @@ namespace starsky.foundation.accountmanagement.Services
 			_dbContext.Credentials.Remove(credential);
 			_dbContext.Users.Remove(user);
 			_dbContext.UserRoles.Remove(userRole);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 	        
 			RemoveUserFromCache(user);
 	        

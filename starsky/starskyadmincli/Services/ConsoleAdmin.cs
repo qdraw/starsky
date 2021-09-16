@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -16,7 +17,7 @@ namespace starskyAdminCli.Services
 			_userManager = userManager;
 			_console = console;
 		}
-		public void Tool(string userName, string password)
+		public async Task Tool(string userName, string password)
 		{
 			if (string.IsNullOrEmpty(userName))
 			{
@@ -48,7 +49,7 @@ namespace starskyAdminCli.Services
 					return;
 				}
 				
-				_userManager.SignUp(string.Empty, "email", userName, password);
+				await _userManager.SignUp(string.Empty, "email", userName, password);
 				_console.WriteLine($"User {userName} is created");
 				return;
 			}
@@ -61,7 +62,7 @@ namespace starskyAdminCli.Services
 			switch ( selectedOption )
 			{
 				case ManageAdminOptions.RemoveAccount :
-					_userManager.RemoveUser("Email", userName);
+					await _userManager.RemoveUser("Email", userName);
 					_console.WriteLine($"User {userName} is removed");
 					return;
 				case ManageAdminOptions.ToggleUserAdminRole:

@@ -28,9 +28,9 @@ namespace starskytest.FakeMocks
 		public Credential Credentials { get; set; }
 		public Role Role { get; set; }
 
-		public List<User> AllUsers()
+		public Task<List<User>> AllUsers()
 		{
-			return new List<User>{CurrentUser};
+			return Task.FromResult(new List<User>{CurrentUser});
 		}
 
 		public void AddUserToCache(User user)
@@ -38,9 +38,10 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
+		public Task<SignUpResult> SignUp(string name, string credentialTypeCode,
+			string identifier, string secret)
 		{
-			return new SignUpResult();
+			return Task.FromResult(new SignUpResult());
 		}
 
 		public void AddToRole(User user, string roleCode)
@@ -108,9 +109,10 @@ namespace starskytest.FakeMocks
 			return Credentials;
 		}
 
-		public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+		public Task<ValidateResult> RemoveUser(string credentialTypeCode,
+			string identifier)
 		{
-			return new ValidateResult();
+			return Task.FromResult(new ValidateResult());
 		}
 
 		public User Exist(string identifier)

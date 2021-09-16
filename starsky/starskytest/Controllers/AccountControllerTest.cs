@@ -162,7 +162,7 @@ namespace starskytest.Controllers
 			};
 
 			// Arange > new account
-			controller.Register(newAccount);
+			await controller.Register(newAccount);
             
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
@@ -180,7 +180,7 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void AccountController_Model_is_not_correct_NoUsersActive()
+		public async Task AccountController_Model_is_not_correct_NoUsersActive()
 		{
 			var controller = new AccountController(new UserManager(_dbContext,_appSettings), _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -188,13 +188,13 @@ namespace starskytest.Controllers
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "NoUsersActive"};
             
-			var actionResult = controller.Register(registerViewModel) as JsonResult;
+			var actionResult = await controller.Register(registerViewModel) as JsonResult;
             
 			Assert.AreEqual("Model is not correct", actionResult.Value as string);
 		}
 
 		[TestMethod]
-		public void AccountController_Model_WithUsersActive_GetRegisterPage_Forbid()
+		public async Task AccountController_Model_WithUsersActive_GetRegisterPage_Forbid()
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -202,7 +202,7 @@ namespace starskytest.Controllers
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "Forbid"};
             
-			var actionResult = controller.Register(registerViewModel) as JsonResult;
+			var actionResult = await controller.Register(registerViewModel) as JsonResult;
 
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual("Account Register page is closed",actionResult.Value);
@@ -283,7 +283,7 @@ namespace starskytest.Controllers
         
 
 		[TestMethod]
-		public void AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
+		public async Task AccountController_Model_WithUsersActive_GetRegisterPage_BlockedByDefault()
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = false}, _antiForgery,_selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -291,14 +291,14 @@ namespace starskytest.Controllers
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "1", Password = "2", Name = "blockedByDefault"};
             
-			var actionResult = controller.Register(registerViewModel) as JsonResult;
+			var actionResult = await controller.Register(registerViewModel) as JsonResult;
 
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual("Account Register page is closed",actionResult.Value);
 		}
 
 		[TestMethod]
-		public void AccountController_LoginContext_GetRegisterPage_AccountCreated()
+		public async Task AccountController_LoginContext_GetRegisterPage_AccountCreated()
 		{
 			var user = new User() { Name = "JohnDoe2"};
    
@@ -312,14 +312,14 @@ namespace starskytest.Controllers
 
 			var registerViewModel = new RegisterViewModel{Email = "test", ConfirmPassword = "test123456789", Password = "test123456789", Name = user.Name};
             
-			var actionResult = controller.Register(registerViewModel) as JsonResult;
+			var actionResult = await controller.Register(registerViewModel) as JsonResult;
 
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual("Account Created",actionResult.Value);
 	        
 			var getUser = _dbContext.Users.FirstOrDefault(p => p.Name == user.Name);
 			_dbContext.Users.Remove(getUser);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 		}
         
         
@@ -349,7 +349,7 @@ namespace starskytest.Controllers
 		}
 	    
 		[TestMethod]
-		public void AccountController_WithActiveUsers_IndexGetLoginFail()
+		public async Task AccountController_WithActiveUsers_IndexGetLoginFail()
 		{
 			// There are users active
 			var controller = new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage);
@@ -368,7 +368,7 @@ namespace starskytest.Controllers
 			controller.ControllerContext = context;
 		    
 			// keep 401, is used by the warmup script
-			var index = controller.Status() as UnauthorizedObjectResult;
+			var index = await controller.Status() as UnauthorizedObjectResult;
 			Assert.AreEqual(401,index.StatusCode);
 		    
 		}
@@ -435,7 +435,7 @@ namespace starskytest.Controllers
 			};
 
 			// Arrange > new account
-			controller.Register(newAccount);
+			await controller.Register(newAccount);
             
 			// login > it must be succesfull
 			await controller.LoginPost(login);
@@ -456,7 +456,7 @@ namespace starskytest.Controllers
 			};
             
 			// For security reasons there is no feedback when a account already exist
-			controller.Register(newAccountDuplicate);
+			await controller.Register(newAccountDuplicate);
 
 			// Try login again > now it must be succesfull
 			await controller.LoginPost(login);
@@ -470,11 +470,11 @@ namespace starskytest.Controllers
 			// Clean afterwards            
 			var user = _dbContext.Users.FirstOrDefault(p => p.Name == userId);
 			_dbContext.Users.Remove(user);
-			_dbContext.SaveChanges();
+			await _dbContext.SaveChangesAsync();
 		}
 
 		[TestMethod]
-		public void AccountController_RegisterStatus_NoAccounts()
+		public async Task AccountController_RegisterStatus_NoAccounts()
 		{
 			var controller =
 				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
@@ -482,14 +482,14 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
 
-			var actionResult = controller.RegisterStatus() as JsonResult;
+			var actionResult = await controller.RegisterStatus() as JsonResult;
             
 			Assert.AreEqual(202,controller.Response.StatusCode);
 			Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
 		}
         
 		[TestMethod]
-		public void AccountController_RegisterStatus_ActiveUsers()
+		public async Task AccountController_RegisterStatus_ActiveUsers()
 		{
 			var controller =
 				new AccountController(new FakeUserManagerActiveUsers(), _appSettings, _antiForgery, _selectorStorage)
@@ -497,14 +497,14 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
 
-			var actionResult = controller.RegisterStatus() as JsonResult;
+			var actionResult = await controller.RegisterStatus() as JsonResult;
 	   
 			Assert.AreEqual(403,controller.Response.StatusCode);
 			Assert.AreEqual("Account Register page is closed", actionResult.Value as string);
 		}
         
 		[TestMethod]
-		public void AccountController_RegisterStatus_ActiveUsers_AppSettingOpen()
+		public async Task AccountController_RegisterStatus_ActiveUsers_AppSettingOpen()
 		{
 			var controller =
 				new AccountController(new FakeUserManagerActiveUsers(), new AppSettings{IsAccountRegisterOpen = true}, _antiForgery, _selectorStorage)
@@ -512,14 +512,14 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
 
-			var actionResult = controller.RegisterStatus() as JsonResult;
+			var actionResult = await controller.RegisterStatus() as JsonResult;
 	   
 			Assert.AreEqual(200,controller.Response.StatusCode);
 			Assert.AreEqual("RegisterStatus open", actionResult.Value as string);
 		}
         
 		[TestMethod]
-		public void AccountController_LoginStatus_NoAccounts()
+		public async Task AccountController_LoginStatus_NoAccounts()
 		{
 			var controller =
 				new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
@@ -527,13 +527,13 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = new DefaultHttpContext()}
 				};
 
-			var actionResult = controller.Status() as JsonResult;
+			var actionResult = await controller.Status() as JsonResult;
             
 			Assert.AreEqual("There are no accounts, you must create an account first", actionResult.Value as string);
 		}
         
 		[TestMethod]
-		public void AccountController_Login_CheckCredentials()
+		public async Task AccountController_Login_CheckCredentials()
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
@@ -546,7 +546,7 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = httpContext}
 				};
 	        
-			var actionResult = controller.Status() as JsonResult;
+			var actionResult = await controller.Status() as JsonResult;
 			var user = actionResult.Value as UserIdentifierStatusModel;
 			Assert.AreEqual("test", 
 				user.CredentialsIdentifiers.FirstOrDefault());
@@ -556,7 +556,7 @@ namespace starskytest.Controllers
 		}
         
 		[TestMethod]
-		public void AccountController_LoginUserDoesNotExistInDatabase()
+		public async Task AccountController_LoginUserDoesNotExistInDatabase()
 		{
 			var httpContext = new DefaultHttpContext();
 			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "Test"));
@@ -568,7 +568,7 @@ namespace starskytest.Controllers
 					ControllerContext = {HttpContext = httpContext}
 				};
 	        
-			var actionResult = controller.Status() as ConflictObjectResult;
+			var actionResult = await controller.Status() as ConflictObjectResult;
 
 			Assert.IsNotNull(actionResult);
 			Assert.AreEqual(409, actionResult.StatusCode);
