@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.database.Models.Account;
 
 namespace starsky.foundation.accountmanagement.Interfaces
@@ -29,23 +30,11 @@ namespace starsky.foundation.accountmanagement.Interfaces
     {
         CredentialTypeNotFound,
         CredentialNotFound,
-        SecretNotValid
+        SecretNotValid,
+        Lockout,
+        UserNotFound
     }
-    
-    public class ValidateResult
-    {
-        public User User { get; set; }
-        public bool Success { get; set; }
-        public ValidateResultError? Error { get; set; }
-        
-        public ValidateResult(User user = null, bool success = false, ValidateResultError? error = null)
-        {
-            User = user;
-            Success = success;
-            Error = error;
-        }
-    }
-    
+
     public enum ChangeSecretResultError
     {
         CredentialTypeNotFound,
@@ -76,7 +65,8 @@ namespace starsky.foundation.accountmanagement.Interfaces
         void RemoveFromRole(User user, string roleCode);
         void RemoveFromRole(User user, Role role);
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
-        ValidateResult Validate(string credentialTypeCode, string identifier, string secret);
+        Task<ValidateResult> Validate(string credentialTypeCode,
+	        string identifier, string secret);
         Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);

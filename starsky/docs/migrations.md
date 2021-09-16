@@ -9,6 +9,22 @@ dotnet tool install -g dotnet-ef
 dotnet tool update --global dotnet-ef
 ```
 
+Copy code : SetupDatabaseTypes.cs
+```
+			
+			// dirty hack
+			_services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseSqlite(_appSettings.DatabaseConnection, 
+					b =>
+					{
+						if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+						{
+							b.MigrationsAssembly(foundationDatabaseName);
+						}
+					}));
+```
+
+
 ```bash
 cd starsky/starsky.foundation.database
 dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test

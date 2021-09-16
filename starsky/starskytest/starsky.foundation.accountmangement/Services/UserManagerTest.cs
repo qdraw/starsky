@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,33 +33,33 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 
 		[TestMethod]
-		public void UserManager_Test_Non_Exist_Account()
+		public async Task UserManager_Test_Non_Exist_Account()
 		{
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 
-			var result = userManager.Validate("email", "test", "test");
+			var result = await userManager.Validate("email", "test", "test");
 			Assert.AreEqual(false, result.Success);
 		}
 		
 		[TestMethod]
-		public void UserManager_WrongPassword()
+		public async Task UserManager_WrongPassword()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
 
 			userManager.SignUp("user01", "email", "test@google.com", "pass");
 
-			var result = userManager.Validate("email", "test@google.com", "----");
+			var result = await userManager.Validate("email", "test@google.com", "----");
 			Assert.AreEqual(false, result.Success);
 		}
 		
 		[TestMethod]
-		public void UserManager_LoginPassword()
+		public async Task UserManager_LoginPassword()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 
 			userManager.SignUp("user01", "email", "login@mail.us", "pass");
 
-			var result = userManager.Validate("email", "login@mail.us", "pass");
+			var result = await userManager.Validate("email", "login@mail.us", "pass");
 			Assert.AreEqual(true, result.Success);
 		}
 		
@@ -75,12 +76,12 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 		}
 
 		[TestMethod]
-		public void UserManager_NoPassword_ExistingAccount()
+		public async Task UserManager_NoPassword_ExistingAccount()
 		{
 			var userManager = new UserManager(_dbContext, new AppSettings(),_memoryCache);
 			userManager.SignUp("user02", "email", "dont@mail.us", "pass");
 			
-			var result = userManager.Validate("email", "dont@mail.us", null);
+			var result = await userManager.Validate("email", "dont@mail.us", null);
 			Assert.AreEqual(false, result.Success);
 		}
 		

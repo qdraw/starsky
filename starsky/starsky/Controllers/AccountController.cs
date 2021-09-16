@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -103,21 +104,27 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
+        /// <response code="423">login failed due lock</response>
+        /// <response code="500">login failed due signIn errors</response>
         [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
-            ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
+            ValidateResult validateResult = await _userManager.Validate("Email", model.Email, model.Password);
 
             if (!validateResult.Success)
             {
-                Response.StatusCode = 401;
+	            Response.StatusCode = 401;
+	            if ( validateResult.Error == ValidateResultError.Lockout )
+	            {
+		            Response.StatusCode = 423;
+	            }
                 return Json("Login failed");
             } 
             
-            await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
+            await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
             if ( User.Identity.IsAuthenticated)
             {
 	            return Json("Login Success");
@@ -168,7 +175,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
         [Authorize]
-        public IActionResult ChangeSecret(ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
 	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
 
@@ -181,7 +188,7 @@ namespace starsky.Controllers
 	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
 
 	        // Re-check password
-	        var validateResult =
+	        var validateResult = await 
 		        _userManager.Validate("Email", credential.Identifier, model.Password);
 	        if ( !validateResult.Success )
 	        {

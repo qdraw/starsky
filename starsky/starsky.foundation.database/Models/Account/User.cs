@@ -15,7 +15,13 @@ namespace starsky.foundation.database.Models.Account
 		public int Id { get; set; }
 		public string Name { get; set; }
 		public DateTime Created { get; set; }
-		
+
+		public DateTime LockoutEnd { get; set; }
+
+		public bool LockoutEnabled { get; set; }
+
+		public int AccessFailedCount { get; set; }
+
 		// menu settings in the future
 		
 		public virtual ICollection<Credential> Credentials { get; set; }

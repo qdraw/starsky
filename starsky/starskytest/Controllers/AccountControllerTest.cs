@@ -209,19 +209,19 @@ namespace starskytest.Controllers
 		}
 
 		[TestMethod]
-		public void AccountController_ChangeSecret_NotLoggedIn()
+		public async Task AccountController_ChangeSecret_NotLoggedIn()
 		{
 			var controller = new AccountController(_userManager, _appSettings,_antiForgery, _selectorStorage);
 			var httpContext = _serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
 			controller.ControllerContext.HttpContext = httpContext;
 
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
-			var actionResult = controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
 			Assert.AreEqual(401,actionResult.StatusCode);
 		}
         
 		[TestMethod]
-		public void AccountController_ChangeSecret_WrongInput()
+		public async Task AccountController_ChangeSecret_WrongInput()
 		{
 	        
 			var controller = new AccountController(_userManager, _appSettings, _antiForgery, _selectorStorage)
@@ -234,14 +234,14 @@ namespace starskytest.Controllers
 	        
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword1111", ChangedConfirmPassword = "newPassword"};
             
-			var actionResult =  controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
+			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as BadRequestObjectResult;
 	        
 			Assert.AreEqual(400,actionResult.StatusCode);
 		}
 
  
 		[TestMethod]
-		public void AccountController_ChangeSecret_PasswordChange_Success_Injected()
+		public async Task AccountController_ChangeSecret_PasswordChange_Success_Injected()
 		{
 			var controller = new AccountController(new FakeUserManagerActiveUsers("test", 
 				new User {Name = "t1", Id = 99}), _appSettings, _antiForgery, _selectorStorage)
@@ -254,14 +254,14 @@ namespace starskytest.Controllers
 
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
-			var actionResult =  controller.ChangeSecret(changePasswordViewModel) as JsonResult;
+			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as JsonResult;
 			var actualResult = actionResult.Value as ChangeSecretResult;
 	        
 			Assert.IsTrue(actualResult.Success);
 		}
 
 		[TestMethod]
-		public void AccountController_ChangeSecret_PasswordChange_Rejected_Injected()
+		public async Task AccountController_ChangeSecret_PasswordChange_Rejected_Injected()
 		{
 			var userManager = new FakeUserManagerActiveUsers("reject", 
 				new User {Name = "t1", Id = 99});
@@ -277,7 +277,7 @@ namespace starskytest.Controllers
 			var changePasswordViewModel = new ChangePasswordViewModel{ Password = "oldPassword", 
 				ChangedPassword = "newPassword", ChangedConfirmPassword = "newPassword"};
             
-			var actionResult = controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
+			var actionResult = await controller.ChangeSecret(changePasswordViewModel) as UnauthorizedObjectResult;
 			Assert.AreEqual(401,actionResult.StatusCode);
 		}
         

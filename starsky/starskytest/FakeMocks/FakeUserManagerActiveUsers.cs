@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
 
 namespace starskytest.FakeMocks
 {
@@ -69,7 +68,9 @@ namespace starskytest.FakeMocks
 			return new ChangeSecretResult{Success = true};
 		}
 
-		public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+#pragma warning disable 1998
+		public async Task<ValidateResult> Validate(string credentialTypeCode, string identifier, string secret)
+#pragma warning restore 1998
 		{
 			// this user is rejected
 			if(identifier == "reject") return new ValidateResult{Success = false};

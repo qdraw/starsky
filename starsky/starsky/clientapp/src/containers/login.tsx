@@ -34,6 +34,11 @@ const Login: React.FC<ILoginProps> = () => {
     "Je gebruikersnaam of wachtwoord is niet juist. Probeer het opnieuw",
     "Your username or password is incorrect. Try again"
   );
+  const MessageLockedOut = language.text(
+    "Je hebt te vaak geprobeerd in te loggen, probeer het over een uur nog een keer",
+    "You've tried to login too many times, please try again in an hour "
+  );
+
   const MessageNoUsernamePassword = language.text(
     "Voer een emailadres en een wachtwoord in",
     "Enter an email address and password"
@@ -93,10 +98,12 @@ const Login: React.FC<ILoginProps> = () => {
         new UrlQuery().UrlLoginApi(),
         "Email=" + userEmail + "&Password=" + userPassword
       );
+      setLoading(false);
       if (!response || !response.data) {
         setError(MessageConnection);
+      } else if (response.statusCode === 423) {
+        setError(MessageLockedOut);
       } else if (response.statusCode === 401 || response.statusCode === 302) {
-        setLoading(false);
         setError(MessageWrongUsernamePassword);
       } else {
         // redirect
@@ -107,7 +114,7 @@ const Login: React.FC<ILoginProps> = () => {
         }
         history.navigate(returnUrl, { replace: true });
       }
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
       setError(err.message);
     }
