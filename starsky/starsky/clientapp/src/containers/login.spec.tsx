@@ -221,7 +221,7 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail by backend", () => {
+  it("login flow fail by backend (401)", () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
@@ -234,6 +234,56 @@ describe("Login", () => {
 
     const mockPost: Promise<any> = Promise.resolve({
       statusCode: 401,
+      data: "fail"
+    });
+    var postSpy = jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockPost);
+
+    var login = mount(<Login />);
+
+    act(() => {
+      // to use with: => import { act } from 'react-dom/test-utils';
+      (login
+        .find('input[type="email"]')
+        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
+      login.find('input[type="email"]').first().simulate("change");
+    });
+
+    act(() => {
+      (login
+        .find('input[type="password"]')
+        .getDOMNode() as HTMLInputElement).value = "password";
+      login.find('input[type="password"]').first().simulate("change");
+    });
+
+    act(() => {
+      login.find('form [type="submit"]').first().simulate("submit");
+    });
+
+    expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    expect(useFetchSpy).toBeCalled();
+    expect(postSpy).toBeCalled();
+
+    act(() => {
+      globalHistory.navigate("/");
+      login.unmount();
+    });
+  });
+
+  it("login flow fail by backend (423)", () => {
+    // usage ==> import * as useFetch from '../hooks/use-fetch';
+    const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
+
+    var useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample);
+
+    const mockPost: Promise<any> = Promise.resolve({
+      statusCode: 423,
       data: "fail"
     });
     var postSpy = jest
