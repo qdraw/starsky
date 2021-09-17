@@ -386,9 +386,13 @@ Task("MergeCoverageFiles")
     }
 
     var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
-
     if (FileExists(outputCoverageFile)) {
       DeleteFile(outputCoverageFile);
+    }
+
+    var outputCoverageSonarQubeFile = $"./starskytest/coverage-merge-sonarqube.xml";
+    if (FileExists(outputCoverageSonarQubeFile)) {
+      DeleteFile(outputCoverageSonarQubeFile);
     }
 
     // Gets the coverage file from the client folder
@@ -407,7 +411,7 @@ Task("MergeCoverageFiles")
                     .Append($"reportgenerator")
                     .Append($"-reports:./starskytest/*coverage.*.xml")
                     .Append($"-targetdir:./starskytest/")
-                    .Append($"-reporttypes:Cobertura"),
+                    .Append($"-reporttypes:Cobertura;SonarQube"),
                   RedirectStandardOutput = true,
                   RedirectStandardError = true
               },
@@ -435,6 +439,8 @@ Task("MergeCoverageFiles")
 
       // And rename it
       MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+      MoveFile($"./starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
+
   });
 
 Task("MergeOnlyNetCoreCoverageFiles")
@@ -447,9 +453,13 @@ Task("MergeOnlyNetCoreCoverageFiles")
     }
 
     var outputCoverageFile = $"./starskytest/coverage-merge-cobertura.xml";
-
     if (FileExists(outputCoverageFile)) {
       DeleteFile(outputCoverageFile);
+    }
+
+    var outputCoverageSonarQubeFile = $"./starskytest/coverage-merge-sonarqube.xml";
+    if (FileExists(outputCoverageSonarQubeFile)) {
+      DeleteFile(outputCoverageSonarQubeFile);
     }
 
     // Client Side coverage does not exist
@@ -463,11 +473,12 @@ Task("MergeOnlyNetCoreCoverageFiles")
         StartProcess(
             "dotnet",
             new ProcessSettings {
+              // duplicate code with ^^
               Arguments = new ProcessArgumentBuilder()
                   .Append($"reportgenerator")
                   .Append($"-reports:./starskytest/*coverage.*.xml")
                   .Append($"-targetdir:./starskytest/")
-                  .Append($"-reporttypes:Cobertura"),
+                  .Append($"-reporttypes:Cobertura;SonarQube"),
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             },
@@ -495,6 +506,7 @@ Task("MergeOnlyNetCoreCoverageFiles")
 
     // And rename it
     MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+    MoveFile($"./starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
 });
 
 // Create a nice report and zip it
@@ -638,10 +650,12 @@ Task("SonarBegin")
         // get first test project
         var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
         string netCoreCoverageFile = System.IO.Path.Combine(firstTestProject, "netcore-coverage.opencover.xml");
+        Information($">> sonar.cs.opencover.reportsPaths: {jestCoverageFile}");
 
         // get jest
         var clientAppProject = GetDirectories("./starsky/clientapp/").FirstOrDefault().ToString();
         string jestCoverageFile = System.IO.Path.Combine(clientAppProject, "coverage", "lcov.info");
+        Information($">> typescript.lcov.reportPaths: {jestCoverageFile}");
 
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
@@ -672,6 +686,8 @@ Task("SonarBegin")
         var tsconfig = System.IO.Path.Combine(clientAppProject,"tsconfig.json");
 
         Information($">> Selecting Branch: {branchName}");
+
+
 
         IEnumerable<string> redirectedStandardOutput;
         IEnumerable<string> redirectedErrorOutput;
