@@ -650,7 +650,7 @@ Task("SonarBegin")
         // get first test project
         var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
         string netCoreCoverageFile = System.IO.Path.Combine(firstTestProject, "netcore-coverage.opencover.xml");
-        Information($">> sonar.cs.opencover.reportsPaths: {jestCoverageFile}");
+        Information($">> sonar.cs.opencover.reportsPaths: {netCoreCoverageFile}");
 
         // get jest
         var clientAppProject = GetDirectories("./starsky/clientapp/").FirstOrDefault().ToString();
