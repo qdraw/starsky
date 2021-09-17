@@ -111,6 +111,51 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.AreEqual(false, result.Success);
 			Assert.AreEqual(result.Error, ValidateResultError.Lockout);
 		}
+		
+		[TestMethod]
+		public async Task ValidateAsync_3thTry()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+
+			await userManager.SignUpAsync("try3@google.com", "email", "try3@google.com", "pass");
+
+			var userObject = _dbContext.Users.FirstOrDefault(p =>
+				p.Name == "try3@google.com");
+			
+			userObject.AccessFailedCount = 2;
+			await _dbContext.SaveChangesAsync();
+
+			var result = await userManager.ValidateAsync("email", "try3@google.com", "--does not matter--");
+			
+			Assert.AreEqual(false, result.Success);
+			Assert.AreEqual(result.Error, ValidateResultError.Lockout);
+		}
+		
+				
+		[TestMethod]
+		public async Task ValidateAsync_ResetCountAfterSuccessLogin()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+
+			await userManager.SignUpAsync("reset@google.com", "email", "reset@google.com", "pass");
+
+			var userObject = _dbContext.Users.FirstOrDefault(p =>
+				p.Name == "reset@google.com");
+			
+			userObject.AccessFailedCount = 2;
+			await _dbContext.SaveChangesAsync();
+
+			var result = await userManager.ValidateAsync("email", "reset@google.com", "pass");
+			
+			Assert.AreEqual(true, result.Success);
+			
+			userObject = _dbContext.Users.FirstOrDefault(p =>
+				p.Name == "reset@google.com");
+			
+			Assert.AreEqual(0,userObject.AccessFailedCount);
+			Assert.AreEqual(DateTime.MinValue,userObject.LockoutEnd);
+			Assert.AreEqual(false,userObject.LockoutEnabled);
+		}
 				
 		[TestMethod]
 		public async Task ValidateAsync_LockoutExpired()

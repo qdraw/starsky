@@ -490,7 +490,7 @@ namespace starsky.foundation.accountmanagement.Services
 
 		private async Task<ValidateResult> ResetAndSuccess(int accessFailedCount, int userId, User userData )
 		{
-			if ( accessFailedCount < 0 )
+			if ( accessFailedCount <= 0 )
 				return new ValidateResult(userData, true);
 			
 			userData = await _dbContext.Users.FindAsync(userId);
