@@ -1,6 +1,6 @@
 {
   "name": "clientapp",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "private": true,
   "proxy": "http://localhost:5000",
   "homepage": "/starsky/",
@@ -57,7 +57,12 @@
     ],
     "coverageReporters": [
       "text",
-      ["lcov", {"projectRoot": "../../../"}],
+      [
+        "lcov",
+        {
+          "projectRoot": "../../"
+        }
+      ],
       "json",
       "cobertura"
     ],

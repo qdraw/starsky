@@ -42,7 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.11 _(Unreleased)_ - 2021-08-??
+# version 0.4.12 _(Unreleased)_ - 2021-09-??
+- nothing yet
+- 
+# version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
 - [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear (PR #429)
 - [x]   (Fixed) _Back-end_ Change how appSettings are read to merge patch files (PR #429) 
