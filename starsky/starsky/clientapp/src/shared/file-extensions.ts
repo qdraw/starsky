@@ -58,12 +58,10 @@ export class FileExtensions {
    * extract fileName from string
    * @param filePath the filepath
    */
-  public GetFileName(filePath: string) {
-    // [^\/]+(?=\.[\w]+\.$)|[^\/]+$
-    var filenameRegex = /[^/]+(?=\.[\w]+\.$)|[^/]+$/;
-    var fileNameMatchArray = filePath.match(filenameRegex);
-    if (!fileNameMatchArray) return "/";
-    return fileNameMatchArray[0];
+  public GetFileName(filePath: string): string {
+    const result = filePath.split("/").pop();
+    if (!result) return filePath;
+    return result;
   }
 
   /**
