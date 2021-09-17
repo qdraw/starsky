@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
@@ -42,9 +43,9 @@ namespace starsky.Controllers
 		[ProducesResponseType(typeof(string), 401)]
 		[ProducesResponseType(typeof(string), 406)]
 		[Produces("application/json")]
-		public IActionResult Status()
+		public async Task<IActionResult> Status()
 		{
-			if ( !_userManager.AllUsers().Any() )
+			if ( ! (await _userManager.AllUsersAsync()).Any() )
 			{
 				Response.StatusCode = 406;
 				return Json("There are no accounts, you must create an account first");
@@ -103,21 +104,27 @@ namespace starsky.Controllers
         /// <returns>Login status</returns>
         /// <response code="200">successful login</response>
         /// <response code="401">login failed</response>
+        /// <response code="423">login failed due lock</response>
+        /// <response code="500">login failed due signIn errors</response>
         [HttpPost("/api/account/login")]
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
         public async Task<IActionResult> LoginPost(LoginViewModel model)
         {
-            ValidateResult validateResult = _userManager.Validate("Email", model.Email, model.Password);
+            ValidateResult validateResult = await _userManager.ValidateAsync("Email", model.Email, model.Password);
 
             if (!validateResult.Success)
             {
-                Response.StatusCode = 401;
+	            Response.StatusCode = 401;
+	            if ( validateResult.Error == ValidateResultError.Lockout )
+	            {
+		            Response.StatusCode = 423;
+	            }
                 return Json("Login failed");
             } 
             
-            await _userManager.SignIn(HttpContext, validateResult.User,model.RememberMe);
+            await _userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
             if ( User.Identity.IsAuthenticated)
             {
 	            return Json("Login Success");
@@ -168,7 +175,7 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),401)]
         [Produces("application/json")]
         [Authorize]
-        public IActionResult ChangeSecret(ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangeSecret(ChangePasswordViewModel model)
         {
 	        if ( !User.Identity.IsAuthenticated ) return Unauthorized("please login first");
 
@@ -181,8 +188,8 @@ namespace starsky.Controllers
 	        var credential = _userManager.GetCredentialsByUserId(currentUserId);
 
 	        // Re-check password
-	        var validateResult =
-		        _userManager.Validate("Email", credential.Identifier, model.Password);
+	        var validateResult = await 
+		        _userManager.ValidateAsync("Email", credential.Identifier, model.Password);
 	        if ( !validateResult.Success )
 	        {
 		        return Unauthorized("Password is not correct");
@@ -212,9 +219,9 @@ namespace starsky.Controllers
         [Produces("application/json")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-	        if ( IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
+	        if ( await IsAccountRegisterClosed(User.Identity.IsAuthenticated) )
 	        {
 		        Response.StatusCode = 403;
 		        return Json("Account Register page is closed");
@@ -222,7 +229,7 @@ namespace starsky.Controllers
 	        
             if (ModelState.IsValid && model.ConfirmPassword == model.Password)
             {
-                _userManager.SignUp(model.Name, "email", model.Email, model.Password );
+                await _userManager.SignUpAsync(model.Name, "email", model.Email, model.Password );
                 return Json("Account Created");
             }
 
@@ -236,10 +243,10 @@ namespace starsky.Controllers
         /// </summary>
         /// <param name="userIdentityIsAuthenticated"></param>
         /// <returns></returns>
-        private bool IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+        private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
         {
 	        if ( userIdentityIsAuthenticated ) return false;
-	        return _appSettings.IsAccountRegisterOpen != true && _userManager.AllUsers().Any();
+	        return _appSettings.IsAccountRegisterOpen != true && (await _userManager.AllUsersAsync()).Any();
         }
         
         /// <summary>
@@ -253,10 +260,10 @@ namespace starsky.Controllers
         [ProducesResponseType(typeof(string),200)]
         [ProducesResponseType(typeof(string),403)]
         [Produces("application/json")]
-        public IActionResult RegisterStatus()
+        public async Task<IActionResult> RegisterStatus()
         {
-	        if ( !_userManager.AllUsers().Any() ) Response.StatusCode = 202;
-	        if ( !IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
+	        if ( !(await _userManager.AllUsersAsync()).Any() ) Response.StatusCode = 202;
+	        if ( !await IsAccountRegisterClosed(User.Identity.IsAuthenticated) ) return Json("RegisterStatus open");
 	        Response.StatusCode = 403;
 	        return Json("Account Register page is closed");
         }

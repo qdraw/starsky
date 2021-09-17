@@ -203,7 +203,7 @@ namespace starskytest.Controllers
 			var actionResult =  await controller.DownloadPhoto(fileIndexItem.FilePath,false)  as FileStreamResult;
 			Assert.AreNotEqual(null,actionResult);
   
-			actionResult.FileStream.Dispose();
+			await actionResult.FileStream.DisposeAsync();
 		}
 
 		[TestMethod]

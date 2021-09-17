@@ -26,7 +26,7 @@ namespace starsky.foundation.accountmanagement.Middleware
         {
             if (_authenticationHeaderValue.IsValidBasicAuthenticationHeaderValue)
             {
-                var validateResult = _userManager.Validate("email",
+                var validateResult = await _userManager.ValidateAsync("email",
                     _authenticationHeaderValue.UserIdentifier,
                     _authenticationHeaderValue.UserPassword);
                 

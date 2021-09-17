@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Models;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
-using starskycore.Interfaces;
 
 namespace starskytest.FakeMocks
 {
@@ -29,9 +28,9 @@ namespace starskytest.FakeMocks
 		public Credential Credentials { get; set; }
 		public Role Role { get; set; }
 
-		public List<User> AllUsers()
+		public Task<List<User>> AllUsersAsync()
 		{
-			return new List<User>{CurrentUser};
+			return Task.FromResult(new List<User>{CurrentUser});
 		}
 
 		public void AddUserToCache(User user)
@@ -39,9 +38,10 @@ namespace starskytest.FakeMocks
 			throw new System.NotImplementedException();
 		}
 
-		public SignUpResult SignUp(string name, string credentialTypeCode, string identifier, string secret)
+		public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
+			string identifier, string secret)
 		{
-			return new SignUpResult();
+			return Task.FromResult(new SignUpResult());
 		}
 
 		public void AddToRole(User user, string roleCode)
@@ -69,17 +69,30 @@ namespace starskytest.FakeMocks
 			return new ChangeSecretResult{Success = true};
 		}
 
-		public ValidateResult Validate(string credentialTypeCode, string identifier, string secret)
+#pragma warning disable 1998
+		public async Task<ValidateResult> ValidateAsync(string credentialTypeCode, string identifier, string secret)
+#pragma warning restore 1998
 		{
-			// this user is rejected
-			if(identifier == "reject") return new ValidateResult{Success = false};
-			
-			return new ValidateResult{Success = true, Error = ValidateResultError.CredentialTypeNotFound};
+			return identifier switch
+			{
+				// this user is rejected
+				"reject" => new ValidateResult
+				{
+					Success = false,
+					Error = ValidateResultError.CredentialNotFound
+				},
+				"lockout" => new ValidateResult
+				{
+					Success = false, 
+					Error = ValidateResultError.Lockout
+				},
+				_ => new ValidateResult { Success = true }
+			};
 		}
 
 		public Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
-			throw new System.NotImplementedException();
+			return Task.CompletedTask;
 		}
 
 		public void SignOut(HttpContext httpContext)
@@ -107,9 +120,10 @@ namespace starskytest.FakeMocks
 			return Credentials;
 		}
 
-		public ValidateResult RemoveUser(string credentialTypeCode, string identifier)
+		public Task<ValidateResult> RemoveUser(string credentialTypeCode,
+			string identifier)
 		{
-			return new ValidateResult();
+			return Task.FromResult(new ValidateResult());
 		}
 
 		public User Exist(string identifier)

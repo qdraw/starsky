@@ -69,6 +69,19 @@ namespace starsky.foundation.database.Helpers
 			if ( _services == null ) throw new AggregateException("services is missing");
 			if ( _console != null && _appSettings.IsVerbose() ) 
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
+
+#if ENABLE_DEFAULT_DATABASE
+				// dirty hack
+			_services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseSqlite(_appSettings.DatabaseConnection, 
+				b =>
+				{
+					if (! string.IsNullOrWhiteSpace(foundationDatabaseName) )
+					{
+						b.MigrationsAssembly(foundationDatabaseName);
+					}
+				}));		
+#endif
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
 

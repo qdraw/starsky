@@ -114,7 +114,7 @@ namespace starskytest.Middleware
 			};
 			// Arange > new account
 
-			iUserManager.SignUp("test", "email", "test", "test");
+			await iUserManager.SignUpAsync("test", "email", "test", "test");
 
 			// base64 dGVzdDp0ZXN0 > test:test
 			httpContext.Request.Headers["Authorization"] = "Basic dGVzdDp0ZXN0";
