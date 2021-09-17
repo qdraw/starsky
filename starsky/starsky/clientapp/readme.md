@@ -216,7 +216,7 @@ With jest `collectCoverageFrom` and `coverageReporters` are used to get the righ
   ],
   "coverageReporters": [
     "text",
-    "lcov",
+    ["lcov", {"projectRoot": "../../../"}],
     "json",
     "cobertura"
   ],
