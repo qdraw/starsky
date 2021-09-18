@@ -43,9 +43,9 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.12 _(Unreleased)_ - 2021-09-??
-- [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords
-- [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table
-- [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp 
+- [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445)
+- [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
+- [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp (PR #444)
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
