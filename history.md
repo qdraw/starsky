@@ -43,7 +43,7 @@ node starsky-tools/build-tools/app-version-update.js
 - remove newtonsoft.json references
 
 # version 0.4.12 _(Unreleased)_ - 2021-09-??
-- [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445)
+- [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
 - [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
 - [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp (PR #444)
 
