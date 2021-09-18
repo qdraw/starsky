@@ -840,12 +840,20 @@ namespace starsky.foundation.database.Models
 			if(isoSpeed >= 1 && isoSpeed <= ushort.MaxValue ) 
 				IsoSpeed = (ushort) isoSpeed;
 		}
+		
+		/// <summary>
+		/// Private field to store Software Data
+		/// </summary>
+		private string _softwareData = string.Empty;
 
 		/// <summary>
 		/// Edited with this program
 		/// </summary>
 		[MaxLength(40)]
-		public string Software { get; set; }
+		public string Software {
+			get => string.IsNullOrEmpty(_softwareData) ? string.Empty : _softwareData;
+			set => _softwareData = string.IsNullOrEmpty(value) ? string.Empty : value;
+		}
 
 		/// <summary>
 		/// Private field to store MakeModel Data
