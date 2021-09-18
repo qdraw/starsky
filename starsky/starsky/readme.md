@@ -156,6 +156,7 @@ __All text (not number or date) driven search queries use a contain search__
 | -colorclass          | -colorclass=6                      | Azure / TypicalAlt            |
 | -colorclass          | -colorclass=7                      | Blue / Extras                 |
 | -colorclass          | -colorclass=8                      | Grey / No name                |
+| __software__         | -software:"photoshop"              | Last edited this app          |
 
 ### Rest API documentation
 Starsky has a Json restful API. Please read the documentation

@@ -73,7 +73,6 @@ namespace starskycore.ViewModels
 	    /// </summary>
 	    public int CollectionsCount => SearchCount;
 
-
 	    /// <summary>
 	    /// Types to search in e.g. -Title=Test
 	    /// </summary>
@@ -83,18 +82,26 @@ namespace starskycore.ViewModels
 	        tags = 0,
 	        filepath = 1,
             filename = 2,
+            // ReSharper disable once IdentifierTypo
             parentdirectory = 3,
             description = 4,
             title = 5,
             datetime = 6,
+            // ReSharper disable once IdentifierTypo
             addtodatabase = 7,
-	        filehash = 8,
+            // ReSharper disable once IdentifierTypo
+            filehash = 8,
+	        // ReSharper disable once IdentifierTypo
 	        isdirectory = 9,
+	        // ReSharper disable once IdentifierTypo
 	        imageformat = 10,
+	        // ReSharper disable once IdentifierTypo
 	        lastedited = 11,
 	        make = 12,
 	        model = 13,
-	        colorclass = 14
+	        // ReSharper disable once IdentifierTypo
+	        colorclass = 14,
+	        software = 15
         }
 
         
