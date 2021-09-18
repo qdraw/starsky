@@ -11,6 +11,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -51,10 +52,11 @@ namespace starskytest.Services
 			await _dbContext.SaveChangesAsync();
 			
 			await new SearchSuggestionsInflateHostedService(_scopeFactory, _memoryCache,
+				new FakeIWebLogger(),
 				new AppSettings()).StartAsync(new CancellationToken());
 
 			var allSuggestions = await new SearchSuggestionsService(_dbContext, 
-					_memoryCache, new AppSettings())
+					_memoryCache, new FakeIWebLogger(),new AppSettings())
 				.GetAllSuggestions();
 
 			var result = allSuggestions.FirstOrDefault(p => p.Key == "test");

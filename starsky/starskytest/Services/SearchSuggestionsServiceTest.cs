@@ -10,6 +10,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.Services
 {
@@ -32,7 +33,7 @@ namespace starskytest.Services
 			builder.UseInMemoryDatabase("searchSuggestionService");
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
-			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new AppSettings());
+			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new FakeIWebLogger(),new AppSettings());
 			_query = new Query(_dbContext,_memoryCache);
 			
 			
@@ -128,6 +129,7 @@ namespace starskytest.Services
 		{
 			// The feature does not work without cache enabled
 			var result = await new SearchSuggestionsService(_dbContext,_memoryCache,
+				new FakeIWebLogger(),
 				new AppSettings{AddMemoryCache = false}).SearchSuggest("sch");
 
 			Assert.AreEqual(0, result.Count());
