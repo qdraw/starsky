@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starskycore.Interfaces;
 
@@ -19,14 +20,17 @@ namespace starskycore.Services
 		private readonly ApplicationDbContext _context;
 		private readonly IMemoryCache _cache;
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
 		public SearchSuggestionsService(
 			ApplicationDbContext context, 
 			IMemoryCache memoryCache,
+			IWebLogger logger, 
 			AppSettings appSettings = null)
 		{
 			_context = context;
 			_cache = memoryCache;
+			_logger = logger;
 			_appSettings = appSettings;
 		}
 
@@ -42,10 +46,18 @@ namespace starskycore.Services
 			if (_cache.TryGetValue(nameof(SearchSuggestionsService), out _)) 
 				return new Dictionary<string,int>().ToList();
 
-			var allFilesList = await _context.FileIndex.GroupBy(i => i.Tags)
-				.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
-				.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
-			
+			var allFilesList = new List<KeyValuePair<string, int>>();
+			try
+			{
+				allFilesList = await _context.FileIndex.GroupBy(i => i.Tags)
+					.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
+					.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
+			}
+			catch ( MySql.Data.MySqlClient.MySqlException e )
+			{
+				_logger.LogError(e, "mysql search suggest catch-ed");
+			}
+
 			var suggestions = new Dictionary<string,int>(StringComparer.InvariantCultureIgnoreCase);
 
 			foreach ( var tag in allFilesList )

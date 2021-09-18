@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.database.Data;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starskycore.Services
@@ -15,12 +16,14 @@ namespace starskycore.Services
 		private readonly AppSettings _appSettings;
 		private readonly IMemoryCache _memoryCache;
 		private readonly IServiceScopeFactory _scopeFactory;
-		
+		private readonly IWebLogger _logger;
+
 		public SearchSuggestionsInflateHostedService(IServiceScopeFactory scopeFactory,
-			IMemoryCache memoryCache, AppSettings appSettings = null)
+			IMemoryCache memoryCache, IWebLogger logger, AppSettings appSettings = null)
 		{
 			_scopeFactory = scopeFactory;
 			_memoryCache = memoryCache;
+			_logger = logger;
 			_appSettings = appSettings;
 		}
 
@@ -29,7 +32,7 @@ namespace starskycore.Services
 			using (var scope = _scopeFactory.CreateScope())
 			{
 				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				await new SearchSuggestionsService(dbContext, _memoryCache, _appSettings).Inflate();
+				await new SearchSuggestionsService(dbContext, _memoryCache, _logger, _appSettings).Inflate();
 			}
 		}
 
