@@ -50,12 +50,14 @@ namespace starskycore.Services
 			try
 			{
 				allFilesList = await _context.FileIndex.GroupBy(i => i.Tags)
+					// ReSharper disable once UseMethodAny.1
 					.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
 					.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
 			}
-			catch ( MySql.Data.MySqlClient.MySqlException e )
+			catch ( Exception e )
 			{
-				_logger.LogError(e, "mysql search suggest catch-ed");
+				_logger.LogError(e, "mysql search suggest exception catch-ed");
+				return allFilesList;
 			}
 
 			var suggestions = new Dictionary<string,int>(StringComparer.InvariantCultureIgnoreCase);

@@ -35,8 +35,6 @@ namespace starskytest.Services
 			_dbContext = new ApplicationDbContext(options);
 			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new FakeIWebLogger(),new AppSettings());
 			_query = new Query(_dbContext,_memoryCache);
-			
-			
 		}
 		
 		[TestInitialize]
@@ -134,6 +132,25 @@ namespace starskytest.Services
 
 			Assert.AreEqual(0, result.Count());
 		
+		}
+		
+		[TestMethod]
+		public async Task SearchSuggestionsService_MySqlError()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache()
+				.BuildServiceProvider();
+            
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseMySql("Server=test;database=test;uid=test;pwd=test;");
+			var options = builder.Options;
+			var dbContext = new ApplicationDbContext(options);
+			var fakeLogger = new FakeIWebLogger();
+			var suggest = new SearchSuggestionsService(dbContext,_memoryCache,fakeLogger,new AppSettings());
+
+			await suggest.Inflate();
+			
+			Assert.AreEqual("mysql search suggest exception catch-ed", fakeLogger.TrackedExceptions.LastOrDefault().Item2);
 		}
 
 	}
