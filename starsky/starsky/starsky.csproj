@@ -81,6 +81,7 @@
         <ProjectReference Include="..\starsky.foundation.accountmanagement\starsky.foundation.accountmanagement.csproj" />
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
         <ProjectReference Include="..\starsky.foundation.http\starsky.foundation.http.csproj" />
+        <ProjectReference Include="..\starsky.foundation.mail\starsky.foundation.mail.csproj" />
         <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj" />
         <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />
         <ProjectReference Include="..\starsky.foundation.thumbnailmeta\starsky.foundation.thumbnailmeta.csproj" />

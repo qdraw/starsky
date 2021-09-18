@@ -572,7 +572,19 @@ namespace starsky.foundation.platform.Models
 		/// Use always UNIX style
 		/// </summary>
 		public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
-	    
+
+		public string MailSmtpServer { get; set; } = "mail.kpnmail.nl";
+
+		public string MailFromEmail { get; set; } = "noreply@qdraw.nl";
+
+		public int MailSmtpPort { get; set; } = 25;
+		
+		public bool MailSmtpUseSsl{ get; set; } = false;
+
+		public string MailSmtpUserName { get; set; }
+		
+		public string MailSmtpPassword { get; set; }
+		
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
