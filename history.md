@@ -46,7 +46,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
 - [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
 - [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp (PR #444)
-- [x]   (Breaking change) _Tools_ Dropbox has changed the way it authorized, in dropbox-tools the refresh token is now used (PR #)
+- [x]   (Breaking change) _Tools_ Dropbox has changed the way it authorized (September 30th, 2021), in dropbox-tools the refresh token is now used (PR #448)
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
