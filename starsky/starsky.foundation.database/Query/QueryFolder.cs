@@ -157,6 +157,29 @@ namespace starsky.foundation.database.Query
             // temp feature to hide deleted items
         }
 
+        private List<FileIndexItem> QueryGetNextPrevInFolder(
+	        string parentFolderPath)
+        {
+	        List<FileIndexItem> LocalQuery(ApplicationDbContext context)
+	        {
+		        // sort by alphabet
+		        return context.FileIndex.Where(
+				        p => p.ParentDirectory == parentFolderPath)
+			        .OrderBy(p => p.FileName).AsEnumerable()
+			        .GroupBy(i => i.FilePath).Select(g => g.First()).ToList();
+	        }
+	        
+	        try
+	        {
+		        return LocalQuery(_context);
+	        }
+	        catch ( ObjectDisposedException )
+	        {
+		        var context = new InjectServiceScope( _scopeFactory).Context();
+		        return LocalQuery(context);
+	        }
+        }
+
         /// <summary>
         /// Show previous en next items in the folder view.
         /// There is equivalent class for prev next in the display view
@@ -170,12 +193,8 @@ namespace starsky.foundation.database.Query
 
             // We use breadcrumbs to get the parent folder
             var parentFolderPath = FilenamesHelper.GetParentPath(currentFolder);
-            
-            // sort by alphabet
-            var itemsInSubFolder = _context.FileIndex.Where(
-		            p => p.ParentDirectory == parentFolderPath)
-                .OrderBy(p => p.FileName).AsEnumerable()
-                .GroupBy(i => i.FilePath).Select(g => g.First()).ToList();
+
+            var itemsInSubFolder = QueryGetNextPrevInFolder(parentFolderPath);
             
             var photoIndexOfSubFolder = itemsInSubFolder.FindIndex(p => p.FilePath == currentFolder);
 
