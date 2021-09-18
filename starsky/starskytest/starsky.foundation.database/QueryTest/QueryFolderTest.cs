@@ -1,8 +1,10 @@
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 
@@ -52,6 +54,35 @@ namespace starskytest.starsky.foundation.database.QueryTest
 
 			var result = queryNoCache.CacheGetParentFolder("/");
 			Assert.IsFalse(result.Item1);
+		}
+		
+		[TestMethod]
+		public void GetNextPrevInFolder_Next_DisposedItem()
+		{
+			var serviceScope = CreateNewScope();
+			var scope = serviceScope.CreateScope();
+			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+	        
+			// item sub folder
+			var item = new FileIndexItem("/test_1234567832/test_0191921.jpg");
+			dbContext.FileIndex.Add(item);
+			
+			var item1 = new FileIndexItem("/test_1234567832/test_0191922.jpg");
+			dbContext.FileIndex.Add(item1);
+			
+			dbContext.SaveChanges();
+	        
+			// Important to dispose!
+			dbContext.Dispose();
+			
+			var getItem = query.GetNextPrevInFolder("/test_1234567832/test_0191921.jpg");
+			Assert.IsNotNull(getItem);
+			Assert.AreEqual("/test_1234567832/test_0191922.jpg", getItem.NextFilePath);
+
+			query.RemoveItem(item);
+			query.RemoveItem(item1);
+
 		}
 	}
 }
