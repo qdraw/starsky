@@ -93,7 +93,7 @@ namespace starskycore.Services
         {
             var searchModel = objectSearchModel as SearchViewModel;            
             
-            // Clone the item to avoid removeing items from cache
+            // Clone the item to avoid removing items from cache
             searchModel = searchModel.Clone();
             
             searchModel.PageNumber = pageNumber;
@@ -221,6 +221,10 @@ namespace starskycore.Services
 				    case SearchViewModel.SearchInTypes.filehash:
 					    var fileHash = model.SearchFor[i];
 					    predicates.Add(x => x.FileHash != null && x.FileHash.ToLower().Contains(fileHash) );
+					    break;
+				    case SearchViewModel.SearchInTypes.software:
+					    var software = model.SearchFor[i];
+					    predicates.Add(x => x.Software.ToLower().Contains(software));
 					    break;
 				    case SearchViewModel.SearchInTypes.isdirectory:
 					    bool.TryParse(model.SearchFor[i].ToLowerInvariant(),

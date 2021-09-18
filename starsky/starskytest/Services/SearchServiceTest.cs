@@ -58,6 +58,7 @@ namespace starskytest.Services
 					ImageFormat = ExtensionRolesHelper.ImageFormat.jpg,
 					DateTime = new DateTime(2014,1,1,1,1,1),
 					MakeModel = "Apple|iPhone SE|",
+					Software = "PhotoTool x",
 					IsDirectory = false,
 					ColorClass = ColorClassParser.Color.WinnerAlt,
 					LastEdited = new DateTime(2020,10,10,10,10,10)
@@ -206,11 +207,16 @@ namespace starskytest.Services
 		{
 			InsertSearchData();
 			// With deleted files is it 3
-			// todo: check the value of this one
-
-			var t = _query.GetAllRecursive("/");
-	        
+			
 			Assert.AreEqual(2, _search.Search("station").SearchCount);
+		}
+		
+		[TestMethod]
+		public void SearchService_SoftwareSearch()
+		{
+			InsertSearchData();
+        
+			Assert.AreEqual(1, _search.Search("-software:photo").SearchCount);
 		}
 
 		[TestMethod]
@@ -846,8 +852,39 @@ namespace starskytest.Services
 			var result2 = model.NarrowSearch(model);
 
 			Assert.AreEqual("lelystadcentrum",result.FileIndexItems[0].Tags);
-
+		}
+		
+		[TestMethod]
+		public void SearchService_SoftwareNull()
+		{
+			var model = new SearchViewModel
+			{
+				SearchIn =
+				{
+					"software"
+				},
+				FileIndexItems = new List<FileIndexItem>{
+					new FileIndexItem
+					{
+						Tags = "software:test123"
+					},
+					new FileIndexItem
+					{
+						Tags = "software:test123"
+					},
+					new FileIndexItem
+					{
+						Tags = "lelystadcentrum",
+						Software = "test123"
+					}
+				}
+			};
 			
+			model.SetAddSearchFor("test1"); 
+			model.SetAddSearchForOptions("=");
+
+			var result = model.NarrowSearch(model);
+			Assert.AreEqual(1,result.FileIndexItems.Count);
 		}
 	    
 		[TestMethod]
