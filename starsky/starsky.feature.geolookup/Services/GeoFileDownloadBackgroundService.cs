@@ -43,7 +43,7 @@ namespace starsky.feature.geolookup.Services
 				var geoFileDownload = scope.ServiceProvider.GetRequiredService<IGeoFileDownload>();
 				try
 				{
-					geoFileDownload.Download();
+					await geoFileDownload.Download();
 				}
 				catch ( FileNotFoundException e )
 				{

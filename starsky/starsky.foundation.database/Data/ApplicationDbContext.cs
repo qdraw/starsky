@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
@@ -47,6 +49,12 @@ namespace starsky.foundation.database.Data
 						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
 					etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
 					etb.ToTable("Users");
+					etb.Property(e => e.LockoutEnd)
+						.HasColumnType("varchar(255)")
+						.HasConversion(
+							v => v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff"),
+							v => DateTime.Parse(v, CultureInfo.InvariantCulture));
+					
 				}
 			);
 

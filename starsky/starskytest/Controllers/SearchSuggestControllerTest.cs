@@ -106,7 +106,7 @@ namespace starskytest.Controllers
 		}
         
 		[TestMethod]
-		public async Task Inflate()
+		public async Task Inflate_HappyFlow()
 		{
 			// Clean cache if not exist
 			_memoryCache.Remove(nameof(SearchSuggestionsService));

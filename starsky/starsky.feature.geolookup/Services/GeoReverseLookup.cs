@@ -32,7 +32,7 @@ namespace starsky.feature.geolookup.Services
         public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null)
         {
 	        // Needed when not having this, application will fail
-	        geoFileDownload.Download();
+	        geoFileDownload.Download().ConfigureAwait(false);
 	        
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
