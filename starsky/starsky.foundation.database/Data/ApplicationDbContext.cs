@@ -53,9 +53,8 @@ namespace starsky.foundation.database.Data
 					
 					DateTime parsedDateTime;
 					var converter = new ValueConverter<DateTime, string>(
-						v => v != null
-							? v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)
-							: string.Empty,
+						v =>
+							v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
 					v => string.IsNullOrWhiteSpace(v)
 							? DateTime.MinValue
 							: DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
