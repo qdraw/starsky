@@ -2,7 +2,9 @@ name: end2end on heroku-demo
 
 on:
   workflow_dispatch:
-
+  schedule:
+    - cron:  '45 0 * * *'
+    
 jobs:
   test:
 
