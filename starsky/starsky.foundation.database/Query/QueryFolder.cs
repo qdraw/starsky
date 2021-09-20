@@ -168,14 +168,19 @@ namespace starsky.foundation.database.Query
 			        .OrderBy(p => p.FileName).AsEnumerable()
 			        .GroupBy(i => i.FilePath).Select(g => g.First()).ToList();
 	        }
-	        
+
 	        try
 	        {
 		        return LocalQuery(_context);
 	        }
+	        catch ( MySql.Data.MySqlClient.MySqlProtocolException )
+	        {
+		        var context = new InjectServiceScope(_scopeFactory).Context();
+		        return LocalQuery(context);
+	        }
 	        catch ( ObjectDisposedException )
 	        {
-		        var context = new InjectServiceScope( _scopeFactory).Context();
+		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        return LocalQuery(context);
 	        }
         }
