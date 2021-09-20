@@ -34,6 +34,12 @@ export async function ForceSyncRequestNewContent({
     new URLPath().StringToIUrl(historyLocationSearch)
   );
   FetchGet(url).then((connectionResult) => {
+    if (connectionResult.statusCode !== 200) {
+      console.log("request failed");
+      console.error(connectionResult);
+      callback();
+      return;
+    }
     const forceSyncResult = new CastToInterface().MediaArchive(
       connectionResult.data
     );

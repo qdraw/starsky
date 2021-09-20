@@ -107,4 +107,29 @@ describe("ForceSyncWaitButton", () => {
 
     expect(dispatch).toBeCalled();
   });
+
+  it("ForceSyncRequestNewContent should when failed callback & dispatch", async () => {
+    const mockIConnectionDataFailed: Promise<IConnectionDefault> = Promise.resolve(
+      {
+        ...newIConnectionDefault(),
+        statusCode: 500 // < - - - - - -
+      }
+    );
+
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockIConnectionDataFailed);
+
+    const callback = jest.fn();
+    const dispatch = jest.fn();
+
+    await ForceSyncRequestNewContent({
+      callback,
+      dispatch,
+      historyLocationSearch: "?f=/"
+    });
+
+    expect(callback).toBeCalled();
+    expect(dispatch).not.toBeCalled();
+  });
 });
