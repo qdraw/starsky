@@ -1,7 +1,6 @@
 import { globalHistory } from "@reach/router";
-import { shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
@@ -11,7 +10,7 @@ import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
 
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />
     );
   });
@@ -35,7 +34,7 @@ describe("archive-sidebar-selection-list", () => {
     ] as IFileIndexItem[];
 
     it("with items, check first item", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
@@ -44,7 +43,7 @@ describe("archive-sidebar-selection-list", () => {
     });
 
     it("toggleSelection", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
@@ -59,7 +58,7 @@ describe("archive-sidebar-selection-list", () => {
     });
 
     it("allSelection", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
       var allSelectionButton = component.find('[data-test="select-all"]');

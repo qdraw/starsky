@@ -1,13 +1,12 @@
 import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { URLPath } from "../../../shared/url-path";
 import ColorClassFilter from "./color-class-filter";
 
 describe("ColorClassFilter", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -18,7 +17,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value", () => {
-    var component = shallow(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -33,7 +32,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("outside current scope display reset", () => {
-    var component = shallow(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -47,7 +46,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value and preloader exist", () => {
-    var component = mount(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -69,7 +68,7 @@ describe("ColorClassFilter", () => {
   it("undo selection when clicking on already selected colorclass", () => {
     globalHistory.navigate("/?colorclass=1");
 
-    var component = mount(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}

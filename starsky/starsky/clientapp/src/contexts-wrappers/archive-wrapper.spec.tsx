@@ -1,4 +1,4 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Archive from "../containers/archive";
 import * as Login from "../containers/login";
@@ -22,7 +22,7 @@ import ArchiveContextWrapper, {
 
 describe("ArchiveContextWrapper", () => {
   it("renders", () => {
-    shallow(<ArchiveContextWrapper {...newIArchive()} />);
+    render(<ArchiveContextWrapper {...newIArchive()} />);
   });
 
   describe("with mount", () => {
@@ -39,7 +39,7 @@ describe("ArchiveContextWrapper", () => {
         });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(archive).toBeCalled();
@@ -64,7 +64,7 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
 
-      const component = mount(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(search).toBeCalled();
@@ -82,7 +82,7 @@ describe("ArchiveContextWrapper", () => {
       });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(<ArchiveContextWrapper {...args} />);
+      const component = render(<ArchiveContextWrapper {...args} />);
       expect(login).toBeCalled();
       component.unmount();
     });
@@ -98,7 +98,7 @@ describe("ArchiveContextWrapper", () => {
       });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(<ArchiveContextWrapper {...args} />);
+      const component = render(<ArchiveContextWrapper {...args} />);
       expect(login).toBeCalled();
       component.unmount();
     });
@@ -114,7 +114,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
@@ -131,7 +131,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
@@ -151,7 +151,7 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 

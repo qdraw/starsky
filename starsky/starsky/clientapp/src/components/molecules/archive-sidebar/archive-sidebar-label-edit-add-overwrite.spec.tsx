@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -16,11 +15,11 @@ import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-ad
 
 describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    render(<ArchiveSidebarLabelEditAddOverwrite />);
   });
 
   it("isReadOnly: true", () => {
-    const mainElement = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+    const mainElement = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
     var formControl = mainElement.find(".form-control");
 
@@ -82,7 +81,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("isReadOnly: false", () => {
-      const component = shallow(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       var formControl = component.find(FormControl);
 
@@ -111,7 +110,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       // update component + now press a key
       act(() => {
@@ -148,7 +147,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefaultReject);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       // update component + now press a key
       act(() => {
@@ -187,7 +186,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("Should change value when onChange was called", () => {
-      const component = mount(
+      const component = render(
         <ArchiveSidebarLabelEditAddOverwrite>
           t
         </ArchiveSidebarLabelEditAddOverwrite>
@@ -229,7 +228,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
@@ -287,7 +286,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
@@ -342,7 +341,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       act(() => {
         // update component + now press a key
@@ -382,7 +381,7 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
     });
 
     it("keydown should be fired", () => {
-      const component = mount(<ArchiveSidebarLabelEditAddOverwrite />);
+      const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
       var keyboardSpy = jest
         .spyOn(Keyboard.prototype, "SetFocusOnEndField")

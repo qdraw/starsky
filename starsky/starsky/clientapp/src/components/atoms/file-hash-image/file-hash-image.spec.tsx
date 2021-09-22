@@ -183,13 +183,15 @@ describe("FileHashImage", () => {
       />
     );
 
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    const button = component.getAllByRole("button")[0] as HTMLButtonElement;
+    const image = component.getAllByRole("img")[0] as HTMLImageElement;
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailZoom("hash", 1)
+    act(() => {
+      button.click();
+    });
+
+    expect(image.src).toBe(
+      "http://localhost" + new UrlQuery().UrlThumbnailZoom("hash", 1)
     );
   });
 
@@ -227,10 +229,11 @@ describe("FileHashImage", () => {
       />
     );
 
+    const button = component.getAllByRole("button")[0];
+
     act(() => {
-      component.find("button").simulate("click");
+      button.click();
     });
-    component.update();
 
     expect(onWheelCallbackSpy).toBeCalled();
   });
