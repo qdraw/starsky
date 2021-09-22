@@ -21,7 +21,7 @@
     "abortcontroller-polyfill": "^1.7.3",
     "enzyme": "^3.11.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^3.4.1",
     "intersection-observer": "^0.12.0",
     "leaflet": "^1.7.1",
     "prettier": "^2.2.1",
