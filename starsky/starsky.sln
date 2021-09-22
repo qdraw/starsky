@@ -100,6 +100,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.thumbnai
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskythumbnailmetacli", "starskythumbnailmetacli\starskythumbnailmetacli.csproj", "{E0559015-77F2-4135-9AF5-41EBEA6C2C9C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{1BFEB172-4387-420C-BB7D-9936CBCE76A9}"
+ProjectSection(SolutionItems) = preProject
+	..\.editorconfig = ..\.editorconfig
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
