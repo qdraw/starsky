@@ -1,11 +1,11 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import FormControl from "./form-control";
 
 describe("FormControl", () => {
   it("renders", () => {
-    shallow(
+    render(
       <FormControl contentEditable={true} onBlur={() => {}} name="test">
         &nbsp;
       </FormControl>
@@ -22,7 +22,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - null/nothing", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -36,7 +36,7 @@ describe("FormControl", () => {
       var preventDefaultSpy = jest.fn();
 
       act(() => {
-        component.getDOMNode().innerHTML = "";
+        component.innerHTML = "";
         component.simulate("keydown", {
           key: "x",
           preventDefault: preventDefaultSpy
@@ -49,7 +49,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown max limit/preventDefault", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -76,7 +76,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown max limit but allow control/command a", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -105,7 +105,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown max limit but allow control/command e", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -134,7 +134,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthKey - keydown ok", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -162,7 +162,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -195,7 +195,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthPaste - copy -> paste ok", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -227,7 +227,7 @@ describe("FormControl", () => {
     });
 
     it("limitLengthBlur - null/nothing", () => {
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -252,7 +252,7 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur pushed/ok", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -276,7 +276,7 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -298,7 +298,7 @@ describe("FormControl", () => {
 
     it("limitLengthBlur - onBlur limit", () => {
       var onBlurSpy = jest.fn();
-      var component = mount(
+      var component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}

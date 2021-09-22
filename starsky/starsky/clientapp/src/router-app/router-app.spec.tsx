@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as ContentPage from "../pages/content-page";
 import * as ImportPage from "../pages/import-page";
@@ -16,7 +16,7 @@ describe("Router", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(contentPageSpy).toBeCalled();
   });
 
@@ -27,7 +27,7 @@ describe("Router", () => {
         return <></>;
       });
     globalHistory.navigate("/search?q=t");
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(searchPagePageSpy).toBeCalled();
   });
 
@@ -38,7 +38,7 @@ describe("Router", () => {
         return <></>;
       });
     globalHistory.navigate("/trash?q=t");
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(trashPagePageSpy).toBeCalled();
   });
 
@@ -49,7 +49,7 @@ describe("Router", () => {
         return <></>;
       });
     globalHistory.navigate("/import?q=t");
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(importPagePageSpy).toBeCalled();
   });
 
@@ -60,7 +60,7 @@ describe("Router", () => {
         return <></>;
       });
     globalHistory.navigate("/account/login");
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(loginPagePageSpy).toBeCalled();
   });
 
@@ -71,7 +71,7 @@ describe("Router", () => {
         return <></>;
       });
     globalHistory.navigate("/not-found");
-    mount(<RouterApp></RouterApp>);
+    render(<RouterApp></RouterApp>);
     expect(notFoundPageSpy).toBeCalled();
   });
 });
