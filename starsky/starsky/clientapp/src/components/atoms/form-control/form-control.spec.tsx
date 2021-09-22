@@ -7,7 +7,6 @@ import {
 import React from "react";
 import { act } from "react-dom/test-utils";
 import FormControl from "./form-control";
-import { LimitLength } from "./limit-length";
 
 describe("FormControl", () => {
   it("renders", () => {
@@ -317,10 +316,6 @@ describe("FormControl", () => {
     it("limitLengthBlur - onBlur pushed/ok", async () => {
       var onBlurSpy = jest.fn();
 
-      const limitSpy = jest
-        .spyOn(LimitLength.prototype, "LimitLengthBlur")
-        .mockImplementationOnce(() => () => {});
-
       var component = render(
         <FormControl
           contentEditable={true}
@@ -338,6 +333,7 @@ describe("FormControl", () => {
       const blurEvent = createEvent.blur(formControl);
 
       act(() => {
+        formControl.innerHTML += "1";
         fireEvent(formControl, blurEvent);
       });
 
@@ -345,15 +341,11 @@ describe("FormControl", () => {
         component.container.getElementsByClassName("warning-box").length
       ).toBeFalsy();
 
-      await waitFor(() => expect(limitSpy).toBeCalled());
-
-      expect(limitSpy).toBeCalled();
-
       onBlurSpy.mockReset();
       component.unmount();
     });
 
-    xit("limitLengthBlur - onBlur limit/preventDefault", () => {
+    it("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
       var component = render(
         <FormControl
@@ -366,16 +358,25 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      // need to dispatch on child element
-      component.find(".form-control").simulate("blur");
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      const blurEvent = createEvent.blur(formControl);
 
-      expect(onBlurSpy).toBeCalledTimes(0);
-      expect(component.exists(".warning-box")).toBeTruthy();
+      // need to dispatch on child element
+      act(() => {
+        formControl.innerHTML += "1";
+        fireEvent(formControl, blurEvent);
+      });
+
+      expect(
+        component.container.getElementsByClassName("warning-box").length
+      ).toBeTruthy();
 
       component.unmount();
     });
 
-    xit("limitLengthBlur - onBlur limit", () => {
+    it("limitLengthBlur - onBlur limit", () => {
       var onBlurSpy = jest.fn();
       var component = render(
         <FormControl
@@ -388,12 +389,20 @@ describe("FormControl", () => {
         </FormControl>
       );
 
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      const blurEvent = createEvent.blur(formControl);
+
+      // need to dispatch on child element
       act(() => {
-        component.simulate("blur");
+        formControl.innerHTML += "1";
+        fireEvent(formControl, blurEvent);
       });
 
-      expect(component.exists(".warning-box")).toBeTruthy();
-      expect(onBlurSpy).toBeCalledTimes(0);
+      expect(
+        component.container.getElementsByClassName("warning-box").length
+      ).toBeTruthy();
 
       component.unmount();
     });
