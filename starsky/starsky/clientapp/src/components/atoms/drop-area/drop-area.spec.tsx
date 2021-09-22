@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import {
@@ -12,7 +12,7 @@ import { PostSingleFormData } from "./post-single-form-data";
 
 describe("DropArea", () => {
   it("renders", () => {
-    shallow(<DropArea endpoint="/import" />);
+    render(<DropArea endpoint="/import" />);
   });
 
   describe("with events", () => {
@@ -75,7 +75,7 @@ describe("DropArea", () => {
       var callbackSpy = jest.fn();
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(
+        render(
           <DropArea
             callback={callbackSpy}
             endpoint="/import"
@@ -119,7 +119,7 @@ describe("DropArea", () => {
     it("Test dragenter", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -132,7 +132,7 @@ describe("DropArea", () => {
     it("Test dragenter and then dragleave", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        mount(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -151,7 +151,7 @@ describe("DropArea", () => {
     it("Test dragover", () => {
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
-        shallow(<DropArea endpoint="/import" enableDragAndDrop={true} />);
+        render(<DropArea endpoint="/import" enableDragAndDrop={true} />);
       });
 
       act(() => {
@@ -456,73 +456,5 @@ describe("DropArea", () => {
     });
   });
 });
-
-// it("WIP renders2", () => {
-
-//   const scrollToSpy = jest.fn();
-//   window.scrollTo = scrollToSpy;
-
-//   const fileUploaderMock = jest.fn();
-//   const component = mount(<DropArea></DropArea>);
-
-//   const file = {
-//     name: 'test.jpg',
-//     type: 'image/jpg',
-//   } as File;
-
-//   const fileList: any = {
-//     length: 1,
-//     item: () => null,
-//     0: file,
-//   };
-
-//   const event = {
-//     currentTarget: {
-//       files: fileList,
-//     }
-//   } as React.ChangeEvent<HTMLInputElement>;
-
-//   window.dispatchEvent(event as Event);
-
-//   component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-//   component.simulate('input', { key: 'a' })
-
-//   // document.dispatchEvent(event);
-
-//   // simulateEvent(component, "mousedown", event);
-
-//   // const instance = component.instance() as DropArea;
-
-//   // instance.handleUploadFile(event);
-//   // expect(fileUploaderMock).toBeCalledWith(fileList);
-
-//   scrollToSpy.mockClear();
-// });
-
-// test('uploads the file after a click event', () => {
-//   const fileUploaderMock = jest.fn();
-//   const component = shallow(<DropArea></DropArea>);
-
-//   const file = {
-//     name: 'test.jpg',
-//     type: 'image/jpg',
-//   } as File;
-
-//   const fileList: FileList = {
-//     length: 1,
-//     item: () => null,
-//     0: file,
-//   };
-
-//   const event = {
-//     currentTarget: {
-//       files: fileList,
-//     }
-//   } as React.ChangeEvent<HTMLInputElement>;
-
-//   const instance = component.instance() as ParentComponent;
-//   instance.handleUploadFile(event);
-//   expect(fileUploaderMock).toBeCalledWith(fileList);
-// });
 
 // https://medium.com/@evanteague/creating-fake-test-events-with-typescript-jest-778018379d1e

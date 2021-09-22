@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -13,7 +13,7 @@ import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
   it("renders", () => {
-    shallow(<FileHashImage isError={false} fileHash={""} />);
+    render(<FileHashImage isError={false} fileHash={""} />);
   });
 
   it("Rotation API is called return 202", async () => {
@@ -47,9 +47,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<>test</>);
+    var component = render(<>test</>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -96,9 +96,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<></>);
+    var component = render(<></>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -132,9 +132,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<></>);
+    var component = render(<></>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -175,7 +175,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject)
       .mockImplementationOnce(panZoomObject);
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -218,7 +218,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject);
 
     const onWheelCallbackSpy = jest.fn();
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -259,7 +259,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject)
       .mockImplementationOnce(panZoomObject);
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -304,7 +304,7 @@ describe("FileHashImage", () => {
 
     const onResetCallbackSpy = jest.fn();
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
