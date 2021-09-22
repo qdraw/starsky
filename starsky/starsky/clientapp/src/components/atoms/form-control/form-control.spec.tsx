@@ -1,7 +1,13 @@
-import { render } from "@testing-library/react";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import FormControl from "./form-control";
+import { LimitLength } from "./limit-length";
 
 describe("FormControl", () => {
   it("renders", () => {
@@ -21,8 +27,8 @@ describe("FormControl", () => {
       };
     });
 
-    it("limitLengthKey - null/nothing", () => {
-      var component = render(
+    it("limitLengthKey - null/nothing", async () => {
+      const component = render(
         <FormControl
           contentEditable={true}
           maxlength={10}
@@ -33,22 +39,67 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
 
-      act(() => {
-        component.innerHTML = "";
-        component.simulate("keydown", {
-          key: "x",
-          preventDefault: preventDefaultSpy
-        });
+      const keyDownEvent = createEvent.keyDown(formControl, {
+        key: "x",
+        code: "x"
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0);
+      act(() => {
+        fireEvent(formControl, keyDownEvent);
+      });
+
+      await waitFor(() => expect(keyDownEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthKey - keydown max limit/preventDefault", () => {
+    it("limitLengthKey - keydown max limit/preventDefault", async () => {
+      const component = render(
+        <FormControl
+          contentEditable={true}
+          maxlength={10}
+          onBlur={() => {}}
+          name="test"
+        >
+          123456789
+        </FormControl>
+      );
+
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+
+      expect(
+        component.container.getElementsByClassName("warning-box").length
+      ).toBeFalsy();
+
+      formControl.innerHTML += 1;
+
+      const keyDownEvent = createEvent.keyDown(formControl, {
+        key: "x",
+        code: "x"
+      });
+
+      act(() => {
+        fireEvent(formControl, keyDownEvent);
+      });
+
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeTruthy()
+      );
+
+      await waitFor(() => expect(keyDownEvent.defaultPrevented).toBeTruthy());
+
+      component.unmount();
+    });
+
+    it("limitLengthKey - keydown max limit but allow control/command a", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -60,22 +111,37 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
+      );
 
-      act(() => {
-        component.getDOMNode().innerHTML = "12345678901";
-        component.simulate("keydown", {
-          key: "x",
-          preventDefault: preventDefaultSpy
-        });
+      const keyDownEvent = createEvent.keyDown(formControl, {
+        key: "a",
+        code: "a",
+        metaKey: true
       });
 
-      expect(preventDefaultSpy).toBeCalled();
+      act(() => {
+        fireEvent(formControl, keyDownEvent);
+      });
+
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
+      );
+
+      await waitFor(() => expect(keyDownEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthKey - keydown max limit but allow control/command a", () => {
+    it("limitLengthKey - keydown max limit but allow control/command e", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -87,53 +153,37 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
-
-      act(() => {
-        component.getDOMNode().innerHTML = "12345678901";
-        component.simulate("keydown", {
-          key: "a",
-          metaKey: true,
-          preventDefault: preventDefaultSpy
-        });
-      });
-
-      // command a is to select all
-      expect(preventDefaultSpy).toBeCalledTimes(0);
-
-      component.unmount();
-    });
-
-    it("limitLengthKey - keydown max limit but allow control/command e", () => {
-      var component = render(
-        <FormControl
-          contentEditable={true}
-          maxlength={10}
-          onBlur={() => {}}
-          name="test"
-        >
-          123456789
-        </FormControl>
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
       );
 
-      var preventDefaultSpy = jest.fn();
-
-      act(() => {
-        component.getDOMNode().innerHTML = "12345678901";
-        component.simulate("keydown", {
-          key: "e",
-          ctrlKey: true,
-          preventDefault: preventDefaultSpy
-        });
+      const keyDownEvent = createEvent.keyDown(formControl, {
+        key: "e",
+        code: "e",
+        ctrlKey: true
       });
 
-      // ctrl e to go the begin of the field
-      expect(preventDefaultSpy).toBeCalledTimes(0);
+      act(() => {
+        fireEvent(formControl, keyDownEvent);
+      });
+
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
+      );
+
+      await waitFor(() => expect(keyDownEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthKey - keydown ok", () => {
+    it("limitLengthKey - keydown ok", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -145,23 +195,35 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
+      );
 
-      act(() => {
-        component.getDOMNode().innerHTML = "1234567";
-
-        component.simulate("keydown", {
-          key: "x",
-          preventDefault: preventDefaultSpy
-        });
+      const keyDownEvent = createEvent.keyDown(formControl, {
+        key: "x"
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0);
+      act(() => {
+        fireEvent(formControl, keyDownEvent);
+      });
+
+      await waitFor(() =>
+        expect(
+          component.container.getElementsByClassName("warning-box").length
+        ).toBeFalsy()
+      );
+
+      await waitFor(() => expect(keyDownEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthPaste - copy -> paste limit/preventDefault", () => {
+    it("limitLengthPaste - copy -> paste limit/preventDefault", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -173,28 +235,27 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
 
-      var mockDataTransfer = {
-        getData: () => {
-          return "01";
+      const pasteEvent = createEvent.paste(formControl, {
+        clipboardData: {
+          getData: () => "10"
         }
-      };
+      });
 
       act(() => {
-        component.simulate("paste", {
-          clipboardData: mockDataTransfer,
-          preventDefault: preventDefaultSpy
-        });
+        fireEvent(formControl, pasteEvent);
       });
 
       // limit!
-      expect(preventDefaultSpy).toBeCalled();
+      await waitFor(() => expect(pasteEvent.defaultPrevented).toBeTruthy());
 
       component.unmount();
     });
 
-    it("limitLengthPaste - copy -> paste ok", () => {
+    it("limitLengthPaste - copy -> paste ok", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -202,31 +263,31 @@ describe("FormControl", () => {
           onBlur={() => {}}
           name="test"
         >
-          12345
+          987654321
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
 
-      var mockDataTransfer = {
-        getData: () => {
-          return "?";
+      const pasteEvent = createEvent.paste(formControl, {
+        clipboardData: {
+          getData: () => "1"
         }
-      };
-
-      act(() => {
-        component.simulate("paste", {
-          clipboardData: mockDataTransfer,
-          preventDefault: preventDefaultSpy
-        });
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0);
+      act(() => {
+        fireEvent(formControl, pasteEvent);
+      });
+
+      // limit!
+      await waitFor(() => expect(pasteEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthBlur - null/nothing", () => {
+    it("limitLengthBlur - null/nothing", async () => {
       var component = render(
         <FormControl
           contentEditable={true}
@@ -238,20 +299,28 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      var preventDefaultSpy = jest.fn();
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      const blurEvent = createEvent.blur(formControl);
 
       act(() => {
-        component.getDOMNode().innerHTML = "";
-        component.simulate("blur");
+        formControl.innerHTML = "";
+        fireEvent(formControl, blurEvent);
       });
 
-      expect(preventDefaultSpy).toBeCalledTimes(0);
+      await waitFor(() => expect(blurEvent.defaultPrevented).toBeFalsy());
 
       component.unmount();
     });
 
-    it("limitLengthBlur - onBlur pushed/ok", () => {
+    it("limitLengthBlur - onBlur pushed/ok", async () => {
       var onBlurSpy = jest.fn();
+
+      const limitSpy = jest
+        .spyOn(LimitLength.prototype, "LimitLengthBlur")
+        .mockImplementationOnce(() => () => {});
+
       var component = render(
         <FormControl
           contentEditable={true}
@@ -263,18 +332,28 @@ describe("FormControl", () => {
         </FormControl>
       );
 
+      const formControl = component.container.getElementsByClassName(
+        "form-control"
+      )[0];
+      const blurEvent = createEvent.blur(formControl);
+
       act(() => {
-        component.simulate("blur");
+        fireEvent(formControl, blurEvent);
       });
 
-      expect(component.exists(".warning-box")).toBeFalsy();
-      expect(onBlurSpy).toBeCalled();
+      expect(
+        component.container.getElementsByClassName("warning-box").length
+      ).toBeFalsy();
+
+      await waitFor(() => expect(limitSpy).toBeCalled());
+
+      expect(limitSpy).toBeCalled();
 
       onBlurSpy.mockReset();
       component.unmount();
     });
 
-    it("limitLengthBlur - onBlur limit/preventDefault", () => {
+    xit("limitLengthBlur - onBlur limit/preventDefault", () => {
       var onBlurSpy = jest.fn();
       var component = render(
         <FormControl
@@ -296,7 +375,7 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("limitLengthBlur - onBlur limit", () => {
+    xit("limitLengthBlur - onBlur limit", () => {
       var onBlurSpy = jest.fn();
       var component = render(
         <FormControl

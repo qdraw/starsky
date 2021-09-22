@@ -24,7 +24,7 @@ export class LimitLength {
    * Limit length before sending to onBlurEvent
    * @param element Focus event
    */
-  public LimitLengthBlur(element: React.FocusEvent<HTMLDivElement>) {
+  public LimitLengthBlur(element: React.FocusEvent<HTMLDivElement>): void {
     if (!element.currentTarget.textContent) {
       this.setChildLength(0);
       if (!this.onBlur) return;
