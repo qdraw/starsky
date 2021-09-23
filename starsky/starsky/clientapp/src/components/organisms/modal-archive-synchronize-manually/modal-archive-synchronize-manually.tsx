@@ -87,16 +87,18 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
         var url = new UrlQuery().UrlIndexServerApi(
           new URLPath().StringToIUrl(history.location.search)
         );
-        FetchGet(url).then((connectionResult) => {
-          var removeCacheResult = new CastToInterface().MediaArchive(
-            connectionResult.data
-          );
-          var payload = removeCacheResult.data as IArchiveProps;
-          if (payload.fileIndexItems) {
-            dispatch({ type: "force-reset", payload });
+        FetchGet(url, { "Cache-Control": "no-store, max-age=0" }).then(
+          (connectionResult) => {
+            var removeCacheResult = new CastToInterface().MediaArchive(
+              connectionResult.data
+            );
+            var payload = removeCacheResult.data as IArchiveProps;
+            if (payload.fileIndexItems) {
+              dispatch({ type: "force-reset", payload });
+            }
+            props.handleExit();
           }
-          props.handleExit();
-        });
+        );
       }, 600);
     });
   }
