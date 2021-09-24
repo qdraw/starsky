@@ -1,4 +1,4 @@
-import { act } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import React, { useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";

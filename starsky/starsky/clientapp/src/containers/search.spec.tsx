@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import { newIArchive } from "../interfaces/IArchive";

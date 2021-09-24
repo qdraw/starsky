@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import * as PreferencesAppSettings from "../components/organisms/preferences-app-settings/preferences-app-settings";
 import * as PreferencesPassword from "../components/organisms/preferences-password/preferences-password";

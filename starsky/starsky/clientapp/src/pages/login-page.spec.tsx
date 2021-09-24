@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Login from "../containers/login";
 import LoginPage from "./login-page";

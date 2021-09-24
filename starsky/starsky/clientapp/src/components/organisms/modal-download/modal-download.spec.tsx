@@ -1,4 +1,4 @@
-import { act } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";

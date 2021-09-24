@@ -1,4 +1,4 @@
-import { act } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";

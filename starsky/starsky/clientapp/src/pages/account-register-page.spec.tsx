@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import * as AccountRegister from "../containers/account-register";
 import AccountRegisterPage from "./account-register-page";

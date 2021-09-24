@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
   IFileIndexItem,

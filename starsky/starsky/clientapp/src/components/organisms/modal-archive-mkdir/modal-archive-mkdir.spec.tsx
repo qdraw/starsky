@@ -1,4 +1,4 @@
-import { act } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";

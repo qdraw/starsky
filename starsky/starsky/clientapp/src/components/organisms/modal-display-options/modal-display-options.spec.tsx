@@ -1,4 +1,5 @@
 import { globalHistory } from "@reach/router";
+import { render } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";

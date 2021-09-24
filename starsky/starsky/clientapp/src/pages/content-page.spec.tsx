@@ -1,4 +1,5 @@
 import { globalHistory } from "@reach/router";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as MediaContent from "../containers/media-content";
 import ContentPage from "./content-page";

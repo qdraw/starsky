@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";

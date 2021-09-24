@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React, { useRef } from "react";
 import useIntersection, {
   newIntersectionObserver

@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import * as MenuDetailView from "../../components/organisms/menu-detail-view/menu-detail-view";
 import MenuDetailViewContainer from "./menu-detailview-container";
