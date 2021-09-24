@@ -1,13 +1,17 @@
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 
-const FetchGet = async (url: string): Promise<IConnectionDefault> => {
+const FetchGet = async (
+  url: string,
+  headers: any = {}
+): Promise<IConnectionDefault> => {
   const settings = {
     method: "GET",
     credentials: "include" as RequestCredentials,
     headers: {
       Accept: "application/json",
       "X-Requested-With":
-        "XMLHttpRequest" /* .net core returns by with this header a 401 when the user is not logged in */
+        "XMLHttpRequest" /* .net core returns by with this header a 401 when the user is not logged in */,
+      ...headers
     }
   };
 

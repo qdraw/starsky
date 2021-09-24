@@ -79,8 +79,14 @@ _See `./starsky-tools/end2end` for details_
 There is a version log and backlog available on the [history and changelog page](history.md)
 
 ### Sonarqube
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=coverage)](https://sonarcloud.io/dashboard?id=starsky)
+[![codecov](https://codecov.io/gh/qdraw/starsky/branch/master/graph/badge.svg?token=MUCQuYH99y)](https://codecov.io/gh/qdraw/starsky)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=bugs)](https://sonarcloud.io/dashboard?id=starsky)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=code_smells)](https://sonarcloud.io/dashboard?id=starsky)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=starsky)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starsky&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=starsky)
+
+### Licence
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/qdraw/starsky/blob/master/LICENSE)
+
+## Authors
+- [@qdraw](https://www.github.com/qdraw)
