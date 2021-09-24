@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as AppContext from "../../../contexts/archive-context";
@@ -15,11 +15,11 @@ import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-s
 
 describe("ArchiveSidebarLabelEditSearchReplace", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditSearchReplace />);
+    render(<ArchiveSidebarLabelEditSearchReplace />);
   });
 
   it("isReadOnly: true", () => {
-    const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
+    const mainElement = render(<ArchiveSidebarLabelEditSearchReplace />);
 
     var formControl = mainElement.find(FormControl);
 
@@ -63,7 +63,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
     });
 
     it("isReadOnly: false", () => {
-      const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
+      const mainElement = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       var formControl = mainElement.find(FormControl);
 
@@ -79,7 +79,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
     });
 
     it("Should change value when onChange was called", () => {
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       act(() => {
         // update component
@@ -110,7 +110,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       // update component + now press a key
       act(() => {
@@ -142,7 +142,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       // update component + now press a key
       act(() => {
@@ -179,7 +179,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefaultReject);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
       // update component + now press a key
       act(() => {
@@ -238,7 +238,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(
+      const component = render(
         <ArchiveSidebarLabelEditSearchReplace>
           t
         </ArchiveSidebarLabelEditSearchReplace>

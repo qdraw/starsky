@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -12,7 +12,7 @@ import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelectKeyboard", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ColorClassSelectKeyboard
         collections={true}
         isEnabled={true}
@@ -35,7 +35,7 @@ describe("ColorClassSelectKeyboard", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const component = mount(
+    const component = render(
       <ColorClassSelectKeyboard
         collections={true}
         clearAfter={true}
@@ -74,7 +74,7 @@ describe("ColorClassSelectKeyboard", () => {
 
   it("press keyboad and should NOT fire http request", async () => {
     // should after press keyboard
-    const component = mount(
+    const component = render(
       <ColorClassSelectKeyboard
         collections={true}
         clearAfter={true}
@@ -122,7 +122,7 @@ describe("ColorClassSelectKeyboard", () => {
         return { Update: jest.fn() } as any;
       });
 
-    const component = mount(
+    const component = render(
       <ColorClassSelectKeyboard
         collections={true}
         clearAfter={true}
@@ -165,7 +165,7 @@ describe("ColorClassSelectKeyboard", () => {
         }
       );
 
-    const component = mount(
+    const component = render(
       <ColorClassSelectKeyboard
         collections={true}
         clearAfter={true}

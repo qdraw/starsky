@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import {
   IRelativeObjects,
@@ -8,14 +8,14 @@ import ArchivePagination from "./archive-pagination";
 
 describe("ArchivePagination", () => {
   it("renders new object", () => {
-    shallow(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
+    render(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
   });
 
   var relativeObjects = {
     nextFilePath: "next",
     prevFilePath: "prev"
   } as IRelativeObjects;
-  var Component = mount(
+  var Component = render(
     <ArchivePagination relativeObjects={relativeObjects} />
   );
 

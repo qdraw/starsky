@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
@@ -9,14 +9,14 @@ jest.mock("../../../hooks/use-intersection-observer");
 
 describe("ListImageTest", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ListImage alt={"alt"} fileHash={"src"} imageFormat={ImageFormat.jpg} />
     );
   });
 
   it("useIntersection = true", () => {
     (useIntersection as jest.Mock<any>).mockImplementation(() => true);
-    var element = mount(
+    var element = render(
       <ListImage fileHash={"test.jpg"} imageFormat={ImageFormat.jpg}>
         test
       </ListImage>
@@ -35,7 +35,7 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null", () => {
-    var element = shallow(
+    var element = render(
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
@@ -47,7 +47,7 @@ describe("ListImageTest", () => {
   });
 
   it("img-box--error null 2", () => {
-    var element = shallow(
+    var element = render(
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 

@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
@@ -13,7 +13,7 @@ import * as ShiftSelectionHelper from "./shift-selection-helper";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <ItemListView
         iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
@@ -28,7 +28,7 @@ describe("ItemListView", () => {
     ] as IFileIndexItem[];
 
     it("search with data-filepath in child element", () => {
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -45,7 +45,7 @@ describe("ItemListView", () => {
       const flatListItemSpy = jest
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={false}
           fileIndexItems={exampleData}
@@ -57,7 +57,7 @@ describe("ItemListView", () => {
     });
 
     it("no content", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={undefined as any}
@@ -68,7 +68,7 @@ describe("ItemListView", () => {
     });
 
     it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -82,7 +82,7 @@ describe("ItemListView", () => {
     });
 
     it("text should be: There are no photos in this folder", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -121,7 +121,7 @@ describe("ItemListView", () => {
       } as INavigateState;
       jest.useFakeTimers();
 
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -152,7 +152,7 @@ describe("ItemListView", () => {
           return true;
         });
 
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -181,7 +181,7 @@ describe("ItemListView", () => {
       const listImageChildItemSpy = jest
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}

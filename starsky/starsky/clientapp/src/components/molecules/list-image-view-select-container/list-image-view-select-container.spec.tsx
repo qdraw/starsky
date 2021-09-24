@@ -1,5 +1,5 @@
 import { globalHistory, Link } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -11,7 +11,7 @@ describe("ListImageTest", () => {
       fileName: "test",
       status: IExifStatus.Ok
     } as IFileIndexItem;
-    shallow(<ListImageNormalSelectContainer item={fileIndexItem} />);
+    render(<ListImageNormalSelectContainer item={fileIndexItem} />);
   });
 
   describe("NonSelectMode", () => {
@@ -24,7 +24,7 @@ describe("ListImageTest", () => {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
-      var component = mount(
+      var component = render(
         <ListImageNormalSelectContainer item={fileIndexItem}>
           t
         </ListImageNormalSelectContainer>
@@ -42,7 +42,7 @@ describe("ListImageTest", () => {
         fileName: "test",
         status: IExifStatus.Ok
       } as IFileIndexItem;
-      var component = mount(
+      var component = render(
         <ListImageNormalSelectContainer item={fileIndexItem} />
       );
       component.find(Link).simulate("click", {
@@ -66,7 +66,7 @@ describe("ListImageTest", () => {
       } as IFileIndexItem;
 
       var onSelectionCallback = jest.fn();
-      var component = mount(
+      var component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
@@ -91,7 +91,7 @@ describe("ListImageTest", () => {
       } as IFileIndexItem;
 
       var onSelectionCallback = jest.fn();
-      var component = mount(
+      var component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={onSelectionCallback}
@@ -116,7 +116,7 @@ describe("ListImageTest", () => {
         status: IExifStatus.Ok
       } as IFileIndexItem;
 
-      var component = mount(
+      var component = render(
         <ListImageNormalSelectContainer
           item={fileIndexItem}
           onSelectionCallback={undefined as any}

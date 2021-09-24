@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
@@ -10,7 +10,7 @@ import MenuInlineSearch from "./menu-inline-search";
 
 describe("Menu.SearchBar", () => {
   it("renders", () => {
-    shallow(<MenuInlineSearch />);
+    render(<MenuInlineSearch />);
   });
 
   describe("with Context", () => {
@@ -25,7 +25,7 @@ describe("Menu.SearchBar", () => {
           return { ...newIConnectionDefault(), statusCode: 200 };
         });
 
-      var menuBar = mount(<MenuInlineSearch>t</MenuInlineSearch>);
+      var menuBar = render(<MenuInlineSearch>t</MenuInlineSearch>);
 
       // default
       expect(menuBar.find("label").hasClass("icon-addon--search")).toBeTruthy();
@@ -51,7 +51,7 @@ describe("Menu.SearchBar", () => {
           return newIConnectionDefault();
         });
 
-      var menuBar = mount(<MenuInlineSearch>t</MenuInlineSearch>);
+      var menuBar = render(<MenuInlineSearch>t</MenuInlineSearch>);
 
       // go to focus
       menuBar.find("input").simulate("focus");
@@ -80,7 +80,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -107,7 +107,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -131,7 +131,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault());
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -159,7 +159,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 

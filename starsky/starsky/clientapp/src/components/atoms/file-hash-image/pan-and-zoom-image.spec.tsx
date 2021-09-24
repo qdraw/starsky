@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
@@ -8,7 +8,7 @@ import PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("PanAndZoomImage", () => {
   it("renders", () => {
-    shallow(
+    render(
       <PanAndZoomImage
         src=""
         translateRotation={Orientation.Horizontal}
@@ -22,7 +22,7 @@ describe("PanAndZoomImage", () => {
     it("mouseDown & mousemove event triggerd", () => {
       const onWheelCallback = jest.fn();
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -65,7 +65,7 @@ describe("PanAndZoomImage", () => {
         .spyOn(OnMoveMouseTouchAction.prototype, "move")
         .mockImplementationOnce(() => {});
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -97,7 +97,7 @@ describe("PanAndZoomImage", () => {
     it("mouse Up should ignore mousemove", () => {
       const onWheelCallback = jest.fn();
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -140,7 +140,7 @@ describe("PanAndZoomImage", () => {
     it("wheel minus should scale up", () => {
       const onWheelCallback = jest.fn();
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -165,7 +165,7 @@ describe("PanAndZoomImage", () => {
     it("wheel plus should scale up", () => {
       const onWheelCallback = jest.fn();
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -192,7 +192,7 @@ describe("PanAndZoomImage", () => {
         .spyOn(OnWheelMouseAction.prototype, "zoom")
         .mockImplementationOnce(() => {});
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -217,7 +217,7 @@ describe("PanAndZoomImage", () => {
         .spyOn(OnWheelMouseAction.prototype, "zoom")
         .mockImplementationOnce(() => {});
 
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -237,7 +237,7 @@ describe("PanAndZoomImage", () => {
 
     it("when pessing cmd+0 expect reset callback to be called", () => {
       const onResetCallbackSpy = jest.fn();
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}
@@ -263,7 +263,7 @@ describe("PanAndZoomImage", () => {
       jest.spyOn(OnWheelMouseAction.prototype, "zoom").mockRestore();
 
       const onResetCallbackSpy = jest.fn();
-      const component = mount(
+      const component = render(
         <PanAndZoomImage
           src=""
           setIsLoading={null as any}

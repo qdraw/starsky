@@ -1,10 +1,10 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import Modal from "./modal";
 
 describe("Modal", () => {
   it("renders", () => {
-    shallow(
+    render(
       <Modal id="test2-modal" isOpen={true} handleExit={() => {}}>
         &nbsp;
       </Modal>
@@ -13,7 +13,7 @@ describe("Modal", () => {
 
   describe("Close Modal", () => {
     var handleExit = jest.fn();
-    var element = mount(
+    var element = render(
       <Modal id="test-modal" isOpen={true} handleExit={handleExit}>
         &nbsp;
       </Modal>
@@ -35,7 +35,7 @@ describe("Modal", () => {
     Object.defineProperty(window, "scrollTo", { value: spyScrollTo });
 
     var handleExit = jest.fn();
-    mount(
+    render(
       <div>
         <Modal id="test-modal" isOpen={false} handleExit={handleExit}>
           &nbsp;

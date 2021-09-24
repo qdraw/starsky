@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import SearchPagination from "./search-pagination";
@@ -27,7 +27,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1");
     });
 
-    var component = mount(
+    var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
     expect(component.find("a.prev").props().href).toBe("/?p=0");
@@ -39,7 +39,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=1&select=test");
     });
 
-    var component = mount(
+    var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
 
@@ -52,7 +52,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0&select=test");
     });
 
-    var component = mount(
+    var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
     expect(component.find("a.next").props().href).toBe("/?p=1&select=");

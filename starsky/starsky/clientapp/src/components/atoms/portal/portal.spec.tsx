@@ -1,20 +1,20 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import Portal from "./portal";
 
 describe("Portal", () => {
   it("renders", () => {
-    shallow(<Portal />);
+    render(<Portal />);
   });
 
   it("default render", () => {
-    var component = mount(<Portal>test</Portal>);
+    var component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
     component.unmount();
   });
 
   it("default cleanup after render", () => {
-    var component = mount(<Portal>test</Portal>);
+    var component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
     console.log(document.body.innerHTML);
 
@@ -25,7 +25,7 @@ describe("Portal", () => {
   });
 
   it("null cleanup after render", () => {
-    var component = mount(<Portal>test</Portal>);
+    var component = render(<Portal>test</Portal>);
     expect(document.querySelectorAll("#portal-root").length).toBe(1);
 
     var tempItem = document.querySelector("#portal-root");

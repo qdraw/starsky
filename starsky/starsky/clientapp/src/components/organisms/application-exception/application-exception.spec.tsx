@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as MenuDefault from "../menu-default/menu-default";
 import ApplicationException from "./application-exception";
@@ -14,7 +14,7 @@ describe("ApplicationException", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
     expect(menuDefaultSpy).toBeCalled();
 
@@ -26,7 +26,7 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
     expect(component.exists(".content--header")).toBeTruthy();
 
@@ -46,7 +46,7 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
     expect(window.location.reload).not.toHaveBeenCalled();
 

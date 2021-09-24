@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import {
   IConnectionDefault,
@@ -15,7 +15,7 @@ import ForceSyncWaitButton, {
 
 describe("ForceSyncWaitButton", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}
@@ -34,7 +34,7 @@ describe("ForceSyncWaitButton", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const component = mount(
+    const component = render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}

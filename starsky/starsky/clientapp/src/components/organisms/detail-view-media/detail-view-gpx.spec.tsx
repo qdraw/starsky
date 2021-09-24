@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import L from "leaflet";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -11,7 +10,7 @@ import DetailViewGpx from "./detail-view-gpx";
 
 describe("DetailViewGpx", () => {
   it("renders (without state component)", () => {
-    shallow(<DetailViewGpx></DetailViewGpx>);
+    render(<DetailViewGpx></DetailViewGpx>);
   });
 
   describe("with Context", () => {
@@ -39,9 +38,10 @@ describe("DetailViewGpx", () => {
       const div = document.createElement("div");
       (window as any).domNode = div;
       document.body.appendChild(div);
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      // {
+      // attachTo: (window as any).domNode
+      //}
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(polylineSpy).toBeCalledTimes(0);
 
@@ -99,9 +99,8 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      // attachTo: (window as any).domNode
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await act(async () => {
@@ -159,7 +158,7 @@ describe("DetailViewGpx", () => {
       });
 
       // , { attachTo: (window as any).domNode }
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>);
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await gpx.find(".main--gpx").simulate("click");
@@ -216,9 +215,8 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      //  attachTo: (window as any).domNode
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await gpx.find(".main--gpx").simulate("click");
@@ -276,9 +274,8 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      //attachTo: (window as any).domNode
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await gpx.find(".main--gpx").simulate("click");
@@ -354,9 +351,10 @@ describe("DetailViewGpx", () => {
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton);
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      // {
+      // attachTo: (window as any).domNode
+      //}
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
       await gpx.find(".main--gpx").simulate("click");

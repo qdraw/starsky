@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as AppContext from "../../../contexts/archive-context";
@@ -11,7 +11,7 @@ import ArchiveSidebarColorClass from "./archive-sidebar-color-class";
 
 describe("ArchiveSidebarColorClass", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ArchiveSidebarColorClass
         pageType={PageType.Archive}
         fileIndexItems={newIFileIndexItemArray()}
@@ -21,7 +21,7 @@ describe("ArchiveSidebarColorClass", () => {
   });
 
   describe("mount object (mount= select is child element)", () => {
-    var wrapper = mount(
+    var wrapper = render(
       <ArchiveSidebarColorClass
         pageType={PageType.Archive}
         fileIndexItems={newIFileIndexItemArray()}
@@ -81,7 +81,7 @@ describe("ArchiveSidebarColorClass", () => {
           );
         });
 
-      const element = mount(
+      const element = render(
         <ArchiveSidebarColorClass
           pageType={PageType.Archive}
           isReadOnly={false}

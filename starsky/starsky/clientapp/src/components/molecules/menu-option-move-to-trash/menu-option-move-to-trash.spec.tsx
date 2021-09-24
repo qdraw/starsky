@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
@@ -23,7 +23,7 @@ describe("MenuOptionMoveToTrash", () => {
       ...newIArchive(),
       fileIndexItems: newIFileIndexItemArray()
     } as IArchiveProps;
-    shallow(
+    render(
       <MenuOptionMoveToTrash
         setSelect={jest.fn()}
         select={["test.jpg"]}
@@ -60,7 +60,7 @@ describe("MenuOptionMoveToTrash", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       var dispatch = jest.fn();
-      var component = await mount(
+      var component = await render(
         <MenuOptionMoveToTrash
           setSelect={jest.fn()}
           select={["test.jpg"]}
@@ -119,7 +119,7 @@ describe("MenuOptionMoveToTrash", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const dispatch = jest.fn();
-      const component = mount(
+      const component = render(
         <MenuOptionMoveToTrash
           setSelect={jest.fn()}
           select={["test.jpg"]}

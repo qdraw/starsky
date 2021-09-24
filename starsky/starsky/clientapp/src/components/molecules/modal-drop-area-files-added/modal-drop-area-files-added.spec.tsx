@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as Modal from "../../atoms/modal/modal";
@@ -7,7 +7,7 @@ import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
 describe("ModalDropAreaFilesAdded", () => {
   it("renders", () => {
-    var component = shallow(
+    var component = render(
       <ModalDropAreaFilesAdded
         isOpen={true}
         uploadFilesList={[]}
@@ -40,7 +40,7 @@ describe("ModalDropAreaFilesAdded", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={exampleList}

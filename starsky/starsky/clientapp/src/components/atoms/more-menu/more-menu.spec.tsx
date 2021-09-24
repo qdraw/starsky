@@ -1,20 +1,19 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
 
 describe("More Menu", () => {
   it("renders", () => {
-    shallow(<MoreMenu />);
+    render(<MoreMenu />);
   });
 
   it("get childeren", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
+    var element = render(<MoreMenu>test</MoreMenu>);
     expect(element.find(".menu-options").text()).toBe("test");
   });
 
   it("toggle", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
+    var element = render(<MoreMenu>test</MoreMenu>);
 
     act(() => {
       element.find(".menu-context").simulate("click");
@@ -26,7 +25,7 @@ describe("More Menu", () => {
   });
 
   it("toggle no childeren", () => {
-    var element = shallow(<MoreMenu />);
+    var element = render(<MoreMenu />);
 
     act(() => {
       element.find(".menu-context").simulate("click");
@@ -38,7 +37,7 @@ describe("More Menu", () => {
   });
 
   it("turn off using event", (done) => {
-    var element = mount(<MoreMenu>test</MoreMenu>);
+    var element = render(<MoreMenu>test</MoreMenu>);
 
     act(() => {
       element.find(".menu-context").simulate("click");

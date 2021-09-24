@@ -1,22 +1,22 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { PortalId } from "../portal/portal";
 import Notification, { NotificationType } from "./notification";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    shallow(<Notification type={NotificationType.default} />);
+    render(<Notification type={NotificationType.default} />);
   });
 
   describe("with Context", () => {
     it("Render component", () => {
-      var component = mount(<Notification type={NotificationType.default} />);
+      var component = render(<Notification type={NotificationType.default} />);
       expect(component.exists(".content")).toBeTruthy();
       component.unmount();
     });
 
     it("Ok close and remove element from DOM", () => {
-      var component = mount(<Notification type={NotificationType.default} />);
+      var component = render(<Notification type={NotificationType.default} />);
 
       component.find(".icon--close").simulate("click");
 
@@ -24,7 +24,7 @@ describe("ItemListView", () => {
     });
 
     it("Portal is already gone", () => {
-      var component = mount(
+      var component = render(
         <Notification type={NotificationType.default}>test</Notification>
       );
 
@@ -39,7 +39,7 @@ describe("ItemListView", () => {
 
     it("Callback test Ok close", () => {
       var callback = jest.fn();
-      var component = mount(
+      var component = render(
         <Notification callback={callback} type={NotificationType.default}>
           test
         </Notification>
@@ -53,7 +53,7 @@ describe("ItemListView", () => {
     });
 
     it("Multiple notification it should remove them all", () => {
-      mount(
+      render(
         <>
           <Notification type={NotificationType.default} />
           <Notification type={NotificationType.danger} />

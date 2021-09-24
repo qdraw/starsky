@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import {
@@ -15,7 +15,7 @@ import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelect", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ColorClassSelect
         collections={true}
         isEnabled={true}
@@ -38,7 +38,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -69,7 +69,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -102,7 +102,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -150,7 +150,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -186,7 +186,7 @@ describe("ColorClassSelect", () => {
         return { Update: jest.fn() } as any;
       });
 
-    const component = mount(
+    const component = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
