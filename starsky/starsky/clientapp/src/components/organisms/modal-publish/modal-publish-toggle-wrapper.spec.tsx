@@ -1,11 +1,10 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as ModalPublish from "./modal-publish";
 import ModalPublishToggleWrapper from "./modal-publish-toggle-wrapper";
 
 describe("ModalPublish", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalPublishToggleWrapper
         select={["/"]}
         stateFileIndexItems={[]}
@@ -18,7 +17,7 @@ describe("ModalPublish", () => {
     const modalPublishSpy = jest
       .spyOn(ModalPublish, "default")
       .mockImplementationOnce(() => <></>);
-    const component = mount(
+    const component = render(
       <ModalPublishToggleWrapper
         select={undefined}
         stateFileIndexItems={[{ fileName: undefined } as any]}
@@ -33,7 +32,7 @@ describe("ModalPublish", () => {
     const modalPublishSpy = jest
       .spyOn(ModalPublish, "default")
       .mockImplementationOnce(() => <></>);
-    const component = mount(
+    const component = render(
       <ModalPublishToggleWrapper
         select={["/"]}
         stateFileIndexItems={[{ fileName: undefined } as any]}

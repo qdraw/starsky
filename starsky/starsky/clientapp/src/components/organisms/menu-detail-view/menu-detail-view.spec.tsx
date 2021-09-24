@@ -1,7 +1,6 @@
 import { globalHistory, Link } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -28,7 +27,7 @@ describe("MenuDetailView", () => {
         parentDirectory: "/test"
       }
     } as IDetailView;
-    shallow(<MenuDetailView state={state} dispatch={jest.fn()} />);
+    render(<MenuDetailView state={state} dispatch={jest.fn()} />);
   });
 
   describe("readonly status context", () => {
@@ -52,7 +51,7 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -80,7 +79,7 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="rename"]');
@@ -106,7 +105,7 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -138,7 +137,7 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -163,7 +162,7 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -192,7 +191,7 @@ describe("MenuDetailView", () => {
       // add search query to url
       globalHistory.navigate("/?t=test&p=0");
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -220,7 +219,7 @@ describe("MenuDetailView", () => {
         }
       };
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={updateState} dispatch={jest.fn()} />
       );
 
@@ -238,7 +237,7 @@ describe("MenuDetailView", () => {
         globalHistory.navigate("/?details=true");
       });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
@@ -260,7 +259,7 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -279,7 +278,7 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click .item--labels [menu]", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -302,7 +301,7 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click (in MoreMenu)", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="labels"]');
@@ -324,7 +323,7 @@ describe("MenuDetailView", () => {
     it("navigate to parent folder click", () => {
       globalHistory.navigate("/?t=test");
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="go-to-parent-folder"]');
@@ -348,7 +347,7 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -374,7 +373,7 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="rename"]');
@@ -400,7 +399,7 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="trash"]');
@@ -422,7 +421,7 @@ describe("MenuDetailView", () => {
     });
 
     it("trash click to trash and collection is true", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView
           state={{
             ...state,
@@ -476,7 +475,7 @@ describe("MenuDetailView", () => {
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
       var item = component.find('[data-test="rotate"]');
@@ -526,7 +525,7 @@ describe("MenuDetailView", () => {
         return contextValues;
       });
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -574,7 +573,7 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -622,7 +621,7 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state1} dispatch={jest.fn()} />
       );
       expect(component.find("header").getDOMNode().className).toBe(
@@ -659,7 +658,7 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
         var item = component.find('[data-test="export"]');
@@ -679,7 +678,7 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
         var item = component.find('[data-test="move"]');
@@ -699,7 +698,7 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
         var item = component.find('[data-test="rename"]');
@@ -719,7 +718,7 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
         var item = component.find('[data-test="trash"]');
@@ -737,7 +736,7 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
         var item = component.find('[data-test="rotate"]');

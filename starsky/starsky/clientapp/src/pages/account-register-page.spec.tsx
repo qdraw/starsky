@@ -1,4 +1,3 @@
-import { mount } from "enzyme";
 import React from "react";
 import * as AccountRegister from "../containers/account-register";
 import AccountRegisterPage from "./account-register-page";
@@ -10,7 +9,7 @@ describe("ContentPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    mount(<AccountRegisterPage>g</AccountRegisterPage>);
+    render(<AccountRegisterPage>g</AccountRegisterPage>);
     expect(accountRegisterSpy).toBeCalledTimes(1);
   });
 });

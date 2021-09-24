@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -6,7 +5,7 @@ import PreferencesUsername from "./preferences-username";
 
 describe("PreferencesUsername", () => {
   it("renders", () => {
-    shallow(<PreferencesUsername />);
+    render(<PreferencesUsername />);
   });
 
   describe("context", () => {
@@ -15,7 +14,7 @@ describe("PreferencesUsername", () => {
         return { ...newIConnectionDefault(), statusCode: 500 };
       });
 
-      var component = mount(<PreferencesUsername />);
+      var component = render(<PreferencesUsername />);
       expect(component.find(".content--text").text()).toBe("Unknown username");
       component.unmount();
     });
@@ -31,7 +30,7 @@ describe("PreferencesUsername", () => {
         };
       });
 
-      var component = mount(<PreferencesUsername />);
+      var component = render(<PreferencesUsername />);
       expect(component.find(".content--text").text()).toBe("Unknown username");
       component.unmount();
     });
@@ -49,7 +48,7 @@ describe("PreferencesUsername", () => {
         .mockImplementationOnce(() => testReply)
         .mockImplementationOnce(() => testReply);
 
-      var component = mount(<PreferencesUsername />);
+      var component = render(<PreferencesUsername />);
       expect(component.find(".content--text").text()).toBe("test");
     });
   });

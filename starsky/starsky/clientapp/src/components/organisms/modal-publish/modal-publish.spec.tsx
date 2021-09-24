@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -11,7 +10,7 @@ import ModalPublish from "./modal-publish";
 
 describe("ModalPublish", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -30,7 +29,7 @@ describe("ModalPublish", () => {
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -85,7 +84,7 @@ describe("ModalPublish", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -162,7 +161,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -224,7 +223,7 @@ describe("ModalPublish", () => {
 
     var handleExitSpy = jest.fn();
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish select={["/"]} isOpen={true} handleExit={handleExitSpy} />
     );
 
@@ -265,7 +264,7 @@ describe("ModalPublish", () => {
         } as IConnectionDefault);
       });
 
-    const modal = mount(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}

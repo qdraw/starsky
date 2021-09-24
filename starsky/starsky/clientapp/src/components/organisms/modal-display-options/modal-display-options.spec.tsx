@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { ReactWrapper } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as Modal from "../../atoms/modal/modal";
@@ -7,7 +7,7 @@ import ModalDisplayOptions from "./modal-display-options";
 
 describe("ModalDisplayOptions", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalDisplayOptions isOpen={true} parentFolder="/" handleExit={() => {}}>
         test
       </ModalDisplayOptions>
@@ -18,7 +18,7 @@ describe("ModalDisplayOptions", () => {
     describe("buttons exist", () => {
       var modal: ReactWrapper;
       beforeAll(() => {
-        modal = mount(
+        modal = render(
           <ModalDisplayOptions
             parentFolder={"/"}
             isOpen={true}
@@ -47,7 +47,7 @@ describe("ModalDisplayOptions", () => {
       var modal: ReactWrapper;
       beforeEach(() => {
         jest.useFakeTimers();
-        modal = mount(
+        modal = render(
           <ModalDisplayOptions
             parentFolder={"/"}
             isOpen={true}
@@ -146,7 +146,7 @@ describe("ModalDisplayOptions", () => {
 
       const handleExitSpy = jest.fn();
 
-      const component = mount(
+      const component = render(
         <ModalDisplayOptions
           parentFolder="/"
           isOpen={true}

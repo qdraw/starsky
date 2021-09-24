@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
@@ -12,7 +11,7 @@ import PreferencesAppSettings from "./preferences-app-settings";
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
-    shallow(<PreferencesAppSettings />);
+    render(<PreferencesAppSettings />);
   });
 
   describe("context", () => {
@@ -23,7 +22,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       expect(
         (component
@@ -48,7 +47,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => connectionDefault)
         .mockImplementationOnce(() => connectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       expect(
         (component
@@ -81,7 +80,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       expect(component.find('[data-name="storageFolder"]').text()).toBe("test");
       act(() => {
@@ -120,7 +119,7 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       var storageFolderForm = component.find('[data-name="storageFolder"]');
       (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
@@ -171,7 +170,7 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       const storageFolderForm = component.find('[data-name="storageFolder"]');
       (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
@@ -216,7 +215,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
       var verboseFirstInput = component.find('input[name="verbose"]').first();
 

@@ -5,7 +5,7 @@ import ApplicationException from "./application-exception";
 
 describe("ApplicationException", () => {
   it("renders", () => {
-    shallow(<ApplicationException>t</ApplicationException>);
+    render(<ApplicationException>t</ApplicationException>);
   });
 
   it("should have menu", () => {

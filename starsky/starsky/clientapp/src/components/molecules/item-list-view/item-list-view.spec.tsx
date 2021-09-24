@@ -94,7 +94,7 @@ describe("ItemListView", () => {
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}

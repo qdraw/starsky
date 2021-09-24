@@ -1,4 +1,3 @@
-import { mount } from "enzyme";
 import React, { memo } from "react";
 import useKeyboardEvent from "./use-keyboard-event";
 
@@ -18,7 +17,7 @@ describe("useKeyboardEvent", () => {
 
   it("check if is called once", () => {
     var callback = jest.fn();
-    mount(
+    render(
       <UseKeyboardEventComponentTest
         dependencies={[]}
         regex={new RegExp("q")}
@@ -40,7 +39,7 @@ describe("useKeyboardEvent", () => {
 
   it("to be not called input z => check for q", () => {
     var callback = jest.fn();
-    mount(
+    render(
       <UseKeyboardEventComponentTest
         dependencies={[]}
         regex={new RegExp("q")}

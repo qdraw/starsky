@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -16,7 +15,7 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
   it("renders", () => {
-    shallow(
+    render(
       <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
     );
   });
@@ -59,7 +58,7 @@ describe("MenuTrash", () => {
     });
 
     it("open hamburger menu", () => {
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
       var hamburger = component.find(".hamburger");
@@ -80,7 +79,7 @@ describe("MenuTrash", () => {
     });
 
     it("select is not disabled", () => {
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -104,7 +103,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -129,7 +128,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -175,7 +174,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -213,7 +212,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -254,7 +253,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
@@ -309,7 +308,7 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 

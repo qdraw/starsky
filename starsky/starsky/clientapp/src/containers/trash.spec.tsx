@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../hooks/use-fetch";
 import { newIArchive } from "../interfaces/IArchive";
@@ -7,7 +6,7 @@ import Trash from "./trash";
 
 describe("Trash", () => {
   it("renders", () => {
-    shallow(<Trash {...newIArchive()} />);
+    render(<Trash {...newIArchive()} />);
   });
 
   it("check if warning exist with no items in the list", () => {
@@ -18,7 +17,7 @@ describe("Trash", () => {
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-    const container = mount(
+    const container = render(
       <Trash
         {...newIArchive()}
         colorClassActiveList={[]}

@@ -1,4 +1,3 @@
-import { mount } from "enzyme";
 import React from "react";
 import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
@@ -15,7 +14,7 @@ describe("TrashPage", () => {
       return {} as ISearchList;
     });
 
-    var error = mount(<TrashPage>t</TrashPage>);
+    var error = render(<TrashPage>t</TrashPage>);
     expect(error.text()).toBe("Something went wrong");
   });
 
@@ -33,7 +32,7 @@ describe("TrashPage", () => {
       } as ISearchList;
     });
 
-    var trashPage = mount(<TrashPage>t</TrashPage>);
+    var trashPage = render(<TrashPage>t</TrashPage>);
 
     expect(contextSpy).toBeCalled();
 
@@ -45,7 +44,7 @@ describe("TrashPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => null as any);
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage>t</TrashPage>);
     expect(component.html()).toBe("Something went wrong");
 
     component.unmount();
@@ -56,7 +55,7 @@ describe("TrashPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => ({} as any));
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage>t</TrashPage>);
     expect(component.html()).toBe("Something went wrong");
 
     component.unmount();
@@ -73,7 +72,7 @@ describe("TrashPage", () => {
       } as any;
     });
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage>t</TrashPage>);
 
     expect(applicationExceptionSpy).toBeCalled();
 
@@ -94,7 +93,7 @@ describe("TrashPage", () => {
       return <></>;
     });
 
-    const component = mount(<TrashPage>t</TrashPage>);
+    const component = render(<TrashPage>t</TrashPage>);
 
     expect(preloaderSpy).toBeCalled();
 

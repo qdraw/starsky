@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFileList from "../../../hooks/use-filelist";
@@ -15,7 +14,7 @@ import ModalMoveFile from "./modal-move-file";
 
 describe("ModalMoveFile", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -31,7 +30,7 @@ describe("ModalMoveFile", () => {
       return null;
     });
 
-    var modal = mount(
+    var modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -87,7 +86,7 @@ describe("ModalMoveFile", () => {
       return startArchive;
     });
 
-    var modal = mount(
+    var modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -140,7 +139,7 @@ describe("ModalMoveFile", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalMoveFile
         parentDirectory="/test"
         selectedSubPath="/test/test.jpg"
@@ -214,7 +213,7 @@ describe("ModalMoveFile", () => {
       .mockImplementationOnce(() => locationMockData)
       .mockImplementationOnce(() => locationMockData);
 
-    var modal = mount(
+    var modal = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -266,7 +265,7 @@ describe("ModalMoveFile", () => {
 
     var handleExitSpy = jest.fn();
 
-    var component = mount(
+    var component = render(
       <ModalMoveFile
         parentDirectory="/"
         selectedSubPath="/test.jpg"
@@ -320,7 +319,7 @@ describe("ModalMoveFile", () => {
         .spyOn(Modal, "default")
         .mockImplementationOnce((props) => <>{props.children}</>);
 
-      var modal = mount(
+      var modal = render(
         <ModalMoveFile
           parentDirectory="/"
           selectedSubPath="/test.jpg"

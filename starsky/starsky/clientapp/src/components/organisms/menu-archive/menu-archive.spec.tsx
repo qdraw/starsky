@@ -1,7 +1,6 @@
 import { globalHistory } from "@reach/router";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useHotKeys from "../../../hooks/use-keyboard/use-hotkeys";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -24,7 +23,7 @@ import MenuArchive from "./menu-archive";
 
 describe("MenuArchive", () => {
   it("renders", () => {
-    shallow(<MenuArchive />);
+    render(<MenuArchive />);
   });
 
   describe("with Context", () => {
@@ -48,7 +47,7 @@ describe("MenuArchive", () => {
     it("default menu", () => {
       globalHistory.navigate("/");
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       expect(component.exists('[data-test="hamburger"]')).toBeTruthy();
       expect(component.exists(".item--select")).toBeTruthy();
@@ -59,7 +58,7 @@ describe("MenuArchive", () => {
     });
 
     it("check if on click the hamburger opens", () => {
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
 
@@ -93,7 +92,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive>t</MenuArchive>);
+      var component = render(<MenuArchive>t</MenuArchive>);
 
       expect(component.exists('[data-test="selected-0"]')).toBeTruthy();
 
@@ -124,7 +123,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive>t</MenuArchive>);
+      var component = render(<MenuArchive>t</MenuArchive>);
 
       expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
 
@@ -163,7 +162,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive>t</MenuArchive>);
+      var component = render(<MenuArchive>t</MenuArchive>);
 
       var item = component.find('[data-test="mkdir"]');
 
@@ -206,7 +205,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive>t</MenuArchive>);
+      var component = render(<MenuArchive>t</MenuArchive>);
 
       var item = component.find('[data-test="rename"]');
 
@@ -261,7 +260,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      var component = mount(<MenuArchive>t</MenuArchive>);
+      var component = render(<MenuArchive>t</MenuArchive>);
 
       act(() => {
         component.find('[data-test="rename"]').simulate("click");
@@ -317,7 +316,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="display-options"]');
 
@@ -372,7 +371,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="display-options"]');
 
@@ -419,7 +418,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="synchronize-manually"]');
 
@@ -473,7 +472,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="synchronize-manually"]');
 
@@ -527,7 +526,7 @@ describe("MenuArchive", () => {
           return newIConnectionDefault();
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var more = component.find(".item--more");
 
@@ -587,7 +586,7 @@ describe("MenuArchive", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var more = component.find(".item--more");
       act(() => {
@@ -632,7 +631,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => contextValues)
         .mockImplementationOnce(() => contextValues);
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       expect(useHotkeysSpy).toBeCalled();
       expect(useHotkeysSpy).toBeCalledTimes(1);
@@ -696,7 +695,7 @@ describe("MenuArchive", () => {
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item: ReactWrapper;
       await act(async () => {
@@ -757,7 +756,7 @@ describe("MenuArchive", () => {
           return <></>;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="export"]');
 
@@ -809,7 +808,7 @@ describe("MenuArchive", () => {
           return <></>;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="publish"]');
 
@@ -857,7 +856,7 @@ describe("MenuArchive", () => {
           return contextValues;
         });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       var item = component.find('[data-test="mkdir"]');
 
@@ -896,7 +895,7 @@ describe("MenuArchive", () => {
         return contextValues;
       });
 
-      var component = mount(<MenuArchive />);
+      var component = render(<MenuArchive />);
 
       expect(dropAreaSpy).toBeCalledTimes(0);
 

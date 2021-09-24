@@ -1,4 +1,3 @@
-import { mount } from "enzyme";
 import React from "react";
 import * as Login from "../containers/login";
 import LoginPage from "./login-page";
@@ -10,7 +9,7 @@ describe("LoginPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    mount(<LoginPage>t</LoginPage>);
+    render(<LoginPage>t</LoginPage>);
     expect(spyLoginComponent).toBeCalled();
   });
 });

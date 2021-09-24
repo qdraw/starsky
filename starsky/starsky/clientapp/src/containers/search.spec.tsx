@@ -1,4 +1,3 @@
-import { shallow } from "enzyme";
 import React from "react";
 import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import { newIArchive } from "../interfaces/IArchive";
@@ -10,12 +9,12 @@ import Search from "./search";
 
 describe("Search", () => {
   it("renders", () => {
-    shallow(<Search {...newIArchive()} />);
+    render(<Search {...newIArchive()} />);
   });
 
   describe("Results count", () => {
     it("No results", () => {
-      var component = shallow(
+      var component = render(
         <Search
           {...newIArchive()}
           fileIndexItems={[]}
@@ -28,7 +27,7 @@ describe("Search", () => {
     });
 
     it("Page 3 of 1 results", () => {
-      var component = shallow(
+      var component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}
@@ -42,7 +41,7 @@ describe("Search", () => {
     });
 
     it("Page 1 of 1 results", () => {
-      var component = shallow(
+      var component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}
@@ -60,7 +59,7 @@ describe("Search", () => {
       for (let index = 0; index < 21; index++) {
         numberOfFileIndexItems.push(newIFileIndexItem());
       }
-      var component = shallow(
+      var component = render(
         <Search
           {...newIArchive()}
           collectionsCount={1}

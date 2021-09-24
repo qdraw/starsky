@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
@@ -11,7 +10,7 @@ import ModalArchiveRename from "./modal-archive-rename";
 
 describe("ModalArchiveRename", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}>
         test
       </ModalArchiveRename>
@@ -19,7 +18,7 @@ describe("ModalArchiveRename", () => {
   });
   describe("rename", () => {
     it("rename to non valid directory name", async () => {
-      var modal = mount(
+      var modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -62,7 +61,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -104,7 +103,7 @@ describe("ModalArchiveRename", () => {
 
       const dispatch = jest.fn();
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -157,7 +156,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => locationObject);
 
       const handleExitSpy = jest.fn();
-      const modal = mount(
+      const modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -193,7 +192,7 @@ describe("ModalArchiveRename", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      var modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -242,7 +241,7 @@ describe("ModalArchiveRename", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const dispatch = jest.fn();
-      var modal = mount(
+      var modal = render(
         <ModalArchiveRename
           isOpen={true}
           subPath="/test"
@@ -288,7 +287,7 @@ describe("ModalArchiveRename", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalArchiveRename
           subPath="/"
           isOpen={true}

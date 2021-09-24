@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -15,7 +14,7 @@ describe("ModalDownload", () => {
     //   select: Array<string> | undefined;
     //   handleExit: Function;
     // }
-    shallow(
+    render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -37,7 +36,7 @@ describe("ModalDownload", () => {
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -86,7 +85,7 @@ describe("ModalDownload", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockFetchGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalDownload
         collections={false}
         select={["/file0", "/file1.jpg"]}
@@ -120,7 +119,7 @@ describe("ModalDownload", () => {
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}
@@ -161,7 +160,7 @@ describe("ModalDownload", () => {
 
     var handleExitSpy = jest.fn();
 
-    var modal = mount(
+    var modal = render(
       <ModalDownload
         collections={false}
         select={["/"]}

@@ -1,18 +1,17 @@
-import { shallow } from "enzyme";
 import React from "react";
 import SwitchButton from "./switch-button";
 
 describe("SwitchButton", () => {
   it("renders", () => {
     var toggle = jest.fn();
-    shallow(
+    render(
       <SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
     );
   });
 
   it("renders (disabled:state)", () => {
     var toggle = jest.fn();
-    var wrapper = shallow(
+    var wrapper = render(
       <SwitchButton
         isEnabled={false}
         onToggle={toggle}
@@ -26,7 +25,7 @@ describe("SwitchButton", () => {
 
   it("test if element triggers onToggle when changed (default)", () => {
     var toggle = jest.fn();
-    var wrapper = shallow(
+    var wrapper = render(
       <SwitchButton
         isOn={true}
         onToggle={toggle}
@@ -43,7 +42,7 @@ describe("SwitchButton", () => {
 
   it("test if element triggers onToggle when changed (negative)", () => {
     var toggle = jest.fn();
-    var wrapper = shallow(
+    var wrapper = render(
       <SwitchButton
         isOn={false}
         onToggle={toggle}

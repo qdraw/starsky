@@ -6,7 +6,7 @@ import SearchPagination from "./search-pagination";
 
 describe("SearchPagination", () => {
   it("renders", () => {
-    shallow(<SearchPagination />);
+    render(<SearchPagination />);
   });
 
   it("next page exist", () => {
@@ -15,7 +15,7 @@ describe("SearchPagination", () => {
       globalHistory.navigate("/?p=0");
     });
 
-    var component = mount(
+    var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
     expect(component.find("a.next").props().href).toBe("/?p=1");

@@ -39,7 +39,7 @@ describe("HealthCheckForUpdates", () => {
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />);
+      var component = render(<HealthCheckForUpdates />);
 
       expect(component.exists(Notification.default)).toBeTruthy();
 

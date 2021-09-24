@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { mount } from "enzyme";
 import React from "react";
 import * as MediaContent from "../containers/media-content";
 import ContentPage from "./content-page";
@@ -11,7 +10,7 @@ describe("ContentPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    mount(<ContentPage></ContentPage>);
+    render(<ContentPage></ContentPage>);
     expect(mediaContentSpy).toBeCalledTimes(0);
   });
 
@@ -21,7 +20,7 @@ describe("ContentPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    mount(
+    render(
       <ContentPage
         navigate={globalHistory.navigate}
         location={globalHistory.location}

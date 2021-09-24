@@ -1,21 +1,21 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuDefault from "./menu-default";
 
 describe("MenuDefault", () => {
   it("renders", () => {
-    shallow(<MenuDefault isEnabled={false} />);
+    render(<MenuDefault isEnabled={false} />);
   });
 
   describe("with Context", () => {
     it("has hamburger", () => {
-      var component = shallow(<MenuDefault isEnabled={true} />);
+      var component = render(<MenuDefault isEnabled={true} />);
       expect(component.exists(HamburgerMenuToggle)).toBeTruthy();
     });
 
     it("check if on click the hamburger opens", () => {
-      var component = mount(<MenuDefault isEnabled={true}>t</MenuDefault>);
+      var component = render(<MenuDefault isEnabled={true}>t</MenuDefault>);
 
       expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
 

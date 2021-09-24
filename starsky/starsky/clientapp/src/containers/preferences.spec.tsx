@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import * as PreferencesAppSettings from "../components/organisms/preferences-app-settings/preferences-app-settings";
 import * as PreferencesPassword from "../components/organisms/preferences-password/preferences-password";
@@ -7,7 +6,7 @@ import { Preferences } from "./preferences";
 
 describe("Preferences", () => {
   it("renders", () => {
-    shallow(<Preferences />);
+    render(<Preferences />);
   });
 
   describe("status", () => {
@@ -22,7 +21,7 @@ describe("Preferences", () => {
         .spyOn(PreferencesAppSettings, "default")
         .mockImplementationOnce(() => <></>);
 
-      var component = mount(<Preferences />);
+      var component = render(<Preferences />);
 
       expect(preferencesUsernameSpy).toBeCalled();
       expect(preferencesPasswordSpy).toBeCalled();

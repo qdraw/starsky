@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -8,7 +7,7 @@ import ModalDatetime from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>
         test
       </ModalDatetime>
@@ -20,7 +19,7 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("no date input", () => {
-      var modal = mount(
+      var modal = render(
         <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
       );
 
@@ -34,7 +33,7 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("example date no error dialog", () => {
-      var modal = mount(
+      var modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
@@ -63,7 +62,7 @@ describe("ModalArchiveMkdir", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      var modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
@@ -112,7 +111,7 @@ describe("ModalArchiveMkdir", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDatetime
           subPath="/test.jpg"
           isOpen={true}

@@ -1,6 +1,5 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import {
@@ -22,7 +21,7 @@ import DetailViewSidebar from "./detail-view-sidebar";
 
 describe("DetailViewSidebar", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -33,7 +32,7 @@ describe("DetailViewSidebar", () => {
   });
 
   it("test warning (without state component)", () => {
-    var wrapper = mount(
+    var wrapper = render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -91,7 +90,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      Component = mount(<TestComponent />);
+      Component = render(<TestComponent />);
     });
 
     afterAll(() => {
@@ -300,7 +299,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
       expect(component.exists(".warning-box")).toBeTruthy();
 
@@ -331,7 +330,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
       expect(component.exists(".warning-box")).toBeTruthy();
 
@@ -434,7 +433,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = mount(
+      var component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -482,7 +481,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = mount(
+      var component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -546,7 +545,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,

@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -11,7 +10,7 @@ import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
 describe("ModalDetailviewRenameFile", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalDetailviewRenameFile
         state={{} as any}
         isOpen={true}
@@ -51,7 +50,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      var modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -112,7 +111,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      var modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -176,7 +175,7 @@ describe("ModalDetailviewRenameFile", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      var modal = render(
         <ModalDetailviewRenameFile
           isOpen={true}
           state={state}
@@ -216,7 +215,7 @@ describe("ModalDetailviewRenameFile", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDetailviewRenameFile
           state={{} as any}
           isOpen={true}

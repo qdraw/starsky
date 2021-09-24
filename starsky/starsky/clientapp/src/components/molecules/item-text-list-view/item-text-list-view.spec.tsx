@@ -1,4 +1,3 @@
-import { shallow } from "enzyme";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import {
   IFileIndexItem,
@@ -8,7 +7,7 @@ import ItemTextListView from "./item-text-list-view";
 
 describe("ItemTextListView", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <ItemTextListView
         fileIndexItems={newIFileIndexItemArray()}
         callback={() => {}}
@@ -17,7 +16,7 @@ describe("ItemTextListView", () => {
   });
 
   it("renders undefined", () => {
-    var content = shallow(
+    var content = render(
       <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
     );
     expect(content.exists(".warning-box")).toBeTruthy();
@@ -32,7 +31,7 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = shallow(
+    var list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
@@ -48,7 +47,7 @@ describe("ItemTextListView", () => {
         isDirectory: false
       }
     ] as IFileIndexItem[];
-    var list = shallow(
+    var list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
@@ -67,7 +66,7 @@ describe("ItemTextListView", () => {
     ] as IFileIndexItem[];
 
     var callback = jest.fn();
-    var list = shallow(
+    var list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 
@@ -85,7 +84,7 @@ describe("ItemTextListView", () => {
     ] as IFileIndexItem[];
 
     var callback = jest.fn();
-    var list = shallow(
+    var list = render(
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 

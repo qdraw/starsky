@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React, { useRef } from "react";
 import useIntersection, {
   newIntersectionObserver
@@ -7,7 +6,7 @@ import useIntersection, {
 describe("useIntersection", () => {
   const IntersectionComponentTest = () => {
     const target = useRef<HTMLDivElement>(null);
-    shallow(<div ref={target} />);
+    render(<div ref={target} />);
     useIntersection(target);
     return null;
   };
@@ -18,20 +17,20 @@ describe("useIntersection", () => {
       .spyOn(React, "useRef")
       .mockReturnValueOnce({ current: { focus } });
 
-    mount(<IntersectionComponentTest></IntersectionComponentTest>);
+    render(<IntersectionComponentTest></IntersectionComponentTest>);
     expect(useRefSpy).toHaveBeenCalledTimes(1);
   });
 
   const NewIntersectionComponentTest = () => {
     const target = useRef<HTMLDivElement>(null);
-    mount(<div ref={target} />);
+    render(<div ref={target} />);
     const tagRef = { current: { scrollHeight: 100, clientHeight: 200 } };
     newIntersectionObserver(target, jest.fn(), true, tagRef);
     return null;
   };
 
   it("newIntersectionObserver is not failing", () => {
-    mount(<NewIntersectionComponentTest />);
+    render(<NewIntersectionComponentTest />);
     // there is no assert/check
   });
 });

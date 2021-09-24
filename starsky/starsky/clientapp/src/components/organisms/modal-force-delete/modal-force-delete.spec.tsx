@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -14,7 +13,7 @@ describe("ModalForceDelete", () => {
   });
 
   it("renders", () => {
-    shallow(
+    render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -35,7 +34,7 @@ describe("ModalForceDelete", () => {
       });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -79,7 +78,7 @@ describe("ModalForceDelete", () => {
       });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -125,7 +124,7 @@ describe("ModalForceDelete", () => {
 
     var handleExitSpy = jest.fn();
 
-    var component = mount(
+    var component = render(
       <ModalForceDelete
         isOpen={true}
         dispatch={jest.fn()}

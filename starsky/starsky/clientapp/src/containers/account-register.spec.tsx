@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
@@ -9,16 +8,16 @@ import AccountRegister from "./account-register";
 
 describe("AccountRegister", () => {
   it("renders", () => {
-    shallow(<AccountRegister />);
+    render(<AccountRegister />);
   });
 
   it("link to TOC exist", () => {
-    var compontent = shallow(<AccountRegister />);
+    var compontent = render(<AccountRegister />);
     expect(compontent.find('[data-test="toc"]')).toBeTruthy();
   });
 
   it("link to privacy exist", () => {
-    var compontent = shallow(<AccountRegister />);
+    var compontent = render(<AccountRegister />);
     expect(compontent.find('[data-test="privacy"]')).toBeTruthy();
   });
 
@@ -35,9 +34,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     expect(
@@ -73,9 +72,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     expect(
@@ -111,9 +110,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     expect(
@@ -157,9 +156,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     container.find('[type="submit"]').last().simulate("submit");
@@ -181,9 +180,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     await act(async () => {
@@ -222,9 +221,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     await act(async () => {
@@ -275,9 +274,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     await act(async () => {
@@ -333,9 +332,9 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = mount(<></>);
+    var container = render(<></>);
     await act(async () => {
-      container = await mount(<AccountRegister />);
+      container = await render(<AccountRegister />);
     });
 
     await act(async () => {

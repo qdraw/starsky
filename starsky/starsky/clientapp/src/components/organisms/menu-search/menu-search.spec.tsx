@@ -1,17 +1,16 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import MenuSearch from "./menu-search";
 
 describe("MenuSearch", () => {
   it("renders", () => {
-    shallow(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
+    render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
   });
 
   describe("with Context", () => {
     it("open hamburger menu", () => {
-      var component = mount(
+      var component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
@@ -36,7 +35,7 @@ describe("MenuSearch", () => {
 
     it("un select items", () => {
       globalHistory.navigate("/?select=1");
-      var component = mount(
+      var component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}

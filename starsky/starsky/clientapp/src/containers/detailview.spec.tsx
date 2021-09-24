@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { ReactWrapper } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
@@ -22,7 +22,7 @@ import DetailView from "./detailview";
 
 describe("DetailView", () => {
   it("renders", () => {
-    shallow(<DetailView {...newDetailView()} />);
+    render(<DetailView {...newDetailView()} />);
   });
 
   var defaultState = {
@@ -80,7 +80,7 @@ describe("DetailView", () => {
       // Show extra information
       globalHistory.navigate("/?details=true");
 
-      Component = mount(<TestComponent />);
+      Component = render(<TestComponent />);
     });
 
     afterEach(() => {
@@ -88,7 +88,7 @@ describe("DetailView", () => {
     });
 
     afterAll(() => {
-      Component = mount(<></>);
+      Component = render(<></>);
       TestComponent = () => <></>;
     });
 
@@ -159,7 +159,7 @@ describe("DetailView", () => {
           };
         });
 
-      var detailview = mount(<TestComponent />);
+      var detailview = render(<TestComponent />);
 
       act(() => {
         detailview.find(".nextprev--next").simulate("click");
@@ -189,7 +189,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(() => locationObject)
         .mockImplementationOnce(() => locationObject);
 
-      const detailview = mount(<TestComponent />);
+      const detailview = render(<TestComponent />);
 
       act(() => {
         detailview.find(".nextprev--prev").simulate("click");
@@ -225,7 +225,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      const detailview = mount(<TestComponent />);
+      const detailview = render(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -268,7 +268,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      var compontent = mount(<TestComponent />);
+      var compontent = render(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -328,7 +328,7 @@ describe("DetailView", () => {
         .mockImplementationOnce(locationFaker)
         .mockImplementationOnce(locationFaker);
 
-      var detailview = mount(<TestComponent />);
+      var detailview = render(<TestComponent />);
       var item = detailview.find(".nextprev--prev");
 
       await act(async () => {
@@ -365,7 +365,7 @@ describe("DetailView", () => {
           return Promise.resolve() as any;
         });
 
-      var component = mount(<TestComponent />);
+      var component = render(<TestComponent />);
 
       var event = new KeyboardEvent("keydown", {
         bubbles: true,
@@ -428,7 +428,7 @@ describe("DetailView", () => {
       );
 
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
-      var component = mount(<TestComponent />);
+      var component = render(<TestComponent />);
 
       component.find("#fake-button").simulate("click");
 
@@ -481,7 +481,7 @@ describe("DetailView", () => {
       );
 
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
-      var component = mount(<TestComponent />);
+      var component = render(<TestComponent />);
 
       component.find("#fake-button").simulate("click");
 

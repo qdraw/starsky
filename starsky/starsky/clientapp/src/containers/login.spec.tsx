@@ -1,5 +1,4 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
@@ -10,7 +9,7 @@ import Login from "./login";
 
 describe("Login", () => {
   it("renders", () => {
-    shallow(<Login />);
+    render(<Login />);
   });
 
   it("account already logged in", () => {
@@ -27,7 +26,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
@@ -57,7 +56,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(login.exists('[data-test="logout"]')).toBeTruthy();
@@ -91,7 +90,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(login.exists('[data-test="logout"]')).toBeTruthy();
@@ -122,7 +121,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(login.find(".form-control").length).toBe(2);
     expect(useFetchSpy).toBeCalled();
@@ -148,7 +147,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(
       globalHistory.location.pathname.indexOf(
@@ -184,7 +183,7 @@ describe("Login", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
@@ -240,7 +239,7 @@ describe("Login", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
@@ -290,7 +289,7 @@ describe("Login", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';

@@ -1,4 +1,3 @@
-import { mount } from "enzyme";
 import React from "react";
 import * as DropArea from "../components/atoms/drop-area/drop-area";
 import * as ModalDropAreaFilesAdded from "../components/atoms/modal-drop-area-files-added/modal-drop-area-files-added";
@@ -18,7 +17,7 @@ describe("ImportPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = mount(<ImportPage>t</ImportPage>);
+    const component = render(<ImportPage>t</ImportPage>);
     expect(menuDefaultSpy).toBeCalled();
     expect(dropAreaSpy).toBeCalled();
     component.unmount();
@@ -46,7 +45,7 @@ describe("ImportPage", () => {
       .mockImplementationOnce(() => [[newIFileIndexItem()], jest.fn()])
       .mockImplementationOnce(() => [[newIFileIndexItem()], jest.fn()]);
 
-    const component = mount(<ImportPage>t</ImportPage>);
+    const component = render(<ImportPage>t</ImportPage>);
     expect(menuDefaultSpy).toBeCalled();
     expect(dropAreaSpy).toBeCalled();
     expect(modal).toBeCalled();

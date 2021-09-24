@@ -70,7 +70,7 @@ describe("ModalDropAreaFilesAdded", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={[]}

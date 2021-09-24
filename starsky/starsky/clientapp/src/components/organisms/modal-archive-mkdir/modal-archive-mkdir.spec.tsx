@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -13,7 +12,7 @@ import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 describe("ModalArchiveMkdir", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveMkdir
         dispatch={jest.fn()}
         state={{} as any}
@@ -42,7 +41,7 @@ describe("ModalArchiveMkdir", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      var modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={jest.fn()}
@@ -111,7 +110,7 @@ describe("ModalArchiveMkdir", () => {
       } as IArchive;
       var contextValues = { state, dispatch: jest.fn() };
 
-      var modal = mount(
+      var modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={contextValues.dispatch}
@@ -166,7 +165,7 @@ describe("ModalArchiveMkdir", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalArchiveMkdir
           state={{} as any}
           isOpen={true}

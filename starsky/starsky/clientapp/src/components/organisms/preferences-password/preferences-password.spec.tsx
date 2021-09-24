@@ -1,4 +1,3 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -8,12 +7,12 @@ import PreferencesPassword from "./preferences-password";
 
 describe("PreferencesPassword", () => {
   it("renders", () => {
-    shallow(<PreferencesPassword />);
+    render(<PreferencesPassword />);
   });
 
   describe("context", () => {
     it("default nothing entered", () => {
-      var component = mount(<PreferencesPassword />);
+      var component = render(<PreferencesPassword />);
 
       component.find('form [type="submit"]').first().simulate("submit");
 
@@ -25,7 +24,7 @@ describe("PreferencesPassword", () => {
     });
 
     it("The passwords do not match", () => {
-      var component = mount(<PreferencesPassword />);
+      var component = render(<PreferencesPassword />);
 
       act(() => {
         // to use with: => import { act } from 'react-dom/test-utils';
@@ -67,7 +66,7 @@ describe("PreferencesPassword", () => {
     });
 
     it("Your password has been successfully changed", async () => {
-      var component = mount(<PreferencesPassword />);
+      var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../../../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -129,7 +128,7 @@ describe("PreferencesPassword", () => {
     });
 
     it("Enter your current password", async () => {
-      var component = mount(<PreferencesPassword />);
+      var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -191,7 +190,7 @@ describe("PreferencesPassword", () => {
     });
 
     it("Modal Error - The new password does not meet the criteria", async () => {
-      var component = mount(<PreferencesPassword />);
+      var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(

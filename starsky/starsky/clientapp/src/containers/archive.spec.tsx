@@ -1,22 +1,21 @@
-import { mount, shallow } from "enzyme";
 import React from "react";
 import { newIArchive } from "../interfaces/IArchive";
 import Archive from "./archive";
 
 describe("Archive", () => {
   it("renders", () => {
-    shallow(<Archive {...newIArchive()} />);
+    render(<Archive {...newIArchive()} />);
   });
 
   it("no colorclass usage", () => {
-    const container = shallow(<Archive {...newIArchive()} />);
+    const container = render(<Archive {...newIArchive()} />);
     expect(container.text()).toBe("(Archive) = no colorClassLists");
   });
 
   it("check if warning exist with no items in the list", () => {
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
 
-    const container = mount(
+    const container = render(
       <Archive
         {...newIArchive()}
         colorClassActiveList={[]}

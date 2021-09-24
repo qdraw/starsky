@@ -1,6 +1,6 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
+import { ReactWrapper } from "enzyme";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -10,7 +10,7 @@ import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manuall
 
 describe("ModalArchiveSynchronizeManually", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveSynchronizeManually
         isOpen={true}
         parentFolder="/"
@@ -25,7 +25,7 @@ describe("ModalArchiveSynchronizeManually", () => {
     describe("buttons exist", () => {
       var modal: ReactWrapper;
       beforeAll(() => {
-        modal = mount(
+        modal = render(
           <ModalArchiveSynchronizeManually
             parentFolder={"/"}
             isOpen={true}
@@ -60,7 +60,7 @@ describe("ModalArchiveSynchronizeManually", () => {
       var modal: ReactWrapper;
       beforeEach(() => {
         jest.useFakeTimers();
-        modal = mount(
+        modal = render(
           <ModalArchiveSynchronizeManually
             parentFolder={"/"}
             isOpen={true}
@@ -177,7 +177,7 @@ describe("ModalArchiveSynchronizeManually", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalArchiveSynchronizeManually
           parentFolder="/"
           isOpen={true}

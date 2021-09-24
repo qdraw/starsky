@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -10,7 +9,7 @@ import DetailViewMp4 from "./detail-view-mp4";
 
 describe("DetailViewMp4", () => {
   it("renders (without state component)", () => {
-    shallow(<DetailViewMp4></DetailViewMp4>);
+    render(<DetailViewMp4></DetailViewMp4>);
   });
 
   describe("with Context", () => {
@@ -23,7 +22,7 @@ describe("DetailViewMp4", () => {
     });
 
     it("click to play video resolve", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+      var component = render(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
@@ -37,7 +36,7 @@ describe("DetailViewMp4", () => {
     });
 
     it("click to play video rejected", async () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+      var component = render(<DetailViewMp4></DetailViewMp4>);
 
       jest.spyOn(HTMLMediaElement.prototype, "play").mockReset();
 
@@ -59,7 +58,7 @@ describe("DetailViewMp4", () => {
     });
 
     it("click to play video and timeupdate", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+      var component = render(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
@@ -87,7 +86,7 @@ describe("DetailViewMp4", () => {
     });
 
     it("progress", () => {
-      var component = mount(<DetailViewMp4></DetailViewMp4>);
+      var component = render(<DetailViewMp4></DetailViewMp4>);
 
       var playSpy = jest
         .spyOn(HTMLMediaElement.prototype, "play")
@@ -132,7 +131,7 @@ describe("DetailViewMp4", () => {
         .mockImplementationOnce(() => {
           return <></>;
         });
-      var component = mount(<DetailViewMp4>g</DetailViewMp4>);
+      var component = render(<DetailViewMp4>g</DetailViewMp4>);
 
       expect(useContextSpy).toBeCalled();
       expect(notificationSpy).toBeCalled();
