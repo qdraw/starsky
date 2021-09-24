@@ -271,13 +271,12 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    component.queryByRole("button")?.click();
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+    const img = component.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
   });
 
@@ -317,14 +316,14 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    component.queryByRole("button")?.click();
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+    const img = component.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
+
     expect(onResetCallbackSpy).toBeCalled();
   });
 });
