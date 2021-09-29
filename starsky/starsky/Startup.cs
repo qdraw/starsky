@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -31,6 +32,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
 
 namespace starsky
@@ -155,7 +157,7 @@ namespace starsky
 					EnableDependencyTrackingTelemetryModule = true,
 					EnableHeartbeat = true,
 					EnableAuthenticationTrackingJavaScript = true,
-					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey
+					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey,
 				});
 			}
 
@@ -303,6 +305,14 @@ namespace starsky
 			app.MapWebSocketConnections("/realtime", new WebSocketConnectionsOptions(),_appSettings?.UseRealtime);
 
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
+
+	        if ( !string.IsNullOrWhiteSpace(_appSettings
+		        .ApplicationInsightsInstrumentationKey) )
+	        {
+		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
+		        configuration.TelemetryProcessorChainBuilder.Build();
+	        }
         }
 
 
