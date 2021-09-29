@@ -306,7 +306,7 @@ namespace starsky
 
 	        EfCoreMigrationsOnProject(app).ConfigureAwait(false);
 
-	        if ( !string.IsNullOrWhiteSpace(_appSettings
+	        if ( _appSettings != null && !string.IsNullOrWhiteSpace(_appSettings
 		        .ApplicationInsightsInstrumentationKey) )
 	        {
 		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
