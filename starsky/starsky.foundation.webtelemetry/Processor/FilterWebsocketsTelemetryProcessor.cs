@@ -16,12 +16,9 @@ namespace starsky.foundation.webtelemetry.Processor
 
 		public void Process(ITelemetry item)
 		{
-			if (item is RequestTelemetry request)
+			if (item is RequestTelemetry request && request.ResponseCode == "101")
 			{
-				if (request.ResponseCode == "101")
-				{
-					return;
-				}
+				return;
 			}
 
 			// Send the item to the next TelemetryProcessor
