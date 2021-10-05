@@ -924,7 +924,8 @@ namespace starsky.foundation.database.Models
 				// ReSharper disable once ConvertIfStatementToReturnStatement
 				if ( string.IsNullOrEmpty(Model) ) return makeModelList[2];
 				// It replaces the Camera Model in the lens
-				return makeModelList[2].Replace(Model,string.Empty).Trim();
+				var lensModel = makeModelList[2].Replace(Model,string.Empty).Trim();
+				return lensModel;
 			}
 		}
 	    
@@ -954,7 +955,10 @@ namespace starsky.foundation.database.Models
 		/// <param name="fieldIndex">the indexer of the array (the place in the array)</param>
 		public void SetMakeModel(string addedValue, int fieldIndex)
 		{
-			if ( string.IsNullOrWhiteSpace(addedValue) )return;
+			if ( string.IsNullOrWhiteSpace(addedValue) || addedValue == "----" )
+			{
+				return;
+			}
 			if ( fieldIndex > MakeModelFixedLength ) throw new AggregateException("index is higher than MakeModelFixedLength");
 
 			var titleValue = addedValue.Replace("|", string.Empty);
