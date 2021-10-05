@@ -72,7 +72,13 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     !props.fileHash ||
     !props.imageFormat
   ) {
-    return <div ref={target} className="img-box--error" />;
+    return (
+      <div
+        ref={target}
+        data-test="list-image-img-error"
+        className="img-box--error"
+      />
+    );
   }
 
   // for example show gpx, raw and mp4 as icon
@@ -85,6 +91,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
     return (
       <div
         ref={target}
+        data-test="list-image-img-error"
         className={`img-box--error img-box--unsupported img-box--${props.imageFormat}`}
       />
     );
