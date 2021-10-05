@@ -102,6 +102,7 @@ const ListImage: React.FunctionComponent<IListImageProps> = memo((props) => {
         <img
           src={src}
           alt={alt}
+          data-test="list-image-img"
           onLoad={() => {
             setError(false);
             setIsLoading(false);
