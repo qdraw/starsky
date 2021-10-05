@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import useIntersection from "../../../hooks/use-intersection-observer";
 import { ImageFormat } from "../../../interfaces/IFileIndexItem";
@@ -21,17 +21,22 @@ describe("ListImageTest", () => {
         test
       </ListImage>
     );
-    element.find("img").simulate("load");
 
-    expect(element.find("img").length).toBe(1);
-    expect(
-      element.find("img").filterWhere((item) => {
-        return (
-          item.prop("src") ===
-          new UrlQuery().UrlThumbnailImage("test.jpg", false)
-        );
-      })
-    ).toHaveLength(1);
+    const img = element.queryAllByTestId(
+      "list-image-img"
+    )[0] as HTMLImageElement;
+
+    const keyDownEvent = createEvent.load(img, {
+      key: "x",
+      code: "x"
+    });
+
+    fireEvent(img, keyDownEvent);
+
+    expect(img).not.toBeNull();
+    expect(img.src).toContain(
+      new UrlQuery().UrlThumbnailImage("test.jpg", false)
+    );
   });
 
   it("img-box--error null", () => {
@@ -39,11 +44,12 @@ describe("ListImageTest", () => {
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    expect(
-      element.filterWhere((item) => {
-        return item.prop("className") === "img-box--error";
-      })
-    ).toHaveLength(1);
+    const img = element.queryAllByTestId(
+      "list-image-img-error"
+    )[0] as HTMLImageElement;
+
+    expect(img).not.toBeNull();
+    expect(img.className).toContain("img-box--error");
   });
 
   it("img-box--error null 2", () => {
@@ -51,10 +57,11 @@ describe("ListImageTest", () => {
       <ListImage imageFormat={ImageFormat.jpg} fileHash={"null"} />
     );
 
-    expect(
-      element.filterWhere((item) => {
-        return item.prop("className") === "img-box--error";
-      })
-    ).toHaveLength(1);
+    const img = element.queryAllByTestId(
+      "list-image-img-error"
+    )[0] as HTMLImageElement;
+
+    expect(img).not.toBeNull();
+    expect(img.className).toContain("img-box--error");
   });
 });

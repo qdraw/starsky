@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import React from "react";
 import {
   IFileIndexItem,
@@ -22,7 +23,9 @@ describe("FlatListItem", () => {
     const data = { tags: "test" } as IFileIndexItem;
     const component = render(<ListImageChildItem {...data} />);
 
-    expect(component.exists(".tags")).toBeTruthy();
-    expect(component.find(".tags").text()).toBe("test");
+    expect(component.queryAllByTestId("list-image-tags")).toBeTruthy();
+    expect(component.queryAllByTestId("list-image-tags")[0].innerText).toBe(
+      "test"
+    );
   });
 });
