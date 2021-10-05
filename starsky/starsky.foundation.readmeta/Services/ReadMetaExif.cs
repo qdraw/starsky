@@ -190,7 +190,7 @@ namespace starsky.foundation.readmeta.Services
 		            item.SetMakeModel(model,1);
 	            }
 
-	            var lensModel = GetMakeLensModel(exifItem);
+	            var lensModel = GetMakeLensModel(exifItem,item.LensModel);
 	            if (lensModel != string.Empty)
 	            {
 		            item.SetMakeModel(lensModel,2);
@@ -292,11 +292,23 @@ namespace starsky.foundation.readmeta.Services
 	    /// </summary>
 	    /// <param name="exifItem"></param>
 	    /// <returns></returns>
-	    private string GetMakeLensModel(Directory exifItem)
+	    private string GetMakeLensModel(Directory exifItem, string prevLensModel)
 	    {
-		    return exifItem.Tags.FirstOrDefault(
+		    if ( !string.IsNullOrEmpty(prevLensModel)  ) return string.Empty;
+
+		    var lensModel = exifItem.Tags.FirstOrDefault(
 			    p => p.DirectoryName == "Exif SubIFD"
 			         && p.Name == "Lens Model")?.Description;
+
+		    if ( string.IsNullOrEmpty(lensModel) || lensModel == "----" )
+		    {
+			    var id = exifItem.Tags.FirstOrDefault(
+				    p => p.DirectoryName == "Sony Makernote"
+				         && p.Name == "Lens ID")?.Description;
+			    lensModel = new SonyLensIdConverter().GetById(id);
+		    }
+		    
+		    return lensModel;
 	    }
 
 
