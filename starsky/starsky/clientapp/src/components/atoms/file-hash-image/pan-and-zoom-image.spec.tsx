@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { Orientation } from "../../../interfaces/IFileIndexItem";
@@ -32,11 +32,22 @@ describe("PanAndZoomImage", () => {
         />
       );
 
-      component.find('[data-test="zoom_in"]').simulate("click");
+      const zoomIn = component.queryAllByTestId("zoom_in")[0];
+      zoomIn.click();
 
-      component
-        .find(".pan-zoom-image-container")
-        .simulate("mousedown", { clientX: 300, clientY: 300 });
+      const panZoomImage = component.queryAllByTestId("pan-zoom-image")[0];
+
+      const pasteEvent = createEvent.mouseDown(panZoomImage, {
+        clientX: 300,
+        clientY: 300
+      });
+
+      fireEvent(panZoomImage, pasteEvent);
+
+      //panZoomImage;
+      // component
+      //   .find(".pan-zoom-image-container")
+      //   .simulate("mousedown", { clientX: 300, clientY: 300 });
 
       let ev = new MouseEvent("mousemove", {
         view: window,
