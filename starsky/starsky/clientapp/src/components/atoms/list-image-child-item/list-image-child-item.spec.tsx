@@ -15,8 +15,10 @@ describe("FlatListItem", () => {
     const data = { fileName: "test" } as IFileIndexItem;
     const component = render(<ListImageChildItem {...data} />);
 
-    expect(component.exists(".name")).toBeTruthy();
-    expect(component.find(".name").text()).toBe("test");
+    const name = component.queryAllByTestId("list-image-name")[0];
+
+    expect(name).not.toBeNull();
+    expect(name.innerHTML).toBe("test");
   });
 
   it("check if tags exist", () => {
@@ -24,7 +26,7 @@ describe("FlatListItem", () => {
     const component = render(<ListImageChildItem {...data} />);
 
     expect(component.queryAllByTestId("list-image-tags")).toBeTruthy();
-    expect(component.queryAllByTestId("list-image-tags")[0].innerText).toBe(
+    expect(component.queryAllByTestId("list-image-tags")[0].innerHTML).toBe(
       "test"
     );
   });
