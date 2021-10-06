@@ -9,7 +9,9 @@ describe("More Menu", () => {
 
   it("get childeren", () => {
     var element = render(<MoreMenu>test</MoreMenu>);
-    expect(element.find(".menu-options").text()).toBe("test");
+    const menuOptions = element.queryAllByTestId("menu-options")[0];
+
+    expect(menuOptions.innerHTML).toBe("test");
   });
 
   it("toggle", () => {
