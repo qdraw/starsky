@@ -10,13 +10,17 @@ describe("ItemListView", () => {
 
   describe("with Context", () => {
     it("Render component", () => {
-      var component = render(<Notification type={NotificationType.default} />);
+      const component = render(
+        <Notification type={NotificationType.default} />
+      );
       expect(component.exists(".content")).toBeTruthy();
       component.unmount();
     });
 
     it("Ok close and remove element from DOM", () => {
-      var component = render(<Notification type={NotificationType.default} />);
+      const component = render(
+        <Notification type={NotificationType.default} />
+      );
 
       component.find(".icon--close").simulate("click");
 
@@ -24,7 +28,7 @@ describe("ItemListView", () => {
     });
 
     it("Portal is already gone", () => {
-      var component = render(
+      const component = render(
         <Notification type={NotificationType.default}>test</Notification>
       );
 
@@ -39,7 +43,7 @@ describe("ItemListView", () => {
 
     it("Callback test Ok close", () => {
       var callback = jest.fn();
-      var component = render(
+      const component = render(
         <Notification callback={callback} type={NotificationType.default}>
           test
         </Notification>
