@@ -13,6 +13,7 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
     <>
       {props.isOverlay ? (
         <div
+          data-test="preloader"
           className={
             props.isTransition === false
               ? "preloader preloader--overlay-no-transition"
