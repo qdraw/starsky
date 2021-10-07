@@ -9,15 +9,17 @@ describe("Preloader", () => {
 
   it("no overlay", () => {
     const component = render(<Preloader isOverlay={false} />);
-    console.log(component.queryByTestId("preloader"));
 
     const className = component.queryByTestId("preloader")?.className;
 
-    expect(className).toContain("preloader--overlay");
+    expect(className).not.toContain("preloader--overlay");
   });
 
   it("with overlay", () => {
     const component = render(<Preloader isOverlay={true} />);
-    expect(component.exists(".preloader--overlay")).toBeTruthy();
+
+    const className = component.queryByTestId("preloader")?.className;
+
+    expect(className).toContain("preloader--overlay");
   });
 });

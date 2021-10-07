@@ -20,10 +20,7 @@ const Preloader: React.FunctionComponent<IPreloaderProps> = (props) => {
               : "preloader preloader--overlay"
           }
         >
-          <div
-            data-test="preloader"
-            className="preloader preloader--icon"
-          ></div>
+          <div className="preloader preloader--icon"></div>
         </div>
       ) : (
         <div
