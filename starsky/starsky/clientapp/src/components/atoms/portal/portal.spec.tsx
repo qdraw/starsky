@@ -19,7 +19,7 @@ describe("Portal", () => {
     console.log(document.body.innerHTML);
 
     component.unmount();
-    expect(component.exists()).toBeFalsy();
+    expect(document.querySelectorAll("#portal-root").length).toBe(0);
 
     // it should not exist in the body anymore
   });

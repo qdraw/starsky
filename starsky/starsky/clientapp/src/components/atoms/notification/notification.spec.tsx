@@ -13,7 +13,10 @@ describe("ItemListView", () => {
       const component = render(
         <Notification type={NotificationType.default} />
       );
-      expect(component.exists(".content")).toBeTruthy();
+
+      const content = component.queryByTestId("notification-content");
+
+      expect(content).toBeTruthy();
       component.unmount();
     });
 
@@ -22,7 +25,7 @@ describe("ItemListView", () => {
         <Notification type={NotificationType.default} />
       );
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       expect(document.getElementById(PortalId)?.innerHTML).toBeUndefined();
     });
@@ -36,7 +39,7 @@ describe("ItemListView", () => {
       if (!portalElement) throw new Error("portal should not be undefined");
       portalElement.remove();
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       expect(document.getElementById(PortalId)?.innerHTML).toBeUndefined();
     });
@@ -49,7 +52,7 @@ describe("ItemListView", () => {
         </Notification>
       );
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       // entire portal is removed from DOM
 
