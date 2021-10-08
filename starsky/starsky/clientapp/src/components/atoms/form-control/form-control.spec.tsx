@@ -167,9 +167,7 @@ describe("FormControl", () => {
         ctrlKey: true
       });
 
-      act(() => {
-        fireEvent(formControl, keyDownEvent);
-      });
+      fireEvent(formControl, keyDownEvent);
 
       await waitFor(() =>
         expect(

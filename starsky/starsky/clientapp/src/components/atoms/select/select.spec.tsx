@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 import Select from "./select";
 
@@ -12,7 +12,20 @@ describe("SwitchButton", () => {
     var component = render(
       <Select selectOptions={["Test"]} callback={outputSpy} />
     );
-    component.find("select").simulate("change", { target: { value: "test" } });
+
+    const selectElement = component.container.querySelector(
+      "select"
+    ) as HTMLSelectElement;
+
+    fireEvent.change(selectElement, new Event("test"));
+
+    // const changeEvent = createEvent.change(selectElement, {
+    //   target: { value: "test" }
+    // });
+
+    // await fireEvent(selectElement, changeEvent);
+
+    // component.find("select").simulate("change", { target: { value: "test" } });
 
     expect(outputSpy).toBeCalled();
     expect(outputSpy).toBeCalledWith("test");
