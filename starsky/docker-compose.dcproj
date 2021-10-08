@@ -15,5 +15,7 @@
   <ItemGroup>
     <Content Include="Dockerfile" />
     <Content Include=".env" />
+      <Content Include=".dockerignore" />
+
   </ItemGroup>
 </Project>
