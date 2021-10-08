@@ -8,13 +8,19 @@ Running end to end testing
 npm ci
 ```
 
-## run
+## Run with UI enabled
 ```sh
 npm run start
 ```
 
 And ready :)
 
+## With docker compose
+Running on http://localhost:12837
+
+```sh
+npm run open:docker
+```
 
 ## With Env variables
 

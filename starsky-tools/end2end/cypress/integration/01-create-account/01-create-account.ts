@@ -15,19 +15,19 @@ describe('Create Account', () => {
     cy.resetStorage()
 
     // Check for a valid statuscode, otherwise skip test cases
-    cy.checkStatusCode(config.url)
+    cy.checkStatusCode(config.url, [200, 202])
   })
 
   it('register page is open', () => {
     if (!config.isEnabled) return false
-    cy.checkStatusCode(config.urlStatusApi)
+    cy.checkStatusCode(config.urlStatusApi, [200, 202])
     // When failing set in application the setting to
     // app__IsAccountRegisterOpen to true
   })
 
   it('does the register page for and checks result page', () => {
     if (!config.isEnabled) return false
-    cy.checkStatusCode(config.urlStatusApi)
+    cy.checkStatusCode(config.urlStatusApi, [200, 202])
 
     /* Start flow (connection header prevents script from
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */

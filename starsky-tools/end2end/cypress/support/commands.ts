@@ -13,14 +13,14 @@ declare global {
     }
 }
 
-function checkStatusCode (url: string) {
+function checkStatusCode (url: string, statusCode: number[] = [200]) {
   cy.request({
     method: 'GET',
     url: url,
     failOnStatusCode: false
   })
     .then((res) => {
-      expect(res.status).to.eq(200)
+      expect(res.status).to.oneOf(statusCode)
     })
 }
 
