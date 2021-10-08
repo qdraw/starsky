@@ -29,14 +29,14 @@ services:
       args:
         - ISDEMO=true
     environment:
-      - PORT=8080
+      - PORT=${STARSKY_PORT}
       - CI=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
       - app__databaseConnection=Server=host.docker.internal;database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
-      - "${STARSKY_PORT}:8080"
+      - "${STARSKY_PORT}:${STARSKY_PORT}"
     networks:
       internalnetwork: null
 
