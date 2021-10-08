@@ -4,12 +4,53 @@
 
 One of the build options is to run Starsky from a docker container
 
+### Using docker compose
+
+1. To get started clone the repository
+
+```sh
+git clone "https://github.com/qdraw/starsky.git"
+```
+
+2. Install Docker Desktop
+   https://www.docker.com/products/docker-desktop
+
+3. Go to the child directory
 ```sh
 cd starsky
 ```
 
-## Build from Starsky folder
+4. Build with docker
+```sh
+docker compose build
+```
 
+5. Enable containers
+```sh
+docker compose up
+```
+
+6. Check if succeed
+```sh
+curl http://localhost:12837/api/health -X GET
+```
+
+### Using classic docker CLI
+1. To get started clone the repository
+
+```sh
+git clone "https://github.com/qdraw/starsky.git"
+```
+
+2. Install Docker Desktop or the docker-cli
+   https://www.docker.com/products/docker-desktop
+
+3. Go to the child directory
+```sh
+cd starsky
+```
+
+4. Build project
 ```sh
 docker build -t starsky .
 ```
@@ -19,12 +60,13 @@ docker build -t starsky .
     docker build -t starsky . --build-arg ISDEMO=true
     ```
 
-## run
+5. Run project
+
 ```sh
 docker run -it --rm -p 8000:80 starsky
 ```
 
-## list of active dockers
+6. list of active dockers
 ```sh
 docker ps
 ```
@@ -33,7 +75,7 @@ docker ps
 docker exec -it d8094eb990de /bin/bash
 ```
 
-## And check if runs
+7. And check if it runs
 ```sh
-curl  curl http://localhost:8000/api/health -X GET
+curl http://localhost:8000/api/health -X GET
 ```
