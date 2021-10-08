@@ -1,6 +1,10 @@
 # # Stage 1 Front-end
 FROM node:14 as react-build
 WORKDIR /app/starsky/clientapp
+ENV CI=true
+ENV INLINE_RUNTIME_CHUNK=false
+ENV IMAGE_INLINE_SIZE_LIMIT=1
+ENV DISABLE_ESLINT_PLUGIN=true
 COPY starsky/clientapp/. ./
 RUN npm ci
 RUN npm run build
