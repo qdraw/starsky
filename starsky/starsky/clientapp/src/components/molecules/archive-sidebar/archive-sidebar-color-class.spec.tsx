@@ -21,20 +21,23 @@ describe("ArchiveSidebarColorClass", () => {
   });
 
   describe("mount object (mount= select is child element)", () => {
-    var wrapper = render(
-      <ArchiveSidebarColorClass
-        pageType={PageType.Archive}
-        fileIndexItems={newIFileIndexItemArray()}
-        isReadOnly={false}
-      />
-    );
-
+    function wrapperHelper() {
+      return render(
+        <ArchiveSidebarColorClass
+          pageType={PageType.Archive}
+          fileIndexItems={newIFileIndexItemArray()}
+          isReadOnly={false}
+        />
+      );
+    }
     it("colorclass--select class exist", () => {
-      expect(wrapper.exists(".colorclass--select")).toBeTruthy();
+      expect(wrapperHelper().container.innerHTML).toContain(
+        "colorclass--select"
+      );
     });
 
     it("not disabled", () => {
-      expect(wrapper.exists(".disabled")).toBeFalsy();
+      expect(wrapperHelper().container.innerHTML).not.toContain(" disabled");
     });
 
     it("Fire event when clicked", async () => {
