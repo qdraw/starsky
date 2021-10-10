@@ -23,6 +23,11 @@ function SwitchButton(props: ISwitchButtonProps) {
     setChecked(props.isOn);
   }, [props]);
 
+  function onChange() {
+    setChecked(!checked);
+    props.onToggle(!checked, props.name);
+  }
+
   return (
     <form
       className={
@@ -36,12 +41,8 @@ function SwitchButton(props: ISwitchButtonProps) {
         name={!props.name ? "switchToggle" : props.name}
         value={props.leftLabel}
         data-test="switch-button-left"
-        onChange={() => {
-          console.log("--test1");
-
-          setChecked(!checked);
-          props.onToggle(!checked, props.name);
-        }}
+        onChange={onChange}
+        onClick={onChange}
         checked={!checked}
       />
       <label htmlFor={"switch_left_" + random}>{props.leftLabel}</label>
@@ -53,11 +54,8 @@ function SwitchButton(props: ISwitchButtonProps) {
         name={!props.name ? "switchToggle" : props.name}
         value={props.rightLabel}
         data-test="switch-button-right"
-        onChange={() => {
-          console.log("--test2");
-          setChecked(!checked);
-          props.onToggle(!checked, props.name);
-        }}
+        onClick={onChange}
+        onChange={onChange}
         checked={checked}
       />
       <label htmlFor={"switch_right_" + random}>{props.rightLabel}</label>
