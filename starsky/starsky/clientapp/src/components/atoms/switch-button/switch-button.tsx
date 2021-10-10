@@ -37,6 +37,8 @@ function SwitchButton(props: ISwitchButtonProps) {
         name={!props.name ? "switchToggle" : props.name}
         value={props.leftLabel}
         onChange={() => {
+          console.log("--test1");
+
           setChecked(!checked);
           props.onToggle(!checked, props.name);
         }}
@@ -52,6 +54,7 @@ function SwitchButton(props: ISwitchButtonProps) {
         value={props.rightLabel}
         data-test="switch-button-right"
         onChange={() => {
+          console.log("--test2");
           setChecked(!checked);
           props.onToggle(!checked, props.name);
         }}
