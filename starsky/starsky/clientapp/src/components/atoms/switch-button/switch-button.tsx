@@ -24,6 +24,8 @@ function SwitchButton(props: ISwitchButtonProps) {
   }, [props]);
 
   function onChange() {
+    console.log("--on change");
+
     setChecked(!checked);
     props.onToggle(!checked, props.name);
   }
