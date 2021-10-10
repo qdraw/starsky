@@ -15,15 +15,24 @@ describe("ArchivePagination", () => {
     nextFilePath: "next",
     prevFilePath: "prev"
   } as IRelativeObjects;
-  var Component = render(
-    <ArchivePagination relativeObjects={relativeObjects} />
-  );
 
   it("next page exist", () => {
-    expect(Component.find("a.next").props().href).toBe("/?f=next");
+    const Component = render(
+      <ArchivePagination relativeObjects={relativeObjects} />
+    );
+    const next = Component.queryByTestId(
+      "archive-pagination-next"
+    ) as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=next");
   });
 
   it("prev page exist", () => {
-    expect(Component.find("a.prev").props().href).toBe("/?f=prev");
+    const Component = render(
+      <ArchivePagination relativeObjects={relativeObjects} />
+    );
+    const next = Component.queryByTestId(
+      "archive-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=prev");
   });
 });
