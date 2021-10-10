@@ -1,4 +1,9 @@
-import { fireEvent, render } from "@testing-library/react";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import Select from "./select";
 
@@ -7,34 +12,36 @@ describe("SwitchButton", () => {
     render(<Select selectOptions={[]} />);
   });
 
-  it("trigger change", () => {
+  it("trigger change", async () => {
     var outputSpy = jest.fn();
     var component = render(
       <Select selectOptions={["Test"]} callback={outputSpy} />
     );
 
-    const selectElement = component.container.querySelector(
-      "select"
-    ) as HTMLSelectElement;
+    const selectElement = component.queryByTestId("select") as HTMLElement;
 
-    fireEvent.change(selectElement, new Event("test"));
+    const changeEvent = createEvent.change(selectElement, {
+      value: "Test"
+    });
 
-    // const changeEvent = createEvent.change(selectElement, {
-    //   target: { value: "test" }
-    // });
+    fireEvent(selectElement, changeEvent);
 
-    // await fireEvent(selectElement, changeEvent);
-
-    // component.find("select").simulate("change", { target: { value: "test" } });
-
-    expect(outputSpy).toBeCalled();
-    expect(outputSpy).toBeCalledWith("test");
+    await waitFor(() => {
+      expect(outputSpy).toBeCalled();
+      expect(outputSpy).toBeCalledWith("Test");
+    });
   });
 
   it("trigger change (no callback)", () => {
     var outputSpy = jest.fn();
     var component = render(<Select selectOptions={[]} />);
-    component.find("select").simulate("change", { target: { value: "test" } });
+    const selectElement = component.queryByTestId("select") as HTMLElement;
+
+    const changeEvent = createEvent.change(selectElement, {
+      value: "Test"
+    });
+
+    fireEvent(selectElement, changeEvent);
 
     expect(outputSpy).toBeCalledTimes(0);
   });
@@ -42,12 +49,16 @@ describe("SwitchButton", () => {
   it("find option", () => {
     var component = render(<Select selectOptions={["Test"]} />);
 
-    expect(component.find("option").text()).toBe("Test");
+    const selectElement = component.queryByTestId("select") as HTMLElement;
+
+    expect(selectElement.querySelector("option")?.innerHTML).toBe("Test");
   });
 
   it("null option", () => {
     var component = render(<Select selectOptions={[]} />);
 
-    expect(component.exists("select")).toBeTruthy();
+    const selectElement = component.queryByTestId("select") as HTMLElement;
+
+    expect(selectElement).toBeTruthy();
   });
 });
