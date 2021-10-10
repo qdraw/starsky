@@ -3,14 +3,14 @@ import React from "react";
 import SwitchButton from "./switch-button";
 
 describe("SwitchButton", () => {
-  xit("renders", () => {
+  it("renders", () => {
     var toggle = jest.fn();
     render(
       <SwitchButton onToggle={toggle} leftLabel={"on"} rightLabel={"off"} />
     );
   });
 
-  xit("renders (disabled:state)", () => {
+  it("renders (disabled:state)", () => {
     var toggle = jest.fn();
     var wrapper = render(
       <SwitchButton
