@@ -33,7 +33,7 @@ function SwitchButton(props: ISwitchButtonProps) {
         type="radio"
         disabled={props.isEnabled === false}
         id={"switch_left_" + random}
-        data-test="switch-button"
+        data-test="switch-button-left"
         name={!props.name ? "switchToggle" : props.name}
         value={props.leftLabel}
         onChange={() => {
@@ -50,6 +50,7 @@ function SwitchButton(props: ISwitchButtonProps) {
         disabled={props.isEnabled === false}
         name={!props.name ? "switchToggle" : props.name}
         value={props.rightLabel}
+        data-test="switch-button-right"
         onChange={() => {
           setChecked(!checked);
           props.onToggle(!checked, props.name);

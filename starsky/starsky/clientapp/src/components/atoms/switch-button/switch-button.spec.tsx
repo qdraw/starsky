@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import SwitchButton from "./switch-button";
 
@@ -20,8 +20,12 @@ describe("SwitchButton", () => {
         rightLabel={"off"}
       />
     );
-    var name = wrapper.find('[name="switchToggle"]');
-    expect(name.last().props().disabled).toBeTruthy();
+
+    const switchButton = wrapper.queryByTestId(
+      "switch-button-left"
+    ) as HTMLInputElement;
+
+    expect(switchButton.disabled).toBeTruthy();
   });
 
   it("test if element triggers onToggle when changed (default)", () => {
@@ -34,8 +38,19 @@ describe("SwitchButton", () => {
         rightLabel={"off"}
       />
     );
-    var name = wrapper.find('[name="switchToggle"]');
-    name.last().simulate("change");
+
+    const switchButton = wrapper.queryByTestId(
+      "switch-button-right"
+    ) as HTMLInputElement;
+
+    const changeEvent = createEvent.change(switchButton, {
+      value: "Test"
+    });
+
+    fireEvent(switchButton, changeEvent);
+
+    // var name = wrapper.find('[name="switchToggle"]');
+    // name.last().simulate("change");
     expect(toggle).toBeCalled();
     expect(name.last().props().disabled).toBeFalsy();
     expect(name.last().props().checked).toBeTruthy();
