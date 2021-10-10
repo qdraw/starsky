@@ -3,7 +3,7 @@ import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import { PageType } from "../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../interfaces/IFileIndexItem";
 import useFetch, { fetchContent } from "./use-fetch";
-import { shallowReactHook } from "./___tests___/test-hook";
+import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseFetch", () => {
   let setupComponent;
@@ -31,7 +31,7 @@ describe("UseFetch", () => {
   }
 
   beforeEach(() => {
-    setupComponent = shallowReactHook(useFetch, ["/default/", "get"]); // Mount a Component with our hook
+    setupComponent = mountReactHook(useFetch, ["/default/", "get"]); // Mount a Component with our hook
     hook = setupComponent.componentHook as IConnectionDefault;
   });
 

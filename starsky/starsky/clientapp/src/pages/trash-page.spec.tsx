@@ -16,7 +16,8 @@ describe("TrashPage", () => {
     });
 
     var error = render(<TrashPage>t</TrashPage>);
-    expect(error.text()).toBe("Something went wrong");
+
+    expect(error.container.innerHTML).toBe("Something went wrong");
   });
 
   it("check if context is called", () => {
@@ -46,7 +47,7 @@ describe("TrashPage", () => {
       .mockImplementationOnce(() => null as any);
 
     const component = render(<TrashPage>t</TrashPage>);
-    expect(component.html()).toBe("Something went wrong");
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -57,7 +58,7 @@ describe("TrashPage", () => {
       .mockImplementationOnce(() => ({} as any));
 
     const component = render(<TrashPage>t</TrashPage>);
-    expect(component.html()).toBe("Something went wrong");
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });

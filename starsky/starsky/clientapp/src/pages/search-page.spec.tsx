@@ -32,7 +32,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => null as any);
 
     const component = render(<SearchPage>t</SearchPage>);
-    expect(component.html()).toBe("Something went wrong");
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -43,7 +43,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => ({} as any));
 
     const component = render(<SearchPage>t</SearchPage>);
-    expect(component.html()).toBe("Something went wrong");
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });

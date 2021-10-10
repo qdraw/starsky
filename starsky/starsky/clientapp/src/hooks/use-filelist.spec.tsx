@@ -7,7 +7,7 @@ import {
 } from "../interfaces/IFileIndexItem";
 import { FileListCache } from "../shared/filelist-cache";
 import useFileList, { IFileList } from "./use-filelist";
-import { shallowReactHook } from "./___tests___/test-hook";
+import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
@@ -37,7 +37,7 @@ describe("UseFileList", () => {
     }
 
     beforeEach(() => {
-      setupComponent = shallowReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
+      setupComponent = mountReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
       hook = setupComponent.componentHook as IFileList;
     });
 
