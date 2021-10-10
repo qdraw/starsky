@@ -70,6 +70,7 @@ namespace starsky.Controllers
 
 			if ( !_thumbnailStorage.ExistFile(ThumbnailNameHelper.Combine(f,ThumbnailSize.Large)) )
 			{
+				SetExpiresResponseHeadersToZero();
 				return NotFound("hash not found");
 			}
 
