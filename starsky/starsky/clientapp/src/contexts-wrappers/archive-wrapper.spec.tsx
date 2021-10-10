@@ -118,7 +118,7 @@ describe("ArchiveContextWrapper", () => {
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("(ArchiveWrapper) = no state");
+      expect(component.container.innerHTML).toBe("(ArchiveWrapper) = no state");
       component.unmount();
     });
 
@@ -135,7 +135,7 @@ describe("ArchiveContextWrapper", () => {
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("");
+      expect(component.container.innerHTML).toBe("");
       component.unmount();
     });
 
@@ -155,7 +155,7 @@ describe("ArchiveContextWrapper", () => {
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("");
+      expect(component.container.innerHTML).toBe("");
       component.unmount();
     });
   });
@@ -216,8 +216,7 @@ describe("ArchiveContextWrapper", () => {
 
       document.body.dispatchEvent(event);
 
-      var element = (result.componentMount as any) as ReactWrapper;
-      element.unmount();
+      result.componentMount.unmount();
     });
 
     it("When outside current directory it should be ignored 2", () => {
@@ -245,8 +244,7 @@ describe("ArchiveContextWrapper", () => {
 
       document.body.dispatchEvent(event);
 
-      var element = (result.componentMount as any) as ReactWrapper;
-      element.unmount();
+      result.componentMount.unmount();
     });
   });
 

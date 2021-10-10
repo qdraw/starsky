@@ -26,7 +26,7 @@ describe("MediaContent", () => {
     jest.spyOn(HealthStatusError, "default").mockImplementationOnce(() => null);
 
     const component = render(<MediaContent />);
-    expect(component.html()).toBe(
+    expect(component.container.innerHTML).toBe(
       "<br>The application has failed. Please reload it to try it again"
     );
     component.unmount();

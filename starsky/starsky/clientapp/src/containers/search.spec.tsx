@@ -23,7 +23,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      var text = component.find(".content--header").text();
+      var text = component.container
+        .querySelector(".content--header")
+        ?.innerHTML();
       expect(text).toBe("No result");
     });
 

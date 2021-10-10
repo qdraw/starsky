@@ -26,7 +26,7 @@ describe("Trash", () => {
         fileIndexItems={[]}
       />
     );
-    expect(container.exists(".warning-box")).toBeTruthy();
+    expect(container.container.innerHTML).toContain("warning-box");
 
     expect(spyGet).toBeCalled();
   });

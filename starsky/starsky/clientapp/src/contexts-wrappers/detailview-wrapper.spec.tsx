@@ -1,3 +1,4 @@
+import { render } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import React from "react";
 import * as DetailView from "../containers/detailview";
@@ -75,7 +76,7 @@ describe("DetailViewWrapper", () => {
       var args = { ...newDetailView() } as IDetailView;
       var compontent = render(<DetailViewWrapper {...args} />);
 
-      expect(compontent.text()).toBe("");
+      expect(compontent.container.innerHTML).toBe("");
       compontent.unmount();
     });
   });

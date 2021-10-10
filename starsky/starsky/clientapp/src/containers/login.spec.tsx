@@ -60,16 +60,16 @@ describe("Login", () => {
     var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.exists('[data-test="logout"]')).toBeTruthy();
-    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+    expect(login.queryByTestId("logout")).toBeTruthy();
+    expect(login.queryByTestId("stayLoggedin")).toBeTruthy();
 
     // no prefix
-    expect(login.find('[data-test="logout"]').props().href).toBe(
+    expect(login.queryByTestId('[data-test="logout"]').props().href).toBe(
       "/account/logout?ReturnUrl=/test"
     );
-    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe(
-      "/test"
-    );
+    expect(
+      login.queryByTestId('[data-test="stayLoggedin"]').first().props().href
+    ).toBe("/test");
 
     act(() => {
       globalHistory.navigate("/");
