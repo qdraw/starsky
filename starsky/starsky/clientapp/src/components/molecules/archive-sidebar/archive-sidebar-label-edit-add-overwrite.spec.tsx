@@ -111,10 +111,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
+      console.log(component.container.innerHTML);
 
+      const tags = component.queryByTestId("tags") as HTMLElement;
       // update component + now press a key
       act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+        tags.textContent = "a";
         component.find('[data-name="tags"]').simulate("input", { key: "a" });
       });
 

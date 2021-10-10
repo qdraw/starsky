@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { newIArchive } from "../../../interfaces/IArchive";
@@ -39,7 +39,7 @@ describe("ArchiveSidebarColorClass", () => {
       expect(wrapperHelper().container.innerHTML).not.toContain(" disabled");
     });
 
-    it("Fire event when clicked", async () => {
+    it("Fire event when clicked", () => {
       // Warning: An update to null inside a test was not wrapped in act(...)
 
       // is used in multiple ways
@@ -66,14 +66,12 @@ describe("ArchiveSidebarColorClass", () => {
       jest
         .spyOn(ColorClassSelect, "default")
         .mockImplementationOnce(() => {
-          return <></>;
-        })
-        .mockImplementationOnce(() => {
-          return <></>;
+          return <div data-test="color-class-select-0"></div>;
         })
         .mockImplementationOnce((data) => {
           return (
             <button
+              data-test="color-class-select-0"
               onClick={() => {
                 data.onToggle(1);
                 isCalled = true;
@@ -91,14 +89,9 @@ describe("ArchiveSidebarColorClass", () => {
         />
       );
 
-      console.log(element1.children);
-
-      // Make sure that the element exist in the first place
-      // expect(element1.container.innerHTML).toContain("button.colorclass--1");
-
-      // await act(async () => {
-      //   await element.find("button.colorclass--1").simulate("click");
-      // });
+      act(() => {
+        element1.queryByTestId("color-class-select-0")?.click();
+      });
 
       expect(isCalled).toBeTruthy();
       expect(dispatch).toBeCalled();
