@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act, render } from "@testing-library/react";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
@@ -9,7 +9,6 @@ import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { Keyboard } from "../../../shared/keyboard";
 import { UrlQuery } from "../../../shared/url-query";
-import FormControl from "../../atoms/form-control/form-control";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditAddOverwrite from "./archive-sidebar-label-edit-add-overwrite";
 
@@ -21,12 +20,12 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("isReadOnly: true", () => {
     const mainElement = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-    var formControl = mainElement.find(".form-control");
+    var formControl = mainElement.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
     formControl.forEach((element) => {
-      var disabled = element.hasClass("disabled");
-      expect(disabled).toBeTruthy();
+      var disabled = element.classList;
+      expect(disabled).toContain("disabled");
     });
   });
 
@@ -80,18 +79,19 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
       useContextSpy.mockClear();
     });
 
-    it("isReadOnly: false", () => {
+    it("isReadOnly: false (so contentEditable is true)", () => {
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
-      var formControl = component.find(FormControl);
-
-      // there are 3 classes [title,info,description]
-      formControl.forEach((element) => {
-        expect(element.props()["contentEditable"]).toBeTruthy();
-      });
+      const formControls = component.queryAllByTestId("form-control");
 
       // if there is no contentEditable it should fail
-      expect(formControl.length).toBeGreaterThanOrEqual(3);
+      expect(formControls.length).toBeGreaterThanOrEqual(3);
+
+      // there are 3 classes [title,info,description]
+      formControls.forEach((element) => {
+        const contentEditable = element.getAttribute("contentEditable");
+        expect(contentEditable).toBeTruthy();
+      });
 
       act(() => {
         component.unmount();
@@ -111,18 +111,25 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
-      console.log(component.container.innerHTML);
 
-      const tags = component.queryByTestId("tags") as HTMLElement;
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
       // update component + now press a key
       act(() => {
+        //
         tags.textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
       // need to await here
+      const add = component.queryByTestId("add") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       expect(notificationSpy).toBeCalled();
@@ -151,15 +158,23 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
       // update component + now press a key
       act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
       // need to await here
+      const add = component.queryByTestId("add") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       jest.spyOn(FetchPost, "default").mockRestore();
@@ -168,18 +183,23 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         .mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeTruthy();
+      let notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+
+      expect(notification).toBeTruthy();
 
       // second time; now it removes the error message from the component
       // need to await here
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeFalsy();
+      notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+      expect(notification).toBeFalsy();
 
       act(() => {
         component.unmount();
@@ -194,16 +214,22 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         </ArchiveSidebarLabelEditAddOverwrite>
       );
 
-      act(() => {
-        // update component
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
-        // now press a key
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+      // update component + now press a key
+      act(() => {
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
-      var className = component.find(".btn.btn--default").getDOMNode()
-        .className;
+      const add = component.queryByTestId("add") as HTMLElement;
+
+      var className = add.className;
       expect(className).toBe("btn btn--default");
 
       act(() => {
@@ -232,17 +258,26 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
       act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
-      expect(component.exists(".btn--default")).toBeTruthy();
+      const add = component.queryByTestId("add") as HTMLElement;
+
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       expect(spy).toBeCalled();
@@ -290,21 +325,31 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
       act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
+
+      const add = component.queryByTestId("add") as HTMLElement;
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      // force update to get the right state
-      component.update();
-
-      expect(component.exists(Notification.default)).toBeTruthy();
+      const notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+      expect(notification).toBeTruthy();
 
       act(() => {
         component.unmount();
@@ -345,15 +390,25 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       const component = render(<ArchiveSidebarLabelEditAddOverwrite />);
 
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
       act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
+
+      const add = component.queryByTestId("add") as HTMLElement;
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       expect(spy).toBeCalled();
