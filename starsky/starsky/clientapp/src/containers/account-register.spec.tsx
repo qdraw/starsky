@@ -13,12 +13,12 @@ describe("AccountRegister", () => {
 
   it("link to TOC exist", () => {
     var compontent = render(<AccountRegister />);
-    expect(compontent.find('[data-test="toc"]')).toBeTruthy();
+    expect(compontent.queryByTestId("toc")).toBeTruthy();
   });
 
   it("link to privacy exist", () => {
     var compontent = render(<AccountRegister />);
-    expect(compontent.find('[data-test="privacy"]')).toBeTruthy();
+    expect(compontent.queryByTestId("privacy")).toBeTruthy();
   });
 
   it("not allowed get 403 from api", async () => {

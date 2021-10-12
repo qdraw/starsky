@@ -10,11 +10,16 @@ describe("Archive", () => {
 
   it("no colorclass usage", () => {
     const container = render(<Archive {...newIArchive()} />);
-    expect(container.text()).toBe("(Archive) = no colorClassLists");
+    expect(container.container.textContent).toBe(
+      "(Archive) = no colorClassLists"
+    );
   });
 
   it("check if warning exist with no items in the list", () => {
-    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    jest
+      .spyOn(window, "scrollTo")
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {});
 
     const container = render(
       <Archive
@@ -24,6 +29,10 @@ describe("Archive", () => {
         fileIndexItems={[]}
       />
     );
-    expect(container.exists(".warning-box")).toBeTruthy();
+
+    const warningBox = container.queryByTestId(
+      "list-view-no-photos-in-folder"
+    ) as HTMLDivElement;
+    expect(warningBox).toBeTruthy();
   });
 });
