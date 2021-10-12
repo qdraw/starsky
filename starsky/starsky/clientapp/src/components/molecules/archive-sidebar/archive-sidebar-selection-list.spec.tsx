@@ -38,8 +38,11 @@ describe("archive-sidebar-selection-list", () => {
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
-      var first = component.find("ul li").first();
-      expect(first.text()).toBe("test.jpg");
+      const selectionList = component.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+
+      expect(selectionList.children[0].textContent).toBe("test.jpg");
     });
 
     it("toggleSelection", () => {
@@ -49,8 +52,15 @@ describe("archive-sidebar-selection-list", () => {
 
       var spy = jest.spyOn(URLPath.prototype, "toggleSelection");
 
-      var first = component.find("ul li").first();
-      first.find(".close").simulate("click");
+      const selectionList = component.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+
+      act(() => {
+        (selectionList.children[0].querySelector(
+          ".close"
+        ) as HTMLElement).click();
+      });
 
       expect(spy).toBeCalledTimes(1);
 
@@ -61,11 +71,13 @@ describe("archive-sidebar-selection-list", () => {
       const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
-      var allSelectionButton = component.find('[data-test="select-all"]');
+      var allSelectionButton = component.queryByTestId("select-all");
 
       var spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
 
-      allSelectionButton.simulate("click");
+      act(() => {
+        (allSelectionButton as HTMLElement).click();
+      });
 
       expect(spy).toBeCalledTimes(1);
 
