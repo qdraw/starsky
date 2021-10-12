@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as FileHashImage from "../components/atoms/file-hash-image/file-hash-image";
@@ -63,7 +62,7 @@ describe("DetailView", () => {
   describe("With context and test if image is loaded", () => {
     let contextProvider: any;
     let TestComponent: () => JSX.Element;
-    let Component: ReactWrapper<any, Readonly<{}>>;
+    let Component: RenderResult;
 
     // Setup mock
     beforeEach(() => {
@@ -94,27 +93,43 @@ describe("DetailView", () => {
     });
 
     it("test if image is loaded", () => {
-      var image = Component.find(".image--default");
-      act(() => {
-        image.simulate("load");
-      });
-      expect(image.props().src).toBe(
-        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
-          contextProvider.state.fileIndexItem.fileHash,
-          true
-        )
+      var imgContainer = Component.queryByTestId(
+        "pan-zoom-image"
+      ) as HTMLDivElement;
+      expect(imgContainer).toBeTruthy();
+      const image = imgContainer?.querySelector("img") as HTMLImageElement;
+      expect(image).toBeTruthy();
+
+      expect(image.src).toBe(
+        "http://localhost" +
+          new UrlQuery().UrlThumbnailImageLargeOrExtraLarge(
+            contextProvider.state.fileIndexItem.fileHash,
+            true
+          )
       );
-      expect(Component.exists(".main--error")).toBeFalsy();
+
+      const mainError = Component.container.querySelector(".main--error");
+      expect(mainError).toBeFalsy();
     });
 
     it("test if image is failed", () => {
-      var image = Component.find(".image--default");
-      image.simulate("error");
-      expect(Component.exists(".main--error")).toBeTruthy();
+      var imgContainer = Component.queryByTestId(
+        "pan-zoom-image"
+      ) as HTMLDivElement;
+      expect(imgContainer).toBeTruthy();
+      const image = imgContainer?.querySelector("img") as HTMLImageElement;
+      expect(image).toBeTruthy();
+
+      fireEvent.error(image);
+
+      const mainError = Component.container.querySelector(".main--error");
+      expect(mainError).toBeTruthy();
     });
 
     it("check if Details exist", () => {
-      expect(Component.exists(".detailview-sidebar")).toBeTruthy();
+      expect(
+        Component.queryByTestId("detailview-sidebar") as HTMLDivElement
+      ).toBeTruthy();
     });
   });
 
@@ -162,9 +177,14 @@ describe("DetailView", () => {
 
       var detailview = render(<TestComponent />);
 
+      const next = detailview.queryByTestId(
+        "detailview-next"
+      ) as HTMLDivElement;
+      expect(next).toBeTruthy();
       act(() => {
-        detailview.find(".nextprev--next").simulate("click");
+        next.click();
       });
+
       expect(locationSpy).toBeCalled();
 
       expect(navigateSpy).toBeCalled();
@@ -192,8 +212,12 @@ describe("DetailView", () => {
 
       const detailview = render(<TestComponent />);
 
+      const prev = detailview.queryByTestId(
+        "detailview-prev"
+      ) as HTMLDivElement;
+      expect(prev).toBeTruthy();
       act(() => {
-        detailview.find(".nextprev--prev").simulate("click");
+        prev.click();
       });
 
       expect(locationSpy).toBeCalled();
@@ -330,10 +354,13 @@ describe("DetailView", () => {
         .mockImplementationOnce(locationFaker);
 
       var detailview = render(<TestComponent />);
-      var item = detailview.find(".nextprev--prev");
 
-      await act(async () => {
-        await item.simulate("click");
+      const prev = detailview.queryByTestId(
+        "detailview-prev"
+      ) as HTMLDivElement;
+      expect(prev).toBeTruthy();
+      act(() => {
+        prev.click();
       });
 
       expect(locationSpy).toBeCalled();
@@ -423,6 +450,7 @@ describe("DetailView", () => {
                 handlerOnSwipeLeft();
               }
             }}
+            data-test="fake-button"
             id="fake-button"
           ></button>
         </>
@@ -431,7 +459,7 @@ describe("DetailView", () => {
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
       var component = render(<TestComponent />);
 
-      component.find("#fake-button").simulate("click");
+      (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();
 
@@ -477,6 +505,7 @@ describe("DetailView", () => {
               }
             }}
             id="fake-button"
+            data-test="fake-button"
           ></button>
         </>
       );
@@ -484,7 +513,7 @@ describe("DetailView", () => {
       jest.spyOn(FileHashImage, "default").mockImplementationOnce(fakeElement);
       var component = render(<TestComponent />);
 
-      component.find("#fake-button").simulate("click");
+      (component.queryByTestId("fake-button") as HTMLButtonElement).click();
 
       expect(updateRelativeObjectSpy).toBeCalled();
 
