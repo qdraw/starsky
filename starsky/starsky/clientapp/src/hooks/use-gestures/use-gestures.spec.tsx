@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import React, { useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
@@ -157,19 +157,6 @@ describe("useGestures", () => {
   });
 
   describe("useGestures", () => {
-    it("check if is called once", () => {
-      jest.useFakeTimers();
-      var component = render(<Rotate />);
-
-      component.find("img").simulate("touchmove", exampleSingleTouches);
-
-      jest.advanceTimersByTime(201);
-
-      // this does nothing
-
-      jest.useRealTimers();
-    });
-
     const exampleSingleTouches = {
       touches: [
         {
