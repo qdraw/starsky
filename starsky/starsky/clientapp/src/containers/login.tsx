@@ -143,7 +143,7 @@ const Login: React.FC<ILoginProps> = () => {
 
       {isLogin ? (
         <>
-          <div className="content">
+          <div className="content" data-test="login-content">
             <div className="content--header">{MessageLogin}</div>
             <form
               className="content--login-form form-inline form-nav"
@@ -214,7 +214,7 @@ const Login: React.FC<ILoginProps> = () => {
       ) : null}
       {!isLogin && accountStatus.data ? (
         <>
-          <div className="content">
+          <div className="content" data-test="logout-content">
             <div className="content--header">{MessageLogout}</div>
           </div>
           <div className="content">
