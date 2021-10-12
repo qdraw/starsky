@@ -92,7 +92,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo(
 
     return (
       <>
-        <div className="relativelink">
+        <div className="relativelink" data-test="search-pagination">
           <h4 className="nextprev">
             {prev()}
             {next()}
