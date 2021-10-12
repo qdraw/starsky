@@ -39,19 +39,16 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeTruthy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeTruthy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeTruthy();
+    const email = container.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeTruthy();
+
+    const password = container.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeTruthy();
+
+    const confirmPassword = container.getByTestId(
+      "confirm-password"
+    ) as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeTruthy();
 
     expect(fetchGetSpy).toBeCalled();
 
@@ -77,19 +74,16 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeFalsy();
+    const email = container.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeTruthy();
+
+    const password = container.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeTruthy();
+
+    const confirmPassword = container.getByTestId(
+      "confirm-password"
+    ) as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeTruthy();
 
     expect(fetchGetSpy).toBeCalled();
 
@@ -115,27 +109,22 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    expect(
-      (container.find('[name="email"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container.find('[name="password"]').getDOMNode() as HTMLInputElement)
-        .disabled
-    ).toBeFalsy();
-    expect(
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).disabled
-    ).toBeFalsy();
+    const email = container.getByTestId("email") as HTMLInputElement;
+    expect(email.disabled).toBeTruthy();
 
-    container.update();
+    const password = container.getByTestId("password") as HTMLInputElement;
+    expect(password.disabled).toBeTruthy();
 
-    const signInInstead = container.find('[data-test="sign-in-instead"]');
+    const confirmPassword = container.getByTestId(
+      "confirm-password"
+    ) as HTMLInputElement;
+    expect(confirmPassword.disabled).toBeTruthy();
 
-    expect(signInInstead.html()).toBeTruthy();
+    const signInInstead = container.getByTestId("sign-in-instead");
 
-    expect(signInInstead.hasClass("disabled")).toBeTruthy();
+    expect(signInInstead).toBeTruthy();
+
+    expect(signInInstead.classList).toContain("disabled");
 
     expect(fetchGetSpy).toBeCalled();
 
