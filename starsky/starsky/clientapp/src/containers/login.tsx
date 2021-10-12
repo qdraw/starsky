@@ -188,7 +188,11 @@ const Login: React.FC<ILoginProps> = () => {
                 placeholder={MessageExamplePassword}
                 onChange={(e) => setUserPassword(e.target.value)}
               />
-              {error && <div className="content--error-true">{error}</div>}
+              {error && (
+                <div data-test="login-error" className="content--error-true">
+                  {error}
+                </div>
+              )}
 
               <ButtonStyled
                 className="btn btn--default"
