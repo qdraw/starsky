@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
@@ -191,23 +191,26 @@ describe("Login", () => {
 
     var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
-    expect(login.find(".form-control").length).toBe(2);
+    // submit
+    const loginContent = login.queryByTestId("login-content");
+    act(() => {
+      loginContent?.querySelector("form")?.submit();
+    });
+
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
       new UrlQuery().UrlAccountStatus(),
@@ -226,12 +229,14 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail by backend (401)", () => {
+  it("login flow fail by backend (401)", async () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
     var useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -243,30 +248,34 @@ describe("Login", () => {
     });
     var postSpy = jest
       .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockPost)
       .mockImplementationOnce(() => mockPost);
 
     var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
+    // submit
+    const loginContent = login.queryByTestId("login-content");
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      loginContent?.querySelector("form")?.submit();
     });
 
-    expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    await waitFor(() =>
+      expect(login.queryByTestId("login-error")).toBeTruthy()
+    );
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 
@@ -276,12 +285,14 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail by backend (423)", () => {
+  it("login flow fail by backend (423)", async () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
     var useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -297,26 +308,31 @@ describe("Login", () => {
 
     var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
+    // submit
+    const loginContent = login.queryByTestId("login-content");
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      loginContent?.querySelector("form")?.submit();
     });
 
-    expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    // expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    // expect(login.queryByTestId("login-error")).toBeTruthy();
+    await waitFor(() =>
+      expect(login.queryByTestId("login-error")).toBeTruthy()
+    );
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 
