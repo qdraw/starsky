@@ -55,7 +55,7 @@ function Search(archive: IArchiveProps) {
           <div className="search-header">
             <MenuSearchBar defaultText={query} />
           </div>
-          <div className="content--header">
+          <div className="content--header" data-test="search-content-header">
             {!archive.collectionsCount ? MessageNoResult : null}
             {archive.collectionsCount && archive.pageNumber === 0 ? (
               <>
