@@ -11,9 +11,6 @@ import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseFileList", () => {
   describe("Archive", () => {
-    let setupComponent;
-    let hook: IFileList;
-
     let fetchSpy: jest.SpyInstance<any>;
 
     function setFetchSpy(statusCode: number, pageType: PageType) {
@@ -36,13 +33,17 @@ describe("UseFileList", () => {
       });
     }
 
-    beforeEach(() => {
-      setupComponent = mountReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
-      hook = setupComponent.componentHook as IFileList;
-    });
+    function mounter() {
+      const setupComponent = mountReactHook(useFileList, ["/default/", "1"]); // Mount a Component with our hook
+      const hook = setupComponent.componentHook as IFileList;
+      return {
+        hook,
+        setupComponent
+      };
+    }
 
     it("with archive content 200", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
@@ -66,7 +67,7 @@ describe("UseFileList", () => {
     });
 
     it("with detailview content 200", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
@@ -90,7 +91,7 @@ describe("UseFileList", () => {
     });
 
     it("with archive content 404", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
@@ -105,7 +106,7 @@ describe("UseFileList", () => {
     });
 
     it("with archive content 401", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
@@ -120,7 +121,7 @@ describe("UseFileList", () => {
     });
 
     it("with archive content 500", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
@@ -135,6 +136,7 @@ describe("UseFileList", () => {
     });
 
     it("get from cache", async () => {
+      const { hook } = mounter();
       var cacheGetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
         .mockImplementationOnce(() => {
@@ -146,6 +148,7 @@ describe("UseFileList", () => {
     });
 
     it("check cache first and then query", async () => {
+      const { hook } = mounter();
       var cacheSetSpy = jest
         .spyOn(FileListCache.prototype, "CacheGet")
         .mockImplementationOnce(() => {
@@ -161,7 +164,7 @@ describe("UseFileList", () => {
     });
 
     it("with connection rejected", async () => {
-      expect(hook.pageType).toBe(PageType.Loading);
+      const { hook } = mounter();
 
       var controller = new AbortController();
 
