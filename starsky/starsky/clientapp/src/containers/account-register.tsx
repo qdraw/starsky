@@ -174,6 +174,7 @@ const AccountRegister: FunctionComponent = () => {
             type="email"
             name="email"
             maxLength={80}
+            data-test="email"
             value={userEmail}
             placeholder={MessageExampleUsername}
             onChange={(e) => setUserEmail(e.target.value)}
@@ -186,6 +187,7 @@ const AccountRegister: FunctionComponent = () => {
             autoComplete="off"
             type="password"
             name="password"
+            data-test="password"
             maxLength={80}
             placeholder={MessageExamplePassword}
             value={userPassword}
@@ -200,6 +202,7 @@ const AccountRegister: FunctionComponent = () => {
             type="password"
             maxLength={100}
             name="confirm-password"
+            data-test="confirm-password"
             value={userConfirmPassword}
             onChange={(e) => setUserConfirmPassword(e.target.value)}
           />
@@ -213,6 +216,7 @@ const AccountRegister: FunctionComponent = () => {
           <ButtonStyled
             className="btn btn--default"
             type="submit"
+            data-test="confirm-password"
             disabled={loading || !isFormEnabled}
           >
             {loading ? "Loading..." : MessageCreateNewAccount}
