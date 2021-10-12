@@ -226,7 +226,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // noinspection HtmlUnknownAttribute
     return (
-      <div className="detailview-sidebar">
+      <div className="detailview-sidebar" data-test="detailview-sidebar">
         {copyPasteAction ? (
           <Notification callback={() => setCopyPasteAction("")}>
             {copyPasteAction}
