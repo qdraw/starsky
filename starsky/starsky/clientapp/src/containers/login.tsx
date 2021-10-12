@@ -170,6 +170,7 @@ const Login: React.FC<ILoginProps> = () => {
                 className="form-control"
                 autoComplete="off"
                 type="email"
+                data-test="email"
                 name="email"
                 maxLength={80}
                 value={userEmail}
@@ -180,6 +181,7 @@ const Login: React.FC<ILoginProps> = () => {
               <input
                 className="form-control"
                 type="password"
+                data-test="password"
                 name="password"
                 maxLength={80}
                 value={userPassword}
@@ -191,6 +193,7 @@ const Login: React.FC<ILoginProps> = () => {
               <ButtonStyled
                 className="btn btn--default"
                 type="submit"
+                data-test="login-submit"
                 disabled={loading}
               >
                 {loading ? "Loading..." : MessageLogin}
