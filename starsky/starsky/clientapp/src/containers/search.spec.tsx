@@ -1,6 +1,5 @@
 import { render } from "@testing-library/react";
 import React from "react";
-import SearchPagination from "../components/molecules/search-pagination/search-pagination";
 import { newIArchive } from "../interfaces/IArchive";
 import {
   newIFileIndexItem,
@@ -23,9 +22,8 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      var text = component.container
-        .querySelector(".content--header")
-        ?.innerHTML();
+      const text = component.queryByTestId("search-content-header")
+        ?.textContent;
       expect(text).toBe("No result");
     });
 
@@ -39,7 +37,8 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      var text = component.find(".content--header").text();
+      const text = component.queryByTestId("search-content-header")
+        ?.textContent;
       expect(text).toBe("Page 2 of 1 results");
     });
 
@@ -53,7 +52,8 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      var text = component.find(".content--header").text();
+      const text = component.queryByTestId("search-content-header")
+        ?.textContent;
       expect(text).toBe("1 results");
     });
 
@@ -71,8 +71,11 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      var text = component.exists(SearchPagination);
-      expect(text).toBeTruthy();
+      console.log(component.container.innerHTML);
+
+      const searchPagination = component.queryAllByTestId("search-pagination");
+
+      expect(searchPagination.length).toEqual(2);
     });
   });
 });

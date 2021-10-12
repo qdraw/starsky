@@ -61,7 +61,7 @@ describe("Login", () => {
 
     expect(useFetchSpy).toBeCalled();
     expect(login.queryByTestId("logout")).toBeTruthy();
-    expect(login.queryByTestId("stayLoggedin")).toBeTruthy();
+    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
     // no prefix
     expect(login.queryByTestId('[data-test="logout"]').props().href).toBe(
