@@ -34,8 +34,9 @@ describe("Login", () => {
       new UrlQuery().UrlAccountStatus(),
       "get"
     );
-    expect(login.exists(".content--error-true")).toBeTruthy();
-    expect(login.exists(".content--header")).toBeTruthy();
+
+    const err = login.queryByTestId("logout-content");
+    expect(err).toBeTruthy();
 
     act(() => {
       globalHistory.navigate("/");
@@ -63,13 +64,14 @@ describe("Login", () => {
     expect(login.queryByTestId("logout")).toBeTruthy();
     expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
-    // no prefix
-    expect(login.queryByTestId('[data-test="logout"]').props().href).toBe(
-      "/account/logout?ReturnUrl=/test"
+    // no prefix (starsky in url)
+    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+      "http://localhost/account/logout?ReturnUrl=/test"
     );
+
     expect(
-      login.queryByTestId('[data-test="stayLoggedin"]').first().props().href
-    ).toBe("/test");
+      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
+    ).toBe("http://localhost/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -94,16 +96,17 @@ describe("Login", () => {
     var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.exists('[data-test="logout"]')).toBeTruthy();
-    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+    expect(login.queryByTestId("logout")).toBeTruthy();
+    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
     // including starsky prefix
-    expect(login.find('[data-test="logout"]').props().href).toBe(
-      "/starsky/account/logout?ReturnUrl=/starsky/test"
+    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+      "http://localhost/starsky/account/logout?ReturnUrl=/starsky/test"
     );
-    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe(
-      "/starsky/test"
-    );
+
+    expect(
+      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
+    ).toBe("http://localhost/starsky/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -124,7 +127,9 @@ describe("Login", () => {
 
     var login = render(<Login />);
 
-    expect(login.find(".form-control").length).toBe(2);
+    expect(login.queryByTestId("email")).toBeTruthy();
+    expect(login.queryByTestId("password")).toBeTruthy();
+
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
       new UrlQuery().UrlAccountStatus(),
