@@ -4,6 +4,7 @@ export interface IButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   className?: string;
+  "data-test"?: string;
   onClick?: <T>(
     event: React.MouseEvent<HTMLButtonElement>
   ) => void | Promise<T>;
@@ -15,6 +16,7 @@ const ButtonStyled: React.FunctionComponent<IButtonProps> = memo((props) => {
       type={props.type || "button"}
       disabled={props.disabled}
       className={props.className}
+      data-test={props["data-test"]}
     >
       {props.children}
     </button>
