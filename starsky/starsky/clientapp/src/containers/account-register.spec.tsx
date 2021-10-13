@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render, RenderResult } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../interfaces/IConnectionDefault";
 import * as FetchGet from "../shared/fetch-get";
@@ -111,15 +111,15 @@ describe("AccountRegister", () => {
     });
 
     const email = container.getByTestId("email") as HTMLInputElement;
-    expect(email.disabled).toBeTruthy();
+    expect(email.disabled).toBeFalsy();
 
     const password = container.getByTestId("password") as HTMLInputElement;
-    expect(password.disabled).toBeTruthy();
+    expect(password.disabled).toBeFalsy();
 
     const confirmPassword = container.getByTestId(
       "confirm-password"
     ) as HTMLInputElement;
-    expect(confirmPassword.disabled).toBeTruthy();
+    expect(confirmPassword.disabled).toBeFalsy();
 
     const signInInstead = container.getByTestId("sign-in-instead");
 
@@ -162,9 +162,47 @@ describe("AccountRegister", () => {
     const error = container.queryByTestId(
       "account-register-error"
     ) as HTMLElement;
-
     expect(error).toBeTruthy();
   });
+
+  function submitEmailPassword(
+    container: RenderResult,
+    email: string,
+    password: string,
+    confirmPassword: string
+  ) {
+    // email
+    act(() => {
+      const emailElement = container.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: email } });
+    });
+
+    // password
+    act(() => {
+      const passwordElement = container.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: password } });
+    });
+
+    // confirm-password
+    act(() => {
+      const confirmPasswordElement = container.queryByTestId(
+        "confirm-password"
+      ) as HTMLInputElement;
+      fireEvent.change(confirmPasswordElement, {
+        target: { value: confirmPassword }
+      });
+    });
+
+    // submit
+    const loginContent = container.queryByTestId(
+      "account-register-form"
+    ) as HTMLFormElement;
+    act(() => {
+      loginContent.submit();
+    });
+  }
 
   it("submit short password", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
@@ -185,26 +223,12 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    submitEmailPassword(container, "dont@mail.me", "123", "123");
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
-
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    const error = container.queryByTestId(
+      "account-register-error"
+    ) as HTMLElement;
+    expect(error).toBeTruthy();
   });
 
   it("submit password No Match", async () => {
@@ -226,26 +250,12 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "123456789";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "123";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
+    submitEmailPassword(container, "dont@mail.me", "123456789", "123");
 
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
-
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    const error = container.queryByTestId(
+      "account-register-error"
+    ) as HTMLElement;
+    expect(error).toBeTruthy();
   });
 
   it("submit password Happy flow", async () => {
@@ -279,24 +289,7 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
-
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
+    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321");
 
     expect(fetchPostSpy).toBeCalled();
 
@@ -337,28 +330,15 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    await act(async () => {
-      (container
-        .find('[name="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      container.find('[name="email"]').simulate("change");
-      (container
-        .find('[name="password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      container.find('[name="password"]').simulate("change");
-      (container
-        .find('[name="confirm-password"]')
-        .getDOMNode() as HTMLInputElement).value = "987654321";
-      // await next one
-      await container.find('[name="confirm-password"]').simulate("change");
-
-      // and submit
-      container.find('[type="submit"]').last().simulate("submit");
-    });
+    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321");
 
     expect(fetchPostSpy).toBeCalled();
 
-    // search for .html()
-    expect(container.html().indexOf("content--error-true") >= 1).toBeTruthy();
+    console.log(container.container.innerHTML);
+
+    const error = container.queryByTestId(
+      "account-register-error"
+    ) as HTMLElement;
+    expect(error).toBeTruthy();
   });
 });

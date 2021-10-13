@@ -160,6 +160,7 @@ const AccountRegister: FunctionComponent = () => {
         <form
           method="post"
           className="content--login-form form-inline form-nav"
+          data-test="account-register-form"
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
