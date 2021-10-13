@@ -211,7 +211,14 @@ const AccountRegister: FunctionComponent = () => {
             dangerouslySetInnerHTML={{ __html: MessageLegalCreateAccountHtml }}
           ></div>
 
-          {error && <div className="content--error-true">{error}</div>}
+          {error && (
+            <div
+              data-test="account-register-error"
+              className="content--error-true"
+            >
+              {error}
+            </div>
+          )}
 
           <ButtonStyled
             className="btn btn--default"
