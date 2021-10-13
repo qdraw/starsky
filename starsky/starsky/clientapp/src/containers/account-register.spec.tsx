@@ -73,7 +73,6 @@ describe("AccountRegister", () => {
     await act(async () => {
       container = await render(<AccountRegister />);
     });
-    console.log(container.container.innerHTML);
 
     const email = container.getByTestId("email") as HTMLInputElement;
     expect(email.disabled).toBeFalsy();
@@ -169,7 +168,8 @@ describe("AccountRegister", () => {
     container: RenderResult,
     email: string,
     password: string,
-    confirmPassword: string
+    confirmPassword: string,
+    submit: boolean = true
   ) {
     // email
     act(() => {
@@ -194,6 +194,10 @@ describe("AccountRegister", () => {
         target: { value: confirmPassword }
       });
     });
+
+    if (!submit) {
+      return;
+    }
 
     // submit
     const loginContent = container.queryByTestId(
@@ -310,6 +314,9 @@ describe("AccountRegister", () => {
 
     jest
       .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
@@ -322,19 +329,33 @@ describe("AccountRegister", () => {
 
     var fetchPostSpy = jest
       .spyOn(FetchPost, "default")
+      .mockClear()
+      .mockImplementationOnce(() => mockPostIConnectionDefault)
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
     var container = render(<></>);
-    await act(async () => {
-      container = await render(<AccountRegister />);
+    act(() => {
+      container = render(<AccountRegister />);
     });
 
-    submitEmailPassword(container, "dont@mail.me", "987654321", "987654321");
+    submitEmailPassword(
+      container,
+      "dont@mail.me",
+      "987654321",
+      "987654321",
+      false
+    );
+
+    // submit & await
+    const loginContent = container.queryByTestId(
+      "account-register-form"
+    ) as HTMLFormElement;
+    // need to await
+    await loginContent.submit();
 
     expect(fetchPostSpy).toBeCalled();
-
-    console.log(container.container.innerHTML);
+    expect(fetchPostSpy).toBeCalledTimes(1);
 
     const error = container.queryByTestId(
       "account-register-error"
