@@ -73,17 +73,18 @@ describe("AccountRegister", () => {
     await act(async () => {
       container = await render(<AccountRegister />);
     });
+    console.log(container.container.innerHTML);
 
     const email = container.getByTestId("email") as HTMLInputElement;
-    expect(email.disabled).toBeTruthy();
+    expect(email.disabled).toBeFalsy();
 
     const password = container.getByTestId("password") as HTMLInputElement;
-    expect(password.disabled).toBeTruthy();
+    expect(password.disabled).toBeFalsy();
 
     const confirmPassword = container.getByTestId(
       "confirm-password"
     ) as HTMLInputElement;
-    expect(confirmPassword.disabled).toBeTruthy();
+    expect(confirmPassword.disabled).toBeFalsy();
 
     expect(fetchGetSpy).toBeCalled();
 
@@ -150,9 +151,19 @@ describe("AccountRegister", () => {
       container = await render(<AccountRegister />);
     });
 
-    container.find('[type="submit"]').last().simulate("submit");
+    const button = container.queryByTestId(
+      "account-register-submit"
+    ) as HTMLButtonElement;
 
-    expect(container.exists(".content--error-true")).toBeTruthy();
+    act(() => {
+      button.click();
+    });
+
+    const error = container.queryByTestId(
+      "account-register-error"
+    ) as HTMLElement;
+
+    expect(error).toBeTruthy();
   });
 
   it("submit short password", async () => {
