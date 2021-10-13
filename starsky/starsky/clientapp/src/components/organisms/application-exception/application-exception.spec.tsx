@@ -28,7 +28,9 @@ describe("ApplicationException", () => {
 
     const component = render(<ApplicationException>t</ApplicationException>);
 
-    expect(component.exists(".content--header")).toBeTruthy();
+    expect(
+      component.queryByTestId("application-exception-header")
+    ).toBeTruthy();
 
     component.unmount();
   });
@@ -50,7 +52,9 @@ describe("ApplicationException", () => {
 
     expect(window.location.reload).not.toHaveBeenCalled();
 
-    component.find("[data-test='reload']").simulate("click");
+    const reload = component.queryByTestId("reload") as HTMLButtonElement;
+
+    reload.click();
 
     expect(reloadSpy).toBeCalledTimes(1);
 
