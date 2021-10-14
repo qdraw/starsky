@@ -9,7 +9,6 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "./color-class-select";
 import * as ColorClassUpdateSingle from "./color-class-update-single";
 
@@ -38,7 +37,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = render(
+    const wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -48,7 +47,12 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    wrapper.find("button.colorclass--2").simulate("click");
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    colorClass.click();
 
     // expect
     expect(fetchPostSpy).toHaveBeenCalledTimes(1);
@@ -79,7 +83,14 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    wrapper.find("button.colorclass--2").simulate("click");
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    colorClass.click();
+
+    // expect(colorClass).toBeTruthy();
 
     // expect [disabled]
     expect(fetchPostSpy).toHaveBeenCalledTimes(0);
@@ -115,22 +126,30 @@ describe("ColorClassSelect", () => {
     );
 
     // need to await this click
-    await act(async () => {
-      await wrapper.find("button.colorclass--3").simulate("click");
-    });
 
-    wrapper.update();
+    let colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    expect(wrapper.exists("button.colorclass--3.active")).toBeTruthy();
+    await colorClass.click();
+
+    colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+
+    expect(colorClass.classList).toContain("active");
 
     // need to await this
     await act(async () => {
       await jest.advanceTimersByTime(1200);
     });
 
-    wrapper.update();
+    colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
 
-    expect(wrapper.exists("button.colorclass--3.active")).toBeFalsy();
+    expect(colorClass.classList).not.toContain("active");
 
     wrapper.unmount();
     fetchPostSpy.mockReset();
@@ -157,25 +176,27 @@ describe("ColorClassSelect", () => {
         isEnabled={true}
         filePath={"/test1"}
         onToggle={(value) => {}}
-      >
-        t
-      </ColorClassSelect>
+      />
     );
 
-    // need to await this click
-    await act(async () => {
-      await wrapper.find("button.colorclass--2").simulate("click");
-    });
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    wrapper.update();
+    await colorClass.click();
 
-    expect(wrapper.exists(Notification)).toBeTruthy();
+    const notification = wrapper.queryByTestId(
+      "notification-content"
+    ) as HTMLElement;
 
-    act(() => {
-      wrapper.unmount();
-    });
+    console.log(wrapper.container.innerHTML);
+    console.log(document.body.innerHTML);
 
-    fetchPostSpy.mockReset();
+    expect(fetchPostSpy).toBeCalled();
+
+    // should contain notification
+    throw Error(notification);
   });
 
   it("when error is it should able to close the warning box", async () => {
@@ -197,13 +218,16 @@ describe("ColorClassSelect", () => {
     );
 
     // need to await this click
-    await act(async () => {
-      await component.find("button.colorclass--2").simulate("click");
-    });
+    let colorClass = component.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    await colorClass.click();
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    component.update();
+    console.log(component.container.innerHTML);
 
     expect(component.exists(".notification")).toBeTruthy();
 
