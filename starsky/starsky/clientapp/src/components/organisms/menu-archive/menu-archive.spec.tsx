@@ -60,10 +60,11 @@ describe("MenuArchive", () => {
     it("check if on click the hamburger opens", () => {
       var component = render(<MenuArchive />);
 
-      expect(component.exists('[data-test="hamburger"] .open')).toBeFalsy();
+      const hamburger = component.queryByTestId("hamburger");
+      expect(hamburger?.querySelector(".open")).toBeFalsy();
 
-      component.find('[data-test="hamburger"]').simulate("click");
-      expect(component.exists('[data-test="hamburger"] .open')).toBeTruthy();
+      hamburger?.click();
+      expect(hamburger?.querySelector(".open")).toBeTruthy();
 
       component.unmount();
     });
@@ -94,7 +95,7 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive>t</MenuArchive>);
 
-      expect(component.exists('[data-test="selected-0"]')).toBeTruthy();
+      expect(component.queryByTestId("selected-0")).toBeTruthy();
 
       component.unmount();
     });
@@ -125,7 +126,7 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive>t</MenuArchive>);
 
-      expect(component.exists('[data-test="selected-2"]')).toBeTruthy();
+      expect(component.queryByTestId("selected-2")).toBeTruthy();
 
       component.unmount();
     });
@@ -164,11 +165,9 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive>t</MenuArchive>);
 
-      var item = component.find('[data-test="mkdir"]');
+      const mkdir = component.queryByTestId("mkdir");
 
-      act(() => {
-        item.simulate("click");
-      });
+      mkdir?.click();
 
       expect(mkdirModalSpy).toBeCalled();
 
@@ -207,11 +206,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive>t</MenuArchive>);
 
-      var item = component.find('[data-test="rename"]');
+      const rename = component.queryByTestId("rename");
+      expect(rename).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      rename?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -242,6 +240,7 @@ describe("MenuArchive", () => {
           return (
             <button
               id="test-btn-fake"
+              data-test="test-btn-fake"
               onClick={() => {
                 if (props.dispatch) {
                   props.dispatch({
@@ -262,16 +261,13 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive>t</MenuArchive>);
 
-      act(() => {
-        component.find('[data-test="rename"]').simulate("click");
-      });
-      act(() => {
-        component.update();
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).not.toBeNull();
 
-      act(() => {
-        component.find("#test-btn-fake").simulate("click");
-      });
+      rename?.click();
+
+      const fakeButton = component.queryByTestId("test-btn-fake");
+      fakeButton?.click();
 
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith({
@@ -318,11 +314,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="display-options"]');
+      const displayOptions = component.queryByTestId("display-options");
+      expect(displayOptions).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      displayOptions?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -373,11 +368,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="display-options"]');
+      const displayOptions = component.queryByTestId("display-options");
+      expect(displayOptions).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      displayOptions?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -420,11 +414,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="synchronize-manually"]');
+      const syncManual = component.queryByTestId("synchronize-manually");
+      expect(syncManual).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      syncManual?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -474,11 +467,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="synchronize-manually"]');
+      const syncManual = component.queryByTestId("synchronize-manually");
+      expect(syncManual).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      syncManual?.click();
 
       expect(renameModalSpy).toBeCalled();
 
@@ -528,11 +520,12 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var more = component.find(".item--more");
+      console.log(component.container.innerHTML);
 
-      act(() => {
-        more.find(".menu-option").first().simulate("click");
-      });
+      const undoSelection = component.queryByTestId("undo-selection");
+      expect(undoSelection).not.toBeNull();
+
+      undoSelection?.click();
 
       // you did press to de-select all
       expect(globalHistory.location.search).toBe("?select=");
