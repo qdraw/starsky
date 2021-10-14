@@ -72,8 +72,11 @@ describe("MenuOptionMoveToTrash", () => {
         </MenuOptionMoveToTrash>
       );
 
+      const trashButton = component.queryByTestId("trash") as HTMLButtonElement;
+      expect(trashButton).toBeTruthy();
+
       await act(async () => {
-        await component.find("li").simulate("click");
+        await trashButton.click();
       });
 
       expect(fetchPostSpy).toBeCalled();

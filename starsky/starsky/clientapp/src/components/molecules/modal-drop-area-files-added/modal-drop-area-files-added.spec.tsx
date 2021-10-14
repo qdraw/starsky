@@ -7,6 +7,8 @@ import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
 describe("ModalDropAreaFilesAdded", () => {
   it("renders", () => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
     var component = render(
       <ModalDropAreaFilesAdded
         isOpen={true}
@@ -27,7 +29,9 @@ describe("ModalDropAreaFilesAdded", () => {
         .spyOn(ItemTextListView, "default")
         .mockImplementationOnce((props) => {
           return (
-            <span id="data-test-0">{props.fileIndexItems[0].fileName}</span>
+            <span data-test="data-test-0" id="data-test-0">
+              {props.fileIndexItems[0].fileName}
+            </span>
           );
         });
 
@@ -48,8 +52,10 @@ describe("ModalDropAreaFilesAdded", () => {
         />
       );
 
-      expect(component.exists("#data-test-0")).toBeTruthy();
-      expect(component.find("#data-test-0").text()).toBe("test.jpg");
+      expect(component.queryByTestId("data-test-0")).toBeTruthy();
+      expect(component.queryByTestId("data-test-0")?.textContent).toBe(
+        "test.jpg"
+      );
 
       component.unmount();
     });
