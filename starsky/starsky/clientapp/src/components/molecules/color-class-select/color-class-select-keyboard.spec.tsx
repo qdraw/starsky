@@ -146,8 +146,6 @@ describe("ColorClassSelectKeyboard", () => {
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    component.update();
-
     component.find(".icon--close").simulate("click");
 
     expect(component.html()).toBeNull();

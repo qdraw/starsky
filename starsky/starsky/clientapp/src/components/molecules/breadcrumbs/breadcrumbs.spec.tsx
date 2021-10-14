@@ -13,10 +13,12 @@ describe("Breadcrumb", () => {
   });
 
   it("check Length for breadcrumbs", () => {
-    var breadcrumbs = ["/", "/test"];
-    var wrapper = render(
+    const breadcrumbs = ["/", "/test"];
+    const wrapper = render(
       <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />
     );
+    console.log(wrapper.container.innerHTML);
+
     expect(wrapper.find("span")).toHaveLength(4);
   });
 });
