@@ -102,6 +102,7 @@ describe("ListImageTest", () => {
       ) as HTMLButtonElement;
       expect(button).not.toBeNull();
 
+      // ClickEvent
       fireEvent(
         button,
         new MouseEvent("click", {
