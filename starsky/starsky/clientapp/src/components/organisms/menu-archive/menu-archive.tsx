@@ -253,6 +253,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? (
             <div
               className="item item--select"
+              data-test="menu-item-select"
               onClick={() => {
                 removeSidebarSelection();
               }}

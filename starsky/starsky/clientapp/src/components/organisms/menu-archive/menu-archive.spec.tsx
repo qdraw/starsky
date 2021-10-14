@@ -49,9 +49,9 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      expect(component.exists('[data-test="hamburger"]')).toBeTruthy();
-      expect(component.exists(".item--select")).toBeTruthy();
-      expect(component.exists(".item--more")).toBeTruthy();
+      expect(component.queryByTestId("hamburger")).toBeTruthy();
+      expect(component.queryByTestId("menu-item-select")).toBeTruthy();
+      expect(component.queryByTestId("menu-context")).toBeTruthy();
 
       // and clean
       component.unmount();
