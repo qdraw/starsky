@@ -17,9 +17,19 @@ describe("HealthStatusError", () => {
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
       });
+
+      var notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => {
+          return null;
+        });
+
       var component = render(<HealthStatusError />);
 
-      expect(component.html()).toBe(null);
+      expect(notificationSpy).not.toBeCalled();
+      expect(notificationSpy).toBeCalledTimes(0);
+
+      component.unmount();
     });
 
     it("Error 500", () => {
