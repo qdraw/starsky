@@ -63,6 +63,7 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
         <div
           className={`${className} ${className}--select`}
           data-filepath={item.filePath}
+          data-test="list-image-view-select-container"
         >
           <button
             onClick={(event) => {

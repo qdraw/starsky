@@ -174,7 +174,6 @@ describe("ItemListView", () => {
       ) as HTMLButtonElement;
 
       console.log(component.container.innerHTML);
-
       expect(item).toBeTruthy();
 
       fireEvent(
