@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
 import L from "leaflet";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -102,14 +102,8 @@ describe("DetailViewGpx", () => {
       // attachTo: (window as any).domNode
       var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
-      // need to await before the maps are added
-      await act(async () => {
-        await gpx.find(".main--gpx").simulate("click");
-      });
+      await waitFor(() => expect(spyGet).toBeCalled());
 
-      expect(gpx.exists(".main--gpx")).toBeTruthy();
-
-      expect(spyGet).toBeCalled();
       expect(spyMap).toBeCalled();
       expect(polylineSpy).toBeCalled();
 
@@ -157,17 +151,15 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      // , { attachTo: (window as any).domNode }
       var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
-      // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
-
-      gpx.find('[data-test="zoom_in"]').simulate("click");
-
       expect(spyGet).toBeCalled();
-      expect(spyMap).toBeCalled();
+      await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
+
+      const zoom_in = gpx.queryByTestId("zoom_in");
+      zoom_in?.click();
+
       expect(zoomIn).toBeCalled();
       expect(enable).toBeCalled();
 
@@ -195,7 +187,7 @@ describe("DetailViewGpx", () => {
       var zoomOut = jest.fn();
       var enable = jest.fn();
 
-      var spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable: jest.fn(), enable },
@@ -215,17 +207,15 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      //  attachTo: (window as any).domNode
       var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
-      // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
-
-      gpx.find('[data-test="zoom_out"]').simulate("click");
-
       expect(spyGet).toBeCalled();
-      expect(spyMap).toBeCalled();
+      await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
+
+      const zoom_out = gpx.queryByTestId("zoom_out"); //.simulate("click");
+      zoom_out?.click();
+
       expect(zoomOut).toBeCalled();
       expect(enable).toBeCalled();
 
@@ -254,7 +244,7 @@ describe("DetailViewGpx", () => {
       var enable = jest.fn();
       var disable = jest.fn();
 
-      jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable, enable },
@@ -278,15 +268,17 @@ describe("DetailViewGpx", () => {
       var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
+      await waitFor(() => expect(spyMap).toBeCalled());
 
       // Enable first
-      gpx.find('[data-test="lock"]').simulate("click");
+      const button = gpx.queryByTestId("lock") as HTMLButtonElement;
+      button.click();
 
       expect(enable).toBeCalled();
 
       // And disable afterwards
-      gpx.find('[data-test="lock"]').simulate("click");
+      const button2 = gpx.queryByTestId("lock") as HTMLButtonElement;
+      button2.click();
 
       expect(disable).toBeCalled();
 
@@ -325,7 +317,7 @@ describe("DetailViewGpx", () => {
           setView: setViewSpy
         };
       };
-      jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
@@ -351,15 +343,15 @@ describe("DetailViewGpx", () => {
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton);
 
-      // {
-      // attachTo: (window as any).domNode
-      //}
       var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
+      await waitFor(() => expect(spyMap).toBeCalled());
 
-      await gpx.find("#current-location").simulate("click");
+      const button = gpx.queryByTestId(
+        "current-location-button"
+      ) as HTMLButtonElement;
+      await button.click();
 
       expect(currentLocationButtonSpy).toBeCalled();
       expect(setViewSpy).toBeCalled();
