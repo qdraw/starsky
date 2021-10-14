@@ -520,8 +520,6 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      console.log(component.container.innerHTML);
-
       const undoSelection = component.queryByTestId("undo-selection");
       expect(undoSelection).not.toBeNull();
 
@@ -581,10 +579,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var more = component.find(".item--more");
-      act(() => {
-        more.find(".menu-option").first().simulate("click");
-      });
+      const undoSelection = component.queryByTestId("undo-selection");
+      expect(undoSelection).not.toBeNull();
+
+      undoSelection?.click();
 
       expect(globalHistory.location.search).toBe("?select=");
 
@@ -690,14 +688,19 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item: ReactWrapper;
-      await act(async () => {
-        item = await component.find('[data-test="trash"]');
-      });
+      // var item: ReactWrapper;
+      // await act(async () => {
+      //   item = await component.find('[data-test="trash"]');
+      // });
 
-      await act(async () => {
-        await item.simulate("click");
-      });
+      // await act(async () => {
+      //   await item.simulate("click");
+      // });
+
+      const trash = component.queryByTestId("trash");
+      expect(trash).not.toBeNull();
+
+      trash?.click();
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -751,11 +754,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="export"]');
+      const exportButton = component.queryByTestId("export");
+      expect(exportButton).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      exportButton?.click();
 
       expect(exportModalSpy).toBeCalled();
 
@@ -803,11 +805,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="publish"]');
+      const publish = component.queryByTestId("publish");
+      expect(publish).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      publish?.click();
 
       expect(exportModalSpy).toBeCalled();
 
@@ -851,11 +852,10 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      var item = component.find('[data-test="mkdir"]');
+      const mkdir = component.queryByTestId("mkdir");
+      expect(mkdir).not.toBeNull();
 
-      act(() => {
-        item.simulate("click");
-      });
+      mkdir?.click();
 
       expect(mkdirModalSpy).toBeCalledTimes(0);
 
