@@ -26,6 +26,7 @@ describe("ModalDisplayOptions", () => {
             handleExit={() => {}}
           />
         );
+        console.log(modal.container.innerHTML);
       });
 
       afterAll(() => {
@@ -38,6 +39,7 @@ describe("ModalDisplayOptions", () => {
 
       it("toggle-collections", () => {
         const toggleCollections = modal.queryByTestId("toggle-collections");
+        //
         console.log(modal.container.innerHTML);
 
         expect(toggleCollections).toBeTruthy();
