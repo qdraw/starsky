@@ -46,8 +46,8 @@ describe("ModalDownload", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="thumbnail"]')).toBeTruthy();
-    expect(modal.exists('[data-test="orginal"]')).toBeTruthy();
+    expect(modal.queryByTestId("thumbnail")).toBeTruthy();
+    expect(modal.queryByTestId("orginal")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -94,11 +94,9 @@ describe("ModalDownload", () => {
       ></ModalDownload>
     );
 
-    var item = modal.find('[data-test="thumbnail"]');
-
-    act(() => {
-      item.simulate("click");
-    });
+    const thumbnail = modal.queryByTestId("thumbnail");
+    expect(thumbnail).toBeTruthy();
+    thumbnail?.click();
 
     expect(fetchPostSpy).toBeCalled();
 
