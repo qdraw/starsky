@@ -70,8 +70,6 @@ describe("ArchiveSidebar", () => {
         "sidebar-selection-none"
       ) as HTMLDivElement;
 
-      console.log(component.container.innerHTML);
-
       expect(element).toBeTruthy();
     });
 
@@ -85,7 +83,12 @@ describe("ArchiveSidebar", () => {
           fileIndexItems={newIFileIndexItemArray()}
         />
       );
-      expect(component.find(".warning-box")).toBeTruthy();
+
+      const element = component.queryByTestId(
+        "sidebar-read-only"
+      ) as HTMLDivElement;
+
+      expect(element).toBeTruthy();
     });
 
     it("scroll event and set body style with scroll", () => {
