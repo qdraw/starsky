@@ -1,5 +1,4 @@
-import { act, render } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
+import { act, render, RenderResult, waitFor } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchGet from "../../../shared/fetch-get";
@@ -23,8 +22,8 @@ describe("ModalArchiveSynchronizeManually", () => {
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: ReactWrapper;
-      beforeAll(() => {
+      var modal: RenderResult;
+      beforeEach(() => {
         modal = render(
           <ModalArchiveSynchronizeManually
             parentFolder={"/"}
@@ -43,21 +42,21 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("force-sync", () => {
-        expect(modal.exists('[data-test="force-sync"]')).toBeTruthy();
+        expect(modal.queryByTestId("force-sync")).toBeTruthy();
       });
       it("remove-cache", () => {
-        expect(modal.exists('[data-test="remove-cache"]')).toBeTruthy();
+        expect(modal.queryByTestId("remove-cache")).toBeTruthy();
       });
       it("geo-sync", () => {
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+        expect(modal.queryByTestId("geo-sync")).toBeTruthy();
       });
       it("thumbnail-generation", () => {
-        expect(modal.exists('[data-test="thumbnail-generation"]')).toBeTruthy();
+        expect(modal.queryByTestId("thumbnail-generation")).toBeTruthy();
       });
     });
 
     describe("click button", () => {
-      var modal: ReactWrapper;
+      var modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(
@@ -78,7 +77,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         jest.useRealTimers();
       });
 
-      it("force-sync (only first get)", () => {
+      it("force-sync (only first get)", async () => {
         const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
           {
             statusCode: 200,
@@ -90,9 +89,12 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-        modal.find('[data-test="force-sync"]').simulate("click");
+        const forceSync = modal.queryByTestId("force-sync");
+        expect(forceSync).toBeTruthy();
 
-        expect(fetchPostSpy).toBeCalled();
+        await forceSync?.click();
+
+        await waitFor(() => expect(fetchPostSpy).toBeCalled());
         expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
       });
 

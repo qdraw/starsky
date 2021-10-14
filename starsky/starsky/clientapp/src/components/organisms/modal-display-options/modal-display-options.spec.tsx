@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { render, RenderResult } from "@testing-library/react";
 import { ReactWrapper } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
@@ -17,8 +17,8 @@ describe("ModalDisplayOptions", () => {
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: ReactWrapper;
-      beforeAll(() => {
+      var modal: RenderResult;
+      beforeEach(() => {
         modal = render(
           <ModalDisplayOptions
             parentFolder={"/"}
@@ -37,7 +37,10 @@ describe("ModalDisplayOptions", () => {
       });
 
       it("toggle-collections", () => {
-        expect(modal.exists('[data-test="toggle-collections"]')).toBeTruthy();
+        const toggleCollections = modal.queryByTestId("toggle-collections");
+        console.log(modal.container.innerHTML);
+
+        expect(toggleCollections).toBeTruthy();
       });
       it("toggle-slow-files", () => {
         expect(modal.exists('[data-test="toggle-slow-files"]')).toBeTruthy();

@@ -57,11 +57,9 @@ describe("MenuDetailView", () => {
         </MenuDetailView>
       );
 
-      var item = component.find('[data-test="move"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+      move?.click();
 
       expect(moveModal).toBeCalledTimes(0);
 
@@ -82,11 +80,10 @@ describe("MenuDetailView", () => {
       var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="rename"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
+      rename?.click();
 
       expect(renameModal).toBeCalledTimes(0);
 
@@ -110,11 +107,10 @@ describe("MenuDetailView", () => {
           t
         </MenuDetailView>
       );
-      var item = component.find('[data-test="trash"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(fetchPostSpy).toBeCalledTimes(0);
 
@@ -263,11 +259,9 @@ describe("MenuDetailView", () => {
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="export"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const exportButton = component.queryByTestId("export");
+      expect(exportButton).toBeTruthy();
+      exportButton?.click();
 
       expect(exportModal).toBeCalled();
 
@@ -304,11 +298,11 @@ describe("MenuDetailView", () => {
       var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="labels"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      //       var item = component.find('[data-test="labels"]');
+      const labels = component.queryByTestId("labels");
+      expect(labels).toBeTruthy();
+      labels?.click();
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
       expect(urlObject.details).toBeTruthy();
@@ -326,11 +320,10 @@ describe("MenuDetailView", () => {
       var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="go-to-parent-folder"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const goToParentFolder = component.queryByTestId("go-to-parent-folder");
+      expect(goToParentFolder).toBeTruthy();
+      goToParentFolder?.click();
 
       expect(globalHistory.location.search).toBe("?f=/test");
 
@@ -351,11 +344,9 @@ describe("MenuDetailView", () => {
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="move"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+      move?.click();
 
       expect(moveModal).toBeCalled();
 
@@ -376,11 +367,10 @@ describe("MenuDetailView", () => {
       var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="rename"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
+      rename?.click();
 
       expect(renameModal).toBeCalled();
 
@@ -402,11 +392,10 @@ describe("MenuDetailView", () => {
       var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="trash"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
@@ -539,11 +528,9 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var item = component.find('[data-test="trash"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(spy).toBeCalledWith(
         new UrlQuery().UrlReplaceApi(),
