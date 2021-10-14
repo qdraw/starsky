@@ -8,6 +8,10 @@ import {
 import Search from "./search";
 
 describe("Search", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(<Search {...newIArchive()} />);
   });
