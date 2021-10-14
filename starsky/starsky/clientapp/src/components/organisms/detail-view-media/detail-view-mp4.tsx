@@ -245,7 +245,7 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
               <span className="icon"></span>
               {isPaused ? "Play" : "Pause"}
             </button>
-            <span ref={timeRef} className="time"></span>
+            <span ref={timeRef} data-test="video-time" className="time"></span>
             <div className="progress">
               <span ref={scrubberRef} className="scrubber"></span>
               <progress

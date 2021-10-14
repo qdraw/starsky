@@ -329,6 +329,7 @@ describe("DetailViewGpx", () => {
         return (
           <button
             id="current-location"
+            data-test="current-location-button"
             onClick={() => {
               if (!input.callback) return;
               input.callback({ longitude: 1, latitude: 1 } as Coordinates);
@@ -351,6 +352,7 @@ describe("DetailViewGpx", () => {
       const button = gpx.queryByTestId(
         "current-location-button"
       ) as HTMLButtonElement;
+      expect(button).toBeTruthy();
       await button.click();
 
       expect(currentLocationButtonSpy).toBeCalled();

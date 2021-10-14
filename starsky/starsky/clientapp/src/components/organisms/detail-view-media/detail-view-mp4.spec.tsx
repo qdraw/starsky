@@ -28,7 +28,8 @@ describe("DetailViewMp4", () => {
         .spyOn(HTMLMediaElement.prototype, "play")
         .mockImplementationOnce(() => Promise.resolve());
 
-      component.find('[data-test="video"]').simulate("click");
+      const figure = component.queryByTestId("video") as HTMLElement;
+      figure.click();
 
       expect(playSpy).toBeCalled();
 
@@ -46,9 +47,8 @@ describe("DetailViewMp4", () => {
           return Promise.reject();
         });
 
-      await act(async () => {
-        await component.find('[data-test="video"]').simulate("click");
-      });
+      const figure = component.queryByTestId("video") as HTMLElement;
+      await figure.click();
 
       expect(playSpy).toBeCalled();
       expect(playSpy).toBeCalledTimes(1);
@@ -56,7 +56,6 @@ describe("DetailViewMp4", () => {
         await component.unmount();
       });
     });
-
     it("click to play video and timeupdate", () => {
       var component = render(<DetailViewMp4></DetailViewMp4>);
 
@@ -66,11 +65,14 @@ describe("DetailViewMp4", () => {
           return Promise.resolve();
         });
 
-      expect(component.find(".time").text()).toBe("");
+      expect(component.queryByTestId("video-time")?.textContent).toBe("");
 
-      component.find('[data-test="video"]').simulate("click");
+      const figure = component.queryByTestId("video") as HTMLElement;
+      figure.click();
 
-      expect(component.find(".time").text()).toBe("0:00 / 0:00");
+      expect(component.queryByTestId("video-time")?.textContent).toBe(
+        "0:00 / 0:00"
+      );
 
       expect(playSpy).toBeCalled();
 
@@ -100,10 +102,9 @@ describe("DetailViewMp4", () => {
         }
       });
 
-      var progress = component
-        .find("progress")
-        .first()
-        .getDOMNode() as HTMLProgressElement;
+      var progress = component.container.querySelector(
+        "progress"
+      ) as HTMLProgressElement;
       component.find("progress").simulate("click", { target: progress });
 
       expect(component.find(".time").text()).toBe("0:00 / 0:00");
