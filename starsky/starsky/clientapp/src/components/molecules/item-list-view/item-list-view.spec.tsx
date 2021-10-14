@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
@@ -35,15 +35,16 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
-      const paths = component.queryAllByTestId(
+      const element = component.queryAllByTestId(
         "list-image-view-select-container"
-      );
+      )[0];
 
-      console.log(paths);
+      expect(element).toBeTruthy();
 
-      expect(component.exists(query)).toBeTruthy();
+      expect(element.dataset["filepath"]).toBeTruthy();
+      expect(element.dataset["filepath"]).toBe(exampleData[0].filePath);
+
       component.unmount();
     });
 
@@ -70,7 +71,7 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe("no content");
+      expect(component.container.textContent).toBe("no content");
     });
 
     it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
@@ -82,7 +83,7 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe(
+      expect(component.container.textContent).toBe(
         "New? Set your drive location in the settings.  There are no photos in this folder"
       );
     });
@@ -96,7 +97,9 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe("There are no photos in this folder");
+      expect(component.container.textContent).toBe(
+        "There are no photos in this folder"
+      );
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
@@ -107,7 +110,7 @@ describe("ItemListView", () => {
           colorClassUsage={[2]}
         />
       );
-      expect(component.text()).toBe(
+      expect(component.container.textContent).toBe(
         "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
       );
     });
@@ -134,8 +137,8 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         >
           item
-        </ItemListView>,
-        { attachTo: (window as any).domNode }
+        </ItemListView>
+        // { attachTo: (window as any).domNode }
       );
 
       act(() => {
@@ -166,11 +169,29 @@ describe("ItemListView", () => {
         />
       );
 
-      act(() => {
-        component
-          .find(".list-image-box button")
-          .simulate("click", { shiftKey: true });
-      });
+      const item = component.queryByTestId(
+        "btn-" + exampleData[0].fileName
+      ) as HTMLButtonElement;
+
+      console.log(component.container.innerHTML);
+
+      expect(item).toBeTruthy();
+
+      fireEvent(
+        item,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          shiftKey: true
+        })
+      );
+
+      // act(() => {
+      //   item?.click()
+      //   component
+      //     .find(".list-image-box button")
+      //     .simulate("click", { shiftKey: true });
+      // });
 
       expect(shiftSelectionHelperSpy).toBeCalled();
       expect(shiftSelectionHelperSpy).toBeCalledWith(
