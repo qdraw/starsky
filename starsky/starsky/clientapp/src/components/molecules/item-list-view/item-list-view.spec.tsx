@@ -170,27 +170,23 @@ describe("ItemListView", () => {
       );
 
       const item = component.queryByTestId(
-        "btn-" + exampleData[0].fileName
+        "list-image-view-select-container"
       ) as HTMLButtonElement;
 
       console.log(component.container.innerHTML);
       expect(item).toBeTruthy();
 
+      const button = item.querySelector("button") as HTMLButtonElement;
+      expect(button).toBeTruthy();
+
       fireEvent(
-        item,
+        button,
         new MouseEvent("click", {
           bubbles: true,
           cancelable: true,
           shiftKey: true
         })
       );
-
-      // act(() => {
-      //   item?.click()
-      //   component
-      //     .find(".list-image-box button")
-      //     .simulate("click", { shiftKey: true });
-      // });
 
       expect(shiftSelectionHelperSpy).toBeCalled();
       expect(shiftSelectionHelperSpy).toBeCalledWith(
