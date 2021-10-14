@@ -146,9 +146,10 @@ describe("ColorClassSelectKeyboard", () => {
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    component.find(".icon--close").simulate("click");
+    const close = component.queryByTestId("notification-close");
+    close?.click();
 
-    expect(component.html()).toBeNull();
+    expect(component.container.innerHTML).toBe("");
 
     await component.unmount();
   });
@@ -187,11 +188,10 @@ describe("ColorClassSelectKeyboard", () => {
 
     expect(colorClassUpdateSingleSpy).toBeCalled();
 
-    component.update();
+    const close = component.queryByTestId("notification-close");
+    close?.click();
 
-    component.find(".icon--close").simulate("click");
-
-    expect(component.html()).toBeNull();
+    expect(component.container.innerHTML).toBe("");
 
     await component.unmount();
   });

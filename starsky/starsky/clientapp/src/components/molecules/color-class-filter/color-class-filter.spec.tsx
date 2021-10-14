@@ -28,8 +28,11 @@ describe("ColorClassFilter", () => {
       </ColorClassFilter>
     );
 
-    expect(component.queryByTestId("color-class-filter-2")).toBeTruthy();
-    // component.find(".colorclass--2").last().simulate("click");
+    const colorClass = component.queryByTestId(
+      "color-class-filter-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+    colorClass.click();
   });
 
   it("outside current scope display reset", () => {
@@ -43,7 +46,8 @@ describe("ColorClassFilter", () => {
         t
       </ColorClassFilter>
     );
-    expect(component.exists(".colorclass--reset")).toBeTruthy();
+
+    expect(component.queryByTestId("color-class-filter-reset")).toBeTruthy();
   });
 
   it("onClick value and preloader exist", () => {
@@ -58,10 +62,15 @@ describe("ColorClassFilter", () => {
       </ColorClassFilter>
     );
 
-    expect(component.exists(".colorclass--2")).toBeTruthy();
+    const colorClass = component.queryByTestId(
+      "color-class-filter-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    component.find(".colorclass--2").last().simulate("click");
-    expect(component.exists(".preloader")).toBeTruthy();
+    colorClass.click();
+
+    const preloader = component.queryByTestId("preloader") as HTMLElement;
+    expect(preloader).toBeTruthy();
 
     component.unmount();
   });
@@ -80,9 +89,12 @@ describe("ColorClassFilter", () => {
       </ColorClassFilter>
     );
 
-    expect(
-      component.find(".colorclass--1").last().hasClass("active")
-    ).toBeTruthy();
+    const colorClass = component.queryByTestId(
+      "color-class-filter-1"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    expect(colorClass.classList).toContain("active");
 
     var urlToStringSpy = jest
       .spyOn(URLPath.prototype, "IUrlToString")
@@ -91,7 +103,7 @@ describe("ColorClassFilter", () => {
       });
 
     act(() => {
-      component.find(".colorclass--1").last().simulate("click");
+      colorClass.click();
     });
 
     expect(urlToStringSpy).toBeCalled();
