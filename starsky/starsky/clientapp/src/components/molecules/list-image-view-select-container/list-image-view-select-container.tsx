@@ -94,7 +94,11 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
     // default state
     // data-filepath is needed to scroll to
     return (
-      <div className={`${className} box--view`} data-filepath={item.filePath}>
+      <div
+        data-test="list-image-view-select-container"
+        className={`${className} box--view`}
+        data-filepath={item.filePath}
+      >
         {/* for slow connections show preloader icon */}
         {isPreloaderState ? preloader : null}
         {/* the a href to the child page */}

@@ -37,6 +37,12 @@ describe("ItemListView", () => {
       );
       var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
+      const paths = component.queryAllByTestId(
+        "list-image-view-select-container"
+      );
+
+      console.log(paths);
+
       expect(component.exists(query)).toBeTruthy();
       component.unmount();
     });
