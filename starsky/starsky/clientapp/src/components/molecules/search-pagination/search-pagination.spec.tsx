@@ -20,11 +20,15 @@ describe("SearchPagination", () => {
     );
 
     const nextButton = component.queryByTestId(
-      "search-pagination-prev"
+      "search-pagination-next"
     ) as HTMLAnchorElement;
     expect(nextButton).toBeTruthy();
+    expect(nextButton.href).toBe("http://localhost/?p=1");
 
-    expect(nextButton.href).toBe("/?p=1");
+    const prevButton = component.queryByTestId(
+      "search-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(prevButton).toBeFalsy();
   });
 
   it("prev page exist", () => {
@@ -36,7 +40,13 @@ describe("SearchPagination", () => {
     var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
-    expect(component.find("a.prev").props().href).toBe("/?p=0");
+
+    const prevButton = component.queryByTestId(
+      "search-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(prevButton).toBeTruthy();
+
+    expect(prevButton.href).toBe("http://localhost/?p=0");
   });
 
   it("prev page exist + remove select param", () => {
@@ -49,7 +59,12 @@ describe("SearchPagination", () => {
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
 
-    expect(component.find("a.prev").props().href).toBe("/?p=0&select=");
+    const prevButton = component.queryByTestId(
+      "search-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(prevButton).toBeTruthy();
+
+    expect(prevButton.href).toBe("http://localhost/?p=0&select=");
   });
 
   it("next page exist + remove select param", () => {
@@ -62,7 +77,10 @@ describe("SearchPagination", () => {
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
 
-    // component.qu;
-    expect(component.find("a.next").props().href).toBe("/?p=1&select=");
+    const nextButton = component.queryByTestId(
+      "search-pagination-next"
+    ) as HTMLAnchorElement;
+    expect(nextButton).toBeTruthy();
+    expect(nextButton.href).toBe("http://localhost/?p=1&select=");
   });
 });
