@@ -7,6 +7,8 @@ import ArchiveSidebar from "./archive-sidebar";
 
 describe("ArchiveSidebar", () => {
   it("renders", () => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
     render(
       <ArchiveSidebar
         pageType={PageType.Loading}
@@ -54,18 +56,23 @@ describe("ArchiveSidebar", () => {
     });
 
     it("no warning if is not read only", () => {
-      var component = render(
+      const component = render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        >
-          t
-        </ArchiveSidebar>
+        />
       );
-      expect(component.find(".warning-box")).toBeTruthy();
+
+      const element = component.queryByTestId(
+        "sidebar-selection-none"
+      ) as HTMLDivElement;
+
+      console.log(component.container.innerHTML);
+
+      expect(element).toBeTruthy();
     });
 
     it("show warning if is read only", () => {
