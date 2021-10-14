@@ -9,7 +9,9 @@ describe("Breadcrumb", () => {
 
   it("disabled", () => {
     var wrapper = render(<Breadcrumb subPath="" breadcrumb={[]} />);
-    expect(wrapper.find("span")).toHaveLength(0);
+
+    const spans = wrapper.queryAllByTestId("breadcrumb-span");
+    expect(spans).toHaveLength(0);
   });
 
   it("check Length for breadcrumbs", () => {
@@ -17,8 +19,16 @@ describe("Breadcrumb", () => {
     const wrapper = render(
       <Breadcrumb subPath="/test/01" breadcrumb={breadcrumbs} />
     );
-    console.log(wrapper.container.innerHTML);
+    const spans = wrapper.queryAllByTestId("breadcrumb-span");
+    expect(spans).toHaveLength(2);
+  });
 
-    expect(wrapper.find("span")).toHaveLength(4);
+  it("check 3 Length for breadcrumbs", () => {
+    const breadcrumbs = ["/", "/test", "/01"];
+    const wrapper = render(
+      <Breadcrumb subPath="/test/01/01" breadcrumb={breadcrumbs} />
+    );
+    const spans = wrapper.queryAllByTestId("breadcrumb-span");
+    expect(spans).toHaveLength(3);
   });
 });

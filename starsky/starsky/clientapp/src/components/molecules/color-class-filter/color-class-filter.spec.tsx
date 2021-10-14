@@ -27,8 +27,9 @@ describe("ColorClassFilter", () => {
         t
       </ColorClassFilter>
     );
-    expect(component.exists(".colorclass--2")).toBeTruthy();
-    component.find(".colorclass--2").last().simulate("click");
+
+    expect(component.queryByTestId("color-class-filter-2")).toBeTruthy();
+    // component.find(".colorclass--2").last().simulate("click");
   });
 
   it("outside current scope display reset", () => {
