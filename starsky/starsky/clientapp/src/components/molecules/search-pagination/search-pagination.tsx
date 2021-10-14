@@ -47,6 +47,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo(
         <Link
           onClick={() => window.scrollTo(0, 0)}
           className="prev"
+          data-test="search-pagination-prev"
           to={new URLPath().IUrlToString(prevObject)}
         >
           {" "}
@@ -71,6 +72,7 @@ const SearchPagination: React.FunctionComponent<IRelativeLink> = memo(
         <Link
           onClick={() => window.scrollTo(0, 0)}
           className="next"
+          data-test="search-pagination-next"
           to={new URLPath().IUrlToString(nextObject)}
         >
           {" "}

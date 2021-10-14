@@ -18,7 +18,13 @@ describe("SearchPagination", () => {
     var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
-    expect(component.find("a.next").props().href).toBe("/?p=1");
+
+    const nextButton = component.queryByTestId(
+      "search-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(nextButton).toBeTruthy();
+
+    expect(nextButton.href).toBe("/?p=1");
   });
 
   it("prev page exist", () => {
@@ -55,6 +61,8 @@ describe("SearchPagination", () => {
     var component = render(
       <SearchPagination lastPageNumber={2}>t</SearchPagination>
     );
+
+    // component.qu;
     expect(component.find("a.next").props().href).toBe("/?p=1&select=");
   });
 });
