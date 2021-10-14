@@ -50,6 +50,8 @@ describe("SearchPagination", () => {
   });
 
   it("prev page exist + remove select param", () => {
+    // due the fact that the selected item does not exist on that new page
+
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
       globalHistory.navigate("/?p=1&select=test");
@@ -68,6 +70,7 @@ describe("SearchPagination", () => {
   });
 
   it("next page exist + remove select param", () => {
+    // due the fact that the selected item does not exist on that new page
     act(() => {
       // to use with: => import { act } from 'react-dom/test-utils';
       globalHistory.navigate("/?p=0&select=test");
