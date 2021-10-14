@@ -20,7 +20,10 @@ describe("ItemTextListView", () => {
     var content = render(
       <ItemTextListView fileIndexItems={undefined as any} callback={() => {}} />
     );
-    expect(content.exists(".warning-box")).toBeTruthy();
+
+    expect(
+      content.queryByTestId("list-text-view-no-photos-in-folder")
+    ).toBeTruthy();
   });
 
   it("list of 1 file item", () => {
@@ -36,7 +39,9 @@ describe("ItemTextListView", () => {
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
-    expect(list.find("ul li").text()).toBe(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li")?.textContent).toBe(
+      fileIndexItems[0].fileName
+    );
   });
 
   it("list of 1 error item", () => {
@@ -52,8 +57,12 @@ describe("ItemTextListView", () => {
       <ItemTextListView fileIndexItems={fileIndexItems} callback={() => {}} />
     );
 
-    expect(list.find("ul li em").text()).toBe("ServerError");
-    expect(list.find("ul li").text()).toContain(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li em")?.textContent).toBe(
+      "ServerError"
+    );
+    expect(list.container.querySelector("ul li")?.textContent).toContain(
+      fileIndexItems[0].fileName
+    );
   });
 
   it("list of 1 directory item", () => {
@@ -71,7 +80,9 @@ describe("ItemTextListView", () => {
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 
-    expect(list.find("ul li button").text()).toBe(fileIndexItems[0].fileName);
+    expect(list.container.querySelector("ul li button")?.textContent).toBe(
+      fileIndexItems[0].fileName
+    );
   });
 
   it("list of 1 directory item callback", () => {
@@ -89,7 +100,13 @@ describe("ItemTextListView", () => {
       <ItemTextListView fileIndexItems={fileIndexItems} callback={callback} />
     );
 
-    list.find("ul li button").simulate("click");
+    const button = list.container.querySelector(
+      "ul li button"
+    ) as HTMLButtonElement;
+
+    expect(button).not.toBeNull();
+
+    button.click();
 
     expect(callback).toBeCalled();
     expect(callback).toBeCalledWith(fileIndexItems[0].filePath);
