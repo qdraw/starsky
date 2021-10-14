@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -101,13 +101,29 @@ describe("DetailViewMp4", () => {
           return this.parentNode;
         }
       });
+      jest
+        .spyOn(HTMLMediaElement.prototype, "load")
+        .mockImplementationOnce(() => {
+          return Promise.resolve();
+        });
 
       var progress = component.container.querySelector(
         "progress"
-      ) as HTMLProgressElement;
-      component.find("progress").simulate("click", { target: progress });
+      ) as HTMLElement;
 
-      expect(component.find(".time").text()).toBe("0:00 / 0:00");
+      // ClickEvent
+      fireEvent(
+        progress,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          target: progress
+        } as any)
+      );
+
+      expect(component.queryByTestId("video-time")?.textContent).toBe(
+        "0:00 / 0:00"
+      );
 
       expect(playSpy).toBeCalled();
 

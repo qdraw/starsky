@@ -19,14 +19,16 @@ describe("HealthCheckForUpdates", () => {
         data: null
       } as IConnectionDefault;
 
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
+
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       var component = render(<HealthCheckForUpdates />);
 
-      console.log(document.body.innerHTML);
-
-      expect(component.exists(Notification.default)).toBeFalsy();
+      expect(notificationSpy).toBeCalledTimes(0);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -41,14 +43,14 @@ describe("HealthCheckForUpdates", () => {
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = render(<HealthCheckForUpdates />);
 
-      console.log(component.container.innerHTML);
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+      var component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
 
-      // there is a link to github
-      expect(component.find("a")).toBeTruthy();
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -90,8 +92,14 @@ describe("HealthCheckForUpdates", () => {
       jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
+
       var component = render(<HealthCheckForUpdates />);
-      expect(component.exists(Notification.default)).toBeFalsy();
+
+      expect(notificationSpy).toBeCalledTimes(0);
 
       component.unmount();
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
@@ -110,11 +118,13 @@ describe("HealthCheckForUpdates", () => {
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <>t</>);
 
       var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -130,18 +140,16 @@ describe("HealthCheckForUpdates", () => {
         data: null
       } as IConnectionDefault;
 
-      jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <>t</>);
 
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
-
-      // there are no links here
-      var aHrefs = component.find("a").length;
-      expect(aHrefs).toBeFalsy();
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
 
