@@ -24,6 +24,8 @@ describe("HealthCheckForUpdates", () => {
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       var component = render(<HealthCheckForUpdates />);
 
+      console.log(document.body.innerHTML);
+
       expect(component.exists(Notification.default)).toBeFalsy();
 
       expect(useFetchSpy).toBeCalled();
@@ -40,6 +42,8 @@ describe("HealthCheckForUpdates", () => {
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
       var component = render(<HealthCheckForUpdates />);
+
+      console.log(component.container.innerHTML);
 
       expect(component.exists(Notification.default)).toBeTruthy();
 
