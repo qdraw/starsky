@@ -1,5 +1,5 @@
-import { globalHistory, Link } from "@reach/router";
-import { render } from "@testing-library/react";
+import { globalHistory } from "@reach/router";
+import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
@@ -29,12 +29,22 @@ describe("ListImageTest", () => {
           t
         </ListImageNormalSelectContainer>
       );
-      component.find(Link).simulate("click", {
-        metaKey: false
-      });
 
-      expect(component.exists(".preloader--overlay")).toBeTruthy();
-      component.unmount();
+      const anchor = component.container.querySelector(
+        "a"
+      ) as HTMLAnchorElement;
+      expect(anchor).not.toBeNull();
+
+      fireEvent(
+        anchor,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          metaKey: false
+        })
+      );
+
+      expect(component.queryByTestId("preloader")).toBeTruthy();
     });
 
     it("when click on Link, with command key it should ignore preloader", () => {
@@ -45,11 +55,23 @@ describe("ListImageTest", () => {
       var component = render(
         <ListImageNormalSelectContainer item={fileIndexItem} />
       );
-      component.find(Link).simulate("click", {
-        metaKey: true
-      });
 
-      expect(component.exists(".preloader--overlay")).toBeFalsy();
+      const anchor = component.container.querySelector(
+        "a"
+      ) as HTMLAnchorElement;
+      expect(anchor).not.toBeNull();
+
+      fireEvent(
+        anchor,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          metaKey: true
+        })
+      );
+
+      expect(component.queryByTestId("preloader")).toBeFalsy();
+
       component.unmount();
     });
   });
@@ -74,9 +96,20 @@ describe("ListImageTest", () => {
           t
         </ListImageNormalSelectContainer>
       );
-      component.find("button").simulate("click", {
-        metaKey: false
-      });
+
+      const button = component.container.querySelector(
+        "button"
+      ) as HTMLButtonElement;
+      expect(button).not.toBeNull();
+
+      fireEvent(
+        button,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          metaKey: false
+        })
+      );
 
       expect(globalHistory.location.search).toBe("?select=test");
       expect(onSelectionCallback).toBeCalledTimes(0);
@@ -99,9 +132,20 @@ describe("ListImageTest", () => {
           t
         </ListImageNormalSelectContainer>
       );
-      component.find("button").simulate("click", {
-        shiftKey: true
-      });
+
+      const button = component.container.querySelector(
+        "button"
+      ) as HTMLButtonElement;
+      expect(button).not.toBeNull();
+
+      fireEvent(
+        button,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          shiftKey: true
+        })
+      );
 
       expect(onSelectionCallback).toBeCalled();
       expect(onSelectionCallback).toBeCalledWith("/test.jpg");
@@ -124,9 +168,21 @@ describe("ListImageTest", () => {
           t
         </ListImageNormalSelectContainer>
       );
-      component.find("button").simulate("click", {
-        shiftKey: true
-      });
+
+      const button = component.container.querySelector(
+        "button"
+      ) as HTMLButtonElement;
+      expect(button).not.toBeNull();
+
+      fireEvent(
+        button,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          shiftKey: true
+        })
+      );
+
       // should normal toggle instead of shift action
       expect(globalHistory.location.search).toBe("?select=");
     });
