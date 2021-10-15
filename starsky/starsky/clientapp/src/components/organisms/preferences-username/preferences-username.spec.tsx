@@ -16,7 +16,9 @@ describe("PreferencesUsername", () => {
       });
 
       var component = render(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("Unknown username");
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("Unknown username");
       component.unmount();
     });
 
@@ -32,7 +34,9 @@ describe("PreferencesUsername", () => {
       });
 
       var component = render(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("Unknown username");
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("Unknown username");
       component.unmount();
     });
 
@@ -50,7 +54,9 @@ describe("PreferencesUsername", () => {
         .mockImplementationOnce(() => testReply);
 
       var component = render(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("test");
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("test");
     });
   });
 });
