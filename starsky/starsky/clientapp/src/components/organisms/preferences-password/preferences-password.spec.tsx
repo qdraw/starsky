@@ -1,4 +1,4 @@
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -27,33 +27,32 @@ describe("PreferencesPassword", () => {
       component.unmount();
     });
 
-    function submitEmailPassword(
+    function submitPassword(
       container: RenderResult,
-      email: string,
-      password: string,
+      passwordInput: string,
+      changedPassword: string,
       confirmPassword: string,
       submit: boolean = true
     ) {
-      // email
-      act(() => {
-        const emailElement = container.queryByTestId(
-          "email"
-        ) as HTMLInputElement;
-        fireEvent.change(emailElement, { target: { value: email } });
-      });
-
-      // password
       act(() => {
         const passwordElement = container.queryByTestId(
-          "password"
+          "preferences-password-input"
         ) as HTMLInputElement;
-        fireEvent.change(passwordElement, { target: { value: password } });
+        fireEvent.change(passwordElement, { target: { value: passwordInput } });
       });
 
-      // confirm-password
+      act(() => {
+        const passwordChangedElement = container.queryByTestId(
+          "preferences-password-changed-input"
+        ) as HTMLInputElement;
+        fireEvent.change(passwordChangedElement, {
+          target: { value: changedPassword }
+        });
+      });
+
       act(() => {
         const confirmPasswordElement = container.queryByTestId(
-          "confirm-password"
+          "preferences-password-changed-confirm-input"
         ) as HTMLInputElement;
         fireEvent.change(confirmPasswordElement, {
           target: { value: confirmPassword }
@@ -66,51 +65,24 @@ describe("PreferencesPassword", () => {
 
       // submit
       const loginContent = container.queryByTestId(
-        "account-register-form"
-      ) as HTMLFormElement;
+        "preferences-password-submit"
+      ) as HTMLButtonElement;
       act(() => {
-        loginContent.submit();
+        loginContent.click();
       });
     }
 
     it("The passwords do not match", () => {
       var component = render(<PreferencesPassword />);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="password"]')
-          .getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate("change");
-      });
+      submitPassword(component, "12345", "password1", "something-else");
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-password"]')
-          .first()
-          .simulate("change");
-      });
+      const warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).not.toBeNull();
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-confirm-password"]')
-          .getDOMNode() as HTMLInputElement).value = "something-else";
-        component
-          .find('input[name="changed-confirm-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      component.find('form [type="submit"]').first().simulate("submit");
-
-      expect(component.find(".warning-box").text()).toBe(
-        "The passwords do not match"
-      );
+      expect(warning.textContent).toBe("The passwords do not match");
 
       component.unmount();
     });
@@ -126,43 +98,17 @@ describe("PreferencesPassword", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="password"]')
-          .getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate("change");
-      });
+      submitPassword(component, "12345", "password1", "password1", false);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-password"]')
-          .first()
-          .simulate("change");
-      });
+      let warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).toBeNull();
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-confirm-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-confirm-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate("submit");
-      });
-
-      // force update to get the right text
-      component.update();
+      const loginContent = component.queryByTestId(
+        "preferences-password-submit"
+      ) as HTMLButtonElement;
+      await loginContent.click();
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -170,7 +116,12 @@ describe("PreferencesPassword", () => {
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      expect(component.find(".warning-box").text()).toBe(
+      warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).not.toBeNull();
+
+      expect(warning.textContent).toBe(
         "Your password has been successfully changed"
       );
 
@@ -188,43 +139,12 @@ describe("PreferencesPassword", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="password"]')
-          .getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate("change");
-      });
+      submitPassword(component, "12345", "password1", "password1", false);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-confirm-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-confirm-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate("submit");
-      });
-
-      // force update to get the right text
-      component.update();
+      const loginContent = component.queryByTestId(
+        "preferences-password-submit"
+      ) as HTMLButtonElement;
+      await loginContent.click();
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -232,9 +152,12 @@ describe("PreferencesPassword", () => {
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      expect(component.find(".warning-box").text()).toBe(
-        "Enter your current password"
-      );
+      const warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).not.toBeNull();
+
+      expect(warning.textContent).toBe("Enter your current password");
 
       component.unmount();
     });
@@ -250,43 +173,12 @@ describe("PreferencesPassword", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="password"]')
-          .getDOMNode() as HTMLInputElement).value = "12345";
-        component.find('input[name="password"]').first().simulate("change");
-      });
+      submitPassword(component, "12345", "password1", "password1", false);
 
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      act(() => {
-        // to use with: => import { act } from 'react-dom/test-utils';
-        (component
-          .find('input[name="changed-confirm-password"]')
-          .getDOMNode() as HTMLInputElement).value = "password1";
-        component
-          .find('input[name="changed-confirm-password"]')
-          .first()
-          .simulate("change");
-      });
-
-      // need to await
-      await act(async () => {
-        await component.find('form [type="submit"]').first().simulate("submit");
-      });
-
-      // force update to get the right text
-      component.update();
+      const loginContent = component.queryByTestId(
+        "preferences-password-submit"
+      ) as HTMLButtonElement;
+      await loginContent.click();
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -294,7 +186,12 @@ describe("PreferencesPassword", () => {
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      expect(component.find(".warning-box").text()).toBe(
+      const warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).not.toBeNull();
+
+      expect(warning.textContent).toBe(
         "The new password does not meet the criteria"
       );
 
