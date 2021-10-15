@@ -174,9 +174,9 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { ...newIConnectionDefault(), statusCode: 404 }
-      );
+      // const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      //   { ...newIConnectionDefault(), statusCode: 404 }
+      // );
       var fetchPostSpy = jest
         .spyOn(LimitLength.LimitLength.prototype, "LimitLengthBlur")
         .mockImplementationOnce(() => () => {});
