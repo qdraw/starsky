@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -15,14 +15,63 @@ describe("PreferencesPassword", () => {
     it("default nothing entered", () => {
       var component = render(<PreferencesPassword />);
 
-      component.find('form [type="submit"]').first().simulate("submit");
+      component.queryByTestId("preferences-password-submit")?.click();
 
-      expect(component.find(".warning-box").text()).toBe(
-        "Enter the current and new password"
-      );
+      const warning = component.queryByTestId(
+        "preferences-password-warning"
+      ) as HTMLDivElement;
+      expect(warning).not.toBeNull();
+
+      expect(warning.textContent).toBe("Enter the current and new password");
 
       component.unmount();
     });
+
+    function submitEmailPassword(
+      container: RenderResult,
+      email: string,
+      password: string,
+      confirmPassword: string,
+      submit: boolean = true
+    ) {
+      // email
+      act(() => {
+        const emailElement = container.queryByTestId(
+          "email"
+        ) as HTMLInputElement;
+        fireEvent.change(emailElement, { target: { value: email } });
+      });
+
+      // password
+      act(() => {
+        const passwordElement = container.queryByTestId(
+          "password"
+        ) as HTMLInputElement;
+        fireEvent.change(passwordElement, { target: { value: password } });
+      });
+
+      // confirm-password
+      act(() => {
+        const confirmPasswordElement = container.queryByTestId(
+          "confirm-password"
+        ) as HTMLInputElement;
+        fireEvent.change(confirmPasswordElement, {
+          target: { value: confirmPassword }
+        });
+      });
+
+      if (!submit) {
+        return;
+      }
+
+      // submit
+      const loginContent = container.queryByTestId(
+        "account-register-form"
+      ) as HTMLFormElement;
+      act(() => {
+        loginContent.submit();
+      });
+    }
 
     it("The passwords do not match", () => {
       var component = render(<PreferencesPassword />);

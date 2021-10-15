@@ -143,7 +143,14 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
             value={userChangedConfirmPassword}
             onChange={(e) => setUserChangedConfirmPassword(e.target.value)}
           />
-          {error && <div className="warning-box">{error}</div>}
+          {error && (
+            <div
+              data-test="preferences-password-warning"
+              className="warning-box"
+            >
+              {error}
+            </div>
+          )}
 
           <ButtonStyled
             className="btn btn--default"
