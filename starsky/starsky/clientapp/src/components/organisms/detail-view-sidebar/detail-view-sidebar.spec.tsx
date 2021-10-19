@@ -1,4 +1,10 @@
-import { act, render, RenderResult, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
@@ -33,7 +39,7 @@ describe("DetailViewSidebar", () => {
   });
 
   beforeEach(() => {
-    // jest.spyOn(console, "error").mockImplementationOnce(() => {});
+    jest.spyOn(console, "error").mockImplementationOnce(() => {});
   });
 
   it("test warning (without state component)", () => {
@@ -245,7 +251,7 @@ describe("DetailViewSidebar", () => {
       expect(locationDiv).not.toBeNull();
     });
 
-    xit("On change a tag there is an API called", async () => {
+    it("On change a tag there is an API called", async () => {
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -259,9 +265,10 @@ describe("DetailViewSidebar", () => {
       expect(tagsField).not.toBeNull();
 
       act(() => {
-        tagsField.textContent = "a";
-        tagsField.blur();
+        tagsField.innerHTML = "a";
       });
+
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
 
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
@@ -289,12 +296,13 @@ describe("DetailViewSidebar", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var tagsField = Component.find('[data-name="tags"]');
+      const tagsField = findDataName("tags") as HTMLInputElement;
 
       act(() => {
-        tagsField.getDOMNode().textContent = "";
-        tagsField.simulate("blur");
+        tagsField.innerHTML = "";
       });
+
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
 
       expect(fetchPostSpy).toBeCalled();
 
@@ -396,12 +404,6 @@ describe("DetailViewSidebar", () => {
         "ClearSearchCache"
       );
 
-      const limitLengthBlurSpy = jest
-        .spyOn(LimitLength.prototype, "LimitLengthBlur")
-        .mockImplementation((x) => {
-          console.log(x);
-        });
-
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault)
@@ -413,10 +415,11 @@ describe("DetailViewSidebar", () => {
       // need to await here
       act(() => {
         tagsField.innerHTML = "a";
-        tagsField.blur();
       });
 
-      await waitFor(() => expect(limitLengthBlurSpy).toBeCalled());
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
+
+      await waitFor(() => expect(clearSearchCacheSpy).toBeCalled());
 
       expect(fetchPostSpy).toBeCalledTimes(1);
 
@@ -536,7 +539,7 @@ describe("DetailViewSidebar", () => {
   });
 
   describe("own context", () => {
-    it("keydown t/i should be fired", () => {
+    it("keydown t/i should be fired", async () => {
       var contextProvider = {
         dispatch: () => jest.fn(),
         state: {
@@ -551,30 +554,27 @@ describe("DetailViewSidebar", () => {
         } as any
       };
 
-      var keyboardSpy = jest
+      const isInFormSpy = jest
+        .spyOn(Keyboard.prototype, "isInForm")
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false);
+
+      const setFocusOnEndFieldSpy = jest
         .spyOn(Keyboard.prototype, "SetFocusOnEndField")
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {});
 
-      var DeletedTestComponent = () => (
+      const useKeyboardEventSpy = jest
+        .spyOn(useKeyboardEvent, "default")
+        .mockImplementationOnce(() => {})
+        .mockImplementationOnce(() => {})
+        .mockImplementationOnce((key, callback) => {
+          callback({ preventDefault: () => {} });
+        })
+        .mockImplementationOnce(() => {});
+
+      var TestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
             status={IExifStatus.Ok}
@@ -584,20 +584,25 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = render(<DeletedTestComponent />);
 
-      var event = new KeyboardEvent("keydown", {
-        bubbles: true,
-        cancelable: true,
-        key: "t",
-        shiftKey: true
-      });
+      var component = render(<TestComponent />, { baseElement: document.body });
 
-      act(() => {
-        window.dispatchEvent(event);
-      });
+      expect(useKeyboardEventSpy).toBeCalled();
+      expect(isInFormSpy).toBeCalled();
+      expect(isInFormSpy).toBeCalledTimes(1);
 
-      expect(keyboardSpy).toBeCalled();
+      // var event = new KeyboardEvent("keydown", {
+      //   bubbles: true,
+      //   cancelable: true,
+      //   key: "t",
+      //   shiftKey: true
+      // });
+
+      // await act(async () => {
+      //   await window.dispatchEvent(event);
+      // });
+
+      // await waitFor(() => expect(keyboardSpy).toBeCalled());
 
       component.unmount();
     });
