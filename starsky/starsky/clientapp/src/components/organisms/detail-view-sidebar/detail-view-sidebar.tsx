@@ -408,7 +408,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
                 fileIndexItem.longitude
               }
             >
-              <div className="icon icon--location" />
+              <div
+                className="icon icon--location"
+                data-test="detailview-location-div"
+              />
               {fileIndexItem.locationCity && fileIndexItem.locationCountry ? (
                 <>
                   <b>{fileIndexItem.locationCity}</b>

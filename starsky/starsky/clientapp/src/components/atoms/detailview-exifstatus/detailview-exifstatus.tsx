@@ -81,7 +81,12 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ServerError ? (
           <>
-            <div className="warning-box">{MessageServerError}</div>{" "}
+            <div
+              data-test="detailview-exifstatus-status-server-error"
+              className="warning-box"
+            >
+              {MessageServerError}
+            </div>{" "}
           </>
         ) : null}
       </>

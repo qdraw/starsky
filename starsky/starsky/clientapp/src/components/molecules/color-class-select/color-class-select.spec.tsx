@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import {
@@ -9,6 +9,7 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
+import * as Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "./color-class-select";
 import * as ColorClassUpdateSingle from "./color-class-update-single";
 
@@ -179,6 +180,10 @@ describe("ColorClassSelect", () => {
       />
     );
 
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockImplementationOnce(() => <></>);
+
     const colorClass = wrapper.queryByTestId(
       "color-class-select-2"
     ) as HTMLAnchorElement;
@@ -186,17 +191,8 @@ describe("ColorClassSelect", () => {
 
     await colorClass.click();
 
-    const notification = wrapper.queryByTestId(
-      "notification-content"
-    ) as HTMLElement;
-
-    console.log(wrapper.container.innerHTML);
-    console.log(document.body.innerHTML);
-
     expect(fetchPostSpy).toBeCalled();
-
-    // should contain notification
-    throw Error(notification);
+    expect(notificationSpy).toBeCalled();
   });
 
   it("when error is it should able to close the warning box", async () => {
@@ -217,6 +213,10 @@ describe("ColorClassSelect", () => {
       />
     );
 
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockImplementationOnce(() => <></>);
+
     // need to await this click
     let colorClass = component.queryByTestId(
       "color-class-select-2"
@@ -225,15 +225,11 @@ describe("ColorClassSelect", () => {
 
     await colorClass.click();
 
-    expect(colorClassUpdateSingleSpy).toBeCalled();
+    await waitFor(() => expect(colorClassUpdateSingleSpy).toBeCalled());
 
     console.log(component.container.innerHTML);
 
-    expect(component.exists(".notification")).toBeTruthy();
-
-    component.find(".icon--close").simulate("click");
-
-    expect(component.exists(".notification")).toBeFalsy();
+    expect(notificationSpy).toBeCalled();
 
     await component.unmount();
   });

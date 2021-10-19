@@ -1,4 +1,4 @@
-import { act, render, RenderResult } from "@testing-library/react";
+import { act, render, RenderResult, waitFor } from "@testing-library/react";
 import React from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
@@ -40,9 +40,12 @@ describe("DetailViewSidebar", () => {
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
-    expect(
-      wrapper.find(".detailview-sidebar").find(".warning-box")
-    ).toHaveLength(1);
+    console.log(wrapper.container.innerHTML);
+
+    const serverError = wrapper.queryByTestId(
+      "detailview-exifstatus-status-server-error"
+    );
+    expect(serverError).not.toBeNull();
   });
 
   describe("useContext-test", () => {
@@ -120,15 +123,9 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if colorclass from the context is displayed", () => {
-      expect(Component.exists(".colorclass--3.active")).toBeTruthy();
-      // the rest is false
-      expect(Component.exists(".colorclass--1.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--2.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--4.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--5.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--6.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--7.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--8.active")).toBeFalsy();
+      const colorClassSelect = Component.queryByTestId("color-class-select");
+
+      expect(colorClassSelect?.dataset.colorclass).toBe("3");
     });
 
     it("test if dateTime from the context is displayed", () => {
@@ -188,14 +185,18 @@ describe("DetailViewSidebar", () => {
     });
 
     it("click on ColorClassSelect and return value", () => {
-      var colorClassSelectItem = Component.find(".colorclass--5");
+      const colorClassSelectItem = Component.queryByTestId(
+        "color-class-select-5"
+      ) as HTMLElement;
 
       act(() => {
-        colorClassSelectItem.simulate("click");
+        colorClassSelectItem.click();
       });
 
-      var lastEdited = Component.find('[data-test="lastEdited"]');
-      expect(lastEdited.text()).toBe("less than one minuteago edited");
+      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+
+      expect(lastEdited).not.toBeNull();
+      expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if lastEdited from the context is displayed", () => {
@@ -234,7 +235,11 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if lat/long icon from the context is displayed", () => {
-      expect(Component.exists(".icon--location")).toBeTruthy();
+      const locationDiv = Component.queryByTestId(
+        "detailview-location-div"
+      ) as HTMLElement;
+
+      expect(locationDiv).not.toBeNull();
     });
 
     it("On change a tag there is an API called", () => {
@@ -305,7 +310,7 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
-    it("Deleted status (from FileIndexItem)", () => {
+    it("Deleted status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
       var DeletedTestComponent = () => (
@@ -320,25 +325,24 @@ describe("DetailViewSidebar", () => {
       );
       var component = render(<DeletedTestComponent />);
 
-      console.log(component.container.innerHTML);
-
-      expect(component.exists(".warning-box")).toBeTruthy();
+      const statusDeleted = component.queryByTestId(
+        "detailview-exifstatus-status-deleted"
+      );
+      expect(statusDeleted).not.toBeNull();
 
       // Tags and other input fields are disabled
-      expect(
-        component.find('[data-name="tags"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="description"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="title"]').hasClass("disabled")
-      ).toBeTruthy();
+      const tags = findDataName("tags") as HTMLInputElement;
+      const description = findDataName("description");
+      const title = findDataName("title");
+
+      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      expect(description?.classList).toContain("disabled");
+      expect(title?.classList).toContain("disabled");
 
       component.unmount();
     });
 
-    it("ReadOnly status (from FileIndexItem)", () => {
+    it("ReadOnly status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;
 
       var DeletedTestComponent = () => (
@@ -353,18 +357,20 @@ describe("DetailViewSidebar", () => {
       );
       var component = render(<DeletedTestComponent />);
 
-      expect(component.exists(".warning-box")).toBeTruthy();
+      const statusReadOnly = component.queryByTestId(
+        "detailview-exifstatus-status-read-only"
+      );
+      expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
-      expect(
-        component.find('[data-name="tags"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="description"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="title"]').hasClass("disabled")
-      ).toBeTruthy();
+      const tags = findDataName("tags") as HTMLInputElement;
+      const description = findDataName("description");
+      const title = findDataName("title");
+
+      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      expect(description?.classList).toContain("disabled");
+      expect(title?.classList).toContain("disabled");
+
       component.unmount();
     });
 
