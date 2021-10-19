@@ -208,7 +208,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           history,
           state
         );
-        console.log(updateChange);
 
         const paste = new ClipboardHelper().Paste(updateChange.Update);
 
