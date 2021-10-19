@@ -561,9 +561,9 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => false)
         .mockImplementationOnce(() => false);
 
-      const setFocusOnEndFieldSpy = jest
-        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
-        .mockImplementationOnce(() => {});
+      // const setFocusOnEndFieldSpy = jest
+      //   .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+      //   .mockImplementationOnce(() => {});
 
       const useKeyboardEventSpy = jest
         .spyOn(useKeyboardEvent, "default")
