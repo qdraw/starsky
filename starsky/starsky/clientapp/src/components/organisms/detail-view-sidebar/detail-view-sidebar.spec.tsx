@@ -320,6 +320,8 @@ describe("DetailViewSidebar", () => {
       );
       var component = render(<DeletedTestComponent />);
 
+      console.log(component.container.innerHTML);
+
       expect(component.exists(".warning-box")).toBeTruthy();
 
       // Tags and other input fields are disabled

@@ -37,7 +37,12 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.Deleted ? (
           <>
-            <div className="warning-box">{MessageDeleted}</div>
+            <div
+              data-test="detailview-exifstatus-status-deleted"
+              className="warning-box"
+            >
+              {MessageDeleted}
+            </div>
             {MessageDeletedRestoreInstruction}
           </>
         ) : null}
@@ -47,7 +52,12 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.NotFoundSourceMissing ? (
           <>
-            <div className="warning-box">{MessageNotFoundSourceMissing}</div>{" "}
+            <div
+              data-test="detailview-exifstatus-status-source-missing"
+              className="warning-box"
+            >
+              {MessageNotFoundSourceMissing}
+            </div>{" "}
           </>
         ) : null}
       </>
@@ -56,7 +66,12 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
       <>
         {status === IExifStatus.ReadOnly ? (
           <>
-            <div className="warning-box">{MessageReadOnlyFile}</div>{" "}
+            <div
+              data-test="detailview-exifstatus-status-read-only"
+              className="warning-box"
+            >
+              {MessageReadOnlyFile}
+            </div>{" "}
           </>
         ) : null}
       </>
