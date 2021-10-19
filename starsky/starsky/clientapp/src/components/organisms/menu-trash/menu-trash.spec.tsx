@@ -58,23 +58,22 @@ describe("MenuTrash", () => {
         });
     });
 
-    it("open hamburger menu", () => {
+    it("open hamburger menu (MenuTrash)", () => {
       var component = render(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
-      var hamburger = component.find(".hamburger");
 
-      expect(component.exists(".form-nav")).toBeTruthy();
-      expect(component.exists(".hamburger.open")).toBeFalsy();
-      expect(component.exists(".nav.open")).toBeFalsy();
+      let hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      let hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger");
 
       act(() => {
-        hamburger.simulate("click");
+        hamburger.click();
       });
 
-      expect(component.html()).toContain("hamburger open");
-      expect(component.html()).toContain("nav open");
-      expect(component.exists(".form-nav")).toBeTruthy();
+      hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger open");
 
       component.unmount();
     });
