@@ -83,8 +83,10 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      expect(component.exists(".item--select")).toBeTruthy();
-      expect(component.exists(".item--more")).toBeTruthy();
+      const menuTrashItemSelect = component.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
 
       component.unmount();
     });
@@ -107,11 +109,12 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var select = component.find(".item--select");
+      const menuTrashItemSelect = component.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
 
-      act(() => {
-        select.simulate("click");
-      });
+      menuTrashItemSelect.click();
 
       expect(globalHistory.location.search).toBe("?select=");
       component.unmount();

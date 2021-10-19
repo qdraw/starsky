@@ -152,6 +152,7 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
           {!select && state.fileIndexItems.length >= 1 ? (
             <div
+              data-test="menu-trash-item-select"
               className="item item--select"
               onClick={() => {
                 removeSidebarSelection();
