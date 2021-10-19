@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, RenderResult } from "@testing-library/react";
 import React from "react";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
@@ -48,7 +48,7 @@ describe("DetailViewSidebar", () => {
   describe("useContext-test", () => {
     let contextProvider: any;
     let TestComponent: () => JSX.Element;
-    let Component: ReactWrapper<any, Readonly<{}>>;
+    let Component: RenderResult;
 
     // Setup mock
     beforeEach(() => {
@@ -98,19 +98,25 @@ describe("DetailViewSidebar", () => {
       TestComponent = () => <></>;
     });
 
+    function findDataName(name: string) {
+      return Component.queryAllByTestId("form-control").find(
+        (p) => p.getAttribute("data-name") === name
+      );
+    }
+
     it("test if tags from the context is displayed", () => {
-      var tags = Component.find('[data-name="tags"]');
-      expect(tags.text()).toBe("tags!");
+      var tags = findDataName("tags");
+      expect(tags?.textContent).toBe("tags!");
     });
 
     it("test if title from the context is displayed", () => {
-      var title = Component.find('[data-name="title"]');
-      expect(title.text()).toBe("title!");
+      var tags = findDataName("title");
+      expect(tags?.textContent).toBe("title!");
     });
 
     it("test if description from the context is displayed", () => {
-      var description = Component.find('[data-name="description"]');
-      expect(description.text()).toBe("description!");
+      var description = findDataName("description");
+      expect(description?.textContent).toBe("description!");
     });
 
     it("test if colorclass from the context is displayed", () => {
@@ -126,16 +132,17 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if dateTime from the context is displayed", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime");
 
-      expect(dateTime.text()).toBe(
+      expect(dateTime?.textContent).toBe(
         parseDate("2019-09-15T17:29:59", SupportedLanguages.en) +
           parseTime("2019-09-15T17:29:59")
       );
     });
 
     it("click on datetime modal", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
       var modalDatetimeSpy = jest
@@ -145,14 +152,15 @@ describe("DetailViewSidebar", () => {
         });
 
       act(() => {
-        dateTime.simulate("click");
+        dateTime.click();
       });
 
       expect(modalDatetimeSpy).toBeCalled();
     });
 
     it("click on datetime modal and return value", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
       var modalDatetimeSpy = jest
@@ -165,14 +173,15 @@ describe("DetailViewSidebar", () => {
         });
 
       act(() => {
-        dateTime.simulate("click");
+        dateTime.click();
       });
 
       expect(modalDatetimeSpy).toBeCalled();
 
-      var updatedDatetime = Component.find('[data-test="dateTime"]');
+      var updatedDatetime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(updatedDatetime).not.toBeNull();
 
-      expect(updatedDatetime.text()).toBe(
+      expect(updatedDatetime.textContent).toBe(
         parseDate("2020-02-01T13:15:20", SupportedLanguages.en) +
           parseTime("2020-02-01T13:15:20")
       );
@@ -190,28 +199,38 @@ describe("DetailViewSidebar", () => {
     });
 
     it("test if lastEdited from the context is displayed", () => {
-      var lastEdited = Component.find('[data-test="lastEdited"]');
-      expect(lastEdited.text()).toBe("less than one minuteago edited");
+      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+
+      expect(lastEdited).not.toBeNull();
+      expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if make from the context is displayed", () => {
-      var description = Component.find('[data-test="make"]');
-      expect(description.text()).toContain("apple"); // <= with space on end
+      var make = Component.queryByTestId("make") as HTMLElement;
+
+      expect(make).not.toBeNull();
+      expect(make.textContent).toContain("apple"); // <= with space on end, so contain
     });
 
     it("test if model from the context is displayed", () => {
-      var description = Component.find('[data-test="model"]');
-      expect(description.text()).toBe("iPhone");
+      const model = Component.queryByTestId("model") as HTMLElement;
+
+      expect(model).not.toBeNull();
+      expect(model.textContent).toBe("iPhone");
     });
 
     it("test if aperture from the context is displayed", () => {
-      var description = Component.find('[data-test="aperture"]');
-      expect(description.text()).toBe("2");
+      const aperture = Component.queryByTestId("aperture") as HTMLElement;
+
+      expect(aperture).not.toBeNull();
+      expect(aperture.textContent).toBe("2");
     });
 
     it("test if focalLength from the context is displayed", () => {
-      var description = Component.find('[data-test="focalLength"]');
-      expect(description.text()).toBe("10.0");
+      const focalLength = Component.queryByTestId("focalLength") as HTMLElement;
+
+      expect(focalLength).not.toBeNull();
+      expect(focalLength.textContent).toBe("10.0");
     });
 
     it("test if lat/long icon from the context is displayed", () => {
