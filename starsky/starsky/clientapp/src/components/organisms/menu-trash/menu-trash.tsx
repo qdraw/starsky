@@ -189,7 +189,11 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
           {select && select.length >= 1 ? (
             <MoreMenu>
               {select.length === state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => undoSelection()}>
+                <li
+                  data-test="undo-selection"
+                  className="menu-option"
+                  onClick={() => undoSelection()}
+                >
                   {MessageUndoSelection}
                 </li>
               ) : null}
