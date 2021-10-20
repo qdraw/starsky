@@ -188,14 +188,7 @@ describe("MenuTrash", () => {
       const menuContextParent = menuContext.parentElement as HTMLInputElement;
       expect(menuContextParent.classList).not.toContain("disabled");
 
-      console.log(component.container.innerHTML);
-
       component.queryByTestId("undo-selection")?.click();
-
-      // var more = component.find(".item--more");
-      // act(() => {
-      //   more.find(".menu-option").first().simulate("click");
-      // });
 
       expect(globalHistory.location.search).toBe("?select=");
 
@@ -207,7 +200,7 @@ describe("MenuTrash", () => {
       });
     });
 
-    xit("more force delete, expect modal", () => {
+    it("more force delete, expect modal", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
@@ -230,10 +223,10 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="delete"]');
+      var item = component.queryByTestId("delete");
 
       act(() => {
-        item.simulate("click");
+        item?.click();
       });
 
       expect(modalSpy).toBeCalled();
@@ -248,7 +241,7 @@ describe("MenuTrash", () => {
       });
     });
 
-    xit("more force delete, expect modal 2", () => {
+    it("more force delete, expect modal 2", () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
@@ -271,17 +264,15 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="delete"]');
+      var item = component.queryByTestId("delete");
 
       act(() => {
-        item.simulate("click");
+        item?.click();
       });
 
       expect(modalSpy).toBeCalled();
 
       expect(globalHistory.location.search).toBe("?select=test1.jpg");
-
-      console.log(component.html());
 
       // cleanup
       act(() => {
@@ -291,7 +282,7 @@ describe("MenuTrash", () => {
       });
     });
 
-    xit("more restore-from-trash", async () => {
+    it("more restore-from-trash", async () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
@@ -326,11 +317,11 @@ describe("MenuTrash", () => {
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="restore-from-trash"]');
+      var item = component.queryByTestId("restore-from-trash");
 
-      // need to await here
+      // // need to await here
       await act(async () => {
-        await item.simulate("click");
+        await item?.click();
       });
 
       expect(globalHistory.location.search).toBe("?select=");
