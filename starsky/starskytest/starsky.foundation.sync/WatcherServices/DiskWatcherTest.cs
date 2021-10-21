@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
@@ -45,7 +46,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
+			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory){EndOrError = true}.Watcher("/test");
 			var autoResetEvent = new AutoResetEvent(false);
 
 			using var scope = _scopeFactory.CreateScope();
@@ -128,6 +129,19 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			Assert.AreEqual("/test", receivedValue);
 			Assert.AreEqual(new Tuple<string,bool>("/test", true), synchronize.Inputs.FirstOrDefault());
+		}
+
+		[TestMethod]
+		[Timeout(200)]
+		public void Watcher_Retry_should_hit_timeout()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+
+			var task = Task.Run(() => new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry());
+			var completedInTime = task.Wait(30); // Also an overload available for TimeSpan
+			
+			Assert.AreEqual(false, completedInTime);
+			Assert.AreEqual(null, fakeIFileSystemWatcher.Path);
 		}
 	}
 }

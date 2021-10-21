@@ -30,6 +30,11 @@ namespace starsky.foundation.sync.WatcherServices
 		}
 
 		/// <summary>
+		/// For testing
+		/// </summary>
+		internal bool EndOrError { get; set; }
+
+		/// <summary>
 		/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netcore-3.1
 		/// </summary>
 		public void Watcher(string fullFilePath)
@@ -86,8 +91,9 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <summary>
 		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
 		/// </summary>
-		private void Retry()
+		internal void Retry()
 		{
+			if ( EndOrError ) return;
 			_webLogger.LogInformation("[DiskWatcher] next retry");
 			var path = _fileSystemWatcherWrapper.Path;
 			_fileSystemWatcherWrapper = new FileSystemWatcherWrapper();
