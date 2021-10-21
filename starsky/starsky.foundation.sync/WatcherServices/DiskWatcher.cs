@@ -21,7 +21,6 @@ namespace starsky.foundation.sync.WatcherServices
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
 		{
-
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
