@@ -17,6 +17,7 @@ namespace starsky.foundation.sync.WatcherServices
 		private readonly FileProcessor _fileProcessor;
 		private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 		private readonly IWebLogger _webLogger;
+		private readonly IServiceScopeFactory _scopeFactory;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
@@ -24,6 +25,7 @@ namespace starsky.foundation.sync.WatcherServices
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
+			_scopeFactory = scopeFactory;
 
 			_webLogger = scopeFactory.CreateScope().ServiceProvider.GetService<IWebLogger>();
 		}
@@ -90,12 +92,14 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <summary>
 		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
 		/// </summary>
-		internal void Retry()
+		internal bool Retry()
 		{
-			if ( EndOrError ) return;
 			_webLogger.LogInformation("[DiskWatcher] next retry");
 			var path = _fileSystemWatcherWrapper.Path;
-			_fileSystemWatcherWrapper = new FileSystemWatcherWrapper();
+			
+			_fileSystemWatcherWrapper = _scopeFactory.CreateScope()
+				.ServiceProvider.GetService<IFileSystemWatcherWrapper>();
+			
 			while (!_fileSystemWatcherWrapper.EnableRaisingEvents)
 			{
 				try
@@ -104,6 +108,7 @@ namespace starsky.foundation.sync.WatcherServices
 					// watcher.NotifyFilter line if it can't get the path.
 					Watcher(path);
 					_webLogger.LogError("[DiskWatcher] I'm Back!");
+					return true;
 				}
 				catch
 				{
@@ -113,6 +118,7 @@ namespace starsky.foundation.sync.WatcherServices
 					System.Threading.Thread.Sleep(5000);
 				}
 			}
+			return false;
 		}
 		
 		// Define the event handlers.
