@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView } from "../../../interfaces/IDetailView";
@@ -62,31 +62,41 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = modal.queryByTestId(
+        "modal-detailview-rename-file-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="filename"]').getDOMNode().textContent =
-          "file-with-different-extension.tiff";
-        modal.find('[data-name="filename"]').simulate("input");
+        directoryName.textContent = "file-with-different-extension.tiff";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
+
+      expect(
+        modal.queryByTestId("modal-detailview-rename-file-warning-box")
+      ).toBeTruthy();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeTruthy();
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlSyncRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
       );
-
-      // find does not work in this case
-      expect(modal.html()).toContain("warning-box");
-      expect(modal.html()).toContain("disabled");
 
       // cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -123,27 +133,34 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = modal.queryByTestId(
+        "modal-detailview-rename-file-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="filename"]').getDOMNode().textContent =
-          "file-without-extension";
-        modal.find('[data-name="filename"]').simulate("input");
+        directoryName.textContent = "file-without-extension";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(
+        modal.queryByTestId("modal-detailview-rename-file-warning-box")
+      ).toBeTruthy();
 
-      var submitButtonAfter = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      var submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
@@ -187,15 +204,24 @@ describe("ModalDetailviewRenameFile", () => {
         ></ModalDetailviewRenameFile>
       );
 
+      const button = modal.queryByTestId(
+        "modal-detailview-rename-file-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="filename"]').getDOMNode().textContent =
-          "name.jpg";
-        modal.find('[data-name="filename"]').simulate("input");
+        directoryName.textContent = "name.jpg";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       expect(fetchPostSpy).toBeCalled();
