@@ -496,7 +496,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           >
             {MessageCloseDetailScreenDialog}
             {isRecentEdited ? (
-              <div className="autosave">{MessageSaved}</div>
+              <div data-test="menu-detail-view-autosave" className="autosave">
+                {MessageSaved}
+              </div>
             ) : null}
           </div>
         </div>
