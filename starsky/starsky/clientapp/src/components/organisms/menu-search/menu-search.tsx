@@ -187,7 +187,11 @@ export const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({
           {select && select.length >= 1 ? (
             <MoreMenu>
               {select.length === state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => undoSelection()}>
+                <li
+                  data-test="undo-selection"
+                  className="menu-option"
+                  onClick={() => undoSelection()}
+                >
                   {MessageUndoSelection}
                 </li>
               ) : null}
