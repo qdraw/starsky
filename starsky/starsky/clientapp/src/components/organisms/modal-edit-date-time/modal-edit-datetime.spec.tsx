@@ -7,6 +7,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDatetime from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>

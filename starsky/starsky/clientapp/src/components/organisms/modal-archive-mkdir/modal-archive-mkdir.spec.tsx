@@ -11,6 +11,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalArchiveMkdir
@@ -60,12 +64,6 @@ describe("ModalArchiveMkdir", () => {
       const directoryName = modal.queryByTestId(
         "form-control"
       ) as HTMLInputElement;
-
-      // act(() => {
-      //   modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-      //     "f";
-      //   modal.find('[data-name="directoryname"]').simulate("input");
-      // });
 
       // update component + now press a key
       act(() => {
@@ -132,15 +130,23 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-mkdir-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
       act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "new folder";
-        modal.find('[data-name="directoryname"]').simulate("input");
+        directoryName.textContent = "new folder";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       // to create new directory

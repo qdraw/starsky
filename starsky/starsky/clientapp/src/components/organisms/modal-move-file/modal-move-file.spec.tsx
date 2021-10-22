@@ -14,6 +14,10 @@ import * as ItemTextListView from "../../molecules/item-text-list-view/item-text
 import ModalMoveFile from "./modal-move-file";
 
 describe("ModalMoveFile", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalMoveFile

@@ -10,6 +10,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveRename from "./modal-archive-rename";
 
 describe("ModalArchiveRename", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalArchiveRename isOpen={true} subPath="/" handleExit={() => {}}>

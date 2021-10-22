@@ -9,6 +9,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalPublish from "./modal-publish";
 
 describe("ModalPublish", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalPublish

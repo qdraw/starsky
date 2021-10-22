@@ -7,6 +7,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDisplayOptions from "./modal-display-options";
 
 describe("ModalDisplayOptions", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalDisplayOptions isOpen={true} parentFolder="/" handleExit={() => {}}>

@@ -9,6 +9,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDetailviewRenameFile from "./modal-detailview-rename-file";
 
 describe("ModalDetailviewRenameFile", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalDetailviewRenameFile

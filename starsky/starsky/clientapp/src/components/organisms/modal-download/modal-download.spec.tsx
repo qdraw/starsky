@@ -8,6 +8,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDownload from "./modal-download";
 
 describe("ModalDownload", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     // interface IModalExportProps {
     //   isOpen: boolean;

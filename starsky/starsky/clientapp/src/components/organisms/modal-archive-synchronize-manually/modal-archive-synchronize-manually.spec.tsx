@@ -8,6 +8,10 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
 
 describe("ModalArchiveSynchronizeManually", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
     render(
       <ModalArchiveSynchronizeManually
