@@ -7,7 +7,7 @@ interface ISwitchButtonProps {
   isEnabled?: boolean;
   isOn?: boolean;
   name?: string;
-  "data-test";
+  "data-test"?: string;
 }
 
 function SwitchButton(props: ISwitchButtonProps) {
