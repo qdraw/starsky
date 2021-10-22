@@ -96,7 +96,9 @@ describe("ModalArchiveSynchronizeManually", () => {
         const forceSync = modal.queryByTestId("force-sync");
         expect(forceSync).toBeTruthy();
 
-        await forceSync?.click();
+        await act(async () => {
+          await forceSync?.click();
+        });
 
         await waitFor(() => expect(fetchPostSpy).toBeCalled());
         expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
@@ -114,8 +116,11 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchGet, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
+        const removeCache = modal.queryByTestId("remove-cache");
+        expect(removeCache).toBeTruthy();
+
         act(() => {
-          modal.find('[data-test="remove-cache"]').simulate("click");
+          removeCache?.click();
         });
 
         expect(fetchGetSpy).toBeCalled();
@@ -124,7 +129,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         fetchGetSpy.mockReset();
       });
 
-      it("geo-sync (only first post)", () => {
+      it("geo-sync (only first post)", async () => {
         const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
           {
             statusCode: 200,
@@ -140,9 +145,13 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(UrlQuery.prototype, "UrlGeoSync")
           .mockImplementationOnce(() => "");
 
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+        const geoSyncButton = modal.queryByTestId("geo-sync");
+        expect(geoSyncButton).toBeTruthy();
 
-        modal.find('[data-test="geo-sync"]').simulate("click");
+        await act(async () => {
+          await geoSyncButton?.click();
+        });
+
         expect(urlGeoSyncUrlQuerySpy).toBeCalled();
         expect(fetchPostSpy).toBeCalled();
       });
@@ -159,8 +168,11 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
+        const thumbnailGeneration = modal.queryByTestId("thumbnail-generation");
+        expect(thumbnailGeneration).toBeTruthy();
+
         act(() => {
-          modal.find('[data-test="thumbnail-generation"]').simulate("click");
+          thumbnailGeneration?.click();
         });
 
         expect(fetchGetSpy).toBeCalled();
