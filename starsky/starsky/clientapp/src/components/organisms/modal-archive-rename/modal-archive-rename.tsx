@@ -163,7 +163,12 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
           </FormControl>
 
           {error && (
-            <div className="warning-box--under-form warning-box">{error}</div>
+            <div
+              data-test="modal-archive-rename-warning-box"
+              className="warning-box--under-form warning-box"
+            >
+              {error}
+            </div>
           )}
 
           <button
@@ -172,6 +177,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
               !!error ||
               loading
             }
+            data-test="modal-archive-rename-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >

@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { render } from "@testing-library/react";
+import { createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
@@ -31,24 +31,54 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory.test";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "a";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      // See warning message
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(
+        modal.queryByTestId("modal-archive-rename-warning-box")
+      ).toBeTruthy();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeTruthy();
+
+      // var submitButtonBefore = (modal
+      //   .find(".btn--default")
+      //   .getDOMNode() as HTMLButtonElement).disabled;
+      // expect(submitButtonBefore).toBeTruthy();
+
+      // act(() => {
+      //   modal.find('[data-name="foldername"]').getDOMNode().textContent =
+      //     "directory.test";
+      //   modal.find('[data-name="foldername"]').simulate("input");
+      // });
+
+      // // await is needed => there is no button
+      // await act(async () => {
+      //   await modal.find(".btn--default").simulate("click");
+      // });
+
+      // // See warning message
+      // expect(modal.exists(".warning-box")).toBeTruthy();
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
