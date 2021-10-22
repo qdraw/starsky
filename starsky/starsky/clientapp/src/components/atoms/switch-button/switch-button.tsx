@@ -7,6 +7,7 @@ interface ISwitchButtonProps {
   isEnabled?: boolean;
   isOn?: boolean;
   name?: string;
+  "data-test";
 }
 
 function SwitchButton(props: ISwitchButtonProps) {
@@ -30,6 +31,7 @@ function SwitchButton(props: ISwitchButtonProps) {
 
   return (
     <form
+      data-test={props["data-test"]}
       className={
         props.isEnabled !== false ? "switch-field" : "switch-field disabled"
       }
