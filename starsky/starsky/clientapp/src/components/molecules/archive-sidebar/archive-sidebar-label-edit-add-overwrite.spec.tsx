@@ -120,7 +120,6 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
       // update component + now press a key
       act(() => {
-        //
         tags.textContent = "a";
         const inputEvent = createEvent.input(tags, { key: "a" });
         fireEvent(tags, inputEvent);

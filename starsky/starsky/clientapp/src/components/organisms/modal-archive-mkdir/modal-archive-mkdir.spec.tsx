@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -50,27 +50,40 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = modal.queryByTestId(
+        "modal-archive-mkdir-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // act(() => {
+      //   modal.find('[data-name="directoryname"]').getDOMNode().textContent =
+      //     "f";
+      //   modal.find('[data-name="directoryname"]').simulate("input");
+      // });
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "f";
-        modal.find('[data-name="directoryname"]').simulate("input");
+        directoryName.textContent = "a";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(
+        modal.queryByTestId("modal-archive-mkdir-warning-box")
+      ).toBeTruthy();
 
-      var submitButtonAfter = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      var submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
