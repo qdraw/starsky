@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
 import { render, RenderResult } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as Modal from "../../atoms/modal/modal";
@@ -21,7 +20,7 @@ describe("ModalDisplayOptions", () => {
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: RenderResult;
+      let modal: RenderResult;
       beforeEach(() => {
         modal = render(
           <ModalDisplayOptions
@@ -30,7 +29,6 @@ describe("ModalDisplayOptions", () => {
             handleExit={() => {}}
           />
         );
-        console.log(modal.container.innerHTML);
       });
 
       afterAll(() => {
@@ -44,17 +42,22 @@ describe("ModalDisplayOptions", () => {
       it("toggle-collections", () => {
         const toggleCollections = modal.queryByTestId("toggle-collections");
         //
-        console.log(modal.container.innerHTML);
+        const modalDisplayOptions = modal.queryByTestId(
+          "modal-display-options"
+        );
+        console.log(modalDisplayOptions?.innerHTML);
+
+        console.log(toggleCollections);
 
         expect(toggleCollections).toBeTruthy();
       });
       it("toggle-slow-files", () => {
-        expect(modal.exists('[data-test="toggle-slow-files"]')).toBeTruthy();
+        expect(modal.queryByTestId("toggle-slow-files")).toBeTruthy();
       });
     });
 
     describe("click button", () => {
-      var modal: ReactWrapper;
+      var modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
         modal = render(
