@@ -1,5 +1,10 @@
 import { globalHistory } from "@reach/router";
-import { createEvent, fireEvent, render } from "@testing-library/react";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useLocation from "../../../hooks/use-location";
@@ -61,25 +66,6 @@ describe("ModalArchiveRename", () => {
       var submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
-      // var submitButtonBefore = (modal
-      //   .find(".btn--default")
-      //   .getDOMNode() as HTMLButtonElement).disabled;
-      // expect(submitButtonBefore).toBeTruthy();
-
-      // act(() => {
-      //   modal.find('[data-name="foldername"]').getDOMNode().textContent =
-      //     "directory.test";
-      //   modal.find('[data-name="foldername"]').simulate("input");
-      // });
-
-      // // await is needed => there is no button
-      // await act(async () => {
-      //   await modal.find(".btn--default").simulate("click");
-      // });
-
-      // // See warning message
-      // expect(modal.exists(".warning-box")).toBeTruthy();
-
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
       modal.unmount();
@@ -104,18 +90,35 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
+      expect(submitButtonBefore).toBeTruthy();
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "directory";
+        const inputEvent = createEvent.input(directoryName, { key: "d" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(fetchPostSpy).toBeCalled();
+      await waitFor(() => expect(fetchPostSpy).toBeCalled());
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlSyncRename(),
         "f=%2Ftest&to=%2Fdirectory"
@@ -147,15 +150,29 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "directory";
+        const inputEvent = createEvent.input(directoryName, { key: "d" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       expect(dispatch).toBeCalled();
@@ -199,15 +216,29 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "directory";
+        const inputEvent = createEvent.input(directoryName, { key: "d" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       expect(handleExitSpy).toBeCalledWith("/directory");
@@ -235,15 +266,29 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "directory";
+        const inputEvent = createEvent.input(directoryName, { key: "d" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
+
+      var submitButtonAfter = button.disabled;
+      expect(submitButtonAfter).toBeFalsy();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       expect(fetchPostSpy).toBeCalled();
@@ -252,13 +297,10 @@ describe("ModalArchiveRename", () => {
         "f=%2Ftest&to=%2Fdirectory"
       );
 
-      // await is needed (button is disabled)
-      await act(async () => {
-        await modal.find(".btn--default").simulate("click");
-      });
-
       // Where should be a warning
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(
+        modal.queryByTestId("modal-archive-rename-warning-box")
+      ).toBeTruthy();
 
       // Cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
@@ -285,15 +327,26 @@ describe("ModalArchiveRename", () => {
         ></ModalArchiveRename>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-rename-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="foldername"]').getDOMNode().textContent =
-          "directory";
-        modal.find('[data-name="foldername"]').simulate("input");
+        directoryName.textContent = "directory";
+        const inputEvent = createEvent.input(directoryName, { key: "d" });
+        fireEvent(directoryName, inputEvent);
       });
 
-      // await is needed
+      expect(modal.queryByTestId("modal-archive-rename")).not.toBeNull();
+
+      // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       expect(dispatch).toBeCalled();
