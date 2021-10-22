@@ -52,7 +52,7 @@ namespace starsky.foundation.sync.SyncServices
 			// Route without database check
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
-				_logger.LogInformation($"[SingleFile/no-db] {subPath}" );
+				_logger.LogInformation($"[SingleFile/no-db] {subPath} - {DateTime.UtcNow.ToShortTimeString()}" );
 			}
 			
 			// Sidecar files are updated but ignored by the process
