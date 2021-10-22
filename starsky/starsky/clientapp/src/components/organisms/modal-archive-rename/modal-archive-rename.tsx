@@ -151,7 +151,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
         props.handleExit();
       }}
     >
-      <div className="content">
+      <div className="content" data-test="modal-archive-rename">
         <div className="modal content--subheader">{MessageRenameFolder}</div>
         <div className="modal content--text">
           <FormControl
