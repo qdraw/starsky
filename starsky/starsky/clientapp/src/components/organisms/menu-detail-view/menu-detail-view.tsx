@@ -402,6 +402,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
           <button
             className="item item--labels"
+            data-test="menu-detail-view-labels"
             onClick={() => {
               toggleLabels();
             }}
