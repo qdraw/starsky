@@ -366,6 +366,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           {!isSearchQuery ? (
             <Link
               className="item item--first item--close"
+              data-test="menu-detail-view-close"
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
               }
@@ -388,6 +389,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           {/* to search */}
           {isSearchQuery ? (
             <Link
+              data-test="menu-detail-view-close"
               className="item item--first item--search"
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
