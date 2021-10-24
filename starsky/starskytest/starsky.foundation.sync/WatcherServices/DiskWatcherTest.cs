@@ -140,7 +140,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 
-			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry();
+			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(new FileSystemWatcherWrapper());
 			
 			Assert.IsTrue(result);	
 		}

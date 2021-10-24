@@ -40,6 +40,9 @@ namespace starsky.foundation.sync.WatcherServices
 		/// </summary>
 		public void Watcher(string fullFilePath)
 		{
+			_webLogger.LogInformation("[DiskWatcher] started " +
+			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			
 			// why: https://stackoverflow.com/a/21000492
 			GC.KeepAlive(_fileSystemWatcherWrapper);  
 
@@ -74,7 +77,8 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnError(object source, ErrorEventArgs e)
 		{
 			//  Show that an error has been detected.
-			_webLogger.LogError("[DiskWatcher] The FileSystemWatcher has detected an error - next: retry");
+			_webLogger.LogError("[DiskWatcher] The FileSystemWatcher has detected an error - next: retry" +
+			                    $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
 			//  Give more information if the error is due to an internal buffer overflow.
 			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
 			{
@@ -86,20 +90,19 @@ namespace starsky.foundation.sync.WatcherServices
 			}
 			
 			// When fail it should try it again
-			Retry();
+			Retry(new FileSystemWatcher() as FileSystemWatcherWrapper);
 		}
 
 		/// <summary>
 		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
 		/// </summary>
-		internal bool Retry()
+		internal bool Retry(FileSystemWatcherWrapper fileSystemWatcherWrapper)
 		{
-			_webLogger.LogInformation("[DiskWatcher] next retry");
+			_webLogger.LogInformation("[DiskWatcher] next retry " +
+			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
 			var path = _fileSystemWatcherWrapper.Path;
-			
-			_fileSystemWatcherWrapper = _scopeFactory.CreateScope()
-				.ServiceProvider.GetService<IFileSystemWatcherWrapper>();
-			
+
+			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 			while (!_fileSystemWatcherWrapper.EnableRaisingEvents)
 			{
 				try
