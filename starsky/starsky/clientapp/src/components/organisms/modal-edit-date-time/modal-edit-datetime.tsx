@@ -86,7 +86,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
         props.handleExit(null);
       }}
     >
-      <div className="content">
+      <div data-test="modal-edit-datetime" className="content">
         <div className="modal content--subheader">
           <b>{MessageModalDatetime}</b>
           {isValidDate(getDates()) ? (
