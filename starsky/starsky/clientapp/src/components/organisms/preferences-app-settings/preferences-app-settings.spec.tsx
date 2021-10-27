@@ -13,7 +13,6 @@ import {
 } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import * as LimitLength from "../../atoms/form-control/limit-length";
 import PreferencesAppSettings from "./preferences-app-settings";
 
 describe("PreferencesAppSettings", () => {
@@ -186,12 +185,13 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      // const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      //   { ...newIConnectionDefault(), statusCode: 404 }
-      // );
+      // This fails -->
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        { ...newIConnectionDefault(), statusCode: 404 }
+      );
       var fetchPostSpy = jest
-        .spyOn(LimitLength.LimitLength.prototype, "LimitLengthBlur")
-        .mockImplementationOnce(() => () => {});
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
 
       var component = render(<PreferencesAppSettings />);
 
@@ -209,33 +209,18 @@ describe("PreferencesAppSettings", () => {
         await fireEvent(storageFolder, blurEventYear);
       });
 
-      expect(storageFolder).not.toBeNull();
-      // console.log(storageFolder.className);
-
-      // const keyDownEvent = createEvent.keyDown(storageFolder, {
-      //   key: "e",
-      //   code: "e"
-      // });
-
-      // fireEvent(storageFolder, keyDownEvent);
-      // console.log(component.container.innerHTML);
-
-      // const storageFolderForm = component.find('[data-name="storageFolder"]');
-      // (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
-
-      // // need to await here
-      // await act(async () => {
-      //   await storageFolderForm.first().simulate("blur");
-      // });
-
-      await waitFor(() => expect(fetchPostSpy).toBeCalled());
+      expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().UrlApiAppSettings(),
         "storageFolder=12345"
       );
 
-      // expect(component.exists('[data-test="storage-not-found"]')).toBeTruthy();
-      component.unmount();
+      // if failed show extra storage id
+      expect(component.queryByTestId("storage-not-found")).toBeTruthy();
+
+      act(() => {
+        component.unmount();
+      });
     });
 
     it("toggle verbose", async () => {
