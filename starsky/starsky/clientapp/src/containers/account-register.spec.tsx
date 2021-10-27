@@ -8,15 +8,30 @@ import AccountRegister from "./account-register";
 
 describe("AccountRegister", () => {
   it("renders", () => {
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 4638 }) as any
+      );
     render(<AccountRegister />);
   });
 
   it("link to TOC exist", () => {
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 876 }) as any
+      );
     var compontent = render(<AccountRegister />);
     expect(compontent.queryByTestId("toc")).toBeTruthy();
   });
 
   it("link to privacy exist", () => {
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(
+        () => Promise.resolve({ statusCode: 123 }) as any
+      );
     var compontent = render(<AccountRegister />);
     expect(compontent.queryByTestId("privacy")).toBeTruthy();
   });
@@ -29,6 +44,7 @@ describe("AccountRegister", () => {
         data: null
       } as IConnectionDefault
     );
+    jest.spyOn(FetchGet, "default").mockReset();
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -142,6 +158,7 @@ describe("AccountRegister", () => {
 
     jest
       .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
