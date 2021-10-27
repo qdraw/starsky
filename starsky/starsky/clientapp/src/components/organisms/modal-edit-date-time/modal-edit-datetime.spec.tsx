@@ -120,8 +120,6 @@ describe("ModalArchiveMkdir", () => {
         await modal.queryByTestId("modal-edit-datetime-btn-default")?.click();
       });
 
-      console.log(modal.queryByTestId("modal-edit-datetime")?.innerHTML);
-
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
         new UrlQuery().prefix + "/api/update",
