@@ -130,7 +130,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }
 
   const existItemNameComponent = existItemName ? (
-    <div className="warning-box">
+    <div className="warning-box" data-test="modal-publish-warning-box">
       {MessageItemNameInUse}
       {/* optional you could overwrite by pressing Publish*/}
     </div>
