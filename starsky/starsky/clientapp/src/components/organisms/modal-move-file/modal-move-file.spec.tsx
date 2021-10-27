@@ -100,7 +100,9 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    expect(modal.exists('[data-test="btn-test"]')).toBeTruthy();
+    const btnTest = modal.queryByTestId("btn-test");
+    expect(btnTest).toBeTruthy();
+
     expect(modal.exists("button.btn--default")).toBeTruthy();
 
     // can't move to the same folder

@@ -57,10 +57,11 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = modal.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
+    await forceDelete?.click();
+
     expect(fetchSpy).toBeCalled();
     expect(fetchSpy).toBeCalledWith(
       new UrlQuery().UrlDeleteApi(),
@@ -101,10 +102,11 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = modal.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
+    await forceDelete?.click();
+
     expect(fetchSpy).toBeCalled();
     expect(fetchSpy).toBeCalledWith(
       new UrlQuery().UrlDeleteApi(),
