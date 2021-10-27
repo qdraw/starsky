@@ -138,7 +138,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
 
           {usesFileList.pageType === PageType.Loading ? (
             <div
-              data-test="preloader"
+              data-test="preloader-inside"
               className="preloader preloader--inside"
             ></div>
           ) : null}
