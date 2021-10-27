@@ -24,8 +24,6 @@ const DetailViewGpx: React.FC = () => {
   const [isMapLocked, setIsMapLocked] = useState(true);
 
   function updateMap(response: IConnectionDefault) {
-    console.log(response);
-
     if (!response.data) return;
     if (!mapReference.current) return;
 
