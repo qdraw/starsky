@@ -102,7 +102,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div className="content">
+      <div className="content" data-test="modal-move-file">
         <div className="modal content--subheader">
           Verplaats{" "}
           {new StringOptions().LimitLength(

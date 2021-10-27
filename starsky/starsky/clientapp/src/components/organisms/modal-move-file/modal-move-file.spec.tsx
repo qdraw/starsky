@@ -44,7 +44,9 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    expect(modal.exists(".preloader")).toBeTruthy();
+    console.log(modal.queryByTestId("modal-move-file")?.innerHTML);
+
+    expect(modal.queryByTestId("preloader")).toBeTruthy();
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
     modal.unmount();
@@ -156,13 +158,19 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
+    const parent = modal.queryByTestId("parent");
+
     act(() => {
-      modal.find('[data-test="parent"]').simulate("click");
+      parent?.click();
     });
+
+    const btnDefault = modal.queryByTestId(
+      "modal-move-file-btn-default"
+    ) as HTMLButtonElement;
 
     act(() => {
       // now move
-      modal.find(".btn--default").simulate("click");
+      btnDefault?.click();
     });
 
     expect(fetchPostSpy).toBeCalledTimes(1);
@@ -230,19 +238,22 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
+    const btnTest = modal.queryByTestId("btn-test");
+    expect(btnTest).toBeTruthy();
+
     act(() => {
-      modal.find('[data-test="btn-test"]').simulate("click");
+      btnTest?.click();
     });
 
+    const btnDefault = modal.queryByTestId(
+      "modal-move-file-btn-default"
+    ) as HTMLButtonElement;
     // button isn't disabled anymore
-    var submitButtonBefore = (modal
-      .find(".btn--default")
-      .getDOMNode() as HTMLButtonElement).disabled;
-    expect(submitButtonBefore).toBeFalsy();
+    expect(btnDefault.disabled).toBeFalsy();
 
     act(() => {
       // now move
-      modal.find(".btn--default").simulate("click");
+      btnDefault?.click();
     });
 
     expect(fetchPostSpy).toBeCalledTimes(1);
