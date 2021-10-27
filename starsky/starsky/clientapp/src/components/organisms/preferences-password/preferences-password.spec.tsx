@@ -15,7 +15,9 @@ describe("PreferencesPassword", () => {
     it("default nothing entered", () => {
       var component = render(<PreferencesPassword />);
 
-      component.queryByTestId("preferences-password-submit")?.click();
+      act(() => {
+        component.queryByTestId("preferences-password-submit")?.click();
+      });
 
       const warning = component.queryByTestId(
         "preferences-password-warning"
@@ -87,7 +89,7 @@ describe("PreferencesPassword", () => {
       component.unmount();
     });
 
-    it("Your password has been successfully changed", async () => {
+    it("Test if your password has been successfully changed", async () => {
       var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../../../shared/fetch-post';
@@ -108,7 +110,11 @@ describe("PreferencesPassword", () => {
       const loginContent = component.queryByTestId(
         "preferences-password-submit"
       ) as HTMLButtonElement;
-      await loginContent.click();
+
+      // need await here
+      await act(async () => {
+        await loginContent.click();
+      });
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -116,19 +122,19 @@ describe("PreferencesPassword", () => {
         "Password=12345&ChangedPassword=password1&ChangedConfirmPassword=password1"
       );
 
-      warning = component.queryByTestId(
+      const warning1 = component.queryByTestId(
         "preferences-password-warning"
       ) as HTMLDivElement;
-      expect(warning).not.toBeNull();
+      expect(warning1).not.toBeNull();
 
-      expect(warning.textContent).toBe(
+      expect(warning1.textContent).toBe(
         "Your password has been successfully changed"
       );
 
       component.unmount();
     });
 
-    it("Enter your current password", async () => {
+    it("Test if enter your current password", async () => {
       var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
@@ -144,7 +150,11 @@ describe("PreferencesPassword", () => {
       const loginContent = component.queryByTestId(
         "preferences-password-submit"
       ) as HTMLButtonElement;
-      await loginContent.click();
+
+      // need await here
+      await act(async () => {
+        await loginContent.click();
+      });
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -178,7 +188,11 @@ describe("PreferencesPassword", () => {
       const loginContent = component.queryByTestId(
         "preferences-password-submit"
       ) as HTMLButtonElement;
-      await loginContent.click();
+
+      // need await here
+      await act(async () => {
+        await loginContent.click();
+      });
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(

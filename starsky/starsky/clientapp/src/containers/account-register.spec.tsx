@@ -351,10 +351,7 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockPostIConnectionDefault);
 
     // need to await here
-    var container = render(<></>);
-    act(() => {
-      container = render(<AccountRegister />);
-    });
+    var container = render(<AccountRegister />);
 
     submitEmailPassword(
       container,
@@ -377,6 +374,9 @@ describe("AccountRegister", () => {
     const error = container.queryByTestId(
       "account-register-error"
     ) as HTMLElement;
+
+    console.log(container.container.innerHTML);
+
     expect(error).toBeTruthy();
   });
 });
