@@ -348,7 +348,7 @@ describe("ModalMoveFile", () => {
       );
 
       // Test is warning exist
-      expect(modal.find(".warning-box")).toBeTruthy();
+      expect(modal.queryByTestId("modal-move-file-warning-box")).toBeTruthy();
 
       // and cleanup
       jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});

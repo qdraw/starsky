@@ -154,7 +154,14 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           ) : null}
         </div>
         <div className="modal modal-move-button">
-          {error && <div className="warning-box">{error}</div>}
+          {error && (
+            <div
+              data-test="modal-move-file-warning-box"
+              className="warning-box"
+            >
+              {error}
+            </div>
+          )}
           <button
             disabled={
               currentFolderPath === props.parentDirectory ||
