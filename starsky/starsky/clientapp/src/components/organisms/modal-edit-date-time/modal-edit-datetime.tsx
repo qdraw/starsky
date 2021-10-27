@@ -103,6 +103,9 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
               name="year"
               maxlength={4}
               onBlur={(e) => {
+                console.log("debug");
+                console.log(e.target.textContent);
+
                 setFullYear(Number(e.target.textContent));
               }}
               className="inline-block"
