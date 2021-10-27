@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFileList from "../../../hooks/use-filelist";
@@ -10,7 +10,6 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
 import * as Modal from "../../atoms/modal/modal";
-import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
 import ModalMoveFile from "./modal-move-file";
 
 describe("ModalMoveFile", () => {
@@ -301,7 +300,7 @@ describe("ModalMoveFile", () => {
     beforeEach(() => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      jest.spyOn(FetchPost, "default").mockReset();
+      jest.spyOn(FetchPost, "default").mockClear();
 
       // use this import => import * as useFileList from '../hooks/use-filelist';
       jest
@@ -311,7 +310,7 @@ describe("ModalMoveFile", () => {
         .mockImplementationOnce(() => inTestFolderArchive);
     });
 
-    it("click to folder -> move and generic fail", () => {
+    it("click to folder -> move and generic fail", async () => {
       const mockIConnectionDefault = Promise.resolve({
         statusCode: 500,
         data: [
@@ -321,22 +320,24 @@ describe("ModalMoveFile", () => {
         ]
       } as IConnectionDefault);
 
-      jest
+      const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      // import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
-      jest
-        .spyOn(ItemTextListView, "default")
-        .mockImplementationOnce(() => null)
-        .mockImplementationOnce(() => null);
+      // // import * as ItemTextListView from "../../molecules/item-text-list-view/item-text-list-view";
+      // jest
+      //   .spyOn(ItemTextListView, "default")
+      //   .mockImplementationOnce(() => null)
+      //   .mockImplementationOnce(() => null);
 
       jest
         .spyOn(Modal, "default")
+        .mockImplementationOnce((props) => <>{props.children}</>)
+        .mockImplementationOnce((props) => <>{props.children}</>)
         .mockImplementationOnce((props) => <>{props.children}</>);
 
-      var modal = render(
+      const modal = render(
         <ModalMoveFile
           parentDirectory="/"
           selectedSubPath="/test.jpg"
@@ -346,6 +347,25 @@ describe("ModalMoveFile", () => {
           t
         </ModalMoveFile>
       );
+      const btnTest = modal.queryByTestId("btn-test");
+      expect(btnTest).toBeTruthy();
+
+      await act(async () => {
+        await btnTest?.click();
+      });
+
+      const btnDefault = modal.queryByTestId(
+        "modal-move-file-btn-default"
+      ) as HTMLButtonElement;
+      // button isn't disabled anymore
+      expect(btnDefault.disabled).toBeFalsy();
+
+      await act(async () => {
+        // now move
+        await btnDefault?.click();
+      });
+
+      await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
       // Test is warning exist
       expect(modal.queryByTestId("modal-move-file-warning-box")).toBeTruthy();
