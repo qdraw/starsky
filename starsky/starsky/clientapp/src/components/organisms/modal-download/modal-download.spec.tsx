@@ -131,8 +131,12 @@ describe("ModalDownload", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="btn-test"]')).toBeFalsy();
-    expect(modal.exists('[data-test="orginal"]')).toBeTruthy();
+
+    const btnTest = modal.queryByTestId("btn-test");
+    const orginal = modal.queryByTestId("orginal");
+
+    expect(btnTest).toBeNull();
+    expect(orginal).not.toBeNull();
 
     // and clean afterwards
     act(() => {
