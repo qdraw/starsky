@@ -144,7 +144,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div className="modal content--subheader">
+      <div
+        data-test="modal-publish-subheader"
+        className="modal content--subheader"
+      >
         {isProcessing !== ProcessingState.server
           ? MessagePublishSelection
           : MessageOneMomentPlease}

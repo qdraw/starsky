@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -42,7 +42,7 @@ describe("ModalPublish", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -96,14 +96,21 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
+    // update component + now press a key
     act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
     });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
@@ -122,10 +129,12 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault2);
 
     await act(async () => {
-      await modal.find('[data-test="publish"]').simulate("click");
+      await modal.queryByTestId("publish")?.click();
     });
 
-    expect(modal.find(".content--subheader").text()).toBe("One moment please");
+    expect(modal.queryByTestId("modal-publish-subheader")?.textContent).toBe(
+      "One moment please"
+    );
 
     // and clean afterwards
     act(() => {
