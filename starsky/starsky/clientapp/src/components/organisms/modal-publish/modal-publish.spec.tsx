@@ -187,22 +187,31 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault)
       .mockImplementationOnce(() => mockIConnectionDefault);
 
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
     // update component + now press a key
-    modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-    modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
+    act(() => {
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+    });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
-      await modal.find('[data-test="publish"]').simulate("click");
+      await modal.queryByTestId("publish")?.click();
     });
 
-    expect(modal.find(".content--text").text()).toBe(
+    expect(modal.queryByTestId("modal-publish-content-text")?.textContent).toBe(
       "Something went wrong with exporting"
     );
 
@@ -285,24 +294,26 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
-    act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
-    });
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
 
-    // need await for update
+    // update component + now press a key
     await act(async () => {
-      await modal.render();
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      await fireEvent(tags, inputEvent);
     });
 
-    expect(modal.html()).toContain('class="warning-box"');
+    expect(modal.queryByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
-    act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "" });
+    await act(async () => {
+      tags.textContent = "";
+      const inputEvent = createEvent.input(tags, { key: "" });
+      await fireEvent(tags, inputEvent);
     });
 
     // should only send get once. the second time should be avoid due sending emthy string

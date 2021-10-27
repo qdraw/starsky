@@ -1,4 +1,10 @@
-import { act, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
@@ -132,12 +138,18 @@ describe("PreferencesAppSettings", () => {
 
       var component = render(<PreferencesAppSettings />);
 
-      var storageFolderForm = component.find('[data-name="storageFolder"]');
-      (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "storageFolder");
+      const storageFolder = formControls as HTMLInputElement[][0];
 
-      // need to await here
+      storageFolder.innerText = "12345";
+      const blurEventYear = createEvent.focusOut(storageFolder, {
+        textContent: "12345"
+      });
+
       await act(async () => {
-        await storageFolderForm.first().simulate("blur");
+        await fireEvent(storageFolder, blurEventYear);
       });
 
       expect(fetchPostSpy).toBeCalled();
@@ -183,11 +195,20 @@ describe("PreferencesAppSettings", () => {
 
       var component = render(<PreferencesAppSettings />);
 
-      const formControls = component.queryAllByTestId("form-control");
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "storageFolder");
+      const storageFolder = formControls as HTMLInputElement[][0];
 
-      const storageFolder = formControls.find(
-        (p) => p.getAttribute("data-name") === "storageFolder"
-      ) as HTMLElement;
+      storageFolder.innerText = "12345";
+      const blurEventYear = createEvent.focusOut(storageFolder, {
+        textContent: "12345"
+      });
+
+      await act(async () => {
+        await fireEvent(storageFolder, blurEventYear);
+      });
+
       expect(storageFolder).not.toBeNull();
       // console.log(storageFolder.className);
 
@@ -199,7 +220,6 @@ describe("PreferencesAppSettings", () => {
       // fireEvent(storageFolder, keyDownEvent);
       // console.log(component.container.innerHTML);
 
-      await storageFolder.blur();
       // const storageFolderForm = component.find('[data-name="storageFolder"]');
       // (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
 
@@ -213,8 +233,6 @@ describe("PreferencesAppSettings", () => {
         new UrlQuery().UrlApiAppSettings(),
         "storageFolder=12345"
       );
-
-      // component.update();
 
       // expect(component.exists('[data-test="storage-not-found"]')).toBeTruthy();
       component.unmount();
