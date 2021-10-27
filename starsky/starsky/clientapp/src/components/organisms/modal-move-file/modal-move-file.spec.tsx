@@ -103,13 +103,14 @@ describe("ModalMoveFile", () => {
     const btnTest = modal.queryByTestId("btn-test");
     expect(btnTest).toBeTruthy();
 
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const btnDefault = modal.queryByTestId(
+      "modal-move-file-btn-default"
+    ) as HTMLButtonElement;
+
+    expect(btnDefault).toBeTruthy();
 
     // can't move to the same folder
-    var submitButtonBefore = (modal
-      .find(".btn--default")
-      .getDOMNode() as HTMLButtonElement).disabled;
-    expect(submitButtonBefore).toBeTruthy();
+    expect(btnDefault.disabled).toBeTruthy();
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
     modal.unmount();

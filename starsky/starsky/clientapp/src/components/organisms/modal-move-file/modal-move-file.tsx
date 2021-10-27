@@ -157,6 +157,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
               currentFolderPath === props.parentDirectory ||
               usesFileList.pageType === PageType.Loading
             }
+            data-test="modal-move-file-btn-default"
             className="btn btn--default"
             onClick={MoveFile}
           >
