@@ -44,9 +44,7 @@ describe("ModalMoveFile", () => {
       ></ModalMoveFile>
     );
 
-    console.log(modal.queryByTestId("modal-move-file")?.innerHTML);
-
-    expect(modal.queryByTestId("preloader")).toBeTruthy();
+    expect(modal.queryByTestId("preloader-inside")).toBeTruthy();
 
     jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
     modal.unmount();
