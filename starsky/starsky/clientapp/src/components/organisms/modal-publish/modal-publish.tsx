@@ -152,7 +152,10 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
           ? MessagePublishSelection
           : MessageOneMomentPlease}
       </div>
-      <div className="modal content--text publish">
+      <div
+        data-test="modal-publish-content-text"
+        className="modal content--text publish"
+      >
         {/* when selecting one file */}
         {isProcessing === ProcessingState.default && props.select ? (
           <>
