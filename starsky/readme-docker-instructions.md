@@ -52,6 +52,7 @@ cd starsky
 
 4. Build project
 ```sh
+export DOCKER_BUILDKIT=0
 docker build -t starsky .
 ```
 
