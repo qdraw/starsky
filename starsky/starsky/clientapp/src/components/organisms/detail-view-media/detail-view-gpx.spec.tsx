@@ -121,6 +121,7 @@ describe("DetailViewGpx", () => {
       );
       var spyGet = jest
         .spyOn(FetchXml, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
