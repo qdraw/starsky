@@ -222,12 +222,12 @@ describe("DetailViewGpx", () => {
       expect(polylineSpy).toBeCalled();
 
       const zoom_out = gpx.queryByTestId("zoom_out"); //.simulate("click");
-      // act(() => {
-      //   zoom_out?.click();
-      // });
+      act(() => {
+        zoom_out?.click();
+      });
 
-      // expect(zoomOut).toBeCalled();
-      // expect(enable).toBeCalled();
+      expect(zoomOut).toBeCalled();
+      expect(enable).toBeCalled();
 
       gpx.unmount();
       expect(spyGet).toBeCalledTimes(1);
