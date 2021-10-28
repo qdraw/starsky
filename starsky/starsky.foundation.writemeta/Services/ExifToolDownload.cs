@@ -108,12 +108,12 @@ namespace starsky.foundation.writemeta.Services
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
 			if ( imageExifToolVersionFolder != null )
 			{
-				var exifToolUnixFolderFullFilePath =
-					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
 			
-			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
+			var exifToolExePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix","exiftool");
+			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 
