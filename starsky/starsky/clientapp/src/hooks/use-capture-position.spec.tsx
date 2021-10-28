@@ -1,5 +1,5 @@
 import capturePosition, { ICaptionPosition } from "./use-capture-position";
-import { shallowReactHook } from "./___tests___/test-hook";
+import { mountReactHook } from "./___tests___/test-hook";
 
 describe("capturePosition", () => {
   let setupComponent;
@@ -7,7 +7,7 @@ describe("capturePosition", () => {
   let scrollToSpy: jest.SpyInstance<any>;
 
   beforeEach(() => {
-    setupComponent = shallowReactHook(capturePosition, []); // Mount a Component with our hook
+    setupComponent = mountReactHook(capturePosition, []); // Mount a Component with our hook
     hook = setupComponent.componentHook as ICaptionPosition;
 
     scrollToSpy = jest

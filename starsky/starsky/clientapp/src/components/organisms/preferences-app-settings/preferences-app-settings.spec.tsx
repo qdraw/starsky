@@ -1,5 +1,10 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
@@ -12,7 +17,7 @@ import PreferencesAppSettings from "./preferences-app-settings";
 
 describe("PreferencesAppSettings", () => {
   it("renders", () => {
-    shallow(<PreferencesAppSettings />);
+    render(<PreferencesAppSettings />);
   });
 
   describe("context", () => {
@@ -23,14 +28,15 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => newIConnectionDefault())
         .mockImplementationOnce(() => newIConnectionDefault());
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      expect(
-        (component
-          .find('input[name="verbose"]')
-          .first()
-          .getDOMNode() as HTMLInputElement).disabled
-      ).toBeTruthy();
+      const switchButtons = component.queryAllByTestId("switch-button-right");
+
+      const verbose = switchButtons.find(
+        (p) => p.getAttribute("name") === "verbose"
+      ) as HTMLInputElement;
+
+      expect(verbose.disabled).toBeTruthy();
 
       component.unmount();
     });
@@ -48,14 +54,15 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => connectionDefault)
         .mockImplementationOnce(() => connectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      expect(
-        (component
-          .find('input[name="verbose"]')
-          .first()
-          .getDOMNode() as HTMLInputElement).disabled
-      ).toBeFalsy();
+      const switchButtons = component.queryAllByTestId("switch-button-right");
+
+      const verbose = switchButtons.find(
+        (p) => p.getAttribute("name") === "verbose"
+      ) as HTMLInputElement;
+
+      expect(verbose.disabled).toBeFalsy();
 
       component.unmount();
     });
@@ -81,9 +88,17 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      expect(component.find('[data-name="storageFolder"]').text()).toBe("test");
+      const formControls = component.queryAllByTestId("form-control");
+
+      const storageFolder = formControls.find(
+        (p) => p.getAttribute("data-name") === "storageFolder"
+      ) as HTMLElement;
+      expect(storageFolder).not.toBeNull();
+
+      expect(storageFolder.textContent).toBe("test");
+
       act(() => {
         component.unmount();
       });
@@ -120,14 +135,20 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      var storageFolderForm = component.find('[data-name="storageFolder"]');
-      (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "storageFolder");
+      const storageFolder = formControls as HTMLInputElement[][0];
 
-      // need to await here
+      storageFolder.innerText = "12345";
+      const blurEventYear = createEvent.focusOut(storageFolder, {
+        textContent: "12345"
+      });
+
       await act(async () => {
-        await storageFolderForm.first().simulate("blur");
+        await fireEvent(storageFolder, blurEventYear);
       });
 
       expect(fetchPostSpy).toBeCalled();
@@ -164,6 +185,7 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
+      // This fails -->
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
         { ...newIConnectionDefault(), statusCode: 404 }
       );
@@ -171,14 +193,20 @@ describe("PreferencesAppSettings", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      const storageFolderForm = component.find('[data-name="storageFolder"]');
-      (storageFolderForm.getDOMNode() as HTMLInputElement).innerText = "12345";
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "storageFolder");
+      const storageFolder = formControls as HTMLInputElement[][0];
 
-      // need to await here
+      storageFolder.innerText = "12345";
+      const blurEventYear = createEvent.focusOut(storageFolder, {
+        textContent: "12345"
+      });
+
       await act(async () => {
-        await storageFolderForm.first().simulate("blur");
+        await fireEvent(storageFolder, blurEventYear);
       });
 
       expect(fetchPostSpy).toBeCalled();
@@ -187,13 +215,15 @@ describe("PreferencesAppSettings", () => {
         "storageFolder=12345"
       );
 
-      component.update();
+      // if failed show extra storage id
+      expect(component.queryByTestId("storage-not-found")).toBeTruthy();
 
-      expect(component.exists('[data-test="storage-not-found"]')).toBeTruthy();
-      component.unmount();
+      act(() => {
+        component.unmount();
+      });
     });
 
-    it("toggle verbose", () => {
+    it("toggle verbose", async () => {
       var permissions = {
         statusCode: 200,
         data: ["AppSettingsWrite"]
@@ -216,13 +246,26 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      var component = mount(<PreferencesAppSettings />);
+      var component = render(<PreferencesAppSettings />);
 
-      var verboseFirstInput = component.find('input[name="verbose"]').first();
+      const fetchPostSpy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => {
+          return Promise.resolve({
+            statusCode: 400,
+            data: null
+          });
+        });
 
-      verboseFirstInput.simulate("change", {
-        currentTarget: { checked: false }
-      });
+      const switchButtons = component.queryAllByTestId("switch-button-right");
+
+      const verbose = switchButtons.find(
+        (p) => p.getAttribute("name") === "verbose"
+      ) as HTMLElement;
+
+      verbose.click();
+
+      await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
       component.unmount();
     });

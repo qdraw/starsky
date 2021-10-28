@@ -115,6 +115,7 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
             className="form-control"
             type="password"
             name="password"
+            data-test="preferences-password-input"
             maxLength={80}
             placeholder={MessageExamplePassword}
             value={userCurrentPassword}
@@ -126,6 +127,7 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
             className="form-control"
             type="password"
             name="changed-password"
+            data-test="preferences-password-changed-input"
             maxLength={80}
             value={userChangedPassword}
             onChange={(e) => setUserChangedPassword(e.target.value)}
@@ -136,15 +138,24 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
             className="form-control"
             type="password"
             name="changed-confirm-password"
+            data-test="preferences-password-changed-confirm-input"
             maxLength={80}
             value={userChangedConfirmPassword}
             onChange={(e) => setUserChangedConfirmPassword(e.target.value)}
           />
-          {error && <div className="warning-box">{error}</div>}
+          {error && (
+            <div
+              data-test="preferences-password-warning"
+              className="warning-box"
+            >
+              {error}
+            </div>
+          )}
 
           <ButtonStyled
             className="btn btn--default"
             type="submit"
+            data-test="preferences-password-submit"
             disabled={loading}
           >
             {loading ? "Loading..." : MessageChangePassword}

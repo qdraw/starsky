@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -6,7 +6,7 @@ import PreferencesUsername from "./preferences-username";
 
 describe("PreferencesUsername", () => {
   it("renders", () => {
-    shallow(<PreferencesUsername />);
+    render(<PreferencesUsername />);
   });
 
   describe("context", () => {
@@ -15,8 +15,10 @@ describe("PreferencesUsername", () => {
         return { ...newIConnectionDefault(), statusCode: 500 };
       });
 
-      var component = mount(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("Unknown username");
+      var component = render(<PreferencesUsername />);
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("Unknown username");
       component.unmount();
     });
 
@@ -31,8 +33,10 @@ describe("PreferencesUsername", () => {
         };
       });
 
-      var component = mount(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("Unknown username");
+      var component = render(<PreferencesUsername />);
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("Unknown username");
       component.unmount();
     });
 
@@ -49,8 +53,10 @@ describe("PreferencesUsername", () => {
         .mockImplementationOnce(() => testReply)
         .mockImplementationOnce(() => testReply);
 
-      var component = mount(<PreferencesUsername />);
-      expect(component.find(".content--text").text()).toBe("test");
+      var component = render(<PreferencesUsername />);
+      expect(
+        component.queryByTestId("preferences-username-text")?.textContent
+      ).toBe("test");
     });
   });
 });

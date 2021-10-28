@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render, waitFor } from "@testing-library/react";
 import L from "leaflet";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -10,21 +9,26 @@ import { CurrentLocationButtonPropTypes } from "../../atoms/current-location-but
 import DetailViewGpx from "./detail-view-gpx";
 
 describe("DetailViewGpx", () => {
+  var responseString =
+    '<?xml version="1.0" encoding="UTF - 8" ?><gpx version="1.1"><trkpt lat="52" lon="13"></trkpt></gpx>';
+  const xmlParser = new DOMParser();
+  const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+    {
+      statusCode: 200,
+      data: xmlParser.parseFromString(responseString, "text/xml")
+    } as IConnectionDefault
+  );
+
   it("renders (without state component)", () => {
-    shallow(<DetailViewGpx></DetailViewGpx>);
+    jest
+      .spyOn(FetchXml, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+    const component = render(<DetailViewGpx></DetailViewGpx>);
+    component.unmount();
   });
 
   describe("with Context", () => {
     it("renders with example GPX (very short one)", async () => {
-      var responseString =
-        '<?xml version="1.0" encoding="UTF - 8" ?><gpx version="1.1"><trkpt lat="52" lon="13"></trkpt></gpx>';
-      const xmlParser = new DOMParser();
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
-          statusCode: 200,
-          data: xmlParser.parseFromString(responseString, "text/xml")
-        } as IConnectionDefault
-      );
       var spyGet = jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -39,19 +43,19 @@ describe("DetailViewGpx", () => {
       const div = document.createElement("div");
       (window as any).domNode = div;
       document.body.appendChild(div);
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+
+      const gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(polylineSpy).toBeCalledTimes(0);
 
       expect(spyGet).toBeCalled();
 
-      act(() => {
-        gpx.unmount();
-        document.body.innerHTML = "";
-        (window as any).domNode = null;
-      });
+      gpx.unmount();
+      // act(() => {
+      //   gpx.unmount();
+      //   document.body.innerHTML = "";
+      //   (window as any).domNode = null;
+      // });
     });
 
     var responseString = `<gpx version="1.1">
@@ -99,24 +103,15 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      // attachTo: (window as any).domNode
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
-      // need to await before the maps are added
-      await act(async () => {
-        await gpx.find(".main--gpx").simulate("click");
-      });
+      await waitFor(() => expect(spyGet).toBeCalled());
 
-      expect(gpx.exists(".main--gpx")).toBeTruthy();
-
-      expect(spyGet).toBeCalled();
       expect(spyMap).toBeCalled();
       expect(polylineSpy).toBeCalled();
 
-      await act(async () => {
-        await gpx.unmount();
-      });
+      gpx.unmount();
     });
 
     it("zoom in", async () => {
@@ -130,10 +125,10 @@ describe("DetailViewGpx", () => {
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
-      const div = document.createElement("div");
-      (window as any).domNode = div;
-      document.body.appendChild(div);
+      // // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
+      // const div = document.createElement("div");
+      // (window as any).domNode = div;
+      // document.body.appendChild(div);
 
       var zoomIn = jest.fn();
       var enable = jest.fn();
@@ -158,26 +153,28 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      // , { attachTo: (window as any).domNode }
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>);
-
-      // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
-
-      gpx.find('[data-test="zoom_in"]').simulate("click");
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(spyGet).toBeCalled();
-      expect(spyMap).toBeCalled();
+      expect(spyGet).toBeCalledTimes(1);
+
+      // expect(spyMap).toBeCalled();
+      await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
+
+      const zoom_in = gpx.queryByTestId("zoom_in");
+      act(() => {
+        zoom_in?.click();
+      });
+
       expect(zoomIn).toBeCalled();
       expect(enable).toBeCalled();
 
-      await act(async () => {
-        await gpx.unmount();
-      });
+      gpx.unmount();
+      expect(spyGet).toBeCalledTimes(1);
     });
 
-    it("zoom out", async () => {
+    it("zoom out 1", async () => {
       const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
         {
           statusCode: 200,
@@ -196,7 +193,7 @@ describe("DetailViewGpx", () => {
       var zoomOut = jest.fn();
       var enable = jest.fn();
 
-      var spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable: jest.fn(), enable },
@@ -216,24 +213,24 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
-
-      // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
-
-      gpx.find('[data-test="zoom_out"]').simulate("click");
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       expect(spyGet).toBeCalled();
-      expect(spyMap).toBeCalled();
+      expect(spyGet).toBeCalledTimes(1);
+
+      await waitFor(() => expect(spyMap).toBeCalled());
       expect(polylineSpy).toBeCalled();
+
+      const zoom_out = gpx.queryByTestId("zoom_out"); //.simulate("click");
+      act(() => {
+        zoom_out?.click();
+      });
+
       expect(zoomOut).toBeCalled();
       expect(enable).toBeCalled();
 
-      await act(async () => {
-        await gpx.unmount();
-      });
+      gpx.unmount();
+      expect(spyGet).toBeCalledTimes(1);
     });
 
     it("zoom out 2", async () => {
@@ -243,20 +240,27 @@ describe("DetailViewGpx", () => {
           data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault
       );
+
+      jest.spyOn(FetchXml, "default").mockClear();
+
       jest
         .spyOn(FetchXml, "default")
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
+        .mockImplementationOnce(() => mockGetIConnectionDefault)
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
       // https://stackoverflow.com/questions/43694975/jest-enzyme-using-mount-document-getelementbyid-returns-null-on-componen
-      const div = document.createElement("div");
-      (window as any).domNode = div;
-      document.body.appendChild(div);
+      // const div = document.createElement("div");
+      // (window as any).domNode = div;
+      // document.body.appendChild(div);
 
       var zoomOut = jest.fn();
       var enable = jest.fn();
       var disable = jest.fn();
 
-      jest.spyOn(L, "map").mockImplementationOnce(() => {
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(() => {
         return {
           ...(new MapMock("", {}) as any),
           dragging: { disable, enable },
@@ -276,26 +280,25 @@ describe("DetailViewGpx", () => {
         } as any;
       });
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      //attachTo: (window as any).domNode
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
+      await waitFor(() => expect(spyMap).toBeCalled());
 
       // Enable first
-      gpx.find('[data-test="lock"]').simulate("click");
+      const button = gpx.queryByTestId("lock") as HTMLButtonElement;
+      button.click();
 
       expect(enable).toBeCalled();
 
       // And disable afterwards
-      gpx.find('[data-test="lock"]').simulate("click");
+      const button2 = gpx.queryByTestId("lock") as HTMLButtonElement;
+      button2.click();
 
       expect(disable).toBeCalled();
 
-      await act(async () => {
-        await gpx.unmount();
-      });
+      gpx.unmount();
     });
 
     it("current location", async () => {
@@ -305,6 +308,7 @@ describe("DetailViewGpx", () => {
           data: xmlParser.parseFromString(responseString, "text/xml")
         } as IConnectionDefault
       );
+
       jest
         .spyOn(FetchXml, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -328,7 +332,7 @@ describe("DetailViewGpx", () => {
           setView: setViewSpy
         };
       };
-      jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
+      const spyMap = jest.spyOn(L, "map").mockImplementationOnce(lMapMock);
 
       jest.spyOn(L, "polyline").mockImplementationOnce(() => {
         return {
@@ -340,6 +344,7 @@ describe("DetailViewGpx", () => {
         return (
           <button
             id="current-location"
+            data-test="current-location-button"
             onClick={() => {
               if (!input.callback) return;
               input.callback({ longitude: 1, latitude: 1 } as Coordinates);
@@ -354,14 +359,16 @@ describe("DetailViewGpx", () => {
         .mockImplementationOnce(locationButton)
         .mockImplementationOnce(locationButton);
 
-      var gpx = mount(<DetailViewGpx></DetailViewGpx>, {
-        attachTo: (window as any).domNode
-      });
+      var gpx = render(<DetailViewGpx></DetailViewGpx>);
 
       // need to await before the maps are added
-      await gpx.find(".main--gpx").simulate("click");
+      await waitFor(() => expect(spyMap).toBeCalled());
 
-      await gpx.find("#current-location").simulate("click");
+      const button = gpx.queryByTestId(
+        "current-location-button"
+      ) as HTMLButtonElement;
+      expect(button).toBeTruthy();
+      await button.click();
 
       expect(currentLocationButtonSpy).toBeCalled();
       expect(setViewSpy).toBeCalled();

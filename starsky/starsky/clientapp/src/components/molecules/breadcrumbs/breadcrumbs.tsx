@@ -38,7 +38,7 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
         // For the home page
         if (item === props.subPath) {
           return (
-            <span key={item}>
+            <span key={item} data-test={"breadcrumb-span"}>
               <Link
                 to={new UrlQuery().updateFilePathHash(
                   history.location.search,
@@ -52,7 +52,7 @@ const Breadcrumbs: React.FunctionComponent<IBreadcrumbProps> = memo((props) => {
         }
 
         return (
-          <span key={item}>
+          <span key={item} data-test={"breadcrumb-span"}>
             <Link
               to={new UrlQuery().updateFilePathHash(
                 history.location.search,

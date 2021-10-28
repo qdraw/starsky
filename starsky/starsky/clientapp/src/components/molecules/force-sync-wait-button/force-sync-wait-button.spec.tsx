@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import {
   IConnectionDefault,
@@ -15,7 +15,7 @@ import ForceSyncWaitButton, {
 
 describe("ForceSyncWaitButton", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}
@@ -29,12 +29,12 @@ describe("ForceSyncWaitButton", () => {
     data: null
   });
 
-  it("onClick value", () => {
+  it("onClick value", async () => {
     const fetchPostSpy = jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    const component = mount(
+    const component = render(
       <ForceSyncWaitButton
         historyLocationSearch={""}
         dispatch={jest.fn()}
@@ -44,8 +44,13 @@ describe("ForceSyncWaitButton", () => {
       </ForceSyncWaitButton>
     );
 
-    component.find("button").simulate("click");
-    expect(fetchPostSpy).toBeCalled();
+    const forceSync = component.queryByTestId(
+      "force-sync"
+    ) as HTMLButtonElement;
+    expect(forceSync).toBeTruthy();
+    forceSync.click();
+
+    await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
     var urlSync = new UrlQuery().UrlSync("/");
     expect(fetchPostSpy).toBeCalledWith(urlSync, "");

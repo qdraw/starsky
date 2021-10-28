@@ -49,6 +49,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Breaking change) _Tools_ Dropbox has changed the way it authorized (September 30th, 2021), in dropbox-tools the refresh token is now used (PR #448)
 - [x]   (Fixed) _Back-end_  Dispose error on index page (Issue #424 / PR #449)
 - [x]   (Added) _Back-end_  Support for `-software` search (issue #441 / PR #450)
+- [x]   (Added) _Back-end_  Docker compose support (PR #469)
+- [x]   (Change) _Front-end_ Remove Enzeme as framework for unittests and use react testing framework (PR #463)
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)

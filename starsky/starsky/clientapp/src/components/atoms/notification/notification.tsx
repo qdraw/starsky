@@ -32,8 +32,14 @@ const Notification: React.FunctionComponent<NotificationPropTypes> = ({
     <Portal>
       <div className={`notification notification--${type}`}>
         <div className="icon icon--error" />
-        <div className="content">{children}</div>
-        <button className="icon icon--close" onClick={close} />
+        <div data-test="notification-content" className="content">
+          {children}
+        </div>
+        <button
+          data-test="notification-close"
+          className="icon icon--close"
+          onClick={close}
+        />
       </div>
     </Portal>
   );

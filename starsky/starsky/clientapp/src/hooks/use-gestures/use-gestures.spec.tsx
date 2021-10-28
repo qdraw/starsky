@@ -1,5 +1,5 @@
-import { act } from "@testing-library/react";
-import { mount, ReactWrapper } from "enzyme";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
+import { ReactWrapper } from "enzyme";
 import React, { useRef, useState } from "react";
 import { mountReactHook } from "../___tests___/test-hook";
 import * as callHandler from "./call-handler";
@@ -157,19 +157,6 @@ describe("useGestures", () => {
   });
 
   describe("useGestures", () => {
-    it("check if is called once", () => {
-      jest.useFakeTimers();
-      var component = mount(<Rotate />);
-
-      component.find("img").simulate("touchmove", exampleSingleTouches);
-
-      jest.advanceTimersByTime(201);
-
-      // this does nothing
-
-      jest.useRealTimers();
-    });
-
     const exampleSingleTouches = {
       touches: [
         {
@@ -191,6 +178,24 @@ describe("useGestures", () => {
         } as any
       ]
     };
+
+    it("check if is called once", () => {
+      jest.useFakeTimers();
+      var component = render(<Rotate />);
+
+      const image = component.container.querySelector(
+        "img"
+      ) as HTMLImageElement;
+      const touchmoveEvent = createEvent.wheel(image, exampleSingleTouches);
+
+      fireEvent(image, touchmoveEvent);
+
+      jest.advanceTimersByTime(201);
+
+      // this does nothing
+
+      jest.useRealTimers();
+    });
 
     it("touchstart single onPanStart", () => {
       const callHandlerSpy = jest

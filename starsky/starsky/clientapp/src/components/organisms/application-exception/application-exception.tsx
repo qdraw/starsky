@@ -18,7 +18,9 @@ const ApplicationException: FunctionComponent<any> = () => {
   return (
     <>
       <MenuDefault isEnabled={false} />
-      <div className="content--header">{MessageApplicationException}</div>
+      <div className="content--header" data-test="application-exception-header">
+        {MessageApplicationException}
+      </div>
       <div className="content--subheader">
         <button
           data-test="reload"

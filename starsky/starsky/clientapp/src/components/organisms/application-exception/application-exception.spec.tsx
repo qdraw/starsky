@@ -1,11 +1,11 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as MenuDefault from "../menu-default/menu-default";
 import ApplicationException from "./application-exception";
 
 describe("ApplicationException", () => {
   it("renders", () => {
-    shallow(<ApplicationException>t</ApplicationException>);
+    render(<ApplicationException>t</ApplicationException>);
   });
 
   it("should have menu", () => {
@@ -14,7 +14,7 @@ describe("ApplicationException", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
     expect(menuDefaultSpy).toBeCalled();
 
@@ -26,9 +26,11 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
-    expect(component.exists(".content--header")).toBeTruthy();
+    expect(
+      component.queryByTestId("application-exception-header")
+    ).toBeTruthy();
 
     component.unmount();
   });
@@ -46,11 +48,13 @@ describe("ApplicationException", () => {
       return <></>;
     });
 
-    const component = mount(<ApplicationException>t</ApplicationException>);
+    const component = render(<ApplicationException>t</ApplicationException>);
 
     expect(window.location.reload).not.toHaveBeenCalled();
 
-    component.find("[data-test='reload']").simulate("click");
+    const reload = component.queryByTestId("reload") as HTMLButtonElement;
+
+    reload.click();
 
     expect(reloadSpy).toBeCalledTimes(1);
 

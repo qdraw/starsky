@@ -1,3 +1,5 @@
+import { configure } from "@testing-library/react";
+
 const localStorageMock = {
   getItem: jest.fn(),
   setItem: jest.fn(),
@@ -5,8 +7,11 @@ const localStorageMock = {
   clear: jest.fn()
 };
 global.localStorage = localStorageMock;
-// we are not using testing-library/jest-dom
-import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
-import Enzyme from "enzyme";
 
-Enzyme.configure({ adapter: new Adapter() });
+configure({ testIdAttribute: "data-test" });
+
+// // we are not using testing-library/jest-dom
+// import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
+// import Enzyme from "enzyme";
+
+// Enzyme.configure({ adapter: new Adapter() });

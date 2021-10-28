@@ -102,7 +102,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div className="content">
+      <div className="content" data-test="modal-move-file">
         <div className="modal content--subheader">
           Verplaats{" "}
           {new StringOptions().LimitLength(
@@ -137,7 +137,10 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           ) : null}
 
           {usesFileList.pageType === PageType.Loading ? (
-            <div className="preloader preloader--inside"></div>
+            <div
+              data-test="preloader-inside"
+              className="preloader preloader--inside"
+            ></div>
           ) : null}
           {usesFileList.pageType !== PageType.Loading ? (
             <ItemTextListView
@@ -151,12 +154,20 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
           ) : null}
         </div>
         <div className="modal modal-move-button">
-          {error && <div className="warning-box">{error}</div>}
+          {error && (
+            <div
+              data-test="modal-move-file-warning-box"
+              className="warning-box"
+            >
+              {error}
+            </div>
+          )}
           <button
             disabled={
               currentFolderPath === props.parentDirectory ||
               usesFileList.pageType === PageType.Loading
             }
+            data-test="modal-move-file-btn-default"
             className="btn btn--default"
             onClick={MoveFile}
           >

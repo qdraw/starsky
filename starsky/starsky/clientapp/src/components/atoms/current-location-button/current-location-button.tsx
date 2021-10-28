@@ -36,6 +36,7 @@ const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTy
 
   return (
     <button
+      data-test="current-location-button"
       className={
         !error
           ? "current-location icon icon--location_on"

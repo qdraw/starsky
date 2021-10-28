@@ -11,10 +11,10 @@ const ListImageChildItem: React.FunctionComponent<IFileIndexItem> = (item) => {
         fileHash={item.fileHash}
       />
       <div className="caption">
-        <div className="name" title={item.fileName}>
+        <div className="name" data-test="list-image-name" title={item.fileName}>
           {item.fileName}
         </div>
-        <div className="tags" title={item.tags}>
+        <div className="tags" data-test="list-image-tags" title={item.tags}>
           {item.tags}
         </div>
       </div>

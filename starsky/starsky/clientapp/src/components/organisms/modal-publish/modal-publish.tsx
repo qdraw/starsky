@@ -130,7 +130,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }
 
   const existItemNameComponent = existItemName ? (
-    <div className="warning-box">
+    <div className="warning-box" data-test="modal-publish-warning-box">
       {MessageItemNameInUse}
       {/* optional you could overwrite by pressing Publish*/}
     </div>
@@ -144,12 +144,18 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div className="modal content--subheader">
+      <div
+        data-test="modal-publish-subheader"
+        className="modal content--subheader"
+      >
         {isProcessing !== ProcessingState.server
           ? MessagePublishSelection
           : MessageOneMomentPlease}
       </div>
-      <div className="modal content--text publish">
+      <div
+        data-test="modal-publish-content-text"
+        className="modal content--text publish"
+      >
         {/* when selecting one file */}
         {isProcessing === ProcessingState.default && props.select ? (
           <>

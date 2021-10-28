@@ -1,7 +1,6 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import * as AppContext from "../../../contexts/archive-context";
 import { IArchive } from "../../../interfaces/IArchive";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -9,27 +8,30 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import FormControl from "../../atoms/form-control/form-control";
 import * as Notification from "../../atoms/notification/notification";
 import ArchiveSidebarLabelEditSearchReplace from "./archive-sidebar-label-edit-search-replace";
 
-describe("ArchiveSidebarLabelEditSearchReplace", () => {
+describe("ArchiveSidebarLabelEditAddOverwrite", () => {
   it("renders", () => {
-    shallow(<ArchiveSidebarLabelEditSearchReplace />);
+    render(<ArchiveSidebarLabelEditSearchReplace />);
   });
 
   it("isReadOnly: true", () => {
-    const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
+    const mainElement = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-    var formControl = mainElement.find(FormControl);
+    var formControl = mainElement.queryAllByTestId("form-control");
 
     // there are 3 classes [title,info,description]
     formControl.forEach((element) => {
-      expect(element.props()["contentEditable"]).toBeFalsy();
+      var disabled = element.classList;
+      expect(disabled).toContain("disabled");
     });
   });
+
   describe("with context", () => {
     var useContextSpy: jest.SpyInstance;
+
+    var dispatchedValues: any[] = [];
 
     beforeEach(() => {
       // is used in multiple ways
@@ -38,12 +40,26 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(React, "useContext")
         .mockImplementation(() => contextValues);
 
+      // clean array
+      dispatchedValues = [];
+
       const contextValues = {
         state: {
           isReadOnly: false,
-          fileIndexItems: [{ fileName: "test.jpg", parentDirectory: "/" }]
+          fileIndexItems: [
+            {
+              fileName: "test.jpg",
+              parentDirectory: "/"
+            },
+            {
+              fileName: "test1.jpg",
+              parentDirectory: "/"
+            }
+          ]
         } as IArchive,
-        dispatch: jest.fn()
+        dispatch: (value: any) => {
+          dispatchedValues.push(value);
+        }
       } as AppContext.IArchiveContext;
 
       jest.mock("@reach/router", () => ({
@@ -62,75 +78,26 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       useContextSpy.mockClear();
     });
 
-    it("isReadOnly: false", () => {
-      const mainElement = shallow(<ArchiveSidebarLabelEditSearchReplace />);
+    it("isReadOnly: false (so contentEditable is true)", () => {
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
-      var formControl = mainElement.find(FormControl);
-
-      // there are 3 classes [title,info,description]
-      // but those exist 2 times!
-      formControl.forEach((element) => {
-        expect(element.props()["contentEditable"]).toBeTruthy();
-      });
+      const formControls = component.queryAllByTestId("form-control");
 
       // if there is no contentEditable it should fail
-      // double amount of classes
-      expect(formControl.length).toBeGreaterThanOrEqual(6);
-    });
+      expect(formControls.length).toBeGreaterThanOrEqual(3);
 
-    it("Should change value when onChange was called", () => {
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
-
-      act(() => {
-        // update component
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
+      // there are 3 classes [title,info,description]
+      formControls.forEach((element) => {
+        const contentEditable = element.getAttribute("contentEditable");
+        expect(contentEditable).toBeTruthy();
       });
 
       act(() => {
-        // now press a key
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        component.unmount();
       });
-
-      var className = component.find(".btn.btn--default").getDOMNode()
-        .className;
-      expect(className).toBe("btn btn--default");
     });
 
-    it("click replace", async () => {
-      var connectionDefault: IConnectionDefault = {
-        statusCode: 200,
-        data: [
-          { fileName: "test.jpg", parentDirectory: "/" }
-        ] as IFileIndexItem[]
-      };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
-      var spy = jest
-        .spyOn(FetchPost, "default")
-        .mockImplementationOnce(() => mockIConnectionDefault);
-
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
-
-      // update component + now press a key
-      act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
-      });
-
-      // need to await here
-      await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
-      });
-
-      expect(spy).toBeCalled();
-      expect(spy).toBeCalledWith(
-        new UrlQuery().prefix + "/api/replace",
-        "f=%2Ftest.jpg&collections=true&fieldName=tags&search=a&replace="
-      );
-    });
-
-    it("click replace and generic fail", async () => {
+    it("click overwrite and generic fail", async () => {
       // reject! ?>
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.reject();
 
@@ -142,17 +109,26 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
+
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
       // update component + now press a key
       act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        //
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
       // need to await here
+      const add = component.queryByTestId("replace-button") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       expect(notificationSpy).toBeCalled();
@@ -163,7 +139,7 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
       jest.spyOn(Notification, "default").mockRestore();
     });
 
-    it("click replace > generic fail > remove message retry when success", async () => {
+    it("click overwrite > generic fail > remove message retry when success", async () => {
       var connectionDefault: IConnectionDefault = {
         statusCode: 200,
         data: [] as any[]
@@ -179,17 +155,25 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefaultReject);
 
-      const component = mount(<ArchiveSidebarLabelEditSearchReplace />);
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
+
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
 
       // update component + now press a key
       act(() => {
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
 
       // need to await here
+      const add = component.queryByTestId("replace-button") as HTMLElement;
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       jest.spyOn(FetchPost, "default").mockRestore();
@@ -198,23 +182,123 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .mockImplementationOnce(() => mockIConnectionDefaultResolve);
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeTruthy();
+      let notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+
+      expect(notification).toBeTruthy();
 
       // second time; now it removes the error message from the component
       // need to await here
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
       // force update to show message
-      component.update();
-      expect(component.exists(".notification")).toBeFalsy();
+      notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+      expect(notification).toBeFalsy();
 
       act(() => {
         component.unmount();
       });
       jest.spyOn(Notification, "default").mockRestore();
+    });
+
+    it("Should change value when onChange was called", () => {
+      const component = render(
+        <ArchiveSidebarLabelEditSearchReplace>
+          t
+        </ArchiveSidebarLabelEditSearchReplace>
+      );
+
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
+      act(() => {
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
+      });
+
+      const add = component.queryByTestId("replace-button") as HTMLElement;
+
+      var className = add.className;
+      expect(className).toBe("btn btn--default");
+
+      act(() => {
+        component.unmount();
+      });
+    });
+
+    it("click replace", async () => {
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [
+          {
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            tags: "test1, test2",
+            status: IExifStatus.Ok
+          }
+        ] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+      var spy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
+
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
+      act(() => {
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
+      });
+
+      const add = component.queryByTestId("replace-button") as HTMLElement;
+
+      expect(add).toBeTruthy();
+
+      // need to await to contain dispatchedValues
+      await act(async () => {
+        await add.click();
+      });
+
+      expect(spy).toBeCalled();
+      expect(spy).toBeCalledWith(
+        new UrlQuery().UrlReplaceApi(),
+        "f=%2Ftest.jpg&collections=true&fieldName=tags&search=a&replace="
+      );
+
+      expect(dispatchedValues).toStrictEqual([
+        {
+          type: "update",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          tags: "test1, test2",
+          select: ["test.jpg"],
+          status: IExifStatus.Ok
+        }
+      ]);
+
+      act(() => {
+        component.unmount();
+      });
     });
 
     it("click update | read only", async () => {
@@ -238,31 +322,118 @@ describe("ArchiveSidebarLabelEditSearchReplace", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const component = mount(
-        <ArchiveSidebarLabelEditSearchReplace>
-          t
-        </ArchiveSidebarLabelEditSearchReplace>
-      );
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
 
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
       act(() => {
-        // update component + now press a key
-        component.find('[data-name="tags"]').getDOMNode().textContent = "a";
-        component.find('[data-name="tags"]').simulate("input", { key: "a" });
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
       });
+
+      const add = component.queryByTestId("replace-button") as HTMLElement;
+      expect(add).toBeTruthy();
 
       // need to await to contain dispatchedValues
       await act(async () => {
-        await component.find(".btn.btn--default").simulate("click");
+        await add.click();
       });
 
-      // force update to get the right state
-      component.update();
-
-      expect(component.exists(Notification.default)).toBeTruthy();
+      const notification = component.queryByTestId(
+        "notification-content"
+      ) as HTMLElement;
+      expect(notification).toBeTruthy();
 
       act(() => {
         component.unmount();
       });
+    });
+
+    it("click append multiple", async () => {
+      act(() => {
+        // to use with: => import { act } from 'react-dom/test-utils';
+        globalHistory.navigate("/?select=test.jpg,test1.jpg,notfound.jpg");
+      });
+
+      jest.spyOn(FetchPost, "default").mockReset();
+
+      var connectionDefault: IConnectionDefault = {
+        statusCode: 200,
+        data: [
+          {
+            fileName: "test.jpg",
+            parentDirectory: "/",
+            tags: "test1, test2",
+            status: IExifStatus.Ok
+          },
+          {
+            fileName: "test1.jpg",
+            parentDirectory: "/",
+            tags: "test, test2",
+            status: IExifStatus.Ok
+          }
+        ] as IFileIndexItem[]
+      };
+      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+        connectionDefault
+      );
+      var spy = jest
+        .spyOn(FetchPost, "default")
+        .mockImplementationOnce(() => mockIConnectionDefault);
+
+      const component = render(<ArchiveSidebarLabelEditSearchReplace />);
+
+      const formControls = component
+        .queryAllByTestId("form-control")
+        .find((p) => p.getAttribute("data-name") === "tags");
+      const tags = formControls as HTMLElement[][0];
+      expect(tags).not.toBe(undefined);
+
+      // update component + now press a key
+      act(() => {
+        tags.textContent = "a";
+        const inputEvent = createEvent.input(tags, { key: "a" });
+        fireEvent(tags, inputEvent);
+      });
+
+      const add = component.queryByTestId("replace-button") as HTMLElement;
+      expect(add).toBeTruthy();
+
+      // need to await to contain dispatchedValues
+      await act(async () => {
+        await add.click();
+      });
+
+      expect(spy).toBeCalled();
+      expect(spy).toBeCalledWith(
+        new UrlQuery().UrlReplaceApi(),
+        "f=%2Ftest.jpg%3B%2Ftest1.jpg&collections=true&fieldName=tags&search=a&replace="
+      );
+
+      expect(dispatchedValues).toStrictEqual([
+        {
+          type: "update",
+          fileName: "test.jpg",
+          parentDirectory: "/",
+          tags: "test1, test2",
+          select: ["test.jpg"],
+          status: IExifStatus.Ok
+        },
+        {
+          type: "update",
+          fileName: "test1.jpg",
+          parentDirectory: "/",
+          tags: "test, test2",
+          select: ["test1.jpg"],
+          status: IExifStatus.Ok
+        }
+      ]);
     });
   });
 });

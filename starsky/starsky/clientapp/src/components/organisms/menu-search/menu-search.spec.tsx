@@ -1,42 +1,41 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import MenuSearch from "./menu-search";
 
 describe("MenuSearch", () => {
   it("renders", () => {
-    shallow(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
+    render(<MenuSearch state={undefined as any} dispatch={jest.fn()} />);
   });
 
   describe("with Context", () => {
     it("open hamburger menu", () => {
-      var component = mount(
+      var component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
         />
       );
-      var hamburger = component.find(".hamburger");
 
-      expect(component.exists(".form-nav")).toBeTruthy();
-      expect(component.exists(".hamburger.open")).toBeFalsy();
-      expect(component.exists(".nav.open")).toBeFalsy();
+      let hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      let hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger");
 
       act(() => {
-        hamburger.simulate("click");
+        hamburger.click();
       });
 
-      // find does not work
-      expect(component.html()).toContain("hamburger open");
-      expect(component.html()).toContain("nav open");
-      expect(component.exists(".form-nav")).toBeTruthy();
+      hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger open");
+
       component.unmount();
     });
 
     it("un select items", () => {
       globalHistory.navigate("/?select=1");
-      var component = mount(
+      var component = render(
         <MenuSearch
           state={{ fileIndexItems: [] } as any}
           dispatch={jest.fn()}
@@ -45,8 +44,10 @@ describe("MenuSearch", () => {
 
       expect(globalHistory.location.search).toBe("?select=1");
 
+      let selected1 = component.queryByTestId("selected-1") as HTMLDivElement;
+
       act(() => {
-        component.find('[data-test="selected-1"]').simulate("click");
+        selected1.click();
       });
 
       expect(globalHistory.location.search).toBe("");

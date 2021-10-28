@@ -1,6 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { PageType } from "../../../interfaces/IDetailView";
 import { newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
@@ -8,7 +7,9 @@ import ArchiveSidebar from "./archive-sidebar";
 
 describe("ArchiveSidebar", () => {
   it("renders", () => {
-    shallow(
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+
+    render(
       <ArchiveSidebar
         pageType={PageType.Loading}
         subPath={"/"}
@@ -33,7 +34,7 @@ describe("ArchiveSidebar", () => {
         .spyOn(window, "scrollTo")
         .mockImplementationOnce(() => {});
 
-      const component = mount(
+      const component = render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}
@@ -42,8 +43,7 @@ describe("ArchiveSidebar", () => {
           fileIndexItems={newIFileIndexItemArray()}
         >
           t
-        </ArchiveSidebar>,
-        { attachTo: (window as any).domNode }
+        </ArchiveSidebar>
       );
 
       act(() => {
@@ -56,22 +56,25 @@ describe("ArchiveSidebar", () => {
     });
 
     it("no warning if is not read only", () => {
-      var component = mount(
+      const component = render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}
           isReadOnly={false}
           colorClassUsage={[]}
           fileIndexItems={newIFileIndexItemArray()}
-        >
-          t
-        </ArchiveSidebar>
+        />
       );
-      expect(component.find(".warning-box")).toBeTruthy();
+
+      const element = component.queryByTestId(
+        "sidebar-selection-none"
+      ) as HTMLDivElement;
+
+      expect(element).toBeTruthy();
     });
 
     it("show warning if is read only", () => {
-      const component = mount(
+      const component = render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}
@@ -80,11 +83,16 @@ describe("ArchiveSidebar", () => {
           fileIndexItems={newIFileIndexItemArray()}
         />
       );
-      expect(component.find(".warning-box")).toBeTruthy();
+
+      const element = component.queryByTestId(
+        "sidebar-read-only"
+      ) as HTMLDivElement;
+
+      expect(element).toBeTruthy();
     });
 
     it("scroll event and set body style with scroll", () => {
-      mount(
+      render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}
@@ -105,7 +113,7 @@ describe("ArchiveSidebar", () => {
     });
 
     it("scroll event and set body style no scroll", () => {
-      mount(
+      render(
         <ArchiveSidebar
           pageType={PageType.Archive}
           subPath={"/"}

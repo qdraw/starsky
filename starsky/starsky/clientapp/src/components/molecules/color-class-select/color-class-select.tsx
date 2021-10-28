@@ -69,6 +69,8 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
         </Portal>
       ) : null}
       <div
+        data-colorclass={currentColorClass}
+        data-test={"color-class-select"}
         className={
           props.isEnabled
             ? "colorclass colorclass--select"
@@ -78,6 +80,7 @@ const ColorClassSelect: React.FunctionComponent<IColorClassSelectProps> = (
         {colorContent.map((item, index) => (
           <button
             key={index}
+            data-test={"color-class-select-" + index}
             onClick={() => {
               new ColorClassUpdateSingle(
                 props.isEnabled,

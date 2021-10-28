@@ -1,6 +1,5 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { act, render, RenderResult, waitFor } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchGet from "../../../shared/fetch-get";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -9,8 +8,12 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveSynchronizeManually from "./modal-archive-synchronize-manually";
 
 describe("ModalArchiveSynchronizeManually", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveSynchronizeManually
         isOpen={true}
         parentFolder="/"
@@ -23,9 +26,9 @@ describe("ModalArchiveSynchronizeManually", () => {
 
   describe("with Context", () => {
     describe("buttons exist", () => {
-      var modal: ReactWrapper;
-      beforeAll(() => {
-        modal = mount(
+      var modal: RenderResult;
+      beforeEach(() => {
+        modal = render(
           <ModalArchiveSynchronizeManually
             parentFolder={"/"}
             isOpen={true}
@@ -43,24 +46,24 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("force-sync", () => {
-        expect(modal.exists('[data-test="force-sync"]')).toBeTruthy();
+        expect(modal.queryByTestId("force-sync")).toBeTruthy();
       });
       it("remove-cache", () => {
-        expect(modal.exists('[data-test="remove-cache"]')).toBeTruthy();
+        expect(modal.queryByTestId("remove-cache")).toBeTruthy();
       });
       it("geo-sync", () => {
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+        expect(modal.queryByTestId("geo-sync")).toBeTruthy();
       });
       it("thumbnail-generation", () => {
-        expect(modal.exists('[data-test="thumbnail-generation"]')).toBeTruthy();
+        expect(modal.queryByTestId("thumbnail-generation")).toBeTruthy();
       });
     });
 
     describe("click button", () => {
-      var modal: ReactWrapper;
+      var modal: RenderResult;
       beforeEach(() => {
         jest.useFakeTimers();
-        modal = mount(
+        modal = render(
           <ModalArchiveSynchronizeManually
             parentFolder={"/"}
             isOpen={true}
@@ -78,7 +81,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         jest.useRealTimers();
       });
 
-      it("force-sync (only first get)", () => {
+      it("force-sync (only first get)", async () => {
         const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
           {
             statusCode: 200,
@@ -90,9 +93,14 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-        modal.find('[data-test="force-sync"]').simulate("click");
+        const forceSync = modal.queryByTestId("force-sync");
+        expect(forceSync).toBeTruthy();
 
-        expect(fetchPostSpy).toBeCalled();
+        await act(async () => {
+          await forceSync?.click();
+        });
+
+        await waitFor(() => expect(fetchPostSpy).toBeCalled());
         expect(fetchPostSpy).toBeCalledWith(new UrlQuery().UrlSync("/"), "");
       });
 
@@ -108,8 +116,11 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchGet, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
+        const removeCache = modal.queryByTestId("remove-cache");
+        expect(removeCache).toBeTruthy();
+
         act(() => {
-          modal.find('[data-test="remove-cache"]').simulate("click");
+          removeCache?.click();
         });
 
         expect(fetchGetSpy).toBeCalled();
@@ -118,7 +129,7 @@ describe("ModalArchiveSynchronizeManually", () => {
         fetchGetSpy.mockReset();
       });
 
-      it("geo-sync (only first post)", () => {
+      it("geo-sync (only first post)", async () => {
         const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
           {
             statusCode: 200,
@@ -134,9 +145,13 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(UrlQuery.prototype, "UrlGeoSync")
           .mockImplementationOnce(() => "");
 
-        expect(modal.exists('[data-test="geo-sync"]')).toBeTruthy();
+        const geoSyncButton = modal.queryByTestId("geo-sync");
+        expect(geoSyncButton).toBeTruthy();
 
-        modal.find('[data-test="geo-sync"]').simulate("click");
+        await act(async () => {
+          await geoSyncButton?.click();
+        });
+
         expect(urlGeoSyncUrlQuerySpy).toBeCalled();
         expect(fetchPostSpy).toBeCalled();
       });
@@ -153,8 +168,11 @@ describe("ModalArchiveSynchronizeManually", () => {
           .spyOn(FetchPost, "default")
           .mockImplementationOnce(() => mockGetIConnectionDefault);
 
+        const thumbnailGeneration = modal.queryByTestId("thumbnail-generation");
+        expect(thumbnailGeneration).toBeTruthy();
+
         act(() => {
-          modal.find('[data-test="thumbnail-generation"]').simulate("click");
+          thumbnailGeneration?.click();
         });
 
         expect(fetchGetSpy).toBeCalled();
@@ -177,7 +195,7 @@ describe("ModalArchiveSynchronizeManually", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalArchiveSynchronizeManually
           parentFolder="/"
           isOpen={true}

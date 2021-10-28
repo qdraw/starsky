@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { newIConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -8,7 +8,7 @@ import HealthStatusError from "./health-status-error";
 
 describe("HealthStatusError", () => {
   it("renders (without state component)", () => {
-    shallow(<HealthStatusError />);
+    render(<HealthStatusError />);
   });
 
   describe("with Context", () => {
@@ -17,9 +17,19 @@ describe("HealthStatusError", () => {
       jest.spyOn(useFetch, "default").mockImplementationOnce(() => {
         return newIConnectionDefault();
       });
-      var component = mount(<HealthStatusError />);
 
-      expect(component.html()).toBe(null);
+      var notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => {
+          return null;
+        });
+
+      var component = render(<HealthStatusError />);
+
+      expect(notificationSpy).not.toBeCalled();
+      expect(notificationSpy).toBeCalledTimes(0);
+
+      component.unmount();
     });
 
     it("Error 500", () => {
@@ -35,7 +45,7 @@ describe("HealthStatusError", () => {
           return null;
         });
 
-      var component = mount(<HealthStatusError>t</HealthStatusError>);
+      var component = render(<HealthStatusError>t</HealthStatusError>);
 
       expect(notificationSpy).toBeCalled();
 
@@ -72,7 +82,7 @@ describe("HealthStatusError", () => {
           return null;
         });
 
-      var component = mount(<HealthStatusError />);
+      var component = render(<HealthStatusError />);
 
       expect(notificationSpy).toBeCalled();
 

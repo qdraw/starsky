@@ -253,6 +253,7 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {!select ? (
             <div
               className="item item--select"
+              data-test="menu-item-select"
               onClick={() => {
                 removeSidebarSelection();
               }}
@@ -310,7 +311,11 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
           {select ? (
             <MoreMenu>
               {select.length === state.fileIndexItems.length ? (
-                <li className="menu-option" onClick={() => undoSelection()}>
+                <li
+                  className="menu-option"
+                  data-test="undo-selection"
+                  onClick={() => undoSelection()}
+                >
                   {MessageUndoSelection}
                 </li>
               ) : null}
