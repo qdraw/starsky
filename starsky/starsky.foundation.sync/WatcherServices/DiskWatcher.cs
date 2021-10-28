@@ -31,11 +31,6 @@ namespace starsky.foundation.sync.WatcherServices
 		}
 
 		/// <summary>
-		/// For testing
-		/// </summary>
-		internal bool EndOrError { get; set; }
-
-		/// <summary>
 		/// @see: https://docs.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netcore-3.1
 		/// </summary>
 		public void Watcher(string fullFilePath)
@@ -88,15 +83,18 @@ namespace starsky.foundation.sync.WatcherServices
 				//  that some of the file system events are being lost.
 				_webLogger.LogError(e.GetException(),"[DiskWatcher] The file system watcher experienced an internal buffer overflow ");
 			}
+
+			// when test dont retry
+			if ( e.GetException().Message == "test" ) return;
 			
 			// When fail it should try it again
-			Retry(new FileSystemWatcher() as FileSystemWatcherWrapper);
+			Retry(new FileSystemWatcherWrapper());
 		}
 
 		/// <summary>
 		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
 		/// </summary>
-		internal bool Retry(FileSystemWatcherWrapper fileSystemWatcherWrapper)
+		internal bool Retry(IFileSystemWatcherWrapper fileSystemWatcherWrapper)
 		{
 			_webLogger.LogInformation("[DiskWatcher] next retry " +
 			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");

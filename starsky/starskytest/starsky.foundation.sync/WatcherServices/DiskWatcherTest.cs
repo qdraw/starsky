@@ -49,7 +49,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			
-			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory){EndOrError = true}.Watcher("/test");
+			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
 			var autoResetEvent = new AutoResetEvent(false);
 
 			using var scope = _scopeFactory.CreateScope();
@@ -64,12 +64,12 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				autoResetEvent.Set();
 				message = e.GetException().Message;
 			};
-			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException() ));
-
-			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(300));
+			
+			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException("test") ));
+			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(200));
+			
 			Assert.IsTrue(wasSignaled);
-
-			Assert.IsTrue(message.Contains("err"));
+			Assert.IsTrue(message.Contains("test"));
 		}
 		
 		[TestMethod]
@@ -140,7 +140,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 
-			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(new FileSystemWatcherWrapper());
+			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher);
 			
 			Assert.IsTrue(result);	
 		}
