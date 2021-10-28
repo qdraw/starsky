@@ -95,7 +95,7 @@ function geoDeps {
 
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
-    echo "do only the geo deps"
+    echo "do only the geo deps exiftool/ geo data"
     start_pushd
     geoDeps
     end_popd
