@@ -1,7 +1,6 @@
 import { globalHistory } from "@reach/router";
-import { shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
   newIFileIndexItemArray
@@ -11,7 +10,7 @@ import ArchiveSidebarSelectionList from "./archive-sidebar-selection-list";
 
 describe("archive-sidebar-selection-list", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ArchiveSidebarSelectionList fileIndexItems={newIFileIndexItemArray()} />
     );
   });
@@ -35,23 +34,33 @@ describe("archive-sidebar-selection-list", () => {
     ] as IFileIndexItem[];
 
     it("with items, check first item", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
-      var first = component.find("ul li").first();
-      expect(first.text()).toBe("test.jpg");
+      const selectionList = component.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+
+      expect(selectionList.children[0].textContent).toBe("test.jpg");
     });
 
     it("toggleSelection", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
 
       var spy = jest.spyOn(URLPath.prototype, "toggleSelection");
 
-      var first = component.find("ul li").first();
-      first.find(".close").simulate("click");
+      const selectionList = component.queryByTestId(
+        "sidebar-selection-list"
+      ) as HTMLElement;
+
+      act(() => {
+        (selectionList.children[0].querySelector(
+          ".close"
+        ) as HTMLElement).click();
+      });
 
       expect(spy).toBeCalledTimes(1);
 
@@ -59,14 +68,16 @@ describe("archive-sidebar-selection-list", () => {
     });
 
     it("allSelection", () => {
-      const component = shallow(
+      const component = render(
         <ArchiveSidebarSelectionList fileIndexItems={items} />
       );
-      var allSelectionButton = component.find('[data-test="select-all"]');
+      var allSelectionButton = component.queryByTestId("select-all");
 
       var spy = jest.spyOn(URLPath.prototype, "GetAllSelection");
 
-      allSelectionButton.simulate("click");
+      act(() => {
+        (allSelectionButton as HTMLElement).click();
+      });
 
       expect(spy).toBeCalledTimes(1);
 

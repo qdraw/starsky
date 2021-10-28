@@ -28,6 +28,7 @@ const Select: React.FunctionComponent<SelectPropTypes> = ({
     <select
       defaultValue={selected}
       className="select"
+      data-test="select"
       onChange={(e) => change(e.target.value)}
     >
       {selectOptions.map((value, index) => {

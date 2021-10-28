@@ -149,12 +149,18 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
           </FormControl>
 
           {error && (
-            <div className="warning-box--under-form warning-box">{error}</div>
+            <div
+              data-test="modal-archive-mkdir-warning-box"
+              className="warning-box--under-form warning-box"
+            >
+              {error}
+            </div>
           )}
 
           <button
             disabled={!isFormEnabled || loading || !buttonState}
             className="btn btn--default"
+            data-test="modal-archive-mkdir-btn-default"
             onClick={pushRenameChange}
           >
             {loading ? "Loading..." : MessageFeatureName}

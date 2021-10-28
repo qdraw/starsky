@@ -85,7 +85,12 @@ const ItemListView: React.FunctionComponent<ItemListProps> = memo((props) => {
             {MessageItemsOutsideFilter}
           </div>
         ) : (
-          <div className="warning-box">{MessageNoPhotosInFolder}</div>
+          <div
+            className="warning-box"
+            data-test="list-view-no-photos-in-folder"
+          >
+            {MessageNoPhotosInFolder}
+          </div>
         )
       ) : null}
 

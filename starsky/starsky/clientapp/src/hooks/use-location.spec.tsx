@@ -1,4 +1,4 @@
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import useLocation from "./use-location";
 
@@ -16,7 +16,7 @@ describe("useLocation", () => {
         return [setState, setState];
       });
 
-    mount(<UseLocationComponentTest></UseLocationComponentTest>);
+    render(<UseLocationComponentTest></UseLocationComponentTest>);
 
     expect(useStateSpy).toBeCalled();
   });

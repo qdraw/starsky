@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Notification from "../components/atoms/notification/notification";
 import * as HealthStatusError from "../components/molecules/health-status-error/health-status-error";
@@ -10,7 +10,7 @@ import MediaContent from "./media-content";
 
 describe("MediaContent", () => {
   it("renders", () => {
-    shallow(<MediaContent />);
+    render(<MediaContent />);
   });
   it("application failed", () => {
     // use this import => import * as useFileList from '../hooks/use-filelist';
@@ -25,8 +25,8 @@ describe("MediaContent", () => {
     // use ==> import * as HealthStatusError from '../components/health-status-error';
     jest.spyOn(HealthStatusError, "default").mockImplementationOnce(() => null);
 
-    const component = mount(<MediaContent />);
-    expect(component.html()).toBe(
+    const component = render(<MediaContent />);
+    expect(component.container.innerHTML).toBe(
       "<br>The application has failed. Please reload it to try it again"
     );
     component.unmount();
@@ -58,7 +58,7 @@ describe("MediaContent", () => {
       return <div className="test">testung</div>;
     });
 
-    const component = mount(<MediaContent />);
+    const component = render(<MediaContent />);
 
     expect(setShowSocketErrorSpy).toBeCalled();
     component.unmount();

@@ -208,7 +208,6 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           history,
           state
         );
-        console.log(updateChange);
 
         const paste = new ClipboardHelper().Paste(updateChange.Update);
 
@@ -226,7 +225,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
 
     // noinspection HtmlUnknownAttribute
     return (
-      <div className="detailview-sidebar">
+      <div className="detailview-sidebar" data-test="detailview-sidebar">
         {copyPasteAction ? (
           <Notification callback={() => setCopyPasteAction("")}>
             {copyPasteAction}
@@ -408,7 +407,10 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
                 fileIndexItem.longitude
               }
             >
-              <div className="icon icon--location" />
+              <div
+                className="icon icon--location"
+                data-test="detailview-location-div"
+              />
               {fileIndexItem.locationCity && fileIndexItem.locationCountry ? (
                 <>
                   <b>{fileIndexItem.locationCity}</b>

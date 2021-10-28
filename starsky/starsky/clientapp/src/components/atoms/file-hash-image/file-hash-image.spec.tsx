@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -13,7 +13,7 @@ import * as PanAndZoomImage from "./pan-and-zoom-image";
 
 describe("FileHashImage", () => {
   it("renders", () => {
-    shallow(<FileHashImage isError={false} fileHash={""} />);
+    render(<FileHashImage isError={false} fileHash={""} />);
   });
 
   it("Rotation API is called return 202", async () => {
@@ -47,9 +47,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<>test</>);
+    var component = render(<>test</>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -96,9 +96,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<></>);
+    var component = render(<></>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -132,9 +132,9 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // need to await here
-    var component = mount(<></>);
+    var component = render(<></>);
     await act(async () => {
-      component = await mount(
+      component = await render(
         <FileHashImage
           isError={false}
           fileHash="hash"
@@ -175,7 +175,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject)
       .mockImplementationOnce(panZoomObject);
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -183,13 +183,15 @@ describe("FileHashImage", () => {
       />
     );
 
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    const button = component.getAllByRole("button")[0] as HTMLButtonElement;
+    const image = component.getAllByRole("img")[0] as HTMLImageElement;
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailZoom("hash", 1)
+    act(() => {
+      button.click();
+    });
+
+    expect(image.src).toBe(
+      "http://localhost" + new UrlQuery().UrlThumbnailZoom("hash", 1)
     );
   });
 
@@ -218,7 +220,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject);
 
     const onWheelCallbackSpy = jest.fn();
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -227,10 +229,11 @@ describe("FileHashImage", () => {
       />
     );
 
+    const button = component.getAllByRole("button")[0];
+
     act(() => {
-      component.find("button").simulate("click");
+      button.click();
     });
-    component.update();
 
     expect(onWheelCallbackSpy).toBeCalled();
   });
@@ -259,7 +262,7 @@ describe("FileHashImage", () => {
       .mockImplementationOnce(panZoomObject)
       .mockImplementationOnce(panZoomObject);
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -268,13 +271,12 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    component.queryByRole("button")?.click();
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+    const img = component.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
   });
 
@@ -304,7 +306,7 @@ describe("FileHashImage", () => {
 
     const onResetCallbackSpy = jest.fn();
 
-    const component = mount(
+    const component = render(
       <FileHashImage
         isError={false}
         fileHash="hash"
@@ -314,14 +316,14 @@ describe("FileHashImage", () => {
     );
 
     // there is one problem with this test, is assumes the default value
-    act(() => {
-      component.find("button").simulate("click");
-    });
-    component.update();
+    component.queryByRole("button")?.click();
 
-    expect(component.find("img").prop("src")).toBe(
-      new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
+    const img = component.queryByRole("img") as HTMLImageElement;
+    expect(img.src).toBe(
+      "http://localhost" +
+        new UrlQuery().UrlThumbnailImageLargeOrExtraLarge("hash", true)
     );
+
     expect(onResetCallbackSpy).toBeCalled();
   });
 });

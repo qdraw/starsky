@@ -178,7 +178,12 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
           </FormControl>
 
           {error && (
-            <div className="warning-box--under-form warning-box">{error}</div>
+            <div
+              data-test="modal-detailview-rename-file-warning-box"
+              className="warning-box--under-form warning-box"
+            >
+              {error}
+            </div>
           )}
 
           <button
@@ -188,6 +193,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
               loading ||
               !buttonState
             }
+            data-test="modal-detailview-rename-file-btn-default"
             className="btn btn--default"
             onClick={pushRenameChange}
           >

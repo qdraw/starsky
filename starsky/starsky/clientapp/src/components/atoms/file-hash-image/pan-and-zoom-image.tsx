@@ -132,6 +132,7 @@ const PanAndZoomImage = ({ src, id, ...props }: IPanAndZoomImage) => {
     <>
       <div
         className={className}
+        data-test="pan-zoom-image"
         ref={containerRef}
         onMouseDown={
           new OnMouseDownMouseAction(setPanning, position, setPosition)

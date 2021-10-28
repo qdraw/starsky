@@ -1,4 +1,10 @@
-import { mount, shallow } from "enzyme";
+import {
+  act,
+  createEvent,
+  fireEvent,
+  render,
+  RenderResult
+} from "@testing-library/react";
 import React from "react";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import * as FetchPost from "../../../shared/fetch-post";
@@ -7,8 +13,12 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalDatetime from "./modal-edit-datetime";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
+    render(
       <ModalDatetime isOpen={true} subPath="/" handleExit={() => {}}>
         test
       </ModalDatetime>
@@ -20,21 +30,23 @@ describe("ModalArchiveMkdir", () => {
     });
 
     it("no date input", () => {
-      var modal = mount(
+      var modal = render(
         <ModalDatetime subPath={"/test"} isOpen={true} handleExit={() => {}} />
       );
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(modal.queryByTestId("modal-edit-datetime-non-valid")).toBeTruthy();
 
       // and button is disabled
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
-      expect(submitButtonBefore).toBeTruthy();
+      const submitButtonBefore = modal.queryByTestId(
+        "modal-edit-datetime-btn-default"
+      ) as HTMLButtonElement;
+      expect(submitButtonBefore).not.toBeNull();
+
+      expect(submitButtonBefore.disabled).toBeTruthy();
     });
 
     it("example date no error dialog", () => {
-      var modal = mount(
+      var modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
@@ -44,16 +56,39 @@ describe("ModalArchiveMkdir", () => {
       );
 
       // no warning
-      expect(modal.exists(".warning-box")).toBeFalsy();
+      expect(modal.queryByTestId("modal-edit-datetime-non-valid")).toBeFalsy();
 
-      // and button is enabled
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
-      expect(submitButtonBefore).toBeFalsy();
+      const submitButtonBefore = modal.queryByTestId(
+        "modal-edit-datetime-btn-default"
+      ) as HTMLButtonElement;
+      expect(submitButtonBefore).not.toBeNull();
+
+      // and button is NOT disabled
+      expect(submitButtonBefore.disabled).toBeFalsy();
     });
 
-    it("change all options", (done) => {
+    async function fireEventOnFormControl(
+      modal: RenderResult,
+      dataName: string,
+      input: string
+    ) {
+      const formControls = modal.queryAllByTestId("form-control");
+
+      const year = formControls.find(
+        (p) => p.getAttribute("data-name") === dataName
+      ) as HTMLElement;
+      // use focusout instead of .blur
+      const blurEventYear = createEvent.focusOut(year, {
+        textContent: input
+      });
+
+      await act(async () => {
+        year.innerHTML = input;
+        await fireEvent(year, blurEventYear);
+      });
+    }
+
+    it("change all options", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -63,37 +98,27 @@ describe("ModalArchiveMkdir", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var modal = mount(
+      const modal = render(
         <ModalDatetime
           dateTime="2020-01-01T01:29:40"
           subPath={"/test"}
           isOpen={true}
           handleExit={() => {
-            done();
+            // done();
           }}
         />
       );
 
-      // update component + and blur
-      modal.find('[data-name="year"]').getDOMNode().textContent = "1998";
-      modal.find('[data-name="year"]').simulate("blur");
+      await fireEventOnFormControl(modal, "year", "1998");
+      await fireEventOnFormControl(modal, "month", "12");
+      await fireEventOnFormControl(modal, "date", "1");
+      await fireEventOnFormControl(modal, "hour", "13");
+      await fireEventOnFormControl(modal, "minute", "5");
+      await fireEventOnFormControl(modal, "sec", "5");
 
-      modal.find('[data-name="month"]').getDOMNode().textContent = "12";
-      modal.find('[data-name="month"]').simulate("blur");
-
-      modal.find('[data-name="date"]').getDOMNode().textContent = "1";
-      modal.find('[data-name="date"]').simulate("blur");
-
-      modal.find('[data-name="hour"]').getDOMNode().textContent = "13";
-      modal.find('[data-name="hour"]').simulate("blur");
-
-      modal.find('[data-name="minute"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="minute"]').simulate("blur");
-
-      modal.find('[data-name="sec"]').getDOMNode().textContent = "5";
-      modal.find('[data-name="sec"]').simulate("blur");
-
-      modal.find(".btn--default").simulate("click");
+      await act(async () => {
+        await modal.queryByTestId("modal-edit-datetime-btn-default")?.click();
+      });
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
@@ -112,7 +137,7 @@ describe("ModalArchiveMkdir", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDatetime
           subPath="/test.jpg"
           isOpen={true}

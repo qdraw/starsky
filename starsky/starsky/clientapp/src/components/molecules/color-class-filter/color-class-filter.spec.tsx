@@ -1,13 +1,12 @@
 import { globalHistory } from "@reach/router";
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import { URLPath } from "../../../shared/url-path";
 import ColorClassFilter from "./color-class-filter";
 
 describe("ColorClassFilter", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -18,7 +17,7 @@ describe("ColorClassFilter", () => {
   });
 
   it("onClick value", () => {
-    var component = shallow(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -28,12 +27,16 @@ describe("ColorClassFilter", () => {
         t
       </ColorClassFilter>
     );
-    expect(component.exists(".colorclass--2")).toBeTruthy();
-    component.find(".colorclass--2").last().simulate("click");
+
+    const colorClass = component.queryByTestId(
+      "color-class-filter-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+    colorClass.click();
   });
 
   it("outside current scope display reset", () => {
-    var component = shallow(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -43,11 +46,12 @@ describe("ColorClassFilter", () => {
         t
       </ColorClassFilter>
     );
-    expect(component.exists(".colorclass--reset")).toBeTruthy();
+
+    expect(component.queryByTestId("color-class-filter-reset")).toBeTruthy();
   });
 
   it("onClick value and preloader exist", () => {
-    var component = mount(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -58,10 +62,15 @@ describe("ColorClassFilter", () => {
       </ColorClassFilter>
     );
 
-    expect(component.exists(".colorclass--2")).toBeTruthy();
+    const colorClass = component.queryByTestId(
+      "color-class-filter-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    component.find(".colorclass--2").last().simulate("click");
-    expect(component.exists(".preloader")).toBeTruthy();
+    colorClass.click();
+
+    const preloader = component.queryByTestId("preloader") as HTMLElement;
+    expect(preloader).toBeTruthy();
 
     component.unmount();
   });
@@ -69,7 +78,7 @@ describe("ColorClassFilter", () => {
   it("undo selection when clicking on already selected colorclass", () => {
     globalHistory.navigate("/?colorclass=1");
 
-    var component = mount(
+    var component = render(
       <ColorClassFilter
         itemsCount={1}
         subPath={"/test"}
@@ -80,9 +89,12 @@ describe("ColorClassFilter", () => {
       </ColorClassFilter>
     );
 
-    expect(
-      component.find(".colorclass--1").last().hasClass("active")
-    ).toBeTruthy();
+    const colorClass = component.queryByTestId(
+      "color-class-filter-1"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    expect(colorClass.classList).toContain("active");
 
     var urlToStringSpy = jest
       .spyOn(URLPath.prototype, "IUrlToString")
@@ -91,7 +103,7 @@ describe("ColorClassFilter", () => {
       });
 
     act(() => {
-      component.find(".colorclass--1").last().simulate("click");
+      colorClass.click();
     });
 
     expect(urlToStringSpy).toBeCalled();

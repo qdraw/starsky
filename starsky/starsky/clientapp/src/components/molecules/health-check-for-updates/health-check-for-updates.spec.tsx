@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
@@ -9,7 +9,7 @@ import HealthCheckForUpdates, {
 
 describe("HealthCheckForUpdates", () => {
   it("renders (without state component)", () => {
-    shallow(<HealthCheckForUpdates />);
+    render(<HealthCheckForUpdates />);
   });
 
   describe("with Context", () => {
@@ -19,12 +19,16 @@ describe("HealthCheckForUpdates", () => {
         data: null
       } as IConnectionDefault;
 
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
+
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />);
+      var component = render(<HealthCheckForUpdates />);
 
-      expect(component.exists(Notification.default)).toBeFalsy();
+      expect(notificationSpy).toBeCalledTimes(0);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -39,12 +43,14 @@ describe("HealthCheckForUpdates", () => {
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
 
-      // there is a link to github
-      expect(component.find("a")).toBeTruthy();
+      var component = render(<HealthCheckForUpdates></HealthCheckForUpdates>);
+
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -64,7 +70,7 @@ describe("HealthCheckForUpdates", () => {
       jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />);
+      var component = render(<HealthCheckForUpdates />);
       component.unmount();
 
       var item = localStorage.getItem(CheckForUpdatesLocalStorageName);
@@ -86,8 +92,14 @@ describe("HealthCheckForUpdates", () => {
       jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates />);
-      expect(component.exists(Notification.default)).toBeFalsy();
+
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <></>);
+
+      var component = render(<HealthCheckForUpdates />);
+
+      expect(notificationSpy).toBeCalledTimes(0);
 
       component.unmount();
       localStorage.removeItem(CheckForUpdatesLocalStorageName);
@@ -106,14 +118,13 @@ describe("HealthCheckForUpdates", () => {
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <>t</>);
 
-      // React 17 / Enzyme
-      // Error: mockConstructor(...): Nothing was returned from render.
-      // This usually means a return statement is missing. Or, to render nothing, return null
-      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
+      var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
       component.unmount();
@@ -129,18 +140,16 @@ describe("HealthCheckForUpdates", () => {
         data: null
       } as IConnectionDefault;
 
-      jest.spyOn(Notification, "default").mockImplementationOnce(() => <>t</>);
+      const notificationSpy = jest
+        .spyOn(Notification, "default")
+        .mockImplementationOnce(() => <>t</>);
 
       const useFetchSpy = jest
         .spyOn(useFetch, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
-      var component = mount(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
+      var component = render(<HealthCheckForUpdates>t</HealthCheckForUpdates>);
 
-      expect(component.exists(Notification.default)).toBeTruthy();
-
-      // there are no links here
-      var aHrefs = component.find("a").length;
-      expect(aHrefs).toBeFalsy();
+      expect(notificationSpy).toBeCalledTimes(1);
 
       expect(useFetchSpy).toBeCalled();
 

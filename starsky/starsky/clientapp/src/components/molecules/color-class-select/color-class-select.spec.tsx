@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render, waitFor } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import {
@@ -9,13 +9,13 @@ import { IExifStatus } from "../../../interfaces/IExifStatus";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as FetchPost from "../../../shared/fetch-post";
 import { UrlQuery } from "../../../shared/url-query";
-import Notification from "../../atoms/notification/notification";
+import * as Notification from "../../atoms/notification/notification";
 import ColorClassSelect from "./color-class-select";
 import * as ColorClassUpdateSingle from "./color-class-update-single";
 
 describe("ColorClassSelect", () => {
   it("renders", () => {
-    shallow(
+    render(
       <ColorClassSelect
         collections={true}
         isEnabled={true}
@@ -38,7 +38,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(
+    const wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -48,7 +48,12 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    wrapper.find("button.colorclass--2").simulate("click");
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    colorClass.click();
 
     // expect
     expect(fetchPostSpy).toHaveBeenCalledTimes(1);
@@ -69,7 +74,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = shallow(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -79,7 +84,14 @@ describe("ColorClassSelect", () => {
       />
     );
 
-    wrapper.find("button.colorclass--2").simulate("click");
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
+
+    colorClass.click();
+
+    // expect(colorClass).toBeTruthy();
 
     // expect [disabled]
     expect(fetchPostSpy).toHaveBeenCalledTimes(0);
@@ -102,7 +114,7 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -115,22 +127,30 @@ describe("ColorClassSelect", () => {
     );
 
     // need to await this click
-    await act(async () => {
-      await wrapper.find("button.colorclass--3").simulate("click");
-    });
 
-    wrapper.update();
+    let colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    expect(wrapper.exists("button.colorclass--3.active")).toBeTruthy();
+    await colorClass.click();
+
+    colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+
+    expect(colorClass.classList).toContain("active");
 
     // need to await this
     await act(async () => {
       await jest.advanceTimersByTime(1200);
     });
 
-    wrapper.update();
+    colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
 
-    expect(wrapper.exists("button.colorclass--3.active")).toBeFalsy();
+    expect(colorClass.classList).not.toContain("active");
 
     wrapper.unmount();
     fetchPostSpy.mockReset();
@@ -150,32 +170,29 @@ describe("ColorClassSelect", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var wrapper = mount(
+    var wrapper = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
         isEnabled={true}
         filePath={"/test1"}
         onToggle={(value) => {}}
-      >
-        t
-      </ColorClassSelect>
+      />
     );
 
-    // need to await this click
-    await act(async () => {
-      await wrapper.find("button.colorclass--2").simulate("click");
-    });
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockImplementationOnce(() => <></>);
 
-    wrapper.update();
+    const colorClass = wrapper.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    expect(wrapper.exists(Notification)).toBeTruthy();
+    await colorClass.click();
 
-    act(() => {
-      wrapper.unmount();
-    });
-
-    fetchPostSpy.mockReset();
+    expect(fetchPostSpy).toBeCalled();
+    expect(notificationSpy).toBeCalled();
   });
 
   it("when error is it should able to close the warning box", async () => {
@@ -186,7 +203,7 @@ describe("ColorClassSelect", () => {
         return { Update: jest.fn() } as any;
       });
 
-    const component = mount(
+    const component = render(
       <ColorClassSelect
         collections={true}
         clearAfter={true}
@@ -196,20 +213,23 @@ describe("ColorClassSelect", () => {
       />
     );
 
+    const notificationSpy = jest
+      .spyOn(Notification, "default")
+      .mockImplementationOnce(() => <></>);
+
     // need to await this click
-    await act(async () => {
-      await component.find("button.colorclass--2").simulate("click");
-    });
+    let colorClass = component.queryByTestId(
+      "color-class-select-2"
+    ) as HTMLAnchorElement;
+    expect(colorClass).toBeTruthy();
 
-    expect(colorClassUpdateSingleSpy).toBeCalled();
+    await colorClass.click();
 
-    component.update();
+    await waitFor(() => expect(colorClassUpdateSingleSpy).toBeCalled());
 
-    expect(component.exists(".notification")).toBeTruthy();
+    console.log(component.container.innerHTML);
 
-    component.find(".icon--close").simulate("click");
-
-    expect(component.exists(".notification")).toBeFalsy();
+    expect(notificationSpy).toBeCalled();
 
     await component.unmount();
   });

@@ -86,7 +86,7 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
         props.handleExit(null);
       }}
     >
-      <div className="content">
+      <div data-test="modal-edit-datetime" className="content">
         <div className="modal content--subheader">
           <b>{MessageModalDatetime}</b>
           {isValidDate(getDates()) ? (
@@ -190,13 +190,19 @@ const ModalEditDatetime: React.FunctionComponent<IModalDatetimeProps> = (
           </div>
 
           {!isValidDate(getDates()) ? (
-            <div className="warning-box">{MessageErrorDatetime}</div>
+            <div
+              data-test="modal-edit-datetime-non-valid"
+              className="warning-box"
+            >
+              {MessageErrorDatetime}
+            </div>
           ) : null}
 
           <button
             disabled={!isValidDate(getDates())}
             className="btn btn--default"
             onClick={updateDateTime}
+            data-test="modal-edit-datetime-btn-default"
           >
             {MessageModalDatetime}
           </button>

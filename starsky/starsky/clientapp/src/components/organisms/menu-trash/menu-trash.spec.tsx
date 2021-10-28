@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../../../hooks/use-fetch";
@@ -16,7 +16,7 @@ import MenuTrash from "./menu-trash";
 
 describe("MenuTrash", () => {
   it("renders", () => {
-    shallow(
+    render(
       <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
     );
   });
@@ -58,34 +58,35 @@ describe("MenuTrash", () => {
         });
     });
 
-    it("open hamburger menu", () => {
-      var component = mount(
-        <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
+    it("open hamburger menu (MenuTrash)", () => {
+      var component = render(
+        <MenuTrash state={{ fileIndexItems: [] } as any} dispatch={jest.fn()} />
       );
-      var hamburger = component.find(".hamburger");
 
-      expect(component.exists(".form-nav")).toBeTruthy();
-      expect(component.exists(".hamburger.open")).toBeFalsy();
-      expect(component.exists(".nav.open")).toBeFalsy();
+      let hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      let hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger");
 
       act(() => {
-        hamburger.simulate("click");
+        hamburger.click();
       });
 
-      expect(component.html()).toContain("hamburger open");
-      expect(component.html()).toContain("nav open");
-      expect(component.exists(".form-nav")).toBeTruthy();
+      hamburger = component.queryByTestId("hamburger") as HTMLDivElement;
+      hamburgerDiv = hamburger.querySelector("div") as HTMLDivElement;
+      expect(hamburgerDiv.className).toBe("hamburger open");
 
       component.unmount();
     });
 
     it("select is not disabled", () => {
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      expect(component.exists(".item--select")).toBeTruthy();
-      expect(component.exists(".item--more")).toBeTruthy();
+      const menuTrashItemSelect = component.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
 
       component.unmount();
     });
@@ -104,15 +105,16 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var select = component.find(".item--select");
+      const menuTrashItemSelect = component.queryByTestId(
+        "menu-trash-item-select"
+      ) as HTMLDivElement;
+      expect(menuTrashItemSelect).toBeTruthy();
 
-      act(() => {
-        select.simulate("click");
-      });
+      menuTrashItemSelect.click();
 
       expect(globalHistory.location.search).toBe("?select=");
       component.unmount();
@@ -129,16 +131,17 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var more = component.find(".item--more");
-      expect(more.exists(".disabled")).toBeFalsy();
+      const menuContext = component.queryByTestId(
+        "menu-context"
+      ) as HTMLInputElement;
+      const menuContextParent = menuContext.parentElement as HTMLInputElement;
+      expect(menuContextParent.classList).not.toContain("disabled");
 
-      act(() => {
-        more.find(".menu-option").simulate("click");
-      });
+      component.queryByTestId("select-all")?.click();
 
       expect(globalHistory.location.search).toBe("?select=test1.jpg");
 
@@ -175,14 +178,17 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var more = component.find(".item--more");
-      act(() => {
-        more.find(".menu-option").first().simulate("click");
-      });
+      const menuContext = component.queryByTestId(
+        "menu-context"
+      ) as HTMLInputElement;
+      const menuContextParent = menuContext.parentElement as HTMLInputElement;
+      expect(menuContextParent.classList).not.toContain("disabled");
+
+      component.queryByTestId("undo-selection")?.click();
 
       expect(globalHistory.location.search).toBe("?select=");
 
@@ -213,14 +219,14 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="delete"]');
+      var item = component.queryByTestId("delete");
 
       act(() => {
-        item.simulate("click");
+        item?.click();
       });
 
       expect(modalSpy).toBeCalled();
@@ -254,21 +260,19 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="delete"]');
+      var item = component.queryByTestId("delete");
 
       act(() => {
-        item.simulate("click");
+        item?.click();
       });
 
       expect(modalSpy).toBeCalled();
 
       expect(globalHistory.location.search).toBe("?select=test1.jpg");
-
-      console.log(component.html());
 
       // cleanup
       act(() => {
@@ -309,15 +313,15 @@ describe("MenuTrash", () => {
         globalHistory.navigate("/?select=test1.jpg");
       });
 
-      var component = mount(
+      var component = render(
         <MenuTrash state={contextValues.state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="restore-from-trash"]');
+      var item = component.queryByTestId("restore-from-trash");
 
-      // need to await here
+      // // need to await here
       await act(async () => {
-        await item.simulate("click");
+        await item?.click();
       });
 
       expect(globalHistory.location.search).toBe("?select=");

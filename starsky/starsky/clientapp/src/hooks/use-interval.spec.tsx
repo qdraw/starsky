@@ -1,4 +1,4 @@
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import React, { memo } from "react";
 import useInterval from "./use-interval";
 
@@ -19,7 +19,7 @@ describe("useInterval", () => {
     function callback() {
       done();
     }
-    mount(
+    render(
       <UseIntervalComponentTest timer={0} callback={callback}>
         t
       </UseIntervalComponentTest>
@@ -33,7 +33,7 @@ describe("useInterval", () => {
         return {} as any;
       });
 
-    var component = mount(
+    var component = render(
       <UseIntervalComponentTest timer={10} callback={jest.fn()} />
     );
     component.unmount();

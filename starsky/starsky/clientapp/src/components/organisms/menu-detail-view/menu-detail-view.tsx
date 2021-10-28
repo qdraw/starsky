@@ -366,6 +366,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           {!isSearchQuery ? (
             <Link
               className="item item--first item--close"
+              data-test="menu-detail-view-close"
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
               }
@@ -388,6 +389,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           {/* to search */}
           {isSearchQuery ? (
             <Link
+              data-test="menu-detail-view-close"
               className="item item--first item--search"
               state={
                 { filePath: state.fileIndexItem.filePath } as INavigateState
@@ -400,6 +402,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
 
           <button
             className="item item--labels"
+            data-test="menu-detail-view-labels"
             onClick={() => {
               toggleLabels();
             }}
@@ -494,7 +497,9 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({
           >
             {MessageCloseDetailScreenDialog}
             {isRecentEdited ? (
-              <div className="autosave">{MessageSaved}</div>
+              <div data-test="menu-detail-view-autosave" className="autosave">
+                {MessageSaved}
+              </div>
             ) : null}
           </div>
         </div>

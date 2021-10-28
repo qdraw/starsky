@@ -1,4 +1,4 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Archive from "../containers/archive";
 import * as Login from "../containers/login";
@@ -22,7 +22,7 @@ import ArchiveContextWrapper, {
 
 describe("ArchiveContextWrapper", () => {
   it("renders", () => {
-    shallow(<ArchiveContextWrapper {...newIArchive()} />);
+    render(<ArchiveContextWrapper {...newIArchive()} />);
   });
 
   describe("with mount", () => {
@@ -39,7 +39,7 @@ describe("ArchiveContextWrapper", () => {
         });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(archive).toBeCalled();
@@ -64,7 +64,7 @@ describe("ArchiveContextWrapper", () => {
 
       args.fileIndexItems.push({} as IFileIndexItem);
 
-      const component = mount(
+      const component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
       expect(search).toBeCalled();
@@ -82,7 +82,7 @@ describe("ArchiveContextWrapper", () => {
       });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(<ArchiveContextWrapper {...args} />);
+      const component = render(<ArchiveContextWrapper {...args} />);
       expect(login).toBeCalled();
       component.unmount();
     });
@@ -98,7 +98,7 @@ describe("ArchiveContextWrapper", () => {
       });
 
       args.fileIndexItems.push({} as IFileIndexItem);
-      const component = mount(<ArchiveContextWrapper {...args} />);
+      const component = render(<ArchiveContextWrapper {...args} />);
       expect(login).toBeCalled();
       component.unmount();
     });
@@ -114,11 +114,11 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("(ArchiveWrapper) = no state");
+      expect(component.container.innerHTML).toBe("(ArchiveWrapper) = no state");
       component.unmount();
     });
 
@@ -131,11 +131,11 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("");
+      expect(component.container.innerHTML).toBe("");
       component.unmount();
     });
 
@@ -151,11 +151,11 @@ describe("ArchiveContextWrapper", () => {
         fileIndexItems: [],
         pageType: PageType.Search
       } as IArchiveProps;
-      var component = mount(
+      var component = render(
         <ArchiveContextWrapper {...args}></ArchiveContextWrapper>
       );
 
-      expect(component.text()).toBe("");
+      expect(component.container.innerHTML).toBe("");
       component.unmount();
     });
   });
@@ -216,8 +216,7 @@ describe("ArchiveContextWrapper", () => {
 
       document.body.dispatchEvent(event);
 
-      var element = (result.componentMount as any) as ReactWrapper;
-      element.unmount();
+      result.componentMount.unmount();
     });
 
     it("When outside current directory it should be ignored 2", () => {
@@ -245,8 +244,7 @@ describe("ArchiveContextWrapper", () => {
 
       document.body.dispatchEvent(event);
 
-      var element = (result.componentMount as any) as ReactWrapper;
-      element.unmount();
+      result.componentMount.unmount();
     });
   });
 

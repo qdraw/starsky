@@ -104,6 +104,7 @@ export default function Modal({
             if (target.className.indexOf("modal-bg--open") === -1) return;
             handleExit();
           }}
+          data-test="modal-bg"
           className={`modal-bg ${isOpen ? " modal-bg--open" : ""}`}
         >
           <div
@@ -115,6 +116,7 @@ export default function Modal({
                   isOpen ? " modal-exit-button--showing" : ""
                 }`}
                 ref={exitButton}
+                data-test="modal-exit-button"
                 onClick={() => {
                   handleExit();
                 }}

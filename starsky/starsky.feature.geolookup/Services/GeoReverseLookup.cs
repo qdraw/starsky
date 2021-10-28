@@ -11,6 +11,7 @@ using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 
@@ -29,7 +30,7 @@ namespace starsky.feature.geolookup.Services
         /// <param name="appSettings">to know where to store the temp files</param>
         /// <param name="geoFileDownload">Abstraction to download Geo Data</param>
         /// <param name="memoryCache">for keeping status</param>
-        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null)
+        public GeoReverseLookup(AppSettings appSettings, IGeoFileDownload geoFileDownload, IMemoryCache memoryCache = null, IWebLogger logger = null)
         {
 	        // Needed when not having this, application will fail
 	        geoFileDownload.Download().ConfigureAwait(false);
@@ -38,10 +39,17 @@ namespace starsky.feature.geolookup.Services
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
             
             // Create our ReverseGeoCode class and supply it with data
-            _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-                GeoFileReader.ReadExtendedGeoNames(
-	                Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt"))
-            );
+            try
+            {
+	            _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
+		            GeoFileReader.ReadExtendedGeoNames(
+			            Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt")));
+            }
+            catch ( FileNotFoundException e )
+            {
+	            logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
+            }
+
             _cache = memoryCache;
         }
 

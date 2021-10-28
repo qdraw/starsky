@@ -143,7 +143,7 @@ const Login: React.FC<ILoginProps> = () => {
 
       {isLogin ? (
         <>
-          <div className="content">
+          <div className="content" data-test="login-content">
             <div className="content--header">{MessageLogin}</div>
             <form
               className="content--login-form form-inline form-nav"
@@ -170,6 +170,7 @@ const Login: React.FC<ILoginProps> = () => {
                 className="form-control"
                 autoComplete="off"
                 type="email"
+                data-test="email"
                 name="email"
                 maxLength={80}
                 value={userEmail}
@@ -180,17 +181,23 @@ const Login: React.FC<ILoginProps> = () => {
               <input
                 className="form-control"
                 type="password"
+                data-test="password"
                 name="password"
                 maxLength={80}
                 value={userPassword}
                 placeholder={MessageExamplePassword}
                 onChange={(e) => setUserPassword(e.target.value)}
               />
-              {error && <div className="content--error-true">{error}</div>}
+              {error && (
+                <div data-test="login-error" className="content--error-true">
+                  {error}
+                </div>
+              )}
 
               <ButtonStyled
                 className="btn btn--default"
                 type="submit"
+                data-test="login-submit"
                 disabled={loading}
               >
                 {loading ? "Loading..." : MessageLogin}
@@ -207,7 +214,7 @@ const Login: React.FC<ILoginProps> = () => {
       ) : null}
       {!isLogin && accountStatus.data ? (
         <>
-          <div className="content">
+          <div className="content" data-test="logout-content">
             <div className="content--header">{MessageLogout}</div>
           </div>
           <div className="content">

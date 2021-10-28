@@ -1,6 +1,11 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor
+} from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { DetailViewContext } from "../../../contexts/detailview-context";
 import * as useKeyboardEvent from "../../../hooks/use-keyboard/use-keyboard-event";
 import {
@@ -17,12 +22,13 @@ import { Keyboard } from "../../../shared/keyboard";
 import { SupportedLanguages } from "../../../shared/language";
 import * as ClearSearchCache from "../../../shared/search/clear-search-cache";
 import { UrlQuery } from "../../../shared/url-query";
+import { LimitLength } from "../../atoms/form-control/limit-length";
 import * as ModalDatetime from "../modal-edit-date-time/modal-edit-datetime";
 import DetailViewSidebar from "./detail-view-sidebar";
 
 describe("DetailViewSidebar", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -32,8 +38,12 @@ describe("DetailViewSidebar", () => {
     );
   });
 
+  beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementationOnce(() => {});
+  });
+
   it("test warning (without state component)", () => {
-    var wrapper = mount(
+    var wrapper = render(
       <DetailViewSidebar
         status={IExifStatus.Default}
         filePath={"/t"}
@@ -41,15 +51,16 @@ describe("DetailViewSidebar", () => {
         dispatch={jest.fn()}
       ></DetailViewSidebar>
     );
-    expect(
-      wrapper.find(".detailview-sidebar").find(".warning-box")
-    ).toHaveLength(1);
+    const serverError = wrapper.queryByTestId(
+      "detailview-exifstatus-status-server-error"
+    );
+    expect(serverError).not.toBeNull();
   });
 
   describe("useContext-test", () => {
     let contextProvider: any;
     let TestComponent: () => JSX.Element;
-    let Component: ReactWrapper<any, Readonly<{}>>;
+    let Component: RenderResult;
 
     // Setup mock
     beforeEach(() => {
@@ -91,7 +102,7 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      Component = mount(<TestComponent />);
+      Component = render(<TestComponent />);
     });
 
     afterAll(() => {
@@ -99,44 +110,45 @@ describe("DetailViewSidebar", () => {
       TestComponent = () => <></>;
     });
 
+    function findDataName(name: string) {
+      return Component.queryAllByTestId("form-control").find(
+        (p) => p.getAttribute("data-name") === name
+      );
+    }
+
     it("test if tags from the context is displayed", () => {
-      var tags = Component.find('[data-name="tags"]');
-      expect(tags.text()).toBe("tags!");
+      var tags = findDataName("tags");
+      expect(tags?.textContent).toBe("tags!");
     });
 
     it("test if title from the context is displayed", () => {
-      var title = Component.find('[data-name="title"]');
-      expect(title.text()).toBe("title!");
+      var tags = findDataName("title");
+      expect(tags?.textContent).toBe("title!");
     });
 
     it("test if description from the context is displayed", () => {
-      var description = Component.find('[data-name="description"]');
-      expect(description.text()).toBe("description!");
+      var description = findDataName("description");
+      expect(description?.textContent).toBe("description!");
     });
 
     it("test if colorclass from the context is displayed", () => {
-      expect(Component.exists(".colorclass--3.active")).toBeTruthy();
-      // the rest is false
-      expect(Component.exists(".colorclass--1.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--2.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--4.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--5.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--6.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--7.active")).toBeFalsy();
-      expect(Component.exists(".colorclass--8.active")).toBeFalsy();
+      const colorClassSelect = Component.queryByTestId("color-class-select");
+
+      expect(colorClassSelect?.dataset.colorclass).toBe("3");
     });
 
     it("test if dateTime from the context is displayed", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime");
 
-      expect(dateTime.text()).toBe(
+      expect(dateTime?.textContent).toBe(
         parseDate("2019-09-15T17:29:59", SupportedLanguages.en) +
           parseTime("2019-09-15T17:29:59")
       );
     });
 
     it("click on datetime modal", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
       var modalDatetimeSpy = jest
@@ -146,14 +158,15 @@ describe("DetailViewSidebar", () => {
         });
 
       act(() => {
-        dateTime.simulate("click");
+        dateTime.click();
       });
 
       expect(modalDatetimeSpy).toBeCalled();
     });
 
     it("click on datetime modal and return value", () => {
-      var dateTime = Component.find('[data-test="dateTime"]');
+      var dateTime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(dateTime).not.toBeNull();
 
       // import * as ModalDatetime from './modal-datetime';
       var modalDatetimeSpy = jest
@@ -166,60 +179,79 @@ describe("DetailViewSidebar", () => {
         });
 
       act(() => {
-        dateTime.simulate("click");
+        dateTime.click();
       });
 
       expect(modalDatetimeSpy).toBeCalled();
 
-      var updatedDatetime = Component.find('[data-test="dateTime"]');
+      var updatedDatetime = Component.queryByTestId("dateTime") as HTMLElement;
+      expect(updatedDatetime).not.toBeNull();
 
-      expect(updatedDatetime.text()).toBe(
+      expect(updatedDatetime.textContent).toBe(
         parseDate("2020-02-01T13:15:20", SupportedLanguages.en) +
           parseTime("2020-02-01T13:15:20")
       );
     });
 
     it("click on ColorClassSelect and return value", () => {
-      var colorClassSelectItem = Component.find(".colorclass--5");
+      const colorClassSelectItem = Component.queryByTestId(
+        "color-class-select-5"
+      ) as HTMLElement;
 
       act(() => {
-        colorClassSelectItem.simulate("click");
+        colorClassSelectItem.click();
       });
 
-      var lastEdited = Component.find('[data-test="lastEdited"]');
-      expect(lastEdited.text()).toBe("less than one minuteago edited");
+      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+
+      expect(lastEdited).not.toBeNull();
+      expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if lastEdited from the context is displayed", () => {
-      var lastEdited = Component.find('[data-test="lastEdited"]');
-      expect(lastEdited.text()).toBe("less than one minuteago edited");
+      var lastEdited = Component.queryByTestId("lastEdited") as HTMLElement;
+
+      expect(lastEdited).not.toBeNull();
+      expect(lastEdited.textContent).toBe("less than one minuteago edited");
     });
 
     it("test if make from the context is displayed", () => {
-      var description = Component.find('[data-test="make"]');
-      expect(description.text()).toContain("apple"); // <= with space on end
+      var make = Component.queryByTestId("make") as HTMLElement;
+
+      expect(make).not.toBeNull();
+      expect(make.textContent).toContain("apple"); // <= with space on end, so contain
     });
 
     it("test if model from the context is displayed", () => {
-      var description = Component.find('[data-test="model"]');
-      expect(description.text()).toBe("iPhone");
+      const model = Component.queryByTestId("model") as HTMLElement;
+
+      expect(model).not.toBeNull();
+      expect(model.textContent).toBe("iPhone");
     });
 
     it("test if aperture from the context is displayed", () => {
-      var description = Component.find('[data-test="aperture"]');
-      expect(description.text()).toBe("2");
+      const aperture = Component.queryByTestId("aperture") as HTMLElement;
+
+      expect(aperture).not.toBeNull();
+      expect(aperture.textContent).toBe("2");
     });
 
     it("test if focalLength from the context is displayed", () => {
-      var description = Component.find('[data-test="focalLength"]');
-      expect(description.text()).toBe("10.0");
+      const focalLength = Component.queryByTestId("focalLength") as HTMLElement;
+
+      expect(focalLength).not.toBeNull();
+      expect(focalLength.textContent).toBe("10.0");
     });
 
     it("test if lat/long icon from the context is displayed", () => {
-      expect(Component.exists(".icon--location")).toBeTruthy();
+      const locationDiv = Component.queryByTestId(
+        "detailview-location-div"
+      ) as HTMLElement;
+
+      expect(locationDiv).not.toBeNull();
     });
 
-    it("On change a tag there is an API called", () => {
+    it("On change a tag there is an API called", async () => {
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
       const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
@@ -229,14 +261,16 @@ describe("DetailViewSidebar", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var tagsField = Component.find('[data-name="tags"]');
+      const tagsField = findDataName("tags") as HTMLElement;
+      expect(tagsField).not.toBeNull();
 
       act(() => {
-        tagsField.getDOMNode().textContent = "a";
-        tagsField.simulate("blur");
+        tagsField.innerHTML = "a";
       });
 
-      expect(fetchPostSpy).toBeCalled();
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
+
+      await waitFor(() => expect(fetchPostSpy).toBeCalled());
 
       var expectedBodyParams = new URLSearchParams();
       expectedBodyParams.append("f", "/test.jpg");
@@ -262,12 +296,13 @@ describe("DetailViewSidebar", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var tagsField = Component.find('[data-name="tags"]');
+      const tagsField = findDataName("tags") as HTMLInputElement;
 
       act(() => {
-        tagsField.getDOMNode().textContent = "";
-        tagsField.simulate("blur");
+        tagsField.innerHTML = "";
       });
+
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
 
       expect(fetchPostSpy).toBeCalled();
 
@@ -287,7 +322,7 @@ describe("DetailViewSidebar", () => {
       fetchPostSpy.mockClear();
     });
 
-    it("Deleted status (from FileIndexItem)", () => {
+    it("Deleted status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.Deleted;
 
       var DeletedTestComponent = () => (
@@ -300,25 +335,26 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
-      expect(component.exists(".warning-box")).toBeTruthy();
+      const statusDeleted = component.queryByTestId(
+        "detailview-exifstatus-status-deleted"
+      );
+      expect(statusDeleted).not.toBeNull();
 
       // Tags and other input fields are disabled
-      expect(
-        component.find('[data-name="tags"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="description"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="title"]').hasClass("disabled")
-      ).toBeTruthy();
+      const tags = findDataName("tags") as HTMLInputElement;
+      const description = findDataName("description");
+      const title = findDataName("title");
+
+      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      expect(description?.classList).toContain("disabled");
+      expect(title?.classList).toContain("disabled");
 
       component.unmount();
     });
 
-    it("ReadOnly status (from FileIndexItem)", () => {
+    it("ReadOnly status (from FileIndexItem)", async () => {
       contextProvider.state.fileIndexItem.status = IExifStatus.ReadOnly;
 
       var DeletedTestComponent = () => (
@@ -331,20 +367,22 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
+      var component = render(<DeletedTestComponent />);
 
-      expect(component.exists(".warning-box")).toBeTruthy();
+      const statusReadOnly = component.queryByTestId(
+        "detailview-exifstatus-status-read-only"
+      );
+      expect(statusReadOnly).not.toBeNull();
 
       // Tags and other input fields are disabled
-      expect(
-        component.find('[data-name="tags"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="description"]').hasClass("disabled")
-      ).toBeTruthy();
-      expect(
-        component.find('[data-name="title"]').hasClass("disabled")
-      ).toBeTruthy();
+      const tags = findDataName("tags") as HTMLInputElement;
+      const description = findDataName("description");
+      const title = findDataName("title");
+
+      await waitFor(() => expect(tags?.classList).toContain("disabled"));
+      expect(description?.classList).toContain("disabled");
+      expect(title?.classList).toContain("disabled");
+
       component.unmount();
     });
 
@@ -372,17 +410,20 @@ describe("DetailViewSidebar", () => {
         .mockImplementationOnce(() => mockIConnectionDefault)
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var tagsField = Component.find('[data-name="tags"]');
+      const tagsField = findDataName("tags") as HTMLInputElement;
 
       // need to await here
-      await act(async () => {
-        tagsField.getDOMNode().textContent = "a";
-        await tagsField.simulate("blur");
+      act(() => {
+        tagsField.innerHTML = "a";
       });
 
-      expect(clearSearchCacheSpy).toBeCalled();
+      fireEvent.blur(tagsField, { currentTarget: tagsField });
+
+      await waitFor(() => expect(clearSearchCacheSpy).toBeCalled());
 
       expect(fetchPostSpy).toBeCalledTimes(1);
+
+      jest.spyOn(LimitLength.prototype, "LimitLengthBlur").mockClear();
 
       document.location.search = "";
     });
@@ -434,7 +475,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = mount(
+      var component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -482,7 +523,7 @@ describe("DetailViewSidebar", () => {
           return false;
         });
 
-      var component = mount(
+      var component = render(
         <DetailViewSidebar
           status={IExifStatus.Default}
           filePath={"/t"}
@@ -498,7 +539,7 @@ describe("DetailViewSidebar", () => {
   });
 
   describe("own context", () => {
-    it("keydown t/i should be fired", () => {
+    it("keydown t/i should be fired", async () => {
       var contextProvider = {
         dispatch: () => jest.fn(),
         state: {
@@ -513,30 +554,27 @@ describe("DetailViewSidebar", () => {
         } as any
       };
 
-      var keyboardSpy = jest
-        .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+      const isInFormSpy = jest
+        .spyOn(Keyboard.prototype, "isInForm")
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false)
+        .mockImplementationOnce(() => false);
+
+      // const setFocusOnEndFieldSpy = jest
+      //   .spyOn(Keyboard.prototype, "SetFocusOnEndField")
+      //   .mockImplementationOnce(() => {});
+
+      const useKeyboardEventSpy = jest
+        .spyOn(useKeyboardEvent, "default")
         .mockImplementationOnce(() => {})
         .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
-        .mockImplementationOnce(() => {})
+        .mockImplementationOnce((key, callback) => {
+          callback({ preventDefault: () => {} });
+        })
         .mockImplementationOnce(() => {});
 
-      var DeletedTestComponent = () => (
+      var TestComponent = () => (
         <DetailViewContext.Provider value={contextProvider}>
           <DetailViewSidebar
             status={IExifStatus.Ok}
@@ -546,20 +584,25 @@ describe("DetailViewSidebar", () => {
           ></DetailViewSidebar>
         </DetailViewContext.Provider>
       );
-      var component = mount(<DeletedTestComponent />);
 
-      var event = new KeyboardEvent("keydown", {
-        bubbles: true,
-        cancelable: true,
-        key: "t",
-        shiftKey: true
-      });
+      var component = render(<TestComponent />, { baseElement: document.body });
 
-      act(() => {
-        window.dispatchEvent(event);
-      });
+      expect(useKeyboardEventSpy).toBeCalled();
+      expect(isInFormSpy).toBeCalled();
+      expect(isInFormSpy).toBeCalledTimes(1);
 
-      expect(keyboardSpy).toBeCalled();
+      // var event = new KeyboardEvent("keydown", {
+      //   bubbles: true,
+      //   cancelable: true,
+      //   key: "t",
+      //   shiftKey: true
+      // });
+
+      // await act(async () => {
+      //   await window.dispatchEvent(event);
+      // });
+
+      // await waitFor(() => expect(keyboardSpy).toBeCalled());
 
       component.unmount();
     });

@@ -115,44 +115,46 @@ const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = 
         props.handleExit();
       }}
     >
-      <div className="modal content--subheader">{MessageDisplayOptions}</div>
-      <div className="content--text">
-        <SwitchButton
-          isOn={!collections}
-          data-test="toggle-collections"
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonCollectionsOn}
-          onToggle={() => toggleCollections()}
-          rightLabel={MessageSwitchButtonCollectionsOff}
-        />
-      </div>
-      <div className="modal content--subheader">
-        <SwitchButton
-          data-test="toggle-slow-files"
-          isOn={isAlwaysLoadImage}
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonIsSingleItemOn}
-          rightLabel={MessageSwitchButtonIsSingleItemOff}
-          onToggle={() => toggleSlowFiles()}
-        />
-      </div>
-      <div className="content--text">
-        <SwitchButton
-          isOn={isUseSockets}
-          data-test="toggle-sockets"
-          isEnabled={true}
-          leftLabel={MessageSwitchButtonIsSocketOn}
-          onToggle={() => toggleSockets()}
-          rightLabel={MessageSwitchButtonIsSocketOff}
-        />
-      </div>
-      <div className="modal content--text">
-        <Select
-          data-test="sort"
-          selectOptions={Object.values(SortType) as any}
-          callback={toggleSort}
-          selected={currentSort()}
-        />
+      <div data-test="modal-display-options">
+        <div className="modal content--subheader">{MessageDisplayOptions}</div>
+        <div className="content--text">
+          <SwitchButton
+            isOn={!collections}
+            data-test="toggle-collections"
+            isEnabled={true}
+            leftLabel={MessageSwitchButtonCollectionsOn}
+            onToggle={() => toggleCollections()}
+            rightLabel={MessageSwitchButtonCollectionsOff}
+          />
+        </div>
+        <div className="modal content--subheader">
+          <SwitchButton
+            data-test="toggle-slow-files"
+            isOn={isAlwaysLoadImage}
+            isEnabled={true}
+            leftLabel={MessageSwitchButtonIsSingleItemOn}
+            rightLabel={MessageSwitchButtonIsSingleItemOff}
+            onToggle={() => toggleSlowFiles()}
+          />
+        </div>
+        <div className="content--text">
+          <SwitchButton
+            isOn={isUseSockets}
+            data-test="toggle-sockets"
+            isEnabled={true}
+            leftLabel={MessageSwitchButtonIsSocketOn}
+            onToggle={() => toggleSockets()}
+            rightLabel={MessageSwitchButtonIsSocketOff}
+          />
+        </div>
+        <div className="modal content--text">
+          <Select
+            data-test="sort"
+            selectOptions={Object.values(SortType) as any}
+            callback={toggleSort}
+            selected={currentSort()}
+          />
+        </div>
       </div>
     </Modal>
   );

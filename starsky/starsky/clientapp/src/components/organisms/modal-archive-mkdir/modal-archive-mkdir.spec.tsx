@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import { IArchive, newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -12,8 +11,12 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalArchiveMkdir from "./modal-archive-mkdir";
 
 describe("ModalArchiveMkdir", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
+    render(
       <ModalArchiveMkdir
         dispatch={jest.fn()}
         state={{} as any}
@@ -42,7 +45,7 @@ describe("ModalArchiveMkdir", () => {
           return contextValues;
         });
 
-      var modal = mount(
+      var modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={jest.fn()}
@@ -51,27 +54,34 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
-      var submitButtonBefore = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      const button = modal.queryByTestId(
+        "modal-archive-mkdir-btn-default"
+      ) as HTMLButtonElement;
+
+      var submitButtonBefore = button.disabled;
       expect(submitButtonBefore).toBeTruthy();
 
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
+      // update component + now press a key
       act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "f";
-        modal.find('[data-name="directoryname"]').simulate("input");
+        directoryName.textContent = "a";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed => there is no button
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
-      expect(modal.exists(".warning-box")).toBeTruthy();
+      expect(
+        modal.queryByTestId("modal-archive-mkdir-warning-box")
+      ).toBeTruthy();
 
-      var submitButtonAfter = (modal
-        .find(".btn--default")
-        .getDOMNode() as HTMLButtonElement).disabled;
+      var submitButtonAfter = button.disabled;
       expect(submitButtonAfter).toBeTruthy();
 
       // cleanup
@@ -111,7 +121,7 @@ describe("ModalArchiveMkdir", () => {
       } as IArchive;
       var contextValues = { state, dispatch: jest.fn() };
 
-      var modal = mount(
+      var modal = render(
         <ModalArchiveMkdir
           state={state}
           dispatch={contextValues.dispatch}
@@ -120,15 +130,23 @@ describe("ModalArchiveMkdir", () => {
         ></ModalArchiveMkdir>
       );
 
+      const button = modal.queryByTestId(
+        "modal-archive-mkdir-btn-default"
+      ) as HTMLButtonElement;
+
+      const directoryName = modal.queryByTestId(
+        "form-control"
+      ) as HTMLInputElement;
+
       act(() => {
-        modal.find('[data-name="directoryname"]').getDOMNode().textContent =
-          "new folder";
-        modal.find('[data-name="directoryname"]').simulate("input");
+        directoryName.textContent = "new folder";
+        const inputEvent = createEvent.input(directoryName, { key: "a" });
+        fireEvent(directoryName, inputEvent);
       });
 
       // await is needed
       await act(async () => {
-        await modal.find(".btn--default").simulate("click");
+        await button.click();
       });
 
       // to create new directory
@@ -166,7 +184,7 @@ describe("ModalArchiveMkdir", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalArchiveMkdir
           state={{} as any}
           isOpen={true}

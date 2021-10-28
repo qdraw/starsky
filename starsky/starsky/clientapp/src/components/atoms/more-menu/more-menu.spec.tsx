@@ -1,53 +1,44 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, render } from "@testing-library/react";
 import React from "react";
 import MoreMenu, { MoreMenuEventCloseConst } from "./more-menu";
 
 describe("More Menu", () => {
   it("renders", () => {
-    shallow(<MoreMenu />);
+    render(<MoreMenu />);
   });
 
   it("get childeren", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
-    expect(element.find(".menu-options").text()).toBe("test");
+    const element = render(<MoreMenu>test</MoreMenu>);
+    const menuOptions = element.queryAllByTestId("menu-options")[0];
+
+    expect(menuOptions.innerHTML).toBe("test");
   });
 
   it("toggle", () => {
-    var element = shallow(<MoreMenu>test</MoreMenu>);
+    const element = render(<MoreMenu>test</MoreMenu>);
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    const menuContext = element.queryAllByTestId("menu-context")[0];
+    menuContext.click();
 
-    expect(element.find(".menu-context").props().className).toBe(
-      "menu-context"
-    );
+    expect(menuContext.className).toBe("menu-context");
   });
 
   it("toggle no childeren", () => {
-    var element = shallow(<MoreMenu />);
+    const element = render(<MoreMenu></MoreMenu>);
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    const menuContext = element.queryAllByTestId("menu-context")[0];
+    menuContext.click();
 
-    expect(element.find(".menu-context").props().className).toBe(
-      "menu-context menu-context--hide"
-    );
+    expect(menuContext.className).toBe("menu-context menu-context--hide");
   });
 
   it("turn off using event", (done) => {
-    var element = mount(<MoreMenu>test</MoreMenu>);
+    var element = render(<MoreMenu>test</MoreMenu>);
 
-    act(() => {
-      element.find(".menu-context").simulate("click");
-    });
+    const menuContext = element.queryAllByTestId("menu-context")[0];
 
     window.addEventListener(MoreMenuEventCloseConst, () => {
-      expect(element.find(".menu-context").props().className).toBe(
-        "menu-context menu-context--hide"
-      );
+      expect(menuContext.className).toBe("menu-context menu-context--hide");
       done();
     });
 

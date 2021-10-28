@@ -1,4 +1,4 @@
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as Preloader from "../components/atoms/preloader/preloader";
 import * as ApplicationException from "../components/organisms/application-exception/application-exception";
@@ -21,7 +21,7 @@ describe("SearchPage", () => {
       .mockImplementationOnce(() => {
         return <></>;
       });
-    const component = mount(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage>t</SearchPage>);
     expect(contextSpy).toBeCalled();
     component.unmount();
   });
@@ -31,8 +31,8 @@ describe("SearchPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => null as any);
 
-    const component = mount(<SearchPage>t</SearchPage>);
-    expect(component.html()).toBe("Something went wrong");
+    const component = render(<SearchPage>t</SearchPage>);
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -42,8 +42,8 @@ describe("SearchPage", () => {
       .spyOn(useSearchList, "default")
       .mockImplementationOnce(() => ({} as any));
 
-    const component = mount(<SearchPage>t</SearchPage>);
-    expect(component.html()).toBe("Something went wrong");
+    const component = render(<SearchPage>t</SearchPage>);
+    expect(component.container.innerHTML).toBe("Something went wrong");
 
     component.unmount();
   });
@@ -59,7 +59,7 @@ describe("SearchPage", () => {
       } as any;
     });
 
-    const component = mount(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage>t</SearchPage>);
 
     expect(applicationExceptionSpy).toBeCalled();
 
@@ -80,7 +80,7 @@ describe("SearchPage", () => {
       return <></>;
     });
 
-    const component = mount(<SearchPage>t</SearchPage>);
+    const component = render(<SearchPage>t</SearchPage>);
 
     expect(preloaderSpy).toBeCalled();
 
