@@ -95,6 +95,10 @@ function geoDeps {
 
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
+    echo "do only the geo deps"
+    start_pushd
+    geoDeps
+    end_popd
 else
     echo $E_ISDEMO
     start_pushd
