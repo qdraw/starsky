@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_  Support for `-software` search (issue #441 / PR #450)
 - [x]   (Added) _Back-end_  Docker compose support (PR #469)
 - [x]   (Change) _Front-end_ Remove Enzeme as framework for unittests and use react testing framework (PR #463)
+- [x]   (Change) _Back-end_ Retry for DiskWatcher (PR #479)
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
