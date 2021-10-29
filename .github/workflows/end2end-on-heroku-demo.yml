@@ -23,7 +23,7 @@ jobs:
         CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
         CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       with:
-        command: npm run e2e:env:record --tag "heroku"
+        command: npm run e2e:env:record -- --tag "heroku"
         working-directory: starsky-tools/end2end  
 
     - name: Upload screenshots (always)
