@@ -72,8 +72,8 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnError(object source, ErrorEventArgs e)
 		{
 			//  Show that an error has been detected.
-			_webLogger.LogError("[DiskWatcher] The FileSystemWatcher has detected an error - next: retry" +
-			                    $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			_webLogger.LogError(e.GetException(),"[DiskWatcher] The FileSystemWatcher has an error (catch-ed) - next: retry " +
+			                     $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
 			//  Give more information if the error is due to an internal buffer overflow.
 			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
 			{
