@@ -32,7 +32,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
-			_hostFileSystemStorage = new StorageHostFullPathFilesystem();
+			_hostFileSystemStorage = new StorageHostFullPathFilesystem(logger);
 			_logger = logger;
 		}
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
@@ -15,10 +16,12 @@ namespace starsky.foundation.storage.Storage
 	public class StorageThumbnailFilesystem : IStorage
 	{
 		private readonly AppSettings _appSettings;
+		private readonly IWebLogger _logger;
 
-		public StorageThumbnailFilesystem(AppSettings appSettings)
+		public StorageThumbnailFilesystem(AppSettings appSettings, IWebLogger logger)
 		{
 			_appSettings = appSettings;
+			_logger = logger;
 		}
 
 		internal string CombinePath(string fileHash)
@@ -38,13 +41,13 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public bool ExistFile(string path)
 		{
-			return new StorageHostFullPathFilesystem().ExistFile(CombinePath(path));
+			return new StorageHostFullPathFilesystem(_logger).ExistFile(CombinePath(path));
 		}
 
 		public bool ExistFolder(string path)
 		{
 			// only for the root folder
-			return new StorageHostFullPathFilesystem().ExistFolder(_appSettings.ThumbnailTempFolder);
+			return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings.ThumbnailTempFolder);
 		}
 
 		public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
@@ -62,7 +65,7 @@ namespace starsky.foundation.storage.Storage
 			var oldThumbPath = CombinePath(fromPath);
 			var newThumbPath = CombinePath(toPath);
 
-			var hostFilesystem = new StorageHostFullPathFilesystem();
+			var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
 
 			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
 			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
@@ -79,7 +82,7 @@ namespace starsky.foundation.storage.Storage
 			var oldThumbPath = CombinePath(fromPath);
 			var newThumbPath = CombinePath(toPath);
 
-			var hostFilesystem = new StorageHostFullPathFilesystem();
+			var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
 
 			var existOldFile = hostFilesystem.ExistFile(oldThumbPath);
 			var existNewFile = hostFilesystem.ExistFile(newThumbPath);
@@ -101,7 +104,7 @@ namespace starsky.foundation.storage.Storage
 			if (string.IsNullOrEmpty(path) || !ExistFile(path) ) return false;
 
 			var thumbPath = CombinePath(path);
-			var hostFilesystem = new StorageHostFullPathFilesystem();
+			var hostFilesystem = new StorageHostFullPathFilesystem(_logger);
 			return hostFilesystem.FileDelete(thumbPath);
 		}
 
@@ -140,7 +143,7 @@ namespace starsky.foundation.storage.Storage
 		public Stream ReadStream(string path, int maxRead = -1)
 		{
 			if ( !ExistFile(path) ) throw new FileNotFoundException(path); 
-			return new StorageHostFullPathFilesystem().ReadStream(CombinePath(path), maxRead);
+			return new StorageHostFullPathFilesystem(_logger).ReadStream(CombinePath(path), maxRead);
 		}
 
 		/// <summary>
@@ -151,7 +154,7 @@ namespace starsky.foundation.storage.Storage
 		/// <returns></returns>
 		public bool WriteStream(Stream stream, string path)
 		{
-			return new StorageHostFullPathFilesystem()
+			return new StorageHostFullPathFilesystem(_logger)
 				.WriteStream(stream, CombinePath(path));
 		}
 
@@ -162,7 +165,7 @@ namespace starsky.foundation.storage.Storage
 
 		public Task<bool> WriteStreamAsync(Stream stream, string path)
 		{
-			return new StorageHostFullPathFilesystem().WriteStreamAsync(stream, CombinePath(path));
+			return new StorageHostFullPathFilesystem(_logger).WriteStreamAsync(stream, CombinePath(path));
 		}
 
 		public StorageInfo Info(string path)

@@ -147,7 +147,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					_logger?.LogError("Catch-ed UnauthorizedAccessException => " + e.Message);
+					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
 			return folderList.OrderBy(p => p);
@@ -354,6 +354,25 @@ namespace starsky.foundation.storage.Storage
             return findList.OrderBy(x => x).ToList();
         }
 
+		private Tuple<string[], string[]> GetFilesAndDirectories(string path)
+		{
+			try
+			{
+				var filesArray = Directory.GetFiles(path);
+				var directoriesArray = Directory.GetDirectories(path);
+				return new Tuple<string[], string[]>(filesArray,
+					directoriesArray);
+			}
+			catch ( Exception exception)
+			{
+				_logger?.LogInformation($"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
+				return new Tuple<string[], string[]>(
+					new List<string>().ToArray(),
+					new List<string>().ToArray()
+					);
+			}
+		}
+
 		/// <summary>
 		/// recursive find. (private)
 		/// </summary>
@@ -361,18 +380,8 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="list">The list of strings.</param>
 		private void RecurseFind( string path, List<string> list )
 		{
-			var filesArray = new string[]{};
-	        try
-	        {
-		        filesArray = Directory.GetFiles(path);
-	        }
-	        catch ( IOException exception)
-	        {
-		        _logger.LogError($"SHostFileSystem catch-ed ex: {path} {exception.Message}");
-	        }
-	        
-            var directoriesArray = Directory.GetDirectories(path);
-            if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
+			var (filesArray, directoriesArray) = GetFilesAndDirectories(path);
+			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
             //I begin with the files, and store all of them in the list
             list.AddRange(filesArray);
             // I then add the directory and recurse that directory,
