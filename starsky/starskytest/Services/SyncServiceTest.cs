@@ -66,10 +66,10 @@ namespace starskytest.Services
 			// Activate Query
 			_query = new Query(context,memoryCache);
             
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var readmeta = new ReadMeta(_iStorage,_appSettings);
 			// Activate SyncService
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
 			_syncService = new SyncService(_query,_appSettings,storageSelector);
 		}

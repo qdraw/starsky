@@ -74,7 +74,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 				ThumbnailTempFolder = existFullDir,
 				Verbose = true
 			};
-			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
+			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
 			
 			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings, new FakeIWebLogger());
 			

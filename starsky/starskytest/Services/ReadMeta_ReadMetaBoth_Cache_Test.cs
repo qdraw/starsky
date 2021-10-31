@@ -25,7 +25,7 @@ namespace starskytest.Services
 		{
 
 			var appsettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-			var iStorage = new StorageSubPathFilesystem(appsettings);
+			var iStorage = new StorageSubPathFilesystem(appsettings, new FakeIWebLogger());
 
 			var listofFiles = new List<string>{ new CreateAnImage().DbPath};
 			var fakeCache =
@@ -40,7 +40,7 @@ namespace starskytest.Services
 		public void ReadMeta_ReadMetaBothTest_RemoveCache()
 		{
 			var appSettings = new AppSettings {StorageFolder = new CreateAnImage().BasePath};
-			var iStorage = new StorageSubPathFilesystem(appSettings);
+			var iStorage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>());
 			new ReadMeta(iStorage,appSettings, fakeCache)

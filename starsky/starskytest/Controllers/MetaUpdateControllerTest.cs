@@ -94,7 +94,7 @@ namespace starskytest.Controllers
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
 	        
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 
 		}
         
@@ -125,7 +125,7 @@ namespace starskytest.Controllers
 			var createAnImage = new CreateAnImage();
 			InsertSearchData();
             
-			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 	        
 			var metaPreflight = new MetaPreflight(_query,_appSettings,
 				selectorStorage,new FakeIWebLogger());
@@ -162,7 +162,7 @@ namespace starskytest.Controllers
 				ParentDirectory = "/",
 				FileHash = "ApiController_Update_SourceImageMissingOnDisk_WithFakeExifTool"
 			});
-			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 
 			var metaPreflight = new MetaPreflight(_query,
 				_appSettings,selectorStorage,new FakeIWebLogger());
@@ -195,7 +195,7 @@ namespace starskytest.Controllers
 				ParentDirectory = "/",
 				FileHash = "345678765434567"
 			});
-			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 
 			var metaPreflight = new MetaPreflight(_query,
 				_appSettings,selectorStorage,new FakeIWebLogger());

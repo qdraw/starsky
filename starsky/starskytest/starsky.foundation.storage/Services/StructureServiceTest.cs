@@ -70,7 +70,7 @@ namespace starskytest.starsky.foundation.storage.Services
 			var storage = new StorageSubPathFilesystem(new AppSettings
 			{
 				StorageFolder = new CreateAnImage().BasePath
-			});
+			}, new FakeIWebLogger());
 			storage.CreateDirectory("test");
 			
 			var result = new StructureService(storage, structure).ParseSubfolders(

@@ -6,6 +6,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.Storage
 {
@@ -19,7 +20,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			var createNewImage = new CreateAnImage();
 			var appSettings = new AppSettings {ThumbnailTempFolder = createNewImage.BasePath};
-			_thumbnailStorage = new StorageThumbnailFilesystem(appSettings);
+			_thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
 			_fileNameWithoutExtension = FilenamesHelper.GetFileNameWithoutExtension(createNewImage.FileName);
 
 		}

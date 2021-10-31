@@ -51,7 +51,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var serviceProvider = provider.BuildServiceProvider();
 			
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_query = serviceProvider.GetRequiredService<IQuery>();
 		}
