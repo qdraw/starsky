@@ -102,8 +102,11 @@ namespace starsky.foundation.sync.WatcherServices
 			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
 			var path = _fileSystemWatcherWrapper.Path;
 
+			_fileSystemWatcherWrapper.Dispose();
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
-			while (!_fileSystemWatcherWrapper.EnableRaisingEvents)
+
+			var i = 0;
+			while (!_fileSystemWatcherWrapper.EnableRaisingEvents && i < 20)
 			{
 				try
 				{
@@ -119,8 +122,10 @@ namespace starsky.foundation.sync.WatcherServices
 					// Sleep for a bit; otherwise, it takes a bit of
 					// processor time
 					System.Threading.Thread.Sleep(5000);
+					i++;
 				}
 			}
+			_webLogger.LogError($"[DiskWatcher] Failed after {i} times - so stop trying");
 			return false;
 		}
 		

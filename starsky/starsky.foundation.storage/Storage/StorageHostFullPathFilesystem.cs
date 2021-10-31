@@ -360,15 +360,22 @@ namespace starsky.foundation.storage.Storage
 		/// <param name="path">The path.</param>
 		/// <param name="list">The list of strings.</param>
 		private static void RecurseFind( string path, List<string> list )
-        {
-            var fl = Directory.GetFiles(path);
-            var dl = Directory.GetDirectories(path);
-            if ( fl.Length <= 0 && dl.Length <= 0 ) return;
+		{
+			var filesArray = new string[]{};
+	        try
+	        {
+		        filesArray = Directory.GetFiles(path);
+	        }
+	        catch ( IOException)
+	        {
+	        }
+            var directoriesArray = Directory.GetDirectories(path);
+            if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
             //I begin with the files, and store all of them in the list
-            list.AddRange(fl);
+            list.AddRange(filesArray);
             // I then add the directory and recurse that directory,
             // the process will repeat until there are no more files and directories to recurse
-            foreach(var s in dl)
+            foreach(var s in directoriesArray)
             {
 	            list.Add(s);
 	            RecurseFind(s, list);
