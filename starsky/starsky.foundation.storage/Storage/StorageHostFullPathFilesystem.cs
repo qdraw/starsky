@@ -359,16 +359,18 @@ namespace starsky.foundation.storage.Storage
 		/// </summary>
 		/// <param name="path">The path.</param>
 		/// <param name="list">The list of strings.</param>
-		private static void RecurseFind( string path, List<string> list )
+		private void RecurseFind( string path, List<string> list )
 		{
 			var filesArray = new string[]{};
 	        try
 	        {
 		        filesArray = Directory.GetFiles(path);
 	        }
-	        catch ( IOException)
+	        catch ( IOException exception)
 	        {
+		        _logger.LogError($"SHostFileSystem catch-ed ex: {path} {exception.Message}");
 	        }
+	        
             var directoriesArray = Directory.GetDirectories(path);
             if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
             //I begin with the files, and store all of them in the list

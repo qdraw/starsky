@@ -118,7 +118,7 @@ namespace starsky.foundation.sync.WatcherServices
 				}
 				catch
 				{
-					_webLogger.LogInformation("[DiskWatcher] next retry - wait for 5000ms");
+					_webLogger.LogInformation($"[DiskWatcher] next retry {i} - wait for 5000ms");
 					// Sleep for a bit; otherwise, it takes a bit of
 					// processor time
 					System.Threading.Thread.Sleep(5000);
