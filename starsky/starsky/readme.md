@@ -271,3 +271,18 @@ There is also a check to make sure the database runs good
 
 #### Application Insights
 Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.
+
+### Known issues
+
+#### DiskWatcher in combination with child folders that have no access
+When using `useDiskwatcher: true` and there are child folders that are not allowed to read
+For example the `lost+found` folder
+```
+drwx------ 2 root root  16K Apr 16  2018 lost+found
+```
+Then DiskWatcher is stopping and retry 20 times before the state will be disabled
+```
+[DiskWatcher] (catch-ed) Access to the path '/mnt/external_disk/lost+found' is denied
+```
+
+Solution: make sure that all child folder are accessible
