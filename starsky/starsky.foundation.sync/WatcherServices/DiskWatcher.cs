@@ -113,7 +113,10 @@ namespace starsky.foundation.sync.WatcherServices
 					// This will throw an error at the
 					// watcher.NotifyFilter line if it can't get the path.
 					Watcher(path);
-					_webLogger.LogError("[DiskWatcher] I'm Back!");
+					if ( _fileSystemWatcherWrapper.EnableRaisingEvents )
+					{
+						_webLogger.LogInformation("[DiskWatcher] I'm Back!");
+					}
 					return true;
 				}
 				catch
