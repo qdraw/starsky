@@ -38,11 +38,11 @@ namespace starsky.feature.import.Services
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
-			
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
+
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
 				.GetPathFormArgs(args,false).Length <= 1)
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
