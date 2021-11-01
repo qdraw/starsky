@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -32,8 +33,16 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var logger = new FakeIWebLogger();
 			var realStorage = new StorageHostFullPathFilesystem(logger);
 			var directories = realStorage.GetAllFilesInDirectoryRecursive("NOT:\\t");
+
+			if ( new AppSettings().IsWindows )
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+			}
+			else
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+			}
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
 			Assert.AreEqual(directories.Count(),0);
 		}
 		
@@ -67,7 +76,15 @@ namespace starskytest.starsky.foundation.storage.Storage
 			var realStorage = new StorageHostFullPathFilesystem(logger);
 			var directories = realStorage.GetFilesAndDirectories("NOT:\\t");
 			
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+			if ( new AppSettings().IsWindows )
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+			}
+			else
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+			}
+			
 			Assert.AreEqual(directories.Item1.Length,0);
 			Assert.AreEqual(directories.Item2.Length,0);
 		}
