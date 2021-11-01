@@ -96,7 +96,7 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <summary>
 		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
 		/// </summary>
-		internal bool Retry(IFileSystemWatcherWrapper fileSystemWatcherWrapper)
+		internal bool Retry(IFileSystemWatcherWrapper fileSystemWatcherWrapper, int numberOfTries = 20, int milliSecondsTimeout = 5000)
 		{
 			_webLogger.LogInformation("[DiskWatcher] next retry " +
 			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
@@ -106,7 +106,7 @@ namespace starsky.foundation.sync.WatcherServices
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 
 			var i = 0;
-			while (!_fileSystemWatcherWrapper.EnableRaisingEvents && i < 20)
+			while (!_fileSystemWatcherWrapper.EnableRaisingEvents && i < numberOfTries)
 			{
 				try
 				{
@@ -121,10 +121,10 @@ namespace starsky.foundation.sync.WatcherServices
 				}
 				catch
 				{
-					_webLogger.LogInformation($"[DiskWatcher] next retry {i} - wait for 5000ms");
+					_webLogger.LogInformation($"[DiskWatcher] next retry {i} - wait for {milliSecondsTimeout}ms");
 					// Sleep for a bit; otherwise, it takes a bit of
 					// processor time
-					System.Threading.Thread.Sleep(5000);
+					System.Threading.Thread.Sleep(milliSecondsTimeout);
 					i++;
 				}
 			}
