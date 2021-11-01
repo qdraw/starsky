@@ -55,7 +55,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible (chown) (PR #490)
 - [x]   (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a known issue 
 - [x]   (Fixed) _Back-end_ Skip folders with meta thumbnail tool when folder has no read rights (PR #490) 
-- todo: filter for import
+- [x]   (Added) _Back-end_  Filter for import (ImportIgnore) (PR #490)
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)

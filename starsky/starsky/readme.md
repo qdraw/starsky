@@ -50,16 +50,16 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 
 ### Optional settings
-1.  `Structure` - The structure that will be used when you import files, has a default fallback.
-2.  `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
-3.  `AddMemoryCache` - Enable caching _(default true)_
+1. `Structure` - The structure that will be used when you import files, has a default fallback.
+2. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
+3. `AddMemoryCache` - Enable caching _(default true)_
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
-4.  `AddSwagger` - To show a user interface to show al REST-services _(default false)_
-5.  `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
-6.  `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
-7.  `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-8.  `Verbose` - show more console logging  _(default false)_
-9.  `WebFtp` - ftp path, this is used by starskyWebFtpCli
+4. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+5. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(default false)_
+6. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+7. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
+8. `Verbose` - show more console logging  _(default false)_
+9. `WebFtp` - ftp path, this is used by starskyWebFtpCli
 10. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish button
 11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
@@ -73,6 +73,7 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
 20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
 21. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
+22. `ImportIgnore` ImportIgnore filter  _default list with: lost+found_
 
 ### Appsettings.json example
 ```json
@@ -85,7 +86,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
     "AddMemoryCache": "true",
-    "CameraTimeZone": "America/New_York"
+    "CameraTimeZone": "America/New_York",
+    "ImportIgnore": ["lost+found"]
   }
 }
 ```
