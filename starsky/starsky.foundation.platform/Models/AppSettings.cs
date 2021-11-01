@@ -581,6 +581,13 @@ namespace starsky.foundation.platform.Models
 		/// Use always UNIX style
 		/// </summary>
 		public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
+		
+		/// <summary>
+		/// Ignore this part of a path while importing
+		/// use env variable: app__importIgnore__0 - value
+		/// Use always UNIX style
+		/// </summary>
+		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found"};
 	    
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------

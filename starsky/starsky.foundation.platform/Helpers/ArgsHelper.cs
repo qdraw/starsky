@@ -293,6 +293,14 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 
+			_console.Write("SyncIgnore ");
+			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
+			_console.Write("\n");
+			
+			_console.Write("ImportIgnore ");
+			foreach ( var rule in _appSettings.ImportIgnore ) _console.Write($"{rule}, ");
+			_console.Write("\n");
+
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer)
 				_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " + _appSettings.ExifToolImportXmpCreate);
 			
