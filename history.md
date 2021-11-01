@@ -52,8 +52,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_  Docker compose support (PR #469)
 - [x]   (Change) _Front-end_ Remove Enzeme as framework for unittests and use react testing framework (PR #463)
 - [x]   (Change) _Back-end_ Retry for DiskWatcher (PR #479)
-- [x]   (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible (chown) 
-- [x]   (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a known issue
+- [x]   (Change) _Back-end_ Max amount of retry for DiskWatcher when folders are not accessible (chown) (PR #490)
+- [x]   (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a known issue 
+- [x]   (Fixed) _Back-end_ Skip folders with meta thumbnail tool when folder has no read rights (PR #490) 
 - todo: filter for import
 
 # version 0.4.11 - 2021-09-17
