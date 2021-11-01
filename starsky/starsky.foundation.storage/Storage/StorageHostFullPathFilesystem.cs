@@ -354,7 +354,7 @@ namespace starsky.foundation.storage.Storage
             return findList.OrderBy(x => x).ToList();
         }
 
-		private Tuple<string[], string[]> GetFilesAndDirectories(string path)
+		internal Tuple<string[], string[]> GetFilesAndDirectories(string path)
 		{
 			try
 			{
