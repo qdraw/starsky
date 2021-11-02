@@ -6,6 +6,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starskyAdminCli.Services;
@@ -29,7 +30,8 @@ namespace starskyAdminCli
 			new RegisterDependencies().Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
+			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
+
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 
@@ -45,7 +47,7 @@ namespace starskyAdminCli
 				return;
 			}
 			
-			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>());
+			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger);
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 		}
