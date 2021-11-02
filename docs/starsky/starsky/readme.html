@@ -94,6 +94,7 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code><b
 <li><code>UseDiskWatcher</code> Watch the disk for changes and update the database <em>default false (but will change)</em></li>
 <li><code>CheckForUpdates</code> Check if there are updates on github and notify the user <em>default true</em></li>
 <li><code>SyncIgnore</code> Ignore pattern to not include disk items while running sync, uses always unix style and startsWith <em>default list with: /lost+found</em></li>
+<li><code>ImportIgnore</code> ImportIgnore filter  <em>default list with: lost+found</em></li>
 </ol>
 <h3 id="appsettingsjson-example">Appsettings.json example</h3>
 <pre><code class="json language-json">{
@@ -105,7 +106,8 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code><b
     "Structure": "/yyyy/MM/yyyy_MM_dd/yyyyMMdd_HHmmss_{filenamebase}.ext",
     "ReadOnlyFolders": ["/2015","/2018"],
     "AddMemoryCache": "true",
-    "CameraTimeZone": "America/New_York"
+    "CameraTimeZone": "America/New_York",
+    "ImportIgnore": ["lost+found"]
   }
 }</code></pre>
 <blockquote>
@@ -736,6 +738,14 @@ Try to remove the <em>temp folder</em> and run the Application again.</li>
 <p>There is also a check to make sure the database runs good</p>
 <h4 id="application-insights">Application Insights</h4>
 <p>Health issues are also reported to Microsoft Application Insights This only is when a valid key is configured.</p>
+<h3 id="known-issues">Known issues</h3>
+<h4 id="diskwatcher-in-combination-with-child-folders-that-have-no-access">DiskWatcher in combination with child folders that have no access</h4>
+<p>When using <code>useDiskwatcher: true</code> and there are child folders that are not allowed to read<br />
+For example the <code>lost+found</code> folder</p>
+<pre><code>drwx------ 2 root root  16K Apr 16  2018 lost+found</code></pre>
+<p>Then DiskWatcher is stopping and retry 20 times before the state will be disabled</p>
+<pre><code>[DiskWatcher] (catch-ed) Access to the path '/mnt/external_disk/lost+found' is denied</code></pre>
+<p>Solution: make sure that all child folder are accessible</p>
 </div>
 </div>
 </div>
