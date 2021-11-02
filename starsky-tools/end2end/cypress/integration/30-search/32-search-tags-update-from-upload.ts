@@ -64,12 +64,13 @@ describe('Search -from upload - update tags', () => {
     }, () => {
       if (!config.isEnabled) return
 
+      cy.request('POST', config.searchClearCache)
       // need to wait for backend
       cy.wait(1000)
 
       cy.request('POST', config.searchClearCache)
 
-      cy.wait(50)
+      cy.wait(100)
 
       cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
       cy.visit(config.urlSearchFromUpload)
@@ -115,7 +116,7 @@ describe('Search -from upload - update tags', () => {
 
       cy.request('POST', config.searchClearCache)
 
-      cy.wait(50)
+      cy.wait(100)
 
       cy.intercept('/search?t=-inurl:starsky-end2end-test%20-imageformat:jpg').as('search')
       cy.visit(config.urlSearchFromUpload)
