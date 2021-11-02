@@ -10,15 +10,15 @@ namespace starsky.foundation.database.Helpers
 {
 	public static class RunMigrations
 	{
-		public static async Task Run(IServiceScope serviceScope)
+		public static async Task Run(IServiceScope serviceScope, int retryCount = 2)
 		{
 			var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
 			var logger = serviceScope.ServiceProvider.GetService<IWebLogger>();
 
-			await Run(dbContext,logger);
+			await Run(dbContext,logger,retryCount);
 		}
 
-		public static async Task Run(ApplicationDbContext dbContext, IWebLogger logger)
+		public static async Task Run(ApplicationDbContext dbContext, IWebLogger logger, int retryCount = 2)
 		{
 			logger.LogInformation("[RunMigrations] start migration");
 			async Task<bool> Migrate()
@@ -29,7 +29,7 @@ namespace starsky.foundation.database.Helpers
 			
 			try
 			{
-				await RetryHelper.DoAsync(Migrate, TimeSpan.FromSeconds(2),2);
+				await RetryHelper.DoAsync(Migrate, TimeSpan.FromSeconds(2),retryCount);
 			}
 			catch (AggregateException exception)
 			{

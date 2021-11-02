@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Helpers
@@ -18,10 +19,11 @@ namespace starskytest.starsky.foundation.database.Helpers
 	public class RunMigrationsTest
 	{
 		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public async Task Test()
 		{
 			IServiceCollection services = new ServiceCollection();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+
 			var efServiceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
 			services
 				.AddDbContext<ApplicationDbContext>(b =>
@@ -30,7 +32,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 			var serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			Assert.IsNotNull(serviceScopeFactory);
-			await RunMigrations.Run(serviceScopeFactory.CreateScope());
+			await RunMigrations.Run(serviceScopeFactory.CreateScope(),1);
 			// expect exception: Relational-specific methods can only be used when the context is using a relational database provider.
 		}
 
