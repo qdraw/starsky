@@ -213,7 +213,7 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
 				.Contains("[DownloadExifTool] " + appSettings.TempFolder));
 			
-			Directory.Delete(appSettings.TempFolder,true);
+			Directory.Delete(Path.Combine(appSettings.TempFolder,"exiftool-windows"),true);
 		}
 		
 				
