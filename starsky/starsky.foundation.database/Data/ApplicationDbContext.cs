@@ -25,6 +25,7 @@ namespace starsky.foundation.database.Data
 		public DbSet<UserRole> UserRoles { get; set; }
 		public DbSet<Permission> Permissions { get; set; }
 		public DbSet<RolePermission> RolePermissions { get; set; }
+		public DbSet<DataProtection> DataProtection { get; set; }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

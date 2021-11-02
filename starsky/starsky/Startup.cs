@@ -12,11 +12,14 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -26,6 +29,8 @@ using starsky.feature.health.HealthCheck;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
+using starsky.foundation.database.Services;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
@@ -78,15 +83,15 @@ namespace starsky
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
-	            
-            // Enable Dual Authentication 
+			SetDataProtection(services);
+
+			// Enable Dual Authentication 
             services
                 .AddAuthentication(sharedOptions =>
                 {
                     sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
                 })
                 .AddCookie(options =>
                     {
@@ -162,6 +167,19 @@ namespace starsky
 			}
 
 			new RegisterDependencies().Configure(services);
+        }
+
+        private void SetDataProtection(IServiceCollection services)
+        {
+	        services.AddDataProtection().SetApplicationName("starsky").AddKeyManagementOptions(
+		        options =>
+		        {
+			        var serviceProvider = services.BuildServiceProvider();
+			        options.XmlRepository =
+				        serviceProvider
+					        .GetService<IAddDataProtectionXmlRepository>();
+		        }
+	        );
         }
 
         /// <summary>

@@ -83,6 +83,7 @@ namespace starsky.foundation.database.Helpers
 				}));		
 #endif
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+
 		}
 
 	}
