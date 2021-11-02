@@ -50,9 +50,12 @@ namespace starsky.foundation.writemeta.Services
 				return await StartDownloadForUnix();
 			}
 
-			var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
-				: ExeExifToolUnixFullFilePath();
-			_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			if ( _appSettings.IsVerbose() )
+			{
+				var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
+					: ExeExifToolUnixFullFilePath();
+				_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			}
 			
 			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows) return true;
@@ -120,7 +123,6 @@ namespace starsky.foundation.writemeta.Services
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.IsVerbose() ) _logger.LogInformation($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
 			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;

@@ -212,8 +212,94 @@ describe("ModalPublish", () => {
     });
 
     expect(modal.queryByTestId("modal-publish-content-text")?.textContent).toBe(
-      "Something went wrong with exporting"
+      "Something went wrong with exporting Retry this"
     );
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
+  it("Fail - Publish flow with default options -> wait and go back", async () => {
+    var connectionDefault: IConnectionDefault = {
+      statusCode: 500,
+      data: null
+    };
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      connectionDefault
+    );
+
+    jest
+      .spyOn(useInterval, "default")
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {});
+
+    // use ==> import * as useFetch from '../hooks/use-fetch';
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: ["_default"]
+    } as IConnectionDefault;
+    var useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    var modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault)
+      .mockImplementationOnce(() => mockIConnectionDefault)
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
+    // update component + now press a key
+    act(() => {
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+    });
+
+    expect(useFetchSpy).toBeCalled();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
+
+    jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    await act(async () => {
+      await modal.queryByTestId("publish")?.click();
+    });
+
+    // and go back to
+    await act(async () => {
+      await modal.queryByTestId("publish-retry-export-fail")?.click();
+    });
+
+    // and be at the main window
+    expect(modal.queryByTestId("publish")).not.toBeNull();
 
     // and clean afterwards
     act(() => {

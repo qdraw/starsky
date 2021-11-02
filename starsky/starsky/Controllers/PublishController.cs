@@ -76,7 +76,7 @@ namespace starsky.Controllers
 			_webLogger.LogInformation($"[/api/publish/create] Press publish: {itemName} {f} {DateTime.UtcNow}");
 			var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
 			var info = _metaInfo.GetInfo(inputFilePaths, false);
-			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
+			if (info.All(p => p.Status != FileIndexItem.ExifStatus.Ok && p.Status != FileIndexItem.ExifStatus.ReadOnly))
 				return NotFound(info);
 
 			var slugItemName = _appSettings.GenerateSlug(itemName, true);

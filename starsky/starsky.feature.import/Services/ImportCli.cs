@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
@@ -69,11 +71,15 @@ namespace starsky.feature.import.Services
 				                  $"Structure {_appSettings.Structure}, " +
 				                  $"IndexMode {importSettings.IndexMode}");
 			}
-
+			
+			var stopWatch = Stopwatch.StartNew();
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
 			
 			_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
+			_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+			                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
 			_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+
 		}
 	}
 }
