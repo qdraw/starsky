@@ -35,6 +35,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "Er is iets misgegaan met exporteren",
     "Something went wrong with exporting"
   );
+  const MessageRetryExportFail = language.text(
+    "Probeer het opnieuw",
+    "Retry this"
+  );
+
   const MessageExportReady = language.text(
     "Het bestand {createZipKey} is klaar met exporteren.",
     "The file {createZipKey} has finished exporting."
@@ -188,9 +193,18 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
           </>
         ) : null}
 
-        {isProcessing === ProcessingState.fail
-          ? MessageGenericExportFail
-          : null}
+        {isProcessing === ProcessingState.fail ? (
+          <>
+            {MessageGenericExportFail} <br />
+            <button
+              onClick={() => setProcessing(ProcessingState.default)}
+              className="btn btn--info"
+              data-test="publish-retry-export-fail"
+            >
+              {MessageRetryExportFail}
+            </button>
+          </>
+        ) : null}
 
         {isProcessing === ProcessingState.ready ? (
           <>
