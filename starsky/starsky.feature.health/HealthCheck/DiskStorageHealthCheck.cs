@@ -56,10 +56,11 @@ namespace starsky.feature.health.HealthCheck
 			{
 				drivesList = DriveInfo.GetDrives();
 			}
-			catch ( Exception )
+			catch
 			{
 				return ( false, 0L );
 			}
+
 			DriveInfo driveInfo = drivesList.FirstOrDefault(
 				drive => drive != null && 
 				         string.Equals(drive.Name, driveName, StringComparison.InvariantCultureIgnoreCase));

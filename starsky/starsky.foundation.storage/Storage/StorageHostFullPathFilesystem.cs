@@ -147,7 +147,7 @@ namespace starsky.foundation.storage.Storage
 				}
 				catch(UnauthorizedAccessException e) 
 				{
-					_logger?.LogError("Catch-ed UnauthorizedAccessException => " + e.Message);
+					_logger?.LogError("[StorageHostFullPathFilesystem] Catch-ed UnauthorizedAccessException => " + e.Message);
 				}
 			}
 			return folderList.OrderBy(p => p);
@@ -354,21 +354,39 @@ namespace starsky.foundation.storage.Storage
             return findList.OrderBy(x => x).ToList();
         }
 
+		internal Tuple<string[], string[]> GetFilesAndDirectories(string path)
+		{
+			try
+			{
+				var filesArray = Directory.GetFiles(path);
+				var directoriesArray = Directory.GetDirectories(path);
+				return new Tuple<string[], string[]>(filesArray,
+					directoriesArray);
+			}
+			catch ( Exception exception)
+			{
+				_logger?.LogInformation($"[StorageHostFullPathFilesystem] catch-ed ex: {exception.Message} -  {path}");
+				return new Tuple<string[], string[]>(
+					new List<string>().ToArray(),
+					new List<string>().ToArray()
+					);
+			}
+		}
+
 		/// <summary>
 		/// recursive find. (private)
 		/// </summary>
 		/// <param name="path">The path.</param>
 		/// <param name="list">The list of strings.</param>
-		private static void RecurseFind( string path, List<string> list )
-        {
-            var fl = Directory.GetFiles(path);
-            var dl = Directory.GetDirectories(path);
-            if ( fl.Length <= 0 && dl.Length <= 0 ) return;
+		private void RecurseFind( string path, List<string> list )
+		{
+			var (filesArray, directoriesArray) = GetFilesAndDirectories(path);
+			if ( filesArray.Length <= 0 && directoriesArray.Length <= 0 ) return;
             //I begin with the files, and store all of them in the list
-            list.AddRange(fl);
+            list.AddRange(filesArray);
             // I then add the directory and recurse that directory,
             // the process will repeat until there are no more files and directories to recurse
-            foreach(var s in dl)
+            foreach(var s in directoriesArray)
             {
 	            list.Add(s);
 	            RecurseFind(s, list);

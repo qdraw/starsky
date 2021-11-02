@@ -27,7 +27,8 @@ namespace starsky.foundation.database.Models
 		IgnoredAlreadyImported,
 		AgeToOld,
 		FileError,
-		NotFound
+		NotFound,
+		Ignore
 	}
 	
     public class ImportIndexItem

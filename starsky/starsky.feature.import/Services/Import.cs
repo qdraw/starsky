@@ -214,6 +214,16 @@ namespace starsky.feature.import.Services
 		internal async Task<ImportIndexItem> PreflightPerFile(KeyValuePair<string,bool> inputFileFullPath, 
 			ImportSettingsModel importSettings)
 		{
+			if ( _appSettings.ImportIgnore.Any(p => inputFileFullPath.Key.Contains(p)) )
+			{
+				_console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
+				return new ImportIndexItem{ 
+					Status = ImportStatus.Ignore, 
+					FilePath = inputFileFullPath.Key,
+					AddToDatabase = DateTime.UtcNow
+				};
+			}
+			
 			if ( !inputFileFullPath.Value || !_filesystemStorage.ExistFile(inputFileFullPath.Key) )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ not found: {inputFileFullPath.Key}");

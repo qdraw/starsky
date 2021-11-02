@@ -62,11 +62,11 @@ namespace starskytest.starsky.feature.rename.Services
 				});
 			}
 			
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 
 			var readMeta = new ReadMeta(iStorage,_appSettings,memoryCache);
 			
-			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings);
+			_iStorageSubPath = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			
 			var services = new ServiceCollection();
 			var selectorStorage = new FakeSelectorStorage(iStorage);

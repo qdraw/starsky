@@ -61,6 +61,7 @@ namespace starskytest.Controllers
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
@@ -105,7 +106,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportController_CreateZipNotFound()
 		{
-			var iStorage = new StorageSubPathFilesystem(_appSettings);
+			var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var storageSelector = new FakeSelectorStorage(iStorage);
 			var export = new ExportService(_query,_appSettings,storageSelector, new FakeIWebLogger());
 			var controller = new ExportController( _bgTaskQueue, storageSelector, export);
@@ -292,7 +293,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbFalse__FilePathToFileName()
 		{
-			var storage = new StorageSubPathFilesystem(_appSettings);
+			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 
@@ -307,7 +308,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportControllerTest__ThumbTrue__FilePathToFileName()
 		{
-			var storage = new StorageSubPathFilesystem(_appSettings);
+			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 			var filePaths = new List<string>
@@ -333,7 +334,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public void ExportController_ZipNotFound()
 		{
-			var storage = new StorageSubPathFilesystem(_appSettings);
+			var storage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var selectorStorage = new FakeSelectorStorage(storage);
 			var export = new ExportService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 			var controller = new ExportController( _bgTaskQueue, selectorStorage, export);

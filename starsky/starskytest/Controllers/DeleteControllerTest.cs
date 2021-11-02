@@ -100,7 +100,7 @@ namespace starskytest.Controllers
 			// get the background helper
 			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
 	        
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 
 		}
         
@@ -132,7 +132,7 @@ namespace starskytest.Controllers
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 			
 			// RealFs Storage
-			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 			
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
 			var controller = new DeleteController(deleteItem);
@@ -164,7 +164,7 @@ namespace starskytest.Controllers
 			_appSettings.DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase;
 	        
 			var selectorStorage =
-				new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+				new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 			
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
 			var controller = new DeleteController(deleteItem);
@@ -190,7 +190,7 @@ namespace starskytest.Controllers
 				FileHash = "345678765434567"
 			});
             
-			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings));
+			var selectorStorage = new FakeSelectorStorage(new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger()));
 			var deleteItem = new DeleteItem(_query,_appSettings,selectorStorage);
 			var controller = new DeleteController(deleteItem);
 			var notFoundResult = controller.Delete("/345678765434567.jpg") as NotFoundObjectResult;

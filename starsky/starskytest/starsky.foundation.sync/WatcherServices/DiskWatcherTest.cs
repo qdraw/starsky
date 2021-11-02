@@ -144,5 +144,22 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.IsTrue(result);	
 		}
+		
+		
+		[TestMethod]
+		[Timeout(500)]
+		public void Watcher_CrashAnd_Retry()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+			
+			fakeIFileSystemWatcher.EnableRaisingEvents = false;
+			
+			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher,1,0);
+			
+			Assert.IsFalse(result);	
+		}
 	}
 }

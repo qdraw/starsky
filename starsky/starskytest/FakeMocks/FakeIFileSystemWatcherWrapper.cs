@@ -39,8 +39,25 @@ namespace starskytest.FakeMocks
 		{
 			Error?.Invoke(this, args);
 		}
-		
-		public bool EnableRaisingEvents { get; set; }
+
+		public bool CrashOnEnableRaisingEvents { get; set; } = false;
+
+		public bool EnableRaisingEventsPrivate { get; set; }
+
+		public bool EnableRaisingEvents
+		{
+			get => EnableRaisingEventsPrivate;
+			set
+			{
+				if ( CrashOnEnableRaisingEvents && value )
+				{
+					throw new Exception("test");
+				}
+				
+				EnableRaisingEventsPrivate = value;
+			}
+		}
+
 		public bool IncludeSubdirectories { get; set; }
 		public string Path { get; set; }
 		public string Filter { get; set; }
