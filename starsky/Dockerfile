@@ -38,6 +38,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS release
 
 # to avoid System.TimeZoneNotFoundException
 RUN apk add --no-cache tzdata
+RUN apk add --no-cache exiftool
 
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .

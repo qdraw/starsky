@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - ISDEMO=true
+        - I_SDEMO=true
     environment:
       - PORT=${STARSKY_PORT}
       - CI=true
@@ -37,6 +37,8 @@ services:
       - app__databaseConnection=Server=host.docker.internal;database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
+    depends_on:
+      - "mariadb"
     networks:
       internalnetwork: null
 

@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Helpers
 {
@@ -81,7 +82,7 @@ namespace starskytest.starsky.foundation.database.Helpers
 				.Options;
 			
 			Assert.IsNotNull(options);
-			await RunMigrations.Run(new AppDbMySqlException(options));
+			await RunMigrations.Run(new AppDbMySqlException(options), new FakeIWebLogger());
 			
 			// should not crash
 		}
