@@ -253,6 +253,8 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 				{"https://exiftool.org/Image-ExifTool-11.99.tar.gz", new ByteArrayContent(CreateAnExifToolTarGz.Bytes)}
 			});
 
+			_appSettings.Verbose = true;
+
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForUnix();
 			Assert.IsTrue(result);

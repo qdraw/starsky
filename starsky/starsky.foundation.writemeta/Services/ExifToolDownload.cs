@@ -50,9 +50,12 @@ namespace starsky.foundation.writemeta.Services
 				return await StartDownloadForUnix();
 			}
 
-			var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
-				: ExeExifToolUnixFullFilePath();
-			_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			if ( _appSettings.IsVerbose() )
+			{
+				var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
+					: ExeExifToolUnixFullFilePath();
+				_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			}
 			
 			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows) return true;
