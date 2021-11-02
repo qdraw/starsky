@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Medallion.Shell;
@@ -188,6 +189,57 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).DownloadExifTool(false);
 			Assert.IsFalse(result);
 		}
+		
+		[TestMethod]
+		public async Task DownloadExifTool_Windows_existVerbose()
+		{
+			var appSettings = new AppSettings{
+				TempFolder = AppDomain.CurrentDomain.BaseDirectory,
+				Verbose = true
+			};
+			Directory.CreateDirectory(appSettings.TempFolder);
+			Directory.CreateDirectory(Path.Combine(appSettings.TempFolder,"exiftool-windows"));
+			
+			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
+			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
+				Path.Combine(appSettings.TempFolder, "exiftool-windows", "exiftool.exe"));
+			
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var logger = new FakeIWebLogger();
+			
+			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(true);
+			
+			Assert.IsTrue(result);
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
+				.Contains("[DownloadExifTool] " + appSettings.TempFolder));
+			
+			Directory.Delete(appSettings.TempFolder,true);
+		}
+		
+				
+		[TestMethod]
+		public async Task DownloadExifTool_Unix_existVerbose()
+		{
+			if ( _appSettings.IsWindows )
+			{
+				Console.WriteLine("This test is for unix only");
+				return;
+			}
+			
+			var appSettings = await CreateTempFolderWithExifTool("test32");
+			appSettings.Verbose = true;
+			var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(), _serviceScopeFactory, new FakeIWebLogger());
+			var logger = new FakeIWebLogger();
+			var result = await new ExifToolDownload(httpClientHelper,appSettings,logger).DownloadExifTool(false);
+			
+			Assert.IsTrue(result);
+			Assert.IsTrue(logger.TrackedInformation.FirstOrDefault().Item2
+				.Contains("[DownloadExifTool] " + appSettings.TempFolder));
+			
+			Directory.Delete(appSettings.TempFolder,true);
+		}
+		
+		
 
 		[TestMethod]
 		public async Task StartDownloadForWindows_2Times()
