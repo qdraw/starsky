@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Interfaces;
@@ -9,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
 
@@ -27,6 +29,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			services.AddScoped<IWebLogger, FakeIWebLogger>();
 			services.AddScoped<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 			services.AddScoped<IQuery, FakeIQuery>();
+			services.AddScoped<IFileSystemWatcherWrapper, FakeIFileSystemWatcherWrapper>();
+
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -60,12 +64,12 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 				autoResetEvent.Set();
 				message = e.GetException().Message;
 			};
-			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException() ));
-
-			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(300));
+			
+			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException("test") ));
+			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(200));
+			
 			Assert.IsTrue(wasSignaled);
-
-			Assert.IsTrue(message.Contains("err"));
+			Assert.IsTrue(message.Contains("test"));
 		}
 		
 		[TestMethod]
@@ -128,6 +132,34 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			Assert.AreEqual("/test", receivedValue);
 			Assert.AreEqual(new Tuple<string,bool>("/test", true), synchronize.Inputs.FirstOrDefault());
+		}
+
+		[TestMethod]
+		[Timeout(200)]
+		public void Watcher_Retry_Ok()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
+
+			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher);
+			
+			Assert.IsTrue(result);	
+		}
+		
+		
+		[TestMethod]
+		[Timeout(500)]
+		public void Watcher_CrashAnd_Retry()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+			
+			fakeIFileSystemWatcher.EnableRaisingEvents = false;
+			
+			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher,1,0);
+			
+			Assert.IsFalse(result);	
 		}
 	}
 }

@@ -103,7 +103,10 @@ describe('Delete file from upload (50)', () => {
     waitFileInTrash(0, `/starsky-end2end-test/${fileName4}`)
 
     cy.log(`go to: ${config.trash}`)
+
+    cy.intercept('/starsky/api/search?json=true&t=!delete!&p=0').as('trashPage')
     cy.visit(config.trash)
+    cy.wait('@trashPage')
 
     cy.get('.item.item--select').click()
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName4}"] button`).click()

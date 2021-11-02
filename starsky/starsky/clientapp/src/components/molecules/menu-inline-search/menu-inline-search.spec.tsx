@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import {
@@ -10,11 +10,11 @@ import MenuInlineSearch from "./menu-inline-search";
 
 describe("Menu.SearchBar", () => {
   it("renders", () => {
-    shallow(<MenuInlineSearch />);
+    render(<MenuInlineSearch />);
   });
 
   describe("with Context", () => {
-    it("focus", () => {
+    it("focus", async () => {
       // usage ==> import * as useFetch from '../hooks/use-fetch';
       jest
         .spyOn(useFetch, "default")
@@ -25,15 +25,26 @@ describe("Menu.SearchBar", () => {
           return { ...newIConnectionDefault(), statusCode: 200 };
         });
 
-      var menuBar = mount(<MenuInlineSearch>t</MenuInlineSearch>);
+      var menuBar = render(<MenuInlineSearch>t</MenuInlineSearch>);
 
       // default
-      expect(menuBar.find("label").hasClass("icon-addon--search")).toBeTruthy();
+      expect(menuBar.container.querySelector("label")?.classList).toContain(
+        "icon-addon--search"
+      );
 
-      menuBar.find("input").simulate("focus");
-      expect(
-        menuBar.find("label").hasClass("icon-addon--search-focus")
-      ).toBeTruthy();
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
+
+      expect(input).not.toBeNull();
+
+      input.focus();
+
+      await waitFor(() =>
+        expect(menuBar.container.querySelector("label")?.classList).toContain(
+          "icon-addon--search-focus"
+        )
+      );
 
       menuBar.unmount();
     });
@@ -51,17 +62,26 @@ describe("Menu.SearchBar", () => {
           return newIConnectionDefault();
         });
 
-      var menuBar = mount(<MenuInlineSearch>t</MenuInlineSearch>);
+      var menuBar = render(<MenuInlineSearch>t</MenuInlineSearch>);
 
-      // go to focus
-      menuBar.find("input").simulate("focus");
-      expect(
-        menuBar.find("label").hasClass("icon-addon--search-focus")
-      ).toBeTruthy();
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
+
+      expect(input).not.toBeNull();
+
+      input.focus();
+
+      expect(menuBar.container.querySelector("label")?.classList).toContain(
+        "icon-addon--search-focus"
+      );
 
       // go to blur
-      menuBar.find("input").simulate("blur");
-      expect(menuBar.find("label").hasClass("icon-addon--search")).toBeTruthy();
+      input.blur();
+
+      expect(menuBar.container.querySelector("label")?.classList).toContain(
+        "icon-addon--search"
+      );
 
       menuBar.unmount();
     });
@@ -80,17 +100,27 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      (menuBar.find("input").getDOMNode() as HTMLInputElement).value = "test";
-      menuBar.find("input").simulate("change");
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
 
-      var results = menuBar.find(".menu-item--results > button");
-      expect(results.first().text()).toBe("suggest1");
-      expect(results.last().text()).toBe("suggest2");
+      expect(input).not.toBeNull();
+
+      fireEvent.change(input, { target: { value: "test" } });
+
+      var results = menuBar.container.querySelectorAll(
+        ".menu-item--results > button"
+      );
+
+      expect(results[0].textContent).toBe("suggest1");
+      expect(results[1].textContent).toBe("suggest2");
+
       expect(callback).toBeCalledTimes(0);
+
       menuBar.unmount();
     });
 
@@ -107,15 +137,24 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      (menuBar.find("input").getDOMNode() as HTMLInputElement).value = "test";
-      menuBar.find("input").simulate("change");
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
 
-      var results = menuBar.find(".menu-item--results > button");
-      results.first().simulate("click");
+      expect(input).not.toBeNull();
+
+      fireEvent.change(input, { target: { value: "test" } });
+
+      var results = menuBar.container.querySelectorAll(
+        ".menu-item--results > button"
+      );
+
+      expect(results).toHaveLength(2);
+      (results[0] as HTMLButtonElement).click();
 
       expect(callback).toBeCalled();
       menuBar.unmount();
@@ -131,18 +170,21 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => newIConnectionDefault());
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
-      (menuBar.find("input").getDOMNode() as HTMLInputElement).value = "test";
-      menuBar.find("input").simulate("change");
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
 
+      expect(input).not.toBeNull();
+
+      fireEvent.change(input, { target: { value: "test" } });
       // and change it back
-      (menuBar.find("input").getDOMNode() as HTMLInputElement).value = "";
-      menuBar.find("input").simulate("change");
+      fireEvent.change(input, { target: { value: "" } });
 
-      var results = menuBar.find(".menu-item--default").first();
+      var results = menuBar.container.querySelector(".menu-item--default");
 
       expect(results).toBeTruthy();
 
@@ -159,7 +201,7 @@ describe("Menu.SearchBar", () => {
         .mockImplementationOnce(() => suggestionsExample);
 
       var callback = jest.fn();
-      var menuBar = mount(
+      var menuBar = render(
         <MenuInlineSearch defaultText={"tes"} callback={callback} />
       );
 
@@ -167,8 +209,13 @@ describe("Menu.SearchBar", () => {
         .spyOn(ArrowKeyDown, "default")
         .mockImplementationOnce(() => {});
 
-      (menuBar.find("input").getDOMNode() as HTMLInputElement).value = "test";
-      menuBar.find("input").simulate("keydown");
+      const input = menuBar.queryByTestId(
+        "menu-inline-search"
+      ) as HTMLInputElement;
+
+      expect(input).not.toBeNull();
+
+      fireEvent.keyDown(input, { target: { value: "test" } });
 
       expect(arrowKeyDownSpy).toBeCalled();
 

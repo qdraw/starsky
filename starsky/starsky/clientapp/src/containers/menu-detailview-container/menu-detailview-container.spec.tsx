@@ -1,18 +1,18 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import * as MenuDetailView from "../../components/organisms/menu-detail-view/menu-detail-view";
 import MenuDetailViewContainer from "./menu-detailview-container";
 
 describe("MenuDetailViewContainer", () => {
   it("renders", () => {
-    shallow(<MenuDetailViewContainer />);
+    render(<MenuDetailViewContainer />);
   });
 
   it("expect child object", () => {
     const menuDetailViewSpy = jest
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
-    var component = mount(<MenuDetailViewContainer />);
+    var component = render(<MenuDetailViewContainer />);
     expect(menuDetailViewSpy).toBeCalled();
     component.unmount();
   });
@@ -25,7 +25,7 @@ describe("MenuDetailViewContainer", () => {
       .spyOn(MenuDetailView, "default")
       .mockImplementationOnce(() => null);
 
-    var component = mount(<MenuDetailViewContainer />);
+    var component = render(<MenuDetailViewContainer />);
     expect(menuDetailViewSpy).toBeCalled();
 
     component.unmount();

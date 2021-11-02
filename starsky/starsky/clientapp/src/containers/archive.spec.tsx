@@ -1,22 +1,27 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { newIArchive } from "../interfaces/IArchive";
 import Archive from "./archive";
 
 describe("Archive", () => {
   it("renders", () => {
-    shallow(<Archive {...newIArchive()} />);
+    render(<Archive {...newIArchive()} />);
   });
 
   it("no colorclass usage", () => {
-    const container = shallow(<Archive {...newIArchive()} />);
-    expect(container.text()).toBe("(Archive) = no colorClassLists");
+    const container = render(<Archive {...newIArchive()} />);
+    expect(container.container.textContent).toBe(
+      "(Archive) = no colorClassLists"
+    );
   });
 
   it("check if warning exist with no items in the list", () => {
-    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+    jest
+      .spyOn(window, "scrollTo")
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {});
 
-    const container = mount(
+    const container = render(
       <Archive
         {...newIArchive()}
         colorClassActiveList={[]}
@@ -24,6 +29,10 @@ describe("Archive", () => {
         fileIndexItems={[]}
       />
     );
-    expect(container.exists(".warning-box")).toBeTruthy();
+
+    const warningBox = container.queryByTestId(
+      "list-view-no-photos-in-folder"
+    ) as HTMLDivElement;
+    expect(warningBox).toBeTruthy();
   });
 });

@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
@@ -38,11 +40,11 @@ namespace starsky.feature.import.Services
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
-			
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
+
 			if (new ArgsHelper().NeedHelp(args) || new ArgsHelper(_appSettings)
 				.GetPathFormArgs(args,false).Length <= 1)
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Importer;
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
@@ -69,11 +71,15 @@ namespace starsky.feature.import.Services
 				                  $"Structure {_appSettings.Structure}, " +
 				                  $"IndexMode {importSettings.IndexMode}");
 			}
-
+			
+			var stopWatch = Stopwatch.StartNew();
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
 			
 			_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
+			_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+			                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
 			_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+
 		}
 	}
 }

@@ -4,7 +4,7 @@ using starsky.foundation.sync.WatcherInterfaces;
 
 namespace starsky.foundation.sync.WatcherServices
 {
-	[Service(typeof(IFileSystemWatcherWrapper), InjectionLifetime = InjectionLifetime.Transient)]
+	[Service(typeof(IFileSystemWatcherWrapper), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class FileSystemWatcherWrapper: FileSystemWatcher, IFileSystemWatcherWrapper
 	{
 		// no code its a wrapper around FileSystemWatcher

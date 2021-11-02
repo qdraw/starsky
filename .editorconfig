@@ -6,6 +6,7 @@ root = true
 # Most of the standard properties are supported
 indent_size=4
 max_line_length=80
+end_of_line = lf
 
 # Most frequently used .NET-coding-convention properties are supported
 csharp_space_between_parentheses=expressions, type_casts, control_flow_statements

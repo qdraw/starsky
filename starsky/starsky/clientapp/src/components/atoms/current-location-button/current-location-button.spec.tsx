@@ -1,19 +1,21 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import CurrentLocationButton from "./current-location-button";
 
 describe("CurrentLocationButton", () => {
   it("renders", () => {
-    shallow(<CurrentLocationButton />);
+    render(<CurrentLocationButton />);
   });
 
   describe("context", () => {
     it("no navigator.geolocation wrong_location", () => {
-      var component = mount(<CurrentLocationButton />);
-      component.find("button").simulate("click");
-      expect(
-        component.find("button").hasClass("icon--wrong_location")
-      ).toBeTruthy();
+      const component = render(<CurrentLocationButton />);
+      const button = component.getByRole("button");
+      button.click();
+
+      const list = component.getByRole("button").classList;
+
+      expect(list).toContain("icon--wrong_location");
     });
 
     it("getCurrentPosition success", () => {
@@ -32,15 +34,15 @@ describe("CurrentLocationButton", () => {
       (global as any).navigator.geolocation = mockGeolocation;
 
       var callback = jest.fn();
-      var component = mount(<CurrentLocationButton callback={callback} />);
-      component.find("button").simulate("click");
+      const component = render(<CurrentLocationButton callback={callback} />);
+      component.getByRole("button").click();
 
       expect(callback).toBeCalled();
       expect(callback).toBeCalledWith({ latitude: 51.1, longitude: 45.3 });
 
-      expect(
-        component.find("button").hasClass("icon--location_on")
-      ).toBeTruthy();
+      expect(component.getByRole("button").classList).toContain(
+        "icon--location_on"
+      );
     });
 
     it("getCurrentPosition success no callback", () => {
@@ -58,13 +60,13 @@ describe("CurrentLocationButton", () => {
       };
       (global as any).navigator.geolocation = mockGeolocation;
 
-      var component = mount(<CurrentLocationButton />);
-      component.find("button").simulate("click");
+      var component = render(<CurrentLocationButton />);
+      component.getByRole("button").click();
 
       // no callback
-      expect(
-        component.find("button").hasClass("icon--location_on")
-      ).toBeTruthy();
+      expect(component.getByRole("button").classList).toContain(
+        "icon--location_on"
+      );
     });
 
     it("getCurrentPosition error", () => {
@@ -76,12 +78,12 @@ describe("CurrentLocationButton", () => {
       (global as any).navigator.geolocation = mockGeolocation;
 
       var callback = jest.fn();
-      var component = mount(<CurrentLocationButton callback={callback} />);
-      component.find("button").simulate("click");
+      var component = render(<CurrentLocationButton callback={callback} />);
+      component.getByRole("button").click();
 
-      expect(
-        component.find("button").hasClass("icon--wrong_location")
-      ).toBeTruthy();
+      expect(component.getByRole("button").classList).toContain(
+        "icon--wrong_location"
+      );
     });
   });
 });

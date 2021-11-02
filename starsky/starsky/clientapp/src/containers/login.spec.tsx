@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
@@ -10,7 +10,7 @@ import Login from "./login";
 
 describe("Login", () => {
   it("renders", () => {
-    shallow(<Login />);
+    render(<Login />);
   });
 
   it("account already logged in", () => {
@@ -27,15 +27,16 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
       new UrlQuery().UrlAccountStatus(),
       "get"
     );
-    expect(login.exists(".content--error-true")).toBeTruthy();
-    expect(login.exists(".content--header")).toBeTruthy();
+
+    const err = login.queryByTestId("logout-content");
+    expect(err).toBeTruthy();
 
     act(() => {
       globalHistory.navigate("/");
@@ -57,19 +58,20 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.exists('[data-test="logout"]')).toBeTruthy();
-    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+    expect(login.queryByTestId("logout")).toBeTruthy();
+    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
-    // no prefix
-    expect(login.find('[data-test="logout"]').props().href).toBe(
-      "/account/logout?ReturnUrl=/test"
+    // no prefix (starsky in url)
+    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+      "http://localhost/account/logout?ReturnUrl=/test"
     );
-    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe(
-      "/test"
-    );
+
+    expect(
+      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
+    ).toBe("http://localhost/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -91,19 +93,20 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(useFetchSpy).toBeCalled();
-    expect(login.exists('[data-test="logout"]')).toBeTruthy();
-    expect(login.exists('[data-test="stayLoggedin"]')).toBeTruthy();
+    expect(login.queryByTestId("logout")).toBeTruthy();
+    expect(login.queryAllByTestId("stayLoggedin")).toBeTruthy();
 
     // including starsky prefix
-    expect(login.find('[data-test="logout"]').props().href).toBe(
-      "/starsky/account/logout?ReturnUrl=/starsky/test"
+    expect((login.queryByTestId("logout") as HTMLAnchorElement).href).toBe(
+      "http://localhost/starsky/account/logout?ReturnUrl=/starsky/test"
     );
-    expect(login.find('[data-test="stayLoggedin"]').first().props().href).toBe(
-      "/starsky/test"
-    );
+
+    expect(
+      (login.queryAllByTestId("stayLoggedin")[0] as HTMLAnchorElement).href
+    ).toBe("http://localhost/starsky/test");
 
     act(() => {
       globalHistory.navigate("/");
@@ -122,9 +125,11 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
-    expect(login.find(".form-control").length).toBe(2);
+    expect(login.queryByTestId("email")).toBeTruthy();
+    expect(login.queryByTestId("password")).toBeTruthy();
+
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
       new UrlQuery().UrlAccountStatus(),
@@ -148,7 +153,7 @@ describe("Login", () => {
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
     expect(
       globalHistory.location.pathname.indexOf(
@@ -184,25 +189,28 @@ describe("Login", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
-    expect(login.find(".form-control").length).toBe(2);
+    // submit
+    const loginContent = login.queryByTestId("login-content");
+    act(() => {
+      loginContent?.querySelector("form")?.submit();
+    });
+
     expect(useFetchSpy).toBeCalled();
     expect(useFetchSpy).toBeCalledWith(
       new UrlQuery().UrlAccountStatus(),
@@ -221,12 +229,14 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail by backend (401)", () => {
+  it("login flow fail by backend (401)", async () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
     var useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -238,30 +248,34 @@ describe("Login", () => {
     });
     var postSpy = jest
       .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockPost)
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
+    // submit
+    const loginContent = login.queryByTestId("login-content");
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      loginContent?.querySelector("form")?.submit();
     });
 
-    expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    await waitFor(() =>
+      expect(login.queryByTestId("login-error")).toBeTruthy()
+    );
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 
@@ -271,12 +285,14 @@ describe("Login", () => {
     });
   });
 
-  it("login flow fail by backend (423)", () => {
+  it("login flow fail by backend (423)", async () => {
     // usage ==> import * as useFetch from '../hooks/use-fetch';
     const connectionDefaultExample = { statusCode: 401 } as IConnectionDefault;
 
     var useFetchSpy = jest
       .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
       .mockImplementationOnce(() => connectionDefaultExample)
@@ -290,28 +306,33 @@ describe("Login", () => {
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockPost);
 
-    var login = mount(<Login />);
+    var login = render(<Login />);
 
+    // email
     act(() => {
-      // to use with: => import { act } from 'react-dom/test-utils';
-      (login
-        .find('input[type="email"]')
-        .getDOMNode() as HTMLInputElement).value = "dont@mail.me";
-      login.find('input[type="email"]').first().simulate("change");
+      const emailElement = login.queryByTestId("email") as HTMLInputElement;
+      fireEvent.change(emailElement, { target: { value: "dont@mail.me" } });
     });
 
+    // password
     act(() => {
-      (login
-        .find('input[type="password"]')
-        .getDOMNode() as HTMLInputElement).value = "password";
-      login.find('input[type="password"]').first().simulate("change");
+      const passwordElement = login.queryByTestId(
+        "password"
+      ) as HTMLInputElement;
+      fireEvent.change(passwordElement, { target: { value: "password" } });
     });
 
+    // submit
+    const loginContent = login.queryByTestId("login-content");
     act(() => {
-      login.find('form [type="submit"]').first().simulate("submit");
+      loginContent?.querySelector("form")?.submit();
     });
 
-    expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    // expect(login.html().search('class="content--error-true"')).toBeTruthy();
+    // expect(login.queryByTestId("login-error")).toBeTruthy();
+    await waitFor(() =>
+      expect(login.queryByTestId("login-error")).toBeTruthy()
+    );
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 

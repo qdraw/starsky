@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import {
   IFileIndexItem,
@@ -13,7 +13,7 @@ import * as ShiftSelectionHelper from "./shift-selection-helper";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    shallow(
+    render(
       <ItemListView
         iconList={true}
         fileIndexItems={newIFileIndexItemArray()}
@@ -28,16 +28,23 @@ describe("ItemListView", () => {
     ] as IFileIndexItem[];
 
     it("search with data-filepath in child element", () => {
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
           colorClassUsage={[]}
         />
       );
-      var query = '[data-filepath="' + exampleData[0].filePath + '"]';
 
-      expect(component.exists(query)).toBeTruthy();
+      const element = component.queryAllByTestId(
+        "list-image-view-select-container"
+      )[0];
+
+      expect(element).toBeTruthy();
+
+      expect(element.dataset["filepath"]).toBeTruthy();
+      expect(element.dataset["filepath"]).toBe(exampleData[0].filePath);
+
       component.unmount();
     });
 
@@ -45,7 +52,7 @@ describe("ItemListView", () => {
       const flatListItemSpy = jest
         .spyOn(FlatListItem, "default")
         .mockImplementationOnce(() => <></>);
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={false}
           fileIndexItems={exampleData}
@@ -57,18 +64,18 @@ describe("ItemListView", () => {
     });
 
     it("no content", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={undefined as any}
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe("no content");
+      expect(component.container.textContent).toBe("no content");
     });
 
     it("text should be: New? Set your drive location in the settings.  There are no photos in this folder", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -76,13 +83,13 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe(
+      expect(component.container.textContent).toBe(
         "New? Set your drive location in the settings.  There are no photos in this folder"
       );
     });
 
     it("text should be: There are no photos in this folder", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
@@ -90,18 +97,20 @@ describe("ItemListView", () => {
           colorClassUsage={[]}
         />
       );
-      expect(component.text()).toBe("There are no photos in this folder");
+      expect(component.container.textContent).toBe(
+        "There are no photos in this folder"
+      );
     });
 
     it("you did select a different colorclass but there a no items with this colorclass", () => {
-      var component = shallow(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={[]}
           colorClassUsage={[2]}
         />
       );
-      expect(component.text()).toBe(
+      expect(component.container.textContent).toBe(
         "There are more items, but these are outside of your filters. To see everything click on 'Reset Filter'"
       );
     });
@@ -121,15 +130,15 @@ describe("ItemListView", () => {
       } as INavigateState;
       jest.useFakeTimers();
 
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
           colorClassUsage={[]}
         >
           item
-        </ItemListView>,
-        { attachTo: (window as any).domNode }
+        </ItemListView>
+        // { attachTo: (window as any).domNode }
       );
 
       act(() => {
@@ -152,7 +161,7 @@ describe("ItemListView", () => {
           return true;
         });
 
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}
@@ -160,11 +169,24 @@ describe("ItemListView", () => {
         />
       );
 
-      act(() => {
-        component
-          .find(".list-image-box button")
-          .simulate("click", { shiftKey: true });
-      });
+      const item = component.queryByTestId(
+        "list-image-view-select-container"
+      ) as HTMLButtonElement;
+
+      console.log(component.container.innerHTML);
+      expect(item).toBeTruthy();
+
+      const button = item.querySelector("button") as HTMLButtonElement;
+      expect(button).toBeTruthy();
+
+      fireEvent(
+        button,
+        new MouseEvent("click", {
+          bubbles: true,
+          cancelable: true,
+          shiftKey: true
+        })
+      );
 
       expect(shiftSelectionHelperSpy).toBeCalled();
       expect(shiftSelectionHelperSpy).toBeCalledWith(
@@ -181,7 +203,7 @@ describe("ItemListView", () => {
       const listImageChildItemSpy = jest
         .spyOn(ListImageChildItem, "default")
         .mockImplementationOnce(() => <>t</>);
-      var component = mount(
+      var component = render(
         <ItemListView
           iconList={true}
           fileIndexItems={exampleData}

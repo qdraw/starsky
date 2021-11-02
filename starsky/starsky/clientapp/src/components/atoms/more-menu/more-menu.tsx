@@ -44,11 +44,14 @@ const MoreMenu: React.FunctionComponent<MoreMenuPropTypes> = ({
       <div
         onChange={offMoreMenu}
         onClick={toggleMoreMenu}
+        data-test="menu-context"
         className={
           enabledMenu ? "menu-context" : "menu-context menu-context--hide"
         }
       >
-        <ul className="menu-options">{children}</ul>
+        <ul data-test="menu-options" className="menu-options">
+          {children}
+        </ul>
       </div>
     </button>
   );

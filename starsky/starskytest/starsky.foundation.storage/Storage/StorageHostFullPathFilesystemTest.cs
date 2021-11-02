@@ -3,9 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.Storage
 {
@@ -23,6 +25,25 @@ namespace starskytest.starsky.foundation.storage.Storage
 
 			// Gives a list of the content in the temp folder.
 			Assert.AreEqual(true, content.Any());            
+		}
+		
+		[TestMethod]
+		public void GetAllFilesInDirectoryRecursive_NotFound()
+		{
+			var logger = new FakeIWebLogger();
+			var realStorage = new StorageHostFullPathFilesystem(logger);
+			var directories = realStorage.GetAllFilesInDirectoryRecursive("NOT:\\t");
+
+			if ( new AppSettings().IsWindows )
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+			}
+			else
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+			}
+			
+			Assert.AreEqual(directories.Count(),0);
 		}
 		
 		[TestMethod]
@@ -47,5 +68,26 @@ namespace starskytest.starsky.foundation.storage.Storage
 			Assert.AreEqual(false,realStorage.ExistFolder(rootDir));
 			Assert.AreEqual(false,realStorage.ExistFolder(childDir));
 		}
+
+		[TestMethod]
+		public void GetFilesAndDirectories_Exception_NotFound()
+		{
+			var logger = new FakeIWebLogger();
+			var realStorage = new StorageHostFullPathFilesystem(logger);
+			var directories = realStorage.GetFilesAndDirectories("NOT:\\t");
+			
+			if ( new AppSettings().IsWindows )
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("The filename, directory name, or volume label syntax is incorrect"));
+			}
+			else
+			{
+				Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("Could not find a part of the path"));
+			}
+			
+			Assert.AreEqual(directories.Item1.Length,0);
+			Assert.AreEqual(directories.Item2.Length,0);
+		}
+
 	}
 }

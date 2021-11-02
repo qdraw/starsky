@@ -22,12 +22,24 @@ const ItemTextListView: React.FunctionComponent<ItemListProps> = (props) => {
   );
 
   if (!props.fileIndexItems)
-    return <div className="warning-box">{MessageNoPhotos}</div>;
+    return (
+      <div
+        className="warning-box"
+        data-test="list-text-view-no-photos-in-folder"
+      >
+        {MessageNoPhotos}
+      </div>
+    );
 
   return (
     <>
       {props.fileIndexItems.length === 0 ? (
-        <div className="warning-box">{MessageNoPhotos}</div>
+        <div
+          className="warning-box"
+          data-test="list-text-view-no-photos-in-folder"
+        >
+          {MessageNoPhotos}
+        </div>
       ) : (
         ""
       )}

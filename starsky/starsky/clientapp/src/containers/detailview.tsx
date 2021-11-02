@@ -322,7 +322,11 @@ const DetailView: React.FC<IDetailView> = () => {
           ) : null}
 
           {relativeObjects.nextFilePath ? (
-            <div onClick={() => next()} className="nextprev nextprev--next">
+            <div
+              onClick={() => next()}
+              data-test="detailview-next"
+              className="nextprev nextprev--next"
+            >
               <div className="icon" />
             </div>
           ) : (
@@ -330,7 +334,11 @@ const DetailView: React.FC<IDetailView> = () => {
           )}
 
           {relativeObjects.prevFilePath ? (
-            <div onClick={() => prev()} className="nextprev nextprev--prev">
+            <div
+              onClick={() => prev()}
+              data-test="detailview-prev"
+              className="nextprev nextprev--prev"
+            >
               <div className="icon" />
             </div>
           ) : (

@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { IFileIndexItem } from "../../../interfaces/IFileIndexItem";
 import * as Modal from "../../atoms/modal/modal";
@@ -7,7 +7,7 @@ import ModalDropAreaFilesAdded from "./modal-drop-area-files-added";
 
 describe("ModalDropAreaFilesAdded", () => {
   it("renders", () => {
-    var component = shallow(
+    const component = render(
       <ModalDropAreaFilesAdded
         isOpen={true}
         uploadFilesList={[]}
@@ -27,7 +27,9 @@ describe("ModalDropAreaFilesAdded", () => {
         .spyOn(ItemTextListView, "default")
         .mockImplementationOnce((props) => {
           return (
-            <span id="data-test-0">{props.fileIndexItems[0].fileName}</span>
+            <span data-test="data-test-0">
+              {props.fileIndexItems[0].fileName}
+            </span>
           );
         });
 
@@ -38,9 +40,9 @@ describe("ModalDropAreaFilesAdded", () => {
         } as IFileIndexItem
       ];
 
-      var handleExitSpy = jest.fn();
+      const handleExitSpy = jest.fn();
 
-      var component = mount(
+      const component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={exampleList}
@@ -48,8 +50,10 @@ describe("ModalDropAreaFilesAdded", () => {
         />
       );
 
-      expect(component.exists("#data-test-0")).toBeTruthy();
-      expect(component.find("#data-test-0").text()).toBe("test.jpg");
+      const dataTestId = component.queryAllByTestId("data-test-0")[0];
+
+      expect(dataTestId).toBeTruthy();
+      expect(dataTestId.innerHTML).toBe("test.jpg");
 
       component.unmount();
     });
@@ -70,7 +74,7 @@ describe("ModalDropAreaFilesAdded", () => {
 
       var handleExitSpy = jest.fn();
 
-      var component = mount(
+      var component = render(
         <ModalDropAreaFilesAdded
           isOpen={true}
           uploadFilesList={[]}

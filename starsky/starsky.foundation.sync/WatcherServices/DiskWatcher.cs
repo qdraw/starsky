@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
@@ -14,16 +15,18 @@ namespace starsky.foundation.sync.WatcherServices
 	public class DiskWatcher : IDiskWatcher
 	{
 		private readonly FileProcessor _fileProcessor;
-		private readonly IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
+		private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 		private readonly IWebLogger _webLogger;
+		private readonly IServiceScopeFactory _scopeFactory;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
 		{
-
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
+			_scopeFactory = scopeFactory;
+
 			_webLogger = scopeFactory.CreateScope().ServiceProvider.GetService<IWebLogger>();
 		}
 
@@ -32,6 +35,12 @@ namespace starsky.foundation.sync.WatcherServices
 		/// </summary>
 		public void Watcher(string fullFilePath)
 		{
+			_webLogger.LogInformation("[DiskWatcher] started " +
+			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			
+			// why: https://stackoverflow.com/a/21000492
+			GC.KeepAlive(_fileSystemWatcherWrapper);  
+
 			// Create a new FileSystemWatcher and set its properties.
 
 			_fileSystemWatcherWrapper.Path = fullFilePath;
@@ -63,7 +72,10 @@ namespace starsky.foundation.sync.WatcherServices
 		private void OnError(object source, ErrorEventArgs e)
 		{
 			//  Show that an error has been detected.
-			_webLogger.LogError("The FileSystemWatcher has detected an error");
+			_webLogger.LogError(e.GetException(),"[DiskWatcher] The FileSystemWatcher has an error (catch-ed) - next: retry " +
+			                     $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			_webLogger.LogError("[DiskWatcher] (catch-ed) " + e.GetException().Message);
+			
 			//  Give more information if the error is due to an internal buffer overflow.
 			if (e.GetException().GetType() == typeof(InternalBufferOverflowException))
 			{
@@ -71,8 +83,53 @@ namespace starsky.foundation.sync.WatcherServices
 				//  and internal buffer of the  FileSystemWatcher is not large enough to handle this
 				//  rate of events. The InternalBufferOverflowException error informs the application
 				//  that some of the file system events are being lost.
-				_webLogger.LogError(e.GetException(),"The file system watcher experienced an internal buffer overflow ");
+				_webLogger.LogError(e.GetException(),"[DiskWatcher] The file system watcher experienced an internal buffer overflow ");
 			}
+
+			// when test dont retry
+			if ( e.GetException().Message == "test" ) return;
+			
+			// When fail it should try it again
+			Retry(new FileSystemWatcherWrapper());
+		}
+
+		/// <summary>
+		/// @see: https://www.codeguru.com/dotnet/filesystemwatcher%EF%BF%BDwhy-does-it-stop-working/
+		/// </summary>
+		internal bool Retry(IFileSystemWatcherWrapper fileSystemWatcherWrapper, int numberOfTries = 20, int milliSecondsTimeout = 5000)
+		{
+			_webLogger.LogInformation("[DiskWatcher] next retry " +
+			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			var path = _fileSystemWatcherWrapper.Path;
+
+			_fileSystemWatcherWrapper.Dispose();
+			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
+
+			var i = 0;
+			while (!_fileSystemWatcherWrapper.EnableRaisingEvents && i < numberOfTries)
+			{
+				try
+				{
+					// This will throw an error at the
+					// watcher.NotifyFilter line if it can't get the path.
+					Watcher(path);
+					if ( _fileSystemWatcherWrapper.EnableRaisingEvents )
+					{
+						_webLogger.LogInformation("[DiskWatcher] I'm Back!");
+					}
+					return true;
+				}
+				catch
+				{
+					_webLogger.LogInformation($"[DiskWatcher] next retry {i} - wait for {milliSecondsTimeout}ms");
+					// Sleep for a bit; otherwise, it takes a bit of
+					// processor time
+					System.Threading.Thread.Sleep(milliSecondsTimeout);
+					i++;
+				}
+			}
+			_webLogger.LogError($"[DiskWatcher] Failed after {i} times - so stop trying");
+			return false;
 		}
 		
 		// Define the event handlers.

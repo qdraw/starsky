@@ -1,5 +1,4 @@
-import { act } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import React from "react";
 import * as useFetch from "../../../hooks/use-fetch";
 import * as useInterval from "../../../hooks/use-interval";
@@ -10,8 +9,12 @@ import * as Modal from "../../atoms/modal/modal";
 import ModalPublish from "./modal-publish";
 
 describe("ModalPublish", () => {
+  beforeEach(() => {
+    jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+  });
+
   it("renders", () => {
-    shallow(
+    render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -30,7 +33,7 @@ describe("ModalPublish", () => {
       .spyOn(useFetch, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -39,7 +42,7 @@ describe("ModalPublish", () => {
     );
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     // and clean afterwards
     act(() => {
@@ -85,7 +88,7 @@ describe("ModalPublish", () => {
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -93,14 +96,21 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
+    // update component + now press a key
     act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
     });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
@@ -119,10 +129,12 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault2);
 
     await act(async () => {
-      await modal.find('[data-test="publish"]').simulate("click");
+      await modal.queryByTestId("publish")?.click();
     });
 
-    expect(modal.find(".content--subheader").text()).toBe("One moment please");
+    expect(modal.queryByTestId("modal-publish-subheader")?.textContent).toBe(
+      "One moment please"
+    );
 
     // and clean afterwards
     act(() => {
@@ -162,7 +174,7 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault)
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -175,24 +187,119 @@ describe("ModalPublish", () => {
       .mockImplementationOnce(() => mockIConnectionDefault)
       .mockImplementationOnce(() => mockIConnectionDefault);
 
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
     // update component + now press a key
-    modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-    modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
+    act(() => {
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+    });
 
     expect(useFetchSpy).toBeCalled();
-    expect(modal.exists('[data-test="publish"]')).toBeTruthy();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
 
     jest
       .spyOn(FetchPost, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
 
     await act(async () => {
-      await modal.find('[data-test="publish"]').simulate("click");
+      await modal.queryByTestId("publish")?.click();
     });
 
-    expect(modal.find(".content--text").text()).toBe(
-      "Something went wrong with exporting"
+    expect(modal.queryByTestId("modal-publish-content-text")?.textContent).toBe(
+      "Something went wrong with exporting Retry this"
     );
+
+    // and clean afterwards
+    act(() => {
+      jest.spyOn(window, "scrollTo").mockImplementationOnce(() => {});
+      modal.unmount();
+    });
+  });
+
+  it("Fail - Publish flow with default options -> wait and go back", async () => {
+    var connectionDefault: IConnectionDefault = {
+      statusCode: 500,
+      data: null
+    };
+    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
+      connectionDefault
+    );
+
+    jest
+      .spyOn(useInterval, "default")
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {});
+
+    // use ==> import * as useFetch from '../hooks/use-fetch';
+    const mockGetIConnectionDefault = {
+      statusCode: 200,
+      data: ["_default"]
+    } as IConnectionDefault;
+    var useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault)
+      .mockImplementationOnce(() => mockGetIConnectionDefault);
+
+    var modal = render(
+      <ModalPublish
+        select={["/"]}
+        isOpen={true}
+        handleExit={() => {}}
+      ></ModalPublish>
+    );
+    jest
+      .spyOn(FetchGet, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault)
+      .mockImplementationOnce(() => mockIConnectionDefault)
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
+
+    // update component + now press a key
+    act(() => {
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      fireEvent(tags, inputEvent);
+    });
+
+    expect(useFetchSpy).toBeCalled();
+    expect(modal.queryByTestId("publish")).toBeTruthy();
+
+    jest
+      .spyOn(FetchPost, "default")
+      .mockImplementationOnce(() => mockIConnectionDefault);
+
+    await act(async () => {
+      await modal.queryByTestId("publish")?.click();
+    });
+
+    // and go back to
+    await act(async () => {
+      await modal.queryByTestId("publish-retry-export-fail")?.click();
+    });
+
+    // and be at the main window
+    expect(modal.queryByTestId("publish")).not.toBeNull();
 
     // and clean afterwards
     act(() => {
@@ -224,7 +331,7 @@ describe("ModalPublish", () => {
 
     var handleExitSpy = jest.fn();
 
-    var modal = mount(
+    var modal = render(
       <ModalPublish select={["/"]} isOpen={true} handleExit={handleExitSpy} />
     );
 
@@ -265,7 +372,7 @@ describe("ModalPublish", () => {
         } as IConnectionDefault);
       });
 
-    const modal = mount(
+    const modal = render(
       <ModalPublish
         select={["/"]}
         isOpen={true}
@@ -273,24 +380,26 @@ describe("ModalPublish", () => {
       ></ModalPublish>
     );
 
-    act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "a";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "a" });
-    });
+    const formControls = modal
+      .queryAllByTestId("form-control")
+      .find((p) => p.getAttribute("data-name") === "item-name");
+    const tags = formControls as HTMLElement[][0];
+    expect(tags).not.toBe(undefined);
 
-    // need await for update
+    // update component + now press a key
     await act(async () => {
-      await modal.render();
+      tags.textContent = "a";
+      const inputEvent = createEvent.input(tags, { key: "a" });
+      await fireEvent(tags, inputEvent);
     });
 
-    expect(modal.html()).toContain('class="warning-box"');
+    expect(modal.queryByTestId("modal-publish-warning-box")).toBeTruthy();
 
     // and now undo
-    act(() => {
-      // update component + now press a key
-      modal.find('[data-name="item-name"]').getDOMNode().textContent = "";
-      modal.find('[data-name="item-name"]').simulate("input", { key: "" });
+    await act(async () => {
+      tags.textContent = "";
+      const inputEvent = createEvent.input(tags, { key: "" });
+      await fireEvent(tags, inputEvent);
     });
 
     // should only send get once. the second time should be avoid due sending emthy string

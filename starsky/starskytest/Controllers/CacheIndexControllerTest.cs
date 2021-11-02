@@ -84,7 +84,7 @@ namespace starskytest.Controllers
 			// get the service
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 	        
-			_iStorage = new StorageSubPathFilesystem(_appSettings);
+			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 		}
         
 		[TestMethod]

@@ -28,7 +28,8 @@ namespace starsky.foundation.platform.Models
 
 			// Temp folder, should be cleaned
 			TempFolder = Path.Combine(BaseDirectoryProject, "temp");
-
+			ExifToolPathDefaultPrivate = GetDefaultExifToolPath();
+			
 			try
 			{
 				CreateDefaultFolders();
@@ -399,26 +400,34 @@ namespace starsky.foundation.platform.Models
 		/// Private Location of ExifTool.exe
 		/// </summary>
 		private string ExifToolPathPrivate { get; set; }
-        
+		
+		/// <summary>
+		/// Set in ctor on startup
+		/// </summary>
+		private string ExifToolPathDefaultPrivate { get; }
+		
+		private string GetDefaultExifToolPath()
+		{
+			return IsWindows
+				? Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe")
+				: Path.Combine(TempFolder, "exiftool-unix", "exiftool");
+		}
+		
 		/// <summary>
 		/// Location of ExifTool.exe
 		/// </summary>
-		public string ExifToolPath {
-			get
+		public string ExifToolPath
+		{
+			get => string.IsNullOrEmpty(ExifToolPathPrivate) ? GetDefaultExifToolPath() : ExifToolPathPrivate;
+			set
 			{
-				if (IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate)  )
+				if ( value != ExifToolPathDefaultPrivate)
 				{
-					return Path.Combine(TempFolder, "exiftool-windows", "exiftool.exe");
+					ExifToolPathPrivate = value;
 				}
-				if (!IsWindows && string.IsNullOrEmpty(ExifToolPathPrivate) )
-				{
-					return Path.Combine(TempFolder, "exiftool-unix", "exiftool");
-				}
-				return ExifToolPathPrivate;
 			}
-			set => ExifToolPathPrivate = value;
 		}
-        
+
 		// C# 6+ required for this
 		public bool ExifToolImportXmpCreate { get; set; } = true; // -x -clean command
 
@@ -572,6 +581,13 @@ namespace starsky.foundation.platform.Models
 		/// Use always UNIX style
 		/// </summary>
 		public List<string> SyncIgnore { get; set; } = new List<string>{"/lost+found"};
+		
+		/// <summary>
+		/// Ignore this part of a path while importing
+		/// use env variable: app__importIgnore__0 - value
+		/// Use always UNIX style
+		/// </summary>
+		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found"};
 	    
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------

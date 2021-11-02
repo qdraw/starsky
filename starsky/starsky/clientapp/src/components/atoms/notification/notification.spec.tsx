@@ -1,30 +1,37 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { PortalId } from "../portal/portal";
 import Notification, { NotificationType } from "./notification";
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
-    shallow(<Notification type={NotificationType.default} />);
+    render(<Notification type={NotificationType.default} />);
   });
 
   describe("with Context", () => {
     it("Render component", () => {
-      var component = mount(<Notification type={NotificationType.default} />);
-      expect(component.exists(".content")).toBeTruthy();
+      const component = render(
+        <Notification type={NotificationType.default} />
+      );
+
+      const content = component.queryByTestId("notification-content");
+
+      expect(content).toBeTruthy();
       component.unmount();
     });
 
     it("Ok close and remove element from DOM", () => {
-      var component = mount(<Notification type={NotificationType.default} />);
+      const component = render(
+        <Notification type={NotificationType.default} />
+      );
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       expect(document.getElementById(PortalId)?.innerHTML).toBeUndefined();
     });
 
     it("Portal is already gone", () => {
-      var component = mount(
+      const component = render(
         <Notification type={NotificationType.default}>test</Notification>
       );
 
@@ -32,20 +39,20 @@ describe("ItemListView", () => {
       if (!portalElement) throw new Error("portal should not be undefined");
       portalElement.remove();
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       expect(document.getElementById(PortalId)?.innerHTML).toBeUndefined();
     });
 
     it("Callback test Ok close", () => {
       var callback = jest.fn();
-      var component = mount(
+      const component = render(
         <Notification callback={callback} type={NotificationType.default}>
           test
         </Notification>
       );
 
-      component.find(".icon--close").simulate("click");
+      component.queryByTestId("notification-close")?.click();
 
       // entire portal is removed from DOM
 
@@ -53,7 +60,7 @@ describe("ItemListView", () => {
     });
 
     it("Multiple notification it should remove them all", () => {
-      mount(
+      render(
         <>
           <Notification type={NotificationType.default} />
           <Notification type={NotificationType.danger} />

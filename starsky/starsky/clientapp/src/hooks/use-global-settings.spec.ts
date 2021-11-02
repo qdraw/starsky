@@ -1,6 +1,6 @@
 import { SupportedLanguages } from "../shared/language";
 import useGlobalSettings, { IGlobalSettings } from "./use-global-settings";
-import { shallowReactHook } from "./___tests___/test-hook";
+import { mountReactHook } from "./___tests___/test-hook";
 
 describe("useGlobalSettings", () => {
   describe("language", () => {
@@ -8,7 +8,7 @@ describe("useGlobalSettings", () => {
     let hook: IGlobalSettings;
 
     function runHook() {
-      setupComponent = shallowReactHook(useGlobalSettings, []);
+      setupComponent = mountReactHook(useGlobalSettings, []);
       hook = setupComponent.componentHook as IGlobalSettings;
     }
 

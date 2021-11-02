@@ -385,6 +385,8 @@ starsky-netframework-msbuild.zip
 **/jest-coverage.cobertura.xml
 **/coverage-merge-report/*
 
+!starsky/.env
+
 bundle.min.js
 bundle.min.js.map
 .eslintcache

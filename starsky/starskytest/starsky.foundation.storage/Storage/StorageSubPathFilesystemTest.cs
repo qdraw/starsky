@@ -5,6 +5,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.storage.Storage
 {
@@ -18,7 +19,7 @@ namespace starskytest.starsky.foundation.storage.Storage
 		{
 			_newImage = new CreateAnImage();
 			var appSettings = new AppSettings {StorageFolder = _newImage.BasePath};
-			_storage = new StorageSubPathFilesystem(appSettings);
+			_storage = new StorageSubPathFilesystem(appSettings, new FakeIWebLogger());
 		}
 		
 		[TestMethod]

@@ -93,7 +93,11 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
     }
 
     let resetButton = (
-      <Link to={cleanColorClass()} className="btn colorclass colorclass--reset">
+      <Link
+        data-test="color-class-filter-reset"
+        to={cleanColorClass()}
+        className="btn colorclass colorclass--reset"
+      >
         {colorContent[9]}
       </Link>
     );
@@ -125,6 +129,7 @@ const ColorClassFilter: React.FunctionComponent<IColorClassProp> = memo(
               onClick={() => setIsLoading(true)}
               key={item}
               to={getFilterUrlColorClass(item)}
+              data-test={"color-class-filter-" + item}
               className={
                 props.colorClassActiveList.indexOf(item) >= 0
                   ? "btn btn--default colorclass colorclass--" +

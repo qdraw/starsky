@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import {
   IRelativeObjects,
@@ -8,22 +8,31 @@ import ArchivePagination from "./archive-pagination";
 
 describe("ArchivePagination", () => {
   it("renders new object", () => {
-    shallow(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
+    render(<ArchivePagination relativeObjects={newIRelativeObjects()} />);
   });
 
   var relativeObjects = {
     nextFilePath: "next",
     prevFilePath: "prev"
   } as IRelativeObjects;
-  var Component = mount(
-    <ArchivePagination relativeObjects={relativeObjects} />
-  );
 
   it("next page exist", () => {
-    expect(Component.find("a.next").props().href).toBe("/?f=next");
+    const Component = render(
+      <ArchivePagination relativeObjects={relativeObjects} />
+    );
+    const next = Component.queryByTestId(
+      "archive-pagination-next"
+    ) as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=next");
   });
 
   it("prev page exist", () => {
-    expect(Component.find("a.prev").props().href).toBe("/?f=prev");
+    const Component = render(
+      <ArchivePagination relativeObjects={relativeObjects} />
+    );
+    const next = Component.queryByTestId(
+      "archive-pagination-prev"
+    ) as HTMLAnchorElement;
+    expect(next.href).toBe("http://localhost/?f=prev");
   });
 });

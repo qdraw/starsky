@@ -24,6 +24,8 @@ describe('Login', () => {
   }, () => {
     if (!config.isEnabled) return false
 
+    cy.intercept('/starsky/api/account/status').as('status')
+
     /* Start flow (connection header prevents script from
         occassionaly throwing ESOCKETTIMEDOUT errors in CI) */
     cy.visit(config.url, {
@@ -31,6 +33,7 @@ describe('Login', () => {
         Connection: 'Keep-Alive'
       }
     })
+    cy.wait('@status')
 
     cy.get(flow.form).within(() => {
       cy.get(flow.fields.name).type(Cypress.env('AUTH_USER'))

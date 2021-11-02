@@ -102,6 +102,7 @@ storiesOf("components/molecules/list-image-child-item", module).add(
 
     return (
       <div className={"folder"}>
+        {/* EXAMPLE STORY */}
         <div className={"list-image-box box--view"}>
           {exampleItems.map((item) => (
             <div className={"box-content colorclass--0 isDirectory-true"}>

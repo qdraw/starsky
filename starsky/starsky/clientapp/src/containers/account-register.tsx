@@ -160,6 +160,7 @@ const AccountRegister: FunctionComponent = () => {
         <form
           method="post"
           className="content--login-form form-inline form-nav"
+          data-test="account-register-form"
           onSubmit={(e) => {
             e.preventDefault();
             setError(null);
@@ -174,6 +175,7 @@ const AccountRegister: FunctionComponent = () => {
             type="email"
             name="email"
             maxLength={80}
+            data-test="email"
             value={userEmail}
             placeholder={MessageExampleUsername}
             onChange={(e) => setUserEmail(e.target.value)}
@@ -186,6 +188,7 @@ const AccountRegister: FunctionComponent = () => {
             autoComplete="off"
             type="password"
             name="password"
+            data-test="password"
             maxLength={80}
             placeholder={MessageExamplePassword}
             value={userPassword}
@@ -200,6 +203,7 @@ const AccountRegister: FunctionComponent = () => {
             type="password"
             maxLength={100}
             name="confirm-password"
+            data-test="confirm-password"
             value={userConfirmPassword}
             onChange={(e) => setUserConfirmPassword(e.target.value)}
           />
@@ -208,11 +212,19 @@ const AccountRegister: FunctionComponent = () => {
             dangerouslySetInnerHTML={{ __html: MessageLegalCreateAccountHtml }}
           ></div>
 
-          {error && <div className="content--error-true">{error}</div>}
+          {error && (
+            <div
+              data-test="account-register-error"
+              className="content--error-true"
+            >
+              {error}
+            </div>
+          )}
 
           <ButtonStyled
             className="btn btn--default"
             type="submit"
+            data-test="account-register-submit"
             disabled={loading || !isFormEnabled}
           >
             {loading ? "Loading..." : MessageCreateNewAccount}

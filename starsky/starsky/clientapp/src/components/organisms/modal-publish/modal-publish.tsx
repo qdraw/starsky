@@ -35,6 +35,11 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
     "Er is iets misgegaan met exporteren",
     "Something went wrong with exporting"
   );
+  const MessageRetryExportFail = language.text(
+    "Probeer het opnieuw",
+    "Retry this"
+  );
+
   const MessageExportReady = language.text(
     "Het bestand {createZipKey} is klaar met exporteren.",
     "The file {createZipKey} has finished exporting."
@@ -130,7 +135,7 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
   }
 
   const existItemNameComponent = existItemName ? (
-    <div className="warning-box">
+    <div className="warning-box" data-test="modal-publish-warning-box">
       {MessageItemNameInUse}
       {/* optional you could overwrite by pressing Publish*/}
     </div>
@@ -144,12 +149,18 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
         props.handleExit();
       }}
     >
-      <div className="modal content--subheader">
+      <div
+        data-test="modal-publish-subheader"
+        className="modal content--subheader"
+      >
         {isProcessing !== ProcessingState.server
           ? MessagePublishSelection
           : MessageOneMomentPlease}
       </div>
-      <div className="modal content--text publish">
+      <div
+        data-test="modal-publish-content-text"
+        className="modal content--text publish"
+      >
         {/* when selecting one file */}
         {isProcessing === ProcessingState.default && props.select ? (
           <>
@@ -182,9 +193,18 @@ const ModalPublish: React.FunctionComponent<IModalPublishProps> = (props) => {
           </>
         ) : null}
 
-        {isProcessing === ProcessingState.fail
-          ? MessageGenericExportFail
-          : null}
+        {isProcessing === ProcessingState.fail ? (
+          <>
+            {MessageGenericExportFail} <br />
+            <button
+              onClick={() => setProcessing(ProcessingState.default)}
+              className="btn btn--info"
+              data-test="publish-retry-export-fail"
+            >
+              {MessageRetryExportFail}
+            </button>
+          </>
+        ) : null}
 
         {isProcessing === ProcessingState.ready ? (
           <>

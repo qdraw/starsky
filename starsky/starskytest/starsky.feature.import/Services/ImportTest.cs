@@ -72,6 +72,23 @@ namespace starskytest.starsky.feature.import.Services
 		}
 		
 		[TestMethod]
+		public async Task Preflight_SingleImage_Ignore()
+		{
+			var appSettings = new AppSettings{Verbose = true, ImportIgnore = new List<string>(){"test"}};
+			var importService = new Import(new FakeSelectorStorage(_iStorageFake), appSettings, new FakeIImportQuery(),
+				new FakeExifTool(_iStorageFake, appSettings), null, _console, new FakeIMetaExifThumbnailService());
+
+			var result = await importService.Preflight(
+				new List<string> {"/test.jpg"},
+				new ImportSettingsModel());
+			
+			Assert.IsNotNull(result.FirstOrDefault());
+			Assert.AreEqual(ImportStatus.Ignore, result.FirstOrDefault().Status);
+			
+			Assert.IsNull(result.FirstOrDefault().FileIndexItem);
+		}
+		
+		[TestMethod]
 		public async Task Preflight_SingleImage_Ignore_ColorClassOverwrite()
 		{
 			var appSettings = new AppSettings{Verbose = true};

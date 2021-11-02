@@ -68,11 +68,12 @@ function getSamplePhotos {
   curl https://media.qdraw.nl/log/gers-in-de-franse-alpen-2020/1000/20200822_164141_dsc03321_e_kl1k.jpg --output $STORAGE_FOLDER"/gers/20200822_164141_dsc03321_e_kl1k.jpg"
 
   starskysynchronizecli=($(find $SOURCE_DIR -type f -name "starskysynchronizecli.csproj"))
-  dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db" -v
+  dotnet run --project ${starskysynchronizecli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --connection "Data Source="$APPLICATION_DIR"/app__data.db"
 
   echo "run thumbnailer"
+  mkdir -p $THUMBNAILTEMPFOLDER
   starskythumbnailcli=($(find $SOURCE_DIR -type f -name "starskythumbnailcli.csproj"))
-  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -v -t true
+  dotnet run --project ${starskythumbnailcli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -t true -v
 }
 
 function start_pushd {
@@ -85,17 +86,24 @@ function  end_popd {
   popd
 }
 
-echo "download dependencies; exiftool and geo data"  
-starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
-dotnet run --project ${starskygeocli[0]} --configuration Release -- -h
-echo "end download"
+function geoDeps {
+    echo "download dependencies; exiftool and geo data"  
+    starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
+    dotnet run --project ${starskygeocli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -h -v
+    echo "end download"
+}
 
 if [ -z "$E_ISDEMO" ]; then
     echo "NO PARAM PASSED"
+    echo "do only the geo deps exiftool/ geo data"
+    start_pushd
+    geoDeps
+    end_popd
 else
     echo $E_ISDEMO
     start_pushd
     makeDemoUser
     getSamplePhotos
+    geoDeps
     end_popd
 fi

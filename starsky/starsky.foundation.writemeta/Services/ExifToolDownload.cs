@@ -32,7 +32,7 @@ namespace starsky.foundation.writemeta.Services
 		{
 			_httpClientHelper = httpClientHelper;
 			_appSettings = appSettings;
-			_hostFileSystemStorage = new StorageHostFullPathFilesystem();
+			_hostFileSystemStorage = new StorageHostFullPathFilesystem(logger);
 			_logger = logger;
 		}
 
@@ -50,9 +50,12 @@ namespace starsky.foundation.writemeta.Services
 				return await StartDownloadForUnix();
 			}
 
-			var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
-				: ExeExifToolUnixFullFilePath();
-			_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			if ( _appSettings.IsVerbose() )
+			{
+				var debugPath = isWindows ? ExeExifToolWindowsFullFilePath()
+					: ExeExifToolUnixFullFilePath();
+				_logger.LogInformation($"[DownloadExifTool] {debugPath}");
+			}
 			
 			// When running deploy scripts rights might reset (only for unix)
 			if ( isWindows) return true;
@@ -108,19 +111,18 @@ namespace starsky.foundation.writemeta.Services
 				.FirstOrDefault(p => p.StartsWith(Path.Combine(_appSettings.TempFolder, "Image-ExifTool-")));
 			if ( imageExifToolVersionFolder != null )
 			{
-				var exifToolUnixFolderFullFilePath =
-					Path.Combine(_appSettings.TempFolder, "exiftool-unix");
+				var exifToolUnixFolderFullFilePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix");
 				_hostFileSystemStorage.FolderMove(imageExifToolVersionFolder,exifToolUnixFolderFullFilePath);
 			}
 			
-			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
+			var exifToolExePath = Path.Combine(_appSettings.TempFolder, "exiftool-unix","exiftool");
+			_logger.LogInformation($"[DownloadForUnix] ExifTool downloaded: {exifToolExePath}");
 			return await RunChmodOnExifToolUnixExe();
 		}
 
 		internal async Task<bool> RunChmodOnExifToolUnixExe()
 		{
 			// need to check again
-			if ( _appSettings.IsVerbose() ) _logger.LogInformation($"ExeExifToolUnixFullFilePath {ExeExifToolUnixFullFilePath()}");
 			// when not exist
 			if ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ) return false;
 			if ( _appSettings.IsWindows ) return true;

@@ -233,7 +233,7 @@ Task("RestoreNetCore")
               System.Console.WriteLine(genericName);
 
                 // https://cakebuild.net/api/Cake.Common.Tools.DotNetCore.Restore/DotNetCoreRestoreSettings/C6DB42EB
-              DotNetCoreRestore(".",
+              DotNetCoreRestore("./starsky.sln",
                   new DotNetCoreRestoreSettings());
               continue;
             }
@@ -265,7 +265,7 @@ Task("BuildNetCoreGeneric")
           ArgumentCustomization = args => args.Append("--nologo").Append("--no-restore"),
           /* Verbosity = DotNetCoreVerbosity.Detailed */
       };
-      DotNetCoreBuild(".",
+      DotNetCoreBuild("./starsky.sln",
           dotnetBuildSettings);
   });
 

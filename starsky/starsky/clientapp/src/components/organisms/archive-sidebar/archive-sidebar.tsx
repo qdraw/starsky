@@ -81,7 +81,9 @@ const ArchiveSidebar: React.FunctionComponent<IArchiveSidebarProps> = memo(
           <>
             <div className="content--header">Status</div>
             <div className="content content--text">
-              <div className="warning-box">{MessageReadOnlyFolder}</div>
+              <div className="warning-box" data-test="sidebar-read-only">
+                {MessageReadOnlyFolder}
+              </div>
             </div>{" "}
           </>
         ) : null}

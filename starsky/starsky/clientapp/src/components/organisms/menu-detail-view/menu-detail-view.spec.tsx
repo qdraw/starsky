@@ -1,7 +1,6 @@
-import { globalHistory, Link } from "@reach/router";
-import { mount, shallow } from "enzyme";
+import { globalHistory } from "@reach/router";
+import { act, fireEvent, render } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { IConnectionDefault } from "../../../interfaces/IConnectionDefault";
 import { IDetailView, PageType } from "../../../interfaces/IDetailView";
 import { IExifStatus } from "../../../interfaces/IExifStatus";
@@ -28,7 +27,7 @@ describe("MenuDetailView", () => {
         parentDirectory: "/test"
       }
     } as IDetailView;
-    shallow(<MenuDetailView state={state} dispatch={jest.fn()} />);
+    render(<MenuDetailView state={state} dispatch={jest.fn()} />);
   });
 
   describe("readonly status context", () => {
@@ -52,17 +51,15 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
 
-      var item = component.find('[data-test="move"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+      move?.click();
 
       expect(moveModal).toBeCalledTimes(0);
 
@@ -80,14 +77,13 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="rename"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
+      rename?.click();
 
       expect(renameModal).toBeCalledTimes(0);
 
@@ -106,16 +102,15 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
-      var item = component.find('[data-test="trash"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(fetchPostSpy).toBeCalledTimes(0);
 
@@ -138,16 +133,22 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
-      component.find(Link).simulate("click", {
+
+      const anchor = component.queryByTestId(
+        "menu-detail-view-close"
+      ) as HTMLAnchorElement;
+
+      fireEvent.click(anchor, {
         metaKey: true
       });
 
-      expect(component.exists(".preloader--overlay")).toBeFalsy();
+      expect(component.queryByTestId("preloader")).toBeNull();
+
       component.unmount();
     });
 
@@ -163,14 +164,22 @@ describe("MenuDetailView", () => {
           parentDirectory: "/test"
         }
       } as IDetailView;
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
-      component.find(Link).simulate("click");
 
-      expect(component.exists(".preloader--overlay")).toBeTruthy();
+      const anchor = component.queryByTestId(
+        "menu-detail-view-close"
+      ) as HTMLAnchorElement;
+
+      fireEvent.click(anchor, {
+        metaKey: false
+      });
+
+      expect(component.queryByTestId("preloader")).not.toBeNull();
+
       component.unmount();
     });
   });
@@ -192,13 +201,18 @@ describe("MenuDetailView", () => {
       // add search query to url
       globalHistory.navigate("/?t=test&p=0");
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
 
-      expect(component.exists(".item--search")).toBeTruthy();
+      const anchor = component.queryByTestId(
+        "menu-detail-view-close"
+      ) as HTMLAnchorElement;
+
+      expect(anchor).toBeTruthy();
+      expect(anchor.className).toContain("search");
 
       act(() => {
         // reset afterwards
@@ -220,11 +234,11 @@ describe("MenuDetailView", () => {
         }
       };
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={updateState} dispatch={jest.fn()} />
       );
 
-      expect(component.exists(".autosave")).toBeTruthy();
+      expect(component.queryByTestId("menu-detail-view-autosave")).toBeTruthy();
 
       act(() => {
         // reset afterwards
@@ -238,13 +252,13 @@ describe("MenuDetailView", () => {
         globalHistory.navigate("/?details=true");
       });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()}>
           t
         </MenuDetailView>
       );
 
-      expect(component.exists(".autosave")).toBeFalsy();
+      expect(component.queryByTestId("menu-detail-view-autosave")).toBeFalsy();
 
       act(() => {
         // reset afterwards
@@ -260,15 +274,13 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="export"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const exportButton = component.queryByTestId("export");
+      expect(exportButton).toBeTruthy();
+      exportButton?.click();
 
       expect(exportModal).toBeCalled();
 
@@ -279,14 +291,14 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click .item--labels [menu]", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      var find = component.find(".item.item--labels");
+      const labels = component.queryByTestId("menu-detail-view-labels");
 
       act(() => {
-        find.simulate("click");
+        labels?.click();
       });
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
@@ -302,14 +314,14 @@ describe("MenuDetailView", () => {
     });
 
     it("labels click (in MoreMenu)", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="labels"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      //       var item = component.find('[data-test="labels"]');
+      const labels = component.queryByTestId("labels");
+      expect(labels).toBeTruthy();
+      labels?.click();
 
       var urlObject = new URLPath().StringToIUrl(globalHistory.location.search);
       expect(urlObject.details).toBeTruthy();
@@ -324,14 +336,13 @@ describe("MenuDetailView", () => {
     it("navigate to parent folder click", () => {
       globalHistory.navigate("/?t=test");
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="go-to-parent-folder"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const goToParentFolder = component.queryByTestId("go-to-parent-folder");
+      expect(goToParentFolder).toBeTruthy();
+      goToParentFolder?.click();
 
       expect(globalHistory.location.search).toBe("?f=/test");
 
@@ -348,15 +359,13 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
-      var item = component.find('[data-test="move"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const move = component.queryByTestId("move");
+      expect(move).toBeTruthy();
+      move?.click();
 
       expect(moveModal).toBeCalled();
 
@@ -374,14 +383,13 @@ describe("MenuDetailView", () => {
           return <></>;
         });
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="rename"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const rename = component.queryByTestId("rename");
+      expect(rename).toBeTruthy();
+      rename?.click();
 
       expect(renameModal).toBeCalled();
 
@@ -400,14 +408,13 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="trash"]');
 
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(spy).toBeCalled();
       expect(spy).toBeCalledTimes(1);
@@ -422,7 +429,7 @@ describe("MenuDetailView", () => {
     });
 
     it("trash click to trash and collection is true", () => {
-      var component = mount(
+      var component = render(
         <MenuDetailView
           state={{
             ...state,
@@ -435,11 +442,12 @@ describe("MenuDetailView", () => {
           dispatch={jest.fn()}
         />
       );
-      expect(component.exists('[data-test="trash-including"]')).toBeTruthy();
 
-      var trashIncl = component.find('[data-test="trash-including"]').text();
+      const trashIncl = component.queryByTestId("trash-including");
 
-      expect(trashIncl).toBe("Including: jpg, arw");
+      expect(trashIncl).toBeTruthy();
+
+      expect(trashIncl?.textContent).toBe("Including: jpg, arw");
 
       act(() => {
         component.unmount();
@@ -476,14 +484,15 @@ describe("MenuDetailView", () => {
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
 
-      var component = mount(
+      var component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
-      var item = component.find('[data-test="rotate"]');
+
+      const item = component.queryByTestId("rotate");
 
       // need to await this click 2 times
       await act(async () => {
-        await item.simulate("click");
+        await item?.click();
       });
 
       expect(spyPost).toBeCalled();
@@ -526,7 +535,7 @@ describe("MenuDetailView", () => {
         return contextValues;
       });
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -540,11 +549,9 @@ describe("MenuDetailView", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      var item = component.find('[data-test="trash"]');
-
-      act(() => {
-        item.simulate("click");
-      });
+      const trash = component.queryByTestId("trash");
+      expect(trash).toBeTruthy();
+      trash?.click();
 
       expect(spy).toBeCalledWith(
         new UrlQuery().UrlReplaceApi(),
@@ -574,7 +581,7 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state} dispatch={jest.fn()} />
       );
 
@@ -622,12 +629,13 @@ describe("MenuDetailView", () => {
         }
       } as IDetailView;
 
-      const component = mount(
+      const component = render(
         <MenuDetailView state={state1} dispatch={jest.fn()} />
       );
-      expect(component.find("header").getDOMNode().className).toBe(
-        "header header--main header--deleted"
-      );
+      let header = component.container.querySelector(
+        "header"
+      ) as HTMLHeadingElement;
+      expect(header.className).toBe("header header--main header--deleted");
 
       act(() => {
         state1.fileIndexItem.status = IExifStatus.Ok;
@@ -637,9 +645,11 @@ describe("MenuDetailView", () => {
         globalHistory.navigate("/?f=/test2.jpg");
       });
 
-      expect(component.find("header").getDOMNode().className).toBe(
-        "header header--main"
-      );
+      header = component.container.querySelector(
+        "header"
+      ) as HTMLHeadingElement;
+
+      expect(header.className).toBe("header header--main");
 
       act(() => {
         component.unmount();
@@ -659,12 +669,12 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
-        var item = component.find('[data-test="export"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        var item = component.queryByTestId("export") as HTMLDivElement;
+        expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved", () => {
@@ -679,12 +689,12 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
-        var item = component.find('[data-test="move"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        var item = component.queryByTestId("move") as HTMLDivElement;
+        expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be renamed", () => {
@@ -699,12 +709,12 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
-        var item = component.find('[data-test="rename"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        var item = component.queryByTestId("rename") as HTMLDivElement;
+        expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be moved to trash", () => {
@@ -719,12 +729,12 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
-        var item = component.find('[data-test="trash"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        var item = component.queryByTestId("trash") as HTMLDivElement;
+        expect(item.className).toBe("menu-option disabled");
       });
 
       it("when source is missing file can't be rotated", () => {
@@ -737,12 +747,12 @@ describe("MenuDetailView", () => {
           }
         } as IDetailView;
 
-        const component = mount(
+        const component = render(
           <MenuDetailView state={state} dispatch={jest.fn()} />
         );
-        var item = component.find('[data-test="rotate"]');
 
-        expect(item.getDOMNode().className).toBe("menu-option disabled");
+        var item = component.queryByTestId("rotate") as HTMLDivElement;
+        expect(item.className).toBe("menu-option disabled");
       });
     });
   });

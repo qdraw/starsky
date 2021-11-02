@@ -1,4 +1,5 @@
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { render } from "@testing-library/react";
+import { ReactWrapper } from "enzyme";
 import React from "react";
 import * as DetailView from "../containers/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
@@ -12,7 +13,7 @@ import DetailViewWrapper, {
 
 describe("DetailViewWrapper", () => {
   it("renders", () => {
-    shallow(<DetailViewWrapper {...newDetailView()} />);
+    render(<DetailViewWrapper {...newDetailView()} />);
   });
 
   describe("with mount", () => {
@@ -24,7 +25,7 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = mount(<DetailViewWrapper {...args} />);
+      const compontent = render(<DetailViewWrapper {...args} />);
       expect(detailView).toBeCalled();
       compontent.unmount();
     });
@@ -52,7 +53,7 @@ describe("DetailViewWrapper", () => {
           return <></>;
         });
 
-      const compontent = mount(<DetailViewWrapper {...args} />);
+      const compontent = render(<DetailViewWrapper {...args} />);
 
       expect(contextValues.dispatch).toBeCalled();
       expect(detailView).toBeCalled();
@@ -73,9 +74,9 @@ describe("DetailViewWrapper", () => {
         .mockImplementationOnce(() => contextValues as any);
 
       var args = { ...newDetailView() } as IDetailView;
-      var compontent = mount(<DetailViewWrapper {...args} />);
+      var compontent = render(<DetailViewWrapper {...args} />);
 
-      expect(compontent.text()).toBe("");
+      expect(compontent.container.innerHTML).toBe("");
       compontent.unmount();
     });
   });

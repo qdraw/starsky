@@ -1,4 +1,4 @@
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import React from "react";
 import { newIArchive } from "../../../interfaces/IArchive";
 import { IArchiveProps } from "../../../interfaces/IArchiveProps";
@@ -14,7 +14,7 @@ describe("ModalForceDelete", () => {
   });
 
   it("renders", () => {
-    shallow(
+    render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -35,7 +35,7 @@ describe("ModalForceDelete", () => {
       });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -57,10 +57,11 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = modal.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
+    await forceDelete?.click();
+
     expect(fetchSpy).toBeCalled();
     expect(fetchSpy).toBeCalledWith(
       new UrlQuery().UrlDeleteApi(),
@@ -79,7 +80,7 @@ describe("ModalForceDelete", () => {
       });
 
     const dispatch = jest.fn();
-    const modal = mount(
+    const modal = render(
       <ModalForceDelete
         isOpen={true}
         handleExit={() => {}}
@@ -101,10 +102,11 @@ describe("ModalForceDelete", () => {
       ></ModalForceDelete>
     );
 
-    expect(modal.exists('[data-test="force-delete"]')).toBeTruthy();
-    expect(modal.exists("button.btn--default")).toBeTruthy();
+    const forceDelete = modal.queryByTestId("force-delete");
+    expect(forceDelete).toBeTruthy();
     // need to await here
-    await modal.find('[data-test="force-delete"]').simulate("click");
+    await forceDelete?.click();
+
     expect(fetchSpy).toBeCalled();
     expect(fetchSpy).toBeCalledWith(
       new UrlQuery().UrlDeleteApi(),
@@ -125,7 +127,7 @@ describe("ModalForceDelete", () => {
 
     var handleExitSpy = jest.fn();
 
-    var component = mount(
+    var component = render(
       <ModalForceDelete
         isOpen={true}
         dispatch={jest.fn()}

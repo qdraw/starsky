@@ -6,7 +6,7 @@ import {
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
 import useSearchList, { ISearchList } from "./use-searchlist";
-import { shallowReactHook } from "./___tests___/test-hook";
+import { mountReactHook } from "./___tests___/test-hook";
 
 describe("UseSearchList", () => {
   describe("Search", () => {
@@ -36,7 +36,7 @@ describe("UseSearchList", () => {
     }
 
     beforeEach(() => {
-      setupComponent = shallowReactHook(useSearchList, ["test", "1", "true"]); // Mount a Component with our hook
+      setupComponent = mountReactHook(useSearchList, ["test", "1", "true"]); // Mount a Component with our hook
       hook = setupComponent.componentHook as ISearchList;
     });
 
