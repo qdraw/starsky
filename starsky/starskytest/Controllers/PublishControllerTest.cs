@@ -104,7 +104,29 @@ namespace starskytest.Controllers
 		{
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				new FakeIWebHtmlPublishService(), 
-				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg"){Status = FileIndexItem.ExifStatus.Ok}}),
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.Ok
+				}}),
+				new FakeSelectorStorage(),
+				_bgTaskQueue, new FakeIWebLogger());
+			
+			var actionResult = await controller.PublishCreate("/test.jpg", 
+				"test", "test", true) as JsonResult;
+			var result = actionResult.Value as string;
+			
+			Assert.AreEqual("test", result);
+		}
+		
+		[TestMethod]
+		public async Task PublishCreate_newItem_readonly()
+		{
+			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(), 
+				new FakeIMetaInfo(new List<FileIndexItem>{new FileIndexItem("/test.jpg")
+				{
+					Status = FileIndexItem.ExifStatus.ReadOnly
+				}}),
 				new FakeSelectorStorage(),
 				_bgTaskQueue, new FakeIWebLogger());
 			
