@@ -45,5 +45,7 @@ COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
 
 ENV ASPNETCORE_Environment=Production
+ENV app__ExifToolPath=/usr/bin/exiftool
+ENV app__storageFolder=/app/storageFolder
 
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet starsky.dll
