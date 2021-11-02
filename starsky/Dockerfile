@@ -23,7 +23,7 @@ COPY . ./
 
 # insert demo user and content
 ARG ISDEMO=""
-ENV E_ISDEMO=$ISDEMO
+ENV EISDEMO=$ISDEMO
 RUN chmod +x docker_demo_setup.sh 
 RUN ls
 RUN ./docker_demo_setup.sh
