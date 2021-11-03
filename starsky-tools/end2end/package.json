@@ -4,13 +4,19 @@
   "scripts": {
     "start": "cypress open --env configFolder=starsky,configEnv=local,CYPRESS_RETRIES=2",
     "start:env": "cypress open",
-    "open:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
+    "open:env": "npm run start:env",
+    "start:heroku": "npm run start:heroku-demo",
+    "open:heroku": "npm run start:heroku-demo",
+    "open:heroku-demo": "npm run start:heroku-demo",
+    "start:heroku-demo": "cypress open --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
     "e2e:heroku-demo": "cypress run --env configFolder=starsky,configEnv=heroku-demo,CYPRESS_RETRIES=2",
     "open:docker": "cypress open --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2",
+    "start:docker": "npm run open:docker",
     "e2e:docker": "cypress run --env configFolder=starsky,configEnv=docker,CYPRESS_RETRIES=2",
     "e2e:env": "cypress run",
     "e2e:env:record": "cypress run --record",
-    "cache-path": "cypress cache path"
+    "cache-path": "cypress cache path",
+    "cache": "cypress cache path"
   },
   "devDependencies": {
     "@types/node": "^14.17.9",
