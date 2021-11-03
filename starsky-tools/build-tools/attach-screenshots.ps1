@@ -1,33 +1,40 @@
+#!/usr/bin/env pwsh
+
+# $Env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI = "https://dev.azure.com/<<username>>/"
+# $Env:SYSTEM_TEAMPROJECTID = "<>"
+# $Env:RELEASE_ID = 520
+# $Env:REPO_DIR = "~/workspaces/starsky/"
+# $Env:ADO_SYSTEM_ACCESSTOKEN = ""
+# $Env:CYPRESS_SCREENSHOTS = "starsky-tools/end2end"
+
 # Configuration
-# source: http://codestyle.dk/2020/05/19/cypress-screenshots-are-missing-in-azure-pipelines/
-# https://github.com/krileo/azure-devops-screenshot-attachments
+$global:cwd = $env:REPO_DIR
+$global:screenshotPath = Join-Path -Path $global:cwd -ChildPath $CYPRESS_SCREENSHOTS
 
-$cwd = Get-Location # D:\azagent_wecycle\A1\_work\r4\a
-$global:screenshotPath = Join-Path -Path $cwd -ChildPath "_repo\tests\e2e\cypress\screenshots"
-
-If(!(test-path $global:screenshotPath))
-{
-	write-host $screenshotPath 
-	write-host "Does not exists"
-	exit 0
-}
+write-host $screenshotPath
 
 # Global Variables
 $screenshotsHashtable = @{ } # Key = test name, Value = Full screenshot filename
 
 # Authentication - Azure DevOps
 
-$accessToken = $env:SYSTEM_ACCESSTOKEN
+$accessToken = $env:ADO_SYSTEM_ACCESSTOKEN
 $teamFoundationCollectionUri = $env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI
 $teamProjectId = $env:SYSTEM_TEAMPROJECTID
-$buildId = $env:BUILD_BUILDID
-$headers = @{ Authorization = "Bearer " + $accessToken }
+$releaseId = $env:RELEASE_ID
+
+$pair = ":$($accessToken)"
+$encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
+$basicAuthValue = "Basic $encodedCreds"
+
+$headers = @{
+  Authorization = $basicAuthValue
+}
 
 # Authentication - Local Testing
 # $accessToken = "ENTER_YOUR_TOKEN"
 # $teamFoundationCollectionUri = "https://dev.azure.com/lbforsikring/"
 # $teamProjectId = "1e10926f-6e19-47b5-9049-b1661f115ebe"
-# $buildId = 8600
 # $pair = "$($accessToken):$($accessToken)"
 # $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
 # $headers = @{ Authorization = "Basic $encodedCreds" }
@@ -54,22 +61,36 @@ function Get-TestRuns {
 
 	$today = Get-Date
 	$tomorrow = $today.AddDays(1)
-	$yesterday = $today.AddDays(-1)
+	$yesterday = $today.AddDays(-6)
 
 	$minLastUpdatedDate = $yesterday.ToString("yyyy-MM-dd")
 	$maxLastUpdatedDate = $tomorrow.ToString("yyyy-MM-dd")
 
-	$testRunUrl = "$($teamFoundationCollectionUri)$($teamProjectId)/_apis/test/runs?api-version=5.1&minLastUpdatedDate=$($minLastUpdatedDate)&maxLastUpdatedDate=$($maxLastUpdatedDate)&buildIds=$($buildId)"
-	Write-Host "Getting Test Runs from '$testRunUrl'"
+	$testRunUrl = "$($teamFoundationCollectionUri)$($teamProjectId)/_apis/test/runs?api-version=5.1&minLastUpdatedDate=$($minLastUpdatedDate)&maxLastUpdatedDate=$($maxLastUpdatedDate)"
+  # &buildIds=$($buildId)
+  Write-Host ">> Getting Test Runs from '$testRunUrl'"
 
-	$testRunResponse = Invoke-RestMethod -Uri $testRunUrl -Headers $headers
+  $testRunResponse = @{ }
+  try {
+    $testRunResponse = Invoke-RestMethod -Uri $testRunUrl -Headers $headers
+  }
+  catch {
+    # Dig into the exception to get the Response details.
+    # Note that value__ is not a typo.
+    Write-Host -ForegroundColor:Red "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+    Write-Host -ForegroundColor:Red "StatusDescription:" $_.Exception.Response.StatusDescription
+  }
 
 	$allResults = 0;
+  write-host $testRunResponse.value.count
 
 	foreach ($run in $testRunResponse.value) {
-		$results = Get-Test-Results -runId $run.id
+		if ( $run.release.id -eq $releaseId) {
+		# write-host "Test" $run.release.id
 
-		$allResults = $allResults + $results;
+		$results = Get-Test-Results -runId $run.id
+			$allResults = $allResults + $results;
+		}
 	}
 
 	return $allResults
@@ -85,10 +106,16 @@ function Find-Screenshot-From-Test-Result {
 	if ($null -ne $screenshotFilename) {
 		Write-Host -ForegroundColor:Green "Found screenshot '$($screenshotFilename)' matching test '$($testName)'"
 	}
- else {
-		Write-Host -ForegroundColor:Red "No screenshot found matching test '$($name)'"
+	else {
+		$testName = $testName.Replace("|","")
+		$screenshotFilename = $screenshotsHashtable[$testName]
+		if ($null -ne $screenshotFilename) {
+			Write-Host -ForegroundColor:Green "Found screenshot '$($screenshotFilename)' matching test '$($testName)'"
+		}
+		else {
+			Write-Host -ForegroundColor:Red "No screenshot found matching test: '$($testName)'"
+		}
 	}
-
 	return $screenshotFilename
 }
 
@@ -100,6 +127,8 @@ function Add-Attachment-To-TestResult {
 	$createTestResultsAttachmentUrl = "$teamFoundationCollectionUri$teamProjectId/_apis/test/runs/$($runId)/results/$($testResultId)/attachments?api-version=5.1-preview&outcomes=Failed"
 
 	$base64string = [Convert]::ToBase64String([IO.File]::ReadAllBytes($screenshotFilename))
+
+  	$screenshotFilenameWithoutPath = $screenshotFilenameWithoutPath.Replace("|","-");
 
 	$body = @{
 		fileName       = $screenshotFilenameWithoutPath
@@ -143,12 +172,11 @@ function Get-Test-Results {
 }
 
 # Entry Point
-Write-Host "Azure DevOps Test Result Attacher v.0.1b"
+Write-Host "Azure DevOps Test Result Attacher v.0.1b - edited"
 Write-Host ""
-Write-Host "AccessToken: $accessToken"
 Write-Host "TeamFoundationCollectionUri: $teamFoundationCollectionUri"
 Write-Host "TeamProjectId: $teamProjectId"
-Write-Host "BuildId: $buildId"
+Write-Host "releaseId: $releaseId"
 Write-Host ""
 
 Save-Screenshots-Hashtable
@@ -161,6 +189,9 @@ $LASTEXITCODE = 0
 if ($failedTests -gt 0) {
 	$LASTEXITCODE = 1
 }
+
+# source: http://codestyle.dk/2020/05/19/cypress-screenshots-are-missing-in-azure-pipelines/
+# https://github.com/krileo/azure-devops-screenshot-attachments
 
 Write-Host "Exiting with exitCode $($LASTEXITCODE)"
 exit $LASTEXITCODE
