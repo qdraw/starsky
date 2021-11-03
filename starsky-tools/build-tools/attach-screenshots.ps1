@@ -1,13 +1,24 @@
 #!/usr/bin/env pwsh
 
+# Authentication - Pipeline (release)
+
+# ADO_SYSTEM_ACCESSTOKEN = $(System.AccessToken)
+# SYSTEM_TEAMFOUNDATIONCOLLECTIONURI = $(System.TeamFoundationCollectionUri)
+# SYSTEM_TEAMPROJECTID = $(System.TeamProjectId)
+# RELEASE_ID = $(Release.ReleaseId)
+# REPO_DIR = $(System.DefaultWorkingDirectory)/_starsky
+# CYPRESS_SCREENSHOTS = starsky-tools/end2end/cypress
+
+# Authentication - Local Testing
+
+# $Env:ADO_SYSTEM_ACCESSTOKEN = ""
 # $Env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI = "https://dev.azure.com/<<username>>/"
 # $Env:SYSTEM_TEAMPROJECTID = "<>"
 # $Env:RELEASE_ID = 520
 # $Env:REPO_DIR = "~/workspaces/starsky/"
-# $Env:ADO_SYSTEM_ACCESSTOKEN = ""
-# $Env:CYPRESS_SCREENSHOTS = "starsky-tools/end2end"
+# $Env:CYPRESS_SCREENSHOTS = "starsky-tools/end2end/cypress"
 
-# Configuration
+# Script --> 
 $global:cwd = $env:REPO_DIR
 $global:screenshotPath = Join-Path -Path $global:cwd -ChildPath $CYPRESS_SCREENSHOTS
 
@@ -30,14 +41,6 @@ $basicAuthValue = "Basic $encodedCreds"
 $headers = @{
   Authorization = $basicAuthValue
 }
-
-# Authentication - Local Testing
-# $accessToken = "ENTER_YOUR_TOKEN"
-# $teamFoundationCollectionUri = "https://dev.azure.com/lbforsikring/"
-# $teamProjectId = "1e10926f-6e19-47b5-9049-b1661f115ebe"
-# $pair = "$($accessToken):$($accessToken)"
-# $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
-# $headers = @{ Authorization = "Basic $encodedCreds" }
 
 # Functions
 
