@@ -1,4 +1,4 @@
-name: Starsky Deploy Demo
+name: Starsky Docker Deploy Demo
 
 on:
   push:
