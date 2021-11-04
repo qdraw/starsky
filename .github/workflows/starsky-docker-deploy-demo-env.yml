@@ -5,6 +5,9 @@ on:
     branches:
     - master
     - release/*
+    paths:
+    - '.github/workflows/starsky-docker-deploy-demo-env.yml'
+    - 'starsky/*'
   pull_request:
     branches: [ master ]
     paths:
