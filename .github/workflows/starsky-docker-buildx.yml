@@ -2,7 +2,7 @@ on:
   push:
     branches: [ master ]
 
-name: Create Release on tag for docker hub
+name: Docker buildx multi-arch CI
 
 jobs:
   deploy:
