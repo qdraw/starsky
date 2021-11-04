@@ -1,4 +1,4 @@
-name: Starsky Deploy Demo
+name: Starsky Docker Deploy Demo
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [ master ]
     paths:
-    - '.github/workflows/starsky-deploy-demo-env.yml'
+    - '.github/workflows/starsky-docker-deploy-demo-env.yml'
     - 'starsky/Dockerfile'
     - 'starsky/docker_demo_setup.sh'
     
