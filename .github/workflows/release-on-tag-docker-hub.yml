@@ -46,6 +46,8 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:${{ steps.pushtags.outputs.tag }}
+
             
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
