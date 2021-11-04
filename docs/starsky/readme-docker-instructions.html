@@ -76,6 +76,9 @@ docker build -t starsky . --build-arg ISDEMO=true
 <li>And check if it runs</li>
 </ol>
 <pre><code class="sh language-sh">curl http://localhost:8000/api/health -X GET</code></pre>
+<h3 id="docker-buildx-for-multi-arch">Docker buildX for multi-arch</h3>
+<pre><code class="sh language-sh">cd /root_of_repo
+docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64,linux/arm/v7</code></pre>
 </div>
 </div>
 </div>
