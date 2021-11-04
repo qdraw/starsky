@@ -22,6 +22,7 @@ RUN echo "react done"
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 ARG BUILDPLATFORM
+ARG TARGETPLATFORM
 
 RUN mkdir -p /app
 WORKDIR /app
@@ -39,27 +40,30 @@ RUN ./docker_demo_setup.sh
 WORKDIR /app/starsky
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        RID=linux-x64 ; \
+        echo $TARGETPLATFORM ; \
+        dotnet restore --runtime linux-x64 starsky.csproj ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-        RID=linux-arm64 ; \
+        dotnet restore --runtime linux-arm64 starsky.csproj ; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-        RID=linux-arm ; \
-    fi \
-    && dotnet restore starsky.csproj
+        dotnet restore --runtime linux-arm starsky.csproj ; \
+    else \
+        dotnet restore starsky.csproj ; \
+    fi
 
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-        RID=linux-x64 ; \
+        echo $TARGETPLATFORM ; \
+        dotnet publish -c release -o out --runtime linux-x64 --self-contained false ; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-        RID=linux-arm64 ; \
+        dotnet publish -c release -o out --runtime linux-arm64 --self-contained false ; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-        RID=linux-arm ; \
-    fi \
-    && dotnet publish -c release -o out -r $RID --self-contained false
-
+        dotnet publish -c release -o out --runtime linux-arm --self-contained false ; \
+    else \
+       dotnet publish -c release -o out  ; \
+    fi
 
 # build runtime image (multiarch)
-# docker buildx imagetools inspect mcr.microsoft.com/dotnet/core/aspnet:3.1
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS release
+# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS release
 
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
