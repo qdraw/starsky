@@ -34,7 +34,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./starsky
-          file: ./Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
