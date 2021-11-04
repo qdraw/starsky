@@ -33,4 +33,3 @@ jobs:
           push: false
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:latest
-            ${{ secrets.DOCKER_HUB_USERNAME }}/starsky:${{ steps.pushtags.outputs.tag }}
