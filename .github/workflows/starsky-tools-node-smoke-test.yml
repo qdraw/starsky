@@ -8,7 +8,6 @@ on:
     branches: [ master ]
     paths:
     - 'starsky-tools/dropbox-import'
-    - 'starsky-tools/import'
     - 'starsky-tools/localtunnel'
     - 'starsky-tools/mail'
     - 'starsky-tools/thumbnail'
@@ -16,7 +15,6 @@ on:
     branches: [ master ]
     paths:
     - 'starsky-tools/dropbox-import'
-    - 'starsky-tools/import'
     - 'starsky-tools/localtunnel'
     - 'starsky-tools/mail'
     - 'starsky-tools/thumbnail'
@@ -40,10 +38,6 @@ jobs:
         
     - name: NpmCi dropbox-import
       working-directory: ./starsky-tools/dropbox-import
-      run: npm ci
-      
-    - name: NpmCi import
-      working-directory: ./starsky-tools/import
       run: npm ci
       
     - name: NpmCi localtunnel
