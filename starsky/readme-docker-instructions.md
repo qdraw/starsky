@@ -80,3 +80,10 @@ docker exec -it d8094eb990de /bin/bash
 ```sh
 curl http://localhost:8000/api/health -X GET
 ```
+
+### Docker buildX for multi-arch
+
+```sh
+cd /root_of_repo
+docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64,linux/arm/v7
+```

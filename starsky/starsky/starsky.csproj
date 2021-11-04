@@ -61,6 +61,10 @@
         <Content Include="pm2-download-azure-devops.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <None Remove="docker-cleanup.sh" />
+        <Content Include="docker-cleanup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
         <Content Update="appsettings.json">
