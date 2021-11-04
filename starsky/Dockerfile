@@ -20,7 +20,7 @@ RUN echo "react done"
 
 # no alpine build since there is no support for multi-arch
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:3.1 AS build-env
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 
