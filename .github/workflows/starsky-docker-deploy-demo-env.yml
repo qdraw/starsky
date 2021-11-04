@@ -27,7 +27,7 @@ jobs:
       run: |
         cd ./starsky
         docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-        heroku container:push web -a $APP_NAME --arg ISDEMO=true BUILDPLATFORM=linux/amd64
+        heroku container:push web -a $APP_NAME --arg ISDEMO=true,BUILDPLATFORM=linux/amd64
         heroku container:release web -a $APP_NAME
         
   trigger_pipe:
