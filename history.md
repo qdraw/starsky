@@ -42,7 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.12 _(Unreleased)_ - 2021-09-??
+# version 0.4.13 _(Unreleased)_ - 2021-11-?
+- nothing yet
+
+# version 0.4.12 _(Unreleased)_ - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
 - [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
 - [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp (PR #444)
@@ -56,7 +59,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a known issue 
 - [x]   (Fixed) _Back-end_ Skip folders with meta thumbnail tool when folder has no read rights (PR #490) 
 - [x]   (Added) _Back-end_  Filter for import (ImportIgnore) (PR #490)
-
+- [x]   (Added) _Back-end_ Add to docker hub and multi-arch build with buildx
+- 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)
 - [x]   (Fixed) _Back-end_ Make StorageFolder setting more clear (PR #429)
