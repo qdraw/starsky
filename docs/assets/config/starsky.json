@@ -1,7 +1,7 @@
 {
   "Info": {
     "Title": "Starsky",
-    "Version": "0.4.1.0",
+    "Version": "0.4.12.0",
     "Extensions": {}
   },
   "Servers": [
@@ -174,7 +174,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -230,7 +230,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -423,6 +423,22 @@
               "Links": {},
               "Extensions": {},
               "UnresolvedReference": false
+            },
+            "423": {
+              "Description": "login failed due lock",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "500": {
+              "Description": "login failed due signIn errors",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
             }
           },
           "Callbacks": {},
@@ -493,7 +509,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "insert url to redirect",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -503,7 +518,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -577,7 +592,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -639,7 +654,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -814,7 +829,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -876,7 +891,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -1088,6 +1103,14 @@
                   "Extensions": {}
                 }
               },
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "202": {
+              "Description": "open, but you are the first user",
+              "Headers": {},
+              "Content": {},
               "Links": {},
               "Extensions": {},
               "UnresolvedReference": false
@@ -1441,7 +1464,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "the name with extension and no parent path",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -1451,7 +1473,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -1524,203 +1546,6 @@
             },
             "401": {
               "Description": "please login first",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          },
-          "Callbacks": {},
-          "Deprecated": false,
-          "Security": [],
-          "Servers": [],
-          "Extensions": {}
-        }
-      },
-      "Servers": [],
-      "Parameters": [],
-      "Extensions": {}
-    },
-    "/api/remove-cache": {
-      "Operations": {
-        "Get": {
-          "Tags": [
-            {
-              "Name": "Api",
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          ],
-          "Summary": "Delete Database Cache (only the cache)",
-          "Parameters": [
-            {
-              "UnresolvedReference": false,
-              "Name": "f",
-              "In": 0,
-              "Description": "subPath",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "Description": "subPath",
-                "Default": {
-                  "PrimitiveType": 4,
-                  "AnyType": 0,
-                  "Value": "/"
-                },
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": true,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            }
-          ],
-          "Responses": {
-            "200": {
-              "Description": "when json is true, \"cache successful cleared\"",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "412": {
-              "Description": "\"cache disabled in config\"",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "400": {
-              "Description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "302": {
-              "Description": "redirect back to the url",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "401": {
-              "Description": "User unauthorized",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          },
-          "Callbacks": {},
-          "Deprecated": false,
-          "Security": [],
-          "Servers": [],
-          "Extensions": {}
-        },
-        "Post": {
-          "Tags": [
-            {
-              "Name": "Api",
-              "Extensions": {},
-              "UnresolvedReference": false
-            }
-          ],
-          "Summary": "Delete Database Cache (only the cache)",
-          "Parameters": [
-            {
-              "UnresolvedReference": false,
-              "Name": "f",
-              "In": 0,
-              "Description": "subPath",
-              "Required": false,
-              "Deprecated": false,
-              "AllowEmptyValue": false,
-              "Explode": false,
-              "AllowReserved": false,
-              "Schema": {
-                "Type": "string",
-                "Description": "subPath",
-                "Default": {
-                  "PrimitiveType": 4,
-                  "AnyType": 0,
-                  "Value": "/"
-                },
-                "ReadOnly": false,
-                "WriteOnly": false,
-                "AllOf": [],
-                "OneOf": [],
-                "AnyOf": [],
-                "Required": [],
-                "Properties": {},
-                "AdditionalPropertiesAllowed": true,
-                "Enum": [],
-                "Nullable": true,
-                "Deprecated": false,
-                "Extensions": {},
-                "UnresolvedReference": false
-              },
-              "Examples": {},
-              "Content": {},
-              "Extensions": {}
-            }
-          ],
-          "Responses": {
-            "200": {
-              "Description": "when json is true, \"cache successful cleared\"",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "412": {
-              "Description": "\"cache disabled in config\"",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "400": {
-              "Description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "302": {
-              "Description": "redirect back to the url",
-              "Headers": {},
-              "Content": {},
-              "Links": {},
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "401": {
-              "Description": "User unauthorized",
               "Headers": {},
               "Content": {},
               "Links": {},
@@ -1955,7 +1780,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -1984,7 +1809,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2081,6 +1906,294 @@
       "Parameters": [],
       "Extensions": {}
     },
+    "/api/cache/list": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "CacheIndex",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Get Database Cache (only the cache)",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "subPath (only direct so no dot;comma list)",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "Default": {
+                  "PrimitiveType": 4,
+                  "AnyType": 0,
+                  "Value": "/"
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "when json\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "412": {
+              "Description": "\"cache disabled in config\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/remove-cache": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "CacheIndex",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Delete Database Cache (only the cache)",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "subPath (only direct so no dot;comma list)",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "Default": {
+                  "PrimitiveType": 4,
+                  "AnyType": 0,
+                  "Value": "/"
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "when json is true, \"cache successful cleared\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "412": {
+              "Description": "\"cache disabled in config\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "302": {
+              "Description": "redirect back to the url",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        },
+        "Post": {
+          "Tags": [
+            {
+              "Name": "CacheIndex",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Delete Database Cache (only the cache)",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 0,
+              "Description": "subPath (only direct so no dot;comma list)",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "Default": {
+                  "PrimitiveType": 4,
+                  "AnyType": 0,
+                  "Value": "/"
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "when json is true, \"cache successful cleared\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "412": {
+              "Description": "\"cache disabled in config\"",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "ignored, please check if the 'f' path exist or use a folder string to clear the cache",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "302": {
+              "Description": "redirect back to the url",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
     "/api/delete": {
       "Operations": {
         "Delete": {
@@ -2105,7 +2218,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths, separated by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2115,7 +2227,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2136,11 +2248,10 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true is to update files with the same name before the extenstion",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
-                  "Value": true
+                  "Value": false
                 },
                 "ReadOnly": false,
                 "WriteOnly": false,
@@ -2312,7 +2423,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "string, 'sub path' to find the file",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2322,7 +2432,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2393,7 +2503,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "string, 'sub path' to find the file",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2403,7 +2512,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2424,7 +2533,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true = 1000px thumb (if supported)",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -2460,7 +2568,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true = send client headers to cache",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -2555,7 +2662,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "to add the status code to the response",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2565,7 +2671,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2620,7 +2726,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath to files",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2630,7 +2735,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2651,7 +2756,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "enable files with the same name (before the extension)",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -2687,7 +2791,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "export thumbnails",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -2832,7 +2935,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "zip hash e.g. TNA995920129",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -2842,7 +2944,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -2863,7 +2965,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true to get OK instead of a zip file",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -2941,7 +3042,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "sub path folders",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -2956,7 +3056,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -3070,7 +3170,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath only folders",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -3085,7 +3184,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -3106,7 +3205,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "-i in cli",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -3142,7 +3240,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "-a in cli",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -3483,8 +3580,38 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Check if Client/App version has a match with the API-version\r\nuses x-api-version header",
-          "Parameters": [],
+          "Summary": "Check if Client/App version has a match with the API-version\r\nthe parameter 'version' is checked first, and if missing the x-api-version header is used",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "version",
+              "In": 0,
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
           "Responses": {
             "200": {
               "Description": "Ok",
@@ -3559,7 +3686,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -3646,7 +3773,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -3661,7 +3787,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -3683,7 +3809,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "page number",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -3754,7 +3879,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -3769,7 +3893,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -3791,7 +3915,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "page number",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -3886,7 +4009,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "page number",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -4054,7 +4176,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "when successful continue",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4064,7 +4185,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4434,7 +4555,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "the url",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4444,7 +4564,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4465,7 +4585,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "the filename (optional, random used if empty)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4475,7 +4594,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4496,7 +4615,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "use structure (optional)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4506,7 +4624,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4745,7 +4863,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -4760,7 +4877,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4781,7 +4898,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "filter on colorClass (use int)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4791,7 +4907,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4812,7 +4928,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "to combine files with the same name before the extension",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -4848,7 +4963,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "ignore deleted files",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -4867,6 +4981,43 @@
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "sort",
+              "In": 0,
+              "Description": "how to orderBy, defaults to fileName",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false,
+                "Reference": {
+                  "Type": 0,
+                  "Id": "SortType",
+                  "IsExternal": false,
+                  "IsLocal": true,
+                  "ReferenceV3": "#/components/schemas/SortType",
+                  "ReferenceV2": "#/definitions/SortType"
+                }
               },
               "Examples": {},
               "Content": {},
@@ -4963,7 +5114,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths split by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -4973,7 +5123,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -4994,7 +5144,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true is to update files with the same name before the extenstion",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -5262,7 +5411,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5292,7 +5441,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5322,7 +5471,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5351,7 +5500,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5381,7 +5530,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5410,7 +5559,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5440,7 +5589,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5505,7 +5654,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5534,7 +5683,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5744,7 +5893,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5774,7 +5923,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -5804,7 +5953,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6017,7 +6166,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6046,7 +6195,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6092,7 +6241,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6152,7 +6301,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6212,7 +6361,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6241,7 +6390,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6270,7 +6419,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6299,7 +6448,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6328,7 +6477,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6409,7 +6558,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath filepath to file, split by dot comma (;)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6419,7 +6567,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6440,7 +6588,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "only for stings, add update to existing items",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6471,7 +6618,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "StackCollections bool, default true",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -6508,7 +6654,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "relative orientation -1 or 1",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -6684,7 +6829,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath filepath to file, split by dot comma (;)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6694,7 +6838,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6715,7 +6859,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "name of fileIndexItem field e.g. Tags",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6725,7 +6868,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6746,7 +6889,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "text to search for",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6756,7 +6898,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6777,7 +6919,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "replace [search] with this text",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -6787,7 +6928,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -6808,7 +6949,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "enable collections",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -7025,7 +7165,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath filepath to file, split by dot comma (;)",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7035,7 +7174,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7056,7 +7195,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "itemName",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7066,7 +7204,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7087,7 +7225,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "publishProfileName",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7097,7 +7234,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7118,7 +7255,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -7256,7 +7392,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7342,7 +7478,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "how many days ago",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7373,7 +7508,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "get results",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -7451,7 +7585,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7461,7 +7594,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7483,7 +7616,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "page number",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -7582,7 +7714,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPath",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7592,7 +7723,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7613,7 +7744,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7623,7 +7753,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7645,7 +7775,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "pageNumber (search query)",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -7745,7 +7874,6 @@
               "Schema": {
                 "Type": "integer",
                 "Format": "int32",
-                "Description": "page number",
                 "Default": {
                   "PrimitiveType": 0,
                   "AnyType": 0,
@@ -7844,7 +7972,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "Default": {
                   "PrimitiveType": 4,
                   "AnyType": 0,
@@ -7859,7 +7986,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -7974,7 +8101,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "search query",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -7984,7 +8110,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8163,7 +8289,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths split by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8173,7 +8298,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8342,7 +8467,7 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Do a file sync in a background process",
+          "Summary": "Do a file sync in a background process (replace with /api/synchronize)",
           "Parameters": [
             {
               "UnresolvedReference": false,
@@ -8356,7 +8481,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths split by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8366,7 +8490,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8462,7 +8586,7 @@
             }
           },
           "Callbacks": {},
-          "Deprecated": false,
+          "Deprecated": true,
           "Security": [],
           "Servers": [],
           "Extensions": {}
@@ -8496,7 +8620,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "from subPath",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8506,7 +8629,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8527,7 +8650,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "to subPath",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8537,7 +8659,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8558,7 +8680,41 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "is collections bool",
+                "Default": {
+                  "PrimitiveType": 7,
+                  "AnyType": 0,
+                  "Value": true
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "currentStatus",
+              "In": 0,
+              "Description": "default is to not included files that are removed in result",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -8720,7 +8876,7 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Experimental/Alpha API to sync data! Please use /api/sync",
+          "Summary": "Faster API to Check if directory is changed (not recursive)",
           "Parameters": [
             {
               "UnresolvedReference": false,
@@ -8734,7 +8890,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths split by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8744,7 +8899,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8830,7 +8985,7 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Experimental/Alpha API to sync data! Please use /api/sync",
+          "Summary": "Faster API to Check if directory is changed (not recursive)",
           "Parameters": [
             {
               "UnresolvedReference": false,
@@ -8844,7 +8999,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "subPaths split by dot comma",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8854,7 +9008,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8937,6 +9091,198 @@
       "Parameters": [],
       "Extensions": {}
     },
+    "/api/thumbnail/small/{f}": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "Thumbnail",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Get thumbnail for index pages (300 px or 150px or 1000px (based on whats there))",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 2,
+              "Description": "one single fileHash (NOT path)",
+              "Required": true,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "returns content of the file",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "string (f) input not allowed to avoid path injection attacks",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "404": {
+              "Description": "item not found on disk",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/thumbnail/list-sizes/{f}": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "Thumbnail",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Get overview of what exists by name",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 2,
+              "Description": "one single fileHash (NOT path)",
+              "Required": true,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "ok view content to see whats ready",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "202": {
+              "Description": "Thumbnail is not ready yet",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "210": {
+              "Description": "Success",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "string (f) input not allowed to avoid path injection attacks",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "404": {
+              "Description": "no thumbnails yet",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
     "/api/thumbnail/{f}": {
       "Operations": {
         "Get": {
@@ -8947,13 +9293,13 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Http Endpoint to get full size image or thumbnail",
+          "Summary": "Get thumbnail with fallback to original source image.\r\nReturn source image when IsExtensionThumbnailSupported is true",
           "Parameters": [
             {
               "UnresolvedReference": false,
               "Name": "f",
               "In": 2,
-              "Description": "one single file",
+              "Description": "one single fileHash (NOT path)",
               "Required": true,
               "Deprecated": false,
               "AllowEmptyValue": false,
@@ -8961,7 +9307,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "string",
-                "Description": "one single file",
                 "ReadOnly": false,
                 "WriteOnly": false,
                 "AllOf": [],
@@ -8971,7 +9316,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -8992,7 +9337,6 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "true = load original",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
@@ -9028,11 +9372,45 @@
               "AllowReserved": false,
               "Schema": {
                 "Type": "boolean",
-                "Description": "text as output",
                 "Default": {
                   "PrimitiveType": 7,
                   "AnyType": 0,
                   "Value": false
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "extraLarge",
+              "In": 0,
+              "Description": "give preference to extraLarge over large image",
+              "Required": false,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "boolean",
+                "Default": {
+                  "PrimitiveType": 7,
+                  "AnyType": 0,
+                  "Value": true
                 },
                 "ReadOnly": false,
                 "WriteOnly": false,
@@ -9062,6 +9440,38 @@
               "Extensions": {},
               "UnresolvedReference": false
             },
+            "202": {
+              "Description": "thumbnail can be generated, Thumbnail is not ready yet",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "204": {
+              "Description": "thumbnail is corrupt",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "210": {
+              "Description": "Conflict, you did try get for example a thumbnail of a raw file",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "400": {
+              "Description": "string (f) input not allowed to avoid path injection attacks",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
             "404": {
               "Description": "item not found on disk",
               "Headers": {},
@@ -9070,16 +9480,132 @@
               "Extensions": {},
               "UnresolvedReference": false
             },
-            "409": {
-              "Description": "Conflict, you did try get for example a thumbnail of a raw file",
+            "401": {
+              "Description": "User unauthorized",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          },
+          "Callbacks": {},
+          "Deprecated": false,
+          "Security": [],
+          "Servers": [],
+          "Extensions": {}
+        }
+      },
+      "Servers": [],
+      "Parameters": [],
+      "Extensions": {}
+    },
+    "/api/thumbnail/zoom/{f}@{z}": {
+      "Operations": {
+        "Get": {
+          "Tags": [
+            {
+              "Name": "Thumbnail",
+              "Extensions": {},
+              "UnresolvedReference": false
+            }
+          ],
+          "Summary": "Get zoomed in image by fileHash.\r\nAt the moment this is the source image",
+          "Parameters": [
+            {
+              "UnresolvedReference": false,
+              "Name": "f",
+              "In": 2,
+              "Description": "one single fileHash (NOT path)",
+              "Required": true,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "string",
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            },
+            {
+              "UnresolvedReference": false,
+              "Name": "z",
+              "In": 2,
+              "Description": "zoom factor?",
+              "Required": true,
+              "Deprecated": false,
+              "AllowEmptyValue": false,
+              "Explode": false,
+              "AllowReserved": false,
+              "Schema": {
+                "Type": "integer",
+                "Format": "int32",
+                "Default": {
+                  "PrimitiveType": 0,
+                  "AnyType": 0,
+                  "Value": 0
+                },
+                "ReadOnly": false,
+                "WriteOnly": false,
+                "AllOf": [],
+                "OneOf": [],
+                "AnyOf": [],
+                "Required": [],
+                "Properties": {},
+                "AdditionalPropertiesAllowed": true,
+                "Enum": [],
+                "Nullable": false,
+                "Deprecated": false,
+                "Extensions": {},
+                "UnresolvedReference": false
+              },
+              "Examples": {},
+              "Content": {},
+              "Extensions": {}
+            }
+          ],
+          "Responses": {
+            "200": {
+              "Description": "returns content of the file or when json is true, \"OK\"",
               "Headers": {},
               "Content": {},
               "Links": {},
               "Extensions": {},
               "UnresolvedReference": false
             },
-            "209": {
-              "Description": "\"Thumbnail is not ready yet\"",
+            "400": {
+              "Description": "string (f) input not allowed to avoid path injection attacks",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "404": {
+              "Description": "item not found on disk",
+              "Headers": {},
+              "Content": {},
+              "Links": {},
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "210": {
+              "Description": "Conflict, you did try get for example a thumbnail of a raw file",
               "Headers": {},
               "Content": {},
               "Links": {},
@@ -9138,7 +9664,7 @@
                 "Properties": {},
                 "AdditionalPropertiesAllowed": true,
                 "Enum": [],
-                "Nullable": true,
+                "Nullable": false,
                 "Deprecated": false,
                 "Extensions": {},
                 "UnresolvedReference": false
@@ -9401,7 +9927,7 @@
               "UnresolvedReference": false
             }
           ],
-          "Summary": "Upload sidecar file to specific folder (does not check if already has been imported)\r\nUse the header 'to' to determine the location to where to upload\r\nAdd header 'filename' when uploading direct without form\r\n(ActionResult UploadToFolder)",
+          "Summary": "Upload sidecar file to specific folder (does not check if already has been imported)\r\nUse the header 'to' to determine the location to where to upload\r\nAdd header 'filename' when uploading direct without form\r\n(ActionResult UploadToFolderSidecarFile)",
           "Parameters": [],
           "Responses": {
             "200": {
@@ -9608,468 +10134,6 @@
   },
   "Components": {
     "Schemas": {
-      "UserIdentifierStatusModel": {
-        "Type": "object",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {
-          "id": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "name": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "created": {
-            "Type": "string",
-            "Format": "date-time",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "credentialsIdentifiers": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "Type": "string",
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "credentialTypeIds": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "Type": "integer",
-              "Format": "int32",
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          }
-        },
-        "AdditionalPropertiesAllowed": false,
-        "Enum": [],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
-      "StarskyAppType": {
-        "Type": "integer",
-        "Format": "int32",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {},
-        "AdditionalPropertiesAllowed": true,
-        "Enum": [
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 0
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 1
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 2
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 3
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 4
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 5
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 6
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 7
-          }
-        ],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
-      "DatabaseTypeList": {
-        "Type": "integer",
-        "Format": "int32",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {},
-        "AdditionalPropertiesAllowed": true,
-        "Enum": [
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 1
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 2
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 3
-          }
-        ],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
-      "TemplateContentType": {
-        "Type": "integer",
-        "Format": "int32",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {},
-        "AdditionalPropertiesAllowed": true,
-        "Enum": [
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 0
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 1
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 2
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 3
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 4
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 6
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 7
-          }
-        ],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
-      "AppSettingsPublishProfiles": {
-        "Type": "object",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {
-          "contentType": {
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false,
-            "Reference": {
-              "Type": 0,
-              "Id": "TemplateContentType",
-              "IsExternal": false,
-              "IsLocal": true,
-              "ReferenceV3": "#/components/schemas/TemplateContentType",
-              "ReferenceV2": "#/definitions/TemplateContentType"
-            }
-          },
-          "sourceMaxWidth": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "overlayMaxWidth": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "path": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "folder": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "append": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "template": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "prepend": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "metaData": {
-            "Type": "boolean",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "copy": {
-            "Type": "boolean",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          }
-        },
-        "AdditionalPropertiesAllowed": false,
-        "Enum": [],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
       "AppAccountRoles": {
         "Type": "integer",
         "Format": "int32",
@@ -10195,6 +10259,22 @@
             "Extensions": {},
             "UnresolvedReference": false
           },
+          "storageFolderAllowEdit": {
+            "Type": "boolean",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
           "verbose": {
             "Type": "boolean",
             "ReadOnly": false,
@@ -10206,7 +10286,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10437,7 +10517,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10453,7 +10533,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10469,7 +10549,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10486,6 +10566,22 @@
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
             "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "metaThumbnailOnImport": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10572,7 +10668,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10644,7 +10740,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10660,7 +10756,7 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
@@ -10676,12 +10772,262 @@
             "Properties": {},
             "AdditionalPropertiesAllowed": true,
             "Enum": [],
-            "Nullable": false,
+            "Nullable": true,
             "Deprecated": false,
             "Extensions": {},
             "UnresolvedReference": false
           },
           "checkForUpdates": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "syncIgnore": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "string",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "importIgnore": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "string",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          }
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "AppSettingsPublishProfiles": {
+        "Type": "object",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {
+          "contentType": {
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false,
+            "Reference": {
+              "Type": 0,
+              "Id": "TemplateContentType",
+              "IsExternal": false,
+              "IsLocal": true,
+              "ReferenceV3": "#/components/schemas/TemplateContentType",
+              "ReferenceV2": "#/definitions/TemplateContentType"
+            }
+          },
+          "sourceMaxWidth": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "overlayMaxWidth": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "path": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "folder": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "append": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "template": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "prepend": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "metaData": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "copy": {
             "Type": "boolean",
             "ReadOnly": false,
             "WriteOnly": false,
@@ -10705,69 +11051,287 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "ExifStatus": {
-        "Type": "integer",
-        "Format": "int32",
+      "ArchiveViewModel": {
+        "Type": "object",
         "ReadOnly": false,
         "WriteOnly": false,
         "AllOf": [],
         "OneOf": [],
         "AnyOf": [],
         "Required": [],
-        "Properties": {},
-        "AdditionalPropertiesAllowed": true,
-        "Enum": [
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 0
+        "Properties": {
+          "fileIndexItems": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false,
+              "Reference": {
+                "Type": 0,
+                "Id": "FileIndexItem",
+                "IsExternal": false,
+                "IsLocal": true,
+                "ReferenceV3": "#/components/schemas/FileIndexItem",
+                "ReferenceV2": "#/definitions/FileIndexItem"
+              }
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 1
+          "breadcrumb": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "string",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 2
+          "relativeObjects": {
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false,
+            "Reference": {
+              "Type": 0,
+              "Id": "RelativeObjects",
+              "IsExternal": false,
+              "IsLocal": true,
+              "ReferenceV3": "#/components/schemas/RelativeObjects",
+              "ReferenceV2": "#/definitions/RelativeObjects"
+            }
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 3
+          "searchQuery": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 4
+          "pageType": {
+            "Type": "string",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 5
+          "subPath": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 6
+          "collectionsCount": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 7
+          "isReadOnly": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 8
+          "colorClassActiveList": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false,
+              "Reference": {
+                "Type": 0,
+                "Id": "Color",
+                "IsExternal": false,
+                "IsLocal": true,
+                "ReferenceV3": "#/components/schemas/Color",
+                "ReferenceV2": "#/definitions/Color"
+              }
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 9
+          "colorClassUsage": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false,
+              "Reference": {
+                "Type": 0,
+                "Id": "Color",
+                "IsExternal": false,
+                "IsLocal": true,
+                "ReferenceV3": "#/components/schemas/Color",
+                "ReferenceV2": "#/definitions/Color"
+              }
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "collections": {
+            "Type": "boolean",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           }
-        ],
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
         "Nullable": false,
         "Deprecated": false,
         "Extensions": {},
@@ -10841,7 +11405,7 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "Rotation": {
+      "DatabaseTypeList": {
         "Type": "integer",
         "Format": "int32",
         "ReadOnly": false,
@@ -10861,22 +11425,12 @@
           {
             "PrimitiveType": 0,
             "AnyType": 0,
+            "Value": 2
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
             "Value": 3
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 6
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 8
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": -1
           }
         ],
         "Nullable": false,
@@ -10884,7 +11438,7 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "ImageFormat": {
+      "ExifStatus": {
         "Type": "integer",
         "Format": "int32",
         "ReadOnly": false,
@@ -10904,47 +11458,57 @@
           {
             "PrimitiveType": 0,
             "AnyType": 0,
+            "Value": 1
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 2
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 3
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 4
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 5
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 6
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 7
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 8
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 9
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
             "Value": 10
           },
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 12
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 13
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 14
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 15
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 30
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 40
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": 50
-          },
-          {
-            "PrimitiveType": 0,
-            "AnyType": 0,
-            "Value": -1
+            "Value": 11
           }
         ],
         "Nullable": false,
@@ -11679,210 +12243,6 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "TimeSpan": {
-        "Type": "object",
-        "ReadOnly": false,
-        "WriteOnly": false,
-        "AllOf": [],
-        "OneOf": [],
-        "AnyOf": [],
-        "Required": [],
-        "Properties": {
-          "ticks": {
-            "Type": "integer",
-            "Format": "int64",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "days": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "hours": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "milliseconds": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "minutes": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "seconds": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "totalDays": {
-            "Type": "number",
-            "Format": "double",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "totalHours": {
-            "Type": "number",
-            "Format": "double",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "totalMilliseconds": {
-            "Type": "number",
-            "Format": "double",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "totalMinutes": {
-            "Type": "number",
-            "Format": "double",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "totalSeconds": {
-            "Type": "number",
-            "Format": "double",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          }
-        },
-        "AdditionalPropertiesAllowed": false,
-        "Enum": [],
-        "Nullable": false,
-        "Deprecated": false,
-        "Extensions": {},
-        "UnresolvedReference": false
-      },
       "HealthEntry": {
         "Type": "object",
         "ReadOnly": false,
@@ -12066,7 +12426,7 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "ImportStatus": {
+      "ImageFormat": {
         "Type": "integer",
         "Format": "int32",
         "ReadOnly": false,
@@ -12086,27 +12446,47 @@
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 1
+            "Value": 10
           },
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 2
+            "Value": 12
           },
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 3
+            "Value": 13
           },
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 4
+            "Value": 14
           },
           {
             "PrimitiveType": 0,
             "AnyType": 0,
-            "Value": 5
+            "Value": 15
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 30
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 40
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 50
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": -1
           }
         ],
         "Nullable": false,
@@ -12243,6 +12623,59 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
+      "ImportStatus": {
+        "Type": "integer",
+        "Format": "int32",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 0
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 2
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 3
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 4
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 5
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 6
+          }
+        ],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
       "RelativeObjects": {
         "Type": "object",
         "ReadOnly": false,
@@ -12356,287 +12789,44 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
-      "ArchiveViewModel": {
-        "Type": "object",
+      "Rotation": {
+        "Type": "integer",
+        "Format": "int32",
         "ReadOnly": false,
         "WriteOnly": false,
         "AllOf": [],
         "OneOf": [],
         "AnyOf": [],
         "Required": [],
-        "Properties": {
-          "fileIndexItems": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false,
-              "Reference": {
-                "Type": 0,
-                "Id": "FileIndexItem",
-                "IsExternal": false,
-                "IsLocal": true,
-                "ReferenceV3": "#/components/schemas/FileIndexItem",
-                "ReferenceV2": "#/definitions/FileIndexItem"
-              }
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
           },
-          "breadcrumb": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "Type": "string",
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 3
           },
-          "relativeObjects": {
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false,
-            "Reference": {
-              "Type": 0,
-              "Id": "RelativeObjects",
-              "IsExternal": false,
-              "IsLocal": true,
-              "ReferenceV3": "#/components/schemas/RelativeObjects",
-              "ReferenceV2": "#/definitions/RelativeObjects"
-            }
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 6
           },
-          "searchQuery": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 8
           },
-          "pageType": {
-            "Type": "string",
-            "ReadOnly": true,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "subPath": {
-            "Type": "string",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "collectionsCount": {
-            "Type": "integer",
-            "Format": "int32",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "isReadOnly": {
-            "Type": "boolean",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "colorClassActiveList": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false,
-              "Reference": {
-                "Type": 0,
-                "Id": "Color",
-                "IsExternal": false,
-                "IsLocal": true,
-                "ReferenceV3": "#/components/schemas/Color",
-                "ReferenceV2": "#/definitions/Color"
-              }
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "colorClassUsage": {
-            "Type": "array",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Items": {
-              "ReadOnly": false,
-              "WriteOnly": false,
-              "AllOf": [],
-              "OneOf": [],
-              "AnyOf": [],
-              "Required": [],
-              "Properties": {},
-              "AdditionalPropertiesAllowed": true,
-              "Enum": [],
-              "Nullable": false,
-              "Deprecated": false,
-              "Extensions": {},
-              "UnresolvedReference": false,
-              "Reference": {
-                "Type": 0,
-                "Id": "Color",
-                "IsExternal": false,
-                "IsLocal": true,
-                "ReferenceV3": "#/components/schemas/Color",
-                "ReferenceV2": "#/definitions/Color"
-              }
-            },
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": true,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
-          },
-          "collections": {
-            "Type": "boolean",
-            "ReadOnly": false,
-            "WriteOnly": false,
-            "AllOf": [],
-            "OneOf": [],
-            "AnyOf": [],
-            "Required": [],
-            "Properties": {},
-            "AdditionalPropertiesAllowed": true,
-            "Enum": [],
-            "Nullable": false,
-            "Deprecated": false,
-            "Extensions": {},
-            "UnresolvedReference": false
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": -1
           }
-        },
-        "AdditionalPropertiesAllowed": false,
-        "Enum": [],
+        ],
         "Nullable": false,
         "Deprecated": false,
         "Extensions": {},
@@ -13036,6 +13226,97 @@
         "Extensions": {},
         "UnresolvedReference": false
       },
+      "SortType": {
+        "Type": "integer",
+        "Format": "int32",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 0
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
+          }
+        ],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "StarskyAppType": {
+        "Type": "integer",
+        "Format": "int32",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 0
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 2
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 3
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 4
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 5
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 6
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 7
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 8
+          }
+        ],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
       "SyncViewModel": {
         "Type": "object",
         "ReadOnly": false,
@@ -13083,6 +13364,395 @@
               "ReferenceV3": "#/components/schemas/ExifStatus",
               "ReferenceV2": "#/definitions/ExifStatus"
             }
+          }
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "TemplateContentType": {
+        "Type": "integer",
+        "Format": "int32",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {},
+        "AdditionalPropertiesAllowed": true,
+        "Enum": [
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 0
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 1
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 2
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 3
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 4
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 6
+          },
+          {
+            "PrimitiveType": 0,
+            "AnyType": 0,
+            "Value": 7
+          }
+        ],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "TimeSpan": {
+        "Type": "object",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {
+          "ticks": {
+            "Type": "integer",
+            "Format": "int64",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "days": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "hours": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "milliseconds": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "minutes": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "seconds": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "totalDays": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "totalHours": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "totalMilliseconds": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "totalMinutes": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "totalSeconds": {
+            "Type": "number",
+            "Format": "double",
+            "ReadOnly": true,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          }
+        },
+        "AdditionalPropertiesAllowed": false,
+        "Enum": [],
+        "Nullable": false,
+        "Deprecated": false,
+        "Extensions": {},
+        "UnresolvedReference": false
+      },
+      "UserIdentifierStatusModel": {
+        "Type": "object",
+        "ReadOnly": false,
+        "WriteOnly": false,
+        "AllOf": [],
+        "OneOf": [],
+        "AnyOf": [],
+        "Required": [],
+        "Properties": {
+          "id": {
+            "Type": "integer",
+            "Format": "int32",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "name": {
+            "Type": "string",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "created": {
+            "Type": "string",
+            "Format": "date-time",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": false,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "credentialsIdentifiers": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "string",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
+          },
+          "credentialTypeIds": {
+            "Type": "array",
+            "ReadOnly": false,
+            "WriteOnly": false,
+            "AllOf": [],
+            "OneOf": [],
+            "AnyOf": [],
+            "Required": [],
+            "Items": {
+              "Type": "integer",
+              "Format": "int32",
+              "ReadOnly": false,
+              "WriteOnly": false,
+              "AllOf": [],
+              "OneOf": [],
+              "AnyOf": [],
+              "Required": [],
+              "Properties": {},
+              "AdditionalPropertiesAllowed": true,
+              "Enum": [],
+              "Nullable": false,
+              "Deprecated": false,
+              "Extensions": {},
+              "UnresolvedReference": false
+            },
+            "Properties": {},
+            "AdditionalPropertiesAllowed": true,
+            "Enum": [],
+            "Nullable": true,
+            "Deprecated": false,
+            "Extensions": {},
+            "UnresolvedReference": false
           }
         },
         "AdditionalPropertiesAllowed": false,
