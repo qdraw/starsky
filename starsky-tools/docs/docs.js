@@ -288,3 +288,22 @@ function getTitle(contentsHtml) {
 	}
 	return title;
 }
+
+String.prototype.replaceBetween = function(start, end, what) {
+	return this.substring(0, start) + what + this.substring(end);
+};
+
+function searchReplaceStaticContent(filePath) {
+	var contents = fs.readFileSync(filePath, "utf8");
+
+	const startTag = "<!-- default_header begin -->";
+	const endTag = "<!-- default_header end -->";
+
+	const startIndex = contents.indexOf(startTag);
+	const endIndex = contents.indexOf(endTag);
+
+	const contentsHtml = contents.replaceBetween(startIndex, endIndex, startTag + defaultHeaderContent )
+	fs.writeFileSync(filePath, contentsHtml);
+}
+
+searchReplaceStaticContent(path.join(__dirname, '/assets/download/download.html'));

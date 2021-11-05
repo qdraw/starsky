@@ -11,9 +11,10 @@
     * [starskyAdminCli](../../starsky/starskyadmincli/readme.md)  _manage user accounts_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
+ * [Changelog](../../history.md) _Release notes and history_
 
 ## starskysynccli docs
 _Deprecated and replaced by `starskysynchronizecli`_
