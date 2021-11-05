@@ -12,9 +12,9 @@
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_    
     * __[Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) business logic libraries (netstandard 2.0)__
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## Starsky Business Logic docs
