@@ -192,9 +192,11 @@ for (var i = 0; i < htmlFullPathList.length; i++) {
 	contentsHtml = classMapper(contentsHtml);
 
 	if (!defaultHeaderExist) {
+		const editedHeaderContent = linkRelativeReplacer(filePathList[i]);
+		
 		contentsHtml = contentsHtml.replace(
 			"<!-- end breadcrumb -->",
-			defaultHeaderContent
+			editedHeaderContent
 		);
 	}
 
@@ -293,7 +295,48 @@ String.prototype.replaceBetween = function(start, end, what) {
 	return this.substring(0, start) + what + this.substring(end);
 };
 
-function searchReplaceStaticContent(filePath) {
+
+
+function linkRelativeReplacer(subPath) {
+	// example url : 'assets/download/download.html'
+	
+	const ahrefLinkRegex = new RegExp('(<|&lt;)a.*? href\s*=\s*(\'|"|&apos;|&quot;)(.+?)(<|&lt;)\/a(>|&gt;)', 'ig');
+	const targetRegex = new RegExp('target\s*=\s*("|\'|&apos;|&quot;)((?!("|\'|&apos;|&quot;)).)*("|\'|&apos;|&quot;)', 'ig');
+	const hrefRegex = new RegExp('href\s*=\s*("|\'|&apos;|&quot;)(.+?)' +
+	'((?!("|\'|&apos;|&quot;)).)*("|\'|&apos;|&quot;)', 'ig');
+	const tagContentRegex = new RegExp('(>|&gt;).*(<|&lt;)', 'ig');
+
+	const ahrefsMatches = defaultHeaderContent.match(ahrefLinkRegex);
+	let editedHeaderContent = defaultHeaderContent;
+
+	for (const inputMatch of Array.from(ahrefsMatches)) {
+		const targetMatches = inputMatch.match(targetRegex);
+		const targetMatch = targetMatches ? targetMatches[0] : '';
+  
+		const hrefMatches = inputMatch.match(hrefRegex);
+		const hrefMatch = hrefMatches ? hrefMatches[0] : '';
+		const url = hrefMatch.replace("href=\"","")
+		if (url.startsWith("http")) {
+			continue;
+		}
+
+		let newUrl = ""
+		for (let index = 0; index < subPath.split("/").length-1; index++) {
+			newUrl += "../";
+		}
+		newUrl += url
+
+		const tagContentMatches = inputMatch.match(tagContentRegex);
+		const tagContentMatch = tagContentMatches ? tagContentMatches[0] : '';
+  
+		const newOutput = `<a href="${newUrl} ${targetMatch}${tagContentMatch}/a>`;
+		editedHeaderContent = editedHeaderContent.replace(inputMatch, newOutput);
+	  };
+	  return editedHeaderContent;
+}
+
+function searchReplaceStaticContent(subPath) {
+	var filePath = path.join(__dirname, subPath );
 	var contents = fs.readFileSync(filePath, "utf8");
 
 	const startTag = "<!-- default_header begin -->";
@@ -302,8 +345,9 @@ function searchReplaceStaticContent(filePath) {
 	const startIndex = contents.indexOf(startTag);
 	const endIndex = contents.indexOf(endTag);
 
-	const contentsHtml = contents.replaceBetween(startIndex, endIndex, startTag + defaultHeaderContent )
+	const editedHeaderContent = linkRelativeReplacer(subPath);
+	const contentsHtml = contents.replaceBetween(startIndex, endIndex, startTag + editedHeaderContent )
 	fs.writeFileSync(filePath, contentsHtml);
 }
 
-searchReplaceStaticContent(path.join(__dirname, '/assets/download/download.html'));
+searchReplaceStaticContent('assets/download/download.html');
