@@ -62,11 +62,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"
 ProjectSection(SolutionItems) = preProject
 	readme.md = readme.md
-	readme-docker-instructions.md = readme-docker-instructions.md
+	readme-docker-development.md = readme-docker-development.md
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
 	docker_demo_setup.sh = docker_demo_setup.sh
 	Dockerfile = Dockerfile
 	build.cake = build.cake
+	readme-docker-hub.md = readme-docker-hub.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"

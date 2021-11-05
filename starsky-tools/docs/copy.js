@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var outputFolderName = 'output_folder';
 
 function copyFileSync( source, target ) {
 
@@ -54,6 +55,13 @@ function copyFolderRecursiveSync( source, target ) {
 function copy(source, target) {
   console.log("copy " + source + " --> " + path.resolve(target, "docs"));
 
+     // remove target folder before start
+    if (fs.existsSync(target)) {
+        fs.rmSync(target,{recursive: true});
+    }
+    fs.mkdirSync(target);
+
+
   copyFolderRecursiveSync( source, target );
 
   fs.writeFileSync(path.join(target, "docs", "readme.md"), '# Auto generated folder \nOpen `index.html` to see the documentation. ' +
@@ -67,9 +75,9 @@ var myArgs = process.argv.slice(2);
 
 if (myArgs && myArgs.length === 1 && fs.lstatSync(  myArgs[0] ).isDirectory() ) {
   // use the parent folder as arg
-  copy(__dirname, myArgs[0]);
+  copy(path.join(__dirname, outputFolderName), myArgs[0]);
 }
 else {
-  copy(__dirname, path.join("../","../"));
+  copy(path.join(__dirname, outputFolderName), path.join("../","../","docs"));
   console.log("has run default option: ignore args: enter the full parent folder as arg");
 }

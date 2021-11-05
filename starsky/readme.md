@@ -19,9 +19,15 @@
 -   [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
 -   [Changelog](../history.md) _Release notes and history_
 
+## Run pre-build binaries (fastest)
+
+See the [How use prebuild images](readme-docker-hub.md) for more details about how to run docker
+
+
 ## Build instructions for docker
 
-See the [Docker instructions](readme-docker-instructions.md) for more details about how to install
+See the [Docker instructions](readme-docker-development.md) for more details about how 
+to compile the application for development
 
 ## Build instructions (without docker)
 
