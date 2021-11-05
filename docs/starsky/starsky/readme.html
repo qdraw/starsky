@@ -445,16 +445,6 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>Check if IsExtensionThumbnailSupported</td>
 </tr>
 <tr>
-<td>/api/remove-cache</td>
-<td>GET</td>
-<td>Delete Database Cache (only the cache)</td>
-</tr>
-<tr>
-<td>/api/remove-cache</td>
-<td>POST</td>
-<td>Delete Database Cache (only the cache)</td>
-</tr>
-<tr>
 <td>/api/env</td>
 <td>HEAD</td>
 <td>Show the runtime settings (dont allow AllowAnonymous)</td>
@@ -468,6 +458,21 @@ To be sure that the application is warm before someone arrives, please check <co
 <td>/api/env</td>
 <td>POST</td>
 <td>Show the runtime settings (dont allow AllowAnonymous)</td>
+</tr>
+<tr>
+<td>/api/cache/list</td>
+<td>GET</td>
+<td>Get Database Cache (only the cache)</td>
+</tr>
+<tr>
+<td>/api/remove-cache</td>
+<td>GET</td>
+<td>Delete Database Cache (only the cache)</td>
+</tr>
+<tr>
+<td>/api/remove-cache</td>
+<td>POST</td>
+<td>Delete Database Cache (only the cache)</td>
 </tr>
 <tr>
 <td>/api/delete</td>
@@ -527,7 +532,7 @@ To be sure that the application is warm before someone arrives, please check <co
 <tr>
 <td>/api/health/version</td>
 <td>POST</td>
-<td>Check if Client/App version has a match with the API-versionuses x-api-v…</td>
+<td>Check if Client/App version has a match with the API-versionthe paramete…</td>
 </tr>
 <tr>
 <td>/api/health/check-for-updates</td>
@@ -667,7 +672,7 @@ To be sure that the application is warm before someone arrives, please check <co
 <tr>
 <td>/api/sync</td>
 <td>POST</td>
-<td>Do a file sync in a background process</td>
+<td>Do a file sync in a background process (replace with /api/synchronize)</td>
 </tr>
 <tr>
 <td>/api/sync/rename</td>
@@ -677,17 +682,32 @@ To be sure that the application is warm before someone arrives, please check <co
 <tr>
 <td>/api/synchronize</td>
 <td>POST</td>
-<td>Experimental/Alpha API to sync data! Please use /api/sync</td>
+<td>Faster API to Check if directory is changed (not recursive)</td>
 </tr>
 <tr>
 <td>/api/synchronize</td>
 <td>GET</td>
-<td>Experimental/Alpha API to sync data! Please use /api/sync</td>
+<td>Faster API to Check if directory is changed (not recursive)</td>
+</tr>
+<tr>
+<td>/api/thumbnail/small/{f}</td>
+<td>GET</td>
+<td>Get thumbnail for index pages (300 px or 150px or 1000px (based on whats…</td>
+</tr>
+<tr>
+<td>/api/thumbnail/list-sizes/{f}</td>
+<td>GET</td>
+<td>Get overview of what exists by name</td>
 </tr>
 <tr>
 <td>/api/thumbnail/{f}</td>
 <td>GET</td>
-<td>Http Endpoint to get full size image or thumbnail</td>
+<td>Get thumbnail with fallback to original source image.Return source image…</td>
+</tr>
+<tr>
+<td>/api/thumbnail/zoom/{f}@{z}</td>
+<td>GET</td>
+<td>Get zoomed in image by fileHash.At the moment this is the source image</td>
 </tr>
 <tr>
 <td>/api/thumbnail-generation</td>
