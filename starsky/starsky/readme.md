@@ -181,11 +181,12 @@ Starsky has a Json restful API. Please read the documentation
 | /api/allowed-types/mimetype/sync   | GET   | A (string) list of allowed MIME-types ExtensionSyncSupportedList           |
 | /api/allowed-types/mimetype/thumb  | GET   | A (string) list of allowed ExtensionThumbSupportedList MimeTypes           |
 | /api/allowed-types/thumb           | GET   | Check if IsExtensionThumbnailSupported                                     |
-| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
-| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
 | /api/env                           | HEAD  | Show the runtime settings (dont allow AllowAnonymous)                      |
 | /api/env                           | GET   | Show the runtime settings (dont allow AllowAnonymous)                      |
 | /api/env                           | POST  | Show the runtime settings (dont allow AllowAnonymous)                      |
+| /api/cache/list                    | GET   | Get Database Cache (only the cache)                                        |
+| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
+| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
 | /api/delete                        | DELETE| Remove files from the disk, but the file must contain the !delete! tag     |
 | /api/download-sidecar              | GET   | Download sidecar file for example image.xmp                                |
 | /api/download-photo                | GET   | Select manually the original or thumbnail                                  |
@@ -197,7 +198,7 @@ Starsky has a Json restful API. Please read the documentation
 | /api/health                        | GET   | Check if the service has any known errors and return only a stringPublic...|
 | /api/health/details                | GET   | Check if the service has any known errorsFor Authorized Users only         |
 | /api/health/application-insights   | GET   | Add Application Insights script to user context                            |
-| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionuses x-api-v...|
+| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionthe paramete...|
 | /api/health/check-for-updates      | GET   | Check if Client/App version has a match with the API-version               |
 | /search                            | POST  | Redirect to search GET page (HTML)                                         |
 | /search                            | GET   | Search GET page (HTML)                                                     |
@@ -225,11 +226,14 @@ Starsky has a Json restful API. Please read the documentation
 | /api/suggest/all                   | GET   | Show all items in the search suggest cache                                 |
 | /api/suggest/inflate               | GET   | To fill the cache with the data (only if cache is not already filled)      |
 | /api/sync/mkdir                    | POST  | Make a directory (-p)                                                      |
-| /api/sync                          | POST  | Do a file sync in a background process                                     |
+| /api/sync                          | POST  | Do a file sync in a background process (replace with /api/synchronize)     |
 | /api/sync/rename                   | POST  | Rename file/folder and update it in the database                           |
-| /api/synchronize                   | POST  | Experimental/Alpha API to sync data! Please use /api/sync                  |
-| /api/synchronize                   | GET   | Experimental/Alpha API to sync data! Please use /api/sync                  |
-| /api/thumbnail/{f}                 | GET   | Http Endpoint to get full size image or thumbnail                          |
+| /api/synchronize                   | POST  | Faster API to Check if directory is changed (not recursive)                |
+| /api/synchronize                   | GET   | Faster API to Check if directory is changed (not recursive)                |
+| /api/thumbnail/small/{f}           | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats...|
+| /api/thumbnail/list-sizes/{f}      | GET   | Get overview of what exists by name                                        |
+| /api/thumbnail/{f}                 | GET   | Get thumbnail with fallback to original source image.Return source image...|
+| /api/thumbnail/zoom/{f}@{z}        | GET   | Get zoomed in image by fileHash.At the moment this is the source image     |
 | /api/thumbnail-generation          | POST  | Create thumbnails for a folder in the background                           |
 | /api/upload                        | POST  | Upload to specific folder (does not check if already has been imported)U...|
 | /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|
