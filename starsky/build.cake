@@ -806,7 +806,7 @@ Task("DocsGenerate")
             continue;
           }
 
-          var docsDistDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, runtime);
+          var docsDistDirectory = System.IO.Path.Combine(Environment.CurrentDirectory, runtime, "docs");
           Information("copy to: " + docsDistDirectory);
 
           NpmRunScript("copy", (s) => {

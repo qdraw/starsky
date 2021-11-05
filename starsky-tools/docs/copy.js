@@ -40,7 +40,7 @@ var outputFolderName = 'output_folder';
 // Target folder will be removed first :!
 var myArgs = process.argv.slice(2);
 
-if (myArgs && myArgs.length === 1 && fs.lstatSync(  myArgs[0] ).isDirectory() ) {
+if (myArgs && myArgs.length === 1 && fs.lstatSync( path.dirname(myArgs[0]) ).isDirectory() ) {
   // use the parent folder as arg
   copy(path.join(__dirname, outputFolderName), myArgs[0]);
 }
