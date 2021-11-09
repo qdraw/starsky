@@ -33,9 +33,9 @@ namespace starsky.foundation.database.Import
 		{
 			_scopeFactory = scopeFactory;
 
-			using ( var scope = _scopeFactory.CreateScope() )
+			using ( var scope = scopeFactory?.CreateScope() )
 			{
-				_console = scope.ServiceProvider.GetRequiredService<IConsole>();
+				_console = scope?.ServiceProvider.GetService<IConsole>();
 			}
 			_dbContext = dbContext;
 			_isConnection = TestConnection();
