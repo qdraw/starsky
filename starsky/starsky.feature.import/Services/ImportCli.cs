@@ -61,6 +61,7 @@ namespace starsky.feature.import.Services
 					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
 					IndexMode = new ArgsHelper().GetIndexMode(args),
 					ColorClass = new ArgsHelper().GetColorClass(args),
+					ConsoleOutputMode = new ArgsHelper().GetConsoleOutputMode(args)
 				};
 
 			if ( _appSettings.IsVerbose() ) 
@@ -74,11 +75,26 @@ namespace starsky.feature.import.Services
 			
 			var stopWatch = Stopwatch.StartNew();
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
-			
-			_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
-			_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
-			                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
-			_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+
+			if ( importSettings.IsConsoleOutputModeDefault() )
+			{
+				_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
+				_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+				                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+				_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+			}
+
+			if ( importSettings.ConsoleOutputMode == ConsoleOutputMode.Csv )
+			{
+				_console.WriteLine($"Id;Status;SourceFilePath;SubPath;FileHash");
+				foreach ( var item in result )
+				{
+					_console.WriteLine($"{item.Id};{item.Status};" +
+					                   $"{item.FilePath};" +
+					                   $"{item?.FileIndexItem?.FilePath};" +
+					               $"{item?.FileIndexItem?.FileHash}");
+				}
+			}
 
 		}
 	}

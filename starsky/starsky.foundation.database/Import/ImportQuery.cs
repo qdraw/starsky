@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Import
 {
@@ -19,6 +20,7 @@ namespace starsky.foundation.database.Import
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ApplicationDbContext _dbContext;
+		private readonly IConsole _console;
 
 		/// <summary>
 		/// Query Already imported Database
@@ -30,6 +32,11 @@ namespace starsky.foundation.database.Import
 		public ImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
+
+			using ( var scope = _scopeFactory.CreateScope() )
+			{
+				_console = scope.ServiceProvider.GetRequiredService<IConsole>();
+			}
 			_dbContext = dbContext;
 			_isConnection = TestConnection();
 		}
@@ -71,13 +78,13 @@ namespace starsky.foundation.database.Import
 		/// </summary>
 		/// <param name="updateStatusContent">import database item</param>
 		/// <returns>fail or success</returns>
-		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
 		{
 			var dbContext = GetDbContext();
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
-			Console.Write("⬆️");
+			if ( writeConsole ) _console.Write("⬆️");
 			// removed MySqlException catch
 			return true;
 		}
@@ -97,7 +104,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = GetDbContext();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
-			Console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
+			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
 			return importIndexItemList;
 		}
 
@@ -106,7 +113,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = GetDbContext();
 			dbContext.ImportIndex.AddRange(importIndexItemList);
 			dbContext.SaveChanges();
-			Console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
+			_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
 			return importIndexItemList;
 		}
 	}

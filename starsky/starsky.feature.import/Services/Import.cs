@@ -216,7 +216,7 @@ namespace starsky.feature.import.Services
 		{
 			if ( _appSettings.ImportIgnore.Any(p => inputFileFullPath.Key.Contains(p)) )
 			{
-				_console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
+				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.Ignore, 
 					FilePath = inputFileFullPath.Key,
@@ -503,7 +503,7 @@ namespace starsky.feature.import.Services
 			
 			// Add to check db, to avoid duplicate input
 			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery).ImportQuery();
-			await importQuery.AddAsync(importIndexItem);
+			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
 			return importIndexItem;
 		}

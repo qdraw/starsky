@@ -49,7 +49,7 @@ namespace starskytest.starsky.feature.import.Services
 			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
 			provider.AddScoped<IQuery,Query>();
 			provider.AddScoped<IImportQuery, ImportQuery>();
-
+			provider.AddSingleton<IConsole, FakeConsoleWrapper>();
 			var serviceProvider = provider.BuildServiceProvider();
 			
 			_query = serviceProvider.GetRequiredService<IQuery>();

@@ -9,6 +9,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Import
 {
@@ -32,6 +34,7 @@ namespace starskytest.starsky.foundation.database.Import
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(ImportQueryNetFrameworkTest)));
+			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}

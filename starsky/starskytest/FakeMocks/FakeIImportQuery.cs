@@ -47,7 +47,7 @@ namespace starskytest.FakeMocks
 			return _isConnection;
 		}
 
-		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		public async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool console = true)
 		{
 			_exist.Add(updateStatusContent.FileHash);
 			return true;
