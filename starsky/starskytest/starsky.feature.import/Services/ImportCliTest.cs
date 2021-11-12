@@ -73,6 +73,9 @@ namespace starskytest.starsky.feature.import.Services
 			
 			Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
 			Assert.AreEqual("Id;Status;SourceFullFilePath;SubPath;FileHash",fakeConsole.WrittenLines.FirstOrDefault() );
+			Assert.AreEqual("0;FileError;~/temp/test;;FAKE",fakeConsole.WrittenLines[1] );
+			Assert.AreEqual("0;FileError;~/temp/test;;FAKE",fakeConsole.WrittenLines[2] );
+			Assert.AreEqual("4;Ok;/test;/test;FAKE_OK",fakeConsole.WrittenLines[3] );
 		}
 		
 		[TestMethod]
