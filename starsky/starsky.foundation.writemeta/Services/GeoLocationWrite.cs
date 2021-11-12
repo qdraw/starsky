@@ -61,8 +61,10 @@ namespace starsky.foundation.writemeta.Services
 					_iStorage, 
 					_thumbnailStorage, 
 					new ReadMeta(_iStorage)).Update(metaFileItem, comparedNamesList);
-	            
-				if ( _appSettings.IsVerbose() ) _console.Write($"GeoLocationWrite: {metaFileItem.FilePath} ");
+
+				_console.Write(_appSettings.IsVerbose()
+					? $"  GeoLocationWrite: {metaFileItem.FilePath}  "
+					: "🚀");
 			}
 
 		}
