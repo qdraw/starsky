@@ -14,7 +14,7 @@ Define constance in `starsky.foundation.database.csproj`
         <DefineConstants>SYSTEM_TEXT_ENABLED;ENABLE_DEFAULT_DATABASE</DefineConstants>
 ```
 
-Copy code : SetupDatabaseTypes.cs
+(Optional) : Copy code : SetupDatabaseTypes.cs
 ```
 			// dirty hack
 			_services.AddDbContext<ApplicationDbContext>(options =>
