@@ -79,20 +79,25 @@ namespace starsky.feature.import.Services
 			if ( importSettings.IsConsoleOutputModeDefault() )
 			{
 				_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
-				_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
-				                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+				if ( result.Count != 0 ) {
+					_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+					$"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+				}
 				_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
 			}
 
 			if ( importSettings.ConsoleOutputMode == ConsoleOutputMode.Csv )
 			{
-				_console.WriteLine($"Id;Status;SourceFilePath;SubPath;FileHash");
+				_console.WriteLine($"Id;Status;SourceFullFilePath;SubPath;FileHash");
 				foreach ( var item in result )
 				{
+					var filePath = item.Status == ImportStatus.Ok
+						? item.FilePath : "";
 					_console.WriteLine($"{item.Id};{item.Status};" +
-					                   $"{item.FilePath};" +
-					                   $"{item?.FileIndexItem?.FilePath};" +
-					               $"{item?.FileIndexItem?.FileHash}");
+					                   $"{item.SourceFullFilePath};" +
+					                   $"{filePath};" +
+					                   $"{item.GetFileHashWithUpdate()}");
+
 				}
 			}
 

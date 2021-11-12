@@ -57,6 +57,23 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"-p", "/test"}.ToArray());
 			Assert.IsTrue(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
 		}
+
+				
+		[TestMethod]
+		public async Task ImporterCli_ArgPath_1()
+		{
+			var fakeConsole = new FakeConsoleWrapper(new List<string>());
+			var storage = new FakeIStorage(new List<string>{"/"}, 
+				new List<string>{"/test"}, 
+				new List<byte[]>(new byte[0][]));
+			
+			await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)), 
+				new AppSettings(), fakeConsole, new FakeExifToolDownload()).Importer(
+				new List<string>{"-p", "/test", "--output" , "csv"}.ToArray());
+			
+			Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
+			Assert.AreEqual("Id;Status;SourceFilePath;SubPath;FileHash",fakeConsole.WrittenLines.FirstOrDefault() );
+		}
 		
 		[TestMethod]
 		public async Task ImporterCli_ArgPath_Verbose()

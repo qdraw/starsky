@@ -62,6 +62,15 @@ namespace starsky.foundation.database.Models
         /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
         /// </summary>
         public string FileHash { get; set; }
+
+        public string GetFileHashWithUpdate()
+        {
+	        if ( FileIndexItem == null )
+	        {
+		        return FileHash;
+	        }
+	        return FileIndexItem.FileHash;
+        }
         
         /// <summary>
         /// The location where the image should be stored.
@@ -99,6 +108,8 @@ namespace starsky.foundation.database.Models
         [NotMapped] 
         [JsonIgnore]
         public string Structure { get; set; }
+
+        public string MakeModel { get; set; }
 
         public DateTime ParseDateTimeFromFileName()
         {

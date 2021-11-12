@@ -68,6 +68,7 @@ ProjectSection(SolutionItems) = preProject
 	Dockerfile = Dockerfile
 	build.cake = build.cake
 	readme-docker-hub.md = readme-docker-hub.md
+	docs\migrations.md = docs\migrations.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
