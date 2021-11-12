@@ -27,7 +27,7 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = _serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			_importQueryNetFramework = new ImportQueryNetFramework(_serviceScope);
+			_importQueryNetFramework = new ImportQueryNetFramework(_serviceScope, new FakeConsoleWrapper());
 		}
 
 		private IServiceScopeFactory CreateNewScope()
@@ -78,7 +78,7 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			await new ImportQuery(serviceScopeFactory).AddRangeAsync(expectedResult);
+			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper()).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
