@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
+
 #pragma warning disable 1998
 
 namespace starskytest.FakeMocks
@@ -30,8 +32,9 @@ namespace starskytest.FakeMocks
 		/// To fake auto inject content
 		/// </summary>
 		/// <param name="scopeFactory"></param>
+		/// <param name="console"></param>
 		/// <param name="dbContext"></param>
-		public FakeIImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
+		public FakeIImportQuery(IServiceScopeFactory scopeFactory, IConsole console, ApplicationDbContext dbContext = null)
 		{
 			_exist = new List<string>();
 			_isConnection = true;
