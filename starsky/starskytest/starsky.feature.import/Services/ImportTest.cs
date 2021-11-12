@@ -834,7 +834,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			var result = await importService.CreateMataThumbnail(new List<ImportIndexItem>
 				{
-					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok}
+					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok, FileIndexItem = new FileIndexItem(){FileHash = "hash"}}
 				},
 				new ImportSettingsModel());
 			
@@ -868,7 +868,7 @@ namespace starskytest.starsky.feature.import.Services
 
 			await importService.CreateMataThumbnail(new List<ImportIndexItem>
 				{
-					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok}
+					new ImportIndexItem{FileHash = "hash", FilePath = "/test.jpg", Status = ImportStatus.Ok, FileIndexItem = new FileIndexItem(){FileHash = "hash"}}
 				},
 				new ImportSettingsModel());
 			

@@ -72,7 +72,7 @@ namespace starskytest.starsky.feature.import.Services
 				new List<string>{"-p", "/test", "--output" , "csv"}.ToArray());
 			
 			Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault().Contains("Done Importing"));
-			Assert.AreEqual("Id;Status;SourceFilePath;SubPath;FileHash",fakeConsole.WrittenLines.FirstOrDefault() );
+			Assert.AreEqual("Id;Status;SourceFullFilePath;SubPath;FileHash",fakeConsole.WrittenLines.FirstOrDefault() );
 		}
 		
 		[TestMethod]
