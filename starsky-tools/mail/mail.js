@@ -180,6 +180,10 @@ imaps.connect(config).then(function (connection) {
 });
 
 function updateGeoData(parentDirectory) {
+	if (!process.env.STARKSYGEOURL) {
+		return;
+	}
+
 	var formData = {
 		f: parentDirectory,
 	};
