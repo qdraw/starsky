@@ -6,7 +6,7 @@ on:
     - cron:  '45 0 * * *'
     
 jobs:
-  test:
+  run:
 
     runs-on: ubuntu-latest
 
@@ -17,8 +17,28 @@ jobs:
       id: dotnet_sdk_version_update
       working-directory: ./starsky-tools/build-tools
       run: npm run dotnet-sdk-version-update
-
+      
     - name: Npm generate package list  ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
       working-directory: ./starsky-tools/build-tools
       run: npm run nuget-package-list
+      
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: Update report
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: feature/auto_dotnet_sdk_version_update_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+        delete-branch: true
+        title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
+        body: |
+          Upgrade of .NET with newer SDK Version
+          First test on test envs before approve
+        labels: |
+          upgrade
+        draft: false
+
   
