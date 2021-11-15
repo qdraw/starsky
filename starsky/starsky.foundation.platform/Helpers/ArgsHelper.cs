@@ -445,6 +445,25 @@ namespace starsky.foundation.platform.Helpers
 		}
 		
 		/// <summary>
+		/// Get output mode
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>path</returns>
+		public ConsoleOutputMode GetConsoleOutputMode(IReadOnlyList<string> args)
+		{
+			var outputMode = ConsoleOutputMode.Default;
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--output") && (arg + 1) != args.Count )
+				{
+					var outputModeItem = args[arg + 1];
+					Enum.TryParse<ConsoleOutputMode>(outputModeItem, true, out outputMode);				    
+				}
+			}
+			return outputMode;
+		}
+		
+		/// <summary>
 		/// Get the user input from -n or --name
 		/// </summary>
 		/// <param name="args">arg list</param>

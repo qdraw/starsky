@@ -9,6 +9,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Import;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.Import
 {
@@ -25,13 +27,14 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = _serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			_importQueryNetFramework = new ImportQueryNetFramework(_serviceScope);
+			_importQueryNetFramework = new ImportQueryNetFramework(_serviceScope, new FakeConsoleWrapper());
 		}
 
 		private IServiceScopeFactory CreateNewScope()
 		{
 			var services = new ServiceCollection();
 			services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase(nameof(ImportQueryNetFrameworkTest)));
+			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			var serviceProvider = services.BuildServiceProvider();
 			return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -75,7 +78,7 @@ namespace starskytest.starsky.foundation.database.Import
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			await new ImportQuery(serviceScopeFactory).AddRangeAsync(expectedResult);
+			await new ImportQuery(serviceScopeFactory, new FakeConsoleWrapper()).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.ImportIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);

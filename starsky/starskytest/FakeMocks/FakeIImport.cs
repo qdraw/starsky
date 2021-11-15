@@ -54,7 +54,9 @@ namespace starskytest.FakeMocks
 				// if the item fails
 				var importIndexFileError = new ImportIndexItem {
 					FilePath = "/" + FilenamesHelper.GetFileName(inputFileFullPath),
+					SourceFullFilePath = "~/temp/test",
 					FileHash = "FAKE", 
+					MakeModel = "added if the item fails",
 					Status = ImportStatus.FileError
 				};
 			
@@ -76,9 +78,13 @@ namespace starskytest.FakeMocks
 				
 				results.Add(new ImportIndexItem
 				{
+					Id = 4,
 					SourceFullFilePath = inputFileFullPath,
+					FilePath = inputFileFullPath,
 					Status = ImportStatus.Ok,
-					FileHash = "FAKE"
+					FileHash = "FAKE",
+					MakeModel = "added okay",
+					FileIndexItem = new FileIndexItem(){FileHash = "FAKE_OK", FilePath = inputFileFullPath}
 				});
 			}
 			PreflightList.AddRange(results);

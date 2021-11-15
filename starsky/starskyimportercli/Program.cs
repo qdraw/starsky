@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.import.Interfaces;
 using starsky.feature.import.Services;
+using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
@@ -35,7 +36,11 @@ namespace starskyimportercli
             var import = serviceProvider.GetService<IImport>();
             var console = serviceProvider.GetRequiredService<IConsole>();
             var exifToolDownload = serviceProvider.GetRequiredService<IExifToolDownload>();
+            var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
+            // Migrations before importing
+            await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger);
+            
             // Help and other Command Line Tools args are included in the ImporterCli 
             await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
         }

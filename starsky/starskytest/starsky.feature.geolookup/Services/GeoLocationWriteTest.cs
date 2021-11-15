@@ -47,7 +47,9 @@ namespace starskytest.starskyGeoCore.Services
 			var fakeIStorage = new FakeIStorage();
 			new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage),console).LoopFolder(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
-			Assert.AreEqual(0,console.WrittenLines.Count);
+			
+			Assert.AreEqual(1,console.WrittenLines.Count);
+			Assert.AreEqual("🚀",console.WrittenLines[0]);
 		}
 
 		[TestMethod]
@@ -72,6 +74,7 @@ namespace starskytest.starskyGeoCore.Services
 				.LoopFolder(metaFilesInDirectory, 
 				true);
 
+			Assert.AreEqual(2,console.WrittenLines.Count);
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("GeoLocationWrite"));
 		}
 	}

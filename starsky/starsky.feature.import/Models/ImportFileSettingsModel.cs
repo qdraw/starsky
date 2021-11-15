@@ -91,5 +91,12 @@ namespace starskycore.Models
 	    /// Default false, when Exiftool need to sync content
 	    /// </summary>
 	    public bool NeedExiftoolSync { get; set; } = false;
+
+	    public ConsoleOutputMode ConsoleOutputMode { get; set; }
+
+	    public bool IsConsoleOutputModeDefault()
+	    {
+		    return ConsoleOutputMode.Default == ConsoleOutputMode;
+	    }
     }
 }

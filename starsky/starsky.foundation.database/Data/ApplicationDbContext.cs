@@ -64,7 +64,7 @@ namespace starsky.foundation.database.Data
 					);
 					
 					etb.Property(e => e.LockoutEnd)
-						.HasColumnType("varchar(255)")
+						.HasColumnType("TEXT")
 						.HasConversion(converter);
 				}
 			);
