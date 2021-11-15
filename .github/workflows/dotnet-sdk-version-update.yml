@@ -1,4 +1,4 @@
-name: PR upgrade
+name: Dotnet sdk version update
 
 on:
   workflow_dispatch:
