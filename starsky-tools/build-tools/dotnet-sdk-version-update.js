@@ -76,17 +76,19 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 
 	getFiles(join(__dirname, prefixPath))
 		.then(async (filePathList) => {
-			const sdkVersion = await getSdkVersionByTarget(newTargetVersion);
+			const sdkVersion = await getSdkVersionByTarget();
+			process.env["SDK_VERSION"] = sdkVersion;
+			console.log(`::set-output name=SDK_VERSION::${sdkVersion}`);
+
 			await updateAzureYmlFile(filePathList, sdkVersion);
 			await updateGithubYmlFile(filePathList, sdkVersion);
-			console.log(sdkVersion);
 		})
 		.catch((err) => {
 			console.log(err);
 		});
 });
 
-async function getSdkVersionByTarget(newTargetVersion) {
+async function getSdkVersionByTarget() {
 	const results = await httpsGet(
 		"https://api.github.com/repos/dotnet/sdk/releases"
 	);
