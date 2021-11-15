@@ -27,7 +27,7 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
-        commit-message: Update report
+        commit-message: '.NET Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
