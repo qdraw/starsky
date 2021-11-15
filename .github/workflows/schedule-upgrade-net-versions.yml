@@ -1,0 +1,24 @@
+name: PR upgrade
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '45 0 * * *'
+    
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Update .NET Versions'
+      id: dotnet_sdk_version_update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run dotnet-sdk-version-update
+
+    - name: Npm generate package list  ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+      working-directory: ./starsky-tools/build-tools
+      run: npm run nuget-package-list
+  
