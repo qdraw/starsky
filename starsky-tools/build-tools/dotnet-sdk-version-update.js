@@ -24,14 +24,14 @@ if (argv && argv.length === 1) {
 }
 
 async function getLatestDotnetRelease() {
-	var results = await httpsGet(
+	const results = await httpsGet(
 		"https://api.github.com/repos/dotnet/core/releases"
 	);
 	if (results.message && results.message.startsWith("API rate limit")) {
 		console.log(results.message);
 		return [];
 	}
-	var targetVersion = newRunTimeVersion.replace(".x", "");
+	const targetVersion = newRunTimeVersion.replace(".x", "");
 	let versions = [];
 	for (const item of results) {
 		if (
@@ -55,18 +55,151 @@ async function getLatestDotnetRelease() {
 
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
-getFiles(join(__dirname, prefixPath, "starsky"))
-	.then(async (filePathList) => {
-		const newTargetVersion = await getLatestDotnetRelease();
-		if (newTargetVersion) {
-			await updateRuntimeFrameworkVersion(filePathList, newTargetVersion);
-			await updateNugetPackageVersions(filePathList, newRunTimeVersion);
-			// await is not working right here
+getLatestDotnetRelease().then((newTargetVersion) => {
+	getFiles(join(__dirname, prefixPath, "starsky"))
+		.then(async (filePathList) => {
+			if (newTargetVersion) {
+				await updateRuntimeFrameworkVersion(
+					filePathList,
+					newTargetVersion
+				);
+				await updateNugetPackageVersions(
+					filePathList,
+					newRunTimeVersion
+				);
+				// await is not working right here
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+
+	getFiles(join(__dirname, prefixPath))
+		.then(async (filePathList) => {
+			const sdkVersion = await getSdkVersionByTarget(newTargetVersion);
+			await updateAzureYmlFile(filePathList, sdkVersion);
+			await updateGithubYmlFile(filePathList, sdkVersion);
+			console.log(sdkVersion);
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
+async function getSdkVersionByTarget(newTargetVersion) {
+	const results = await httpsGet(
+		"https://api.github.com/repos/dotnet/sdk/releases"
+	);
+	if (results.message && results.message.startsWith("API rate limit")) {
+		console.log(results.message);
+		return [];
+	}
+	let versions = [];
+	const targetVersion = newRunTimeVersion.replace(".x", "");
+
+	for (const item of results) {
+		if (
+			!item.prerelease &&
+			!item.tag_name.includes("preview") &&
+			!item.tag_name.includes("rc") &&
+			item.tag_name.startsWith("v" + targetVersion)
+		) {
+			versions.push(item.tag_name);
 		}
-	})
-	.catch((err) => {
-		console.log(err);
+	}
+
+	if (versions.length == 0) {
+		console.log(`\nThere are no versions matching ${targetVersion}`);
+		return;
+	}
+
+	versions = versions.sort().reverse();
+	return versions[0].replace(/^v/, "");
+}
+
+async function updateAzureYmlFile(filePathList, sdkVersion) {
+	await filePathList.forEach(async (filePath) => {
+		if (filePath.match(new RegExp("^.+.yml$", "i"))) {
+			let buffer = await readFile(filePath);
+			let fileContent = buffer.toString("utf8");
+
+			var taskUseDotNetRegex = new RegExp("task: UseDotNet@2", "g");
+
+			const taskUseDotNetMatch = taskUseDotNetRegex.exec(fileContent);
+
+			if (taskUseDotNetMatch != null) {
+				let startNewLineIndex = 0;
+				for (const iterator of fileContent.matchAll("\n")) {
+					if (taskUseDotNetMatch.index >= iterator.index) {
+						startNewLineIndex = iterator.index;
+					}
+				}
+				const numberOfSpacesBefore =
+					taskUseDotNetMatch.index - startNewLineIndex + 1;
+
+				var versionTag = " ".repeat(numberOfSpacesBefore) + "version: ";
+
+				var versionRegex = new RegExp(versionTag + "[0-9.]+", "g");
+				if (fileContent.match(versionRegex)) {
+					fileContent = fileContent.replace(
+						versionRegex,
+						versionTag + sdkVersion
+					);
+				}
+
+				var displayNameTag =
+					" ".repeat(numberOfSpacesBefore - 2) + "displayName: ";
+				var displayNameTagRegex = new RegExp(
+					displayNameTag + ".+",
+					"g"
+				);
+
+				if (fileContent.match(displayNameTagRegex)) {
+					fileContent = fileContent.replace(
+						displayNameTagRegex,
+						displayNameTag +
+							"'Use .NET Core sdk " +
+							sdkVersion +
+							"'"
+					);
+				}
+				await writeFile(filePath, fileContent);
+				console.log(
+					`✓ ${filePath} - Azure Yml is updated to ${sdkVersion}`
+				);
+			}
+		}
 	});
+}
+
+async function updateGithubYmlFile(filePathList, sdkVersion) {
+	await filePathList.forEach(async (filePath) => {
+		if (filePath.match(new RegExp("^.+.github.+.yml$", "i"))) {
+			let buffer = await readFile(filePath);
+			let fileContent = buffer.toString("utf8");
+
+			var actionsSetupDotNet = new RegExp(
+				"uses: actions\\/setup-dotnet@v1\n\\s+with:\n\\s+dotnet-version: [0-9.]+",
+				"g"
+			);
+			const actionsSetupDotNetMatch =
+				fileContent.match(actionsSetupDotNet);
+			if (actionsSetupDotNetMatch) {
+				const actionsSetupDotNetReplaced =
+					actionsSetupDotNetMatch[0].replace(/[0-9.]+$/, sdkVersion);
+				fileContent = fileContent.replace(
+					actionsSetupDotNetMatch[0],
+					actionsSetupDotNetReplaced
+				);
+
+				await writeFile(filePath, fileContent);
+				console.log(
+					`✓ ${filePath} - Github Yml is updated to ${sdkVersion}`
+				);
+			}
+		}
+	});
+}
 
 async function updateRuntimeFrameworkVersion(filePathList, newTargetVersion) {
 	await filePathList.forEach(async (filePath) => {
