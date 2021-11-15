@@ -7,7 +7,8 @@
     "app-version-update": "node app-version-update.js",
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
-    "release-version-check": "node release-version-check.js"
+    "release-version-check": "node release-version-check.js",
+    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js"
   },
   "author": "",
   "license": "ISC"
