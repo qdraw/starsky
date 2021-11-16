@@ -36,9 +36,12 @@ jobs:
         title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
         body: |
           Upgrade of .NET with newer SDK Version
-          First test on test envs before approve
+          - First test on linux-arm test envs before approve
+          - update azure runtime on test
+          - when upgrading to newer major release check docker
+          - update docs with minimal version
         labels: |
-          upgrade
+          dependencies
         draft: false
 
   
