@@ -4,6 +4,8 @@ parameters:
       value: '/starsky/starsky-linux-arm64.zip' 
     - key: linux-arm
       value: '/starsky/starsky-linux-arm.zip' 
+    - key: linux-x64
+      value: '/starsky/starsky-linux-x64.zip' 
     - key: generic-netcore
       value: '/starsky/starsky-generic-netcore.zip'
     - key: coverage-report
