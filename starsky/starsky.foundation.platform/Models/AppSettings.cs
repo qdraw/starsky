@@ -551,7 +551,7 @@ namespace starsky.foundation.platform.Models
 			set => ApplicationInsightsInstrumentationKeyPrivate = value;
 		}
 
-		public int MaxDegreesOfParallelism => 6;
+		public int MaxDegreesOfParallelism { get; set; } = 6;
 	    
 		/// <summary>
 		/// Set to false when running on http-only service.
