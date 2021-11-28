@@ -66,7 +66,8 @@ function runQueryChain(index = 0, searchQueries: string[]) {
 	if (searchQueries.length === 0) return;
 	if (index >= searchQueries.length) return;
 
-	console.log(searchQueries[index] + "\n^^^^searchQuery^^^^");
+	let date = new Date();
+	console.log(searchQueries[index] + `\n^^^^searchQuery^^^^ - ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`);
 
 	query
 		.isImportOrDirectSearch(searchQueries[index])
