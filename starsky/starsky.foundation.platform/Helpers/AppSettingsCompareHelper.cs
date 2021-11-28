@@ -42,6 +42,13 @@ namespace starsky.foundation.platform.Helpers
 		            CompareString(propertyB.Name, sourceIndexItem, oldStringValue, newStringValue, differenceList);
 	            }
 	            
+	            if ( propertyB.PropertyType == typeof(int) )
+	            {
+		            var oldIntValue = (int)propertyInfoFromA.GetValue(sourceIndexItem, null);
+		            var newIntValue = (int)propertyB.GetValue(updateObject, null);
+		            CompareInt(propertyB.Name, sourceIndexItem, oldIntValue, newIntValue, differenceList);
+	            }
+	            
 	            if ( propertyB.PropertyType == typeof(AppSettings.DatabaseTypeList) )
 	            {
 		            var oldListStringValue = ( AppSettings.DatabaseTypeList ) propertyInfoFromA.GetValue(sourceIndexItem, null);
@@ -170,6 +177,33 @@ namespace starsky.foundation.platform.Helpers
             
             differenceList.Add(propertyName.ToLowerInvariant());
         }
+	    
+	    
+	    /// <summary>
+	    /// Compare string type 
+	    /// </summary>
+	    /// <param name="propertyName">name of property e.g. Tags</param>
+	    /// <param name="sourceIndexItem">source object</param>
+	    /// <param name="oldStringValue">oldStringValue to compare with newStringValue</param>
+	    /// <param name="newStringValue">oldStringValue to compare with newStringValue</param>
+	    /// <param name="differenceList">list of different values</param>
+	    private static void CompareInt(string propertyName, AppSettings sourceIndexItem, 
+		    int oldStringValue, int newStringValue, 
+		    List<string> differenceList)
+	    {
+		    var newAppSettings = new AppSettings();
+
+		    var defaultValue = GetPropertyValue(newAppSettings, propertyName) as int?;
+		    if ( newStringValue == defaultValue ) return;
+	        
+		    if (oldStringValue == newStringValue ||  newStringValue == 0) return;
+         
+		    var propertyObject = sourceIndexItem.GetType().GetProperty(propertyName);
+            
+		    propertyObject.SetValue(sourceIndexItem, newStringValue, null);
+            
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
 	    
 	    /// <summary>
 	    /// @see: https://stackoverflow.com/a/5508068
