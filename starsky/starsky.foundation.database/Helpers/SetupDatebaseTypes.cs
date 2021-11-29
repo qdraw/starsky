@@ -5,6 +5,8 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Storage;
+using starsky.foundation.databasetelemetry.Helpers;
+using starsky.foundation.databasetelemetry.Services;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers
@@ -43,6 +45,7 @@ namespace starsky.foundation.database.Helpers
 								mySqlOptions.MigrationsAssembly(foundationDatabaseName);
 							}
 						});
+					EnableDatabaseTracking(mysql);
 					return mysql.Options;
 				case AppSettings.DatabaseTypeList.InMemoryDatabase:
 					var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -58,17 +61,37 @@ namespace starsky.foundation.database.Helpers
 									b.MigrationsAssembly(foundationDatabaseName);
 								}
 							});
+					EnableDatabaseTracking(sqlite);
 					return sqlite.Options;
 				default:
 					throw new AggregateException(nameof(_appSettings.DatabaseType));
 			}
 		}
 
+		private bool IsDatabaseTrackingEnabled()
+		{
+			return !string.IsNullOrEmpty(_appSettings
+				       .ApplicationInsightsInstrumentationKey) && _appSettings.ApplicationInsightsDatabaseTracking == true;
+		}
+
+		private void EnableDatabaseTracking( DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
+		{
+			if (!IsDatabaseTrackingEnabled())
+			{
+				return;
+			}
+			databaseOptionsBuilder.AddInterceptors(new DatabaseTelemetryInterceptor(
+				TelemetryConfigurationHelper.InitTelemetryClient(_appSettings.ApplicationInsightsInstrumentationKey)));
+		}
+
 		public void BuilderDb(string foundationDatabaseName = "")
 		{
 			if ( _services == null ) throw new AggregateException("services is missing");
-			if ( _console != null && _appSettings.IsVerbose() ) 
+			if ( _console != null && _appSettings.IsVerbose() )
+			{
 				_console.WriteLine($"Database connection: {_appSettings.DatabaseConnection}");
+			}
+			_console?.WriteLine($"Application Insights Database tracking is {IsDatabaseTrackingEnabled()}" );
 
 #if ENABLE_DEFAULT_DATABASE
 				// dirty hack
@@ -82,6 +105,7 @@ namespace starsky.foundation.database.Helpers
 					}
 				}));		
 #endif
+
 			_services.AddScoped(provider => new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
 		}
 

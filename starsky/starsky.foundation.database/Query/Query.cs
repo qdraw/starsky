@@ -127,7 +127,7 @@ namespace starsky.foundation.database.Query
         {   
 	        try
 	        {
-		       return _context.FileIndex.FirstOrDefault(
+		       return _context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && p.IsDirectory != true
 		        )?.FilePath;
@@ -135,7 +135,7 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return context.FileIndex.FirstOrDefault(
+		        return context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && p.IsDirectory != true
 		        )?.FilePath;

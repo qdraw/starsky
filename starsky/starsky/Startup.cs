@@ -30,6 +30,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
 using starsky.foundation.webtelemetry.Processor;
@@ -76,7 +77,7 @@ namespace starsky
             });
             
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
-            new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
+            new SetupDatabaseTypes(_appSettings,services, new ConsoleWrapper()).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 	            
             // Enable Dual Authentication 

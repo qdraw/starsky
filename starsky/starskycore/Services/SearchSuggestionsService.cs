@@ -52,6 +52,7 @@ namespace starskycore.Services
 				allFilesList = await _context.FileIndex.GroupBy(i => i.Tags)
 					// ReSharper disable once UseMethodAny.1
 					.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
+					.TagWith("Inflate SearchSuggestionsService")
 					.Select(val => new KeyValuePair<string, int>(val.Key, val.Count())).ToListAsync();
 			}
 			catch ( Exception e )
