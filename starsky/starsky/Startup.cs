@@ -68,7 +68,10 @@ namespace starsky
 	            logging.AddConsole();
 	            
 	            // Skip when is Development
-	            if ( string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || _hostEnvironment?.IsDevelopment() == true) return;
+	            if (_appSettings.ApplicationInsightsLog != true || 
+	                string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || 
+	                _hostEnvironment?.IsDevelopment() == true) return;
+	            
 	            // Optional: Apply filters to configure LogLevel Information or above is sent to
 	            // Application Insights for all categories.
 	            logging.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>
