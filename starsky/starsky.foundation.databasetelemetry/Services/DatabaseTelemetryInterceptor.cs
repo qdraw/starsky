@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using starsky.foundation.databasetelemetry.Helpers;
 
 namespace starsky.foundation.databasetelemetry.Services
 {
@@ -35,26 +36,6 @@ namespace starsky.foundation.databasetelemetry.Services
 		        name = $"{command.Connection.DataSource} | {command.Connection.Database}";
 	        }
 	        return name;
-        }
-        
-        private void TrackDependency(DbCommand command, DateTimeOffset startTime, bool success = true)
-        {
-	        var duration = TimeSpan.Zero;
-	        if (startTime != default(DateTimeOffset))
-	        {
-		        duration = DateTimeOffset.UtcNow - startTime;
-	        }
-
-	        var commandName = command.CommandText;
-	        _telemetryClient.TrackDependency(new DependencyTelemetry()
-	        {
-		        Name = GetSqlName(command),
-		        Data = commandName,
-		        Type = TelemetryType,
-		        Duration = duration,
-		        Timestamp = startTime,
-		        Success = success
-	        });
         }
 
         public InterceptionResult<DbCommand> CommandCreating(CommandCorrelatedEventData eventData,
@@ -164,8 +145,7 @@ namespace starsky.foundation.databasetelemetry.Services
 		        return result;
 	        }
 	        
-	        TrackDependency(command, eventData.StartTime);
-	        
+	        new TrackDependency(_telemetryClient).Track(command, eventData.StartTime, GetSqlName(command), TelemetryType);
 	        return result;
         }
     }
