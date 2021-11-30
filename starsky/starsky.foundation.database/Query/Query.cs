@@ -83,7 +83,8 @@ namespace starsky.foundation.database.Query
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(
 			string filePath, TimeSpan? cacheTime = null)
 		{
-			if ( cacheTime.HasValue &&
+			// cache code:
+			if ( cacheTime != null &&
 			     _appSettings.AddMemoryCache == true &&
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
@@ -91,6 +92,7 @@ namespace starsky.foundation.database.Query
 				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
 				return data as FileIndexItem;
 			}
+			// end cache
 			
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
 
@@ -98,7 +100,8 @@ namespace starsky.foundation.database.Query
 			var result = ( await GetObjectsByFilePathQueryAsync(paths) )
 				.FirstOrDefault();
 
-			if ( !cacheTime.HasValue || _appSettings.AddMemoryCache != true )
+			// cache code:
+			if ( cacheTime == null || _appSettings.AddMemoryCache != true )
 				return result;
 			
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
