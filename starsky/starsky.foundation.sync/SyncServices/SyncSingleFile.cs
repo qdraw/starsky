@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
@@ -91,7 +92,7 @@ namespace starsky.foundation.sync.SyncServices
 			// route with database check
 			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 			{
-				_logger.LogInformation($"[SingleFile/db] {subPath}" );
+				_logger.LogInformation($"[SingleFile/db] {subPath}" + DateTimeDebug());
 			}
 
 			// Sidecar files are updated but ignored by the process
@@ -120,11 +121,17 @@ namespace starsky.foundation.sync.SyncServices
 				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 			}
 
-			// to avoid resync
+			// to avoid reSync
 			updatedDbItem.Status = FileIndexItem.ExifStatus.OkAndSame;
 			AddDeleteStatus(statusItem, FileIndexItem.ExifStatus.DeletedAndSame);
 			_logger.LogInformation($"[SingleFile/db] Same: {updatedDbItem.Status} for: {updatedDbItem.FilePath}");
 			return updatedDbItem;
+		}
+		
+		private static string DateTimeDebug()
+		{
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
+				CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
