@@ -129,6 +129,7 @@ namespace starsky.foundation.databasetelemetry.Services
 
         public void CommandFailed(DbCommand command, CommandErrorEventData eventData)
         {
+	        // should not contain anything
         }
 
         public Task CommandFailedAsync(DbCommand command, CommandErrorEventData eventData,
@@ -145,7 +146,7 @@ namespace starsky.foundation.databasetelemetry.Services
 		        return result;
 	        }
 	        
-	        new TrackDependency(_telemetryClient).Track(command, eventData.StartTime, GetSqlName(command), TelemetryType);
+	        new TrackDependency(_telemetryClient).Track(command, eventData?.StartTime, GetSqlName(command), TelemetryType);
 	        return result;
         }
     }
