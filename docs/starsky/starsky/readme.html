@@ -72,8 +72,8 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code><b
 </ol>
 <h3 id="optional-settings">Optional settings</h3>
 <ol>
-<li><code>Structure</code> - The structure that will be used when you import files, has a default fallback.</li>
-<li><code>ReadOnlyFolders</code> - Accepts a list of folders that never may be edited, defaults a empty list</li>
+<li><code>Structure</code> - The structure that will be used when you import files, <em>has a default fallback</em>.</li>
+<li><code>ReadOnlyFolders</code> - Accepts a list of folders that never may be edited, <em>defaults a empty list</em></li>
 <li><code>AddMemoryCache</code> - Enable caching <em>(default true)</em><br />
  The only 2 build-in exceptions are when there are no accounts or you already logged in <em>(default false)</em></li>
 <li><code>AddSwagger</code> - To show a user interface to show al REST-services <em>(default false)</em></li>
@@ -86,16 +86,20 @@ For <code>ThumbnailTempFolder</code> use <code>app__ThumbnailTempFolder</code><b
 <li><code>ExifToolPath</code> - A path to Exiftool.exe <em>to ignore the included ExifTool</em></li>
 <li><code>isAccountRegisterOpen</code> - Allow everyone to register an account <em>(default false)</em></li>
 <li><code>AccountRegisterDefaultRole</code> When a user is new and register an account, give it the role User or Administrator <em>(default User)</em></li>
-<li><code>applicationInsightsInstrumentationKey</code> - Track telementry with Microsoft Application Insights <em>(default disabled)</em></li>
+<li><code>applicationInsightsInstrumentationKey</code> - Track Telemetry with Microsoft Application Insights <em>(default disabled)</em></li>
+<li><code>ApplicationInsightsDatabaseTracking</code> - Track database dependencies (need to have InstrumentationKey) <em>(default disabled)</em></li>
+<li><code>ApplicationInsightsLog</code> - Add WebLogger output to Application Insights (need to have InstrumentationKey) <em>(default enabled, when key is provided)</em></li>
 <li><code>useHttpsRedirection</code> - Redirect users to https page. You should enable before going to production.<br />
  This toggle is always disabled in debug/develop mode <em>(default false)</em></li>
 <li><code>Name</code> Name of the application, does not have much effect <em>(default Starsky)</em></li>
 <li><code>AppSettingsPath</code> To store the settings by user in the AppData folder <em>(default empty string)</em></li>
 <li><code>UseRealtime</code> Update the user interface realtime <em>default true</em></li>
-<li><code>UseDiskWatcher</code> Watch the disk for changes and update the database <em>default false (but will change)</em></li>
+<li><code>UseDiskWatcher</code> Watch the disk for changes and update the database <em>default true</em></li>
 <li><code>CheckForUpdates</code> Check if there are updates on github and notify the user <em>default true</em></li>
 <li><code>SyncIgnore</code> Ignore pattern to not include disk items while running sync, uses always unix style and startsWith <em>default list with: /lost+found</em></li>
-<li><code>ImportIgnore</code> ImportIgnore filter  <em>default list with: lost+found</em></li>
+<li><code>ImportIgnore</code> ImportIgnore filter  <em>default list with: "lost+found" ".Trashes"</em></li>
+<li><code>MaxDegreesOfParallelism</code> Number of jobs running in background <em>default 6</em></li>
+<li><code>MetaThumbnailOnImport</code> Create small thumbnails after import, is very fast <em>default true</em></li>
 </ol>
 <h3 id="appsettingsjson-example">Appsettings.json example</h3>
 <pre><code class="json language-json">{
