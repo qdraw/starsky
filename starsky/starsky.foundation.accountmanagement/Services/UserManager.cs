@@ -267,7 +267,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="roleCode">RoleCode</param>
 		public void AddToRole(User user, string roleCode)
 		{
-			Role role = _dbContext.Roles.FirstOrDefault(r => r.Code == roleCode);
+			Role role = _dbContext.Roles.TagWith("AddToRole").FirstOrDefault(r => r.Code == roleCode);
 
 			if (role == null)
 			{
@@ -302,7 +302,7 @@ namespace starsky.foundation.accountmanagement.Services
 		}
 		public void RemoveFromRole(User user, string roleCode)
 		{
-			Role role = _dbContext.Roles.FirstOrDefault(
+			Role role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(
 				r => string.Equals(r.Code, roleCode, StringComparison.OrdinalIgnoreCase));
             
 			if (role == null)
@@ -643,7 +643,7 @@ namespace starsky.foundation.accountmanagement.Services
 		private IEnumerable<Claim> GetUserRoleClaims(User user)
 		{
 			var claims = new List<Claim>();
-			IEnumerable<int> roleIds = this._dbContext.UserRoles.Where(
+			IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims").Where(
 				ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
 
 			foreach (var roleId in roleIds)
@@ -711,7 +711,7 @@ namespace starsky.foundation.accountmanagement.Services
 	        
 			foreach ( var rolePermissionsDictionary in existingRolePermissions )
 			{
-				var role = _dbContext.Roles.FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
+				var role = _dbContext.Roles.TagWith("AddDefaultRolePermissions").FirstOrDefault(p => p.Code == rolePermissionsDictionary.Key );
 				var permission = _dbContext.Permissions.FirstOrDefault(p => 
 					p.Code == rolePermissionsDictionary.Value.ToString());
 
