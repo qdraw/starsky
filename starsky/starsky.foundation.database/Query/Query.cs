@@ -67,19 +67,44 @@ namespace starsky.foundation.database.Query
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
+		
+		private string GetObjectByFilePathAsyncCacheName(string subPath)
+		{
+			return $"{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
+		}
+		
 
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
+		/// <param name="cacheTime"></param>
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(
-			string filePath)
+			string filePath, TimeSpan? cacheTime = null)
 		{
+			if ( cacheTime.HasValue &&
+			     _appSettings.AddMemoryCache == true &&
+			     _cache.TryGetValue(
+				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
+			{
+				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
+				return data as FileIndexItem;
+			}
+			
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
 
 			var paths = new List<string> {filePath};
-			return (await GetObjectsByFilePathQueryAsync(paths)).FirstOrDefault();
+			var result = ( await GetObjectsByFilePathQueryAsync(paths) )
+				.FirstOrDefault();
+
+			if ( !cacheTime.HasValue || _appSettings.AddMemoryCache != true )
+				return result;
+			
+			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+				cacheTime.Value);
+
+			return result;
 		}
 	    
 		/// <summary>

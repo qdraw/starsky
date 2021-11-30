@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -46,13 +47,13 @@ namespace starsky.foundation.sync.SyncServices
 			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
-			_console.WriteLine($"[Synchronize] Sync {subPath}");
+			_console.WriteLine($"[Synchronize] Sync {subPath} {DateTimeDebug()}");
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath,updateDelegate);
+					return await _syncFolder.Folder(subPath, updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
@@ -71,6 +72,13 @@ namespace starsky.foundation.sync.SyncServices
 				results.AddRange(await Sync(subPath, recursive));
 			}
 			return results;
+		}
+		
+				
+		internal static string DateTimeDebug()
+		{
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
+				CultureInfo.InvariantCulture);
 		}
 	}
 }
