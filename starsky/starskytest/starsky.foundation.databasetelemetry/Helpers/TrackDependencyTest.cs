@@ -11,6 +11,9 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 	[TestClass]
 	public class TrackDependencyTest
 	{
+		/// <summary>
+		/// Test code --> scroll down
+		/// </summary>
 		private class TestDbCommand : DbCommand
 		{
 			public override void Cancel()
@@ -62,6 +65,14 @@ namespace starskytest.starsky.foundation.databasetelemetry.Helpers
 		{
 			var command = new TestDbCommand() as DbCommand;
 			var result = new TrackDependency(new TelemetryClient(new TelemetryConfiguration())).Track(command, DateTimeOffset.Now, "", "");
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void Track_ShouldGiveBackTrue_default_DateTimeOffset()
+		{
+			var command = new TestDbCommand() as DbCommand;
+			var result = new TrackDependency(new TelemetryClient(new TelemetryConfiguration())).Track(command, default(DateTimeOffset), "", "");
 			Assert.IsTrue(result);
 		}
 	}
