@@ -43,12 +43,14 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 - remove newtonsoft.json references
 
-# version 0.4.13 _(Unreleased)_ - 2021-11-?
+# version 0.4.13 _(Unreleased)_ - 2021-12-?
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
 - [x]   (Fixed) _Tools_ Dotnet SDK updater build tools (Work in progress) (PR #510)
 - [x]   (Fixed) _Back-end_  Fix for type LockoutEnd (PR #510)
 - [x]   (Changed) _Back-end_ Add migration for MakeModel in ImportIndex (PR #510)
 - [x]   (Fixed) _Tools_ Add push to gpx loader for mail  (PR #510)
+- [x]   (Added) _Back-end_ Add feature (appSettings) `ApplicationInsightsDatabaseTracking` - Track database dependencies  (PR #528)
+- [x]   (Added) _Back-end_ Add feature toggle (appSettings) `ApplicationInsightsLog` - Add WebLogger output to Application Insights (PR #528)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
