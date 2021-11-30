@@ -19,7 +19,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 		{
 			if ( startTime == null ) return false;
 			var duration = TimeSpan.Zero;
-			if (startTime != default(DateTimeOffset))
+			if (startTime.Value != default(DateTimeOffset))
 			{
 				duration = DateTimeOffset.UtcNow - startTime.Value;
 			}
