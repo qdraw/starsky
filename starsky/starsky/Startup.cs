@@ -72,8 +72,6 @@ namespace starsky
 	                string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || 
 	                _hostEnvironment?.IsDevelopment() == true) return;
 	            
-	            // Optional: Apply filters to configure LogLevel Information or above is sent to
-	            // Application Insights for all categories.
 	            logging.AddApplicationInsights(_appSettings.ApplicationInsightsInstrumentationKey);
             });
             
