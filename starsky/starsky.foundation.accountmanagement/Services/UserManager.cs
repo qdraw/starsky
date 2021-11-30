@@ -656,7 +656,7 @@ namespace starsky.foundation.accountmanagement.Services
 			return claims;
 		}
         
-		private IEnumerable<Claim> GetUserPermissionClaims(Role role)
+		internal IEnumerable<Claim> GetUserPermissionClaims(Role role)
 		{
 			List<Claim> claims = new List<Claim>();
 			IEnumerable<int> permissionIds = _dbContext.RolePermissions.Where(

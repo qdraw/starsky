@@ -74,14 +74,15 @@ namespace starsky.foundation.database.Helpers
 				       .ApplicationInsightsInstrumentationKey) && _appSettings.ApplicationInsightsDatabaseTracking == true;
 		}
 
-		private void EnableDatabaseTracking( DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
+		internal bool EnableDatabaseTracking( DbContextOptionsBuilder<ApplicationDbContext> databaseOptionsBuilder)
 		{
 			if (!IsDatabaseTrackingEnabled())
 			{
-				return;
+				return false;
 			}
 			databaseOptionsBuilder.AddInterceptors(new DatabaseTelemetryInterceptor(
 				TelemetryConfigurationHelper.InitTelemetryClient(_appSettings.ApplicationInsightsInstrumentationKey)));
+			return true;
 		}
 
 		public void BuilderDb(string foundationDatabaseName = "")

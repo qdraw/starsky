@@ -15,7 +15,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			_telemetryClient = telemetryClient;
 		}
 		
-		public void Track(DbCommand command, DateTimeOffset startTime, string name, string telemetryType, bool success = true)
+		public bool Track(DbCommand command, DateTimeOffset startTime, string name, string telemetryType, bool success = true)
 		{
 			var duration = TimeSpan.Zero;
 			if (startTime != default(DateTimeOffset))
@@ -33,6 +33,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 				Timestamp = startTime,
 				Success = success
 			});
+			return true;
 		}
 
 	}
