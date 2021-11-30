@@ -74,8 +74,6 @@ namespace starsky
 	            
 	            // Optional: Apply filters to configure LogLevel Information or above is sent to
 	            // Application Insights for all categories.
-	            logging.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>
-		            (string.Empty, LogLevel.Information);
 	            logging.AddApplicationInsights(_appSettings.ApplicationInsightsInstrumentationKey);
             });
             
