@@ -12,7 +12,26 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 	[TestClass]
 	public class DatabaseTelemetryInterceptorTest
 	{
-				
+		[TestMethod]
+		public void DatabaseTelemetryInterceptor_GetSqlName_Ok()
+		{
+			var result =
+				DatabaseTelemetryInterceptor.GetSqlName(
+					new MySqlCommand("t", new MySqlConnection("Server=test.nl;database=test;uid=test;pwd=test;")));
+			
+			Assert.AreEqual("test.nl | test",result);
+		}
+		
+		[TestMethod]
+		public void DatabaseTelemetryInterceptor_GetSqlName_Null()
+		{
+			var result =
+				DatabaseTelemetryInterceptor.GetSqlName(
+					new MySqlCommand("t", null));
+			
+			Assert.AreEqual("SQLDatabase",result);
+		}
+
 		[TestMethod]
 		public void DatabaseTelemetryInterceptor_CommandCreating()
 		{
@@ -64,15 +83,17 @@ namespace starskytest.starsky.foundation.databasetelemetry.Services
 				.NonQueryExecuting(null, null, eventData);
 			Assert.IsNotNull(result);
 		}
+		
+								
 								
 		[TestMethod]
 		public void DatabaseTelemetryInterceptor_ReaderExecutingAsync()
 		{
-			InterceptionResult<int> eventData = InterceptionResult<int>.SuppressWithResult(1);
+			InterceptionResult<DbDataReader> eventData = InterceptionResult<DbDataReader>.SuppressWithResult(new DataTableReader(new DataTable()));
 
 			var result = new DatabaseTelemetryInterceptor(
 					new TelemetryClient(new TelemetryConfiguration()))
-				.NonQueryExecuting(null, null, eventData);
+				.ReaderExecutingAsync(null, null, eventData);
 			Assert.IsNotNull(result);
 		}
 		

@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using starsky.foundation.databasetelemetry.Helpers;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.databasetelemetry.Services
 {
 	/// <summary>
@@ -28,7 +23,7 @@ namespace starsky.foundation.databasetelemetry.Services
             _telemetryClient = telemetryClient;
         }
 
-        private static string GetSqlName(DbCommand command)
+        internal static string GetSqlName(DbCommand command)
         {
 	        var name = "SQLDatabase";
 	        if (command.Connection != null)
