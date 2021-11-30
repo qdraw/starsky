@@ -551,6 +551,10 @@ namespace starsky.foundation.platform.Models
 			set => ApplicationInsightsInstrumentationKeyPrivate = value;
 		}
 
+		public bool? ApplicationInsightsLog { get; set; } = true;
+
+		public bool? ApplicationInsightsDatabaseTracking { get; set; } = false;
+
 		public int MaxDegreesOfParallelism { get; set; } = 6;
 	    
 		/// <summary>

@@ -354,5 +354,23 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.IsNotNull(result);
 			Assert.AreEqual(expectSecret, result.Secret);
 		}
+
+		[TestMethod]
+		public void GetUserPermissionClaims_ShouldGet()
+		{
+			_dbContext.RolePermissions.Add(new RolePermission
+			{
+				RoleId = 99,
+				PermissionId = 101
+			});
+
+			_dbContext.Permissions.Add(new Permission { Id = 101, Code = "test"});
+			_dbContext.SaveChanges();
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var result = userManager.GetUserPermissionClaims(new Role { Id = 99 }).ToList();
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("test", result[0].Value);
+		}
 	}
 }
