@@ -468,7 +468,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Set Meta Thumbnails on import
 		/// </summary>
-		public bool? MetaThumbnailOnImport { get; set; }
+		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
 		private string _webftp; 
 		public string WebFtp
@@ -591,7 +591,7 @@ namespace starsky.foundation.platform.Models
 		/// use env variable: app__importIgnore__0 - value
 		/// Use always UNIX style
 		/// </summary>
-		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found"};
+		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found", ".Trashes"};
 	    
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
