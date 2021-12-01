@@ -125,7 +125,7 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
-		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			try
 			{

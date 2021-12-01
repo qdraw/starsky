@@ -26,12 +26,14 @@ trigger:
     - starsky/starsky/readme.md
     - starsky/starsky/clientapp/readme.md
     - /*.md
+    - /*.json
+    - starsky/nuget-packages-list.json
 
 pr:
   branches:
     exclude:
     - master
-    
+
 pool:
   vmImage: 'ubuntu-20.04'
 
@@ -52,6 +54,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site' 
+    PathtoPublish: '$(Build.SourcesDirectory)//starsky/starsky/generic-site'
     ArtifactName: 'generic-site'
     publishLocation: 'Container'

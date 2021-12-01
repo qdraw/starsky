@@ -1,4 +1,5 @@
 using System;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,7 @@ namespace starskytest.root
 			serviceCollection.AddRouting();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			serviceCollection.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+			serviceCollection.AddSingleton<TelemetryConfiguration, TelemetryConfiguration>();
 			serviceCollection.AddAuthorization();
 			serviceCollection.AddControllers();
 			serviceCollection.AddLogging();

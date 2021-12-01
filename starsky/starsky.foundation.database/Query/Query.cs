@@ -67,19 +67,52 @@ namespace starsky.foundation.database.Query
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
+		
+		internal static string GetObjectByFilePathAsyncCacheName(string subPath)
+		{
+			return $"{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
+		}
+		
 
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
+		/// <param name="cacheTime">time to have the cache present</param>
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(
+			string filePath, TimeSpan? cacheTime = null)
+		{
+			// cache code:
+			if ( cacheTime != null && 
+			     _appSettings?.AddMemoryCache == true &&
+			     _cache.TryGetValue(
+				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
+			{
+				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
+				return data as FileIndexItem;
+			}
+			// end cache
+
+			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
+
+			// cache code:
+			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
+				return result;
+			
+			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+				cacheTime.Value);
+
+			return result;
+		}
+
+		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
 			string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
-
 			var paths = new List<string> {filePath};
-			return (await GetObjectsByFilePathQueryAsync(paths)).FirstOrDefault();
+			return ( await GetObjectsByFilePathQueryAsync(paths) )
+				.FirstOrDefault();
 		}
 	    
 		/// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
@@ -36,7 +37,7 @@ namespace starsky.foundation.sync.WatcherServices
 		public void Watcher(string fullFilePath)
 		{
 			_webLogger.LogInformation("[DiskWatcher] started " +
-			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			        $"{DateTimeDebug()}");
 			
 			// why: https://stackoverflow.com/a/21000492
 			GC.KeepAlive(_fileSystemWatcherWrapper);  
@@ -73,7 +74,7 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 			//  Show that an error has been detected.
 			_webLogger.LogError(e.GetException(),"[DiskWatcher] The FileSystemWatcher has an error (catch-ed) - next: retry " +
-			                     $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			                     $"{DateTimeDebug()}");
 			_webLogger.LogError("[DiskWatcher] (catch-ed) " + e.GetException().Message);
 			
 			//  Give more information if the error is due to an internal buffer overflow.
@@ -99,7 +100,7 @@ namespace starsky.foundation.sync.WatcherServices
 		internal bool Retry(IFileSystemWatcherWrapper fileSystemWatcherWrapper, int numberOfTries = 20, int milliSecondsTimeout = 5000)
 		{
 			_webLogger.LogInformation("[DiskWatcher] next retry " +
-			        $"{DateTime.UtcNow.ToShortDateString()} ~ {DateTime.UtcNow.ToShortTimeString()}");
+			        $"{DateTimeDebug()}");
 			var path = _fileSystemWatcherWrapper.Path;
 
 			_fileSystemWatcherWrapper.Dispose();
@@ -131,11 +132,18 @@ namespace starsky.foundation.sync.WatcherServices
 			_webLogger.LogError($"[DiskWatcher] Failed after {i} times - so stop trying");
 			return false;
 		}
+
+		private static string DateTimeDebug()
+		{
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
+				CultureInfo.InvariantCulture);
+		}
 		
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_webLogger.LogInformation($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType}");
+			_webLogger.LogInformation($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+			                          DateTimeDebug());
 			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 		}
@@ -147,7 +155,8 @@ namespace starsky.foundation.sync.WatcherServices
 		/// <param name="e">arguments</param>
 		private void OnRenamed(object source, RenamedEventArgs e)
 		{
-			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}");
+			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}" +
+			                          DateTimeDebug());
 			_fileProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
 		}
 

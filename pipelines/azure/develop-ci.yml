@@ -35,6 +35,9 @@ trigger:
       - starsky/readme.md
       - starsky/starsky/readme.md
       - starsky/starsky/clientapp/readme.md
+      - /*.md
+      - /*.json
+      - starsky/nuget-packages-list.json
 
 # specific path build
 pr:

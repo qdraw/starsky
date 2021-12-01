@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			_query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger());
 		}
 
 		private IServiceScopeFactory CreateNewScope()
@@ -627,6 +627,34 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual("/", item.FileName);
 	        
 			await _query.RemoveItemAsync(dbItem);
+		}
+		
+		[TestMethod]
+		public async Task Query_GetObjectByFilePathAsync_Cache_Ok()
+		{
+			_memoryCache.Set(Query.GetObjectByFilePathAsyncCacheName("/test135"),
+				new FileIndexItem("/test135"));
+	        
+			var item = await _query.GetObjectByFilePathAsync("/test135", TimeSpan.MaxValue);
+			Assert.IsNotNull(item);
+			Assert.AreEqual("/test135", item.FilePath);
+			Assert.AreEqual("test135", item.FileName);
+
+			_memoryCache.Remove(
+				Query.GetObjectByFilePathAsyncCacheName("/test135"));
+		}
+				
+		[TestMethod]
+		public async Task Query_GetObjectByFilePathAsync_Cache_NoDateSet_SoIgnored()
+		{
+			_memoryCache.Set(Query.GetObjectByFilePathAsyncCacheName("/test135"),
+				new FileIndexItem("/test135"));
+	        
+			var item = await _query.GetObjectByFilePathAsync("/test135"); // <- -  no date added
+			Assert.IsNull(item); // <- no date is added so cache is ignored
+
+			_memoryCache.Remove(
+				Query.GetObjectByFilePathAsyncCacheName("/test135"));
 		}
         
 		[TestMethod]

@@ -81,8 +81,9 @@ namespace starsky.foundation.database.Interfaces
         /// Get FirstOrDefault for that filePath
         /// </summary>
         /// <param name="filePath">subPath style</param>
+        /// <param name="cacheTime">time of cache </param>
         /// <returns>item</returns>
-        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
+        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
         /// <summary>
         /// Cached result that contain values
@@ -187,6 +188,7 @@ namespace starsky.foundation.database.Interfaces
         Task AddParentItemsAsync(string subPath);
         IQuery Clone( ApplicationDbContext applicationDbContext);
         void Invoke(ApplicationDbContext applicationDbContext);
+
     }
 }
 

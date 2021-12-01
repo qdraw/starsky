@@ -79,7 +79,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			throw _exception;
 		}

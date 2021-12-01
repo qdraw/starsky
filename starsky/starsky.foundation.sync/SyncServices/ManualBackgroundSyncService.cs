@@ -44,14 +44,18 @@ namespace starsky.foundation.sync.SyncServices
 			if ( subPath == "/" && fileIndexItem == null) fileIndexItem = new FileIndexItem();
 			if ( fileIndexItem == null )
 			{
+				_logger.LogInformation($"[ManualSync] NotFoundNotInIndex skip for: {subPath}");
 				return FileIndexItem.ExifStatus.NotFoundNotInIndex;
 			}
 
-			if (_cache.TryGetValue(ManualSyncCacheName + subPath, out _))
+			if ( _cache.TryGetValue(ManualSyncCacheName + subPath, out _) )
+			{
+				_logger.LogInformation($"[ManualSync] Cache hit skip for: {subPath}");
 				return FileIndexItem.ExifStatus.OperationNotSupported;
+			}
 
 			_cache.Set(ManualSyncCacheName + subPath, true, 
-				new TimeSpan(0,2,0));
+				new TimeSpan(0,1,0));
 			
 			await Task.Factory.StartNew(() => BackgroundTask(fileIndexItem.FilePath));
 

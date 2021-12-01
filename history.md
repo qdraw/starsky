@@ -51,6 +51,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Tools_ Add push to gpx loader for mail  (PR #510)
 - [x]   (Added) _Back-end_ Add feature (appSettings) `ApplicationInsightsDatabaseTracking` - Track database dependencies  (PR #528)
 - [x]   (Added) _Back-end_ Add feature toggle (appSettings) `ApplicationInsightsLog` - Add WebLogger output to Application Insights (PR #528)
+- [x]   (Added) _Back-end_ Filter for DiskWatcher sync to prevent database overload (PR #529)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
