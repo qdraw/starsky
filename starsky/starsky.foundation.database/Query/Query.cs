@@ -84,8 +84,8 @@ namespace starsky.foundation.database.Query
 			string filePath, TimeSpan? cacheTime = null)
 		{
 			// cache code:
-			if ( cacheTime != null &&
-			     _appSettings.AddMemoryCache == true &&
+			if ( cacheTime != null && 
+			     _appSettings?.AddMemoryCache == true &&
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
@@ -101,7 +101,7 @@ namespace starsky.foundation.database.Query
 				.FirstOrDefault();
 
 			// cache code:
-			if ( cacheTime == null || _appSettings.AddMemoryCache != true )
+			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
 				return result;
 			
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
