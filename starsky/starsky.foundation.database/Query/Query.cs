@@ -78,7 +78,7 @@ namespace starsky.foundation.database.Query
 		/// Returns a database object file or folder
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
-		/// <param name="cacheTime"></param>
+		/// <param name="cacheTime">time to have the cache present</param>
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(
 			string filePath, TimeSpan? cacheTime = null)
@@ -93,12 +93,8 @@ namespace starsky.foundation.database.Query
 				return data as FileIndexItem;
 			}
 			// end cache
-			
-			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
 
-			var paths = new List<string> {filePath};
-			var result = ( await GetObjectsByFilePathQueryAsync(paths) )
-				.FirstOrDefault();
+			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
 
 			// cache code:
 			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
@@ -108,6 +104,15 @@ namespace starsky.foundation.database.Query
 				cacheTime.Value);
 
 			return result;
+		}
+
+		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
+			string filePath)
+		{
+			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
+			var paths = new List<string> {filePath};
+			return ( await GetObjectsByFilePathQueryAsync(paths) )
+				.FirstOrDefault();
 		}
 	    
 		/// <summary>
