@@ -651,7 +651,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				new FileIndexItem("/test135"));
 	        
 			var item = await _query.GetObjectByFilePathAsync("/test135"); // <- -  no date added
-			Assert.IsNull(item);
+			Assert.IsNull(item); // <- no date is added so cache is ignored
 
 			_memoryCache.Remove(
 				Query.GetObjectByFilePathAsyncCacheName("/test135"));
