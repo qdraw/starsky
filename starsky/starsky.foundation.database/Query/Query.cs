@@ -68,7 +68,7 @@ namespace starsky.foundation.database.Query
             }
         }
 		
-		private string GetObjectByFilePathAsyncCacheName(string subPath)
+		internal static string GetObjectByFilePathAsyncCacheName(string subPath)
 		{
 			return $"{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
 		}
