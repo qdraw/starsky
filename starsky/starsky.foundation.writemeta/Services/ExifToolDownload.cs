@@ -66,7 +66,11 @@ namespace starsky.foundation.writemeta.Services
 		internal async Task<bool> StartDownloadForUnix()
 		{
 			var checksums = await _httpClientHelper.ReadString(CheckSumLocation);
-			if ( !checksums.Key ) return false;
+			if ( !checksums.Key )
+			{
+				_logger.LogError($"[StartDownloadForUnix] Checksum loading failed {CheckSumLocation}");
+				return false;
+			}
 			var matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value);
 			return await DownloadForUnix(matchExifToolForUnixName, GetChecksumsFromTextFile(checksums.Value));
 		}
@@ -144,7 +148,11 @@ namespace starsky.foundation.writemeta.Services
 		internal async Task<bool> StartDownloadForWindows()
 		{
 			var checksums = await _httpClientHelper.ReadString(CheckSumLocation);
-			if ( !checksums.Key ) return false;
+			if ( !checksums.Key )
+			{
+				_logger.LogError($"[StartDownloadForWindows] Checksum loading failed {CheckSumLocation}");
+				return false;
+			}
 			var matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value);
 			return await DownloadForWindows(matchExifToolForWindowsName,GetChecksumsFromTextFile(checksums.Value));
 		}

@@ -40,7 +40,7 @@ services:
         - I_SDEMO=true
     environment:
       - PORT=${STARSKY_PORT}
-      - CI=true
+      - app__verbose=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
