@@ -3,7 +3,7 @@
  */
 
 const { join } = require("path");
-const { stat, readFile, writeFile } = require("fs").promises;
+const { readFile, writeFile } = require("fs").promises;
 
 const { getFiles } = require("./lib/get-files-directory");
 const { prefixPath } = require("./lib/prefix-path.const.js");
@@ -56,7 +56,7 @@ async function getLatestDotnetRelease() {
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
 
 getLatestDotnetRelease().then((newTargetVersion) => {
-	getFiles(join(__dirname, prefixPath, "starsky"))
+	getFiles(join(__dirname, prefixPath)) // add "starsky" back when netframework is removed
 		.then(async (filePathList) => {
 			if (newTargetVersion) {
 				await updateRuntimeFrameworkVersion(
