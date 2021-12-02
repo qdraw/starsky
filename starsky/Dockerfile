@@ -1,6 +1,8 @@
 # Dockerfile
 
-# ARM build test: docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
+# ARM build test: 
+# cd /root_of_repo
+# docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
 
 # Stage 1 Front-end
 # # docker buildx imagetools inspect node:16-alpine
@@ -63,8 +65,16 @@ RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 
 # build runtime image (multiarch)
 # docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
-FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS release
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS release-base
 
+# install exiftool from package manager
+RUN apt-get update 
+RUN apt-get install -y libimage-exiftool-perl curl
+RUN apt-get clean 
+RUN apt-get autoclean 
+
+
+FROM release-base AS release
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp
