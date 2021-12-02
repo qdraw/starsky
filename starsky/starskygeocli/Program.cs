@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Helpers;
-using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
@@ -29,7 +28,6 @@ namespace starskyGeoCli
 			new RegisterDependencies().Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
-            
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
 			serviceProvider = services.BuildServiceProvider();
 

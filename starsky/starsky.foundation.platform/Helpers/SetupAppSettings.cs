@@ -113,7 +113,6 @@ namespace starsky.foundation.platform.Helpers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
 			// Need to rebuild for AppSettings
-			// ReSharper disable once ASP0000
 			var serviceProvider = services.BuildServiceProvider();
             
 			return serviceProvider.GetRequiredService<AppSettings>();
