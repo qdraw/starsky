@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
@@ -61,6 +63,20 @@ namespace starsky.foundation.thumbnailgeneration.Services
 				_thumbnailStorage.FileDelete(fileHash);
 				Console.Write("$");
 			}
+		}
+
+		public Task<List<string>> CleanAllUnusedFilesAsync()
+		{
+			if ( !_thumbnailStorage.ExistFolder("/") )
+			{
+				throw new DirectoryNotFoundException("Thumbnail folder not found");
+			}
+
+			var allThumbnailFiles = _thumbnailStorage.GetAllFilesInDirectory(null).ToList();
+			if(_appSettings.IsVerbose()) _logger.LogInformation($"Total files in thumb dir: {allThumbnailFiles.Count}");
+
+
+			return Task.FromResult(new List<string>());
 		}
 	}
 }
