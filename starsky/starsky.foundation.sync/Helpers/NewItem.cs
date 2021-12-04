@@ -69,7 +69,6 @@ namespace starsky.foundation.sync.Helpers
 			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
 			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
-			dbItem.SetLastEdited();
 			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);
 			return dbItem;
 		}

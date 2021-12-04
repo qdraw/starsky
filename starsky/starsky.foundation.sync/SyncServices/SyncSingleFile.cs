@@ -226,6 +226,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>same item</returns>
 		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
 		{
+			_logger.LogTrace($"[SyncSingleFile] Trigger Update Item {subPath}");
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);
