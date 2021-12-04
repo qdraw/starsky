@@ -38,7 +38,7 @@ jobs:
           ## Upgrade of .NET with newer SDK Version
           - Install SDK version ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }} on your development machine ${{ steps.dotnet_sdk_version_update.outputs.SDK_RELEASE_NOTES }}
           - First test on linux-arm test envs before approve
-          - update azure runtime on test
+          - update azure runtime on test https://demostarsky.scm.azurewebsites.net/
           - update docs with minimal version
           
           ## When upgrading a major version
