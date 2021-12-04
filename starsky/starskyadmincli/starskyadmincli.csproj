@@ -5,7 +5,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{dcf1f6cb-1c65-4394-bef7-cccc2967b56c}</ProjectGuid>
-        <RuntimeFrameworkVersion>3.1.17</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.21</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.4.13</Version>
     </PropertyGroup>
