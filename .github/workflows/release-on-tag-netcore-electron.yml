@@ -17,7 +17,7 @@ jobs:
       - name: Setup .NET Core 3.1
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.411
+          dotnet-version: 3.1.414
 
       - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx.10.12-x64
         shell: bash
