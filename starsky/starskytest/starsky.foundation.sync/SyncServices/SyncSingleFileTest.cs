@@ -236,7 +236,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var result = await sync.SingleFile("/test.jpg");
 
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result.Status);
-			
+
 			var count= (await fakeQuery.GetAllFilesAsync("/")).Count(p => p.FileName == "test.jpg");
 			Assert.AreEqual(1,count);
 			
@@ -246,6 +246,12 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var fileIndexItem = detailView.FileIndexItem;
 			Assert.AreEqual("/test.jpg",fileIndexItem.FilePath);
 			Assert.AreEqual(fileHash, fileIndexItem.FileHash);
+			
+			// Should be around now-ish
+			Assert.AreEqual(DateTime.UtcNow.Day, fileIndexItem.LastEdited.Day);
+			Assert.AreEqual(DateTime.UtcNow.Month, fileIndexItem.LastEdited.Month);
+			Assert.AreEqual(DateTime.UtcNow.Hour, fileIndexItem.LastEdited.Hour);
+			Assert.AreEqual(DateTime.UtcNow.Minute, fileIndexItem.LastEdited.Minute);
 		}
 
 		[TestMethod]
