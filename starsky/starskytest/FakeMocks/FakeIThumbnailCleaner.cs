@@ -13,7 +13,12 @@ namespace starskytest.FakeMocks
 			Inputs.Add(true);
 		}
 
-		public async Task<List<string>> CleanAllUnusedFilesAsync()
+		public Task<List<string>> CleanAllUnusedFilesAsync(int chunkSize = 50)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public Task<List<string>> CleanAllUnusedFilesAsync()
 		{
 			throw new System.NotImplementedException();
 		}

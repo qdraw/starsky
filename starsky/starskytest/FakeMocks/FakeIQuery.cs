@@ -205,6 +205,13 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		{
+			var result = _fakeContext.Where(p =>
+					fileHashesList.Contains(p.FileHash)).ToList();
+			return Task.FromResult(result);
+		}
+
 		public void ResetItemByHash(string fileHash)
 		{
 			throw new System.NotImplementedException();

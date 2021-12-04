@@ -6,7 +6,6 @@ namespace starsky.foundation.thumbnailgeneration.Interfaces
 	public interface IThumbnailCleaner
 	{
 		void CleanAllUnusedFiles();
-		Task<List<string>> CleanAllUnusedFilesAsync();
-
+		Task<List<string>> CleanAllUnusedFilesAsync(int chunkSize = 50);
 	}
 }

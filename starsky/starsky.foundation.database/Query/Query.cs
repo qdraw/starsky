@@ -130,13 +130,13 @@ namespace starsky.foundation.database.Query
 		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubpath) 
-		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
+		         && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
 
-		    cachedSubpath = QueryGetItemByHash(fileHash);
+		    cachedSubPath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryHashListCacheName, cachedSubpath, new TimeSpan(48,0,0));
-		    return (string) cachedSubpath;
+		    _cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
+		    return (string) cachedSubPath;
 		}
 
 		/// <summary>
