@@ -40,6 +40,7 @@ jobs:
           - First test on linux-arm test envs before approve
           - update azure runtime on test https://demostarsky.scm.azurewebsites.net/
           - update docs with minimal version https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/starsky/readme.md
+          - update changelog https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/history.md
           
           ## When upgrading a major version
           - when upgrading to newer major release check docker
