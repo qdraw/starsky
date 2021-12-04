@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -69,7 +70,10 @@ namespace starsky.foundation.sync.SyncServices
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !isSame )
 			{
-				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
+				if ( updateDelegate != null )
+				{
+					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
+				}
 				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 			}
 
@@ -103,7 +107,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				_logger.LogInformation($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogTrace($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItem;
 			}
 
