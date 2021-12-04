@@ -27,19 +27,23 @@ jobs:
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
-        commit-message: '.NET Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
+        commit-message: 'Auto .NET SDK version Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
-        branch: feature/auto_dotnet_sdk_version_update_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+        branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
         delete-branch: true
         title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
         body: |
-          Upgrade of .NET with newer SDK Version
+          ## Upgrade of .NET with newer SDK Version
+          - Install SDK version ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }} on your development machine ${{ steps.dotnet_sdk_version_update.outputs.SDK_RELEASE_NOTES }}
           - First test on linux-arm test envs before approve
           - update azure runtime on test
-          - when upgrading to newer major release check docker
           - update docs with minimal version
+          
+          ## When upgrading a major version
+          - when upgrading to newer major release check docker
+          
         labels: |
           dependencies
         draft: false
