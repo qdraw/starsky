@@ -25,33 +25,17 @@ if (argv && argv.length === 1) {
 }
 
 async function getLatestDotnetRelease() {
-	const results = await httpsGet(
-		"https://api.github.com/repos/dotnet/core/releases"
-	);
-	if (results.message && results.message.startsWith("API rate limit")) {
-		console.log(results.message);
-		return [];
-	}
 	const targetVersion = newRunTimeVersion.replace(".x", "");
-	let versions = [];
-	for (const item of results) {
-		if (
-			!item.prerelease &&
-			!item.tag_name.includes("preview") &&
-			!item.tag_name.includes("rc") &&
-			item.tag_name.startsWith("v" + targetVersion)
-		) {
-			versions.push(item.tag_name);
-		}
-	}
-	if (versions.length == 0) {
-		console.log(`\nThere are no versions matching ${newRunTimeVersion}`);
-		return;
+
+	const data = await getByBlobMicrosoft(targetVersion, true);
+	if (data) {
+		return data[0];
 	}
 
-	versions = versions.sort().reverse();
-
-	return versions[0].replace(/^v/, "");
+	const gData = await getByGithubReleases(targetVersion, true);
+	if (gData) {
+		return gData;
+	}
 }
 
 console.log(`\nUpgrade version in csproj-files to ${newRunTimeVersion}\n`);
@@ -89,16 +73,36 @@ getLatestDotnetRelease().then((newTargetVersion) => {
 		});
 });
 
-async function getSdkVersionByTarget() {
+async function getByBlobMicrosoft(targetVersion, isRuntime) {
+	var what = "latest-sdk"
+	if (isRuntime) what = "latest-runtime"
+
+	const resultsDotnetCli = await httpsGet(
+		"https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json"
+	);
+
+	if (resultsDotnetCli["releases-index"] !== undefined) {
+		var versionObject = resultsDotnetCli["releases-index"].find(p => p["channel-version"] == targetVersion);
+		if (versionObject && versionObject[what].startsWith(targetVersion)) {
+			return [versionObject[what], versionObject];
+		}
+	}
+	console.log(`\n[Blob] There are no versions matching ${targetVersion}`);
+	return null;
+}
+
+async function getByGithubReleases(targetVersion, isRuntime) {
+	let url = "https://api.github.com/repos/dotnet/sdk/releases"
+	if (isRuntime) url = "https://api.github.com/repos/dotnet/core/releases";
+
 	const results = await httpsGet(
-		"https://api.github.com/repos/dotnet/sdk/releases"
+		url
 	);
 	if (results.message && results.message.startsWith("API rate limit")) {
 		console.log(results.message);
 		return [];
 	}
 	let versions = [];
-	const targetVersion = newRunTimeVersion.replace(".x", "");
 
 	for (const item of results) {
 		if (
@@ -112,13 +116,46 @@ async function getSdkVersionByTarget() {
 	}
 
 	if (versions.length == 0) {
-		console.log(`\nThere are no versions matching ${targetVersion}`);
+		console.log(`\n[Github] There are no versions matching ${targetVersion}`);
 		return;
 	}
 
 	versions = versions.sort().reverse();
 	return versions[0].replace(/^v/, "");
 }
+
+async function getSdkVersionByTarget() {
+	const targetVersion = newRunTimeVersion.replace(".x", "");
+
+	const blobObject = await getByBlobMicrosoft(targetVersion, false);
+	if (blobObject) {
+		await getBlobSdkReleaseNotesPage(blobObject);
+		return blobObject[0];
+	}
+
+	const gData = await getByGithubReleases(targetVersion, false);
+	if (gData) {
+		return gData;
+	}
+}
+
+async function getBlobSdkReleaseNotesPage(blobObject) {
+	const releaseJsonFile = blobObject[1]["releases.json"];
+	if (!releaseJsonFile) return;
+
+	const resultsReleaseJsonFile = await httpsGet(
+		releaseJsonFile
+	);
+
+	const findVersion = resultsReleaseJsonFile.releases.find(p => p.sdk.version == blobObject[0]);
+	if (findVersion && findVersion["release-notes"]) {
+		process.env["SDK_RELEASE_NOTES"] = findVersion["release-notes"];
+		console.log(`::set-output name=SDK_RELEASE_NOTES::${findVersion["release-notes"]}`);
+		return findVersion["release-notes"];
+	}
+	return null;
+}
+
 
 async function updateAzureYmlFile(filePathList, sdkVersion) {
 	await filePathList.forEach(async (filePath) => {
