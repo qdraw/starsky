@@ -15,6 +15,7 @@ const aspNetCorePackages = [
 	"Microsoft.AspNetCore.",
 	"Microsoft.Extensions.",
 	"Microsoft.EntityFrameworkCore",
+	"Microsoft.Data.Sqlite.Core"
 ];
 
 // allow version as single argument
