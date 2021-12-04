@@ -11,6 +11,15 @@ namespace starskytest.FakeMocks
 			new List<(Exception, string)>();
 		public List<(Exception, string)> TrackedInformation { get; set; } =
 			new List<(Exception, string)>();
+		public List<(Exception, string)> TrackedTrace { get; set; } =
+			new List<(Exception, string)>();
+		
+		public void LogTrace(string message, params object[] args)
+		{
+			TrackedTrace.Add((null, message));
+			Console.WriteLine(message, args);
+		}
+
 		public void LogInformation(string message, params object[] args)
 		{
 			TrackedInformation.Add((null, message));

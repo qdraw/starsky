@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using starsky.foundation.thumbnailgeneration.Interfaces;
 
 namespace starskytest.FakeMocks
@@ -10,6 +11,11 @@ namespace starskytest.FakeMocks
 		public void CleanAllUnusedFiles()
 		{
 			Inputs.Add(true);
+		}
+
+		public async Task<List<string>> CleanAllUnusedFilesAsync()
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }
