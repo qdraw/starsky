@@ -1,4 +1,4 @@
-name: Dotnet sdk version update
+name: Dotnet sdk version auto upgrade
 
 on:
   workflow_dispatch:
