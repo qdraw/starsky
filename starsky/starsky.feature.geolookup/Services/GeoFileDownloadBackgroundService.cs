@@ -27,9 +27,7 @@ namespace starsky.feature.geolookup.Services
 		/// </summary>
 		/// <param name="stoppingToken">Cancellation Token, but it ignored</param>
 		/// <returns>CompletedTask</returns>
-#pragma warning disable 1998
 		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-#pragma warning restore 1998
 		{
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
