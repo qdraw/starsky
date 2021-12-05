@@ -209,6 +209,16 @@ namespace starskytest.FakeMocks
 		{
 			var result = _fakeContext.Where(p =>
 					fileHashesList.Contains(p.FileHash)).ToList();
+			
+			foreach ( var fileHash in fileHashesList )
+			{
+				if ( result.FirstOrDefault(p => p.FileHash == fileHash) == null )
+				{
+					result.Add(new FileIndexItem(){FileHash = fileHash, 
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+				}
+			}
+			
 			return Task.FromResult(result);
 		}
 

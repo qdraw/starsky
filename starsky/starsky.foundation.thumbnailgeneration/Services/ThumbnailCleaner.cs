@@ -101,7 +101,9 @@ namespace starsky.foundation.thumbnailgeneration.Services
 		private async Task LoopThoughChunk(IEnumerable<string> itemsInChunk , List<string> deletedFileHashes)
 		{
 			var fileIndexItems = await _query.GetObjectsByFileHashAsync(itemsInChunk.ToList());
-			foreach ( var result in fileIndexItems.Where(result => result != null) )
+			foreach ( var result in fileIndexItems.Where(result => 
+				result.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
+				))
 			{
 				var fileHashesToDelete = new List<string>
 				{
