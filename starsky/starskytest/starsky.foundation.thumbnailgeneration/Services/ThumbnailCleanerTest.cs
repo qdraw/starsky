@@ -254,7 +254,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
 				new AppSettings(), new FakeIWebLogger());
 
-			await thumbnailCleaner.CleanAllUnusedFilesAsync();
+			await thumbnailCleaner.CleanAllUnusedFilesAsync(1);
 
 			Assert.IsTrue(fakeStorage.ExistFile(
 				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta)));
