@@ -73,7 +73,55 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = new ExifToolDownload(null, _appSettings, new FakeIWebLogger()).GetWindowsZipFromChecksum(ExampleCheckSum);
 			Assert.AreEqual("exiftool-11.99.zip",result);
 		}
+
+		[TestMethod]
+		public async Task DownloadCheckSums_BaseChecksumDoesExist()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Happy flow
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
+			Assert.AreEqual(true, result.Value.Key);
+		}
 		
+		[TestMethod]
+		public async Task DownloadCheckSums_BaseChecksumDoesNotExist()
+		{
+			// Main source is down, but mirror is up
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Main source is down, but mirror is up
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			
+			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
+			Assert.AreEqual(false, result.Value.Key);
+		}
+		
+		[TestMethod]
+		public async Task DownloadCheckSums_BothServicesAreDown()
+		{
+			// Main & Mirror source are down
+			var fakeIHttpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Main & Mirror source are down
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			
+			Assert.AreEqual(null, result);
+		}
+
 		[TestMethod]
 		public async Task GetExifToolByOs()
 		{
