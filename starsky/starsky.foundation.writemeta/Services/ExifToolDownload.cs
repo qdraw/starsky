@@ -107,7 +107,7 @@ namespace starsky.foundation.writemeta.Services
 			return path;
 		}
 		
-		private async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
+		internal async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
 			string[] getChecksumsFromTextFile, bool downloadFromMirror = false)
 		{
 
@@ -206,8 +206,8 @@ namespace starsky.foundation.writemeta.Services
 		{
 			return Path.Combine(Path.Combine(_appSettings.TempFolder,"exiftool-windows"), "exiftool.exe");
 		}
-		
-		private async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
+
+		internal async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
 			string[] getChecksumsFromTextFile, bool downloadFromMirror = false)
 		{
 			if ( _hostFileSystemStorage.ExistFile(

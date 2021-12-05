@@ -402,5 +402,56 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForWindows();
 			Assert.IsFalse(result);
 		}
+
+		[TestMethod]
+		public async Task DownloadForUnix_FromMirrorInsteadOfMainSource()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
+				{"https://qdraw.nl/special/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			try
+			{
+				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+					.DownloadForUnix("Image-ExifTool-11.99.tar.gz", new List<string>().ToArray(), true);
+			}
+			catch ( HttpRequestException httpRequestException )
+			{
+				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
+				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
+				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
+				return;
+			}
+			throw new HttpRequestException("This test should hit the catch");
+		}
+		
+		
+		[TestMethod]
+		public async Task DownloadForWindows_FromMirrorInsteadOfMainSource()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
+				{"https://qdraw.nl/special/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			try
+			{
+				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+					.DownloadForWindows("exiftool-11.99.zip", new List<string>().ToArray(), true);
+			}
+			catch ( HttpRequestException httpRequestException )
+			{
+				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
+				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
+				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
+				return;
+			}
+			throw new HttpRequestException("This test should hit the catch");
+		}
 	}
 }
