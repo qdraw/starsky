@@ -310,7 +310,7 @@ namespace starsky
 		        configuration.TelemetryProcessorChainBuilder.Build();
 
 		        var onStoppedSync = new FlushOnApplicationStopping(app);
-		        applicationLifetime.ApplicationStopping.Register(onStoppedSync.Flush);
+		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }
 

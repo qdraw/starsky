@@ -41,9 +41,10 @@ namespace starskytest.root
 			
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-			
+			IHostApplicationLifetime lifetime = null;
+
 			// should not crash
-			new Startup().Configure(applicationBuilder, env);
+			new Startup().Configure(applicationBuilder, env, lifetime);
 			
 			Assert.IsNotNull(applicationBuilder);
 			Assert.IsNotNull(env);
@@ -66,7 +67,8 @@ namespace starskytest.root
 			
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-			
+			IHostApplicationLifetime lifetime = null;
+
 			// should not crash
 			var startup = new Startup();
 			
@@ -75,7 +77,7 @@ namespace starskytest.root
 			appSettings.ApplicationInsightsInstrumentationKey = "!";
 			appSettings.UseRealtime = true;
 
-			startup.Configure(applicationBuilder, env);
+			startup.Configure(applicationBuilder, env,null);
 			
 			Assert.IsNotNull(applicationBuilder);
 			Assert.IsNotNull(env);
