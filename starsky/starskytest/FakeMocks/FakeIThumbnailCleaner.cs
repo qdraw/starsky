@@ -15,7 +15,8 @@ namespace starskytest.FakeMocks
 
 		public Task<List<string>> CleanAllUnusedFilesAsync(int chunkSize = 50)
 		{
-			throw new System.NotImplementedException();
+			Inputs.Add(true);
+			return Task.FromResult(new List<string>());
 		}
 
 		public Task<List<string>> CleanAllUnusedFilesAsync()
