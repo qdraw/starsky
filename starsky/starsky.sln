@@ -113,8 +113,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.databasetelemetry", "starsky.foundation.databasetelemetry\starsky.foundation.databasetelemetry.csproj", "{6A237457-45EF-47F2-A225-6340AFF19D4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starskyDiskWatcherWorkerService", "starskydiskwatcherworkerservice\starskyDiskWatcherWorkerService.csproj", "{CCB4BA6C-E091-455E-8D5B-374555BFA17F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -269,10 +267,6 @@ Global
 		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCB4BA6C-E091-455E-8D5B-374555BFA17F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCB4BA6C-E091-455E-8D5B-374555BFA17F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCB4BA6C-E091-455E-8D5B-374555BFA17F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CCB4BA6C-E091-455E-8D5B-374555BFA17F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -317,6 +311,5 @@ Global
 		{1FD59380-AC19-4AF1-A5A5-F295A2844B11} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{6A237457-45EF-47F2-A225-6340AFF19D4F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
-		{CCB4BA6C-E091-455E-8D5B-374555BFA17F} = {8379CCD4-26EE-4881-888E-B56B6EDC852C}
 	EndGlobalSection
 EndGlobal
