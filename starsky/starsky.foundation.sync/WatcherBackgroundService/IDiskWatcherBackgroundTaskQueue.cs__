@@ -1,9 +1,0 @@
-using starsky.foundation.worker.Interfaces;
-
-namespace starsky.foundation.sync.WatcherBackgroundService
-{
-	public interface IDiskWatcherBackgroundTaskQueue : IBackgroundTaskQueue
-	{
-		// does not contain anything
-	}
-}

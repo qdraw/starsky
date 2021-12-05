@@ -1,22 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.WatcherBackgroundService;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
 {
 	public class QueueProcessor
 	{
 		private readonly DiskWatcherBackgroundTaskQueue _bgTaskQueue;
 		private readonly SynchronizeDelegate _processFile;
-		private readonly IServiceScopeFactory _scopeFactory;
 
-		public QueueProcessor(IServiceScopeFactory scopeFactory, SynchronizeDelegate processFile)
+		public QueueProcessor(IServiceScopeFactory serviceProvider, SynchronizeDelegate processFile)
 		{
-			_scopeFactory = scopeFactory;
+			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<DiskWatcherBackgroundTaskQueue>();
+			_processFile = processFile;
+		}
+
+		public QueueProcessor(DiskWatcherBackgroundTaskQueue bgTaskQueue,
+			SynchronizeDelegate processFile)
+		{
+			_bgTaskQueue = bgTaskQueue;
 			_processFile = processFile;
 		}
 
@@ -24,10 +32,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		public void QueueInput(string filepath, string toPath,  WatcherChangeTypes changeTypes)
 		{
-			var bgTaskQueue = _scopeFactory.CreateScope().ServiceProvider
-				.GetService<DiskWatcherBackgroundTaskQueue>();
-			
-			bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
 				await _processFile.Invoke(new Tuple<string, string, WatcherChangeTypes>(filepath,toPath,changeTypes));
 			});

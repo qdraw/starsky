@@ -6,6 +6,6 @@ namespace starsky.foundation.sync.WatcherBackgroundService
 	[Service(typeof(DiskWatcherBackgroundTaskQueue), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcherBackgroundTaskQueue : BackgroundTaskQueue
 	{
-		// is emthy
+		// is empty due inheritance
 	}
 }
