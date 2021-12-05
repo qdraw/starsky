@@ -106,7 +106,26 @@ namespace starskytest.Helpers
 			Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.File,storageProvider.IsFolderOrFile(path));
 			storageProvider.FileDelete(path);
 		}
-		
+
+		[TestMethod]
+		public async Task HttpClientHelper_Download_HttpRequestException()
+		{
+			// > next HttpRequestException
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler(new HttpRequestException("should fail"));
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+			
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var output = await httpClientHelper.Download("https://qdraw.nl/test","/sdkflndf");
+			Assert.IsFalse(output);
+		}
+
 		[TestMethod]
 		public async Task HttpClientHelper_ReadString()
 		{
@@ -126,6 +145,26 @@ namespace starskytest.Helpers
 			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
 			
 			Assert.AreEqual(true,output.Key);
+		}
+		
+		
+		[TestMethod]
+		public async Task HttpClientHelper_ReadString_HttpRequestException()
+		{
+			// > next HttpRequestException
+			var fakeHttpMessageHandler = new FakeHttpMessageHandler(new HttpRequestException("should fail"));
+			var httpClient = new HttpClient(fakeHttpMessageHandler);
+			var httpProvider = new HttpProvider(httpClient);
+			
+			var services = new ServiceCollection();
+			services.AddSingleton<IStorage, FakeIStorage>();
+			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
+			var serviceProvider = services.BuildServiceProvider();
+			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var httpClientHelper = new HttpClientHelper(httpProvider, scopeFactory, new FakeIWebLogger());
+			var output = await httpClientHelper.ReadString("https://qdraw.nl/test");
+			Assert.IsFalse(output.Key);
 		}
 
 		[TestMethod]

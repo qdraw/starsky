@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -69,7 +70,10 @@ namespace starsky.foundation.sync.SyncServices
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
 			if ( !isSame )
 			{
-				if ( updateDelegate != null ) await updateDelegate(new List<FileIndexItem> {dbItem});
+				if ( updateDelegate != null )
+				{
+					new Thread(() => updateDelegate(new List<FileIndexItem> {dbItem})).Start();
+				}
 				return await UpdateItem(dbItem, updatedDbItem.Size, subPath);
 			}
 
@@ -103,7 +107,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				_logger.LogInformation($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItem;
 			}
 
@@ -222,6 +226,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>same item</returns>
 		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
 		{
+			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);

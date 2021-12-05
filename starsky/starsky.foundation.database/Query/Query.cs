@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -129,13 +130,13 @@ namespace starsky.foundation.database.Query
 		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubpath) 
-		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
+		         && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
 
-		    cachedSubpath = QueryGetItemByHash(fileHash);
+		    cachedSubPath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryHashListCacheName, cachedSubpath, new TimeSpan(48,0,0));
-		    return (string) cachedSubpath;
+		    _cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
+		    return (string) cachedSubPath;
 		}
 
 		/// <summary>
@@ -323,7 +324,9 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-	        try
+	        _logger?.LogInformation(e,"[RetrySaveChangesAsync] retry catch-ed exception");
+	        
+	        async Task LocalRetrySaveChangesAsyncQuery()
 	        {
 		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
@@ -332,6 +335,16 @@ namespace starsky.foundation.database.Query
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
 		        context.Attach(updateStatusContent).State = EntityState.Detached; 
+	        }
+
+	        try
+	        {
+		        await LocalRetrySaveChangesAsyncQuery();
+	        }
+	        catch ( MySqlException mySqlException)
+	        {
+		        _logger?.LogError(mySqlException,"[RetrySaveChangesAsync] MySqlException catch-ed and retry again");
+		        await LocalRetrySaveChangesAsyncQuery();
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {

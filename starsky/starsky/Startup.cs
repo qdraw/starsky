@@ -33,6 +33,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
 
@@ -61,20 +62,9 @@ namespace starsky
 			
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-
-            services.AddLogging(logging =>
-            {
-	            logging.ClearProviders();
-	            logging.AddConsole();
-	            
-	            // Skip when is Development
-	            if (_appSettings.ApplicationInsightsLog != true || 
-	                string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || 
-	                _hostEnvironment?.IsDevelopment() == true) return;
-	            
-	            logging.AddApplicationInsights(_appSettings.ApplicationInsightsInstrumentationKey);
-            });
             
+            SetupLogging.AddLogging(services,_appSettings);
+
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
             new SetupDatabaseTypes(_appSettings,services, new ConsoleWrapper()).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
@@ -231,6 +221,7 @@ namespace starsky
         /// <param name="env">Hosting Env</param>
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
+	        
 	        app.UseResponseCompression();
 
 	        if ( env.IsDevelopment()) app.UseDeveloperExceptionPage();

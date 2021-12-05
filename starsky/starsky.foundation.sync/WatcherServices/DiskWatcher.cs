@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -18,7 +19,7 @@ namespace starsky.foundation.sync.WatcherServices
 		private readonly FileProcessor _fileProcessor;
 		private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 		private readonly IWebLogger _webLogger;
-		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly AppSettings _appSettings;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
@@ -26,9 +27,10 @@ namespace starsky.foundation.sync.WatcherServices
 			// File Processor has an endless loop
 			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
-			_scopeFactory = scopeFactory;
+			var serviceProvider = scopeFactory.CreateScope().ServiceProvider;
+			_webLogger = serviceProvider.GetService<IWebLogger>();
+			_appSettings = serviceProvider.GetService<AppSettings>();
 
-			_webLogger = scopeFactory.CreateScope().ServiceProvider.GetService<IWebLogger>();
 		}
 
 		/// <summary>
@@ -142,7 +144,7 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_webLogger.LogInformation($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+			_webLogger.LogDebug($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 			                          DateTimeDebug());
 			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.

@@ -114,6 +114,11 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		{
+			throw _exception;
+		}
+
 		public void ResetItemByHash(string fileHash)
 		{
 			throw _exception;

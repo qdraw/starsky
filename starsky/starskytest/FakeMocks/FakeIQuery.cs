@@ -205,6 +205,23 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
 		}
 
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		{
+			var result = _fakeContext.Where(p =>
+					fileHashesList.Contains(p.FileHash)).ToList();
+			
+			foreach ( var fileHash in fileHashesList )
+			{
+				if ( result.FirstOrDefault(p => p.FileHash == fileHash) == null )
+				{
+					result.Add(new FileIndexItem(){FileHash = fileHash, 
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+				}
+			}
+			
+			return Task.FromResult(result);
+		}
+
 		public void ResetItemByHash(string fileHash)
 		{
 			throw new System.NotImplementedException();
