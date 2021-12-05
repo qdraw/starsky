@@ -13,7 +13,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.worker.Services;
+using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers
 {

@@ -64,7 +64,8 @@ namespace starsky.foundation.platform.Models
 			if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
 		}
 
-		public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
+		public string BaseDirectoryProject => AppDomain.CurrentDomain
+			.BaseDirectory
 			.Replace("starskyadmincli", "starsky")
 			.Replace("starskysynchronizecli", "starsky")
 			.Replace("starskythumbnailcli", "starsky")
@@ -78,7 +79,8 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskywebftpcli", "starsky")
 			.Replace("starskywebhtmlcli", "starsky")
 			.Replace("starskygeocli", "starsky")
-			.Replace("starskytest", "starsky");
+			.Replace("starskytest", "starsky")
+			.Replace("starskydiskwatcherworkerservice", "starsky");
 
 #if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
@@ -127,7 +129,12 @@ namespace starsky.foundation.platform.Models
 			/// <summary>
 			/// Meta Thumbnail Generator CLI
 			/// </summary>
-			MetaThumbnail = 8
+			MetaThumbnail = 8,
+			
+			/// <summary>
+			/// DiskWatcherWorkerService
+			/// </summary>
+			DiskWatcherWorkerService = 9
 		}
 		
 		/// <summary>

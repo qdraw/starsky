@@ -4,15 +4,15 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -21,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using starsky.feature.health.HealthCheck;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
@@ -141,9 +140,15 @@ namespace starsky
 			// Detect Application Insights
 			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
 			{
+				// https://docs.microsoft.com/en-us/azure/azure-monitor/app/telemetry-channels
+				services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel()
+				{
+					StorageFolder = _appSettings.TempFolder,
+				});
+				
 				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
 				{
-					ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+					ApplicationVersion = _appSettings.AppVersion,
 					EnableDependencyTrackingTelemetryModule = true,
 					EnableHeartbeat = true,
 					EnableAuthenticationTrackingJavaScript = true,
@@ -219,7 +224,7 @@ namespace starsky
         /// </summary>
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
 	        
 	        app.UseResponseCompression();
@@ -303,6 +308,9 @@ namespace starsky
 		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
 		        configuration.TelemetryProcessorChainBuilder.Build();
+
+		        var onStoppedSync = new FlushOnApplicationStopping(app);
+		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }
 

@@ -58,6 +58,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Auto download Exiftool from mirror when main source is not up (PR #531)
 - [x]   (Changed) _Back-end_ Change default LogLevel settings in appsettings.json (PR #531)
 - [x]   (Changed) _Back-end_ Handle exceptions for HttpClientHelper to not interupt (PR #531)
+- [x]   (Changed) _Back-end_ Change DiskWatcher background queue system (PR #536) 
+- [x]   (Changed) _Back-end_ Add disk telemetry-channels when app is crashed (PR #536)
+- [x]   (Changed) _Back-end_ Flush Application Insights on ApplicationStopping (PR #536)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)

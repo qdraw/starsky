@@ -17,7 +17,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.worker.Services;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.Controllers

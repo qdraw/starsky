@@ -1,13 +1,16 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherServices
 {
 	/// <summary>
@@ -16,21 +19,17 @@ namespace starsky.foundation.sync.WatcherServices
 	[Service(typeof(IDiskWatcher), InjectionLifetime = InjectionLifetime.Singleton)]
 	public class DiskWatcher : IDiskWatcher
 	{
-		private readonly FileProcessor _fileProcessor;
 		private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 		private readonly IWebLogger _webLogger;
-		private readonly AppSettings _appSettings;
+		private readonly QueueProcessor _queueProcessor;
 
 		public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 			IServiceScopeFactory scopeFactory)
 		{
-			// File Processor has an endless loop
-			_fileProcessor = new FileProcessor(new SyncWatcherConnector(scopeFactory).Sync);
 			_fileSystemWatcherWrapper = fileSystemWatcherWrapper;
 			var serviceProvider = scopeFactory.CreateScope().ServiceProvider;
 			_webLogger = serviceProvider.GetService<IWebLogger>();
-			_appSettings = serviceProvider.GetService<AppSettings>();
-
+			_queueProcessor = new QueueProcessor(scopeFactory, new SyncWatcherConnector(scopeFactory).Sync);
 		}
 
 		/// <summary>
@@ -38,7 +37,7 @@ namespace starsky.foundation.sync.WatcherServices
 		/// </summary>
 		public void Watcher(string fullFilePath)
 		{
-			_webLogger.LogInformation("[DiskWatcher] started " +
+			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
 			        $"{DateTimeDebug()}");
 			
 			// why: https://stackoverflow.com/a/21000492
@@ -144,9 +143,10 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_webLogger.LogDebug($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+			_webLogger.LogDebug($"[DiskWatcher] {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 			                          DateTimeDebug());
-			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
+			
+			_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.
 		}
 
@@ -159,7 +159,7 @@ namespace starsky.foundation.sync.WatcherServices
 		{
 			_webLogger.LogInformation($"DiskWatcher {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 			                          DateTimeDebug());
-			_fileProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
+			_queueProcessor.QueueInput(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed);
 		}
 
 	}

@@ -10,6 +10,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
@@ -26,10 +27,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var services = new ServiceCollection();
 			services.AddSingleton<ISynchronize, FakeISynchronize>();
 			services.AddSingleton<AppSettings>();
-			services.AddScoped<IWebLogger, FakeIWebLogger>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddScoped<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 			services.AddScoped<IQuery, FakeIQuery>();
 			services.AddScoped<IFileSystemWatcherWrapper, FakeIFileSystemWatcherWrapper>();
+			services.AddScoped<DiskWatcherBackgroundTaskQueue>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -78,7 +80,6 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
-			var autoResetEvent = new AutoResetEvent(false);
 
 			using var scope = _scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
@@ -86,20 +87,14 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			if ( synchronize == null )
 				throw new NullReferenceException("FakeISynchronize should not be null ");
-			var receivedValue = string.Empty;
-			synchronize.Receive += (s, e) =>
-			{
-				receivedValue = e;
-				autoResetEvent.Set();
-			};
+
+			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 			
 			fakeIFileSystemWatcher.TriggerOnChanged(new FileSystemEventArgs(WatcherChangeTypes.Changed, "/","test"));
 
-			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(300));
-			Assert.IsTrue(wasSignaled);
-
-			Assert.AreEqual("/test", receivedValue);
-			Assert.AreEqual(new Tuple<string,bool>("/test", true), synchronize.Inputs.FirstOrDefault());
+			Console.WriteLine(logger.TrackedDebug.LastOrDefault().Item2);
+			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("/test"));
+			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("Changed"));
 		}
 		
 		
@@ -109,29 +104,21 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper();
 			new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Watcher("/test");
-			var autoResetEvent = new AutoResetEvent(false);
 
 			using var scope = _scopeFactory.CreateScope();
 			// ISynchronize is a scoped service
 			var synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>() as FakeISynchronize;
 			if ( synchronize == null )
 				throw new NullReferenceException("FakeISynchronize should not be null ");
-			
-			var receivedValue = string.Empty;
-			synchronize.Receive += (s, e) =>
-			{
-				receivedValue = e;
-				autoResetEvent.Set();
-			};
+
+			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
+
 			
 			fakeIFileSystemWatcher.TriggerOnRename(new RenamedEventArgs(WatcherChangeTypes.Renamed, 
 				"/","test","test"));
-
-			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(300));
-			Assert.IsTrue(wasSignaled);
-
-			Assert.AreEqual("/test", receivedValue);
-			Assert.AreEqual(new Tuple<string,bool>("/test", true), synchronize.Inputs.FirstOrDefault());
+			
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("/test"));
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OnRenamed to"));
 		}
 
 		[TestMethod]
