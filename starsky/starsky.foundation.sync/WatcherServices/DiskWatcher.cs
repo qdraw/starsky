@@ -38,7 +38,7 @@ namespace starsky.foundation.sync.WatcherServices
 		/// </summary>
 		public void Watcher(string fullFilePath)
 		{
-			_webLogger.LogInformation("[DiskWatcher] started " +
+			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
 			        $"{DateTimeDebug()}");
 			
 			// why: https://stackoverflow.com/a/21000492

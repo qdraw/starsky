@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.webtelemetry.Interfaces;
+using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.worker.Services
@@ -27,28 +28,37 @@ namespace starsky.foundation.worker.Services
 
 		private IBackgroundTaskQueue TaskQueue { get; }
 		
-		protected override async Task ExecuteAsync(
-            CancellationToken stoppingToken)
+		protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-	        _logger.LogInformation($"Queued Hosted Service is starting on {Environment.MachineName}");  
-            
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                var workItem = await TaskQueue.DequeueAsync(stoppingToken);
-
-                try
-                {
-                    await workItem(stoppingToken);
-                }
-                catch (Exception exception)
-                {
-	                _logger.LogError(exception,  
-		                "Error occurred executing {WorkItem}.", nameof(workItem));
-	                _telemetryService.TrackException(exception);
-                }
-            }
-
-            _logger.LogInformation("Queued Hosted Service is stopping.");
+	        _logger.LogInformation($"Queued Hosted Service {GetType().Name} is " +
+	                               $"starting on {Environment.MachineName}");
+	        return ProcessTaskQueueAsync(stoppingToken);
         }
+		
+		private async Task ProcessTaskQueueAsync(CancellationToken stoppingToken)
+		{
+			while (!stoppingToken.IsCancellationRequested)
+			{
+				var workItem = await TaskQueue.DequeueAsync(stoppingToken);
+				try
+				{
+					await workItem(stoppingToken);
+				}
+				catch (Exception exception)
+				{
+					_logger.LogError(exception,  
+						$"Error occurred executing work item " +
+						$"{nameof(workItem)}.", nameof(workItem));
+					_telemetryService.TrackException(exception);
+				}
+			}
+			_logger.LogInformation("Queued Hosted Service is stopping.");
+		}
+		
+		public override async Task StopAsync(CancellationToken stoppingToken)
+		{
+			_logger.LogInformation($"{nameof(BackgroundQueuedHostedService)} is stopping.");
+			await base.StopAsync(stoppingToken);
+		}
     }
 }

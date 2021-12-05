@@ -3,18 +3,10 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
+using starsky.foundation.worker.Interfaces;
 
 namespace starsky.foundation.worker.Services
 {
-    #region snippet1
-    public interface IBackgroundTaskQueue
-    {
-        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
-
-        Task<Func<CancellationToken, Task>> DequeueAsync(
-            CancellationToken cancellationToken);
-    }
-
     /// <summary>
     /// @see: https://www.c-sharpcorner.com/article/how-to-call-background-service-from-net-core-web-api/
     /// </summary>
@@ -46,5 +38,4 @@ namespace starsky.foundation.worker.Services
             return workItem;
         }
     }
-    #endregion
 }
