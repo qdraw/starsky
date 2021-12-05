@@ -143,7 +143,7 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_webLogger.LogDebug($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+			_webLogger.LogDebug($"[DiskWatcher] {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 			                          DateTimeDebug());
 			
 			_queueProcessor.QueueInput(e.FullPath, null, e.ChangeType);
