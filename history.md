@@ -54,6 +54,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Filter for DiskWatcher sync to prevent database overload (PR #529)
 - [x]   (Changed) _Back-end_ Upgrade dependencies for SixLabors.ImageSharp, ApplicationInsights, System.Threading.Tasks.Dataflow, Swashbuckle.AspNetCore and MSTest (PR #533)
 - [x]   (Changed) _Back-end_ Upgrade SDK Version to 3.1.415 & Runtime version to 3.1.21 (PR #535)
+- [x]   (Changed) _Back-end_ Rewrite thumbnail cleaner with chunks (CleanAllUnusedFilesAsync) (PR #531)
+- [x]   (Changed) _Back-end_ Auto download Exiftool from mirror when main source is not up (PR #531)
+- [x]   (Changed) _Back-end_ Change default LogLevel settings in appsettings.json (PR #531)
+- [x]   (Changed) _Back-end_ Handle exceptions for HttpClientHelper to not interupt (PR #531)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
