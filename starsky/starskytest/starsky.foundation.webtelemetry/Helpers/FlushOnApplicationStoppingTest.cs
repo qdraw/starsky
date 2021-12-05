@@ -1,10 +1,8 @@
-using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.webtelemetry.Helpers;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.webtelemetry.Helpers
 {
