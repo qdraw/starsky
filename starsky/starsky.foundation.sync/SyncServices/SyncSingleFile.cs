@@ -107,7 +107,7 @@ namespace starsky.foundation.sync.SyncServices
 
 			if ( statusItem.Status != FileIndexItem.ExifStatus.Ok )
 			{
-				_logger.LogTrace($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
+				_logger.LogDebug($"[SingleFile/db] status {statusItem.Status} for {subPath} {Synchronize.DateTimeDebug()}");
 				return statusItem;
 			}
 
@@ -226,7 +226,7 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>same item</returns>
 		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
 		{
-			_logger.LogTrace($"[SyncSingleFile] Trigger Update Item {subPath}");
+			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);

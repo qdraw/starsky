@@ -144,7 +144,7 @@ namespace starsky.foundation.sync.WatcherServices
 		// Define the event handlers.
 		private void OnChanged(object source, FileSystemEventArgs e)
 		{
-			_webLogger.LogTrace($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+			_webLogger.LogDebug($"DiskWatcher {e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 			                          DateTimeDebug());
 			_fileProcessor.QueueInput(e.FullPath, null, e.ChangeType);
 			// Specify what is done when a file is changed, created, or deleted.

@@ -79,7 +79,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 			var allThumbnailFiles = _thumbnailStorage
 				.GetAllFilesInDirectory(null).ToList();
-			_logger.LogTrace($"Total files in thumb dir: {allThumbnailFiles.Count}");
+			_logger.LogDebug($"Total files in thumb dir: {allThumbnailFiles.Count}");
 
 			var deletedFileHashes = new List<string>();
 			foreach ( var fileNamesInChunk in allThumbnailFiles.Chunk(chunkSize) )
