@@ -14,6 +14,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 	/// Service is created only once, and used everywhere
 	/// @see: http://web.archive.org/web/20120814142626/http://csharp-codesamples.com/2009/02/file-system-watcher-and-large-file-volumes/
 	/// </summary>
+	[Obsolete("use QueueProcessor")]
 	public class FileProcessor
 	{
 		private readonly Queue<Tuple<string, string, WatcherChangeTypes>> _workQueue;

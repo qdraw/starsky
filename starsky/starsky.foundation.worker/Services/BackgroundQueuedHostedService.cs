@@ -27,15 +27,15 @@ namespace starsky.foundation.worker.Services
 		}
 
 		private IBackgroundTaskQueue TaskQueue { get; }
-		
+
 		protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
 	        _logger.LogInformation($"Queued Hosted Service {GetType().Name} is " +
 	                               $"starting on {Environment.MachineName}");
 	        return ProcessTaskQueueAsync(stoppingToken);
         }
-		
-		private async Task ProcessTaskQueueAsync(CancellationToken stoppingToken)
+
+		public async Task ProcessTaskQueueAsync(CancellationToken stoppingToken)
 		{
 			while (!stoppingToken.IsCancellationRequested)
 			{
@@ -47,18 +47,11 @@ namespace starsky.foundation.worker.Services
 				catch (Exception exception)
 				{
 					_logger.LogError(exception,  
-						$"Error occurred executing work item " +
-						$"{nameof(workItem)}.", nameof(workItem));
+						$"Error occurred executing workItem ", nameof(workItem));
 					_telemetryService.TrackException(exception);
 				}
 			}
 			_logger.LogInformation("Queued Hosted Service is stopping.");
-		}
-		
-		public override async Task StopAsync(CancellationToken stoppingToken)
-		{
-			_logger.LogInformation($"{nameof(BackgroundQueuedHostedService)} is stopping.");
-			await base.StopAsync(stoppingToken);
 		}
     }
 }
