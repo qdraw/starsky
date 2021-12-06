@@ -30,6 +30,16 @@ function getSamplePhotos {
   curl https://media.qdraw.nl/download/starsky-sample-photos/20201213_151447_DSC00249.arw --output $STORAGE_FOLDER"/den-bosch/20201213_151447_DSC00249.arw"
   curl https://media.qdraw.nl/download/starsky-sample-photos/20201213_151447_DSC00249.xmp --output $STORAGE_FOLDER"/den-bosch/20201213_151447_DSC00249.xmp"
 
+  mkdir -p $STORAGE_FOLDER/malaga
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_091926_dsc00514_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_091926_dsc00514_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_092013_dsc00519_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_092013_dsc00519_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_093518_dsc00541_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_093518_dsc00541_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_102145_dsc00600_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_102145_dsc00600_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_102749_dsc00606_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_102749_dsc00606_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_115903_dsc00691_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_115903_dsc00691_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_120426_dsc00697_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_120426_dsc00697_e_kl1k.jpg"
+  curl https://media.qdraw.nl/log/malaga-2021/1000/20211117_140034_dsc00713_e_kl1k.jpg --output $STORAGE_FOLDER"/malaga/20211117_140034_dsc00713_e_kl1k.jpg"
+  
   mkdir -p $STORAGE_FOLDER/vernant
   curl https://media.qdraw.nl/log/vernant-in-de-franse-alpen-2020/1000/20200823_102002_dsc03419_e_kl1k.jpg --output $STORAGE_FOLDER"/vernant/20200823_102002_dsc03419_e_kl1k.jpg"
   curl https://media.qdraw.nl/log/vernant-in-de-franse-alpen-2020/1000/20200823_102313_dsc03422_e_kl1k.jpg --output $STORAGE_FOLDER"/vernant/20200823_102313_dsc03422_e_kl1k.jpg"
@@ -90,6 +100,20 @@ function geoDeps {
     echo "download dependencies; exiftool and geo data"  
     starskygeocli=($(find $SOURCE_DIR -type f -name "starskygeocli.csproj"))
     dotnet run --project ${starskygeocli[0]} --configuration Release -- --basepath $STORAGE_FOLDER --thumbnailTempFolder $THUMBNAILTEMPFOLDER -h -v
+
+    if [[ ! -d "$THUMBNAILTEMPFOLDER/exiftool-unix" ]]
+    then
+        echo  "::warning:: $THUMBNAILTEMPFOLDER/exiftool-unix does not exists on your filesystem."
+    fi
+    if [[ ! -f "$THUMBNAILTEMPFOLDER/cities1000.zip" ]]
+    then
+        echo  "::warning:: $THUMBNAILTEMPFOLDER/cities1000.zip does not exists on your filesystem."
+    fi
+    
+    if [[ ! -f "$THUMBNAILTEMPFOLDER/admin1CodesASCII.txt" ]]
+    then
+        echo  "::warning:: $THUMBNAILTEMPFOLDER/admin1CodesASCII.txt does not exists on your filesystem."
+    fi
     echo "end download"
 }
 
