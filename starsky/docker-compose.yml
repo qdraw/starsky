@@ -37,24 +37,25 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - I_SDEMO=true
+        - I__SDEMO=true # arg name is ISDEMO
     environment:
       - PORT=${STARSKY_PORT}
       - app__verbose=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
+      - app__storageFolder=/app/storageFolderLocal
       - app__databaseConnection=Server=host.docker.internal;port=${MARIA_DB_PORT};database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
+    volumes:
+      - './docker/storageFolder:/app/storageFolderLocal'
     depends_on:
       - "mariadb"
     networks:
       internalnetwork: null
 
 networks:
-  proxy:
-    driver: bridge
   internalnetwork:
     driver: bridge
 
