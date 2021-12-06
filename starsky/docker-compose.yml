@@ -47,14 +47,14 @@ services:
       - app__databaseConnection=Server=host.docker.internal;port=${MARIA_DB_PORT};database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
+    volumes:
+      - './docker/storageFolder:/app/storageFolder'
     depends_on:
       - "mariadb"
     networks:
       internalnetwork: null
 
 networks:
-  proxy:
-    driver: bridge
   internalnetwork:
     driver: bridge
 

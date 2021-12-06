@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
@@ -17,7 +16,6 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Query
 {
@@ -324,7 +322,8 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-	        _logger?.LogInformation(e,"[RetrySaveChangesAsync] retry catch-ed exception");
+	        _logger?.LogInformation(e,"[RetrySaveChangesAsync] retry catch-ed exception ");
+	        _logger?.LogInformation("[RetrySaveChangesAsync] next retry ~>");
 	        
 	        async Task LocalRetrySaveChangesAsyncQuery()
 	        {
