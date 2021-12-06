@@ -46,7 +46,7 @@
   "XmpCore 6.1.10.1",
   "MetadataExtractor 2.7.1",
   "Microsoft.ApplicationInsights.AspNetCore 2.19.0",
-  "Microsoft.Extensions.Logging.Console 3.1.17",
+  "Microsoft.Extensions.Logging.Console 3.1.21",
   "MedallionShell 1.6.2",
   "Microsoft.AspNetCore.Identity.EntityFrameworkCore 3.1.21",
   "Microsoft.Extensions.Hosting 3.1.21",
