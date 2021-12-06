@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -21,17 +22,19 @@ namespace starsky.Controllers
 	public class MetaUpdateController : Controller
 	{
 		private readonly IMetaPreflight _metaPreflight;
-		private readonly IMetaUpdateService _metaUpdateService;
 		private readonly IMetaReplaceService _metaReplaceService;
 		private readonly IBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
+		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IMetaUpdateService _metaUpdateService;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
 			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, 
-			IWebSocketConnectionsService connectionsService, IWebLogger logger)
+			IWebSocketConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory)
 		{
 			_metaPreflight = metaPreflight;
+			_scopeFactory = scopeFactory;
 			_metaUpdateService = metaUpdateService;
 			_metaReplaceService = metaReplaceService;
 			_bgTaskQueue = queue;
@@ -72,7 +75,9 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				await _metaUpdateService
+				var metaUpdateService = _scopeFactory.CreateScope()
+					.ServiceProvider.GetService<IMetaUpdateService>();
+				await metaUpdateService
 					.Update(changedFileIndexItemName, fileIndexResultsList, null,
 						collections, append, rotateClock);
 			});
@@ -149,7 +154,9 @@ namespace starsky.Controllers
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				await _metaUpdateService
+				var metaUpdateService = _scopeFactory.CreateScope()
+					.ServiceProvider.GetService<IMetaUpdateService>();
+				await metaUpdateService
 					.Update(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
 			});
