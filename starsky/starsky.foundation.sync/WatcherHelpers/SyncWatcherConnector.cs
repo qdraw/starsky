@@ -27,12 +27,13 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private readonly IWebLogger _logger;
 
 		public SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets, IQuery query)
+			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
 			_websockets = websockets;
 			_query = query;
+			_logger = logger;
 		}
 
 		public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
