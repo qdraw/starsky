@@ -12,6 +12,7 @@ using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.worker.Interfaces;
 
 namespace starsky.foundation.sync.SyncServices
 {
@@ -23,16 +24,18 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IMemoryCache _cache;
 		private readonly IWebLogger _logger;
+		private readonly IBackgroundTaskQueue _bgTaskQueue;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
 			IWebSocketConnectionsService connectionsService, 
-			IMemoryCache cache , IWebLogger logger)
+			IMemoryCache cache , IWebLogger logger, IBackgroundTaskQueue bgTaskQueue)
 		{
 			_synchronize = synchronize;
 			_connectionsService = connectionsService;
 			_query = query;
 			_cache = cache;
 			_logger = logger;
+			_bgTaskQueue = bgTaskQueue;
 		}
 
 		internal const string ManualSyncCacheName = "ManualSync_";
@@ -57,7 +60,10 @@ namespace starsky.foundation.sync.SyncServices
 			_cache.Set(ManualSyncCacheName + subPath, true, 
 				new TimeSpan(0,1,0));
 			
-			await Task.Factory.StartNew(() => BackgroundTask(fileIndexItem.FilePath));
+			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
+			{
+				await BackgroundTask(fileIndexItem.FilePath);
+			});
 
 			return FileIndexItem.ExifStatus.Ok;
 		}
