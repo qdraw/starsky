@@ -11,27 +11,33 @@ using starsky.foundation.worker.Services;
 namespace starsky.foundation.sync.WatcherBackgroundService
 {
 	[Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-	public class DiskWatcherQueuedHostedService : BackgroundService
+	public class DiskWatcherQueuedHostedService : BackgroundQueuedHostedService
 	{
-		private readonly BackgroundQueuedHostedService _service;
-		private readonly IWebLogger _logger;
-
-		public DiskWatcherQueuedHostedService(IBackgroundTaskQueue taskQueue,
-			IWebLogger logger, ITelemetryService telemetryService)
+		public DiskWatcherQueuedHostedService(IBackgroundTaskQueue taskQueue, IWebLogger logger, 
+			ITelemetryService telemetryService) : base(taskQueue, logger, telemetryService)
 		{
-			TaskQueue = taskQueue;
-			_logger = logger;
-			_service = new BackgroundQueuedHostedService(TaskQueue, logger,
-				telemetryService);
 		}
 
-		private IBackgroundTaskQueue TaskQueue { get; set; }
+		// private readonly IWebLogger _logger;
+		// private readonly ITelemetryService _telemetryService;
+		// public DiskWatcherQueuedHostedService(IBackgroundTaskQueue taskQueue,
+		// 	IWebLogger logger, ITelemetryService telemetryService)
+		// {
+		// 	TaskQueue = taskQueue;
+		// 	_logger = logger;
+		// 	_telemetryService = telemetryService;
+		// }
+		//
+		// private IBackgroundTaskQueue TaskQueue { get; set; }
+		//
+		// protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+		// {
+		// 	_logger.LogInformation($"Queued Hosted Service {GetType().Name} is " +
+		// 	                       $"starting on {Environment.MachineName}");
+		// 	
+		// 	await new BackgroundQueuedHostedService(TaskQueue, _logger,
+		// 		_telemetryService).ProcessTaskQueueAsync(stoppingToken);
+		// }
 
-		protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-		{
-			_logger.LogDebug($"Queued Hosted Service {GetType().Name} is " +
-			                       $"starting on {Environment.MachineName}");
-			await _service.ProcessTaskQueueAsync(stoppingToken);
-		}
 	}
 }
