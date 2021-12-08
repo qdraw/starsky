@@ -77,11 +77,7 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskytest", "starsky")
 			.Replace("starskydiskwatcherworkerservice", "starsky");
 
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 		public StarskyAppType ApplicationType { get; set; }
 
 		/// <summary>

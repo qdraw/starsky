@@ -126,12 +126,7 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-#if SYSTEM_TEXT_ENABLED
-			// NET Core 3 -> removed newtonsoft from core
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
-#else
-	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
-#endif
 
 	        ConfigureForwardedHeaders(services);
 	        
