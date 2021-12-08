@@ -96,7 +96,7 @@ namespace starsky.foundation.database.Query
 			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
 
 			// cache code:
-			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
+			if ( cacheTime == null || _appSettings?.AddMemoryCache != true || result == null)
 				return result;
 
 			SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
@@ -108,7 +108,7 @@ namespace starsky.foundation.database.Query
 			FileIndexItem result,
 			TimeSpan? cacheTime)
 		{
-			if ( cacheTime == null || _cache == null ) return;
+			if ( cacheTime == null || result == null ) return;
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
 				result, cacheTime.Value );
 		}

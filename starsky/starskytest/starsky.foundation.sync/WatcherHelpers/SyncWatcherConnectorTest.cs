@@ -192,15 +192,29 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var fileIndexItems = new List<FileIndexItem>
 			{
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Deleted},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Ok},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundNotInIndex},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
+				new FileIndexItem{ FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Deleted},
+				new FileIndexItem() { FilePath = "/2.jpg",Status = FileIndexItem.ExifStatus.Ok},
+				new FileIndexItem() { FilePath = "/3.jpg",Status = FileIndexItem.ExifStatus.NotFoundNotInIndex},
+				new FileIndexItem() { FilePath = "/4.jpg", Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
 			};
 
 			var result = new SyncWatcherConnector(null,null,
 				null,null, new FakeIWebLogger()).FilterBefore(fileIndexItems);
 			Assert.AreEqual(4,result.Count);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_AllowedStatus_removeDuplicates()
+		{
+			var fileIndexItems = new List<FileIndexItem>
+			{
+				new FileIndexItem{ FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok},
+				new FileIndexItem() { FilePath = "/1.jpg",Status = FileIndexItem.ExifStatus.Ok},
+
+			};
+			var result = new SyncWatcherConnector(null,null,
+				null,null, new FakeIWebLogger()).FilterBefore(fileIndexItems);
+			Assert.AreEqual(1,result.Count);
 		}
 	}
 }
