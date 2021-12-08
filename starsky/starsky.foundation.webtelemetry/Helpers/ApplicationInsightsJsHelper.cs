@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.injection;
@@ -54,9 +55,19 @@ namespace starsky.foundation.webtelemetry.Helpers
 				// Replace the default script with nothing to use as file
 				const string scriptTagStart = @"<script type=""text/javascript"">";
 				const string scriptEndStart = @"</script>";
-
+				
 				var script = js.Replace(scriptTagStart, string.Empty);
 				script = script.Replace(scriptEndStart, string.Empty);
+				
+				const string setAuthenticatedUserContextItemStart =
+					"appInsights.setAuthenticatedUserContext(\"";
+				const string setAuthenticatedUserContextItemEnd = "\")";
+				script = script.Replace(
+					setAuthenticatedUserContextItemStart + 
+					setAuthenticatedUserContextItemEnd, 
+					setAuthenticatedUserContextItemStart + 
+					_httpContext.HttpContext.User.Identity.Name + 
+					setAuthenticatedUserContextItemEnd);
 
 				return script;
 			}
