@@ -26,7 +26,7 @@ namespace starsky.Controllers
 	public class GeoController : Controller
 	{
 		private readonly AppSettings _appSettings;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readMeta;
 		private readonly IMemoryCache _cache;
 		private readonly IStorage _thumbnailStorage;
@@ -35,7 +35,7 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 		private readonly IGeoFileDownload _geoFileDownload;
 
-		public GeoController(AppSettings appSettings, IBackgroundTaskQueue queue,
+		public GeoController(AppSettings appSettings, IUpdateBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
 			IGeoLocationWrite geoLocationWrite,
 			IMemoryCache memoryCache, IWebLogger logger, IGeoFileDownload geoFileDownload)

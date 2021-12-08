@@ -33,7 +33,7 @@ namespace starskytest.Controllers
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private IMemoryCache _memoryCache;
@@ -78,8 +78,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
@@ -93,7 +93,7 @@ namespace starskytest.Controllers
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 		}
 		
 

@@ -25,12 +25,12 @@ namespace starsky.Controllers
     public class SyncController : Controller
     {
         private readonly ISync _sync;
-        private readonly IBackgroundTaskQueue _bgTaskQueue;
+        private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
 
-        public SyncController(ISync sync, IBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
+        public SyncController(ISync sync, IUpdateBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
 	        IWebSocketConnectionsService connectionsService)
         {
             _sync = sync;

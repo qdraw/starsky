@@ -24,11 +24,11 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IMemoryCache _cache;
 		private readonly IWebLogger _logger;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
 		public ManualBackgroundSyncService(ISynchronize synchronize, IQuery query,
 			IWebSocketConnectionsService connectionsService, 
-			IMemoryCache cache , IWebLogger logger, IBackgroundTaskQueue bgTaskQueue)
+			IMemoryCache cache , IWebLogger logger, IUpdateBackgroundTaskQueue bgTaskQueue)
 		{
 			_synchronize = synchronize;
 			_connectionsService = connectionsService;

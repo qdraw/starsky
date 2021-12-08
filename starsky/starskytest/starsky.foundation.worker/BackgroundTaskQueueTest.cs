@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.worker
 	[TestClass]
 	public class BackgroundTaskQueueTest
 	{
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
 		public BackgroundTaskQueueTest()
 		{
@@ -44,13 +44,13 @@ namespace starskytest.starsky.foundation.worker
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 		}
         
 		[TestMethod]
@@ -75,15 +75,15 @@ namespace starskytest.starsky.foundation.worker
 		public async Task BackgroundTaskQueueTest_Verify_Hosted_Service_Executes_Task() {
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
 			await service.StartAsync(CancellationToken.None);
 
@@ -114,15 +114,15 @@ namespace starskytest.starsky.foundation.worker
 		{
 			IServiceCollection services = new ServiceCollection();
 			services.AddSingleton<ILoggerFactory, NullLoggerFactory>();
-			services.AddHostedService<BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
 			await service.StartAsync(CancellationToken.None);
 
@@ -144,7 +144,7 @@ namespace starskytest.starsky.foundation.worker
 		public async Task StartAsync_CancelBeforeStart()
 		{
 			var fakeLogger = new FakeIWebLogger();
-			var service = new BackgroundQueuedHostedService(new FakeIBackgroundTaskQueue(), fakeLogger, new FakeTelemetryService());
+			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), fakeLogger, new FakeTelemetryService());
 
 			var cancelTokenSource = new CancellationTokenSource();
 			cancelTokenSource.Cancel();

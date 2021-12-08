@@ -8,7 +8,7 @@ namespace starskytest.FakeMocks
 	/// <summary>
 	/// @see: FakeIBackgroundTaskQueue
 	/// </summary>
-	public class FakeDiskWatcherBackgroundTaskQueue : DiskWatcherBackgroundTaskQueue
+	public class FakeDiskWatcherUpdateBackgroundTaskQueue : DiskWatcherUpdateBackgroundTaskQueue
 	{
 		public bool QueueBackgroundWorkItemCalled { get; set; }
 		public override void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)

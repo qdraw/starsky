@@ -9,16 +9,16 @@ using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 [assembly: InternalsVisibleTo("starskytest")]
-namespace starsky.foundation.sync.WatcherBackgroundService
+namespace starsky.foundation.worker.Services
 {
 	[Service(typeof(IHostedService),
 		InjectionLifetime = InjectionLifetime.Singleton)]
-	public class DiskWatcherQueuedHostedService : BackgroundService
+	public class UpdateBackgroundQueuedHostedService : BackgroundService
 	{
 		private readonly IWebLogger _logger;
 		
 		// ReSharper disable once SuggestBaseTypeForParameterInConstructor
-		public DiskWatcherQueuedHostedService(IDiskWatcherBackgroundTaskQueue taskQueue,
+		public UpdateBackgroundQueuedHostedService(IUpdateBackgroundTaskQueue taskQueue,
 			IWebLogger logger)
 		{
 			TaskQueue = taskQueue;

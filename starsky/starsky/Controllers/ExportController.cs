@@ -16,11 +16,11 @@ namespace starsky.Controllers
 	[Authorize]
 	public class ExportController : Controller
 	{
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IStorage _hostFileSystemStorage;
 		private readonly IExport _export;
 
-		public ExportController( IBackgroundTaskQueue queue,
+		public ExportController( IUpdateBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, IExport export)
 		{
 			_bgTaskQueue = queue;

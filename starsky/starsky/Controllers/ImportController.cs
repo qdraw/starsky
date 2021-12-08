@@ -32,7 +32,7 @@ namespace starsky.Controllers
 	{
 		private readonly IImport _import;
 		private readonly AppSettings _appSettings;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IStorage _hostFileSystemStorage;
@@ -41,7 +41,7 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 
 		public ImportController(IImport import, AppSettings appSettings,
-			IBackgroundTaskQueue queue, 
+			IUpdateBackgroundTaskQueue queue, 
 			IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
 			IServiceScopeFactory scopeFactory, IWebLogger logger)
 		{

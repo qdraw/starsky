@@ -23,14 +23,14 @@ namespace starsky.Controllers
 	{
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IMetaReplaceService _metaReplaceService;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMetaUpdateService _metaUpdateService;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
-			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, 
+			IMetaReplaceService metaReplaceService,  IUpdateBackgroundTaskQueue queue, 
 			IWebSocketConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory)
 		{
 			_metaPreflight = metaPreflight;

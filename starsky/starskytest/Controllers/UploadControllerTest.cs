@@ -91,8 +91,8 @@ namespace starskytest.Controllers
 			// inject config as object to a service
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();

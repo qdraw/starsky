@@ -22,7 +22,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		[TestMethod]
 		public void QueueProcessorTest_QueueInput()
 		{
-			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherBackgroundTaskQueue();
+			var diskWatcherBackgroundTaskQueue = new FakeDiskWatcherUpdateBackgroundTaskQueue();
 
 			Task<List<FileIndexItem>> Local(Tuple<string, string, WatcherChangeTypes> value)
 			{
