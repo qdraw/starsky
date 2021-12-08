@@ -12,8 +12,9 @@ namespace starsky.foundation.webtelemetry.Helpers
 {
 	public static class RequestTelemetryHelper
 	{
-		public static string GetOperationId(this HttpContext httpContext)
+		public static string GetOperationId(this HttpContext? httpContext)
 		{
+			if ( httpContext == null ) return string.Empty;
 			var requestTelemetry = httpContext.Features.Get<RequestTelemetry>();
 			return requestTelemetry == null ? string.Empty : requestTelemetry.Context.Operation.Id;
 		}
