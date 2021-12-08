@@ -2,7 +2,9 @@
 
 ## When upgrading SDK
 
-Build pipelines need to be updated
+There is an build-tools script that does this automatically 
+
+## Build pipelines need to be updated
 
  - [x] `.github/workflows/starsky-dotnetcore-ubuntu.yml`
  - [x] `.github/workflows/starsky-dotnetcore-windows.yml `
