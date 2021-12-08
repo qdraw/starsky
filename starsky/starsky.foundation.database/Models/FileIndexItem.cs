@@ -1,8 +1,6 @@
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 #endif
 using System;
 using System.Collections.Generic;
@@ -300,11 +298,7 @@ namespace starsky.foundation.database.Models
 		/// The display file status. (eg. NotFoundNotInIndex, Ok).
 		/// </value>
 		
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
 		[NotMapped]
 		public ExifStatus Status { get; set; } = ExifStatus.Default;
         

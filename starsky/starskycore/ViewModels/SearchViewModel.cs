@@ -163,11 +163,7 @@ namespace starskycore.ViewModels
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>

@@ -1,9 +1,4 @@
-#if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
