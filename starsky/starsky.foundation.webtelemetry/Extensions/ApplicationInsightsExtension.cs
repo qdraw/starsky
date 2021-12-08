@@ -60,6 +60,14 @@ namespace starsky.foundation.webtelemetry.Extensions
 			module.Counters.Add(
 				new EventCounterCollectionRequest("System.Runtime",
 					"cpu-usage"));
+			// memory usage
+			module.Counters.Add(
+				new EventCounterCollectionRequest("System.Runtime",
+					"working-set"));	
+			// Retrieves the number of bytes currently thought to be allocated
+			module.Counters.Add(
+				new EventCounterCollectionRequest("System.Runtime",
+					"gc-heap-size"));	
 			module.Counters.Add(
 				new EventCounterCollectionRequest("Microsoft.AspNetCore.Hosting",
 					"current-request"));
