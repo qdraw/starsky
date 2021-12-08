@@ -25,6 +25,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			
 			var telemetryClient = scopeFactory.CreateScope()
 				.ServiceProvider.GetService<TelemetryClient>();
+			if ( telemetryClient == null ) return new EmptyOperationHolder<DependencyTelemetry>();
 			
 			var operationHolder = telemetryClient.StartOperation<DependencyTelemetry>(
 					jobName, operationId);
@@ -32,9 +33,9 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return operationHolder;
 		}
 
-		public static void SetData(this IOperationHolder<DependencyTelemetry> operationHolder, object? data)
+		public static void SetData(this IOperationHolder<DependencyTelemetry>? operationHolder, object? data)
 		{
-			if ( data == null ) return;
+			if ( data == null || operationHolder == null ) return;
 			operationHolder.Telemetry.Data = JsonSerializer.Serialize(data);
 			operationHolder.Telemetry.Target = "BackgroundTask";
 			operationHolder.Telemetry.Type = "BackgroundTask";

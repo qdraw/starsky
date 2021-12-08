@@ -8,6 +8,8 @@ namespace starsky.foundation.webtelemetry.Models
 		{
 			Telemetry = new T();
 		}
+
+		public bool Empty = true;
 		
 		public void Dispose()
 		{
