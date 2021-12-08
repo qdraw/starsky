@@ -108,7 +108,7 @@ namespace starsky.foundation.database.Query
 			FileIndexItem result,
 			TimeSpan? cacheTime)
 		{
-			if ( cacheTime == null ) return;
+			if ( cacheTime == null || _cache == null ) return;
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
 				result, cacheTime.Value );
 		}
