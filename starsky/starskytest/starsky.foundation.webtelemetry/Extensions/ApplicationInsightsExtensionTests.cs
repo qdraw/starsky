@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -32,6 +33,14 @@ namespace starskytest.starsky.foundation.webtelemetry.Extensions
 			var result= serviceCollection.FirstOrDefault(p
 				=> p.ServiceType.FullName.Contains("ApplicationInsights"));
 			Assert.IsNull(result);
+		}
+
+		[TestMethod]
+		public void SetEventCounterCollectionModule_ShouldContainItems()
+		{
+			var module = new EventCounterCollectionModule();
+			ApplicationInsightsExtension.SetEventCounterCollectionModule(module);
+			Assert.IsTrue(module.Counters.Count >= 1);
 		}
 	}
 }

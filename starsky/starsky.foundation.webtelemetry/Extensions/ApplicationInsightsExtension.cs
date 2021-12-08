@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
@@ -5,6 +6,7 @@ using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Models;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.webtelemetry.Extensions
 {
 	public static class ApplicationInsightsExtension
@@ -34,27 +36,33 @@ namespace starsky.foundation.webtelemetry.Extensions
 					InstrumentationKey = appSettings
 						.ApplicationInsightsInstrumentationKey,
 				});
-			
-			// https://docs.microsoft.com/en-us/azure/azure-monitor/app/eventcounters
+
 			services.ConfigureTelemetryModule<EventCounterCollectionModule>(
-				(module, o) =>
-				{
-					// in .NET Core 3 there are no default Counters
-					module.Counters.Clear();
-					// https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-					module.Counters.Add(
-						new EventCounterCollectionRequest("System.Runtime",
-							"gen-0-size"));
-					module.Counters.Add(
-						new EventCounterCollectionRequest("System.Runtime",
-							"time-in-gc"));
-					module.Counters.Add(
-						new EventCounterCollectionRequest("System.Runtime",
-							"cpu-usage"));
-					module.Counters.Add(
-						new EventCounterCollectionRequest("Microsoft.AspNetCore.Hosting",
-							"current-request"));
-				});
+				(module, _) => SetEventCounterCollectionModule(module));
+		}
+
+		/// <summary>
+		/// @see: https://docs.microsoft.com/en-us/azure/azure-monitor/app/eventcounters
+		/// </summary>
+		/// <param name="module">Modules</param>
+		internal static void SetEventCounterCollectionModule(
+			EventCounterCollectionModule module)
+		{
+			// in .NET Core 3 there are no default Counters
+			module.Counters.Clear();
+			// https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+			module.Counters.Add(
+				new EventCounterCollectionRequest("System.Runtime",
+					"gen-0-size"));
+			module.Counters.Add(
+				new EventCounterCollectionRequest("System.Runtime",
+					"time-in-gc"));
+			module.Counters.Add(
+				new EventCounterCollectionRequest("System.Runtime",
+					"cpu-usage"));
+			module.Counters.Add(
+				new EventCounterCollectionRequest("Microsoft.AspNetCore.Hosting",
+					"current-request"));
 		}
 	}
 }
