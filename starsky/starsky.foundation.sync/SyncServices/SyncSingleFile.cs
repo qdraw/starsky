@@ -111,7 +111,7 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			var dbItem =  await _query.GetObjectByFilePathAsync(subPath, TimeSpan.FromSeconds(15));
+			var dbItem =  await _query.GetObjectByFilePathAsync(subPath, TimeSpan.FromSeconds(5));
 			// // // when item does not exist in Database
 			if ( dbItem == null )
 			{

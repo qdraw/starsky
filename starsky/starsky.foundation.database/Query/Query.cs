@@ -98,11 +98,19 @@ namespace starsky.foundation.database.Query
 			// cache code:
 			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
 				return result;
-			
-			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
-				cacheTime.Value);
+
+			SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
 
 			return result;
+		}
+
+		private void SetGetObjectByFilePathCache(string filePath, 
+			FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+			if ( cacheTime == null ) return;
+			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+				result, cacheTime.Value );
 		}
 
 		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
@@ -225,6 +233,7 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromSeconds(5));
 	        }
 
 	        try

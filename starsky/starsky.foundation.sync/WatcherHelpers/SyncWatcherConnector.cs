@@ -94,7 +94,10 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
-			return syncData.Where(p =>
+			// also remove duplicates from output list
+			return syncData.GroupBy(x => x.FilePath).
+				Select(x => x.First())
+				.Where(p =>
 				p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.Deleted ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 

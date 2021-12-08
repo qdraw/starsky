@@ -144,7 +144,7 @@ namespace starskytest.starsky.foundation.worker
 		public async Task StartAsync_CancelBeforeStart()
 		{
 			var fakeLogger = new FakeIWebLogger();
-			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), fakeLogger, new FakeTelemetryService());
+			var service = new UpdateBackgroundQueuedHostedService(new FakeIUpdateBackgroundTaskQueue(), fakeLogger);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			cancelTokenSource.Cancel();
