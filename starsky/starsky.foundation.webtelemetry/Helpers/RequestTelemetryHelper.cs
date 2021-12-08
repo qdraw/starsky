@@ -26,7 +26,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			var telemetryClient = scopeFactory.CreateScope()
 				.ServiceProvider.GetService<TelemetryClient>();
 			
-			using var operationHolder = telemetryClient.StartOperation<DependencyTelemetry>(
+			var operationHolder = telemetryClient.StartOperation<DependencyTelemetry>(
 					jobName, operationId);
 			operationHolder.Telemetry.Timestamp = DateTimeOffset.UtcNow;
 			return operationHolder;
@@ -40,6 +40,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			operationHolder.Telemetry.Type = "BackgroundTask";
 			operationHolder.Telemetry.ResultCode = "OK";
 			operationHolder.Telemetry.Duration = DateTimeOffset.UtcNow - operationHolder.Telemetry.Timestamp;
+			operationHolder.Dispose();
 		}
 	}
 }
