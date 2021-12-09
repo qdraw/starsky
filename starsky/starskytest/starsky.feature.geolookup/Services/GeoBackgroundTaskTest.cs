@@ -61,6 +61,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 		[TestMethod]
 		public async Task GeoBackgroundTask_WithResults_NoGps()
 		{
+			_appSettings.Verbose = true;
 			var storage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{}, 
 				new List<byte[]>{}
