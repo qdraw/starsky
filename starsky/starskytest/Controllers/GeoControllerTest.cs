@@ -12,7 +12,6 @@ using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
@@ -102,12 +101,12 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), null, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			var result = controller.GeoSyncFolder("/") as JsonResult;
-			Assert.AreEqual("event fired",result.Value);
+			Assert.AreEqual("job started",result.Value);
 		}
 		
 		[TestMethod]
@@ -147,7 +146,7 @@ namespace starskytest.Controllers
 		public void StatusCheck_CacheServiceMissing_ItemNotExist()
 		{
 			var storage = new FakeIStorage();
-			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), null, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
