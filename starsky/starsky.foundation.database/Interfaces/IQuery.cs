@@ -193,6 +193,9 @@ namespace starsky.foundation.database.Interfaces
         IQuery Clone( ApplicationDbContext applicationDbContext);
         void Invoke(ApplicationDbContext applicationDbContext);
 
+        void SetGetObjectByFilePathCache(string filePath, 
+	        FileIndexItem result,
+	        TimeSpan? cacheTime);
     }
 }
 

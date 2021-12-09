@@ -69,7 +69,7 @@ namespace starsky.foundation.database.Query
 		
 		internal static string GetObjectByFilePathAsyncCacheName(string subPath)
 		{
-			return $"{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
+			return $"_{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
 		}
 		
 
@@ -89,7 +89,9 @@ namespace starsky.foundation.database.Query
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
 				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
-				return data as FileIndexItem;
+				if ( !(data is FileIndexItem fileIndexItem) ) return null;
+				fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+				return fileIndexItem;
 			}
 			// end cache
 
@@ -104,7 +106,7 @@ namespace starsky.foundation.database.Query
 			return result;
 		}
 
-		private void SetGetObjectByFilePathCache(string filePath, 
+		public void SetGetObjectByFilePathCache(string filePath, 
 			FileIndexItem result,
 			TimeSpan? cacheTime)
 		{
@@ -233,7 +235,7 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
-		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromSeconds(5));
+		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
 	        try

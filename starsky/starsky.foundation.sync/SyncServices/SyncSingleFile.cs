@@ -112,10 +112,18 @@ namespace starsky.foundation.sync.SyncServices
 			}
 
 			var dbItem =  await _query.GetObjectByFilePathAsync(subPath, TimeSpan.FromSeconds(5));
+						
 			// // // when item does not exist in Database
 			if ( dbItem == null )
 			{
 				return await NewItem(statusItem, subPath);
+			}
+			
+			// Cached values are not checked for performance reasons 
+			if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
+			{
+				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} {Synchronize.DateTimeDebug()}");
+				return dbItem;
 			}
 
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);

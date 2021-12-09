@@ -78,7 +78,7 @@ namespace starsky.feature.metaupdate.Services
 					fileIndexItem, inputModel, append, rotateClock);
 						
 				// this one is good :)
-				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default )
+				if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Default || fileIndexItem.Status == FileIndexItem.ExifStatus.OkAndSame)
 				{
 					fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 				}
