@@ -345,12 +345,13 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
-                          .Append("-v=normal") // v=normal is to show test names
+                          // .Append("-v=normal") // v=normal is to show test names
                           .Append("--logger trx")
                           .Append("--collect:\"XPlat Code Coverage\"")
                           .Append("--settings build.vstest.runsettings")
                 });
 
+            Information("on Error: search for: Error Message");
             var coverageEnum = GetFiles("./**/coverage.opencover.xml");
 
             // Get the FirstOrDefault() but there is no LINQ here
