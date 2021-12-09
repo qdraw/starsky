@@ -17,7 +17,9 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			{
 				
 			});
-			queue.DequeueAsync(new CancellationToken());
+			var token = new CancellationToken();
+			queue.DequeueAsync(token);
+			Assert.IsNotNull(token);
 
 		}
 	}
