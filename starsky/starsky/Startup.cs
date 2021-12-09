@@ -126,6 +126,9 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
+			// Detect Application Insights
+			services.AddMonitoring(_appSettings);
+			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
 
 	        ConfigureForwardedHeaders(services);
@@ -133,10 +136,6 @@ namespace starsky
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			
-			// Detect Application Insights
-			services.AddMonitoring(_appSettings);
-
-
 			new RegisterDependencies().Configure(services);
         }
 

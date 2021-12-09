@@ -40,6 +40,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 			services.ConfigureTelemetryModule<EventCounterCollectionModule>(
 				(module, _) => SetEventCounterCollectionModule(module));
 			
+			services.AddApplicationInsightsKubernetesEnricher();
 		}
 
 		/// <summary>
