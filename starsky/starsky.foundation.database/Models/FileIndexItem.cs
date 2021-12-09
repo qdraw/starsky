@@ -1,8 +1,6 @@
 #if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
 #else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 #endif
 using System;
 using System.Collections.Generic;
@@ -299,12 +297,8 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The display file status. (eg. NotFoundNotInIndex, Ok).
 		/// </value>
-		
-#if SYSTEM_TEXT_ENABLED
+		// newtonsoft uses: StringEnumConverter
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
 		[NotMapped]
 		public ExifStatus Status { get; set; } = ExifStatus.Default;
         
@@ -524,11 +518,8 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The orientation as enum item
 		/// </value>
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
+		// newtonsoft uses: StringEnumConverter
 		public Rotation Orientation { get; set; } = Rotation.DoNotChange;
 		
 		/// <summary>
@@ -702,11 +693,8 @@ namespace starsky.foundation.database.Models
 		/// <value>
 		/// The image format as enum item
 		/// </value>
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-		[JsonConverter(typeof(StringEnumConverter))]
-#endif
+		// newtonsoft uses: StringEnumConverter
 		public ExtensionRolesHelper.ImageFormat ImageFormat { get; set; }
 
 		/// <summary>

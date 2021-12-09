@@ -69,7 +69,7 @@ namespace starsky.foundation.database.Query
 		
 		internal static string GetObjectByFilePathAsyncCacheName(string subPath)
 		{
-			return $"{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
+			return $"_{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
 		}
 		
 
@@ -89,20 +89,34 @@ namespace starsky.foundation.database.Query
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
 				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
-				return data as FileIndexItem;
+				if ( !(data is FileIndexItem fileIndexItem) ) return null;
+				fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+				return fileIndexItem;
 			}
 			// end cache
 
 			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
 
 			// cache code:
-			if ( cacheTime == null || _appSettings?.AddMemoryCache != true )
+			if ( cacheTime == null || _appSettings?.AddMemoryCache != true || result == null)
 				return result;
-			
-			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
-				cacheTime.Value);
+
+			SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
 
 			return result;
+		}
+
+		public void SetGetObjectByFilePathCache(string filePath, 
+			FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+			if ( _cache == null || cacheTime == null || result == null )
+			{
+				_logger.LogInformation("SetGetObjectByFilePathCache not used");
+				return;
+			}
+			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+				result, cacheTime.Value );
 		}
 
 		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
@@ -225,6 +239,7 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
 	        try
@@ -576,6 +591,12 @@ namespace starsky.foundation.database.Query
 				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
 				if (obj == null) continue;
 				displayFileFolders.Remove(obj);
+
+				if ( item.Status == FileIndexItem.ExifStatus.OkAndSame )
+				{
+					item.Status = FileIndexItem.ExifStatus.Ok;
+				}
+
 				// Add here item to cached index
 				displayFileFolders.Add(item);
 				

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace starsky.foundation.worker.Interfaces
 {
-	public interface IBackgroundTaskQueue
+	public interface IBaseBackgroundTaskQueue
 	{
 		void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem);
 

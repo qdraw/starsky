@@ -43,7 +43,7 @@ namespace starskytest.Controllers
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly ServiceProvider _serviceProvider;
 
 		public ExportControllerTest()
@@ -67,7 +67,7 @@ namespace starskytest.Controllers
 			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
-			_bgTaskQueue = new BackgroundTaskQueue();
+			_bgTaskQueue = new UpdateBackgroundTaskQueue();
 			
 			// Inject Config helper
 			services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
@@ -89,8 +89,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			services.AddSingleton<ISelectorStorage, SelectorStorage>();
 			services.AddSingleton<IStorage, StorageSubPathFilesystem>();
@@ -131,15 +131,15 @@ namespace starskytest.Controllers
 			}
 			
 			IServiceCollection services = new ServiceCollection();
-			services.AddHostedService<BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddHostedService<UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
 			services.AddSingleton<ITelemetryService, FakeTelemetryService>();
 			var serviceProvider = services.BuildServiceProvider();
 
-			var service = serviceProvider.GetService<IHostedService>() as BackgroundQueuedHostedService;
+			var service = serviceProvider.GetService<IHostedService>() as UpdateBackgroundQueuedHostedService;
 
-			var backgroundQueue = serviceProvider.GetService<IBackgroundTaskQueue>();
+			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
 			if ( service == null ) throw new Exception("service should not be null");
 			await service.StartAsync(CancellationToken.None);

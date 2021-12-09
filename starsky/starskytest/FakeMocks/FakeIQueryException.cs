@@ -228,6 +228,12 @@ namespace starskytest.FakeMocks
 		{
 			throw _exception;
 		}
+
+		public void SetGetObjectByFilePathCache(string filePath, FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+			throw _exception;
+		}
 	}
 	
 }

@@ -32,6 +32,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
@@ -125,37 +126,16 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-#if SYSTEM_TEXT_ENABLED
-			// NET Core 3 -> removed newtonsoft from core
+			// Detect Application Insights
+			services.AddMonitoring(_appSettings);
+			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
-#else
-	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
-#endif
 
 	        ConfigureForwardedHeaders(services);
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			
-			// Detect Application Insights
-			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
-			{
-				// https://docs.microsoft.com/en-us/azure/azure-monitor/app/telemetry-channels
-				services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel()
-				{
-					StorageFolder = _appSettings.TempFolder,
-				});
-				
-				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-				{
-					ApplicationVersion = _appSettings.AppVersion,
-					EnableDependencyTrackingTelemetryModule = true,
-					EnableHeartbeat = true,
-					EnableAuthenticationTrackingJavaScript = true,
-					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey,
-				});
-			}
-
 			new RegisterDependencies().Configure(services);
         }
 

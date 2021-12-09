@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using starsky.foundation.database.Models;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.webtelemetry.Helpers;
 
 namespace starsky.Controllers
 {
@@ -30,7 +31,8 @@ namespace starsky.Controllers
 		[Produces("application/json")]	   
 		public async Task<IActionResult> Index(string f)
 		{
-			var status = await _manualBackgroundSyncService.ManualSync(f);
+			var operationId = HttpContext.GetOperationId();
+			var status = await _manualBackgroundSyncService.ManualSync(f,operationId);
 			switch ( status )
 			{
 				case FileIndexItem.ExifStatus.NotFoundNotInIndex:

@@ -1,9 +1,4 @@
-﻿#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-#endif
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -89,11 +84,7 @@ namespace starsky.foundation.database.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]

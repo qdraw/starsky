@@ -1,57 +1,40 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.database.Models;
-using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
-using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
-using starsky.foundation.writemeta.Interfaces;
 
 namespace starsky.Controllers
 {
 	[Authorize]
 	public class GeoController : Controller
 	{
-		private readonly AppSettings _appSettings;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
-		private readonly IReadMeta _readMeta;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IMemoryCache _cache;
-		private readonly IStorage _thumbnailStorage;
 		private readonly IStorage _iStorage;
-		private readonly IGeoLocationWrite _geoLocationWrite;
+		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IWebLogger _logger;
-		private readonly IGeoFileDownload _geoFileDownload;
 
-		public GeoController(AppSettings appSettings, IBackgroundTaskQueue queue,
+		public GeoController(IUpdateBackgroundTaskQueue queue,
 			ISelectorStorage selectorStorage, 
-			IGeoLocationWrite geoLocationWrite,
-			IMemoryCache memoryCache, IWebLogger logger, IGeoFileDownload geoFileDownload)
+			IMemoryCache memoryCache, IWebLogger logger, IServiceScopeFactory serviceScopeFactory)
 		{
-			_appSettings = appSettings;
 			_bgTaskQueue = queue;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
-			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage);
-			_geoLocationWrite = geoLocationWrite;
 			_cache = memoryCache;
+			_serviceScopeFactory = serviceScopeFactory;
 			_logger = logger;
-			_geoFileDownload = geoFileDownload;
 		}
 
-		
 		/// <summary>
 		/// Get Geo sync status
 		/// </summary>
@@ -85,7 +68,7 @@ namespace starsky.Controllers
 		[Produces("application/json")]
 		[ProducesResponseType(typeof(string),404)] // event is fired
 		[ProducesResponseType(typeof(string),200)] // "Not found"
-		public IActionResult SyncFolder(
+		public IActionResult GeoSyncFolder(
 			string f = "/",
 			bool index = true,
 			bool overwriteLocationNames = false
@@ -96,74 +79,27 @@ namespace starsky.Controllers
 				return NotFound("Folder location is not found");
 			}
 			
-			// Update >
+			var operationId = HttpContext.GetOperationId();
+
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
-				GeoBackgroundTask(
-					new GeoIndexGpx(_appSettings, _iStorage, _cache),
-					new GeoReverseLookup(_appSettings, _geoFileDownload, _cache), 
-					_geoLocationWrite,
-					f, index,
+				_logger.LogInformation($"{nameof(GeoSyncFolder)} started {f} {DateTime.UtcNow.ToShortTimeString()}");
+				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_serviceScopeFactory,
+					nameof(GeoSyncFolder), operationId);
+				
+				var geoBackgroundTask = _serviceScopeFactory.CreateScope().ServiceProvider
+					.GetService<IGeoBackgroundTask>();
+				var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
 					overwriteLocationNames);
+				
+				operationHolder.SetData(result);
+				
+				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {operationHolder.Telemetry?.Duration}");
 			});
 			
-			return Json("event fired");
+			return Json("job started");
 		}
 
-		internal List<FileIndexItem> GeoBackgroundTask(
-			IGeoIndexGpx geoIndexGpx,
-			IGeoReverseLookup geoReverseLookup,
-			IGeoLocationWrite geoLocationWrite,
-			string f = "/",
-			bool index = true,
-			bool overwriteLocationNames = false)
-		{
-			if ( !_iStorage.ExistFolder(f) ) return new List<FileIndexItem>();
-			// use relative to StorageFolder
-			var listOfFiles = _iStorage.GetAllFilesInDirectory(f)
-				.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-			var fileIndexList = _readMeta
-				.ReadExifAndXmpFromFileAddFilePathHash(listOfFiles);
-			
-			var toMetaFilesUpdate = new List<FileIndexItem>();
-			if ( index )
-			{
-				toMetaFilesUpdate =
-					geoIndexGpx
-						.LoopFolder(fileIndexList);
-					
-				if ( _appSettings.IsVerbose() ) Console.Write("¬");
-					
-				geoLocationWrite
-					.LoopFolder(toMetaFilesUpdate, false);
-			}
-
-			fileIndexList =
-				geoReverseLookup
-					.LoopFolderLookup(fileIndexList, overwriteLocationNames);
-				
-			if ( fileIndexList.Count >= 1 )
-			{
-				geoLocationWrite.LoopFolder(
-					fileIndexList, true);
-			}
-
-			// Loop though all options
-			fileIndexList.AddRange(toMetaFilesUpdate);
-
-			// update thumbs to avoid unnecessary re-generation
-			foreach ( var item in fileIndexList.GroupBy(i => i.FilePath).Select(g => g.First())
-				.ToList() )
-			{
-				var newThumb = new FileHash(_iStorage).GetHashCode(item.FilePath).Key;
-				if ( item.FileHash == newThumb) continue;
-				new ThumbnailFileMoveAllSizes(_thumbnailStorage).FileMove(item.FileHash, newThumb);
-				if ( _appSettings.IsVerbose() )
-					_logger.LogInformation("[/api/geo/sync] thumb rename + `" + item.FileHash + "`" + newThumb);
-			}
-
-			return fileIndexList;
-		}
+		
 	}
 }

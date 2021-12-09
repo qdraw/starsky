@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starskycore.Interfaces;
@@ -26,7 +27,7 @@ namespace starskytest.starskyGeoCore.Services
 		}
 
 		[TestMethod]
-		public void GeoLocationWriteLoopFolderTest()
+		public async Task GeoLocationWriteLoopFolderTest()
 		{
 			var metaFilesInDirectory = new List<FileIndexItem>
 			{
@@ -45,7 +46,7 @@ namespace starskytest.starskyGeoCore.Services
 			var console = new FakeConsoleWrapper();
 
 			var fakeIStorage = new FakeIStorage();
-			new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage),console).LoopFolder(metaFilesInDirectory, true);
+			await new GeoLocationWrite(_appSettings, _exifTool, new FakeSelectorStorage(fakeIStorage),console).LoopFolderAsync(metaFilesInDirectory, true);
 			Assert.IsNotNull(metaFilesInDirectory);
 			
 			Assert.AreEqual(1,console.WrittenLines.Count);
@@ -53,7 +54,7 @@ namespace starskytest.starskyGeoCore.Services
 		}
 
 		[TestMethod]
-		public void GeoLocationWriteLoopFolderTest_verbose()
+		public async Task GeoLocationWriteLoopFolderTest_verbose()
 		{
 			var metaFilesInDirectory = new List<FileIndexItem>
 			{
@@ -70,8 +71,8 @@ namespace starskytest.starskyGeoCore.Services
 				}
 			};
 			var console = new FakeConsoleWrapper();
-			new GeoLocationWrite(new AppSettings{Verbose = true}, _exifTool, new FakeSelectorStorage(),console)
-				.LoopFolder(metaFilesInDirectory, 
+			await new GeoLocationWrite(new AppSettings{Verbose = true}, _exifTool, new FakeSelectorStorage(),console)
+				.LoopFolderAsync(metaFilesInDirectory, 
 				true);
 
 			Assert.AreEqual(2,console.WrittenLines.Count);

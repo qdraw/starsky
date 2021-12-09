@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
@@ -23,14 +24,16 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private readonly AppSettings _appSettings;
 		private readonly IWebSocketConnectionsService _websockets;
 		private readonly IQuery _query;
+		private readonly IWebLogger _logger;
 
 		public SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets, IQuery query)
+			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
 			_websockets = websockets;
 			_query = query;
+			_logger = logger;
 		}
 
 		public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
@@ -41,12 +44,17 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 			_websockets = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 			_query = scope.ServiceProvider.GetRequiredService<IQuery>();
+			_logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
 		{
 			var (fullFilePath, toPath, type ) = watcherOutput;
 			var syncData = new List<FileIndexItem>();
+			
+			_logger.LogInformation($"[SyncWatcherConnector] [{fullFilePath}] - [{toPath}] - [{type}]");
+			
 			if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath))
 			{
 				await _synchronize.Sync(_appSettings.FullPathToDatabaseStyle(fullFilePath));
@@ -86,7 +94,10 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)
 		{
-			return syncData.Where(p =>
+			// also remove duplicates from output list
+			return syncData.GroupBy(x => x.FilePath).
+				Select(x => x.First())
+				.Where(p =>
 				p.Status == FileIndexItem.ExifStatus.Ok ||
 				p.Status == FileIndexItem.ExifStatus.Deleted ||
 				p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 

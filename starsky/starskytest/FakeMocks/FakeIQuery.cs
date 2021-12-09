@@ -197,7 +197,11 @@ namespace starskytest.FakeMocks
 
 		public bool RemoveCacheParentItem(string directoryName)
 		{
-			throw new System.NotImplementedException();
+			if ( _fakeCachedContent == null ) return false;
+			var item = _fakeCachedContent.FirstOrDefault(p =>
+				p.ParentDirectory == directoryName);
+			_fakeCachedContent.Remove(item);
+			return true;
 		}
 
 		public string GetSubPathByHash(string fileHash)
@@ -389,6 +393,11 @@ namespace starskytest.FakeMocks
 		}
 
 		public void Invoke(ApplicationDbContext applicationDbContext)
+		{
+		}
+
+		public void SetGetObjectByFilePathCache(string filePath, FileIndexItem result,
+			TimeSpan? cacheTime)
 		{
 		}
 

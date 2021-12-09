@@ -24,12 +24,12 @@ namespace starsky.Controllers
 		private readonly IMetaInfo _metaInfo;
 		private readonly AppSettings _appSettings;
 		private readonly IStorage _hostStorage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebLogger _webLogger;
 
 		public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, 
 			IWebHtmlPublishService publishService, IMetaInfo metaInfo, ISelectorStorage selectorStorage,
-			IBackgroundTaskQueue queue, IWebLogger webLogger)
+			IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
 		{
 			_appSettings = appSettings;
 			_publishPreflight = publishPreflight;

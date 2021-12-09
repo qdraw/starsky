@@ -12,7 +12,6 @@ using starsky.feature.geolookup.Models;
 using starsky.feature.geolookup.Services;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Interfaces;
-using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
@@ -33,7 +32,7 @@ namespace starskytest.Controllers
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private IMemoryCache _memoryCache;
@@ -55,7 +54,7 @@ namespace starskytest.Controllers
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();
 
-			// Fake the readmeta output
+			// Fake the readMeta output
 			services.AddSingleton<IReadMeta, FakeReadMeta>();
 
 			// Inject Config helper
@@ -78,8 +77,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
@@ -93,23 +92,21 @@ namespace starskytest.Controllers
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
 			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 		}
-		
+
 
 		[TestMethod]
 		public void FolderExist()
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_appSettings, _bgTaskQueue, 
-				new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), null, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			var result = controller.SyncFolder("/") as JsonResult;
-			Assert.AreEqual("event fired",result.Value);
+			var result = controller.GeoSyncFolder("/") as JsonResult;
+			Assert.AreEqual("job started",result.Value);
 		}
 		
 		[TestMethod]
@@ -117,13 +114,11 @@ namespace starskytest.Controllers
 		{
 			var istorage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
 
-			var controller = new GeoController(_appSettings, _bgTaskQueue, 
-				new FakeSelectorStorage(istorage), new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(istorage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
-			var result = controller.SyncFolder("/not-found") as NotFoundObjectResult;
+			var result = controller.GeoSyncFolder("/not-found") as NotFoundObjectResult;
 			Assert.AreEqual(404,result.StatusCode);
 		}
 
@@ -135,10 +130,8 @@ namespace starskytest.Controllers
 			new GeoCacheStatusService(_memoryCache).StatusUpdate("/StatusCheck_CachedItemExist",2, StatusType.Total);
 
 			var storage = new FakeIStorage();
-			var storageSelector = new FakeSelectorStorage(storage);
 			
-			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
-				new FakeIGeoLocationWrite(), _memoryCache, new FakeIWebLogger(), new FakeIGeoFileDownload())
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), _memoryCache, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
@@ -153,85 +146,13 @@ namespace starskytest.Controllers
 		public void StatusCheck_CacheServiceMissing_ItemNotExist()
 		{
 			var storage = new FakeIStorage();
-			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_appSettings, _bgTaskQueue, 
-				storageSelector, new FakeIGeoLocationWrite(), null, new FakeIWebLogger(), new FakeIGeoFileDownload())
+			var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(storage), null, new FakeIWebLogger(), _scopeFactory)
 			{
 				ControllerContext = {HttpContext = new DefaultHttpContext()}
 			};
 			
 			var status = controller.Status("/StatusCheck_CachedItemNotExist") as NotFoundObjectResult;
 			Assert.AreEqual(404,status.StatusCode);
-		}
-
-		[TestMethod]
-		public void GeoBackgroundTask_IsCalled()
-		{
-			var storage = new FakeIStorage(new List<string>{"/"});
-			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
-				new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
-			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
-			};
-
-			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
-			var geoReverseLookup = new FakeIGeoReverseLookup();
-			
-			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
-				geoReverseLookup, new FakeIGeoLocationWrite() );
-
-			Assert.AreEqual(1, geoReverseLookup.Count);
-		}
-		
-		[TestMethod]
-		public void GeoBackgroundTask_WithResults_IsCalled()
-		{
-			var storage = new FakeIStorage(new List<string>{"/"}, new List<string>{"2QOYZWMPACZAJ2MABGMOZ6CCPY"});
-			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_appSettings, _bgTaskQueue, storageSelector, 
-				new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
-			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
-			};
-
-			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
-			var geoReverseLookup = new FakeIGeoReverseLookup(new List<FileIndexItem>
-			{
-				new FileIndexItem("/test.jpg")
-				{
-					FileHash = "2QOYZWMPACZAJ2MABGMOZ6CCPY"
-				}
-			});
-			
-			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
-				geoReverseLookup, new FakeIGeoLocationWrite() );
-
-			Assert.AreEqual(1, geoReverseLookup.Count);
-			Assert.AreEqual(1, fakeIGeoIndexGpx.Count);
-		}
-		
-		[TestMethod]
-		public void GeoBackgroundTask_IsNotCalled()
-		{
-			var storage = new FakeIStorage(); // <= main folder not found
-			var storageSelector = new FakeSelectorStorage(storage);
-			var controller = new GeoController(_appSettings, _bgTaskQueue, 
-				storageSelector, new FakeIGeoLocationWrite(), 
-				new FakeMemoryCache(new Dictionary<string, object>()), new FakeIWebLogger(), new FakeIGeoFileDownload())
-			{
-				ControllerContext = {HttpContext = new DefaultHttpContext()}
-			};
-
-			var fakeIGeoIndexGpx = new FakeIGeoIndexGpx();
-			var geoReverseLookup = new FakeIGeoReverseLookup();
-			
-			controller.GeoBackgroundTask(fakeIGeoIndexGpx, 
-				geoReverseLookup, new FakeIGeoLocationWrite() );
-
-			Assert.AreEqual(0, geoReverseLookup.Count);
 		}
 	}
 }

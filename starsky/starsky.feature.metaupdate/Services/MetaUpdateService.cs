@@ -127,7 +127,10 @@ namespace starsky.feature.metaupdate.Services
 					fileIndexItem.FilePath           
 				};
 				var exifTool = new ExifToolCmdHelper(_exifTool,_iStorage,_thumbnailStorage,_readMeta);
-				
+
+				// to avoid diskWatcher catch up
+				_query.SetGetObjectByFilePathCache(fileIndexItem.FilePath, fileIndexItem, TimeSpan.FromSeconds(10));
+					
 				// Do an Exif Sync for all files, including thumbnails
 				var (exifResult,newFileHashes) = await exifTool.UpdateAsync(fileIndexItem, 
 					exifUpdateFilePaths, comparedNamesList,true, true);

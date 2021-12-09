@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.worker.Interfaces;
 
 namespace starsky.Controllers
@@ -23,14 +26,14 @@ namespace starsky.Controllers
 	{
 		private readonly IMetaPreflight _metaPreflight;
 		private readonly IMetaReplaceService _metaReplaceService;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IWebSocketConnectionsService _connectionsService;
 		private readonly IWebLogger _logger;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly IMetaUpdateService _metaUpdateService;
 
 		public MetaUpdateController(IMetaPreflight metaPreflight, IMetaUpdateService metaUpdateService,
-			IMetaReplaceService metaReplaceService,  IBackgroundTaskQueue queue, 
+			IMetaReplaceService metaReplaceService,  IUpdateBackgroundTaskQueue queue, 
 			IWebSocketConnectionsService connectionsService, IWebLogger logger, IServiceScopeFactory scopeFactory)
 		{
 			_metaPreflight = metaPreflight;
@@ -72,14 +75,22 @@ namespace starsky.Controllers
 			var (fileIndexResultsList, changedFileIndexItemName) =  await _metaPreflight.Preflight(inputModel, 
 				inputFilePaths, append, collections, rotateClock);
 
+			var operationId = HttpContext.GetOperationId();
+			
 			// Update >
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>
 			{
+				var operationHolder = RequestTelemetryHelper.GetOperationHolder(_scopeFactory,
+					nameof(UpdateAsync), operationId);
+				
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetService<IMetaUpdateService>();
-				await metaUpdateService
-					.Update(changedFileIndexItemName, fileIndexResultsList, null,
+
+				var data = await 
+					metaUpdateService.Update(changedFileIndexItemName, fileIndexResultsList,
+						null,
 						collections, append, rotateClock);
+				operationHolder.SetData(data);
 			});
 			
 			// When all items are not found

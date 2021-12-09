@@ -5,7 +5,7 @@ using starsky.foundation.worker.Interfaces;
 
 namespace starskytest.FakeMocks
 {
-	public class FakeIBackgroundTaskQueue : IBackgroundTaskQueue
+	public class FakeIUpdateBackgroundTaskQueue : IUpdateBackgroundTaskQueue
 	{
 		public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
 		{

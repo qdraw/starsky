@@ -14,7 +14,8 @@ namespace starskytest.FakeMocks
 		{
 			_items = items;
 		}
-		public Task<FileIndexItem.ExifStatus> ManualSync(string subPath)
+		public Task<FileIndexItem.ExifStatus> ManualSync(string subPath,
+			string operationId)
 		{
 			var value = _items.FirstOrDefault(p => Equals(p.Key, subPath)).Value;
 			return Task.FromResult(value);

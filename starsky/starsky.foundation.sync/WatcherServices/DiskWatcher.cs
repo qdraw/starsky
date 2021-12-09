@@ -5,8 +5,6 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 

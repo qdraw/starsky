@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var sync = new FakeISynchronize();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
-				new FakeIWebSocketConnectionsService(), new FakeIQuery());
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(), new FakeIWebLogger());
 			await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var sync = new FakeISynchronize();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
-				new FakeIWebSocketConnectionsService(), new FakeIQuery());
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(), new FakeIWebLogger());
 			var result = await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), Path.Combine(appSettings.StorageFolder, "test2"), WatcherChangeTypes.Renamed));
@@ -59,7 +59,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var sync = new FakeISynchronize();
 			var appSettings = new AppSettings();
 			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, 
-				new FakeIWebSocketConnectionsService(), new FakeIQuery());
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(), new FakeIWebLogger());
 			var result = await syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Renamed));
@@ -76,7 +76,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			});
 			var websockets = new FakeIWebSocketConnectionsService();
 			var appSettings = new AppSettings();
-			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(), sync, websockets, new FakeIQuery());
+			var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
+				sync, websockets, new FakeIQuery(), new FakeIWebLogger());
 			syncWatcherPreflight.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -97,7 +98,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			});
 			var websockets = new FakeIWebSocketConnectionsService();
 			var appSettings = new AppSettings();
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, new FakeIQuery());
+			var syncWatcherConnector = new SyncWatcherConnector(appSettings, 
+				sync, websockets, new FakeIQuery(), new FakeIWebLogger());
 			syncWatcherConnector.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
@@ -136,7 +138,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 					ParentDirectory = "/"
 				}});
 			
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
+			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
+				sync, websockets, query, new FakeIWebLogger());
 			syncWatcherConnector.Sync(
 				new Tuple<string, string, WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
@@ -175,7 +178,8 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 					ParentDirectory = "/"
 				}});
 			
-			var syncWatcherConnector = new SyncWatcherConnector(appSettings, sync, websockets, query);
+			var syncWatcherConnector = new SyncWatcherConnector(appSettings,
+				sync, websockets, query, new FakeIWebLogger());
 			syncWatcherConnector.Sync(
 				new Tuple<string, string,  WatcherChangeTypes>(
 					Path.Combine(appSettings.StorageFolder, "test.jpg"), null, WatcherChangeTypes.Changed));
@@ -188,15 +192,29 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		{
 			var fileIndexItems = new List<FileIndexItem>
 			{
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Deleted},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.Ok},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundNotInIndex},
-				new FileIndexItem() {Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
+				new FileIndexItem{ FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Deleted},
+				new FileIndexItem() { FilePath = "/2.jpg",Status = FileIndexItem.ExifStatus.Ok},
+				new FileIndexItem() { FilePath = "/3.jpg",Status = FileIndexItem.ExifStatus.NotFoundNotInIndex},
+				new FileIndexItem() { FilePath = "/4.jpg", Status = FileIndexItem.ExifStatus.NotFoundSourceMissing}
 			};
 
 			var result = new SyncWatcherConnector(null,null,
-				null,null).FilterBefore(fileIndexItems);
+				null,null, new FakeIWebLogger()).FilterBefore(fileIndexItems);
 			Assert.AreEqual(4,result.Count);
+		}
+		
+		[TestMethod]
+		public void FilterBefore_AllowedStatus_removeDuplicates()
+		{
+			var fileIndexItems = new List<FileIndexItem>
+			{
+				new FileIndexItem{ FilePath = "/1.jpg", Status = FileIndexItem.ExifStatus.Ok},
+				new FileIndexItem() { FilePath = "/1.jpg",Status = FileIndexItem.ExifStatus.Ok},
+
+			};
+			var result = new SyncWatcherConnector(null,null,
+				null,null, new FakeIWebLogger()).FilterBefore(fileIndexItems);
+			Assert.AreEqual(1,result.Count);
 		}
 	}
 }

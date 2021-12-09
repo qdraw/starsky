@@ -12,16 +12,16 @@ namespace starsky.foundation.sync.WatcherHelpers
 {
 	public class QueueProcessor
 	{
-		private readonly DiskWatcherBackgroundTaskQueue _bgTaskQueue;
+		private readonly IDiskWatcherBackgroundTaskQueue _bgTaskQueue;
 		private readonly SynchronizeDelegate _processFile;
 
 		public QueueProcessor(IServiceScopeFactory serviceProvider, SynchronizeDelegate processFile)
 		{
-			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<DiskWatcherBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.CreateScope().ServiceProvider.GetService<IDiskWatcherBackgroundTaskQueue>();
 			_processFile = processFile;
 		}
 
-		public QueueProcessor(DiskWatcherBackgroundTaskQueue bgTaskQueue,
+		public QueueProcessor(IDiskWatcherBackgroundTaskQueue bgTaskQueue,
 			SynchronizeDelegate processFile)
 		{
 			_bgTaskQueue = bgTaskQueue;

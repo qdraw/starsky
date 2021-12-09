@@ -111,11 +111,19 @@ namespace starsky.foundation.sync.SyncServices
 				return statusItem;
 			}
 
-			var dbItem =  await _query.GetObjectByFilePathAsync(subPath, TimeSpan.FromSeconds(15));
+			var dbItem =  await _query.GetObjectByFilePathAsync(subPath, TimeSpan.FromSeconds(5));
+						
 			// // // when item does not exist in Database
 			if ( dbItem == null )
 			{
 				return await NewItem(statusItem, subPath);
+			}
+			
+			// Cached values are not checked for performance reasons 
+			if ( dbItem.Status == FileIndexItem.ExifStatus.OkAndSame )
+			{
+				_logger.LogDebug($"[SingleFile/db] OkAndSame {subPath} {Synchronize.DateTimeDebug()}");
+				return dbItem;
 			}
 
 			var (isSame, updatedDbItem) = await SizeFileHashIsTheSame(dbItem);
@@ -226,7 +234,11 @@ namespace starsky.foundation.sync.SyncServices
 		/// <returns>same item</returns>
 		private async Task<FileIndexItem> UpdateItem(FileIndexItem dbItem, long size, string subPath)
 		{
-			_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
+			if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+			{
+				_logger.LogDebug($"[SyncSingleFile] Trigger Update Item {subPath}");
+			}
+			
 			var updateItem = await _newItem.PrepareUpdateFileItem(dbItem, size);
 			await _query.UpdateItemAsync(updateItem);
 			await _query.AddParentItemsAsync(subPath);

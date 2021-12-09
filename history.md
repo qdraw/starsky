@@ -41,7 +41,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
-- remove newtonsoft.json references
+
 
 # version 0.4.13 _(Unreleased)_ - 2021-12-?
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
@@ -61,6 +61,16 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Change DiskWatcher background queue system (PR #536) 
 - [x]   (Changed) _Back-end_ Add disk telemetry-channels when app is crashed (PR #536)
 - [x]   (Changed) _Back-end_ Flush Application Insights on ApplicationStopping (PR #536)
+- [x]   (Changed) _Back-end_ Move GeoBackgroundTask to GeoLookUp feature (PR #540)
+- [x]   (Changed) _Back-end_ Add 10 seconds cache to UpdateAsync for performance reasons / diskWatcher catch up SetGetObjectByFilePathCache (PR #540)
+- [x]   (Changed) _Back-end_ Remove NewtonSoftJson from PublishManifest and use System.Text.Json (PR #540)
+- [x]   (Changed) _Back-end_ Remove NewtonSoftJson from various models (PR #540)
+- [x]   (Changed) _Back-end_ Remove sync CleanAllUnusedFiles (PR #540)
+- [x]   (Added) _Back-end_ Add event-counters to application insights https://docs.microsoft.com/en-us/azure/azure-monitor/app/eventcounters
+- [x]   (Added) _Back-end_ setAuthenticatedUserContext for Application Insights (PR #540)
+- [x]   (Added) _Back-end_ OperationId in RequestTelemetryHelper to track background Tasks in Application Insights (PR #540)
+- [x]   (Added) _Back-end_ QueueBackgroundWorkItem for DiskWatcher to have a separate queue (PR #540)
+- [x]   (Changed) _Back-end_ Change GeoLocationWrite to async variant  (PR #540)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)

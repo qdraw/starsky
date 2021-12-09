@@ -508,7 +508,8 @@ namespace starsky.foundation.accountmanagement.Services
 		private async Task<ValidateResult> SetLockIfFailedCountIsToHigh(int userId)
 		{
 			var errorReason = ValidateResultError.SecretNotValid;
-			var userData = await _dbContext.Users.FindAsync(userId);
+			// ReSharper disable once SuggestVarOrType_SimpleTypes
+			User userData = await _dbContext.Users.FindAsync(userId);
 			userData.AccessFailedCount++;
 			if ( userData.AccessFailedCount >= 3 )
 			{
@@ -524,15 +525,17 @@ namespace starsky.foundation.accountmanagement.Services
         
 		public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
+			user.Name = user.Id.ToString();
 			ClaimsIdentity identity = new ClaimsIdentity(
 				GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
-            
+			
 			await httpContext.SignInAsync(
 				CookieAuthenticationDefaults.AuthenticationScheme, 
 				principal, 
-				new AuthenticationProperties() { IsPersistent = isPersistent }
+				new AuthenticationProperties() { IsPersistent = isPersistent}
 			);
+			
 			// Required in the direct context;  when using a REST like call
 			httpContext.User = principal;
 		}

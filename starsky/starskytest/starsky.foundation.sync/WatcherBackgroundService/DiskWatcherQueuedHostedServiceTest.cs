@@ -17,8 +17,8 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		{
 			var logger = new FakeIWebLogger();
 			var service = new DiskWatcherQueuedHostedService(
-				new FakeIBackgroundTaskQueue(),
-				logger, new FakeTelemetryService());
+				new FakeDiskWatcherUpdateBackgroundTaskQueue(),
+				logger);
 			
 			CancellationTokenSource source = new CancellationTokenSource();
 			CancellationToken token = source.Token;

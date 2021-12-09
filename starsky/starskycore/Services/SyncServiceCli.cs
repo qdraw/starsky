@@ -77,7 +77,7 @@ namespace starskycore.Services
 			if ( new ArgsHelper(appSettings).NeedCleanup(args) )
 			{
 				console.WriteLine(">>>>> Heavy CPU Feature => NeedCacheCleanup <<<<< ");
-				thumbnailCleaner.CleanAllUnusedFiles();
+				thumbnailCleaner.CleanAllUnusedFilesAsync().ConfigureAwait(false);
 			}
 
 			console.WriteLine("Done!");

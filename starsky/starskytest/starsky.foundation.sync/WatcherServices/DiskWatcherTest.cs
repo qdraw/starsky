@@ -31,7 +31,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			services.AddScoped<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 			services.AddScoped<IQuery, FakeIQuery>();
 			services.AddScoped<IFileSystemWatcherWrapper, FakeIFileSystemWatcherWrapper>();
-			services.AddScoped<DiskWatcherBackgroundTaskQueue>();
+			services.AddScoped<IDiskWatcherBackgroundTaskQueue,FakeDiskWatcherUpdateBackgroundTaskQueue>();
 
 			var serviceProvider = services.BuildServiceProvider();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
