@@ -547,5 +547,24 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			Assert.IsFalse(theSame.Item1);
 		}
+
+		[TestMethod]
+		public async Task SingleFile_RecentlyTriggered()
+		{
+			var logger = new FakeIWebLogger();
+			var sync = new SyncSingleFile(new AppSettings(), new FakeIQuery(new List<FileIndexItem>
+				{
+					new FileIndexItem("/from-cache.jpg")
+					{
+						Status = FileIndexItem.ExifStatus.OkAndSame
+					}
+				}),
+				new FakeIStorage(new List<string>{"/"}, 
+					new List<string>{"/from-cache.jpg"}, 
+					new List<byte[]>{CreateAnImageNoExif.Bytes}),logger);
+			
+			await sync.SingleFile("/from-cache.jpg");
+			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OkAndSame"));
+		}
 	}
 }
