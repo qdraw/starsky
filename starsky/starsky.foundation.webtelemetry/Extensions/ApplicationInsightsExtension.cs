@@ -39,6 +39,9 @@ namespace starsky.foundation.webtelemetry.Extensions
 
 			services.ConfigureTelemetryModule<EventCounterCollectionModule>(
 				(module, _) => SetEventCounterCollectionModule(module));
+			
+			// https://github.com/microsoft/ApplicationInsights-Profiler-AspNetCore
+			services.AddServiceProfiler();
 		}
 
 		/// <summary>
