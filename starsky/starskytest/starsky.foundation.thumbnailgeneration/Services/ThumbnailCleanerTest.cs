@@ -41,8 +41,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 		[ExpectedException(typeof(DirectoryNotFoundException))]
 		public async Task ThumbnailCleanerTestAsync_DirectoryNotFoundException()
 		{
-			var appSettings = new AppSettings {ThumbnailTempFolder = "\""};
-			await new ThumbnailCleaner(new FakeIStorage(), _query,appSettings, new FakeIWebLogger()).CleanAllUnusedFilesAsync();
+			await new ThumbnailCleaner(new FakeIStorage(), _query, new FakeIWebLogger()).CleanAllUnusedFilesAsync();
 		}
 		
 		[TestMethod]
@@ -74,7 +73,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			};
 			var thumbnailStorage = new StorageThumbnailFilesystem(appSettings, new FakeIWebLogger());
 			
-			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query,appSettings, new FakeIWebLogger());
+			var thumbnailCleaner = new ThumbnailCleaner(thumbnailStorage, _query, new FakeIWebLogger());
 			
 			// there are now two files inside this dir
 			var allThumbnailFilesBefore = thumbnailStorage.GetAllFilesInDirectory("/");
@@ -102,7 +101,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			var fakeQuery = new FakeIQueryException(new Microsoft.EntityFrameworkCore.Storage.RetryLimitExceededException());
 			
 			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				new AppSettings(), new FakeIWebLogger());
+				 new FakeIWebLogger());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync();
 
@@ -133,7 +132,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			});
 			
 			var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery, 
-				new AppSettings(), new FakeIWebLogger());
+				 new FakeIWebLogger());
 
 			await thumbnailCleaner.CleanAllUnusedFilesAsync(1);
 

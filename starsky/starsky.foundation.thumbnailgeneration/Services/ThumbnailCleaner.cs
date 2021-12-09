@@ -20,15 +20,13 @@ namespace starsky.foundation.thumbnailgeneration.Services
 	[Service(typeof(IThumbnailCleaner), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ThumbnailCleaner : IThumbnailCleaner
 	{
-		private readonly AppSettings _appSettings;
 		private readonly IQuery _query;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IWebLogger _logger;
 
-		public ThumbnailCleaner(IStorage thumbnailStorage, IQuery iQuery, AppSettings appSettings, IWebLogger logger)
+		public ThumbnailCleaner(IStorage thumbnailStorage, IQuery iQuery, IWebLogger logger)
 		{
 			_thumbnailStorage = thumbnailStorage;
-			_appSettings = appSettings;
 			_query = iQuery;
 			_logger = logger;
 		}
@@ -42,6 +40,7 @@ namespace starsky.foundation.thumbnailgeneration.Services
 
 			var allThumbnailFiles = _thumbnailStorage
 				.GetAllFilesInDirectory(null).ToList();
+			
 			_logger.LogDebug($"Total files in thumb dir: {allThumbnailFiles.Count}");
 
 			var deletedFileHashes = new List<string>();

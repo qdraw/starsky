@@ -1,3 +1,5 @@
+using System;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
 namespace starsky.foundation.webtelemetry.Models
@@ -9,10 +11,12 @@ namespace starsky.foundation.webtelemetry.Models
 			Telemetry = new T();
 		}
 
-		public bool Empty = true;
-		
+		// ReSharper disable once ConvertToConstant.Global
+		public readonly bool Empty = true;
+
 		public void Dispose()
 		{
+			// does not contain anything
 		}
 
 		public T Telemetry { get; }
