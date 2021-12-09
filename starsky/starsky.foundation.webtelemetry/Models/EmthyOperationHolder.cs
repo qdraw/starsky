@@ -1,10 +1,9 @@
 using System;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
 namespace starsky.foundation.webtelemetry.Models
 {
-	public class EmptyOperationHolder<T> : IOperationHolder<T> where T : new()
+	public sealed class EmptyOperationHolder<T> : IOperationHolder<T> where T : new()
 	{
 		public EmptyOperationHolder()
 		{
@@ -16,7 +15,18 @@ namespace starsky.foundation.webtelemetry.Models
 
 		public void Dispose()
 		{
-			// does not contain anything
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		private bool IsDisposed { get; set; }
+
+		private void Dispose(bool disposing)
+		{
+			if ( disposing && !IsDisposed )
+			{
+				IsDisposed = true;
+			}
 		}
 
 		public T Telemetry { get; }
