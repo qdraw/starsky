@@ -84,11 +84,7 @@ namespace starsky.foundation.database.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]

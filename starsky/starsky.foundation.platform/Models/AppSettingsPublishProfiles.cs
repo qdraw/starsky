@@ -20,6 +20,7 @@ namespace starsky.foundation.platform.Models
 	    /// Type of template
 	    /// </summary>
 	    [JsonConverter(typeof(JsonStringEnumConverter))]
+	    // newtonsoft uses: StringEnumConverter
         public TemplateContentType ContentType { get; set; } = TemplateContentType.None;
 
         /// <summary>

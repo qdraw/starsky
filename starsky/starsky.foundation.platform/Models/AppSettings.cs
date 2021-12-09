@@ -78,6 +78,7 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskydiskwatcherworkerservice", "starsky");
 
 		[JsonConverter(typeof(JsonStringEnumConverter))]
+		// newtonsoft uses: StringEnumConverter
 		public StarskyAppType ApplicationType { get; set; }
 
 		/// <summary>
@@ -230,11 +231,8 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Type of the database, sqlite, mysql or inmemory
 		/// </summary>
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-        [JsonConverter(typeof(StringEnumConverter))]
-#endif
+		// newtonsoft uses: StringEnumConverter
 		public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 
