@@ -67,7 +67,6 @@ namespace starskytest.root
 			
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-			IHostApplicationLifetime lifetime = null;
 
 			// should not crash
 			var startup = new Startup();

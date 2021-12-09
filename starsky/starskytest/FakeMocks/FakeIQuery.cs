@@ -392,6 +392,11 @@ namespace starskytest.FakeMocks
 		{
 		}
 
+		public void SetGetObjectByFilePathCache(string filePath, FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+		}
+
 		public bool IsCacheEnabled()
 		{
 			throw new System.NotImplementedException();

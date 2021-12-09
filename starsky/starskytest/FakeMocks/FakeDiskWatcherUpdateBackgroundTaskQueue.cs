@@ -17,7 +17,7 @@ namespace starskytest.FakeMocks
 			QueueBackgroundWorkItemCalled = true;
 		}
 
-		public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
+		public Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)
 		{
 			throw new NotImplementedException();
 		}
