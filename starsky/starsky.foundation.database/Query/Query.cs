@@ -110,7 +110,11 @@ namespace starsky.foundation.database.Query
 			FileIndexItem result,
 			TimeSpan? cacheTime)
 		{
-			if ( cacheTime == null || result == null ) return;
+			if ( _cache == null || cacheTime == null || result == null )
+			{
+				_logger.LogInformation("SetGetObjectByFilePathCache not used");
+				return;
+			}
 			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
 				result, cacheTime.Value );
 		}
@@ -587,6 +591,12 @@ namespace starsky.foundation.database.Query
 				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
 				if (obj == null) continue;
 				displayFileFolders.Remove(obj);
+
+				if ( item.Status == FileIndexItem.ExifStatus.OkAndSame )
+				{
+					item.Status = FileIndexItem.ExifStatus.Ok;
+				}
+
 				// Add here item to cached index
 				displayFileFolders.Add(item);
 				

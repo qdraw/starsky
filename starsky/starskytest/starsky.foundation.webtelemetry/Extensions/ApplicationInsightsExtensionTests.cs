@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
@@ -15,6 +17,9 @@ namespace starskytest.starsky.foundation.webtelemetry.Extensions
 		public void TestIfServiceIsEnabled()
 		{
 			var serviceCollection = new ServiceCollection();
+			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration); 
+			
 			serviceCollection.AddMonitoring(new AppSettings{ApplicationInsightsInstrumentationKey = "t"});
 
 			Assert.IsTrue(serviceCollection.Count >= 1);
