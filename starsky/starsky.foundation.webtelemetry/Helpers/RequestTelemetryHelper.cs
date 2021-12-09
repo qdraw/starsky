@@ -38,7 +38,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			if ( data == null || operationHolder == null ) return;
 			operationHolder.Telemetry.Data = JsonSerializer.Serialize(data);
 			operationHolder.Telemetry.Target = "BackgroundTask";
-			operationHolder.Telemetry.Type = "BackgroundTask";
+			operationHolder.Telemetry.Type = "Task";
 			operationHolder.Telemetry.ResultCode = "OK";
 			operationHolder.Telemetry.Duration = DateTimeOffset.UtcNow - operationHolder.Telemetry.Timestamp;
 			operationHolder.Dispose();
