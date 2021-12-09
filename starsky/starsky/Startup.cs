@@ -6,10 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -44,11 +41,9 @@ namespace starsky
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
-        private readonly IHostEnvironment _hostEnvironment;
 
-        public Startup(IHostEnvironment hostEnvironment = null)
+        public Startup()
 		{
-			_hostEnvironment = hostEnvironment;
 			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
 		}
 

@@ -174,12 +174,14 @@ namespace starsky.Controllers
 		            syncResultsList.Add(syncItem);
 	            }
 	            // Update >
+#pragma warning disable 1998
 	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
 	            {
 		            _sync.SyncFiles(subPath,false);
 		            Console.WriteLine(">>> running clear cache "+ subPath);
 		            _query.RemoveCacheParentItem(subPath);
 	            });
+#pragma warning restore 1998
             }
 			return Json(syncResultsList);
         }
