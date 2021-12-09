@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using starsky.feature.webhtmlpublish.Models;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
@@ -34,7 +34,12 @@ namespace starsky.feature.webhtmlpublish.Helpers
 				Name = itemName,
 				Copy = copyContent
 			};
-			var output = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+			var output = JsonSerializer.Serialize(manifest,
+				new JsonSerializerOptions
+				{
+					IgnoreNullValues = true,
+					WriteIndented = true
+				});
 			var outputLocation = Path.Combine(parentFullFilePath, ManifestName);
 			
 			_storage.FileDelete(outputLocation);

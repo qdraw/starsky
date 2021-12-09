@@ -83,6 +83,9 @@ namespace starsky.Helpers
 
 		/// <summary>
 		/// Generate Swagger as Json
+		/// Set this:
+		/// app__AddSwagger = true
+		/// app__AddSwaggerExport = true
 		/// </summary>
 		/// <param name="swaggerProvider">Swagger provider</param>
 		/// <param name="docName">document name</param>
