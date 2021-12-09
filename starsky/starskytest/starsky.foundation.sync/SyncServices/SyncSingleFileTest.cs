@@ -564,7 +564,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new List<byte[]>{CreateAnImageNoExif.Bytes}),logger);
 			
 			await sync.SingleFile("/from-cache.jpg");
-			Assert.IsTrue(logger.TrackedInformation.LastOrDefault().Item2.Contains("OkAndSame"));
+			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("OkAndSame"));
 		}
 	}
 }
