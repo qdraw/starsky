@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
@@ -29,18 +31,17 @@ namespace starsky.foundation.writemeta.Services
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_console = console;
 		}
-        
+
 		/// <summary>
 		/// Write to ExifTool by list
 		/// </summary>
 		/// <param name="metaFilesInDirectory">list of files with data</param>
 		/// <param name="syncLocationNames">Write city, state and country to exifTool (false > no)</param>
-		public void LoopFolder(List<FileIndexItem> metaFilesInDirectory, bool syncLocationNames)
+		public async Task LoopFolderAsync(List<FileIndexItem> metaFilesInDirectory,
+			bool syncLocationNames)
 		{
-			foreach (var metaFileItem in metaFilesInDirectory)
+			foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem => ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 			{
-				if (!ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) continue;
-
 				if ( _appSettings.IsVerbose() ) _console.Write(" 👟 ");
 
 				var comparedNamesList = new List<string>
@@ -57,17 +58,16 @@ namespace starsky.foundation.writemeta.Services
 					nameof(FileIndexItem.LocationCountry).ToLowerInvariant(),
 				});
                 
-				new ExifToolCmdHelper(_exifTool, 
+				await new ExifToolCmdHelper(_exifTool, 
 					_iStorage, 
 					_thumbnailStorage, 
-					new ReadMeta(_iStorage)).Update(metaFileItem, comparedNamesList);
+					new ReadMeta(_iStorage)).UpdateAsync(metaFileItem, comparedNamesList);
 
 				// Rocket man!
 				_console.Write(_appSettings.IsVerbose()
 					? $"  GeoLocationWrite: {metaFileItem.FilePath}  "
 					: "🚀");
 			}
-
 		}
 	}
 }

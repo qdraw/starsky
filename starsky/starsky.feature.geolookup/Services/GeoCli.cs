@@ -124,7 +124,7 @@ namespace starsky.feature.geolookup.Services
 					_iStorage).LoopFolder(fileIndexList);
       
 				_console.Write("¬");
-				_geoLocationWrite.LoopFolder(toMetaFilesUpdate, false);
+				_geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);
 				_console.Write("(gps added)");
 			}
     
@@ -134,7 +134,7 @@ namespace starsky.feature.geolookup.Services
 			{
 				_console.Write("~ Add city, state and country info ~");
 				
-				_geoLocationWrite.LoopFolder(fileIndexList, true);
+				_geoLocationWrite.LoopFolderAsync(fileIndexList, true);
 			}
     
 			_console.Write("^\n");

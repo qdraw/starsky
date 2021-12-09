@@ -55,12 +55,10 @@ namespace starsky.foundation.database.Data
 					var converter = new ValueConverter<DateTime, string>(
 						v =>
 							v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-					v => string.IsNullOrWhiteSpace(v)
-							? DateTime.MinValue
-							: DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
-								CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
-								? parsedDateTime
-								: DateTime.MinValue
+					v => DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
+						CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
+						? parsedDateTime
+						: DateTime.MinValue
 					);
 					
 					etb.Property(e => e.LockoutEnd)

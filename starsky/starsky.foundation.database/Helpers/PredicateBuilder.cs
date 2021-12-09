@@ -106,7 +106,7 @@ namespace starsky.foundation.database.Helpers
 				Expression.AndAlso(left, right), parameter);
 		}
 
-		private class ReplaceExpressionVisitor
+		private sealed class ReplaceExpressionVisitor
 			: ExpressionVisitor
 		{
 			private readonly Expression _oldValue;

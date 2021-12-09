@@ -22,6 +22,7 @@
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
         <ProjectReference Include="..\starsky.foundation.readmeta\starsky.foundation.readmeta.csproj" />
         <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj" />
+        <ProjectReference Include="..\starsky.foundation.worker\starsky.foundation.worker.csproj" />
         <ProjectReference Include="..\starsky.foundation.writemeta\starsky.foundation.writemeta.csproj" />
     </ItemGroup>
 
