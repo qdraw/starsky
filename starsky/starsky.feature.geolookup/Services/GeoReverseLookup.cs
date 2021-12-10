@@ -6,6 +6,7 @@ using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using NGeoNames;
 using NGeoNames.Entities;
+using NGeoNames.Parsers;
 using starsky.feature.geolookup.Interfaces;
 using starsky.feature.geolookup.Models;
 using starsky.foundation.database.Models;
@@ -20,9 +21,11 @@ namespace starsky.feature.geolookup.Services
 	[Service(typeof(IGeoReverseLookup), InjectionLifetime = InjectionLifetime.Scoped)]
     public class GeoReverseLookup : IGeoReverseLookup
     {
-        private readonly ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
+        private ReverseGeoCode<ExtendedGeoName> _reverseGeoCode;
         private readonly IEnumerable<Admin1Code> _admin1CodesAscii;
         private readonly IMemoryCache _cache;
+        private readonly AppSettings _appSettings;
+        private readonly IWebLogger _logger;
 
         /// <summary>
         /// Getting GeoData
@@ -34,23 +37,34 @@ namespace starsky.feature.geolookup.Services
         {
 	        // Needed when not having this, application will fail
 	        geoFileDownload.Download().ConfigureAwait(false);
-	        
+	        _appSettings = appSettings;
+	        _logger = logger;
             _admin1CodesAscii = GeoFileReader.ReadAdmin1Codes(
                 Path.Combine(appSettings.TempFolder, "admin1CodesASCII.txt"));
             
             // Create our ReverseGeoCode class and supply it with data
-            try
-            {
-	            _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
-		            GeoFileReader.ReadExtendedGeoNames(
-			            Path.Combine(appSettings.TempFolder, GeoFileDownload.CountryName + ".txt")));
-            }
-            catch ( FileNotFoundException e )
-            {
-	            logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
-            }
+            InitReverseGeoCode();
 
             _cache = memoryCache;
+        }
+
+        private void InitReverseGeoCode()
+        {
+	        if ( _reverseGeoCode != null ) return;
+	        try
+	        {
+		        _reverseGeoCode = new ReverseGeoCode<ExtendedGeoName>(
+			        GeoFileReader.ReadExtendedGeoNames(
+				        Path.Combine(_appSettings.TempFolder, GeoFileDownload.CountryName + ".txt")));
+	        }
+	        catch ( ParserException e )
+	        {
+		        _logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
+	        }
+	        catch ( FileNotFoundException e )
+	        {
+		        _logger?.LogError(e,"catch-ed GeoFileDownload GeoReverseLookup error");
+	        }
         }
 
         private string GetAdmin1Name(string countryCode, string[] adminCodes)
@@ -104,7 +118,9 @@ namespace starsky.feature.geolookup.Services
 	    public List<FileIndexItem> LoopFolderLookup(List<FileIndexItem> metaFilesInDirectory,
             bool overwriteLocationNames)
         {
-            metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
+	        InitReverseGeoCode();
+	        
+	        metaFilesInDirectory = RemoveNoUpdateItems(metaFilesInDirectory,overwriteLocationNames);
 
             var subPath = metaFilesInDirectory.FirstOrDefault()?.ParentDirectory;
             
