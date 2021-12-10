@@ -7,7 +7,7 @@ namespace starskytest.FakeMocks
 {
 	public class FakeIMetaUpdateService : IMetaUpdateService
 	{
-		public Task<List<FileIndexItem>> Update(
+		public Task<List<FileIndexItem>> UpdateAsync(
 			Dictionary<string, List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList, FileIndexItem inputModel,
 			bool collections, bool append, int rotateClock)

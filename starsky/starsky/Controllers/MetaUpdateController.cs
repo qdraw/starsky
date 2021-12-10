@@ -87,7 +87,7 @@ namespace starsky.Controllers
 					.ServiceProvider.GetService<IMetaUpdateService>();
 
 				var data = await 
-					metaUpdateService.Update(changedFileIndexItemName, fileIndexResultsList,
+					metaUpdateService.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
 						null,
 						collections, append, rotateClock);
 				operationHolder.SetData(data);
@@ -168,7 +168,7 @@ namespace starsky.Controllers
 				var metaUpdateService = _scopeFactory.CreateScope()
 					.ServiceProvider.GetService<IMetaUpdateService>();
 				await metaUpdateService
-					.Update(changedFileIndexItemName, resultsOkOrDeleteList,
+					.UpdateAsync(changedFileIndexItemName, resultsOkOrDeleteList,
 						null, collections, false, 0);
 			});
 

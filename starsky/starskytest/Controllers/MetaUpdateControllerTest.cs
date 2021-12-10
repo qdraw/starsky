@@ -145,8 +145,10 @@ namespace starskytest.Controllers
 	        
 			var metaPreflight = new MetaPreflight(_query,_appSettings,
 				selectorStorage,new FakeIWebLogger());
-			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
-				selectorStorage, metaPreflight, new FakeIWebLogger());
+			var metaUpdateService = new MetaUpdateService(_query,_exifTool,
+				selectorStorage, metaPreflight, new FakeIWebLogger(), _appSettings, 
+				new FakeMemoryCache(new Dictionary<string, object>()));
+			
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 			
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
@@ -183,8 +185,9 @@ namespace starskytest.Controllers
 
 			var metaPreflight = new MetaPreflight(_query,
 				_appSettings,selectorStorage,new FakeIWebLogger());
-			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), 
-				selectorStorage, metaPreflight, new FakeIWebLogger());
+			var metaUpdateService = new MetaUpdateService(_query,_exifTool,
+				selectorStorage, metaPreflight, new FakeIWebLogger(), _appSettings, 
+				new FakeMemoryCache(new Dictionary<string, object>()));
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 	        
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
@@ -216,8 +219,9 @@ namespace starskytest.Controllers
 
 			var metaPreflight = new MetaPreflight(_query,
 				_appSettings,selectorStorage,new FakeIWebLogger());
-			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
-				metaPreflight, new FakeIWebLogger());
+			var metaUpdateService = new MetaUpdateService(_query,_exifTool,
+				selectorStorage, metaPreflight, new FakeIWebLogger(), _appSettings, 
+				new FakeMemoryCache(new Dictionary<string, object>()));
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 	        
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
@@ -250,8 +254,9 @@ namespace starskytest.Controllers
 	        
 			var metaPreflight = new MetaPreflight(_query,
 				_appSettings,selectorStorage,new FakeIWebLogger());
-			var metaUpdateService = new MetaUpdateService(_query,_exifTool,new FakeReadMeta(), selectorStorage, 
-				metaPreflight, new FakeIWebLogger());
+			var metaUpdateService = new MetaUpdateService(_query,_exifTool,
+				selectorStorage, metaPreflight, new FakeIWebLogger(), _appSettings, 
+				new FakeMemoryCache(new Dictionary<string, object>()));
 			var metaReplaceService = new MetaReplaceService(_query,_appSettings,selectorStorage, new FakeIWebLogger());
 			var controller = new MetaUpdateController(metaPreflight,metaUpdateService, metaReplaceService, _bgTaskQueue, 
 				new FakeIWebSocketConnectionsService(), new FakeIWebLogger(),NewScopeFactory());

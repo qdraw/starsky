@@ -50,7 +50,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 				_geoLocationWrite, _memoryCache, new FakeIWebLogger(),
-				_geoFileDownload,geoReverseLookup);
+				geoReverseLookup);
 			
 			// var is used
 			var results = await controller.GeoBackgroundTaskAsync();
@@ -78,7 +78,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 				_geoLocationWrite, _memoryCache, new FakeIWebLogger(),
-				_geoFileDownload,geoReverseLookup);
+				geoReverseLookup);
 			
 			var results = await controller.GeoBackgroundTaskAsync();
 		
@@ -95,7 +95,7 @@ namespace starskytest.starsky.feature.geolookup.Services
 
 			var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 				_geoLocationWrite,_memoryCache, 
-				new FakeIWebLogger(), _geoFileDownload, 
+				new FakeIWebLogger(),  
 				geoReverseLookup );
 
 			controller.GeoBackgroundTaskAsync();

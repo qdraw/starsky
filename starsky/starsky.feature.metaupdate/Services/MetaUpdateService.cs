@@ -4,13 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.metaupdate.Interfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
@@ -36,19 +39,21 @@ namespace starsky.feature.metaupdate.Services
 		public MetaUpdateService(
 			IQuery query,
 			IExifTool exifTool, 
-			IReadMeta readMeta,
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
-			IWebLogger logger)
+			IWebLogger logger,
+			AppSettings appSettings,
+			IMemoryCache cache)
 		{
 			_query = query;
 			_exifTool = exifTool;
-			_readMeta = readMeta;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
+			_readMeta = new ReadMeta(_iStorage, appSettings, cache);
 			_metaPreflight = metaPreflight;
 			_logger = logger;
 		}
+
 
 		/// <summary>
 		/// Run Update
@@ -61,7 +66,7 @@ namespace starsky.feature.metaupdate.Services
 		/// <param name="collections">enable or disable this feature</param>
 		/// <param name="append">only for disabled cache or changedFileIndexItemName=null</param>
 		/// <param name="rotateClock">rotation value 1 left, -1 right, 0 nothing</param>
-		public async Task<List<FileIndexItem>> Update(
+		public async Task<List<FileIndexItem>> UpdateAsync(
 			Dictionary<string,List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, // only when changedFileIndexItemName = null
