@@ -71,6 +71,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ OperationId in RequestTelemetryHelper to track background Tasks in Application Insights (PR #540)
 - [x]   (Added) _Back-end_ QueueBackgroundWorkItem for DiskWatcher to have a separate queue (PR #540)
 - [x]   (Changed) _Back-end_ Change GeoLocationWrite to async variant  (PR #540)
+- [x]   (Security) _Back-end_ Upgrade dependencies (PR #548 & #547 & #546 & #545 & #544 & #543 & #542 & #541)
+- [x]   (Fixed) _Back-end_ Extend ServiceCollectionExtensions to load more Assemblies to get auto mapped by the service attribute (PR #550)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)

@@ -9,7 +9,7 @@ using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Interfaces;
 using XmpCore;
 
-namespace starsky.foundation.readmeta.Services
+namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
 	public class ReadMetaXmp
 	{

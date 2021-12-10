@@ -9,6 +9,7 @@ using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.readmeta.Models;
+using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;

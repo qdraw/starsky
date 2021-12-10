@@ -32,7 +32,7 @@ namespace starsky.feature.geolookup.Services
 
 		public GeoBackgroundTask(AppSettings appSettings, ISelectorStorage selectorStorage, 
 			IGeoLocationWrite geoLocationWrite, IMemoryCache memoryCache, 
-			IWebLogger logger, IGeoFileDownload geoFileDownload, IGeoReverseLookup geoReverseLookup)
+			IWebLogger logger, IGeoReverseLookup geoReverseLookup)
 		{
 			_appSettings = appSettings;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);

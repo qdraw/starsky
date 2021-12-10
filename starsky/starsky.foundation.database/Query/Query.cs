@@ -53,7 +53,9 @@ namespace starsky.foundation.database.Query
 			
             FileIndexItem LocalQuery(ApplicationDbContext context)
             {
-	            return context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            var item = context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            if ( item != null ) item.Status = FileIndexItem.ExifStatus.Ok;
+	            return item;
             }
             
             try

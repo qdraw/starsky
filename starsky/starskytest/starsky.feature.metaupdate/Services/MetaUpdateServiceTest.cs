@@ -13,6 +13,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -104,9 +105,14 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				ParentDirectory = "/"
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					new FakeIWebLogger())
-				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache);
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem, false,false,0);
 
 			// check for item (Referenced)
 			Assert.AreEqual("thisKeywordHasChanged",item0.Tags);
@@ -119,18 +125,20 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 		
 		[TestMethod]
-		public void UpdateService_Update_toDelete()
+		public async Task UpdateService_Update_toDelete()
 		{
-			_query.AddItem(new FileIndexItem
+			var query = new FakeIQuery();
+			await query.AddItemAsync(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "",
 				FileName = "test_delete.jpg",
 				Description = "noChanges",
-				ParentDirectory = "/delete"
+				ParentDirectory = "/delete",
+				Id = 9
 			});
 
-			var item0 = _query.GetObjectByFilePath("/delete/test_delete.jpg");
+			var item0 = query.GetObjectByFilePath("/delete/test_delete.jpg");
 			item0.Tags = "!delete!";
 			
 			var changedFileIndexItemName = new Dictionary<string, List<string>>
@@ -148,26 +156,29 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				item0
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					new FakeIWebLogger())
-				.Update(changedFileIndexItemName, fileIndexResultsList, null, false,false,0);
+			var readMeta = new FakeReadMetaSubPathStorage();
+			var service = new MetaUpdateService(query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, null, false,false,0);
 
 			// Deleted status is done in the Preflight stage
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok,fileIndexResultsList[0].Status);
 
 			// db
-			Assert.AreEqual("!delete!",_query.GetObjectByFilePath("/delete/test_delete.jpg").Tags);
+			Assert.AreEqual("!delete!",query.GetObjectByFilePath("/delete/test_delete.jpg").Tags);
 			
-			Assert.AreEqual("noChanges",_query.GetObjectByFilePath("/delete/test_delete.jpg").Description);
+			Assert.AreEqual("noChanges",query.GetObjectByFilePath("/delete/test_delete.jpg").Description);
 
-			_query.RemoveItem(item0);
+			await query.RemoveItemAsync(item0);
 		}
 
 		
 		[TestMethod]
-		public void UpdateService_Update_NoChangedFileIndexItemName_AndHasChanged()
+		public async Task UpdateService_Update_NoChangedFileIndexItemName_AndHasChanged()
 		{
-			var databaseItem = _query.AddItem(new FileIndexItem
+			var databaseItem = await _query.AddItemAsync(new FileIndexItem
 			{
 				Status = FileIndexItem.ExifStatus.Ok,
 				Tags = "databaseItem",
@@ -198,10 +209,15 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				IsDirectory = false
 			};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, 
-					new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(), new FakeIWebLogger())
-				.Update(null, fileIndexResultsList, toUpdateItem, false,false,0);
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache);
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			await service.UpdateAsync(null, fileIndexResultsList, 
+				toUpdateItem, false,false,0);
 			// Second one is null
 
 			// check for item (Referenced)
@@ -213,29 +229,31 @@ namespace starskytest.starsky.feature.metaupdate.Services
 		}
 
 		[TestMethod]
-		public void Update_Write_GPX()
+		public async Task Update_Write_GPX()
 		{
 			var changedFileIndexItemName = new Dictionary<string, List<string>>{
 			{
 				"/test.gpx", new List<string>{"Tags"}
 			}};
 
-			_iStorageFake.WriteStream(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
+			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnGpx.Bytes), "/test.gpx");
 			var updateItem = new FileIndexItem("/test.gpx")
 			{
 				Tags = "test",
 				Status = FileIndexItem.ExifStatus.Ok
 			};
 
-			_query.AddItem(updateItem);
+			var query = new FakeIQuery();
+			await query.AddItemAsync(updateItem);
 			
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, 
-					new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(),  
-					new FakeIWebLogger())
-				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
+			var readMeta = new FakeReadMetaSubPathStorage();
+			var service = new MetaUpdateService(query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,false,0);
 
 			Assert.IsTrue(_iStorageFake.ExistFile("/.starsky.test.gpx.json"));
 		}
@@ -250,22 +268,26 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				new FileIndexItem("/test.jpg") {Status = FileIndexItem.ExifStatus.Ok}
 			};
 			
-			await new MetaUpdateService(_query,_exifTool, _readMeta, 
-					new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),  
-					new FakeIWebLogger())
-				.Update(changedFileIndexItemName, fileIndexResultList , 
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache);
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			await service.UpdateAsync(changedFileIndexItemName, fileIndexResultList , 
 					null,false,false,0);
 			// expect exception
 		}
 		
 		[TestMethod]
-		public void UpdateRotate()
+		public async Task UpdateRotate()
 		{
 			var changedFileIndexItemName = new Dictionary<string, List<string>>{
 			{
 				"/test.jpg", new List<string>{"orientation"}
 			}};
-			_iStorageFake.WriteStream(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
+			await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes), "/test.jpg");
 			var updateItem = new FileIndexItem("/test.jpg")
 			{
 				Orientation = FileIndexItem.Rotation.Horizontal,
@@ -273,20 +295,24 @@ namespace starskytest.starsky.feature.metaupdate.Services
 				FileHash = "test"
 			};
 
-			_query.AddItem(updateItem);
+			var query = new FakeIQuery();
+			await query.AddItemAsync(updateItem);
 			
 			var fileIndexResultsList = new List<FileIndexItem>{updateItem};
 
-			new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(),  
-					null)
-				.Update(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
+			var readMeta = new FakeReadMetaSubPathStorage();
+			var service = new MetaUpdateService(query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+				
+			await service
+				.UpdateAsync(changedFileIndexItemName, fileIndexResultsList, updateItem,false,
 					false,1);
 
 			// so there is something changed
 			Assert.AreNotEqual("test", updateItem.FileHash);
 
-			_query.RemoveItem(updateItem);
+			await _query.RemoveItemAsync(updateItem);
 		}
 
 		[TestMethod]
@@ -296,10 +322,15 @@ namespace starskytest.starsky.feature.metaupdate.Services
 			{
 				FileIndexItem = new FileIndexItem("/test.jpg")
 			};
-			await new MetaUpdateService(_query,_exifTool, _readMeta, new FakeSelectorStorage(_iStorageFake), 
-					new FakeMetaPreflight(),  
-					null)
-				.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView.FileIndexItem);
+
+			var readMeta = new ReadMetaSubPathStorage(
+				new FakeSelectorStorage(_iStorageFake), _appSettings,
+				_memoryCache);
+			var service = new MetaUpdateService(_query, _exifTool,
+				new FakeSelectorStorage(_iStorageFake), new FakeMetaPreflight(),
+				new FakeIWebLogger(), readMeta);
+			
+			await service.ApplyOrGenerateUpdatedFileHash(new List<string>(), detailView.FileIndexItem);
 			
 			Assert.IsNotNull(detailView.FileIndexItem.FileHash);
 		}

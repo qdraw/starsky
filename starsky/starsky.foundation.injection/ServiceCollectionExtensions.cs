@@ -14,7 +14,7 @@ namespace starsky.foundation.injection
 	    public static void AddClassesWithServiceAttribute(this IServiceCollection serviceCollection,
 		    params string[] assemblyFilters)
         {
-            var assemblies = GetAssemblies(assemblyFilters);
+            var assemblies = GetAssemblies(assemblyFilters.ToList());
             serviceCollection.AddClassesWithServiceAttribute(assemblies);
         }
 
@@ -96,7 +96,7 @@ namespace starsky.foundation.injection
             }
         }
         
-        private static Assembly[] GetAssemblies(IEnumerable<string> assemblyFilters)
+        private static Assembly[] GetAssemblies(List<string> assemblyFilters)
         {
             var assemblies = new List<Assembly>();
             foreach (var assemblyFilter in assemblyFilters)
@@ -105,7 +105,43 @@ namespace starsky.foundation.injection
 	                IsWildcardMatch(assembly.GetName().Name, assemblyFilter)).ToArray());
             }
 
+            assemblies = GetEntryAssemblyReferencedAssemblies(assemblies,
+		            assemblyFilters);
+
             return GetReferencedAssemblies(assemblies, assemblyFilters);
+        }
+
+        /// <summary>
+        /// Load Assemblies with filter
+        /// @see: https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+        /// </summary>
+        /// <param name="assemblies">Current Assemblies</param>
+        /// <param name="assemblyFilters">filter used</param>
+        /// <returns>list of assemblies used</returns>
+        private static List<Assembly> GetEntryAssemblyReferencedAssemblies(List<Assembly> assemblies, List<string> assemblyFilters)
+        {
+	        var assemblyNames = Assembly
+		        .GetEntryAssembly()?.GetReferencedAssemblies();
+	        if ( assemblyNames == null )
+	        {
+		        return assemblies;
+	        }
+
+	        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+	        foreach ( var assemblyName in assemblyNames )
+	        {
+		        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		        foreach ( var assemblyFilter in assemblyFilters )
+		        {
+			        var isThere = assemblies.Any(p => p.FullName == assemblyName.FullName);
+			        if (IsWildcardMatch(assemblyName.Name, assemblyFilter) && !isThere )
+			        {
+				        assemblies.Add(AppDomain.CurrentDomain.Load(assemblyName));
+			        }
+		        }
+	        }
+
+	        return assemblies.OrderBy(p => p.FullName).ToList();
         }
 
         /// <summary>
