@@ -15,7 +15,7 @@ using starsky.foundation.storage.Interfaces;
 using Directory = MetadataExtractor.Directory;
 
 [assembly: InternalsVisibleTo("starsky.foundation.metathumbnail.Services")]
-namespace starsky.foundation.readmeta.Services
+namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
 	public class ReadMetaExif
 	{

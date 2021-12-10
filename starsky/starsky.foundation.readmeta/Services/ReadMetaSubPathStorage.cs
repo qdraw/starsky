@@ -4,11 +4,10 @@ using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
-using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 
-namespace starsky.foundation.readmeta.WrapperServices
+namespace starsky.foundation.readmeta.Services
 {
 	[Service(typeof(IReadMetaSubPathStorage), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ReadMetaSubPathStorage : IReadMetaSubPathStorage

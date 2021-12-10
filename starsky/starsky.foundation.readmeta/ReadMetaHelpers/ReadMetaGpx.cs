@@ -10,7 +10,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.Models;
 using starsky.foundation.storage.Helpers;
 
-namespace starsky.foundation.readmeta.Services
+namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
     public class ReadMetaGpx
     {
