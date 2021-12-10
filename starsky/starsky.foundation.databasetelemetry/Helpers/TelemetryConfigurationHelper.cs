@@ -1,3 +1,4 @@
+using System;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -11,6 +12,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			var module = CreateDatabaseDependencyTrackingTelemetryModule();
 			var telemetryConfiguration = CreateTelemetryConfiguration(appInsightsConnectionString);
 			var telemetryClient = new TelemetryClient(telemetryConfiguration);
+			telemetryClient.Context.Cloud.RoleInstance = Environment.MachineName;
 			module.Initialize(telemetryConfiguration);
 			return telemetryClient;
 		}

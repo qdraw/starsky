@@ -11,6 +11,11 @@ namespace starsky.foundation.webtelemetry.Extensions
 {
 	public static class ApplicationInsightsExtension
 	{
+		/// <summary>
+		/// Add Metrics & Monitoring for Application Insights
+		/// </summary>
+		/// <param name="services">collection service</param>
+		/// <param name="appSettings">to use for ApplicationInsights InstrumentationKey</param>
 		public static void AddMonitoring(this IServiceCollection services, AppSettings appSettings)
 		{
 			if ( string.IsNullOrWhiteSpace(appSettings.ApplicationInsightsInstrumentationKey) )
