@@ -30,7 +30,7 @@ namespace starsky.feature.metaupdate.Services
 	{ 
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;
-		private readonly IReadMeta _readMeta;
+		private readonly IReadMetaSubPathStorage _readMeta;
 		private readonly IStorage _iStorage;
 		private readonly IStorage _thumbnailStorage;
 		private readonly IMetaPreflight _metaPreflight;
@@ -42,14 +42,13 @@ namespace starsky.feature.metaupdate.Services
 			ISelectorStorage selectorStorage,
 			IMetaPreflight metaPreflight,
 			IWebLogger logger,
-			AppSettings appSettings,
-			IMemoryCache cache)
+			IReadMetaSubPathStorage readMetaSubPathStorage)
 		{
 			_query = query;
 			_exifTool = exifTool;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, appSettings, cache);
+			_readMeta = readMetaSubPathStorage;
 			_metaPreflight = metaPreflight;
 			_logger = logger;
 		}

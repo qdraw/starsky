@@ -13,7 +13,6 @@ using starsky.foundation.storage.Services;
 
 namespace starsky.foundation.readmeta.Services
 {
-	[Service(typeof(IReadMeta), InjectionLifetime = InjectionLifetime.Scoped)]
 	public class ReadMeta : IReadMeta
 	{
 		private readonly AppSettings _appSettings;
