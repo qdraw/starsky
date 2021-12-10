@@ -111,7 +111,14 @@ namespace starsky.foundation.injection
             return GetReferencedAssemblies(assemblies, assemblyFilters);
         }
 
-        private static List<Assembly> GetEntryAssemblyReferencedAssemblies(List<Assembly> assemblies, IEnumerable<string> assemblyFilters)
+        /// <summary>
+        /// Load Assemblies with filter
+        /// @see: https://dotnetcoretutorials.com/2020/07/03/getting-assemblies-is-harder-than-you-think-in-c/
+        /// </summary>
+        /// <param name="assemblies">Current Assemblies</param>
+        /// <param name="assemblyFilters">filter used</param>
+        /// <returns>list of assemblies used</returns>
+        private static List<Assembly> GetEntryAssemblyReferencedAssemblies(List<Assembly> assemblies, List<string> assemblyFilters)
         {
 	        var assemblyNames = Assembly
 		        .GetEntryAssembly()?.GetReferencedAssemblies();
