@@ -13,6 +13,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskycore.ViewModels;
+using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
 {
@@ -32,25 +33,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test");
 			var options = builderDb.Options;
 			var contextDb = new ApplicationDbContext(options);
-			_query = new Query(contextDb,memoryCache);
-
-			// Create a new http context
-//            var context = new DefaultHttpContext();
-//            services.AddSingleton<IHttpContextAccessor>(
-//                new HttpContextAccessor()
-//                {
-//                    HttpContext = context,
-//                });
-            
-//            services.AddScoped<IUrlHelper>(x => {
-//                var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
-//                var factory = x.GetRequiredService<IUrlHelperFactory>();
-//                return factory.GetUrlHelper(actionContext);
-//            });
-			var services = new ServiceCollection();
-//            services.AddSingleton<IUrlHelper , FakeUrlHelper>();    
-
-            
+			_query = new Query(contextDb,memoryCache, new AppSettings(), null, new FakeIWebLogger());
 		}
 
 		private void InsertSearchData()
