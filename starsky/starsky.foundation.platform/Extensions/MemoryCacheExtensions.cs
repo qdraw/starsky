@@ -14,9 +14,15 @@ namespace starsky.foundation.platform.Extensions
 			typeof(MemoryCache).GetProperty("EntriesCollection", BindingFlags.NonPublic | BindingFlags.Instance).GetGetMethod(true),
 			throwOnBindFailure: true) as Func<MemoryCache, object>;
 
-		public static IEnumerable GetKeys(this IMemoryCache memoryCache) =>
+		private static IEnumerable GetKeys(this IMemoryCache memoryCache) =>
 			((IDictionary)GetEntriesCollection((MemoryCache)memoryCache)).Keys;
 
+		/// <summary>
+		/// Get Keys
+		/// </summary>
+		/// <param name="memoryCache">memory cache</param>
+		/// <typeparam name="T">bind as</typeparam>
+		/// <returns>list of items</returns>
 		public static IEnumerable<T> GetKeys<T>(this IMemoryCache memoryCache) =>
 			GetKeys(memoryCache).OfType<T>();
 	}
