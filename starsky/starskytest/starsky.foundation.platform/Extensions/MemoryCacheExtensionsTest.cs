@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.platform.Extensions
 {
@@ -34,6 +35,13 @@ namespace starskytest.starsky.foundation.platform.Extensions
 			Assert.AreEqual(1, keys.Count);
 			Assert.AreEqual("test", keys[0]);
 		}
-		
+
+		[TestMethod]
+		public void FakeCache_Invalid()
+		{
+			var cache = new FakeMemoryCache();
+			var keys= cache.GetKeys<string>().ToList();
+			Assert.AreEqual(0, keys.Count);
+		}
 	}
 }

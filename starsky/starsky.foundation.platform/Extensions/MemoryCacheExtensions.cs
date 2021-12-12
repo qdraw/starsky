@@ -23,7 +23,16 @@ namespace starsky.foundation.platform.Extensions
 		/// <param name="memoryCache">memory cache</param>
 		/// <typeparam name="T">bind as</typeparam>
 		/// <returns>list of items</returns>
-		public static IEnumerable<T> GetKeys<T>(this IMemoryCache memoryCache) =>
-			GetKeys(memoryCache).OfType<T>();
+		public static IEnumerable<T> GetKeys<T>(this IMemoryCache memoryCache) {
+			try
+			{
+				return GetKeys(memoryCache).OfType<T>();
+			}
+			catch ( InvalidCastException )
+			{
+				return new List<T>();
+			}
+		}
+			
 	}
 }
