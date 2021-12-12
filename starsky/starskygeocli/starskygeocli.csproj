@@ -11,6 +11,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.geolookup\starsky.feature.geolookup.csproj" />
+        <ProjectReference Include="..\starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

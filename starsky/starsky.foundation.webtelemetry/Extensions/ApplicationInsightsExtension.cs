@@ -1,10 +1,12 @@
 using System.Runtime.CompilerServices;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.Extensibility.EventCounterCollector;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Models;
+using starsky.foundation.webtelemetry.Initializers;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.webtelemetry.Extensions
@@ -41,6 +43,8 @@ namespace starsky.foundation.webtelemetry.Extensions
 					InstrumentationKey = appSettings
 						.ApplicationInsightsInstrumentationKey,
 				});
+			
+			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"starsky{AppSettings.StarskyAppType.WebController}"));
 
 			services.ConfigureTelemetryModule<EventCounterCollectionModule>(
 				(module, _) => SetEventCounterCollectionModule(module));

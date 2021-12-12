@@ -69,8 +69,8 @@ namespace starsky.feature.import.Services
 			IQuery query,
 			IConsole console,
 			IMetaExifThumbnailService metaExifThumbnailService,
-			IMemoryCache memoryCache,
-			IWebLogger logger)
+			IWebLogger logger,
+			IMemoryCache memoryCache = null)
 		{
 			_importQuery = importQuery;
 			

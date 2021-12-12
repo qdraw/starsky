@@ -12,6 +12,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 			var module = CreateDatabaseDependencyTrackingTelemetryModule();
 			var telemetryConfiguration = CreateTelemetryConfiguration(appInsightsConnectionString);
 			var telemetryClient = new TelemetryClient(telemetryConfiguration);
+			telemetryClient.Context.Cloud.RoleName = $"starskyWebController";
 			telemetryClient.Context.Cloud.RoleInstance = Environment.MachineName;
 			module.Initialize(telemetryConfiguration);
 			return telemetryClient;

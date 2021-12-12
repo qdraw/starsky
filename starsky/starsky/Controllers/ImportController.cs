@@ -118,7 +118,7 @@ namespace starsky.Controllers
 				// use of IImport direct does not work
 				importedFiles = await new Import(selectorStorage,_appSettings,
 					importQuery, exifTool, query,console, 
-					metaExifThumbnailService, memoryCache, _logger).Importer(tempImportPaths, importSettings);
+					metaExifThumbnailService, _logger, memoryCache).Importer(tempImportPaths, importSettings);
 			}
 	            
 			if (isVerbose)
