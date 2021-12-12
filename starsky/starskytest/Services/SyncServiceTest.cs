@@ -64,7 +64,7 @@ namespace starskytest.Services
 			// copy config to AppSettings as service to inject
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 			// Activate Query
-			_query = new Query(context,memoryCache);
+			_query = new Query(context,memoryCache, _appSettings, null, new FakeIWebLogger());
             
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			var readmeta = new ReadMeta(_iStorage,_appSettings);

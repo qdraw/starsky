@@ -36,7 +36,8 @@ namespace starskytest.Services
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 			_search = new SearchService(_dbContext,null,null, new FakeIWebLogger());
-			_query = new Query(_dbContext,_memoryCache);
+			_query = new Query(_dbContext,_memoryCache,
+				new AppSettings(), null, new FakeIWebLogger());
 		}
 	    
 		private const int NumberOfResultsInView = 120;

@@ -95,7 +95,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task AddParentItemsAsync_Home()
 		{
 			var dbContext = CreateNewScope().CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext);
+			var query = new Query(dbContext,null,null,null,null);
 
 			await query.AddParentItemsAsync("/test/test/test");
 

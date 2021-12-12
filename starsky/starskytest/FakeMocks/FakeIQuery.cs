@@ -401,6 +401,11 @@ namespace starskytest.FakeMocks
 		{
 		}
 
+		public Task DisposeAsync()
+		{
+			return Task.CompletedTask;
+		}
+
 		public bool IsCacheEnabled()
 		{
 			throw new System.NotImplementedException();

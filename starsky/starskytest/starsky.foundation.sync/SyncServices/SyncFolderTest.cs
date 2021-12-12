@@ -383,7 +383,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(new Dictionary<string, object>()));
 
 			var rootItem = await _query.GetObjectByFilePathAsync("/Folder_InDbButNotOnDisk3");
 			var result = await syncFolder.RemoveChildItems(_query, rootItem);

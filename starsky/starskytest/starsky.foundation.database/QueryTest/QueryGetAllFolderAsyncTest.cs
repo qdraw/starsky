@@ -12,6 +12,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -31,7 +32,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			_query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger());
 		}
 		
 		private IServiceScopeFactory CreateNewScope()

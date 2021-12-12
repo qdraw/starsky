@@ -234,6 +234,11 @@ namespace starskytest.FakeMocks
 		{
 			throw _exception;
 		}
+		
+		public Task DisposeAsync()
+		{
+			return Task.CompletedTask;
+		}
 	}
 	
 }

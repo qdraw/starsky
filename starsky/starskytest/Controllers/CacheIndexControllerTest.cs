@@ -49,7 +49,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test1234");
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
-			_query = new Query(_context,memoryCache);
+			_query = new Query(_context,memoryCache,null,null,null);
             
 			// Inject Fake ExifTool; dependency injection
 			var services = new ServiceCollection();

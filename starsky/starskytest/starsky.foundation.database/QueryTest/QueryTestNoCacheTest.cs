@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -16,10 +19,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			builder.UseInMemoryDatabase("QueryTestNoCacheTest");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new global::starsky.foundation.database.Query.Query(context);
+			_query = new Query(context,null, new AppSettings(), null, new FakeIWebLogger());
 		}
 
-		private readonly global::starsky.foundation.database.Query.Query _query;
+		private readonly Query _query;
 
 		[TestMethod]
 		public void QueryNoCache_SingleItem_Test()

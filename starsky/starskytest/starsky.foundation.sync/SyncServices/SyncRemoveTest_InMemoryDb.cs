@@ -8,6 +8,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncServices;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.SyncServices
 {
@@ -49,7 +50,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/Folder_With_ChildItems/test2.jpg"),
 			});
 			
-			var result= await new SyncRemove(_appSettings, _query).Remove("/Folder_With_ChildItems");
+			var result= await new SyncRemove(_appSettings, _query, 
+				new FakeMemoryCache(), new FakeIWebLogger()).Remove("/Folder_With_ChildItems");
 			
 			Assert.AreEqual(3, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);

@@ -41,23 +41,21 @@ namespace starskytest.Controllers
 		private readonly IQuery _query;
 		private readonly IStorage _iStorage;
 		private readonly AppSettings _appSettings;
-		private readonly ISynchronize _iSync;
-		private readonly IReadMeta _readMeta;
 		private readonly Import _import;
+		private readonly IMemoryCache _memoryCache;
 
 		public UploadControllerTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
 				.BuildServiceProvider();
-			var memoryCache = provider.GetService<IMemoryCache>();
+			_memoryCache = provider.GetService<IMemoryCache>();
 
 			var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, memoryCache);
-
+			var scopeFactory = provider.GetService<IServiceScopeFactory>();
 			var services = new ServiceCollection();
 
 			// Fake the readMeta output
@@ -70,18 +68,19 @@ namespace starskytest.Controllers
 			_appSettings = new AppSettings { 
 				TempFolder = createAnImage.BasePath
 			};
+			_query = new Query(context, _memoryCache, _appSettings, scopeFactory, new FakeIWebLogger());
 
 			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 
 				new List<byte[]>{CreateAnImage.Bytes});
 			
-			_readMeta = new ReadMeta(_iStorage,_appSettings);
+			var readMeta = new ReadMeta(_iStorage,_appSettings);
                         
 			var selectorStorage = new FakeSelectorStorage(_iStorage);
-			_iSync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
+			var iSync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger(), _memoryCache);
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
-				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), new FakeIMetaExifThumbnailService());
+				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), new FakeIMetaExifThumbnailService(), _memoryCache, new FakeIWebLogger());
 
 			// Start using dependency injection
 			var builder = new ConfigurationBuilder();
@@ -98,7 +97,6 @@ namespace starskytest.Controllers
 			var serviceProvider = services.BuildServiceProvider();
 			// get the service
 			
-			_readMeta = serviceProvider.GetRequiredService<IReadMeta>();
 			serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
 		

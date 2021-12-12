@@ -50,7 +50,8 @@ namespace starskytest.starsky.feature.rename.Services
 				StorageFolder = PathHelper.AddBackslash(_newImage.BasePath),
 				ThumbnailTempFolder = _newImage.BasePath
 			};
-			_query = new Query(context,memoryCache, _appSettings);
+			_query = new Query(context,memoryCache, _appSettings, null,
+				new FakeIWebLogger());
 
 			if ( _query.GetAllFiles("/").All(p => p.FileName != _newImage.FileName) )
 			{

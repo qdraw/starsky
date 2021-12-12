@@ -34,7 +34,7 @@ namespace starskytest.Services
 			var options = builder.Options;
 			_dbContext = new ApplicationDbContext(options);
 			_suggest = new SearchSuggestionsService(_dbContext,_memoryCache,new FakeIWebLogger(),new AppSettings());
-			_query = new Query(_dbContext,_memoryCache);
+			_query = new Query(_dbContext,_memoryCache, new AppSettings(), null, new FakeIWebLogger());
 		}
 		
 		[TestInitialize]

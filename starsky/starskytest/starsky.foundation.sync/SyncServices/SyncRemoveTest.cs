@@ -55,7 +55,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task FileNotOnDrive()
 		{
-			var result= await new SyncRemove(_appSettings,_query).Remove("/not_found");
+			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var result= await remove.Remove("/not_found");
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -64,8 +65,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		[TestMethod]
 		public async Task SingleItem_Folder_Remove()
 		{
-			var result= await new SyncRemove(_appSettings, 
-				_query).Remove("/folder_no_content");
+			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var result= await remove.Remove("/folder_no_content");
 			
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, result[0].Status);
@@ -95,8 +96,9 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/sidecar_test2/test.xmp")
 			};
 			var query = new FakeIQuery(queryContent);
-			var result= await new SyncRemove(_appSettings, query)
-				.Remove(new List<string>{"/sidecar_test/test.xmp","/sidecar_test2/test.xmp"});
+			var remove = new SyncRemove(_appSettings, _query, null, null);
+
+			var result= await remove.Remove(new List<string>{"/sidecar_test/test.xmp","/sidecar_test2/test.xmp"});
 
 			Assert.AreEqual(2, result.Count);
 			

@@ -172,7 +172,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 			fakeQuery.UpdateItem(new FileIndexItem());
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -186,7 +186,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 			await fakeQuery.UpdateItemAsync(new FileIndexItem("test"));
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -215,7 +215,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 			await fakeQuery.UpdateItemAsync(new List<FileIndexItem>{new FileIndexItem("test")});
 			
 			Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -338,7 +338,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 
 			fakeQuery.SolveConcurrencyException(new FileIndexItem(),
 				new FakePropertyValues(null), new FakePropertyValues(null),
@@ -355,7 +355,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
 				.Options;
 			
-			var fakeQuery = new Query(new AppDbContextConcurrencyException(options));
+			var fakeQuery = new Query(new AppDbContextConcurrencyException(options),null,null,null,null);
 
 			fakeQuery.SolveConcurrencyException(null,
 				new FakePropertyValues(null), new FakePropertyValues(null),
@@ -397,7 +397,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceProvider = services.BuildServiceProvider();
 			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			
-			var fakeQuery = new Query(appDbInvalidOperationException, null, null, scope);
+			var fakeQuery = new Query(appDbInvalidOperationException, null, null, scope,null);
 			
 			fakeQuery.UpdateItem(new List<FileIndexItem>());
 
@@ -423,7 +423,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			dbContext.FileIndex.Add(testItem);
 			dbContext.SaveChanges();
 			
-			var fakeQuery = new Query(appDbInvalidOperationException, null, null, scope);
+			var fakeQuery = new Query(appDbInvalidOperationException, null, null, scope,null);
 
 			testItem.Tags = "test";
 			

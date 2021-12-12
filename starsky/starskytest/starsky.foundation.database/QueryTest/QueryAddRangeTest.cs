@@ -40,7 +40,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await new Query(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory).AddRangeAsync(expectedResult);
+				}, serviceScopeFactory,new FakeIWebLogger()).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
@@ -63,10 +63,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			// Dispose here
 			await dbContextDisposed.DisposeAsync();
 			
-			await new global::starsky.foundation.database.Query.Query(dbContextDisposed, new FakeMemoryCache(new Dictionary<string, object>()),
+			await new Query(dbContextDisposed, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory).AddRangeAsync(expectedResult);
+				}, serviceScopeFactory, new FakeIWebLogger()).AddRangeAsync(expectedResult);
 			
 			var context = new InjectServiceScope(serviceScopeFactory).Context();
 			var queryFromDb = context.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
@@ -88,10 +88,10 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScopeFactory.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 			
-			new global::starsky.foundation.database.Query.Query(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
+			new Query(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory).AddRange(expectedResult);
+				}, serviceScopeFactory, new FakeIWebLogger()).AddRange(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p => p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
