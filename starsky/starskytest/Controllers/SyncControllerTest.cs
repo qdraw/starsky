@@ -101,7 +101,7 @@ namespace starskytest.Controllers
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
-			_query = new Query(_context, memoryCache, new AppSettings(), _scopeFactory, new FakeIWebLogger());
+			_query = new Query(_context, new AppSettings(), _scopeFactory, new FakeIWebLogger(), memoryCache);
 
 			_isync = serviceProvider.GetRequiredService<ISync>();
 

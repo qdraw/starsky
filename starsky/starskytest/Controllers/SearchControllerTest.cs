@@ -35,7 +35,7 @@ namespace starskytest.Controllers
 			builder.UseInMemoryDatabase(nameof(SearchController));
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, memoryCache, new AppSettings(), null, new FakeIWebLogger());
+			_query = new Query(context, new AppSettings(), null, new FakeIWebLogger(), memoryCache);
 			_search = new SearchService(context, memoryCache);
 		}
 

@@ -16,12 +16,12 @@ namespace starsky.foundation.database.Query
 
 		public QueryNetFramework(ApplicationDbContext context, IMemoryCache memoryCache, 
 			AppSettings appSettings, IServiceScopeFactory scopeFactory, IWebLogger logger) : 
-			base(context, memoryCache, appSettings, scopeFactory,logger)
+			base(context, appSettings, scopeFactory,logger, memoryCache)
 		{
 			using ( var scope = scopeFactory.CreateScope() )
 			{
 				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				_query = new Query(dbContext,memoryCache,appSettings,scopeFactory,logger);
+				_query = new Query(dbContext,appSettings,scopeFactory,logger, memoryCache);
 			}
 		}
 

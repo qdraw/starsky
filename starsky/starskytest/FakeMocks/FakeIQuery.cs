@@ -24,10 +24,9 @@ namespace starskytest.FakeMocks
 		}
 
 		public FakeIQuery(ApplicationDbContext context, 
-			IMemoryCache memoryCache, 
 			AppSettings appSettings,
 			IServiceScopeFactory scopeFactory, 
-			IWebLogger logger)
+			IWebLogger logger, IMemoryCache memoryCache = null)
 		{
 		}
 		

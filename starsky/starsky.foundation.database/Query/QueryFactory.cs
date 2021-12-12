@@ -32,9 +32,13 @@ namespace starsky.foundation.database.Query
 			if ( _query.GetType() == typeof(Query) )
 			{
 
-				return new Query(context, _cache, _appSettings, null, _logger);
+				return new Query(context, _appSettings, null, _logger, _cache);
 			}
-			return Activator.CreateInstance(_query.GetType(), context, _cache, _appSettings, null, _logger) as IQuery;
+			// ApplicationDbContext context, 
+			// 	AppSettings appSettings,
+			// IServiceScopeFactory scopeFactory, 
+			// 	IWebLogger logger, IMemoryCache memoryCache = null
+			return Activator.CreateInstance(_query.GetType(), context, _appSettings, null, _logger, _cache) as IQuery;
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services
 			builder.UseInMemoryDatabase("test");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context,memoryCache, new AppSettings(),null,null);
+			_query = new Query(context, new AppSettings(),null,null,memoryCache);
 		}
 		
 		[TestMethod]

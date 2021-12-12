@@ -30,10 +30,9 @@ namespace starsky.foundation.database.Query
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
-            IMemoryCache memoryCache, 
             AppSettings appSettings,
             IServiceScopeFactory scopeFactory, 
-            IWebLogger logger)
+            IWebLogger logger, IMemoryCache memoryCache = null)
         {
 	        _context = context;
             _cache = memoryCache;
@@ -87,6 +86,7 @@ namespace starsky.foundation.database.Query
 			// cache code:
 			if ( cacheTime != null && 
 			     _appSettings?.AddMemoryCache == true &&
+			     _cache != null &&
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{

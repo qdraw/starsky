@@ -19,7 +19,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			builder.UseInMemoryDatabase("QueryTestNoCacheTest");
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context,null, new AppSettings(), null, new FakeIWebLogger());
+			_query = new Query(context,new AppSettings(), null, new FakeIWebLogger());
 		}
 
 		private readonly Query _query;

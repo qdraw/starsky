@@ -68,7 +68,7 @@ namespace starskytest.Controllers
 			_appSettings = new AppSettings { 
 				TempFolder = createAnImage.BasePath
 			};
-			_query = new Query(context, _memoryCache, _appSettings, scopeFactory, new FakeIWebLogger());
+			_query = new Query(context, _appSettings, scopeFactory, new FakeIWebLogger(), _memoryCache);
 
 			_iStorage = new FakeIStorage(new List<string>{"/","/test"}, 
 				new List<string>{createAnImage.DbPath}, 

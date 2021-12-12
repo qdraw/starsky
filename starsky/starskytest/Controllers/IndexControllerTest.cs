@@ -33,7 +33,8 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test");
 			var options = builderDb.Options;
 			var contextDb = new ApplicationDbContext(options);
-			_query = new Query(contextDb,memoryCache, new AppSettings(), null, new FakeIWebLogger());
+			_query = new Query(contextDb, new AppSettings(), null,
+				new FakeIWebLogger(), memoryCache);
 		}
 
 		private void InsertSearchData()

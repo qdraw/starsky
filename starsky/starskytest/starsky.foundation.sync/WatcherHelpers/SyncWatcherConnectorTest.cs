@@ -128,7 +128,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
 
-			var query = new Query(context, memoryCache,null,null,null);
+			var query = new Query(context,null,null,null, memoryCache);
 				
 			query.AddCacheParentItem("/", 
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")
@@ -168,7 +168,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
 
-			var query = new Query(context, memoryCache,null,null,null);
+			var query = new Query(context,null,null,null, memoryCache);
 				
 			query.AddCacheParentItem("/", 
 				new List<FileIndexItem>{new FileIndexItem("/test.jpg")

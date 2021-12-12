@@ -38,7 +38,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			_query = new Query(_dbContext,_memoryCache, new AppSettings(), serviceScope, new FakeIWebLogger());
+			_query = new Query(_dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 		}
 
 		[TestMethod]

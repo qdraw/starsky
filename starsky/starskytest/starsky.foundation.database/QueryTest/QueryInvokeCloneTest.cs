@@ -25,8 +25,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(null, new FakeMemoryCache(), 
-				new AppSettings(), CreateNewScope(), new FakeIWebLogger()).Clone(dbContext);
+			var query = new Query(null,  
+				new AppSettings(), CreateNewScope(), new FakeIWebLogger(),new FakeMemoryCache()).Clone(dbContext);
 			
 			Assert.IsNull(query.GetSubPathByHash("4444"));
 		}
@@ -36,8 +36,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(null, new FakeMemoryCache(), 
-				new AppSettings(), CreateNewScope(), new FakeIWebLogger());
+			var query = new Query(null, 
+				new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 			query.Invoke(dbContext);
 			
 			Assert.IsNull(query.GetSubPathByHash("4444"));

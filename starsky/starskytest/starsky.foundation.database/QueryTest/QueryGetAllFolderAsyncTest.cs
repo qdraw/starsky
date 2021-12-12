@@ -31,8 +31,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			_query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger());
+			_query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 		}
 		
 		private IServiceScopeFactory CreateNewScope()
@@ -52,7 +52,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
 			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
-			var query = new Query(dbContext, new FakeMemoryCache(), new AppSettings(), null, new FakeIWebLogger());
+			var query = new Query(dbContext, new AppSettings(), null, 
+				new FakeIWebLogger(), new FakeMemoryCache());
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFoldersAsync/test") {IsDirectory = true});
@@ -76,7 +77,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
 			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
-			var query = new Query(dbContext, new FakeMemoryCache(), new AppSettings(), null, new FakeIWebLogger());
+			var query = new Query(dbContext, new AppSettings(), 
+				null, new FakeIWebLogger(), new FakeMemoryCache());
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFolders_multi_01") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetFolders_multi_01/test"){IsDirectory = true});
@@ -106,7 +108,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope, new FakeIWebLogger());
+			var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 	        
 			// item sub folder
 			var item = new FileIndexItem("/test_324323423/test_3423434"){IsDirectory = true};

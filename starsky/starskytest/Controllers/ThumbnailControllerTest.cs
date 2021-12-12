@@ -39,8 +39,8 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, memoryCache, new AppSettings(), 
-				null, new FakeIWebLogger());
+			_query = new Query(context, new AppSettings(), 
+				null, new FakeIWebLogger(), memoryCache);
 		}
 
 		private FileIndexItem InsertSearchData()

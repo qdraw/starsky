@@ -33,8 +33,8 @@ namespace starskytest.Services
 			builder.UseInMemoryDatabase(nameof(MetaReplaceService));
 			var options = builder.Options;
 			var dbContext = new ApplicationDbContext(options);
-			_query = new Query(dbContext, memoryCache, new AppSettings(), null, 
-				new FakeIWebLogger());
+			_query = new Query(dbContext, new AppSettings(), null, 
+				new FakeIWebLogger(),memoryCache);
 			
 			_iStorage = new FakeIStorage(new List<string>{"/"}, 
 				new List<string>{"/test.jpg","/test2.jpg", "/readonly/test.jpg", "/test.dng"});

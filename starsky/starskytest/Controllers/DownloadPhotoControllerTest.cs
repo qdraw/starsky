@@ -35,7 +35,7 @@ namespace starskytest.Controllers
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
 			var scopeFactory = provider.GetService<IServiceScopeFactory>();
-			_query = new Query(context, memoryCache, new AppSettings(), scopeFactory, new FakeIWebLogger());
+			_query = new Query(context, new AppSettings(), scopeFactory, new FakeIWebLogger(), memoryCache);
 		}
 
 		private FileIndexItem InsertSearchData()
