@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -37,7 +38,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			_query = new Query(_dbContext,_memoryCache, new AppSettings(), serviceScope);
+			_query = new Query(_dbContext,_memoryCache, new AppSettings(), serviceScope, new FakeIWebLogger());
 		}
 
 		[TestMethod]

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.sync.SyncServices
@@ -17,11 +19,15 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly AppSettings _appSettings;
 		private readonly SetupDatabaseTypes _setupDatabaseTypes;
 		private readonly IQuery _query;
+		private readonly IMemoryCache _memoryCache;
+		private readonly IWebLogger _logger;
 
-		public SyncRemove(AppSettings appSettings, IQuery query)
+		public SyncRemove(AppSettings appSettings, IQuery query, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_setupDatabaseTypes = new SetupDatabaseTypes(appSettings);
+			_memoryCache = memoryCache;
+			_logger = logger;
 			_query = query;
 		}
 
@@ -58,9 +64,11 @@ namespace starsky.foundation.sync.SyncServices
 			await toDeleteList
 				.ForEachAsync(async item =>
 				{
-					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+					var query = new QueryFactory(_setupDatabaseTypes, _query, _memoryCache, _appSettings, _logger).Query();
 					await query.RemoveItemAsync(item);
 					item.Status = FileIndexItem.ExifStatus.NotFoundNotInIndex;
+					// only dispose inside parallelism loop
+					await query.DisposeAsync();
 					return item;
 				}, _appSettings.MaxDegreesOfParallelism);
 

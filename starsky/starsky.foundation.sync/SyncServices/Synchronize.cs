@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -27,13 +28,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IMemoryCache memoryCache)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, logger);
-			_syncRemove = new SyncRemove(appSettings, query);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger);
+			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		

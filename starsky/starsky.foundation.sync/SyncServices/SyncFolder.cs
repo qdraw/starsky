@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -24,9 +25,10 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly IConsole _console;
 		private readonly Duplicate _duplicate;
 		private readonly IWebLogger _logger;
+		private readonly IMemoryCache _memoryCache;
 
 		public SyncFolder(AppSettings appSettings, IQuery query, 
-			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger)
+			ISelectorStorage selectorStorage, IConsole console, IWebLogger logger, IMemoryCache memoryCache)
 		{
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_appSettings = appSettings;
@@ -35,6 +37,7 @@ namespace starsky.foundation.sync.SyncServices
 			_console = console;
 			_duplicate = new Duplicate(_query);
 			_logger = logger;
+			_memoryCache = memoryCache;
 		}
 
 		public async Task<List<FileIndexItem>> Folder(string inputSubPath,
@@ -87,7 +90,7 @@ namespace starsky.foundation.sync.SyncServices
 			var result = await pathsToUpdateInDatabase
 				.ForEachAsync(async subPathInFiles =>
 				{
-					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
 					
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
 						_subPathStorage, _logger).SingleFile(subPathInFiles, 
@@ -101,6 +104,8 @@ namespace starsky.foundation.sync.SyncServices
 						return dbItem;
 					}
 					_console.Write("•");
+					// only used in Parallelism loop
+					await query.DisposeAsync();
 					return dbItem;
 				}, _appSettings.MaxDegreesOfParallelism);
 			return result == null ? new List<FileIndexItem>() : result.ToList();
@@ -169,7 +174,7 @@ namespace starsky.foundation.sync.SyncServices
 					{
 						return null;
 					}
-					var query = new QueryFactory(_setupDatabaseTypes, _query).Query();
+					var query = new QueryFactory(_setupDatabaseTypes, _query,_memoryCache, _appSettings, _logger).Query();
 					return await RemoveChildItems(query, item);
 				}, _appSettings.MaxDegreesOfParallelism)).ToList();
 		}
@@ -194,6 +199,10 @@ namespace starsky.foundation.sync.SyncServices
 			await query.RemoveItemAsync(item);
 			_console.Write("✕");
 			item.Status = FileIndexItem.ExifStatus.NotFoundSourceMissing;
+
+			// only used in loop
+			await query.DisposeAsync();
+
 			return item;
 		}
 		

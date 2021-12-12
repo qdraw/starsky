@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
@@ -51,6 +52,15 @@ namespace starsky.feature.import.Services
 		private readonly IConsole _console;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
+		private readonly IMemoryCache _memoryCache;
+		private readonly IWebLogger _logger;
+		
+		/// <summary>
+		/// Used when File has no exif date in description
+		/// </summary>
+		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+
+		
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
@@ -58,7 +68,9 @@ namespace starsky.feature.import.Services
 			IExifTool exifTool,
 			IQuery query,
 			IConsole console,
-			IMetaExifThumbnailService metaExifThumbnailService)
+			IMetaExifThumbnailService metaExifThumbnailService,
+			IMemoryCache memoryCache,
+			IWebLogger logger)
 		{
 			_importQuery = importQuery;
 			
@@ -72,6 +84,8 @@ namespace starsky.feature.import.Services
             _query = query;
             _console = console;
             _metaExifThumbnailService = metaExifThumbnailService;
+            _memoryCache = memoryCache;
+            _logger = logger;
 		}
 
 		/// <summary>
@@ -284,10 +298,6 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 
-		/// <summary>
-		/// Used when File has no exif date in description
-		/// </summary>
-		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
 		/// <summary>
 		/// Create a new import object
@@ -504,7 +514,9 @@ namespace starsky.feature.import.Services
 			}
 
 			// Add to Normal File Index database
-			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query).Query();
+			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
+				_memoryCache, _appSettings,_logger).Query();
+			
 			await query.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
