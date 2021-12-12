@@ -96,7 +96,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				new FileIndexItem("/sidecar_test2/test.xmp")
 			};
 			var query = new FakeIQuery(queryContent);
-			var remove = new SyncRemove(_appSettings, _query, null, null);
+			var remove = new SyncRemove(_appSettings, query, null, null);
 
 			var result= await remove.Remove(new List<string>{"/sidecar_test/test.xmp","/sidecar_test2/test.xmp"});
 

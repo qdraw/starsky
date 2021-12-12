@@ -23,6 +23,7 @@ namespace starskysynccli
 	        // Setup AppSettings
 	        var services = SetupAppSettings.FirstStepToAddSingleton(new ServiceCollection()).Result;
 
+	        services.AddMemoryCache();
 	        // Inject services
 	        new RegisterDependencies().Configure(services);
 	        var serviceProvider = services.BuildServiceProvider();

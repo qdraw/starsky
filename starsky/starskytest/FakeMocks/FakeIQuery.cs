@@ -9,6 +9,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starskytest.FakeMocks
@@ -23,9 +24,10 @@ namespace starskytest.FakeMocks
 		}
 
 		public FakeIQuery(ApplicationDbContext context, 
-			IMemoryCache memoryCache = null, 
-			AppSettings appSettings = null,
-			IServiceScopeFactory scopeFactory = null)
+			IMemoryCache memoryCache, 
+			AppSettings appSettings,
+			IServiceScopeFactory scopeFactory, 
+			IWebLogger logger)
 		{
 		}
 		
