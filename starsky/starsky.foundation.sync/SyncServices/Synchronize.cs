@@ -28,7 +28,7 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IMemoryCache memoryCache)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IMemoryCache memoryCache = null)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);

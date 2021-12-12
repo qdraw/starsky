@@ -199,6 +199,7 @@ namespace starsky
         /// </summary>
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
+        /// <param name="applicationLifetime">application Lifetime</param>
         public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
 	        
