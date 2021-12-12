@@ -7,6 +7,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -33,14 +34,14 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryFolderTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(),_memoryCache) ;
+				.GetService<ApplicationDbContext>(),_memoryCache, new AppSettings(), CreateNewScope(), new FakeIWebLogger()) ;
 		}
 		
 		[TestMethod]
 		public void CacheGetParentFolder_FallbackWhenNoCache()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>()) ;
+				.GetService<ApplicationDbContext>(), _memoryCache, new AppSettings(), CreateNewScope(), new FakeIWebLogger()) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");
 			Assert.IsFalse(result.Item1);
@@ -50,7 +51,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public void CacheGetParentFolder_FallbackWhenNoCache_appSettings()
 		{
 			var queryNoCache = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(),_memoryCache, new AppSettings{ AddMemoryCache = false}) ;
+				.GetService<ApplicationDbContext>(),_memoryCache, 
+				new AppSettings{ AddMemoryCache = false}, null, new FakeIWebLogger()) ;
 
 			var result = queryNoCache.CacheGetParentFolder("/");
 			Assert.IsFalse(result.Item1);
@@ -62,7 +64,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext,_memoryCache, 
+				new AppSettings(), serviceScope, new FakeIWebLogger());
 	        
 			// item sub folder
 			var item = new FileIndexItem("/test_1234567832/test_0191921.jpg");

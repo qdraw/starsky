@@ -34,7 +34,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryGetObjectsByFilePathAsyncTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>()) ;
+				.GetService<ApplicationDbContext>(), new FakeMemoryCache(), new AppSettings(), null, new FakeIWebLogger()) ;
 		}
 
 		
@@ -42,7 +42,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_cache_collectionFalse()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), _memoryCache) ;
+				.GetService<ApplicationDbContext>(), _memoryCache, new AppSettings(), CreateNewScope(), new FakeIWebLogger()) ;
 
 			var dirName = "/cache_01";
 			query.AddCacheParentItem(dirName,
@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_cache_collectionTrue()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), _memoryCache) ;
+				.GetService<ApplicationDbContext>(), _memoryCache, new AppSettings(), CreateNewScope(), new FakeIWebLogger()) ;
 
 			var dirName = "/cache_02";
 			query.AddCacheParentItem(dirName,
@@ -86,7 +86,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task GetObjectsByFilePathAsync_notImplicitSet_cache_collectionTrue()
 		{
 			var query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>(), _memoryCache) ;
+				.GetService<ApplicationDbContext>(), _memoryCache, new AppSettings(), CreateNewScope(), new FakeIWebLogger()) ;
 
 			var dirName = "/implicit_item_02";
 			await query.AddRangeAsync(new List<FileIndexItem>
@@ -215,7 +215,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await dbContextDisposed.DisposeAsync();
 			
 			var result = await new Query(dbContextDisposed,
-					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
+					new FakeMemoryCache(new Dictionary<string, object>()), 
+					new AppSettings(), serviceScopeFactory, new FakeIWebLogger())
 				.GetObjectsByFilePathQueryAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
 			Assert.AreEqual(1, result.Count);

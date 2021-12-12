@@ -99,6 +99,8 @@ namespace starsky.foundation.sync.SyncServices
 			_cache.Remove(ManualSyncCacheName + subPath);
 			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
+			_logger.LogInformation($"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
+			                       $"OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
 			operationHolder.SetData(updatedList);
 		}
 		

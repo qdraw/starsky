@@ -11,7 +11,9 @@ using starsky.Controllers;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
 using starskycore.Services;
+using starskytest.FakeMocks;
 
 namespace starskytest.Controllers
 {
@@ -33,7 +35,7 @@ namespace starskytest.Controllers
 			builder.UseInMemoryDatabase(nameof(SearchSuggestController));
 			var options = builder.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, _memoryCache);
+			_query = new Query(context, _memoryCache, new AppSettings(), null, new FakeIWebLogger());
 			_searchSuggest = new SearchSuggestionsService(context,_memoryCache, null);
 		}
 
