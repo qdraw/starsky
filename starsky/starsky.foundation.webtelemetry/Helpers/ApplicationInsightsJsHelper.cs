@@ -1,7 +1,7 @@
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
-using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.injection;
 
 namespace starsky.foundation.webtelemetry.Helpers
@@ -67,7 +67,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 					setAuthenticatedUserContextItemStart + 
 					setAuthenticatedUserContextItemEnd, 
 					setAuthenticatedUserContextItemStart + 
-					new UserManager(null,null).GetCurrentUserId(_httpContext.HttpContext) + 
+					GetCurrentUserId() + 
 					setAuthenticatedUserContextItemEnd);
 
 				// when a react plugin is enabled disable: enableAutoRouteTracking
@@ -76,6 +76,18 @@ namespace starsky.foundation.webtelemetry.Helpers
 				script += "\n appInsights.enableAjaxPerfTracking = true;";
 				return script;
 			}
+		}
+
+		private string GetCurrentUserId()
+		{
+			if (_httpContext == null || !_httpContext.HttpContext.User.Identity.IsAuthenticated)
+			{
+				return string.Empty;
+			}
+
+			return _httpContext.HttpContext.User.Claims
+				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
+				?.Value;
 		}
 	}
 }
