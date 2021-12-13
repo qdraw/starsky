@@ -57,7 +57,7 @@ namespace starskyAdminCli
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
 			
-			await new FlushApplicationInsights(serviceProvider).Flush();
+			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

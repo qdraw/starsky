@@ -45,7 +45,7 @@ namespace starskythumbnailcli
 			// Help and other Command Line Tools args are included in the ThumbnailCLI
 			await new ThumbnailCli( appSettings, console, thumbnailService, thumbnailCleaner, selectorStorage).Thumbnail(args); 
 			
-			await new FlushApplicationInsights(serviceProvider).Flush();
+			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

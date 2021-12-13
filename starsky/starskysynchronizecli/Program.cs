@@ -42,13 +42,10 @@ namespace starskysynchronizecli
 			var console = serviceProvider.GetRequiredService<IConsole>();
 			var selectorStorage = serviceProvider.GetRequiredService<ISelectorStorage>();
 
-			var logger = serviceProvider.GetRequiredService<IWebLogger>();
-			logger.LogInformation("Logger is working...");
-
 			// Help and other Command Line Tools args are included in the SyncCLI 
 			await new SyncCli(synchronize, appSettings, console, selectorStorage).Sync(args);
 			
-			await new FlushApplicationInsights(serviceProvider).Flush();
+			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

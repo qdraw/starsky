@@ -285,7 +285,7 @@ namespace starsky
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
 		        configuration.TelemetryProcessorChainBuilder.Build();
 
-		        var onStoppedSync = new FlushOnApplicationStopping(app);
+		        var onStoppedSync = new FlushApplicationInsights(app);
 		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }

@@ -50,7 +50,7 @@ namespace starskyGeoCli
 			await new GeoCli(geoReverseLookup, geoLocationWrite, selectorStorage,
 				appSettings, console, geoFileDownload, exifToolDownload).CommandLineAsync(args);
 
-			await new FlushApplicationInsights(serviceProvider).Flush();
+			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

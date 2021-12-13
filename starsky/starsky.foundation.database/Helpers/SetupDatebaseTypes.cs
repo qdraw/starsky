@@ -80,8 +80,13 @@ namespace starsky.foundation.database.Helpers
 			{
 				return false;
 			}
-			databaseOptionsBuilder.AddInterceptors(new DatabaseTelemetryInterceptor(
-				TelemetryConfigurationHelper.InitTelemetryClient(_appSettings.ApplicationInsightsInstrumentationKey)));
+			databaseOptionsBuilder.AddInterceptors(
+				new DatabaseTelemetryInterceptor(
+					TelemetryConfigurationHelper.InitTelemetryClient(
+						_appSettings.ApplicationInsightsInstrumentationKey, 
+						_appSettings.ApplicationType.ToString())
+					)
+				);
 			return true;
 		}
 

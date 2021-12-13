@@ -24,7 +24,7 @@ namespace starsky.foundation.consoletelemetry.Extensions
 			}
 			
 			appSettings.ApplicationType = appType;
-			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"starsky{appType}"));
+			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"{appType}"));
 			
 			services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions
 			{
