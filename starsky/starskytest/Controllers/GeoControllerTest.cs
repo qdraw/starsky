@@ -48,8 +48,9 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, _memoryCache);
-
+			_query = new Query(context, new AppSettings(), null, 
+				new FakeIWebLogger(), _memoryCache);
+			
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
 			services.AddSingleton<IExifTool, FakeExifTool>();

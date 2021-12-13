@@ -41,7 +41,11 @@ namespace starsky.foundation.database.Query
 			}
 			catch ( ObjectDisposedException )
 			{
-				return FormatOk(await GetAllObjectsQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
+				var dbContext = new InjectServiceScope(_scopeFactory).Context();
+				var result =
+					FormatOk(await GetAllObjectsQuery(dbContext, filePaths).ToListAsync());
+				await dbContext.DisposeAsync();
+				return result;
 			}
 		}
 		

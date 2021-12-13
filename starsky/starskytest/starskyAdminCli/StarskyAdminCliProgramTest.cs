@@ -22,5 +22,6 @@ namespace starskytest.starskyAdminCli
 			Program.Main(args);
 			Assert.IsNotNull(args);
 		}
+
 	}
 }

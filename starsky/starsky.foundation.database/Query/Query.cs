@@ -30,10 +30,9 @@ namespace starsky.foundation.database.Query
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
-            IMemoryCache memoryCache = null, 
-            AppSettings appSettings = null,
-            IServiceScopeFactory scopeFactory = null, 
-            IWebLogger logger = null)
+            AppSettings appSettings,
+            IServiceScopeFactory scopeFactory, 
+            IWebLogger logger, IMemoryCache memoryCache = null)
         {
 	        _context = context;
             _cache = memoryCache;
@@ -87,6 +86,7 @@ namespace starsky.foundation.database.Query
 			// cache code:
 			if ( cacheTime != null && 
 			     _appSettings?.AddMemoryCache == true &&
+			     _cache != null &&
 			     _cache.TryGetValue(
 				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
 			{
@@ -350,7 +350,8 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
-		        context.Attach(updateStatusContent).State = EntityState.Detached; 
+		        context.Attach(updateStatusContent).State = EntityState.Detached;
+		        await context.DisposeAsync();
 	        }
 
 	        try
@@ -937,5 +938,14 @@ namespace starsky.foundation.database.Query
 		    ResetItemByHash(updateStatusContent.FileHash);
 		    return updateStatusContent;
 	    }
+	    
+	    /// <summary>
+	    /// Use only when new Context item is created manualy, otherwise there is only 1 context
+	    /// </summary>
+	    public async Task DisposeAsync()
+	    {
+		    await _context.DisposeAsync();
+	    }
+	    
     }
 }

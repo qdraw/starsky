@@ -118,6 +118,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+			services.AddMemoryCache();
 
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -146,6 +147,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+			services.AddMemoryCache();
 
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

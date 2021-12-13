@@ -56,7 +56,6 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("SyncControllerTest");
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
-			_query = new Query(_context, memoryCache);
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
@@ -102,6 +101,7 @@ namespace starskytest.Controllers
 
 			_readmeta = serviceProvider.GetRequiredService<IReadMeta>();
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_query = new Query(_context, new AppSettings(), _scopeFactory, new FakeIWebLogger(), memoryCache);
 
 			_isync = serviceProvider.GetRequiredService<ISync>();
 

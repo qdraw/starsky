@@ -1,12 +1,14 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
@@ -24,6 +26,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 		private readonly IStorage _iStorage;
 		private readonly CreateAnImage _createAnImage;
 		private readonly IServiceScopeFactory _scopeFactory;
+		private readonly IMemoryCache _memoryCache;
 
 		public SingleFileIntegrationTest()
 		{
@@ -41,11 +44,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
 			provider.AddScoped<IQuery,Query>();
+			provider.AddScoped<IWebLogger, FakeIWebLogger>();
 			
 			var serviceProvider = provider.BuildServiceProvider();
 			
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			_memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+
 			_query = serviceProvider.GetRequiredService<IQuery>();
 		}
 		
@@ -55,7 +61,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
+			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger(),null);
 			var result = await sync.Sync(_createAnImage.DbPath);
 
 			stopWatch.Stop();
@@ -79,7 +85,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 			
-			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger());
+			var sync = new Synchronize(_appSettings, _query, new FakeSelectorStorage(_iStorage), new FakeIWebLogger(),_memoryCache);
 			var result = await sync.Sync("/");
 			
 			stopWatch.Stop();

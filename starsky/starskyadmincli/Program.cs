@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.consoletelemetry.Extensions;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.injection;
@@ -9,6 +10,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.webtelemetry.Helpers;
 using starskyAdminCli.Services;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -30,6 +32,10 @@ namespace starskyAdminCli
 			new RegisterDependencies().Configure(services);
 			var serviceProvider = services.BuildServiceProvider();
 			var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+						
+			services.AddMonitoringWorkerService(appSettings, AppSettings.StarskyAppType.Geo);
+			services.AddApplicationInsightsLogging(appSettings);
+			
 			var webLogger = serviceProvider.GetRequiredService<IWebLogger>();
 
 			new SetupDatabaseTypes(appSettings,services).BuilderDb();
@@ -50,6 +56,8 @@ namespace starskyAdminCli
 			await RunMigrations.Run(serviceProvider.GetService<ApplicationDbContext>(), webLogger);
 			await new ConsoleAdmin(userManager, new ConsoleWrapper()).Tool(
 				new ArgsHelper().GetName(args), new ArgsHelper().GetUserInputPassword(args));
+			
+			await new FlushApplicationInsights(serviceProvider).FlushAsync();
 		}
 	}
 }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 #pragma warning disable 1998
 
@@ -13,14 +14,14 @@ namespace starsky.foundation.database.Query
 	{
 		private readonly Query _query;
 
-		public QueryNetFramework(ApplicationDbContext context, IMemoryCache memoryCache = null, 
-			AppSettings appSettings = null, IServiceScopeFactory scopeFactory = null) : 
-			base(context, memoryCache, appSettings, scopeFactory)
+		public QueryNetFramework(ApplicationDbContext context, IMemoryCache memoryCache, 
+			AppSettings appSettings, IServiceScopeFactory scopeFactory, IWebLogger logger) : 
+			base(context, appSettings, scopeFactory,logger, memoryCache)
 		{
 			using ( var scope = scopeFactory.CreateScope() )
 			{
 				var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-				_query = new Query(dbContext,memoryCache,appSettings,scopeFactory);
+				_query = new Query(dbContext,appSettings,scopeFactory,logger, memoryCache);
 			}
 		}
 

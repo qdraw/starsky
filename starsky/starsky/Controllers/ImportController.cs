@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
@@ -113,11 +113,12 @@ namespace starsky.Controllers
 				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
 				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
 				var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
+				var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 
 				// use of IImport direct does not work
 				importedFiles = await new Import(selectorStorage,_appSettings,
 					importQuery, exifTool, query,console, 
-					metaExifThumbnailService).Importer(tempImportPaths, importSettings);
+					metaExifThumbnailService, _logger, memoryCache).Importer(tempImportPaths, importSettings);
 			}
 	            
 			if (isVerbose)

@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -37,7 +38,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var scope = serviceScope.CreateScope();
 			_dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-			_query = new Query(_dbContext,_memoryCache, new AppSettings(), serviceScope);
+			_query = new Query(_dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 		}
 
 		[TestMethod]
@@ -94,7 +95,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public async Task AddParentItemsAsync_Home()
 		{
 			var dbContext = CreateNewScope().CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext);
+			var query = new Query(dbContext,null,null,null,null);
 
 			await query.AddParentItemsAsync("/test/test/test");
 

@@ -41,7 +41,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await new QueryNetFramework(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory).AddRangeAsync(expectedResult);
+				}, serviceScopeFactory, new FakeIWebLogger()).AddRangeAsync(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p
 				=> p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();
@@ -66,7 +66,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			new QueryNetFramework(dbContext, new FakeMemoryCache(new Dictionary<string, object>()),
 				new AppSettings {
 					AddMemoryCache = false 
-				}, serviceScopeFactory).AddRange(expectedResult);
+				}, serviceScopeFactory, new FakeIWebLogger()).AddRange(expectedResult);
 			
 			var queryFromDb = dbContext.FileIndex.Where(p =>
 				p.FileHash == "TEST4" || p.FileHash == "TEST5").ToList();

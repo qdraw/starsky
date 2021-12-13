@@ -12,6 +12,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeMocks;
 
@@ -33,7 +34,8 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, memoryCache);
+			var scopeFactory = provider.GetService<IServiceScopeFactory>();
+			_query = new Query(context, new AppSettings(), scopeFactory, new FakeIWebLogger(), memoryCache);
 		}
 
 		private FileIndexItem InsertSearchData()

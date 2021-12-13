@@ -7,11 +7,12 @@ namespace starsky.foundation.databasetelemetry.Helpers
 {
 	public static class TelemetryConfigurationHelper
 	{
-		public static TelemetryClient InitTelemetryClient(string appInsightsConnectionString)
+		public static TelemetryClient InitTelemetryClient(string appInsightsConnectionString, string roleName)
 		{
 			var module = CreateDatabaseDependencyTrackingTelemetryModule();
 			var telemetryConfiguration = CreateTelemetryConfiguration(appInsightsConnectionString);
 			var telemetryClient = new TelemetryClient(telemetryConfiguration);
+			telemetryClient.Context.Cloud.RoleName = roleName;
 			telemetryClient.Context.Cloud.RoleInstance = Environment.MachineName;
 			module.Initialize(telemetryConfiguration);
 			return telemetryClient;

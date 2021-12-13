@@ -11,6 +11,8 @@
     
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.import\starsky.feature.import.csproj" />
+        <ProjectReference Include="..\starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj" />
+        <ProjectReference Include="..\starsky.foundation.webtelemetry\starsky.foundation.webtelemetry.csproj" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

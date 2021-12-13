@@ -8,6 +8,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.sync.SyncServices;
@@ -36,7 +37,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			new SetupDatabaseTypes(_appSettings, provider).BuilderDb();
 			provider.AddScoped<IQuery,Query>();
-			
+			provider.AddScoped<IWebLogger,FakeIWebLogger>();
+
 			var serviceProvider = provider.BuildServiceProvider();
 			
 			_query = serviceProvider.GetRequiredService<IQuery>();
@@ -65,7 +67,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				});
 			
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.Folder("/Folder_FilesOnDiskButNotInTheDb");
 			
 			Assert.AreEqual("/Folder_FilesOnDiskButNotInTheDb/test1.jpg",result[0].FilePath);
@@ -91,7 +93,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk");
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk/test.jpg",result[0].FilePath);
@@ -116,7 +118,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var storage = new FakeIStorage();
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk2");
 
 			
@@ -159,7 +161,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 				"/Folder_InDbButNotOnDisk4/test_dir"
 			});
 			var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
-				new ConsoleWrapper(), new FakeIWebLogger());
+				new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache());
 			var result = await syncFolder.Folder("/Folder_InDbButNotOnDisk4");
 			
 			Assert.AreEqual("/Folder_InDbButNotOnDisk4/test.jpg", 

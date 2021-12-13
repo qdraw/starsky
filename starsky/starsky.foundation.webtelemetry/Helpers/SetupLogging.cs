@@ -6,7 +6,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 {
 	public static class SetupLogging
 	{
-		public static void AddLogging( IServiceCollection services, AppSettings appSettings)
+		public static void AddApplicationInsightsLogging(this IServiceCollection services, AppSettings appSettings)
 		{
 			services.AddLogging(logging =>
 			{

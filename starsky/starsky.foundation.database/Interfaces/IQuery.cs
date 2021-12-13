@@ -196,6 +196,8 @@ namespace starsky.foundation.database.Interfaces
         void SetGetObjectByFilePathCache(string filePath, 
 	        FileIndexItem result,
 	        TimeSpan? cacheTime);
+
+        Task DisposeAsync();
     }
 }
 
