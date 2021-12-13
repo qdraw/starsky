@@ -17,7 +17,9 @@ namespace starskytest.Controllers
 		public void CatchFakeCacheDebug()
 		{
 			var controller = new MemoryCacheDebugController(new FakeMemoryCache());
-			controller.MemoryCacheDebug();
+			var actionResult = controller.MemoryCacheDebug() as JsonResult;
+			var list = actionResult.Value as Dictionary<string, object>;
+			Assert.AreEqual(0, list.Count);
 		}
 		
 		[TestMethod]
