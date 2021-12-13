@@ -525,7 +525,6 @@ namespace starsky.foundation.accountmanagement.Services
         
 		public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
-			user.Name = user.Id.ToString();
 			ClaimsIdentity identity = new ClaimsIdentity(
 				GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
