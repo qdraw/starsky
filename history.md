@@ -73,6 +73,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Change GeoLocationWrite to async variant  (PR #540)
 - [x]   (Security) _Back-end_ Upgrade dependencies (PR #548 & #547 & #546 & #545 & #544 & #543 & #542 & #541)
 - [x]   (Fixed) _Back-end_ Extend ServiceCollectionExtensions to load more Assemblies to get auto mapped by the service attribute (PR #550)
+- [x]   (Added) _Back-end_ Add Application Insights logging for CLI Applications (Admin, Geo, Import, Synchronize, Thumbnail) (PR #552)
+- [x]   (Changed) _Back-end_ Add dispose on parallel jobs  (PR #552)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
