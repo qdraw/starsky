@@ -391,6 +391,12 @@ Task("MergeCoverageFiles")
     if (FileExists(outputCoverageFile)) {
       DeleteFile(outputCoverageFile);
     }
+    
+    var outputCoverageSonarQubeFile = $"./starskytest/coverage-merge-sonarqube.xml";
+
+    if (FileExists(outputCoverageSonarQubeFile)) {
+      DeleteFile(outputCoverageSonarQubeFile);
+    }
 
     // Gets the coverage file from the client folder
     if (FileExists($"./starsky/clientapp/coverage/cobertura-coverage.xml")) {
@@ -408,7 +414,7 @@ Task("MergeCoverageFiles")
                     .Append($"reportgenerator")
                     .Append($"-reports:./starskytest/*coverage.*.xml")
                     .Append($"-targetdir:./starskytest/")
-                    .Append($"-reporttypes:Cobertura"),
+                    .Append($"-reporttypes:Cobertura;SonarQube"),
                   RedirectStandardOutput = true,
                   RedirectStandardError = true
               },
@@ -436,6 +442,7 @@ Task("MergeCoverageFiles")
 
       // And rename it
       MoveFile($"./starskytest/Cobertura.xml", outputCoverageFile);
+      MoveFile($"./starskytest/SonarQube.xml", outputCoverageSonarQubeFile);
   });
 
 Task("MergeOnlyNetCoreCoverageFiles")
@@ -638,11 +645,9 @@ Task("SonarBegin")
 
         // get first test project
         var firstTestProject = GetDirectories("./*test").FirstOrDefault().ToString();
-        string netCoreCoverageFile = System.IO.Path.Combine(firstTestProject, "netcore-coverage.opencover.xml");
+        string coverageFile = System.IO.Path.Combine(firstTestProject, "coverage-merge-sonarqube.xml");
 
-        // get jest
         var clientAppProject = GetDirectories("./starsky/clientapp/").FirstOrDefault().ToString();
-        string jestCoverageFile = System.IO.Path.Combine(clientAppProject, "coverage", "lcov.info");
 
         // Current branch name
         string parent = System.IO.Directory.GetParent(".").FullName;
@@ -691,8 +696,7 @@ Task("SonarBegin")
                       .Append($"/d:sonar.branch.name=\"{branchName}\"")
                       .Append($"/o:" + organisation)
                       .Append($"/d:sonar.typescript.tsconfigPath={tsconfig}")
-                      .Append($"/d:sonar.cs.opencover.reportsPaths=\"{netCoreCoverageFile}\"")
-                      .Append($"/d:sonar.typescript.lcov.reportPaths=\"{jestCoverageFile}\"")
+                      .Append($"/d:sonar.coverageReportPaths={coverageFile}")
                       .Append($"/d:sonar.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.tsx,,**/*stories.tsx,**/*spec.ts,**/src/index.tsx,**/src/style/css/vendor/*,**/node_modules/*\"")
                       .Append($"/d:sonar.coverage.exclusions=\"**/setupTests.js,**/react-app-env.d.ts,**/service-worker.ts,*webhtmlcli/**/*.js,**/wwwroot/js/**/*,**/*/Migrations/*,**/*spec.ts,**/*stories.tsx,**/*spec.tsx,**/src/index.tsx,**/node_modules/*\""),
                     RedirectStandardOutput = true,
