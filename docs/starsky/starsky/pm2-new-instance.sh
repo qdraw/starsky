@@ -154,6 +154,7 @@ then
     echo "Copy the App Insights key string and press [ENTER]:"
     echo "for example: "
     echo "11111111-2222-3333-4444-555555555555"
+    echo " >> THIS VALUE IS IGNORED BY CLI APPLICATIONS <<"
     echo ">>>"
     read -p "Enter: " INSTRUMENTATIONKEY
     export APPINSIGHTS_INSTRUMENTATIONKEY=$INSTRUMENTATIONKEY
