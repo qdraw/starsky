@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -23,7 +25,7 @@ namespace starsky.Controllers
 			foreach ( var key in _memoryCache.GetKeys<string>() )
 			{
 				_memoryCache.TryGetValue(key, out var data);
-				result.Add(key, data);
+				result.Add(key, JsonSerializer.Serialize(data));
 			}
 			return Json(result);
 		}
