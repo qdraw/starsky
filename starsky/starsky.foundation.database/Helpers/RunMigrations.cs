@@ -20,7 +20,6 @@ namespace starsky.foundation.database.Helpers
 
 		public static async Task Run(ApplicationDbContext dbContext, IWebLogger logger, int retryCount = 2)
 		{
-			logger.LogInformation("[RunMigrations] start migration");
 			async Task<bool> Migrate()
 			{
 				await dbContext.Database.MigrateAsync();
@@ -33,6 +32,7 @@ namespace starsky.foundation.database.Helpers
 			}
 			catch (AggregateException exception)
 			{
+				logger.LogInformation("[RunMigrations] start migration failed");
 				logger.LogError(exception.Message);
 				logger.LogError("end catch-ed");
 			}
