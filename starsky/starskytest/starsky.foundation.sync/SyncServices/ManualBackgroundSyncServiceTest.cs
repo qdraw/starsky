@@ -1,8 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.database.Helpers;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Models;
 using starsky.foundation.sync.SyncServices;
 using starskytest.FakeMocks;
 
@@ -11,6 +19,8 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public class ManualBackgroundSyncServiceTest
 	{
+		private AppSettings _appSettings;
+
 		private IServiceScopeFactory GetScope()
 		{
 			var services = new ServiceCollection();
@@ -45,6 +55,52 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeIWebLogger(), new FakeIUpdateBackgroundTaskQueue(),GetScope())
 				.ManualSync("/",string.Empty);
 			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
+		}
+		
+		[TestMethod]
+		public async Task ManualSync_test()
+		{
+			var provider = new ServiceCollection()
+				.AddMemoryCache();
+
+			var appSettings = new AppSettings{
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
+				Verbose = true
+			};
+			
+			new SetupDatabaseTypes(appSettings, provider).BuilderDb();
+			provider.AddSingleton(appSettings);
+			provider.AddScoped<IQuery,Query>();
+			provider.AddScoped<IWebLogger,FakeIWebLogger>();
+			
+			var buildServiceProvider = provider.BuildServiceProvider();
+			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
+			var query = buildServiceProvider.GetService<IQuery>();
+		
+			var cacheDbName = new Query(null,null, null, null).CachingDbName(nameof(FileIndexItem), "/");
+
+			var cachedContent = new List<FileIndexItem>
+			{
+				new FileIndexItem("/test.jpg")
+			};
+			memoryCache.Set(cacheDbName, cachedContent);
+
+			var item = new FakeSelectorStorage(
+					new FakeIStorage(new List<string> { "/" }, 
+						new List<string>{"/test2.jpg","/test3.jpg"}, 
+						new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, FakeCreateAn.CreateAnImage.Bytes}));
+			
+			await new ManualBackgroundSyncService(
+					new Synchronize(appSettings, query, item, new FakeIWebLogger()),
+					query,
+					new FakeIWebSocketConnectionsService(),
+					memoryCache, 
+					new FakeIWebLogger(), 
+					new FakeIUpdateBackgroundTaskQueue(),GetScope())
+				.BackgroundTask("/", string.Empty);
+
+			
+			//Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
 		}
 		
 		[TestMethod]

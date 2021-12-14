@@ -85,7 +85,7 @@ namespace starsky.foundation.database.Query
 		        return fallbackResult;
 	        
 	        // Return values from IMemoryCache
-	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        subPath);
 
 	        // ReSharper disable once ConvertIfStatementToReturnStatement
