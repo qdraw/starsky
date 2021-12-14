@@ -79,6 +79,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Fix for cache ManualSync when item is removed or added its now correct updated (PR #555)
 - [x]   (Fixed) _Front-end_ Fix for Safari 14.x and newer that after close a modal, the scroll isn't locked anymore (PR #555) 
 - [x]   (Fixed) _Back-end_ Add port to websocket url in connect-src for Safari 14.x using different port numbers  (PR #555)
+- [x]   (Fixed) _Back-end_ Exception fix SQLite System.InvalidOperationException: ExecuteReader (PR #556)
 
 # version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
