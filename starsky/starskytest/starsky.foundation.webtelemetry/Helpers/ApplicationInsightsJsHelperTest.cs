@@ -1,16 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.WebEncoders.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Services;
+using starsky.foundation.database.Data;
+using starsky.foundation.injection;
+using starsky.foundation.platform.Models;
 using starsky.foundation.webtelemetry.Helpers;
 using starskycore.Helpers;
 
@@ -64,14 +75,18 @@ namespace starskytest.Helpers
 		{
 			var services = new ServiceCollection();
 			// IHttpContextAccessor is required for SignInManager, and UserManager
-			var context = new DefaultHttpContext();
-			services.AddSingleton<IHttpContextAccessor>(
-				new HttpContextAccessor()
-				{
-					HttpContext = context,
-				});
+
+
 			
-			
+			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+			builder.UseInMemoryDatabase("test");
+			var options = builder.Options;
+			var context = new ApplicationDbContext(options);
+			services.AddSingleton(context);
+
+			services.AddSingleton<AppSettings>();
+
+			services.AddSingleton<IUserManager, UserManager>();
 			var mockTelemetryChannel = new MockTelemetryChannel();
 			
 			_telemetryConfiguration = new TelemetryConfiguration
@@ -82,7 +97,30 @@ namespace starskytest.Helpers
 			_telemetryConfiguration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
 			
 			_telemetryClient = new TelemetryClient(_telemetryConfiguration);
+			services
+				.AddAuthentication(sharedOptions =>
+				{
+					sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+					sharedOptions.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+				}).AddCookie();
+
+			services.AddLogging();
 			
+			_serviceProvider = services.BuildServiceProvider();
+
+
+			var httpContext = new DefaultHttpContext
+			{
+				RequestServices = _serviceProvider
+			};
+			
+			services.AddSingleton<IHttpContextAccessor>(
+				new HttpContextAccessor()
+				{
+					HttpContext = httpContext,
+				});
+			// and rebuild
 			_serviceProvider = services.BuildServiceProvider();
 
 		}
@@ -137,6 +175,41 @@ namespace starskytest.Helpers
 			var script = new ApplicationInsightsJsHelper(httpContext, fakeJs).ScriptPlain;
 			
 			Assert.AreEqual(true, script.Contains("Microsoft.ApplicationInsights"));
+		}
+
+		[TestMethod]
+		public async Task ApplicationInsightsJsHelper_GetCurrentUserId_WithId()
+		{
+			var httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+			var userManager = _serviceProvider.GetRequiredService<IUserManager>();
+
+			var result = await userManager.SignUpAsync("test", "email", "test", "test");
+			
+			await userManager.SignIn(httpContextAccessor.HttpContext, result.User);
+
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			
+			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContextAccessor,
+				new JavaScriptTestEncoder());
+			
+			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
+			Assert.AreEqual("1", script);
+		}
+		
+		[TestMethod]
+		public void ApplicationInsightsJsHelper_GetCurrentUserId_NotLogin()
+		{
+			var httpContextAccessor = new HttpContextAccessor
+			{
+				HttpContext = new DefaultHttpContext()
+			};
+			IOptions<ApplicationInsightsServiceOptions> someOptions = Options.Create<ApplicationInsightsServiceOptions>(new ApplicationInsightsServiceOptions());
+			
+			var fakeJs = new MockJavaScriptSnippet(_telemetryConfiguration, someOptions, httpContextAccessor,
+				new JavaScriptTestEncoder());
+			
+			var script = new ApplicationInsightsJsHelper(httpContextAccessor, fakeJs).GetCurrentUserId();
+			Assert.AreEqual("", script);
 		}
 	}
 }

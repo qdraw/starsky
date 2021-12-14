@@ -78,7 +78,7 @@ namespace starsky.foundation.webtelemetry.Helpers
 			}
 		}
 
-		private string GetCurrentUserId()
+		internal string GetCurrentUserId()
 		{
 			if (_httpContext == null || !_httpContext.HttpContext.User.Identity.IsAuthenticated)
 			{
