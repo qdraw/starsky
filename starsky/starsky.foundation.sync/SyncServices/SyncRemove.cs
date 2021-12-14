@@ -32,11 +32,13 @@ namespace starsky.foundation.sync.SyncServices
 		}
 
 		public SyncRemove(AppSettings appSettings, SetupDatabaseTypes setupDatabaseTypes,
-			IQuery query)
+			IQuery query, IMemoryCache memoryCache, IWebLogger logger)
 		{
 			_appSettings = appSettings;
 			_setupDatabaseTypes = setupDatabaseTypes;
+			_memoryCache = memoryCache;
 			_query = query;
+			_logger = logger;
 		}
 
 		/// <summary>

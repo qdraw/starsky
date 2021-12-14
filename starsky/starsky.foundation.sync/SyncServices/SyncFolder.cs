@@ -95,15 +95,20 @@ namespace starsky.foundation.sync.SyncServices
 					var dbItem = await new SyncSingleFile(_appSettings, query, 
 						_subPathStorage, _logger).SingleFile(subPathInFiles, 
 						fileIndexItems.FirstOrDefault(p => p.FilePath == subPathInFiles), updateDelegate);
-					
-					if ( dbItem.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing )
+
+					if ( dbItem.Status ==
+					     FileIndexItem.ExifStatus.NotFoundSourceMissing )
 					{
-						await new SyncRemove(_appSettings, _setupDatabaseTypes, query)
+						await new SyncRemove(_appSettings, _setupDatabaseTypes,
+								query, _memoryCache, _logger)
 							.Remove(subPathInFiles);
-						_console.Write("≠");
-						return dbItem;
 					}
-					_console.Write("•");
+
+					_console.Write(dbItem.Status == FileIndexItem.ExifStatus
+							.NotFoundSourceMissing
+							? "≠"
+							: "•");
+
 					// only used in Parallelism loop
 					await query.DisposeAsync();
 					return dbItem;

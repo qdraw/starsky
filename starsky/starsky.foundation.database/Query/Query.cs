@@ -215,7 +215,7 @@ namespace starsky.foundation.database.Query
         /// <param name="functionName">how is the function called</param>
         /// <param name="singleItemDbPath">the path</param>
         /// <returns>an unique key</returns>
-        private string CachingDbName(string functionName, string singleItemDbPath)
+        internal string CachingDbName(string functionName, string singleItemDbPath)
         {
 	        // when is nothing assume its the home item
             if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
@@ -549,7 +549,7 @@ namespace starsky.foundation.database.Query
             // If cache is turned of
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 updateStatusContent.ParentDirectory);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
@@ -564,60 +564,68 @@ namespace starsky.foundation.database.Query
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
-        /// <summary>
-        /// Cache API within Query to update cached items
-        /// </summary>
-        /// <param name="updateStatusContent">items to update</param>
-        public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
-        {
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+	    /// <summary>
+	    /// Cache API within Query to update cached items and implicit add items to list
+	    /// </summary>
+	    /// <param name="updateStatusContent">items to update</param>
+	    public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
+	    {
+		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var skippedCacheItems = new HashSet<string>();
-			foreach (var item in updateStatusContent.ToList())
-			{
-				// ToList() > Collection was modified; enumeration operation may not execute.
-				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-					item.ParentDirectory);
+		    var skippedCacheItems = new HashSet<string>();
+		    foreach (var item in updateStatusContent.ToList())
+		    {
+			    if ( item.Status == FileIndexItem.ExifStatus.OkAndSame || item.Status == FileIndexItem.ExifStatus.Default )
+			    {
+				    item.Status = FileIndexItem.ExifStatus.Ok;
+			    }
+			    
+			    // ToList() > Collection was modified; enumeration operation may not execute.
+			    var queryCacheName = CachingDbName(nameof(FileIndexItem), 
+				    item.ParentDirectory);
 
-				if ( !_cache.TryGetValue(queryCacheName,
-					out var objectFileFolders) )
-				{
-					skippedCacheItems.Add(item.ParentDirectory);
-					continue;
-				}
+			    if ( !_cache.TryGetValue(queryCacheName,
+				        out var objectFileFolders) )
+			    {
+				    skippedCacheItems.Add(item.ParentDirectory);
+				    continue;
+			    }
 				
-				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+			    var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
-				// make it a list to avoid enum errors
-				displayFileFolders = displayFileFolders.ToList();
+			    // make it a list to avoid enum errors
+			    displayFileFolders = displayFileFolders.ToList();
+
+
 				
-				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
-				if (obj == null) continue;
-				displayFileFolders.Remove(obj);
-
-				if ( item.Status == FileIndexItem.ExifStatus.OkAndSame )
-				{
-					item.Status = FileIndexItem.ExifStatus.Ok;
-				}
-
-				// Add here item to cached index
-				displayFileFolders.Add(item);
+			    var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+			    if ( obj != null )
+			    {
+				    // remove add again
+				    displayFileFolders.Remove(obj);
+			    }
+			    
+			    if ( item.Status == FileIndexItem.ExifStatus.Ok) // ExifStatus.default is already changed
+			    {
+				    // Add here item to cached index
+				    displayFileFolders.Add(item);
+			    }
 				
-				// make it a list to avoid enum errors
-				displayFileFolders = displayFileFolders.ToList();
-				// Order by filename
-				displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+			    // make it a list to avoid enum errors
+			    displayFileFolders = displayFileFolders.ToList();
+			    // Order by filename
+			    displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
 				
-				_cache.Remove(queryCacheName);
-				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
-			}
+			    _cache.Remove(queryCacheName);
+			    _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+		    }
 
-			if ( skippedCacheItems.Any() )
-			{
-				_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
-			}
+		    if ( skippedCacheItems.Any() )
+		    {
+			    _logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+		    }
 			
-        }
+	    }
 
         /// <summary>
         /// Cache Only! Private api within Query to remove cached items
@@ -645,7 +653,7 @@ namespace starsky.foundation.database.Query
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 updateStatusContent.ParentDirectory);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
@@ -670,7 +678,7 @@ namespace starsky.foundation.database.Query
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
             if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
@@ -688,7 +696,7 @@ namespace starsky.foundation.database.Query
 	        // Add protection for disabled caching
 	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
-	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
             
 	        _cache.Set(queryCacheName, items,  

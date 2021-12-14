@@ -14,7 +14,9 @@ const capturePosition = () => {
       (document.body as any).style.width = "100%";
     },
     unfreeze: () => {
-      document.body.removeAttribute("style");
+      (document.body as any).style.position = "initial";
+      (document.body as any).style.top = "initial";
+      (document.body as any).style.width = "initial";
       window.scrollTo(0, topCachedPosition);
     }
   } as ICaptionPosition;
