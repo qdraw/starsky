@@ -49,7 +49,7 @@ namespace starskyimportercli
             // Help and other Command Line Tools args are included in the ImporterCli 
             await new ImportCli(import, appSettings, console, exifToolDownload).Importer(args);
 
-            await new FlushApplicationInsights(serviceProvider).FlushAsync();
+            await new FlushApplicationInsights(serviceProvider, appSettings, webLogger).FlushAsync();
         }
     }
 }

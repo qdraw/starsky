@@ -292,6 +292,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("Name " + _appSettings.Name);
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
+			_console.WriteLine($"ApplicationInsightsKey {_appSettings.ApplicationInsightsInstrumentationKey} ");
+			_console.WriteLine($"AIdbTracking {_appSettings.ApplicationInsightsDatabaseTracking} AIlog {_appSettings.ApplicationInsightsLog} ");
 
 			_console.Write("SyncIgnore ");
 			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
