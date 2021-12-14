@@ -1,14 +1,15 @@
 
+## Install Dotnet EF as global installer
 ```bash
 dotnet tool install -g dotnet-ef
 ```
 
-# from starsky.foundation.database folder
-
+## Or update to latest version
 ```bash
 dotnet tool update --global dotnet-ef
 ```
 
+## Set constance for EF Core
 Define constance in `starsky.foundation.database.csproj`
 ```
         <DefineConstants>SYSTEM_TEXT_ENABLED;ENABLE_DEFAULT_DATABASE</DefineConstants>
@@ -28,7 +29,7 @@ Define constance in `starsky.foundation.database.csproj`
 					}));
 ```
 
-
+## Run Migration
 ```bash
 cd starsky/starsky.foundation.database
 dotnet ef --startup-project ../starsky/starsky.csproj --project starsky.foundation.database.csproj migrations add test
