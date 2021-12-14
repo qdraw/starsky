@@ -853,10 +853,10 @@ Task("SonarBuildTest")
     .IsDependentOn("SonarBegin")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("TestNetCore")
+    .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("SonarEnd");
 
 Task("CoverageDocs")
-    .IsDependentOn("MergeCoverageFiles")
     .IsDependentOn("CoverageReport")
     .IsDependentOn("DocsGenerate");
 
