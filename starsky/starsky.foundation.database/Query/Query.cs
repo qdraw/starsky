@@ -565,7 +565,7 @@ namespace starsky.foundation.database.Query
         }
 
 	    /// <summary>
-	    /// Cache API within Query to update cached items
+	    /// Cache API within Query to update cached items and implicit add items to list
 	    /// </summary>
 	    /// <param name="updateStatusContent">items to update</param>
 	    public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
@@ -575,6 +575,11 @@ namespace starsky.foundation.database.Query
 		    var skippedCacheItems = new HashSet<string>();
 		    foreach (var item in updateStatusContent.ToList())
 		    {
+			    if ( item.Status == FileIndexItem.ExifStatus.OkAndSame || item.Status == FileIndexItem.ExifStatus.Default )
+			    {
+				    item.Status = FileIndexItem.ExifStatus.Ok;
+			    }
+			    
 			    // ToList() > Collection was modified; enumeration operation may not execute.
 			    var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 				    item.ParentDirectory);
@@ -590,18 +595,21 @@ namespace starsky.foundation.database.Query
 
 			    // make it a list to avoid enum errors
 			    displayFileFolders = displayFileFolders.ToList();
+
+
 				
 			    var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
-			    if (obj == null) continue;
-			    displayFileFolders.Remove(obj);
-
-			    if ( item.Status == FileIndexItem.ExifStatus.OkAndSame )
+			    if ( obj != null )
 			    {
-				    item.Status = FileIndexItem.ExifStatus.Ok;
+				    // remove add again
+				    displayFileFolders.Remove(obj);
 			    }
-
-			    // Add here item to cached index
-			    displayFileFolders.Add(item);
+			    
+			    if ( item.Status == FileIndexItem.ExifStatus.Ok) // ExifStatus.default is already changed
+			    {
+				    // Add here item to cached index
+				    displayFileFolders.Add(item);
+			    }
 				
 			    // make it a list to avoid enum errors
 			    displayFileFolders = displayFileFolders.ToList();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,7 +66,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 
 			var appSettings = new AppSettings{
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase, 
-				Verbose = true
+				Verbose = false
 			};
 			
 			new SetupDatabaseTypes(appSettings, provider).BuilderDb();
@@ -76,14 +77,16 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			var buildServiceProvider = provider.BuildServiceProvider();
 			var memoryCache = buildServiceProvider.GetService<IMemoryCache>();
 			var query = buildServiceProvider.GetService<IQuery>();
-		
+				
 			var cacheDbName = new Query(null,null, null, null).CachingDbName(nameof(FileIndexItem), "/");
-
+			memoryCache.Remove(cacheDbName);
+			
 			var cachedContent = new List<FileIndexItem>
 			{
 				new FileIndexItem("/test.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
+			await query.AddItemAsync(new FileIndexItem("/test.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
@@ -91,7 +94,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 						new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, FakeCreateAn.CreateAnImage.Bytes}));
 			
 			await new ManualBackgroundSyncService(
-					new Synchronize(appSettings, query, item, new FakeIWebLogger()),
+					new Synchronize(appSettings, query, item, new FakeIWebLogger(), memoryCache),
 					query,
 					new FakeIWebSocketConnectionsService(),
 					memoryCache, 
@@ -99,8 +102,13 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 					new FakeIUpdateBackgroundTaskQueue(),GetScope())
 				.BackgroundTask("/", string.Empty);
 
+			var content= query.DisplayFileFolders().Where(p => p.FilePath != "/").ToList();
+			foreach ( var itemContent in content )
+			{
+				Console.WriteLine(itemContent.FilePath);
+			}
 			
-			//Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result);
+			Assert.AreEqual(2,content.Count);
 		}
 		
 		[TestMethod]

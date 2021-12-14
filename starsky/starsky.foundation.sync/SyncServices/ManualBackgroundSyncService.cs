@@ -93,14 +93,14 @@ namespace starsky.foundation.sync.SyncServices
 			
 			var updatedList = await _synchronize.Sync(subPath, false, PushToSockets);
 			
-			_query.CacheUpdateItem(FilterBefore(updatedList));
+			_query.CacheUpdateItem(updatedList.Where(p => p.ParentDirectory == subPath).ToList());
 			
 			// so you can click on the button again
 			_cache.Remove(ManualSyncCacheName + subPath);
 			_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			_logger.LogInformation($"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
-			                       $"OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
+			                       $" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
 			operationHolder.SetData(updatedList);
 		}
 		

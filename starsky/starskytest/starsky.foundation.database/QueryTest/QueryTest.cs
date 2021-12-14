@@ -1017,6 +1017,39 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var success = _memoryCache.TryGetValue(name, out var objectFileFolders);
 			Assert.IsFalse(success);
 		}
+
+		[TestMethod]
+		public void CacheUpdateItem_ImplicitAdd()
+		{
+
+			_query.AddCacheParentItem("/456789", new List<FileIndexItem>());
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/456789", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var result = _query.DisplayFileFolders("/456789").ToList();
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("hi", result[0].Tags);
+		}
+
+		[TestMethod]
+		public void CacheUpdateItem_UpdateByName()
+		{
+
+			_query.AddCacheParentItem("/3479824783", new List<FileIndexItem>
+			{
+				new FileIndexItem {Id = 401, Tags = "___not___", ParentDirectory = "/3479824783", FileName = "cache"}
+			});
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/3479824783", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var result = _query.DisplayFileFolders("/3479824783").ToList();
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("hi", result[0].Tags);
+		}
 		
 		[TestMethod]
 		public void CacheUpdateItem_ignore_when_parent_does_notExistFakeLogger()
