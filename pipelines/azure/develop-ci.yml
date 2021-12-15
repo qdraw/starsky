@@ -12,12 +12,6 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
-pool:
-  vmImage: 'ubuntu-20.04'
-  demands:
-  - msbuild
-  - java
-
 trigger:
   branches:
     include:
@@ -52,48 +46,64 @@ pr:
     - starsky-tools/*
     - starsky.netframework/*
 
-steps:
+stages:
+- stage: buildnetcore
+  displayName: 'Develop CI'
+  jobs:
+  - job: buildnetcore
+    displayName: 'Develop CI'
+    timeoutInMinutes: 45 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
+    pool:
+      vmImage: 'ubuntu-20.04'
+      demands:
+      - msbuild
+      - java
 
-  - template: /pipelines/azure/steps/use_dotnet_version.yml
+    steps:
+    - checkout: self
+      fetchDepth: 1
 
-  - template: /pipelines/azure/steps/build_clientapp.yml
-    parameters:
-      npmConfigCache: $(npm_config_cache)
-      jest: ${{ parameters.unitTestsEnabled }}
+    - template: /pipelines/azure/steps/use_dotnet_version.yml
 
-  - template: /pipelines/azure/steps/build_server.yml
-    parameters:
-      vstest: ${{ parameters.unitTestsEnabled }}
-      nugetPackages: $(NUGET_PACKAGES)
+    - template: /pipelines/azure/steps/build_clientapp.yml
+      parameters:
+        npmConfigCache: $(npm_config_cache)
+        jest: ${{ parameters.unitTestsEnabled }}
 
-  - template: /pipelines/azure/steps/coverage_report_merge.yml
-    parameters:
-      unitTest: ${{ parameters.unitTestsEnabled }} 
+    - template: /pipelines/azure/steps/build_server.yml
+      parameters:
+        vstest: ${{ parameters.unitTestsEnabled }}
+        nugetPackages: $(NUGET_PACKAGES)
 
-  - template: /pipelines/azure/steps/build_zip_bundle.yml
+    - template: /pipelines/azure/steps/coverage_report_merge.yml
+      parameters:
+        unitTest: ${{ parameters.unitTestsEnabled }}
 
-  - task: PowerShell@2
-    condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
-    displayName: "[ne] Create zip with coverage with no content"
-    inputs:
-      targetType: 'inline'
-      script: |
-        New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
-        New-Item -ItemType file '$(Build.SourcesDirectory)/temp/index.html'
-        Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
-        Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
-        Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
+    - template: /pipelines/azure/steps/build_zip_bundle.yml
 
-  - template: /pipelines/azure/steps/publish_end2end_container.yml
+    - task: PowerShell@2
+      condition: and(succeeded(), ne('${{ parameters.unitTestsEnabled }}', true) )
+      displayName: "[ne] Create zip with coverage with no content"
+      inputs:
+        targetType: 'inline'
+        script: |
+          New-Item -ItemType Directory -Path '$(Build.SourcesDirectory)/temp'
+          New-Item -ItemType file '$(Build.SourcesDirectory)/temp/index.html'
+          Compress-Archive -Path '$(Build.SourcesDirectory)/temp' -DestinationPath '$(Build.SourcesDirectory)/starsky/starskytest/coverage-report.zip'
+          Write-Host '$(Build.SourcesDirectory)/starsky/starskytest'
+          Get-ChildItem '$(Build.SourcesDirectory)/starsky/starskytest'
 
-  - template: /pipelines/azure/steps/publish_artifacts.yml
-    parameters:
-      publish: 
-        - key: linux-arm64
-          value: '/starsky/starsky-linux-arm64.zip' 
-        - key: linux-arm
-          value: '/starsky/starsky-linux-arm.zip' 
-        - key: generic-netcore
-          value: '/starsky/starsky-generic-netcore.zip'
-        - key: coverage-report
-          value: '/starsky/starskytest/coverage-report.zip'
+    - template: /pipelines/azure/steps/publish_end2end_container.yml
+
+    - template: /pipelines/azure/steps/publish_artifacts.yml
+      parameters:
+        publish:
+          - key: linux-arm64
+            value: '/starsky/starsky-linux-arm64.zip'
+          - key: linux-arm
+            value: '/starsky/starsky-linux-arm.zip'
+          - key: generic-netcore
+            value: '/starsky/starsky-generic-netcore.zip'
+          - key: coverage-report
+            value: '/starsky/starskytest/coverage-report.zip'
