@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <ProjectGuid>{eb1d57d1-29d8-4bfb-950e-447ef8522a10}</ProjectGuid>
-        <RuntimeFrameworkVersion>3.1.21</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.22</RuntimeFrameworkVersion>
         <DebugType>Full</DebugType>
         <Version>0.4.13</Version>
     </PropertyGroup>
