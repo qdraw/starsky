@@ -42,8 +42,10 @@ node starsky-tools/build-tools/app-version-update.js
 - remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 
+# version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
+- nothing yet
 
-# version 0.4.13 _(Unreleased)_ - 2021-12-?
+# version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
 - [x]   (Fixed) _Tools_ Dotnet SDK updater build tools (Work in progress) (PR #510)
 - [x]   (Fixed) _Back-end_  Fix for type LockoutEnd (PR #510)
