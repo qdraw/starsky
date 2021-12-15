@@ -51,7 +51,8 @@ namespace starsky.Controllers
             
             // Used in Detail and Index View => does not hide this single item
             var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
-            var subPath = _query.SubPathSlashRemove(f);
+
+            var subPath = PathHelper.RemoveLatestSlash(f);
 
             // First check if it is a single Item
             var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);
