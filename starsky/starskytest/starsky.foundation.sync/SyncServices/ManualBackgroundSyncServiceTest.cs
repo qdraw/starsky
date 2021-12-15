@@ -20,7 +20,6 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public class ManualBackgroundSyncServiceTest
 	{
-		private AppSettings _appSettings;
 
 		private IServiceScopeFactory GetScope()
 		{
