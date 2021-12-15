@@ -24,16 +24,14 @@ namespace starsky.Controllers
     [Authorize]
     public class SyncController : Controller
     {
-        private readonly ISync _sync;
         private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
 
-        public SyncController(ISync sync, IUpdateBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
+        public SyncController(IUpdateBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
 	        IWebSocketConnectionsService connectionsService)
         {
-            _sync = sync;
             _bgTaskQueue = queue;
             _query = query;
 	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -114,79 +112,6 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Do a file sync in a background process (replace with /api/synchronize)
-        /// </summary>
-        /// <param name="f">subPaths split by dot comma</param>
-        /// <returns>list of changed files</returns>
-        /// <response code="200">started sync as background job</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpPost("/api/sync")]
-        [Obsolete("replace with /api/synchronize")]
-        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
-        [ProducesResponseType(typeof(string),401)]
-        [Produces("application/json")]	    
-        public IActionResult SyncIndex(string f)
-        {
-            var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-            // the result list
-            var syncResultsList = new List<SyncViewModel>();
-
-            foreach ( var inputSubPath in inputFilePaths )
-            {
-	            var subPath = PathHelper.RemoveLatestSlash(inputSubPath);
-	            if ( subPath == string.Empty ) subPath = "/";
-
-	            var folderStatus = _iStorage.IsFolderOrFile(subPath);
-	            if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-	            {
-		            var syncItem = new SyncViewModel
-		            {
-			            FilePath = subPath,
-			            Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-		            };
-		            syncResultsList.Add(syncItem);
-	            }
-	            else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
-	            {
-		            var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
-			            .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-		            var dirs = _iStorage.GetDirectoryRecursive(subPath);
-		            filesAndFoldersInDirectoryArray.AddRange(dirs);
-					
-		            foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
-		            {
-			            var syncItem = new SyncViewModel
-			            {
-				            FilePath = fileInDirectory,
-				            Status = FileIndexItem.ExifStatus.Ok
-			            };
-			            syncResultsList.Add(syncItem);
-		            }
-	            }
-	            else // single file
-	            {
-		            var syncItem = new SyncViewModel
-		            {
-			            FilePath = subPath,
-			            Status = FileIndexItem.ExifStatus.Ok
-		            };
-		            syncResultsList.Add(syncItem);
-	            }
-	            // Update >
-#pragma warning disable 1998
-	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-	            {
-		            _sync.SyncFiles(subPath,false);
-		            Console.WriteLine(">>> running clear cache "+ subPath);
-		            _query.RemoveCacheParentItem(subPath);
-	            });
-#pragma warning restore 1998
-            }
-			return Json(syncResultsList);
-        }
-			   
-	    /// <summary>
 	    /// Rename file/folder and update it in the database
 	    /// </summary>
 	    /// <param name="f">from subPath</param>
