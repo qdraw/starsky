@@ -47,12 +47,12 @@ pr:
     - starsky.netframework/*
 
 stages:
-- stage: buildnetcore
+- stage: build
   displayName: 'Develop CI'
   jobs:
   - job: buildnetcore
-    displayName: 'Develop CI'
-    timeoutInMinutes: 45 # how long to run the job before automatically cancelling
+    displayName: 'Build'
+    timeoutInMinutes: 35 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
     pool:
       vmImage: 'ubuntu-20.04'
@@ -62,7 +62,7 @@ stages:
 
     steps:
     - checkout: self
-      fetchDepth: 1
+      # fetchDepth: 1 - disable for sonarqube
 
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 
