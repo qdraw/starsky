@@ -52,7 +52,7 @@ stages:
   jobs:
   - job: buildnetcore
     displayName: 'Build'
-    timeoutInMinutes: 35 # how long to run the job before automatically cancelling
+    timeoutInMinutes: 30 # how long to run the job before automatically cancelling
     cancelTimeoutInMinutes: 10 # how much time to give 'run always even if cancelled tasks' before stopping them
     pool:
       vmImage: 'ubuntu-20.04'
