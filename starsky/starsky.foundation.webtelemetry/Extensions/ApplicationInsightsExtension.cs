@@ -44,7 +44,7 @@ namespace starsky.foundation.webtelemetry.Extensions
 						.ApplicationInsightsInstrumentationKey,
 				});
 			
-			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"starsky{AppSettings.StarskyAppType.WebController}"));
+			services.AddSingleton<ITelemetryInitializer>(new CloudRoleNameInitializer($"{AppSettings.StarskyAppType.WebController}"));
 
 			services.ConfigureTelemetryModule<EventCounterCollectionModule>(
 				(module, _) => SetEventCounterCollectionModule(module));
