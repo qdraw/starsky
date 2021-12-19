@@ -74,6 +74,8 @@ describe("useSockets", () => {
     jest
       .spyOn(DifferenceInDate, "DifferenceInDate")
       .mockImplementationOnce(() => 1);
+
+    jest.spyOn(WsCurrentStart, "default").mockClear();
     var wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService)
