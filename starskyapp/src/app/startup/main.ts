@@ -12,8 +12,6 @@ import createCheckForUpdatesContainerWindow from "../updates-warning-window/upda
 import defaultAppSettings from "./app-settings";
 import { willNavigateSecurity } from "./will-navigate-security";
 
-// app.allowRendererProcessReuse = true;
-
 MakeLogsPath();
 ipcBridge();
 defaultAppSettings();
