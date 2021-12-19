@@ -39,7 +39,6 @@ var filePathList = [
 	"starsky/starskyadmincli/readme.md",
 	"starsky/starskygeocli/readme.md",
 	"starsky/starskyimportercli/readme.md",
-	"starsky/starskysynccli/readme.md",
 	"starsky/starskytest/readme.md",
 	"starsky/starskywebftpcli/readme.md",
 	"starsky/starskywebhtmlcli/readme.md",
