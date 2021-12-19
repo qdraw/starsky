@@ -1,4 +1,4 @@
-name: Nuget packages list update
+name: Auto update Nuget packages list
 on:
   push:
     branches:
