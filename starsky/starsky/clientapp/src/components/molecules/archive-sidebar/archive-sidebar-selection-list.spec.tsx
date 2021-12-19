@@ -57,9 +57,9 @@ describe("archive-sidebar-selection-list", () => {
       ) as HTMLElement;
 
       act(() => {
-        (selectionList.children[0].querySelector(
-          ".close"
-        ) as HTMLElement).click();
+        (
+          selectionList.children[0].querySelector(".close") as HTMLElement
+        ).click();
       });
 
       expect(spy).toBeCalledTimes(1);

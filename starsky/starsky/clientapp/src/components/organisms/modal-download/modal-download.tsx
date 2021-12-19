@@ -100,10 +100,8 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
     await ExportIntervalUpdate(createZipKey, setProcessing);
   }, 3000);
 
-  const [
-    singleFileThumbnailStatus,
-    setSingleFileThumbnailStatus
-  ] = React.useState(true);
+  const [singleFileThumbnailStatus, setSingleFileThumbnailStatus] =
+    React.useState(true);
 
   function getFirstSelectResult(): string {
     if (!props.select || props.select.length !== 1) return "";

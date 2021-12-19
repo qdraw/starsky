@@ -93,9 +93,8 @@ describe("PreferencesPassword", () => {
       var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../../../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200, data: { success: true } }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200, data: { success: true } });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -138,9 +137,8 @@ describe("PreferencesPassword", () => {
       var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 401, data: null }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 401, data: null });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -176,9 +174,8 @@ describe("PreferencesPassword", () => {
       var component = render(<PreferencesPassword />);
       // spy on fetch
       // use this using => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 400, data: null }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 400, data: null });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);

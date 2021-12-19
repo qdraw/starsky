@@ -8,12 +8,11 @@ describe("useInterval", () => {
     timer: number;
   }
 
-  const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> = memo(
-    (props) => {
+  const UseIntervalComponentTest: React.FunctionComponent<UseIntervalComponentTestProps> =
+    memo((props) => {
       useInterval(props.callback, props.timer);
       return <></>;
-    }
-  );
+    });
 
   it("check if is called once", (done) => {
     function callback() {

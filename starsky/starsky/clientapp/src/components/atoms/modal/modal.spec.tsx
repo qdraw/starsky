@@ -48,7 +48,7 @@ describe("Modal", () => {
     function renderModal2(): [
       jest.Mock<any, any>,
       RenderResult<
-        typeof import("/data/git/starsky/starsky/starsky/clientapp/node_modules/@testing-library/dom/types/queries"),
+        typeof import("@testing-library/dom/types/queries"),
         HTMLElement
       >
     ] {

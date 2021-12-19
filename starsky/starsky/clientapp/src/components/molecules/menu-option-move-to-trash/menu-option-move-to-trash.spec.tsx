@@ -48,13 +48,12 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: null,
           statusCode: 200
-        }
-      );
+        });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -101,13 +100,12 @@ describe("MenuOptionMoveToTrash", () => {
         ]
       } as IArchiveProps;
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: null,
           statusCode: 200
-        }
-      );
+        });
       const locationObject = {
         location: globalHistory.location,
         navigate: jest.fn()

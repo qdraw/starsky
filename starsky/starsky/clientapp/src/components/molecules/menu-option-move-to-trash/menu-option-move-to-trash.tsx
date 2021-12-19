@@ -23,8 +23,8 @@ interface IMenuOptionMoveToTrashProps {
 /**
  * Used from Archive and Search
  */
-const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> = memo(
-  ({ state, dispatch, select, setSelect, isReadOnly }) => {
+const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps> =
+  memo(({ state, dispatch, select, setSelect, isReadOnly }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
@@ -102,7 +102,6 @@ const MenuOptionMoveToTrash: React.FunctionComponent<IMenuOptionMoveToTrashProps
         ) : null}
       </>
     );
-  }
-);
+  });
 
 export default MenuOptionMoveToTrash;

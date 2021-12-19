@@ -7,8 +7,8 @@ interface IDetailViewExifStatusProps {
   status: IExifStatus;
 }
 
-const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> = memo(
-  ({ status }) => {
+const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> =
+  memo(({ status }) => {
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
 
@@ -110,7 +110,6 @@ const DetailViewExifStatus: React.FunctionComponent<IDetailViewExifStatusProps> 
         ) : null}
       </>
     );
-  }
-);
+  });
 
 export default DetailViewExifStatus;

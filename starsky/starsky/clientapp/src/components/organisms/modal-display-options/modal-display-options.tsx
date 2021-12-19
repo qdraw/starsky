@@ -14,9 +14,9 @@ interface IModalDisplayOptionsProps {
   parentFolder?: string;
 }
 
-const ModalDisplayOptions: React.FunctionComponent<IModalDisplayOptionsProps> = (
-  props
-) => {
+const ModalDisplayOptions: React.FunctionComponent<
+  IModalDisplayOptionsProps
+> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

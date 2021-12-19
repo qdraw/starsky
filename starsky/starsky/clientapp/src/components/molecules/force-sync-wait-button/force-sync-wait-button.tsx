@@ -51,12 +51,9 @@ export async function ForceSyncRequestNewContent({
   });
 }
 
-const ForceSyncWaitButton: React.FunctionComponent<ForceSyncWaitButtonPropTypes> = ({
-  propsParentFolder,
-  historyLocationSearch,
-  callback,
-  dispatch
-}) => {
+const ForceSyncWaitButton: React.FunctionComponent<
+  ForceSyncWaitButtonPropTypes
+> = ({ propsParentFolder, historyLocationSearch, callback, dispatch }) => {
   function forceSync(): Promise<IConnectionDefault> {
     const parentFolder = propsParentFolder ? propsParentFolder : "/";
     setIsLoading(true);

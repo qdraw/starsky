@@ -81,9 +81,8 @@ describe("ModalPublish", () => {
       statusCode: 200,
       data: "key"
     };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      connectionDefault
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve(connectionDefault);
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockIConnectionDefault);
@@ -120,9 +119,8 @@ describe("ModalPublish", () => {
       statusCode: 206,
       data: "key"
     };
-    const mockIConnectionDefault2: Promise<IConnectionDefault> = Promise.resolve(
-      connectionDefault2
-    );
+    const mockIConnectionDefault2: Promise<IConnectionDefault> =
+      Promise.resolve(connectionDefault2);
 
     jest
       .spyOn(FetchGet, "default")
@@ -145,9 +143,8 @@ describe("ModalPublish", () => {
 
   it("Fail - Publish flow with default options -> and waiting 2", async () => {
     var connectionDefault: IConnectionDefault = { statusCode: 500, data: null };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      connectionDefault
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve(connectionDefault);
 
     jest
       .spyOn(useInterval, "default")
@@ -227,9 +224,8 @@ describe("ModalPublish", () => {
       statusCode: 500,
       data: null
     };
-    const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      connectionDefault
-    );
+    const mockIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve(connectionDefault);
 
     jest
       .spyOn(useInterval, "default")

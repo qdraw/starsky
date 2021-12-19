@@ -5,8 +5,8 @@ interface IDetailViewInfoMakeModelApertureProps {
   fileIndexItem: IFileIndexItem;
 }
 
-const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> = memo(
-  ({ fileIndexItem }) => {
+const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMakeModelApertureProps> =
+  memo(({ fileIndexItem }) => {
     function ShowISOIfExistCompontent(fileIndexItemInside: IFileIndexItem) {
       return (
         <>
@@ -43,7 +43,6 @@ const DetailViewInfoMakeModelAperture: React.FunctionComponent<IDetailViewInfoMa
         ) : null}
       </>
     );
-  }
-);
+  });
 
 export default DetailViewInfoMakeModelAperture;

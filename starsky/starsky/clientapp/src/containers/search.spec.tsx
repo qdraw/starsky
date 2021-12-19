@@ -26,8 +26,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId("search-content-header")
-        ?.textContent;
+      const text = component.queryByTestId(
+        "search-content-header"
+      )?.textContent;
       expect(text).toBe("No result");
     });
 
@@ -41,8 +42,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId("search-content-header")
-        ?.textContent;
+      const text = component.queryByTestId(
+        "search-content-header"
+      )?.textContent;
       expect(text).toBe("Page 2 of 1 results");
     });
 
@@ -56,8 +58,9 @@ describe("Search", () => {
           colorClassUsage={[]}
         />
       );
-      const text = component.queryByTestId("search-content-header")
-        ?.textContent;
+      const text = component.queryByTestId(
+        "search-content-header"
+      )?.textContent;
       expect(text).toBe("1 results");
     });
 

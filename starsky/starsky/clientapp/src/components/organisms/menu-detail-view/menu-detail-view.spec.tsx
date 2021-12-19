@@ -95,9 +95,8 @@ describe("MenuDetailView", () => {
     it("readonly - trash click to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -401,9 +400,8 @@ describe("MenuDetailView", () => {
     it("trash click to trash", () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -458,15 +456,14 @@ describe("MenuDetailView", () => {
       jest.useFakeTimers();
       var setTimeoutSpy = jest.spyOn(global, "setTimeout");
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spyPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           statusCode: 200,
           data: {
             subPath: "/test/image.jpg",
@@ -478,8 +475,7 @@ describe("MenuDetailView", () => {
               fileName: "image.jpg"
             }
           } as IDetailView
-        } as IConnectionDefault
-      );
+        } as IConnectionDefault);
       var spyGet = jest
         .spyOn(FetchGet, "default")
         .mockImplementationOnce(() => mockGetIConnectionDefault);
@@ -541,9 +537,8 @@ describe("MenuDetailView", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
 
       var spy = jest
         .spyOn(FetchPost, "default")
@@ -587,9 +582,8 @@ describe("MenuDetailView", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var spyFetchPost = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
