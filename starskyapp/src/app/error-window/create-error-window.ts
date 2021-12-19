@@ -15,7 +15,6 @@ export const createErrorWindow = async (error: string) => {
     show: true,
     resizable: !isPackaged(),
     webPreferences: {
-      enableRemoteModule: false,
       contextIsolation: true
     }
   });
