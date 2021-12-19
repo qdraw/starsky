@@ -1,4 +1,4 @@
-name: Auto update Application Version
+name: Application Version Auto update
 on:
   push:
     branches:
@@ -27,7 +27,17 @@ jobs:
       with:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
-        message: "[NugetPackagesListUpdate] Auto commited Application Version update"
+        message: "Auto commited Application Version update csproj"
         add: "starsky/**/*.csproj"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Commit changes
+      uses: EndBug/add-and-commit@v4
+      with:
+        author_name: Application Version Update Bot
+        author_email: qdraw@users.noreply.github.com
+        message: "Auto commited Application Version update package.json"
+        add: "starsky/**/package.json"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
