@@ -121,16 +121,13 @@ In the repository of <a href="https://github.com/facebook/create-react-app/relea
 <pre><code>npm ci</code></pre>
 <p>The following packages are added:</p>
 <pre><code>npm install --save abortcontroller-polyfill
-npm install --save @reach/router
+npm install --save @reach/router --force
 npm install --save intersection-observer
 npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
-npm install --save enzyme
-npm install --save @types/enzyme
 npm install --save-dev @storybook/react
-npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
@@ -159,7 +156,7 @@ npm install --save @types/node</code></pre>
 "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint &amp;&amp; react-scripts test --watchAll=false --coverage --reporters=default 2&gt;&amp;1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20210311  v4.0.3'"</code></pre>
+"upgrade": "echo 'check readme.md 20211219  v5.0.0'"</code></pre>
 <h3 id="collectcoveragefrom-and-coveragereporters">collectCoverageFrom and coverageReporters</h3>
 <p>With jest <code>collectCoverageFrom</code> and <code>coverageReporters</code> are used to get the right output</p>
 <pre><code class="json language-json">"jest": {
