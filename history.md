@@ -43,7 +43,13 @@ node starsky-tools/build-tools/app-version-update.js
 - change default option in thumbnailer cli to scan directories to enabled
 
 # version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
-- nothing yet
+- [x]   (Removed) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
+- [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)
+- [x]   (Removed) _Back-end_ Removed obsolete SubPathSlashRemove API (PR #563)
+- [x]   (Removed) _Back-end_ Removed old sync API  (PR #563)
+
+todo: "/api/sync/mkdir" to /api/file/mkdir
+todo: "/api/sync/rename" to /api/file/rename
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)

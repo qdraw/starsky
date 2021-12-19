@@ -137,86 +137,6 @@ namespace starskytest.Controllers
 			return _query.GetObjectByFilePath(_createAnImage.DbPath);
 		}
 
-		[TestMethod]
-		public void SyncControllerTest_Folder()
-		{
-			InsertSearchData();
-
-			var context = new ControllerContext
-			{
-				HttpContext = new DefaultHttpContext()
-			};
-
-			var newImage = CreateAnImage.Bytes;
-			var fakeStorage = new FakeIStorage(new List<string>{"/"},
-				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
-			var storageSelector = new FakeSelectorStorage(fakeStorage);
-			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query,storageSelector, 
-				new FakeIWebSocketConnectionsService());
-			controller.ControllerContext = context;
-
-#pragma warning disable 0618
-			var result = controller.SyncIndex("/") as JsonResult;
-#pragma warning restore 0618
-			var list = result.Value as List<SyncViewModel>;
-			var path = list.FirstOrDefault(p => p.FilePath == "/test.jpg").FilePath;
-			Assert.AreEqual("/test.jpg", path);
-		}
-
-		[TestMethod]
-		public void SyncControllerTest_OneFile()
-		{
-			InsertSearchData();
-
-			var context = new ControllerContext
-			{
-				HttpContext = new DefaultHttpContext()
-			};
-			
-			var fakeStorage = new FakeIStorage();
-			var storageSelector = new FakeSelectorStorage(fakeStorage);
-
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
-				new FakeIWebSocketConnectionsService());
-			controller.ControllerContext = context;
-
-#pragma warning disable 0618
-			var result = controller.SyncIndex(_createAnImage.DbPath) as JsonResult;
-#pragma warning restore 0618
-			
-			var list = result.Value as List<SyncViewModel>;
-			var path = list.FirstOrDefault(p => p.FilePath == _createAnImage.DbPath).FilePath;
-
-			Assert.AreEqual(1, list.Count);
-			Assert.AreEqual(_createAnImage.DbPath, path);
-		}
-
-		[TestMethod]
-		public void SyncControllerTest_DeletedFile()
-		{
-
-			var context = new ControllerContext
-			{
-				HttpContext = new DefaultHttpContext()
-			};
-			
-			var fakeStorage = new FakeIStorage();
-			var storageSelector = new FakeSelectorStorage(fakeStorage);
-			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
-				new FakeIWebSocketConnectionsService());
-			controller.ControllerContext = context;
-
-#pragma warning disable 0618
-			var result = controller.SyncIndex("/404") as JsonResult;
-#pragma warning restore 0618
-			
-			var list = result.Value as List<SyncViewModel>;
-			
-			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing, list[0].Status);
-			
-		}
 		
 		[TestMethod]
 		public async Task SyncControllerTest_Rename_NotFoundInIndex()
@@ -229,7 +149,7 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+			var controller = new SyncController(_query, storageSelector, 
 				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
@@ -253,7 +173,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -282,7 +202,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController(_query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -313,7 +233,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController(_query, storageSelector, 
 					socket)
 				{
 					ControllerContext = context
@@ -341,7 +261,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -367,7 +287,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController(_query, storageSelector, 
 					socket)
 				{
 					ControllerContext = context
@@ -394,7 +314,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_isync, _bgTaskQueue, _query, storageSelector, 
+				new SyncController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context

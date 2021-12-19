@@ -140,9 +140,6 @@ namespace starsky.foundation.database.Interfaces
         Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
         Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
 
-        [Obsolete("use PathHelper.RemoveLatestSlash()")]
-        string SubPathSlashRemove(string subPath = "/");
-
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
 
