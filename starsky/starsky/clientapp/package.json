@@ -31,7 +31,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "postbuild": "npm run lint",
-    "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 1800",
+    "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 1055",
     "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
     "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
@@ -87,14 +87,14 @@
           "endOfLine": "auto"
         }
       ],
-      "testing-library/render-result-naming-convention": "off",
-      "testing-library/no-container": "off",
-      "testing-library/prefer-screen-queries": "off",
-      "testing-library/prefer-presence-queries": "off",
-      "testing-library/no-unnecessary-act": "off",
-      "testing-library/no-node-access": "off",
-      "testing-library/no-render-in-setup": "off",
-      "testing-library/no-wait-for-multiple-assertions": "off"
+      "testing-library/render-result-naming-convention": "warn",
+      "testing-library/no-container": "warn",
+      "testing-library/prefer-screen-queries": "warn",
+      "testing-library/prefer-presence-queries": "warn",
+      "testing-library/no-unnecessary-act": "warn",
+      "testing-library/no-node-access": "warn",
+      "testing-library/no-render-in-setup": "warn",
+      "testing-library/no-wait-for-multiple-assertions": "warn"
     }
   },
   "prettier": {

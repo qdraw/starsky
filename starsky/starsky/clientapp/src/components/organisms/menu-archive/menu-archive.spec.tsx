@@ -687,15 +687,6 @@ describe("MenuArchive", () => {
 
       var component = render(<MenuArchive />);
 
-      // var item: ReactWrapper;
-      // await act(async () => {
-      //   item = await component.find('[data-test="trash"]');
-      // });
-
-      // await act(async () => {
-      //   await item.simulate("click");
-      // });
-
       const trash = component.queryByTestId("trash");
       expect(trash).not.toBeNull();
 
