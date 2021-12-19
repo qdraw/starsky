@@ -24,15 +24,13 @@ namespace starsky.Controllers
     [Authorize]
     public class SyncController : Controller
     {
-        private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
 
-        public SyncController(IUpdateBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
+        public SyncController(IQuery query, ISelectorStorage selectorStorage, 
 	        IWebSocketConnectionsService connectionsService)
         {
-            _bgTaskQueue = queue;
             _query = query;
 	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 	        _connectionsService = connectionsService;
