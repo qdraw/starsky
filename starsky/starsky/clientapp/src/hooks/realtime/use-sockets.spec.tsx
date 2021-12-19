@@ -1,5 +1,4 @@
 import { act } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
 import * as DifferenceInDate from "../../shared/date";
 import * as useInterval from "../use-interval";
 import { mountReactHook } from "../___tests___/test-hook";
@@ -11,7 +10,7 @@ import { FakeWebSocketService } from "./___tests___/fake-web-socket-service";
 describe("useSockets", () => {
   let setupComponent: any;
   let hook: IUseSockets;
-  let component: ReactWrapper;
+  let component: any;
 
   function mountComponent() {
     setupComponent = mountReactHook(useSockets, []); // Mount a Component with our hook
