@@ -18,6 +18,7 @@ namespace starsky.foundation.database.Helpers
 
             // remove backslash from end
             filePath = PathHelper.RemoveLatestBackslash(filePath);
+            if ( string.IsNullOrEmpty(filePath) ) filePath = "/";
 
             var breadcrumb = new List<string>();
             if (filePath[0].ToString() != "/")

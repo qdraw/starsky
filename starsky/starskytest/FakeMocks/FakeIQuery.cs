@@ -79,7 +79,7 @@ namespace starskytest.FakeMocks
 			List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new NotImplementedException();
+			return GetAllFiles(subPath);
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
@@ -111,7 +111,7 @@ namespace starskytest.FakeMocks
 						.Select(p => p.FilePath)
 				);
 			}
-			return new DetailView {FileIndexItem = fileIndexItem,};
+			return new DetailView {FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true};
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
@@ -319,7 +319,7 @@ namespace starskytest.FakeMocks
 
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
 		{
-			throw new System.NotImplementedException();
+			return new RelativeObjects();
 		}
 
 		public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)

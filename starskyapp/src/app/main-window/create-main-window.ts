@@ -29,7 +29,6 @@ async function createMainWindow(
       allowRunningInsecureContent: false,
       nodeIntegration: false,
       sandbox: false,
-      enableRemoteModule: false,
       partition: "persist:main",
       contextIsolation: true,
       preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script

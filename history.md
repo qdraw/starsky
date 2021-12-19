@@ -48,9 +48,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Removed) _Back-end_ Removed old sync API  (PR #563)
 - [x]   (Security) _Front-end_  Upgrade Prettier 2.5.1 and React scripts 5.0.0 (PR #569)
 - [x]   (Changed) _Front-end_  Prettier new eslint rules 4.0.0 (PR #569)
+- [x]   (Fixed) _Back-end_  IndexController with empty string introduced with removal of SubPathSlashRemove (PR #571)
+- [x]   (Changed) _Back-end_ Upgrade Electron to 16.x and Electron Builder to 22.14.x (PR #571)
 
 todo: "/api/sync/mkdir" to /api/file/mkdir
 todo: "/api/sync/rename" to /api/file/rename
+todo: test electron with new version
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)

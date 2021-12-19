@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -81,6 +83,42 @@ namespace starskytest.Controllers
 			Assert.AreNotEqual(actionResult,null);
 			var jsonCollection = actionResult.Value as ArchiveViewModel;
 			Assert.AreEqual("home0012304590",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
+		}
+		
+		[TestMethod]
+		[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
+		public void HomeControllerIndexIndexViewModel_SlashPage_Test()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/") { IsDirectory = true },
+				new FileIndexItem("/test.jpg"){Tags = "test", FileHash = "test"}
+			});
+			
+			var controller = new IndexController(fakeQuery,new AppSettings());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = controller.Index("/") as JsonResult;
+			Assert.AreNotEqual(actionResult,null);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
+			Assert.AreEqual("test",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
+		}
+		
+				
+		[TestMethod]
+		public void HomeControllerIndexIndexViewModel_EmptyStringPage_Test()
+		{
+			var fakeQuery = new FakeIQuery(new List<FileIndexItem>
+			{
+				new FileIndexItem("/") { IsDirectory = true },
+				new FileIndexItem("/test.jpg"){Tags = "test", FileHash = "test"}
+			});
+			
+			var controller = new IndexController(fakeQuery,new AppSettings());
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			var actionResult = controller.Index(string.Empty) as JsonResult;
+			Assert.AreNotEqual(actionResult,null);
+			var jsonCollection = actionResult.Value as ArchiveViewModel;
+			Assert.AreEqual("test",jsonCollection.FileIndexItems.FirstOrDefault().FileHash);
 		}
 
 		[TestMethod]
