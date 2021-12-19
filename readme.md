@@ -44,6 +44,11 @@ To publish files generate markup and images with a logo use the [Web Html CLI](s
 
 All these projects are separately compiled using the build script and using the same application settings (`appsettings`) configuration.
 
+## Release status
+
+[![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
+
 ## Build status
 
 ### Azure pipeline

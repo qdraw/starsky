@@ -472,8 +472,8 @@ namespace starsky.feature.import.Services
 		    }
 
 		    // Run Exiftool to Update for example colorClass
-		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
-			    importSettings.ColorClass);
+		    importIndexItem.FileIndexItem = await UpdateImportTransformations(
+			    importIndexItem.FileIndexItem, importSettings.ColorClass);
 
 			// to move files
             if (importSettings.DeleteAfter)
@@ -531,7 +531,7 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
-		private FileIndexItem UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
+		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
@@ -548,8 +548,8 @@ namespace starsky.feature.import.Services
 				nameof(FileIndexItem.Description).ToLowerInvariant(),
 			};
 
-			new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage)).Update(fileIndexItem, comparedNamesList);
+			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
+				new ReadMeta(_subPathStorage)).UpdateAsync(fileIndexItem, comparedNamesList);
 			
 			return fileIndexItem.Clone();
 		}

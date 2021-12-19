@@ -31,7 +31,7 @@ if(branchName.StartsWith("refs/heads/")) {
 }
 var noSonar = HasArgument("no-sonar") || HasArgument("nosonar");
 /* use as '--no-unit-test' (without quotes) */
-var noUnitTest = HasArgument("no-unit-test") || HasArgument("nounittest") || HasArgument("nounittests") || HasArgument("no-unit-tests");
+var noUnitTest = HasArgument("no-unit-test") || HasArgument("nounittest") || HasArgument("nounittests") || HasArgument("no-unit-tests") || HasArgument("no-tests")  || HasArgument("no-test");
 
 /* to get a list with the generic item */
 var runtimes = runtimeInput.Split(",").ToList();
@@ -391,7 +391,7 @@ Task("MergeCoverageFiles")
     if (FileExists(outputCoverageFile)) {
       DeleteFile(outputCoverageFile);
     }
-    
+
     var outputCoverageSonarQubeFile = $"./starskytest/coverage-merge-sonarqube.xml";
 
     if (FileExists(outputCoverageSonarQubeFile)) {
