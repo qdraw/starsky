@@ -39,7 +39,6 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 
 # version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
