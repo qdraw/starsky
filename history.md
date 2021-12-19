@@ -48,6 +48,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Removed) _Back-end_ Removed old sync API  (PR #563)
 - [x]   (Security) _Front-end_  Upgrade Prettier 2.5.1 and React scripts 5.0.0 (PR #569)
 - [x]   (Changed) _Front-end_  Prettier new eslint rules 4.0.0 (PR #569)
+- [x]   (Fixed) _Back-end_  IndexController with empty string introduced with removal of SubPathSlashRemove
 
 todo: "/api/sync/mkdir" to /api/file/mkdir
 todo: "/api/sync/rename" to /api/file/rename

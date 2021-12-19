@@ -6,6 +6,10 @@ using starskycore.Attributes;
 
 namespace starskytest.Helpers
 {
+	
+	/// <summary>
+	/// Also known as BreadcrumbsTest
+	/// </summary>
 	[TestClass]
 	public class BreadcrumbHelperTest
 	{
@@ -14,6 +18,15 @@ namespace starskytest.Helpers
 		public void BreadcrumbSlashMethodTest()
 		{
 			var breadcrumbExample = Breadcrumbs.BreadcrumbHelper("/");
+
+			var breadcrumblist = new List<string> { "/" };
+			CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
+		}
+		
+		[TestMethod]
+		public void BreadcrumbNoInputTest()
+		{
+			var breadcrumbExample = Breadcrumbs.BreadcrumbHelper(string.Empty);
 
 			var breadcrumblist = new List<string> { "/" };
 			CollectionAssert.AreEqual(breadcrumbExample, breadcrumblist);
