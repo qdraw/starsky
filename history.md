@@ -48,6 +48,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Removed) _Back-end_ Removed obsolete SubPathSlashRemove API (PR #563)
 - [x]   (Removed) _Back-end_ Removed old sync API  (PR #563)
 
+todo: "/api/sync/mkdir" to /api/file/mkdir
+todo: "/api/sync/rename" to /api/file/rename
+
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
 - [x]   (Fixed) _Tools_ Dotnet SDK updater build tools (Work in progress) (PR #510)
