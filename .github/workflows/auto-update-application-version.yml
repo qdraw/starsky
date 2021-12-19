@@ -28,7 +28,7 @@ jobs:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
         message: "Auto commited Application Version update csproj"
-        add: "starsky/**/*.csproj"
+        add: "**/*.csproj"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,6 +38,6 @@ jobs:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
         message: "Auto commited Application Version update package.json"
-        add: "starsky/**/package.json"
+        add: "**/package.json"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
