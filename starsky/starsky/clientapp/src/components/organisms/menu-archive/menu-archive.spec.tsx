@@ -678,9 +678,8 @@ describe("MenuArchive", () => {
           { fileName: "test.jpg", parentDirectory: "/" }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault)

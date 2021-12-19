@@ -9,12 +9,11 @@ describe("useKeyboardEvent", () => {
     dependencies: any[];
   }
 
-  const UseKeyboardEventComponentTest: React.FunctionComponent<UseKeyboardEventComponentTestProps> = memo(
-    (props) => {
+  const UseKeyboardEventComponentTest: React.FunctionComponent<UseKeyboardEventComponentTestProps> =
+    memo((props) => {
       useKeyboardEvent(props.regex, props.callback, props.dependencies);
       return null;
-    }
-  );
+    });
 
   it("check if is called once", () => {
     var callback = jest.fn();

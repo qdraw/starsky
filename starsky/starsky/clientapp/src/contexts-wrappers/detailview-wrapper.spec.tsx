@@ -126,7 +126,7 @@ describe("DetailViewWrapper", () => {
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith(detail[1]);
 
-      var element = (result.componentMount as any) as ReactWrapper;
+      var element = result.componentMount as any as ReactWrapper;
       element.unmount();
     });
   });

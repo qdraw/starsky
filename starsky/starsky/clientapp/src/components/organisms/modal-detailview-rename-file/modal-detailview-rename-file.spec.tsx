@@ -29,9 +29,8 @@ describe("ModalDetailviewRenameFile", () => {
     it("to wrong extension", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -171,9 +170,8 @@ describe("ModalDetailviewRenameFile", () => {
     it("submit filename change", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);

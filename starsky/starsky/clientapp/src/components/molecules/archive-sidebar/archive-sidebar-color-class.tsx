@@ -16,8 +16,8 @@ interface IArchiveSidebarColorClassProps {
 /**
  * Use for updating/writing multiple files with one colorClass label
  */
-const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> = memo(
-  (props) => {
+const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClassProps> =
+  memo((props) => {
     const history = useLocation();
 
     // show select info
@@ -35,10 +35,8 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
         select,
         props.fileIndexItems
       );
-      var selectParamsLocal = new URLPath().ArrayToCommaSeperatedStringOneParent(
-        subPaths,
-        ""
-      );
+      var selectParamsLocal =
+        new URLPath().ArrayToCommaSeperatedStringOneParent(subPaths, "");
       setSelectParams(selectParamsLocal);
     }, [select, props.fileIndexItems]);
 
@@ -62,6 +60,5 @@ const ArchiveSidebarColorClass: React.FunctionComponent<IArchiveSidebarColorClas
         clearAfter={true}
       />
     );
-  }
-);
+  });
 export default ArchiveSidebarColorClass;

@@ -218,7 +218,7 @@ describe("useGestures", () => {
         expect.anything(),
         undefined
       );
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -243,7 +243,7 @@ describe("useGestures", () => {
         expect.anything(),
         undefined
       );
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -268,7 +268,7 @@ describe("useGestures", () => {
         expect.anything(),
         undefined
       );
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -298,7 +298,7 @@ describe("useGestures", () => {
 
       expect(debounceSpy).toBeCalledTimes(0);
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
       debounceSpy.mockReset();
     });
@@ -334,7 +334,7 @@ describe("useGestures", () => {
         "swipeRight"
       );
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -369,7 +369,7 @@ describe("useGestures", () => {
         "swipeLeft"
       );
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -404,7 +404,7 @@ describe("useGestures", () => {
         "swipeDown"
       );
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -435,7 +435,7 @@ describe("useGestures", () => {
       expect(debounceSpy).toBeCalled();
       expect(debounceAnonymousFnSpy).toBeCalledWith("onSwipeUp", {}, "swipeUp");
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -462,7 +462,7 @@ describe("useGestures", () => {
         undefined
       );
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -487,7 +487,7 @@ describe("useGestures", () => {
       expect(callHandlerSpy).toBeCalled();
       expect(callHandlerSpy).toBeCalledWith("onPinchEnd", undefined, undefined);
 
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
 
@@ -525,7 +525,7 @@ describe("useGestures", () => {
         undefined,
         undefined
       );
-      const component = (hook.componentMount as any) as ReactWrapper;
+      const component = hook.componentMount as any as ReactWrapper;
       component.unmount();
     });
   });

@@ -273,9 +273,7 @@ describe("Login", () => {
       loginContent?.querySelector("form")?.submit();
     });
 
-    await waitFor(() =>
-      expect(login.queryByTestId("login-error")).toBeTruthy()
-    );
+    await login.findByTestId("login-error");
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 
@@ -330,9 +328,7 @@ describe("Login", () => {
 
     // expect(login.html().search('class="content--error-true"')).toBeTruthy();
     // expect(login.queryByTestId("login-error")).toBeTruthy();
-    await waitFor(() =>
-      expect(login.queryByTestId("login-error")).toBeTruthy()
-    );
+    await login.findByTestId("login-error");
     expect(useFetchSpy).toBeCalled();
     expect(postSpy).toBeCalled();
 

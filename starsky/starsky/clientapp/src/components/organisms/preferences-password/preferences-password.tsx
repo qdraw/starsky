@@ -52,10 +52,8 @@ const PreferencesPassword: React.FunctionComponent<any> = (_) => {
 
   const [userCurrentPassword, setUserCurrentPassword] = React.useState("");
   const [userChangedPassword, setUserChangedPassword] = React.useState("");
-  const [
-    userChangedConfirmPassword,
-    setUserChangedConfirmPassword
-  ] = React.useState("");
+  const [userChangedConfirmPassword, setUserChangedConfirmPassword] =
+    React.useState("");
 
   function validateChangePassword(): boolean {
     if (

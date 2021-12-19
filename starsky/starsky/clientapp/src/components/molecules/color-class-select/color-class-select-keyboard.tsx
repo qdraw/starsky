@@ -11,9 +11,9 @@ import Preloader from "../../atoms/preloader/preloader";
 import { IColorClassSelectProps } from "../color-class-select/color-class-select";
 import { ColorClassUpdateSingle } from "./color-class-update-single";
 
-const ColorClassSelectKeyboard: React.FunctionComponent<IColorClassSelectProps> = (
-  props
-) => {
+const ColorClassSelectKeyboard: React.FunctionComponent<
+  IColorClassSelectProps
+> = (props) => {
   // for showing a notification
   const [isError, setIsError] = useState("");
   const [isDone, setIsDone] = useState("");

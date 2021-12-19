@@ -254,9 +254,8 @@ describe("DetailViewSidebar", () => {
     it("On change a tag there is an API called", async () => {
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { ...newIConnectionDefault(), statusCode: 200 }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -289,9 +288,8 @@ describe("DetailViewSidebar", () => {
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { ...newIConnectionDefault(), statusCode: 200 }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ ...newIConnectionDefault(), statusCode: 200 });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -391,13 +389,12 @@ describe("DetailViewSidebar", () => {
 
       // spy on fetch
       // use this => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           statusCode: 200,
           data: [{ filePath: "/test.jpg" } as IFileIndexItem]
-        }
-      );
+        });
 
       const clearSearchCacheSpy = jest.spyOn(
         ClearSearchCache,

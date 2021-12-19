@@ -40,8 +40,8 @@ interface IDetailViewSidebarProps {
   dispatch: React.Dispatch<DetailViewAction>;
 }
 
-const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo(
-  ({ state, dispatch, ...props }) => {
+const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> =
+  memo(({ state, dispatch, ...props }) => {
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
@@ -472,6 +472,5 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
         </div>
       </div>
     );
-  }
-);
+  });
 export default DetailViewSidebar;

@@ -26,10 +26,10 @@ describe("DropArea", () => {
         dataTransfer?: DataTransfer;
       } = new CustomEvent("CustomEvent");
       event.initCustomEvent(eventType, true, true, null);
-      event.dataTransfer = ({
+      event.dataTransfer = {
         files: [exampleFile],
         types: ["", "Files"]
-      } as unknown) as DataTransfer;
+      } as unknown as DataTransfer;
       return event;
     }
 
@@ -47,8 +47,8 @@ describe("DropArea", () => {
     it("Test Drop a file", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: [
             {
@@ -66,8 +66,7 @@ describe("DropArea", () => {
               }
             }
           ]
-        }
-      );
+        });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -209,8 +208,8 @@ describe("DropArea", () => {
     });
 
     it("status Ok", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: [
             {
@@ -228,8 +227,7 @@ describe("DropArea", () => {
               }
             }
           ]
-        }
-      );
+        });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -269,12 +267,11 @@ describe("DropArea", () => {
     });
 
     it("no data", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: null
-        }
-      );
+        });
 
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -309,12 +306,11 @@ describe("DropArea", () => {
     });
 
     it("malformed array", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: [null]
-        }
-      );
+        });
 
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -349,8 +345,8 @@ describe("DropArea", () => {
     });
 
     it("status Error in response", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: [
             {
@@ -368,8 +364,7 @@ describe("DropArea", () => {
               }
             }
           ]
-        }
-      );
+        });
 
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
@@ -410,16 +405,15 @@ describe("DropArea", () => {
     });
 
     it("status Error in response with no FileIndexItem", (done) => {
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           ...newIConnectionDefault(),
           data: [
             {
               status: IExifStatus.ServerError
             }
           ]
-        }
-      );
+        });
 
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")

@@ -18,10 +18,9 @@ interface IModalRenameFileProps {
   state: IDetailView;
 }
 
-const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = ({
-  state,
-  ...props
-}) => {
+const ModalDetailviewRenameFile: React.FunctionComponent<
+  IModalRenameFileProps
+> = ({ state, ...props }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);

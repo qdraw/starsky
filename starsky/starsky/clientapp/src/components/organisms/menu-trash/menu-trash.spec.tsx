@@ -301,9 +301,8 @@ describe("MenuTrash", () => {
 
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        newIConnectionDefault()
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(newIConnectionDefault());
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);

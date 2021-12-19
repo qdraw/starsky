@@ -35,9 +35,9 @@ const DetailViewGpx: React.FC = () => {
     }
 
     var tracks: any[] = [];
-    var tracksNodeList: NodeListOf<Element> = (response.data as XMLDocument).querySelectorAll(
-      "trkpt"
-    );
+    var tracksNodeList: NodeListOf<Element> = (
+      response.data as XMLDocument
+    ).querySelectorAll("trkpt");
 
     Array.from(tracksNodeList).forEach((element) => {
       tracks.push([element.getAttribute("lat"), element.getAttribute("lon")]);

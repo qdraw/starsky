@@ -92,25 +92,23 @@ describe("ModalArchiveMkdir", () => {
     it("submit mkdir", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
 
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
 
       // use ==> import * as FetchGet from '../shared/fetch-get';
-      const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        {
+      const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({
           statusCode: 202,
           data: {
             ...newIArchive(),
             fileIndexItems: [],
             pageType: PageType.Search
           } as IArchiveProps
-        } as IConnectionDefault
-      );
+        } as IConnectionDefault);
 
       var fetchGetSpy = jest
         .spyOn(FetchGet, "default")

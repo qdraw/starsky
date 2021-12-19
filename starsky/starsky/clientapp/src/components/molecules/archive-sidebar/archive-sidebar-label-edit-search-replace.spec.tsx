@@ -99,7 +99,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
 
     it("click overwrite and generic fail", async () => {
       // reject! ?>
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.reject();
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.reject();
 
       const notificationSpy = jest
         .spyOn(Notification, "default")
@@ -145,11 +146,11 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
         data: [] as any[]
       };
 
-      const mockIConnectionDefaultReject: Promise<IConnectionDefault> = Promise.reject();
+      const mockIConnectionDefaultReject: Promise<IConnectionDefault> =
+        Promise.reject();
 
-      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefaultResolve: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
 
       jest
         .spyOn(FetchPost, "default")
@@ -248,9 +249,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
       var spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -315,9 +315,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
       jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -380,9 +379,8 @@ describe("ArchiveSidebarLabelEditAddOverwrite", () => {
           }
         ] as IFileIndexItem[]
       };
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        connectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(connectionDefault);
       var spy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
