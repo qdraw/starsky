@@ -13,6 +13,6 @@
   "author": "Starsky",
   "license": "ISC",
   "dependencies": {
-    "showdown": "^1.9.1"
+    "marked": "^4.0.8"
   }
 }
