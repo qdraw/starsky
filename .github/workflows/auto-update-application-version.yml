@@ -27,17 +27,8 @@ jobs:
       with:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
-        message: "Auto commited Application Version update csproj"
-        add: "*.csproj"
+        message: "Auto commited Application Version update"
+        add: "."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Commit changes
-      uses: EndBug/add-and-commit@v4
-      with:
-        author_name: Application Version Update Bot
-        author_email: qdraw@users.noreply.github.com
-        message: "Auto commited Application Version update package.json"
-        add: "package.json"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
