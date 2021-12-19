@@ -52,6 +52,7 @@ node starsky-tools/build-tools/app-version-update.js
 
 todo: "/api/sync/mkdir" to /api/file/mkdir
 todo: "/api/sync/rename" to /api/file/rename
+todo: test electron with new version
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
