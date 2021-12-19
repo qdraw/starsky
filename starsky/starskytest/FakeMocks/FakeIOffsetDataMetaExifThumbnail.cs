@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using starsky.foundation.database.Models;
 using starsky.foundation.metathumbnail.Interfaces;
@@ -16,10 +18,15 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
+		public (List<Directory>, ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) GetExifMetaDirectories(
 			string subPath)
 		{
-			return ( null, 0, 0, FileIndexItem.Rotation.Horizontal );
+			return (null, null, 0, 0, FileIndexItem.Rotation.Horizontal );
+		}
+
+		public OffsetModel ParseOffsetPreviewData(List<Directory> directory, string subPath)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }

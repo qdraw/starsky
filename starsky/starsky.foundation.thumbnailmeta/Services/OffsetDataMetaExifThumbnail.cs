@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Exif.Makernotes;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metathumbnail.Interfaces;
@@ -30,13 +32,29 @@ namespace starsky.foundation.metathumbnail.Services
 			_logger = logger;
 		}
 
-		public (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation)
+		public (List<Directory>, ExifThumbnailDirectory, int, int, FileIndexItem.Rotation)
 			GetExifMetaDirectories(string subPath)
 		{
 			var (allExifItems,exifThumbnailDir) = ReadExifMetaDirectories(subPath);
 			return ParseMetaThumbnail(allExifItems, exifThumbnailDir, subPath);
 		}
+
+		public OffsetModel ParseOffsetPreviewData(List<Directory> allExifItems, string subPath)
+		{
+			var sonyMakerNote =
+				allExifItems.FirstOrDefault(p =>
+					p.Name == "Sony Makernote") as SonyType1MakernoteDirectory;
+			if ( sonyMakerNote == null ) return new OffsetModel{Success = false};
+
+			var tags = sonyMakerNote.Tags.FirstOrDefault(p => p.Name.Contains("0x0088"));
+			
 		
+			
+			Console.WriteLine(sonyMakerNote);
+			
+			throw new System.NotImplementedException();
+		}
+
 		internal (List<Directory>, ExifThumbnailDirectory) ReadExifMetaDirectories(string subPath)
 		{
 			using ( var stream = _iStorage.ReadStream(subPath) )
@@ -51,13 +69,13 @@ namespace starsky.foundation.metathumbnail.Services
 			}
 		}
 		
-		internal (ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(List<Directory> allExifItems, 
+		internal (List<Directory>, ExifThumbnailDirectory, int, int, FileIndexItem.Rotation) ParseMetaThumbnail(List<Directory> allExifItems, 
 			ExifThumbnailDirectory exifThumbnailDir, string reference = null)
 		{
 
 			if ( exifThumbnailDir == null )
 			{
-				return ( null, 0, 0, FileIndexItem.Rotation.DoNotChange );
+				return (null, null, 0, 0, FileIndexItem.Rotation.DoNotChange );
 			}
 				
 			var jpegTags = allExifItems.FirstOrDefault(p =>
@@ -78,7 +96,7 @@ namespace starsky.foundation.metathumbnail.Services
 			{
 				_logger.LogInformation($"[] ${reference} has no height or width {width}x{height} ");
 			}
-			return (exifThumbnailDir, width, height, rotation);
+			return (allExifItems, exifThumbnailDir, width, height, rotation);
 		}
 
 		public OffsetModel ParseOffsetData(ExifThumbnailDirectory exifThumbnailDir, string subPath)

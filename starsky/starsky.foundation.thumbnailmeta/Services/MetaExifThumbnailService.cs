@@ -114,12 +114,15 @@ namespace starsky.foundation.metathumbnail.Services
 				return false;
 			}
 				
-			var (exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 
+			var (directory, exifThumbnailDir, sourceWidth, sourceHeight, rotation) = 
 				_offsetDataMetaExifThumbnail.GetExifMetaDirectories(subPath);
 			var offsetData = _offsetDataMetaExifThumbnail.
 				ParseOffsetData(exifThumbnailDir,subPath);
 			if ( !offsetData.Success ) return false;
 
+			var offsetData1 = _offsetDataMetaExifThumbnail.
+				ParseOffsetPreviewData(directory,subPath);
+			
 			return await _writeMetaThumbnailService.WriteAndCropFile(fileHash, offsetData, sourceWidth,
 				sourceHeight, rotation, subPath);
 		}

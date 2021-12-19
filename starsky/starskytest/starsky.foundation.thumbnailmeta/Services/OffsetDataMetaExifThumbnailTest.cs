@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -17,7 +19,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 		[TestMethod]
 		public void ParseMetaThumbnail_Null()
 		{
-			var (exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(),
+			var (_,exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(),
 				new FakeIWebLogger()).ParseMetaThumbnail(null, null);
 			Assert.AreEqual(null, exifThumbnailDirectory);
 			Assert.AreEqual(0, width);
@@ -39,7 +41,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
 			
 			// Switch around to get a situation where the image has no size but an valid thumbnail
-			var (exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+			var (_,exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ParseMetaThumbnail(allExifItems, thumbnailDirectory);
 			
 			Assert.AreEqual(thumbnailDirectory,exifThumbnailDirectory);
@@ -59,7 +61,7 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			var (allExifItems,  thumbnailDirectory) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ReadExifMetaDirectories("/test.jpg");
 			
-			var (exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
+			var (_,exifThumbnailDirectory,width,height,rotation) = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ParseMetaThumbnail(allExifItems, thumbnailDirectory);
 			
 			Assert.AreEqual(thumbnailDirectory,exifThumbnailDirectory);
@@ -102,8 +104,25 @@ namespace starskytest.starsky.foundation.readmeta.Services
 
 			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(storage),
 				new FakeIWebLogger()).ParseOffsetData(thumbnailDirectory, "/test.jpg");
+			
+
 
 			Assert.IsTrue(offsetData.Success);
+		}
+
+		[TestMethod]
+		public void TEst()
+		{
+			
+			var directories = ImageMetadataReader.ReadMetadata("/Users/dion/Downloads/20211217_193155_DSC02915.jpg").ToList();
+			foreach (var directory in directories)
+			foreach (var tag in directory.Tags)
+				Console.WriteLine($"{directory.Name} - {tag.Name} = {tag.Description}");
+			
+			
+			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(), new FakeIWebLogger()).ParseOffsetPreviewData(directories, "/test.jpg");
+
+			Console.WriteLine();
 		}
 	}
 }
