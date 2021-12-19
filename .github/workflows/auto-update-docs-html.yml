@@ -1,4 +1,4 @@
-name: Docs Update
+name: Auto update Docs Html
 on:
   push:
     branches:
