@@ -76,6 +76,7 @@ describe("useSockets", () => {
       .mockImplementationOnce(() => 1);
 
     jest.spyOn(WsCurrentStart, "default").mockClear();
+
     var wsCurrent = jest
       .spyOn(WsCurrentStart, "default")
       .mockImplementationOnce(() => socketService)
@@ -84,7 +85,7 @@ describe("useSockets", () => {
     mountComponent();
 
     act(() => {
-      jest.advanceTimersByTime(60000);
+      jest.advanceTimersByTime(40000);
     });
 
     expect(wsCurrent).toBeCalled();
