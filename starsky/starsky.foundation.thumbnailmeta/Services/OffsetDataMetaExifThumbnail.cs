@@ -41,14 +41,23 @@ namespace starsky.foundation.metathumbnail.Services
 
 		public OffsetModel ParseOffsetPreviewData(List<Directory> allExifItems, string subPath)
 		{
+			
+			var subIfdDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
+
+			var dateTime = subIfdDirectory?.GetInt32(SonyType6MakernoteDirectory.TagMakernoteThumbLength);
+			var offSet = subIfdDirectory?.GetInt32(SonyType6MakernoteDirectory.TagMakernoteThumbOffset);
+
+			
 			var sonyMakerNote =
 				allExifItems.FirstOrDefault(p =>
 					p.Name == "Sony Makernote") as SonyType1MakernoteDirectory;
+			
 			if ( sonyMakerNote == null ) return new OffsetModel{Success = false};
 
-			var tags = sonyMakerNote.Tags.FirstOrDefault(p => p.Name.Contains("0x0088"));
+
+			var data= sonyMakerNote.GetDescription(SonyType1MakernoteDirectory.TagPreviewImageSize);
 			
-		
+			var tags = sonyMakerNote.Tags.FirstOrDefault(p => p.Name == "Preview Image");
 			
 			Console.WriteLine(sonyMakerNote);
 			

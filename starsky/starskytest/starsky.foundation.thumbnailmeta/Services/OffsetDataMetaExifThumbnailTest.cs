@@ -118,9 +118,12 @@ namespace starskytest.starsky.foundation.readmeta.Services
 			foreach (var directory in directories)
 			foreach (var tag in directory.Tags)
 				Console.WriteLine($"{directory.Name} - {tag.Name} = {tag.Description}");
-			
-			
-			var offsetData = new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(), new FakeIWebLogger()).ParseOffsetPreviewData(directories, "/test.jpg");
+
+
+			var offsetDataMetaExifThumbnail =
+				new OffsetDataMetaExifThumbnail(new FakeSelectorStorage(),
+					new FakeIWebLogger());
+			var offsetData = offsetDataMetaExifThumbnail.ParseOffsetPreviewData(directories, "/test.jpg");
 
 			Console.WriteLine();
 		}
