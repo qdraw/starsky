@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Security.Claims;
 using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.injection;
@@ -54,12 +56,38 @@ namespace starsky.foundation.webtelemetry.Helpers
 				// Replace the default script with nothing to use as file
 				const string scriptTagStart = @"<script type=""text/javascript"">";
 				const string scriptEndStart = @"</script>";
-
+				
 				var script = js.Replace(scriptTagStart, string.Empty);
 				script = script.Replace(scriptEndStart, string.Empty);
+				
+				const string setAuthenticatedUserContextItemStart =
+					"appInsights.setAuthenticatedUserContext(\"";
+				const string setAuthenticatedUserContextItemEnd = "\")";
+				script = script.Replace(
+					setAuthenticatedUserContextItemStart + 
+					setAuthenticatedUserContextItemEnd, 
+					setAuthenticatedUserContextItemStart + 
+					GetCurrentUserId() + 
+					setAuthenticatedUserContextItemEnd);
 
+				// when a react plugin is enabled disable: enableAutoRouteTracking
+				script += "\n appInsights.enableAutoRouteTracking = true;";
+				script += "\n appInsights.disableFetchTracking = false;";
+				script += "\n appInsights.enableAjaxPerfTracking = true;";
 				return script;
 			}
+		}
+
+		internal string GetCurrentUserId()
+		{
+			if (_httpContext == null || !_httpContext.HttpContext.User.Identity.IsAuthenticated)
+			{
+				return string.Empty;
+			}
+
+			return _httpContext.HttpContext.User.Claims
+				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
+				?.Value;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
+var outputFolderName = 'output_folder';
 
 http.createServer(function (request, response) {
     console.log('request ', request.url);
@@ -9,6 +10,9 @@ http.createServer(function (request, response) {
     if (filePath == './') {
         filePath = './index.html';
     }
+
+    // rm content after question mark
+    filePath = filePath.replace(/\?.*$/g,"");
 
     var extname = String(path.extname(filePath)).toLowerCase();
     var mimeTypes = {
@@ -28,7 +32,7 @@ http.createServer(function (request, response) {
 
     var contentType = mimeTypes[extname] || 'application/octet-stream';
 
-    fs.readFile(filePath, function(error, content) {
+    fs.readFile(path.join(outputFolderName,filePath), function(error, content) {
         if (error) {
             if(error.code == 'ENOENT') {
                 fs.readFile('./404.html', function(error, content) {

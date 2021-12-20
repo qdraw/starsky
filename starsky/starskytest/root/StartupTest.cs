@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.WebSockets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
@@ -19,7 +22,10 @@ namespace starskytest.root
 		public void Startup_ConfigureServices()
 		{
 			IServiceCollection serviceCollection = new ServiceCollection();
-
+			// needed for: AddMetrics
+			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration); 
+			
 			// should not crash
 			new Startup().ConfigureServices(serviceCollection);
 			Assert.IsNotNull(serviceCollection);
@@ -31,6 +37,9 @@ namespace starskytest.root
 			var serviceCollection = new ServiceCollection();
 			serviceCollection.AddRouting();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
+			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration); 
+			
 			serviceCollection.AddAuthorization();
 			serviceCollection.AddControllers();
 			serviceCollection.AddLogging();
@@ -40,9 +49,10 @@ namespace starskytest.root
 			
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-			
+			IHostApplicationLifetime lifetime = null;
+
 			// should not crash
-			new Startup().Configure(applicationBuilder, env);
+			new Startup().Configure(applicationBuilder, env, lifetime);
 			
 			Assert.IsNotNull(applicationBuilder);
 			Assert.IsNotNull(env);
@@ -55,6 +65,9 @@ namespace starskytest.root
 			serviceCollection.AddRouting();
 			serviceCollection.AddSingleton<AppSettings, AppSettings>();
 			serviceCollection.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+			serviceCollection.AddSingleton<TelemetryConfiguration, TelemetryConfiguration>();
+			IConfiguration configuration = new ConfigurationRoot(new List<IConfigurationProvider>());
+			serviceCollection.AddSingleton(configuration); 
 			serviceCollection.AddAuthorization();
 			serviceCollection.AddControllers();
 			serviceCollection.AddLogging();
@@ -64,7 +77,7 @@ namespace starskytest.root
 			
 			var applicationBuilder = new ApplicationBuilder(serviceProviderInterface);
 			IHostEnvironment env = new HostingEnvironment { EnvironmentName = Environments.Development };
-			
+
 			// should not crash
 			var startup = new Startup();
 			
@@ -73,7 +86,7 @@ namespace starskytest.root
 			appSettings.ApplicationInsightsInstrumentationKey = "!";
 			appSettings.UseRealtime = true;
 
-			startup.Configure(applicationBuilder, env);
+			startup.Configure(applicationBuilder, env,null);
 			
 			Assert.IsNotNull(applicationBuilder);
 			Assert.IsNotNull(env);

@@ -1,5 +1,15 @@
-# # Stage 1 Front-end
-FROM node:16-alpine as react-build
+# Dockerfile
+
+# ARM build test: 
+# cd /root_of_repo
+# docker buildx build --push starsky --tag qdraw/starsky:latest --platform linux/arm64
+
+# Stage 1 Front-end
+# # docker buildx imagetools inspect node:16-alpine
+FROM --platform=$BUILDPLATFORM node:16-alpine as react-build
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
 WORKDIR /app/starsky/clientapp
 ENV CI=true
 ENV INLINE_RUNTIME_CHUNK=false
@@ -10,12 +20,13 @@ RUN npm ci
 RUN npm run build
 RUN echo "react done"
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build-env
+# no alpine build since there is no support for multi-arch
+# docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:6.0
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:3.1 AS build-env
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
 
-# for alpine builds
-RUN apk add --no-cache bash
-RUN apk add --no-cache curl
-
+RUN mkdir -p /app
 WORKDIR /app
 
 # copy everything else and build
@@ -29,16 +40,32 @@ RUN ls
 RUN ./docker_demo_setup.sh
 
 WORKDIR /app/starsky
-RUN dotnet restore
 
-RUN dotnet publish -c Release -o out
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+        echo $TARGETPLATFORM ; \
+        dotnet restore --runtime linux-x64 starsky.csproj ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+        dotnet restore --runtime linux-arm64 starsky.csproj ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+        dotnet restore --runtime linux-arm starsky.csproj ; \
+    else \
+        dotnet restore starsky.csproj ; \
+    fi
 
-# build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS release
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+        echo $TARGETPLATFORM ; \
+        dotnet publish -c release -o out --runtime linux-x64 --self-contained false ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+        dotnet publish -c release -o out --runtime linux-arm64 --self-contained false ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+        dotnet publish -c release -o out --runtime linux-arm --self-contained false ; \
+    else \
+       dotnet publish -c release -o out  ; \
+    fi
 
-# to avoid System.TimeZoneNotFoundException
-RUN apk add --no-cache tzdata
-
+# build runtime image (multiarch)
+# docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS release
 WORKDIR /app
 COPY --from=build-env /app/starsky/out .
 COPY --from=react-build /app/starsky/clientapp ./clientapp

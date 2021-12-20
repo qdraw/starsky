@@ -3,12 +3,12 @@
  * Update the project versions to have the same version
  */
 
-const { resolve, join } = require('path');
-const { readdir, readFile, writeFile } = require('fs').promises;
+const { join } = require('path');
+const { readFile, writeFile } = require('fs').promises;
 const {getFiles} = require('./lib/get-files-directory');
 const { prefixPath } = require('./lib/prefix-path.const.js');
 
-var newVersion = "0.4.12";
+var newVersion = "0.5.0-beta.0";
 
 // allow version as single argument
 const argv = process.argv.slice(2)

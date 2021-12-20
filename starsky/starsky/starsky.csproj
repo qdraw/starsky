@@ -5,7 +5,7 @@
         <RuntimeFrameworkVersion Condition=" '$(TargetFramework)' == 'net5.0' ">3.1.17</RuntimeFrameworkVersion>
         <Description>An attempt to create a database driven photo library</Description>
         <!-- use node script to update version -->
-        <Version>0.4.12</Version>
+        <Version>0.5.0-beta.0</Version>
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
@@ -27,9 +27,9 @@
         <WarningLevel>0</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.17" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.22" />
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -59,6 +59,10 @@
         </Content>
         <None Remove="pm2-download-azure-devops.sh" />
         <Content Include="pm2-download-azure-devops.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="docker-cleanup.sh" />
+        <Content Include="docker-cleanup.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

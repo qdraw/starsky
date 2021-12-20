@@ -30,7 +30,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		public QueryGetObjectsByFilePathCollectionAsyncTest()
 		{
 			_query = new Query(CreateNewScope().CreateScope().ServiceProvider
-				.GetService<ApplicationDbContext>()) ;
+				.GetService<ApplicationDbContext>(),  
+				new AppSettings(), CreateNewScope(), new FakeIWebLogger(),new FakeMemoryCache()) ;
 		}
 
 		[TestMethod]
@@ -204,7 +205,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			await dbContextDisposed.DisposeAsync();
 			
 			var result = await new Query(dbContextDisposed,
-					new FakeMemoryCache(new Dictionary<string, object>()), new AppSettings(), serviceScopeFactory)
+					new AppSettings(), serviceScopeFactory, new FakeIWebLogger(),new FakeMemoryCache())
 				.GetObjectsByFilePathCollectionQueryAsync(new List<string> {"/disposed/single_item_disposed_1.jpg"});
 
 			Assert.AreEqual(2, result.Count);

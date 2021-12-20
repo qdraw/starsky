@@ -40,7 +40,7 @@ namespace starsky.feature.geolookup.Services
 			_geoLocationWrite = geoLocationWrite;
 			_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
-			_readMeta = new ReadMeta(_iStorage, _appSettings);
+			_readMeta = new ReadMeta(_iStorage, appSettings);
 			_appSettings = appSettings;
 			_console = console;
 			_exifToolDownload = exifToolDownload;
@@ -61,13 +61,13 @@ namespace starsky.feature.geolookup.Services
 			
 			// Geo cities1000 download
 			await _geoFileDownload.Download();
+			_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 			
 			if ( new ArgsHelper().NeedHelp(args) ||
 			     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
 			       && new ArgsHelper().GetSubpathFormArgs(args).Length <= 1
 			       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
 			{
-				_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
 				new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 				return;
 			}
@@ -124,7 +124,7 @@ namespace starsky.feature.geolookup.Services
 					_iStorage).LoopFolder(fileIndexList);
       
 				_console.Write("¬");
-				_geoLocationWrite.LoopFolder(toMetaFilesUpdate, false);
+				await _geoLocationWrite.LoopFolderAsync(toMetaFilesUpdate, false);
 				_console.Write("(gps added)");
 			}
     
@@ -134,7 +134,7 @@ namespace starsky.feature.geolookup.Services
 			{
 				_console.Write("~ Add city, state and country info ~");
 				
-				_geoLocationWrite.LoopFolder(fileIndexList, true);
+				await _geoLocationWrite.LoopFolderAsync(fileIndexList, true);
 			}
     
 			_console.Write("^\n");

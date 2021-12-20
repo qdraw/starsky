@@ -12,9 +12,9 @@
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * [Changelog](history.md) _Release notes and history_
 
 ## What is Starsky?
@@ -43,6 +43,11 @@ To reverse geo code location information in images use the UI or the [Geo CLI](s
 To publish files generate markup and images with a logo use the [Web Html CLI](starsky/starskywebhtmlcli/readme.md). This publish web images to a content package. And when this is done you could copy a content package to a ftp service.
 
 All these projects are separately compiled using the build script and using the same application settings (`appsettings`) configuration.
+
+## Release status
+
+[![Release](https://img.shields.io/github/v/release/qdraw/starsky)](https://github.com/qdraw/starsky/releases/)
+
 
 ## Build status
 

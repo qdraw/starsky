@@ -35,13 +35,30 @@ namespace starsky.foundation.database.Query
 		public async Task<List<FileIndexItem>> GetAllObjectsAsync(List<string> filePaths)
 		{
 			if ( !filePaths.Any() ) return new List<FileIndexItem>();
+
+			async Task<List<FileIndexItem>> LocalGetAllObjectsAsync()
+			{
+				var dbContext = new InjectServiceScope(_scopeFactory).Context();
+				var result =
+					FormatOk(await GetAllObjectsQuery(dbContext, filePaths)
+						.ToListAsync());
+				await dbContext.DisposeAsync();
+				return result;
+			}
+			
 			try
 			{
-				return FormatOk(await GetAllObjectsQuery(_context, filePaths).ToListAsync());
+				return FormatOk(await GetAllObjectsQuery(_context, filePaths)
+					.ToListAsync());
 			}
 			catch ( ObjectDisposedException )
 			{
-				return FormatOk(await GetAllObjectsQuery(new InjectServiceScope(_scopeFactory).Context(),filePaths).ToListAsync());
+				return await LocalGetAllObjectsAsync();
+			}
+			catch ( InvalidOperationException )
+			{
+				// System.InvalidOperationException: ExecuteReader can only be called when the connection is open.
+				return await LocalGetAllObjectsAsync();
 			}
 		}
 		

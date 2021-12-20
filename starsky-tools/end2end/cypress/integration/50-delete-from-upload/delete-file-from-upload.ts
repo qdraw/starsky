@@ -134,7 +134,7 @@ describe('Delete file from upload (50)', () => {
     })
   })
 
-  function waitFileInTrash (index:number, filePath: string, max: number = 10) {
+  function waitFileInTrash (index:number, filePath: string, max: number = 15) {
     cy.request({
       url: '/api/search/trash',
       method: 'GET',
@@ -143,7 +143,9 @@ describe('Delete file from upload (50)', () => {
       }
     }).then((response) => {
       expect(response.status).to.eq(200)
-      cy.log(JSON.stringify(response.body.fileIndexItems))
+      if (response.body.fileIndexItems.length) {
+        cy.log(JSON.stringify(response.body.fileIndexItems))
+      }
 
       for (const item of response.body.fileIndexItems) {
         if (item.filePath === filePath) {

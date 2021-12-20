@@ -6,13 +6,13 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{7f7fe502-31a8-409b-bd0b-92d7d1bfeb31}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.12</Version>
+        <Version>0.5.0-beta.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="RazorLight" Version="2.0.0-rc.3" />
-      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta12" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
     </ItemGroup>
     
     <ItemGroup>

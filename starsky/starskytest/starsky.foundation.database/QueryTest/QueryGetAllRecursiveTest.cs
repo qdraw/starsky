@@ -10,6 +10,7 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -36,8 +37,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			_query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			_query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 		}
 		
 		[TestMethod]

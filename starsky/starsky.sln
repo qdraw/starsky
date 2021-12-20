@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starsky", "starsky\starsky.csproj", "{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskysynccli", "starskysynccli\starskysynccli.csproj", "{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskyimportercli", "starskyimportercli\starskyimportercli.csproj", "{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "starskytest", "starskytest\starskytest.csproj", "{1E2346C0-67B3-4538-8F76-B152AA65BB1B}"
@@ -62,10 +60,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "starsky.sln", "starsky.sln", "{0F47FD1D-CE79-4069-AFD4-252ED9D9445E}"
 ProjectSection(SolutionItems) = preProject
 	readme.md = readme.md
-	readme-docker-instructions.md = readme-docker-instructions.md
+	readme-docker-development.md = readme-docker-development.md
 	readme-upgrade-net-core.md = readme-upgrade-net-core.md
 	docker_demo_setup.sh = docker_demo_setup.sh
 	Dockerfile = Dockerfile
+	build.cake = build.cake
+	readme-docker-hub.md = readme-docker-hub.md
+	docs\migrations.md = docs\migrations.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.feature.metaupdate", "starsky.feature.metaupdate\starsky.feature.metaupdate.csproj", "{FBB448C3-A995-469C-8004-11FA006F65C5}"
@@ -108,6 +109,10 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "docker-compose", "docker-compose.dcproj", "{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.databasetelemetry", "starsky.foundation.databasetelemetry\starsky.foundation.databasetelemetry.csproj", "{6A237457-45EF-47F2-A225-6340AFF19D4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.consoletelemetry", "starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj", "{48D826B3-2262-422A-941A-AF90E458F647}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,10 +123,6 @@ Global
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -258,6 +259,14 @@ Global
 		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F38C5AC-1FFA-4FC5-9BE3-B960124DCE5E}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A237457-45EF-47F2-A225-6340AFF19D4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48D826B3-2262-422A-941A-AF90E458F647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D826B3-2262-422A-941A-AF90E458F647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D826B3-2262-422A-941A-AF90E458F647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D826B3-2262-422A-941A-AF90E458F647}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -269,7 +278,6 @@ Global
 		{0F0C0B27-8F29-4CC5-BB91-910B9DE22FC1} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{E6DBDFE3-C882-4EE7-B8A4-8BC6C6D53494} = {8379CCD4-26EE-4881-888E-B56B6EDC852C}
 		{F797EB32-21C9-4835-BB67-EFF8F197A219} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
-		{7878CE2F-0934-4050-8D92-7E4EE8C95CC0} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{55BFD7A5-ACCB-44D4-90A0-0A7BC289870E} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{EF96F7C8-4832-4606-8F5C-B1423FEE83B8} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{F8CE092D-F296-4B04-B013-EE5FCD4A8B3B} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
@@ -301,5 +309,7 @@ Global
 		{EE4E6FCA-9E87-4E31-A137-8D1809FFED54} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{1FD59380-AC19-4AF1-A5A5-F295A2844B11} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
+		{6A237457-45EF-47F2-A225-6340AFF19D4F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{48D826B3-2262-422A-941A-AF90E458F647} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 	EndGlobalSection
 EndGlobal

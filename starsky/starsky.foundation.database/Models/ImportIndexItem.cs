@@ -1,9 +1,4 @@
-﻿#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-#endif
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -62,6 +57,15 @@ namespace starsky.foundation.database.Models
         /// When using a -ColorClass=1 overwrite the fileHash changes during the import process
         /// </summary>
         public string FileHash { get; set; }
+
+        public string GetFileHashWithUpdate()
+        {
+	        if ( FileIndexItem == null )
+	        {
+		        return FileHash;
+	        }
+	        return FileIndexItem.FileHash;
+        }
         
         /// <summary>
         /// The location where the image should be stored.
@@ -80,11 +84,7 @@ namespace starsky.foundation.database.Models
         public DateTime DateTime{ get; set; }
 	    
 	    [NotMapped]
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 	    public ImportStatus Status { get; set; }
 	    
 	    [NotMapped]
@@ -99,6 +99,8 @@ namespace starsky.foundation.database.Models
         [NotMapped] 
         [JsonIgnore]
         public string Structure { get; set; }
+
+        public string MakeModel { get; set; }
 
         public DateTime ParseDateTimeFromFileName()
         {

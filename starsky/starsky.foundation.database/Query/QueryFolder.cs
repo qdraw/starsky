@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
@@ -84,7 +85,7 @@ namespace starsky.foundation.database.Query
 		        return fallbackResult;
 	        
 	        // Return values from IMemoryCache
-	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        subPath);
 
 	        // ReSharper disable once ConvertIfStatementToReturnStatement
@@ -114,7 +115,8 @@ namespace starsky.foundation.database.Query
 	        List<FileIndexItem> QueryItems(ApplicationDbContext context)
 	        {
 		        var queryItems = context.FileIndex
-			        .Where(p => p.ParentDirectory == subPath)
+			        .TagWith("QueryDisplayFileFolders")
+			        .Where(p => p.ParentDirectory == subPath && p.FileName != "/")
 			        .OrderBy(p => p.FileName).AsEnumerable()	
 			        // remove duplicates from list
 			        .GroupBy(t => t.FileName).Select(g => g.First());

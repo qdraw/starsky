@@ -116,15 +116,8 @@ export function archiveReducer(state: State, action: ArchiveAction): State {
       }
       return updateCache(newState);
     case "update":
-      const {
-        select,
-        tags,
-        description,
-        title,
-        append,
-        colorclass,
-        fileHash
-      } = action;
+      const { select, tags, description, title, append, colorclass, fileHash } =
+        action;
 
       state.fileIndexItems.forEach((item, index) => {
         if (select.indexOf(item.fileName) !== -1) {

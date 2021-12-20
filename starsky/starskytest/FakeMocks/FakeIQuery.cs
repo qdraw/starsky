@@ -9,6 +9,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 
 namespace starskytest.FakeMocks
@@ -23,9 +24,9 @@ namespace starskytest.FakeMocks
 		}
 
 		public FakeIQuery(ApplicationDbContext context, 
-			IMemoryCache memoryCache = null, 
-			AppSettings appSettings = null,
-			IServiceScopeFactory scopeFactory = null)
+			AppSettings appSettings,
+			IServiceScopeFactory scopeFactory, 
+			IWebLogger logger, IMemoryCache memoryCache = null)
 		{
 		}
 		
@@ -78,7 +79,7 @@ namespace starskytest.FakeMocks
 			List<ColorClassParser.Color> colorClassActiveList = null,
 			bool enableCollections = true, bool hideDeleted = true)
 		{
-			throw new NotImplementedException();
+			return GetAllFiles(subPath);
 		}
 
 		public IEnumerable<FileIndexItem> DisplayFileFolders(List<FileIndexItem> fileIndexItems, List<ColorClassParser.Color> 
@@ -110,7 +111,7 @@ namespace starskytest.FakeMocks
 						.Select(p => p.FilePath)
 				);
 			}
-			return new DetailView {FileIndexItem = fileIndexItem,};
+			return new DetailView {FileIndexItem = fileIndexItem, IsDirectory = fileIndexItem.IsDirectory == true};
 		}
 
 		public DetailView SingleItem(List<FileIndexItem> fileIndexItemsList, string singleItemDbPath,
@@ -125,7 +126,7 @@ namespace starskytest.FakeMocks
 			return _fakeContext.FirstOrDefault(p => p.FilePath == filePath);
 		}
 
-		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public async Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			try
 			{
@@ -197,12 +198,33 @@ namespace starskytest.FakeMocks
 
 		public bool RemoveCacheParentItem(string directoryName)
 		{
-			throw new System.NotImplementedException();
+			if ( _fakeCachedContent == null ) return false;
+			var item = _fakeCachedContent.FirstOrDefault(p =>
+				p.ParentDirectory == directoryName);
+			_fakeCachedContent.Remove(item);
+			return true;
 		}
 
 		public string GetSubPathByHash(string fileHash)
 		{
 			return _fakeContext.FirstOrDefault(p => p.FileHash == fileHash)?.FilePath;
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
+		{
+			var result = _fakeContext.Where(p =>
+					fileHashesList.Contains(p.FileHash)).ToList();
+			
+			foreach ( var fileHash in fileHashesList )
+			{
+				if ( result.FirstOrDefault(p => p.FileHash == fileHash) == null )
+				{
+					result.Add(new FileIndexItem(){FileHash = fileHash, 
+						Status = FileIndexItem.ExifStatus.NotFoundNotInIndex});
+				}
+			}
+			
+			return Task.FromResult(result);
 		}
 
 		public void ResetItemByHash(string fileHash)
@@ -297,7 +319,7 @@ namespace starskytest.FakeMocks
 
 		public RelativeObjects GetNextPrevInFolder(string currentFolder)
 		{
-			throw new System.NotImplementedException();
+			return new RelativeObjects();
 		}
 
 		public List<FileIndexItem> StackCollections(List<FileIndexItem> databaseSubFolderList)
@@ -373,6 +395,16 @@ namespace starskytest.FakeMocks
 
 		public void Invoke(ApplicationDbContext applicationDbContext)
 		{
+		}
+
+		public void SetGetObjectByFilePathCache(string filePath, FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+		}
+
+		public Task DisposeAsync()
+		{
+			return Task.CompletedTask;
 		}
 
 		public bool IsCacheEnabled()

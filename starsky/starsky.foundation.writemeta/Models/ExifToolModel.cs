@@ -1,8 +1,4 @@
-﻿#if SYSTEM_TEXT_ENABLED
-using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-#endif
+﻿using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +19,7 @@ namespace starsky.foundation.writemeta.Models
         private string _captionabstract;
 
 
-#if SYSTEM_TEXT_ENABLED
-		[JsonPropertyName("Caption-Abstract")]
-#else
-		[JsonProperty(PropertyName="Caption-Abstract")]
-#endif
+	    [JsonPropertyName("Caption-Abstract")]
 		public string CaptionAbstract {
             get { 
                     return _captionabstract;

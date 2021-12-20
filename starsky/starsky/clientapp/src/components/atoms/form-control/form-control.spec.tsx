@@ -38,9 +38,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
 
       const keyDownEvent = createEvent.keyDown(formControl, {
         key: "x",
@@ -68,9 +67,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
 
       expect(
         component.container.getElementsByClassName("warning-box").length
@@ -110,9 +108,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       await waitFor(() =>
         expect(
           component.container.getElementsByClassName("warning-box").length
@@ -152,9 +149,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       await waitFor(() =>
         expect(
           component.container.getElementsByClassName("warning-box").length
@@ -192,9 +188,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       await waitFor(() =>
         expect(
           component.container.getElementsByClassName("warning-box").length
@@ -232,9 +227,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
 
       const pasteEvent = createEvent.paste(formControl, {
         clipboardData: {
@@ -264,9 +258,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
 
       const pasteEvent = createEvent.paste(formControl, {
         clipboardData: {
@@ -296,9 +289,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       const blurEvent = createEvent.blur(formControl);
 
       act(() => {
@@ -325,9 +317,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       const blurEvent = createEvent.blur(formControl);
 
       act(() => {
@@ -356,9 +347,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       const blurEvent = createEvent.blur(formControl);
 
       // need to dispatch on child element
@@ -387,9 +377,8 @@ describe("FormControl", () => {
         </FormControl>
       );
 
-      const formControl = component.container.getElementsByClassName(
-        "form-control"
-      )[0];
+      const formControl =
+        component.container.getElementsByClassName("form-control")[0];
       const blurEvent = createEvent.blur(formControl);
 
       // need to dispatch on child element

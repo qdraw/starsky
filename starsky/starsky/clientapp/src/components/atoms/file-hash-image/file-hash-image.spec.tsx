@@ -19,8 +19,8 @@ describe("FileHashImage", () => {
   it("Rotation API is called return 202", async () => {
     console.log("-- Rotation API is called return 202 --");
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 202,
         data: {
           subPath: "/test/image.jpg",
@@ -33,8 +33,7 @@ describe("FileHashImage", () => {
             fileName: "image.jpg"
           }
         } as IDetailView
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     let detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -68,8 +67,8 @@ describe("FileHashImage", () => {
   it("Rotation API is called return 200", async () => {
     console.log("-- Rotation API is called return 200 --");
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: {
           subPath: "/test/image.jpg",
@@ -82,8 +81,7 @@ describe("FileHashImage", () => {
             fileName: "image.jpg"
           }
         } as IDetailView
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     let detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -115,11 +113,10 @@ describe("FileHashImage", () => {
   });
 
   it("should ignore when DetectAutomaticRotation is true", async () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     let detectRotationSpy = jest
       .spyOn(DetectAutomaticRotation, "default")
@@ -152,11 +149,10 @@ describe("FileHashImage", () => {
   });
 
   it("onWheelCallback should replace source image when event is returned", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 500
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -196,11 +192,10 @@ describe("FileHashImage", () => {
   });
 
   it("onWheelCallback should return callback", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 500
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -239,11 +234,10 @@ describe("FileHashImage", () => {
   });
 
   it("with onResetCallback it should set UrlThumbnailImage", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 500
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -281,11 +275,10 @@ describe("FileHashImage", () => {
   });
 
   it("with onResetCallback it should set UrlThumbnailImage and pass callback", () => {
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 500
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")

@@ -1,16 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Models;
-using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
-using starsky.foundation.writemeta.Services;
 using starskycore.Models;
 
 namespace starsky.feature.import.Services
@@ -61,6 +59,7 @@ namespace starsky.feature.import.Services
 					RecursiveDirectory = new ArgsHelper().NeedRecursive(args),
 					IndexMode = new ArgsHelper().GetIndexMode(args),
 					ColorClass = new ArgsHelper().GetColorClass(args),
+					ConsoleOutputMode = new ArgsHelper().GetConsoleOutputMode(args)
 				};
 
 			if ( _appSettings.IsVerbose() ) 
@@ -74,12 +73,39 @@ namespace starsky.feature.import.Services
 			
 			var stopWatch = Stopwatch.StartNew();
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
-			
-			_console.WriteLine($"\nDone Importing {result.Count(p => p.Status == ImportStatus.Ok)}");
-			_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
-			                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
-			_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
 
+			WriteOutputStatus(importSettings, result, stopWatch);
+		}
+
+		private void WriteOutputStatus(ImportSettingsModel importSettings, List<ImportIndexItem> result, Stopwatch stopWatch)
+		{
+			if ( importSettings.IsConsoleOutputModeDefault() )
+			{
+				var okCount = result.Count(p => p.Status == ImportStatus.Ok);
+				_console.WriteLine($"\nDone Importing {okCount}");
+				if ( okCount != 0 ) {
+					_console.WriteLine($"Time: {Math.Round(stopWatch.Elapsed.TotalSeconds, 1)} " +
+					                   $"sec. or {Math.Round(stopWatch.Elapsed.TotalMinutes, 1)} min.");
+				}
+				_console.WriteLine($"Failed: {result.Count(p => p.Status != ImportStatus.Ok)}");
+			}
+
+			if ( importSettings.ConsoleOutputMode != ConsoleOutputMode.Csv )
+			{
+				return;
+			}
+			
+			_console.WriteLine($"Id;Status;SourceFullFilePath;SubPath;FileHash");
+			foreach ( var item in result )
+			{
+				var filePath = item.Status == ImportStatus.Ok
+					? item.FilePath : "";
+				_console.WriteLine($"{item.Id};{item.Status};" +
+				                   $"{item.SourceFullFilePath};" +
+				                   $"{filePath};" +
+				                   $"{item.GetFileHashWithUpdate()}");
+
+			}
 		}
 	}
 }

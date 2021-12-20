@@ -17,6 +17,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
@@ -31,7 +32,7 @@ namespace starskytest.Controllers
 		private readonly IQuery _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 
 		public PublishControllerTest()
 		{
@@ -44,7 +45,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
 			var options = builderDb.Options;
 			var context = new ApplicationDbContext(options);
-			_query = new Query(context, memoryCache);
+			_query = new Query(context,new AppSettings(), null, new FakeIWebLogger(), memoryCache);
 
 			// Inject Fake Exiftool; dependency injection
 			var services = new ServiceCollection();
@@ -73,8 +74,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
@@ -82,7 +83,7 @@ namespace starskytest.Controllers
 			_appSettings = serviceProvider.GetRequiredService<AppSettings>();
 
 			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 			
 		}
 
@@ -140,7 +141,7 @@ namespace starskytest.Controllers
 		[TestMethod]
 		public async Task PublishCreate_FakeBg_Expect_Generate_FakeZip_newItem()
 		{
-			var fakeBg = new FakeIBackgroundTaskQueue();
+			var fakeBg = new FakeIUpdateBackgroundTaskQueue();
 			var fakeIWebHtmlPublishService = new FakeIWebHtmlPublishService();
 			var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 				fakeIWebHtmlPublishService, 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
@@ -26,13 +28,13 @@ namespace starsky.foundation.sync.SyncServices
 		private readonly SyncFolder _syncFolder;
 		private readonly SyncIgnoreCheck _syncIgnoreCheck;
 
-		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger)
+		public Synchronize(AppSettings appSettings, IQuery query, ISelectorStorage selectorStorage, IWebLogger logger, IMemoryCache memoryCache = null)
 		{
 			_console = new ConsoleWrapper();
 			_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 			_syncSingleFile = new SyncSingleFile(appSettings, query, _subPathStorage, logger);
-			_syncRemove = new SyncRemove(appSettings, query);
-			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger);
+			_syncRemove = new SyncRemove(appSettings, query, memoryCache, logger);
+			_syncFolder = new SyncFolder(appSettings, query, selectorStorage, _console,logger,memoryCache);
 			_syncIgnoreCheck = new SyncIgnoreCheck(appSettings, _console);
 		}
 		
@@ -46,13 +48,13 @@ namespace starsky.foundation.sync.SyncServices
 			if ( FilterCommonTempFiles.Filter(subPath)  || _syncIgnoreCheck.Filter(subPath)  ) 
 				return FilterCommonTempFiles.DefaultOperationNotSupported(subPath);
 
-			_console.WriteLine($"[Synchronize] Sync {subPath}");
+			_console.WriteLine($"[Synchronize] Sync {subPath} {DateTimeDebug()}");
 			
 			// ReSharper disable once ConvertSwitchStatementToSwitchExpression
 			switch ( _subPathStorage.IsFolderOrFile(subPath) )
 			{
 				case FolderOrFileModel.FolderOrFileTypeList.Folder:
-					return await _syncFolder.Folder(subPath,updateDelegate);
+					return await _syncFolder.Folder(subPath, updateDelegate);
 				case FolderOrFileModel.FolderOrFileTypeList.File:
 					var item = await _syncSingleFile.SingleFile(subPath, updateDelegate);
 					return new List<FileIndexItem>{item};
@@ -71,6 +73,13 @@ namespace starsky.foundation.sync.SyncServices
 				results.AddRange(await Sync(subPath, recursive));
 			}
 			return results;
+		}
+		
+				
+		internal static string DateTimeDebug()
+		{
+			return ": " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", 
+				CultureInfo.InvariantCulture);
 		}
 	}
 }

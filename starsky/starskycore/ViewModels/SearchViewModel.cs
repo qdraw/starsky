@@ -10,12 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
-#if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-#endif
 
 namespace starskycore.ViewModels
 {
@@ -163,11 +158,7 @@ namespace starskycore.ViewModels
 	    /// The search for types
 	    /// </summary>
 	    [DataContract]
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
 	    public enum SearchForOptionType
 	    {
 		    /// <summary>

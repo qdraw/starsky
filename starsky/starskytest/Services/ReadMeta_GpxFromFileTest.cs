@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starskytest.FakeCreateAn;
 

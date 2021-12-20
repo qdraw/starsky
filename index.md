@@ -30,7 +30,7 @@ To run in connected mode and collaborate use the server version. There are [inst
 ## Desktop app as standalone or server client
 The app can be used standalone or server client. This app runs the server application local. 
 
-[Download and install instructions for the StarskyApp](starskyapp/readme.md?classes=btn,btn-info)
+[Install instructions for the StarskyApp](starskyapp/readme.md?classes=btn,btn-info)
 
 
 ## Indexing and finding stuff back

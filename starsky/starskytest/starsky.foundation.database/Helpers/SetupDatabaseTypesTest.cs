@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
@@ -102,6 +103,39 @@ namespace starskytest.starsky.foundation.database.Helpers
 			new SetupDatabaseTypes(appSettings, services, console).BuilderDb();
 
 			Assert.IsTrue(console.WrittenLines[0].Contains("Database connection:"));
+		}
+
+		[TestMethod]
+		public void EnableDatabaseTracking_shouldEnable()
+		{
+			var console = new FakeConsoleWrapper();
+			var appSettings = new AppSettings {
+				Verbose = true,
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+				ApplicationInsightsInstrumentationKey = "any",
+				ApplicationInsightsDatabaseTracking = true
+			};
+			var services = new ServiceCollection();
+			
+			var memoryDatabase = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase("test123");
+			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(memoryDatabase);
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void EnableDatabaseTracking_shouldDisable()
+		{
+			var console = new FakeConsoleWrapper();
+			var appSettings = new AppSettings {
+				Verbose = true,
+				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase,
+				ApplicationInsightsInstrumentationKey = string.Empty, // <-- No Key
+				ApplicationInsightsDatabaseTracking = true
+			};
+			var services = new ServiceCollection();
+			var result = new SetupDatabaseTypes(appSettings, services, console).EnableDatabaseTracking(null);
+			Assert.IsFalse(result);
 		}
 	}
 }

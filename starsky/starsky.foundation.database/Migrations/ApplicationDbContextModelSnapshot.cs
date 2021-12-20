@@ -14,7 +14,7 @@ namespace starsky.foundation.database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.17");
+                .HasAnnotation("ProductVersion", "3.1.21");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -46,6 +46,8 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("CredentialTypeId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Id", "Identifier");
 
                     b.ToTable("Credentials");
                 });
@@ -156,7 +158,8 @@ namespace starsky.foundation.database.Migrations
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("LockoutEnd")
+                    b.Property<string>("LockoutEnd")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
@@ -315,7 +318,12 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("FilePath")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("MakeModel")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("FileHash");
 
                     b.ToTable("ImportIndex");
                 });

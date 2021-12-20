@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -268,7 +269,8 @@ namespace starsky.Controllers
 		        var fs1 = _iStorage.ReadStream(sourcePath);
 
 		        var fileExt = FilenamesHelper.GetFileExtensionWithoutDot(sourcePath);
-		        Response.Headers.Add("x-filename", FilenamesHelper.GetFileName(sourcePath));
+		        var fileName = HttpUtility.UrlEncode(FilenamesHelper.GetFileName(sourcePath));
+		        Response.Headers.TryAdd("x-filename", new StringValues(fileName));
 		        return File(fs1, MimeHelper.GetMimeType(fileExt));
 	        }
 	        

@@ -5,12 +5,13 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{7e1136a7-cc43-49d2-91d3-48e557f0fb66}</ProjectGuid>
-        <RuntimeFrameworkVersion>3.1.17</RuntimeFrameworkVersion>
+        <RuntimeFrameworkVersion>3.1.22</RuntimeFrameworkVersion>
         <RootNamespace>starskysynchronizecli</RootNamespace>
-        <Version>0.4.12</Version>
+        <Version>0.5.0-beta.0</Version>
     </PropertyGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj" />
       <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj" />
       <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj" />
       <ProjectReference Include="..\starsky.foundation.sync\starsky.foundation.sync.csproj" />

@@ -14,12 +14,13 @@ namespace starskytest.FakeMocks
 		private readonly ICacheEntry _fakeCacheEntry;
 		private readonly Dictionary<string, object> _items;
 
-		public FakeMemoryCache(Dictionary<string, object> items)
+		public FakeMemoryCache(Dictionary<string, object> items = null)
 		{
 			var services = new ServiceCollection();
 			services.AddSingleton<ICacheEntry,FakeICacheEntry>();
 			var serviceProvider = services.BuildServiceProvider();
 			_fakeCacheEntry = serviceProvider.GetRequiredService<ICacheEntry>();
+			items ??= new Dictionary<string, object>();
 			_items = items;
 		}
 		public void Dispose()

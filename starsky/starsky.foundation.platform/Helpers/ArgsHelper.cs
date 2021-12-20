@@ -292,6 +292,8 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine("Name " + _appSettings.Name);
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
+			_console.WriteLine($"ApplicationInsightsKey {_appSettings.ApplicationInsightsInstrumentationKey} ");
+			_console.WriteLine($"AIdbTracking {_appSettings.ApplicationInsightsDatabaseTracking} AIlog {_appSettings.ApplicationInsightsLog} ");
 
 			_console.Write("SyncIgnore ");
 			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
@@ -442,6 +444,25 @@ namespace starsky.foundation.platform.Helpers
 				}
 			}
 			return path;
+		}
+		
+		/// <summary>
+		/// Get output mode
+		/// </summary>
+		/// <param name="args">arg list</param>
+		/// <returns>path</returns>
+		public ConsoleOutputMode GetConsoleOutputMode(IReadOnlyList<string> args)
+		{
+			var outputMode = ConsoleOutputMode.Default;
+			for (int arg = 0; arg < args.Count; arg++)
+			{
+				if ((args[arg].ToLower() == "--output") && (arg + 1) != args.Count )
+				{
+					var outputModeItem = args[arg + 1];
+					Enum.TryParse<ConsoleOutputMode>(outputModeItem, true, out outputMode);				    
+				}
+			}
+			return outputMode;
 		}
 		
 		/// <summary>

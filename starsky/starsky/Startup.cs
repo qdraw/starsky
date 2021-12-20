@@ -4,15 +4,12 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -21,7 +18,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using starsky.feature.health.HealthCheck;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
@@ -30,8 +26,11 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Services;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
+using starsky.foundation.webtelemetry.Extensions;
+using starsky.foundation.webtelemetry.Helpers;
 using starsky.foundation.webtelemetry.Processor;
 using starsky.Helpers;
 
@@ -42,11 +41,9 @@ namespace starsky
     {
         private readonly IConfigurationRoot _configuration;
         private AppSettings _appSettings;
-        private readonly IHostEnvironment _hostEnvironment;
 
-        public Startup(IHostEnvironment hostEnvironment = null)
+        public Startup()
 		{
-			_hostEnvironment = hostEnvironment;
 			_configuration = SetupAppSettings.AppSettingsToBuilder().Result;
 		}
 
@@ -60,23 +57,11 @@ namespace starsky
 			
             services.AddMemoryCache();
             // this is ignored here: appSettings.AddMemoryCache; but implemented in cache
-
-            services.AddLogging(logging =>
-            {
-	            logging.ClearProviders();
-	            logging.AddConsole();
-	            
-	            // Skip when is Development
-	            if ( string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) || _hostEnvironment?.IsDevelopment() == true) return;
-	            // Optional: Apply filters to configure LogLevel Information or above is sent to
-	            // Application Insights for all categories.
-	            logging.AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider>
-		            (string.Empty, LogLevel.Information);
-	            logging.AddApplicationInsights(_appSettings.ApplicationInsightsInstrumentationKey);
-            });
             
+            services.AddApplicationInsightsLogging(_appSettings);
+
             var foundationDatabaseName = typeof(ApplicationDbContext).Assembly.FullName.Split(",").FirstOrDefault();
-            new SetupDatabaseTypes(_appSettings,services).BuilderDb(foundationDatabaseName);
+            new SetupDatabaseTypes(_appSettings,services, new ConsoleWrapper()).BuilderDb(foundationDatabaseName);
 			new SetupHealthCheck(_appSettings,services).BuilderHealth();
 	            
             // Enable Dual Authentication 
@@ -136,31 +121,16 @@ namespace starsky
 						.AllowCredentials() );
 			});
 			
-#if SYSTEM_TEXT_ENABLED
-			// NET Core 3 -> removed newtonsoft from core
+			// Detect Application Insights
+			services.AddMonitoring(_appSettings);
+			
 			services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
-#else
-	        services.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews().AddNewtonsoftJson();
-#endif
 
 	        ConfigureForwardedHeaders(services);
 	        
 			// Application Insights
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			
-			// Detect Application Insights
-			if ( !string.IsNullOrWhiteSpace(_appSettings.ApplicationInsightsInstrumentationKey) )
-			{
-				services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
-				{
-					ApplicationVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
-					EnableDependencyTrackingTelemetryModule = true,
-					EnableHeartbeat = true,
-					EnableAuthenticationTrackingJavaScript = true,
-					InstrumentationKey = _appSettings.ApplicationInsightsInstrumentationKey,
-				});
-			}
-
 			new RegisterDependencies().Configure(services);
         }
 
@@ -229,8 +199,10 @@ namespace starsky
         /// </summary>
         /// <param name="app">ApplicationBuilder</param>
         /// <param name="env">Hosting Env</param>
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
+        /// <param name="applicationLifetime">application Lifetime</param>
+        public void Configure(IApplicationBuilder app, IHostEnvironment env, IHostApplicationLifetime applicationLifetime)
         {
+	        
 	        app.UseResponseCompression();
 
 	        if ( env.IsDevelopment()) app.UseDeveloperExceptionPage();
@@ -312,6 +284,9 @@ namespace starsky
 		        var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
 		        configuration.TelemetryProcessorChainBuilder.Use(next => new FilterWebsocketsTelemetryProcessor(next));
 		        configuration.TelemetryProcessorChainBuilder.Build();
+
+		        var onStoppedSync = new FlushApplicationInsights(app);
+		        applicationLifetime?.ApplicationStopping.Register(onStoppedSync.Flush);
 	        }
         }
 

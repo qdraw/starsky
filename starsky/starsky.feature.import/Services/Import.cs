@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.import.Interfaces;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Import;
@@ -51,6 +52,15 @@ namespace starsky.feature.import.Services
 		private readonly IConsole _console;
 		private readonly IMetaExifThumbnailService _metaExifThumbnailService;
 
+		private readonly IMemoryCache _memoryCache;
+		private readonly IWebLogger _logger;
+		
+		/// <summary>
+		/// Used when File has no exif date in description
+		/// </summary>
+		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
+
+		
 		public Import(
 			ISelectorStorage selectorStorage,
 			AppSettings appSettings,
@@ -58,7 +68,9 @@ namespace starsky.feature.import.Services
 			IExifTool exifTool,
 			IQuery query,
 			IConsole console,
-			IMetaExifThumbnailService metaExifThumbnailService)
+			IMetaExifThumbnailService metaExifThumbnailService,
+			IWebLogger logger,
+			IMemoryCache memoryCache = null)
 		{
 			_importQuery = importQuery;
 			
@@ -72,6 +84,8 @@ namespace starsky.feature.import.Services
             _query = query;
             _console = console;
             _metaExifThumbnailService = metaExifThumbnailService;
+            _memoryCache = memoryCache;
+            _logger = logger;
 		}
 
 		/// <summary>
@@ -216,10 +230,11 @@ namespace starsky.feature.import.Services
 		{
 			if ( _appSettings.ImportIgnore.Any(p => inputFileFullPath.Key.Contains(p)) )
 			{
-				_console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
+				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ skip due rules: {inputFileFullPath.Key} ");
 				return new ImportIndexItem{ 
 					Status = ImportStatus.Ignore, 
 					FilePath = inputFileFullPath.Key,
+					SourceFullFilePath = inputFileFullPath.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
 			}
@@ -230,6 +245,7 @@ namespace starsky.feature.import.Services
 				return new ImportIndexItem{ 
 					Status = ImportStatus.NotFound, 
 					FilePath = inputFileFullPath.Key,
+					SourceFullFilePath = inputFileFullPath.Key,
 					AddToDatabase = DateTime.UtcNow
 				};
 			}
@@ -243,7 +259,7 @@ namespace starsky.feature.import.Services
 			     !ExtensionRolesHelper.IsExtensionSyncSupported($".{imageFormat}") )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ extension not supported: {inputFileFullPath.Key}");
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
+				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
 			}
 			
 			var hashList = await 
@@ -251,7 +267,7 @@ namespace starsky.feature.import.Services
 			if ( !hashList.Value )
 			{
 				if ( _appSettings.IsVerbose() ) _console.WriteLine($"❌ FileHash error {inputFileFullPath.Key}");
-				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key};
+				return new ImportIndexItem{ Status = ImportStatus.FileError, FilePath = inputFileFullPath.Key, SourceFullFilePath = inputFileFullPath.Key};
 			}
 			
 			if (importSettings.IndexMode && await _importQuery.IsHashInImportDbAsync(hashList.Key) )
@@ -262,7 +278,8 @@ namespace starsky.feature.import.Services
 					Status = ImportStatus.IgnoredAlreadyImported, 
 					FilePath = inputFileFullPath.Key,
 					FileHash = hashList.Key,
-					AddToDatabase = DateTime.UtcNow
+					AddToDatabase = DateTime.UtcNow,
+					SourceFullFilePath = inputFileFullPath.Key
 				};
 			} 
 			
@@ -281,10 +298,6 @@ namespace starsky.feature.import.Services
 			return importIndexItem;
 		}
 
-		/// <summary>
-		/// Used when File has no exif date in description
-		/// </summary>
-		internal string MessageDateTimeBasedOnFilename = "Date and Time based on filename";
 
 		/// <summary>
 		/// Create a new import object
@@ -321,7 +334,10 @@ namespace starsky.feature.import.Services
 				// used to sync exifTool and to let the user know that the transformation has been applied
 				importIndexItem.FileIndexItem.Description = MessageDateTimeBasedOnFilename;
 			}
-			
+
+			// Also add Camera brand to list
+			importIndexItem.MakeModel = importIndexItem.FileIndexItem.MakeModel; 
+				
 			// AddToDatabase is Used by the importer History agent
 			importIndexItem.FileIndexItem.AddToDatabase = DateTime.UtcNow;
 			importIndexItem.AddToDatabase = DateTime.UtcNow;
@@ -403,7 +419,7 @@ namespace starsky.feature.import.Services
 			if ( _appSettings.MetaThumbnailOnImport == false || !importSettings.IndexMode) return false;
 			var items = importIndexItemsList
 				.Where(p => p.Status == ImportStatus.Ok)
-				.Select(p => (p.FilePath, p.FileHash)).ToList();
+				.Select(p => (p.FilePath, p.FileIndexItem.FileHash)).ToList();
 			if ( !items.Any() ) return false;
 			return await _metaExifThumbnailService.AddMetaThumbnail(items);
 		}
@@ -456,8 +472,8 @@ namespace starsky.feature.import.Services
 		    }
 
 		    // Run Exiftool to Update for example colorClass
-		    importIndexItem.FileIndexItem = UpdateImportTransformations(importIndexItem.FileIndexItem, 
-			    importSettings.ColorClass);
+		    importIndexItem.FileIndexItem = await UpdateImportTransformations(
+			    importIndexItem.FileIndexItem, importSettings.ColorClass);
 
 			// to move files
             if (importSettings.DeleteAfter)
@@ -498,12 +514,14 @@ namespace starsky.feature.import.Services
 			}
 
 			// Add to Normal File Index database
-			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query).Query();
+			var query = new QueryFactory(new SetupDatabaseTypes(_appSettings), _query,
+				_memoryCache, _appSettings,_logger).Query();
+			
 			await query.AddItemAsync(importIndexItem.FileIndexItem);
 			
 			// Add to check db, to avoid duplicate input
-			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery).ImportQuery();
-			await importQuery.AddAsync(importIndexItem);
+			var importQuery = new ImportQueryFactory(new SetupDatabaseTypes(_appSettings), _importQuery,_console).ImportQuery();
+			await importQuery.AddAsync(importIndexItem, importSettings.IsConsoleOutputModeDefault() );
 			
 			return importIndexItem;
 		}
@@ -513,7 +531,7 @@ namespace starsky.feature.import.Services
 		/// </summary>
 		/// <param name="fileIndexItem">information</param>
 		/// <param name="colorClassTransformation">change colorClass</param>
-		private FileIndexItem UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
+		private async Task<FileIndexItem> UpdateImportTransformations(FileIndexItem fileIndexItem, int colorClassTransformation)
 		{
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(fileIndexItem.FileName) ) return fileIndexItem;
 
@@ -530,8 +548,8 @@ namespace starsky.feature.import.Services
 				nameof(FileIndexItem.Description).ToLowerInvariant(),
 			};
 
-			new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage)).Update(fileIndexItem, comparedNamesList);
+			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
+				new ReadMeta(_subPathStorage)).UpdateAsync(fileIndexItem, comparedNamesList);
 			
 			return fileIndexItem.Clone();
 		}

@@ -8,9 +8,9 @@ export type CurrentLocationButtonPropTypes = {
   callback?(coords: Coordinates): void;
 };
 
-const CurrentLocationButton: React.FunctionComponent<CurrentLocationButtonPropTypes> = ({
-  callback
-}) => {
+const CurrentLocationButton: React.FunctionComponent<
+  CurrentLocationButtonPropTypes
+> = ({ callback }) => {
   function currentPositionSuccess(position: Position) {
     setError(false);
     if (!callback) return;

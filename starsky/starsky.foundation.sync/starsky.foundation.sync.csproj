@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{8cd2e452-ab62-446c-ad42-7d90b63d1b81}</ProjectGuid>
-        <Version>0.4.12</Version>
+        <Version>0.5.0-beta.0</Version>
         <RootNamespace>starsky.foundation.sync</RootNamespace>
     </PropertyGroup>
     
@@ -18,7 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.17" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.22" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

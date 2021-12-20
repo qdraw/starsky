@@ -14,14 +14,20 @@
     -   [starskyThumbnailCli](../starsky/starskythumbnailcli/readme.md) _speed web performance by generating smaller images_
     -   [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     -   [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests_
--   [starsky.netframework](../starsky.netframework/readme.md) _Client for older machines (deprecated)_
 -   [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 -   [starskyapp](../starskyapp/readme.md) _Desktop Application (Pre-alpha code)_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
 -   [Changelog](../history.md) _Release notes and history_
+
+## Run pre-build binaries (fastest)
+
+See the [How use prebuild images](readme-docker-hub.md) for more details about how to run docker
+
 
 ## Build instructions for docker
 
-See the [Docker instructions](readme-docker-instructions.md) for more details about how to install
+See the [Docker instructions](readme-docker-development.md) for more details about how 
+to compile the application for development
 
 ## Build instructions (without docker)
 
@@ -31,7 +37,7 @@ See the [Docker instructions](readme-docker-instructions.md) for more details ab
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 3.1.411 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
+2. Get the `dotnet` 3.1.416 SDK. To get the 'Build apps - SDK' .NET Core from https://www.microsoft.com/net/download
 3. Get a recent version of nodejs (12.x or newer)
 
 4. Make a build of all the projects and run the tests

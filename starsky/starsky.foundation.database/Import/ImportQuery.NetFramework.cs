@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
+
 #pragma warning disable 1998
 
 namespace starsky.foundation.database.Import
@@ -21,11 +23,12 @@ namespace starsky.foundation.database.Import
 		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
 		/// </summary>
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
-		public ImportQueryNetFramework(IServiceScopeFactory scopeFactory) : base(scopeFactory)
+		/// <param name="console">console</param>
+		public ImportQueryNetFramework(IServiceScopeFactory scopeFactory, IConsole console) : base(scopeFactory,console)
 		{
 			_scopeFactory = scopeFactory;
 			_isConnection = TestConnection();
-			_importQuery = new ImportQuery(scopeFactory);
+			_importQuery = new ImportQuery(scopeFactory, console);
 		}
 
 		/// <summary>

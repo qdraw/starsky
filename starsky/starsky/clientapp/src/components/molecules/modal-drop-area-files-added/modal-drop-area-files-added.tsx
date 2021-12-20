@@ -11,9 +11,9 @@ interface IModalDropAreaFilesAddedProps {
   uploadFilesList: IFileIndexItem[];
 }
 
-const ModalDropAreaFilesAdded: React.FunctionComponent<IModalDropAreaFilesAddedProps> = (
-  props
-) => {
+const ModalDropAreaFilesAdded: React.FunctionComponent<
+  IModalDropAreaFilesAddedProps
+> = (props) => {
   const settings = useGlobalSettings();
   const MessageFilesAdded = new Language(settings.language).text(
     "Deze bestanden zijn toegevoegd",

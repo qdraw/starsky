@@ -30,8 +30,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			_query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			_query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 		}
 
 		private IServiceScopeFactory CreateNewScope()
@@ -175,8 +175,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope,
+				new FakeIWebLogger(),_memoryCache);
 		        
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/test.jpg"));
@@ -199,7 +200,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 				DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase
 			};
 			var dbContext = new SetupDatabaseTypes(appSettings, null).BuilderDbFactory();
-			var query = new Query(dbContext);
+			var query = new Query(dbContext,  null, null, new FakeIWebLogger());
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/GetAllRecursiveAsync/test") {IsDirectory = true});
@@ -225,8 +226,9 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, 
+				new FakeIWebLogger(),_memoryCache);
 		        
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar") {IsDirectory = true});
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/gar/test.jpg"));
@@ -273,7 +275,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 	        
 			// item sub folder
 			var item = new FileIndexItem("/test_1231331/sub/test_0191919.jpg");
@@ -471,7 +473,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 	        
 			var item = new FileIndexItem("/test_0191919/test_0191919.jpg");
 			dbContext.FileIndex.Add(item);
@@ -578,8 +581,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 	        
 			var item = new FileIndexItem("/test/010101.jpg");
 			dbContext.FileIndex.Add(item);
@@ -605,8 +608,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 			query.AddItem(new FileIndexItem("/"));
 	        
 			var item = query.GetObjectByFilePath("/");
@@ -628,6 +631,34 @@ namespace starskytest.starsky.foundation.database.QueryTest
 	        
 			await _query.RemoveItemAsync(dbItem);
 		}
+		
+		[TestMethod]
+		public async Task Query_GetObjectByFilePathAsync_Cache_Ok()
+		{
+			_memoryCache.Set(Query.GetObjectByFilePathAsyncCacheName("/test135"),
+				new FileIndexItem("/test135"));
+	        
+			var item = await _query.GetObjectByFilePathAsync("/test135", TimeSpan.MaxValue);
+			Assert.IsNotNull(item);
+			Assert.AreEqual("/test135", item.FilePath);
+			Assert.AreEqual("test135", item.FileName);
+
+			_memoryCache.Remove(
+				Query.GetObjectByFilePathAsyncCacheName("/test135"));
+		}
+				
+		[TestMethod]
+		public async Task Query_GetObjectByFilePathAsync_Cache_NoDateSet_SoIgnored()
+		{
+			_memoryCache.Set(Query.GetObjectByFilePathAsyncCacheName("/test135"),
+				new FileIndexItem("/test135"));
+	        
+			var item = await _query.GetObjectByFilePathAsync("/test135"); // <- -  no date added
+			Assert.IsNull(item); // <- no date is added so cache is ignored
+
+			_memoryCache.Remove(
+				Query.GetObjectByFilePathAsyncCacheName("/test135"));
+		}
         
 		[TestMethod]
 		public async Task Query_GetObjectByFilePathAsync_Disposed()
@@ -635,8 +666,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, 
-				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger());
+			var query = new Query(dbContext, 
+				new AppSettings{Verbose = true}, serviceScope, new FakeIWebLogger(),_memoryCache);
 			var item = await query.AddItemAsync(new FileIndexItem("/GetObjectByFilePathAsync/test.jpg")
 			{
 				Tags = "hi"
@@ -661,7 +692,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, 
+				new AppSettings(), serviceScope, new FakeIWebLogger(),_memoryCache);
 	        
 			var item = new FileIndexItem("/test/010101.jpg");
 			dbContext.FileIndex.Add(item);
@@ -708,7 +740,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope, logger);
+			var query = new Query(dbContext, new AppSettings(), serviceScope, logger,_memoryCache);
 
 			var item = new FileIndexItem("/test/010101.jpg");
 
@@ -722,7 +754,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new global::starsky.foundation.database.Query.Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope,new FakeIWebLogger(),_memoryCache);
 	        
 			var item = new FileIndexItem("/test/010101.jpg");
 			await dbContext.FileIndex.AddAsync(item);
@@ -773,7 +805,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope,new FakeIWebLogger(),_memoryCache);
 	        
 			var item = new FileIndexItem("/test/8284574.jpg");
 			await dbContext.FileIndex.AddAsync(item);
@@ -952,8 +984,11 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		[TestMethod]
 		public void QueryFolder_Add_And_UpdateFolderCache_UpdateCacheItemTest()
 		{
+			var name = _query.CachingDbName(nameof(FileIndexItem),
+				"/");
+			
 			// Add folder to cache normally done by: CacheQueryDisplayFileFolders
-			_memoryCache.Set("List`1_/", new List<FileIndexItem>(), 
+			_memoryCache.Set(name, new List<FileIndexItem>(), 
 				new TimeSpan(1,0,0));
 			// "List`1_" is from CachingDbName
             
@@ -962,8 +997,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
             
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", FileName = "cache"};
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
-
-			_memoryCache.TryGetValue("List`1_/", out var objectFileFolders);
+			
+			_memoryCache.TryGetValue(name, out var objectFileFolders);
 			var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
 			Assert.AreEqual("hi",displayFileFolders.FirstOrDefault(p => p.FileName == "cache").Tags);
@@ -977,15 +1012,50 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test1", FileName = "cache"};
 			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
 
-			var success = _memoryCache.TryGetValue("List`1_/_fail_test1", out var objectFileFolders);
+			var name = _query.CachingDbName(nameof(FileIndexItem),
+				"/_fail_test1");
+			var success = _memoryCache.TryGetValue(name, out var objectFileFolders);
 			Assert.IsFalse(success);
+		}
+
+		[TestMethod]
+		public void CacheUpdateItem_ImplicitAdd()
+		{
+
+			_query.AddCacheParentItem("/456789", new List<FileIndexItem>());
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/456789", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var result = _query.DisplayFileFolders("/456789").ToList();
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("hi", result[0].Tags);
+		}
+
+		[TestMethod]
+		public void CacheUpdateItem_UpdateByName()
+		{
+
+			_query.AddCacheParentItem("/3479824783", new List<FileIndexItem>
+			{
+				new FileIndexItem {Id = 401, Tags = "___not___", ParentDirectory = "/3479824783", FileName = "cache"}
+			});
+			
+			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/3479824783", FileName = "cache"};
+			_query.CacheUpdateItem(new List<FileIndexItem>{item1});
+
+			var result = _query.DisplayFileFolders("/3479824783").ToList();
+
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual("hi", result[0].Tags);
 		}
 		
 		[TestMethod]
 		public void CacheUpdateItem_ignore_when_parent_does_notExistFakeLogger()
 		{
 			var logger = new FakeIWebLogger();
-			var query = new Query(null, _memoryCache, new AppSettings(), null,logger);
+			var query = new Query(null, new AppSettings(), null,logger,_memoryCache);
 			
 			var item1 = new FileIndexItem {Id = 400, Tags = "hi", ParentDirectory = "/_fail_test2", FileName = "cache"};
 			query.CacheUpdateItem(new List<FileIndexItem>{item1});
@@ -1117,7 +1187,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope,new FakeIWebLogger(),_memoryCache);
 
 			await dbContext.DisposeAsync();
 			await query.AddItemAsync(new FileIndexItem("/test982.jpg")
@@ -1137,7 +1207,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope,new FakeIWebLogger(),_memoryCache);
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
 			await dbContext.SaveChangesAsync();
@@ -1155,7 +1225,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			var serviceScope = CreateNewScope();
 			var scope = serviceScope.CreateScope();
 			var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(dbContext,_memoryCache, new AppSettings(), serviceScope);
+			var query = new Query(dbContext, new AppSettings(), serviceScope,new FakeIWebLogger(),_memoryCache);
 
 			await dbContext.FileIndex.AddAsync(new FileIndexItem("/test44.jpg"));
 			await dbContext.SaveChangesAsync();

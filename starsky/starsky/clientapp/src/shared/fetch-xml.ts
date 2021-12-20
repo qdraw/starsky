@@ -4,8 +4,8 @@ function isParseError(parsedDocument: any) {
   // parser and parsererrorNS could be cached on startup for efficiency
   const parser = new DOMParser(),
     errorneousParse = parser.parseFromString("<", "text/xml"),
-    parsererrorNS = errorneousParse.getElementsByTagName("parsererror")[0]
-      .namespaceURI;
+    parsererrorNS =
+      errorneousParse.getElementsByTagName("parsererror")[0].namespaceURI;
 
   if (parsererrorNS === "http://www.w3.org/1999/xhtml") {
     // In PhantomJS the parseerror element doesn't seem to have a special namespace, so we are just guessing here :(

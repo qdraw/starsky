@@ -1,0 +1,52 @@
+name: Dotnet sdk version auto upgrade
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '45 0 * * *'
+    
+jobs:
+  run:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Update .NET Versions'
+      id: dotnet_sdk_version_update
+      working-directory: ./starsky-tools/build-tools
+      run: npm run dotnet-sdk-version-update
+      
+    - name: Npm generate package list  ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+      working-directory: ./starsky-tools/build-tools
+      run: npm run nuget-package-list
+      
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.WORKFLOW_GITHUB }}
+        commit-message: 'Auto .NET SDK version Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}
+        delete-branch: true
+        title: '.NET SDK Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
+        body: |
+          ## Upgrade of .NET with newer SDK Version
+          - Install SDK version ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }} on your development machine ${{ steps.dotnet_sdk_version_update.outputs.SDK_RELEASE_NOTES }}
+          - First test on linux-arm test envs before approve
+          - update azure runtime on test https://demostarsky.scm.azurewebsites.net/
+          - update docs with minimal version https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/starsky/readme.md
+          - update changelog https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/history.md
+          
+          ## When upgrading a major version
+          - when upgrading to newer major release check docker
+          
+        labels: |
+          dependencies
+        draft: false
+
+  

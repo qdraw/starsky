@@ -5,8 +5,9 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{3b84ed27-fef0-4c2b-8cb5-04b7fdb613f8}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.4.12</Version>
+        <Version>0.5.0-beta.0</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     
     <ItemGroup>
@@ -15,9 +16,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.ApplicationInsights" Version="2.18.0" />
-      <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
+      <PackageReference Include="Microsoft.ApplicationInsights" Version="2.19.0" />
+      <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.19.0" />
       <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.22" />
+      <PackageReference Include="System.Text.Json" Version="5.0.2" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

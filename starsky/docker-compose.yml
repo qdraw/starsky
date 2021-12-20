@@ -8,7 +8,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MARIA_DB_ROOT_PASSWORD}
       - TZ=Europe/London
       - MYSQL_DATABASE=${MYSQL_DATABASE} #optional
       - MYSQL_USER=${MYSQL_USER} #optional
@@ -16,10 +16,20 @@ services:
     volumes:
       - sqldata:/config
     ports:
-      - 3306:3306
+      - "${MARIA_DB_PORT}:3306"
     restart: unless-stopped
     networks:
       internalnetwork: null
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      # https://docs.phpmyadmin.net/en/latest/setup.html#docker-environment-variables
+      PMA_HOST: host.docker.internal
+      PMA_PORT: ${MARIA_DB_PORT}
+      MYSQL_ROOT_PASSWORD: "${MARIA_DB_ROOT_PASSWORD}"
+    ports:
+      - "${PHP_MY_ADMIN_PORT}:80"
 
   starsky:
     image: ${DOCKER_REGISTRY-}starsky
@@ -27,22 +37,25 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - ISDEMO=true
+        - I__SDEMO=true # arg name is ISDEMO
     environment:
       - PORT=${STARSKY_PORT}
-      - CI=true
+      - app__verbose=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
       - app__addSwagger=true
-      - app__databaseConnection=Server=host.docker.internal;database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
+      - app__storageFolder=/app/storageFolderLocal
+      - app__databaseConnection=Server=host.docker.internal;port=${MARIA_DB_PORT};database=${MYSQL_DATABASE};uid=${MYSQL_USER};pwd=${MYSQL_PASSWORD};
     ports:
       - "${STARSKY_PORT}:${STARSKY_PORT}"
+    volumes:
+      - './docker/storageFolder:/app/storageFolderLocal'
+    depends_on:
+      - "mariadb"
     networks:
       internalnetwork: null
 
 networks:
-  proxy:
-    driver: bridge
   internalnetwork:
     driver: bridge
 

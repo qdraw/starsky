@@ -1,3 +1,16 @@
+
+/* 
+
+Start starsky with envs: 
+
+app__AddSwaggerExport=true
+app__AddSwagger=true
+
+and copy this file
+>      app__addSwaggerExport ....../bin/Debug/netcoreapp3.1/temp/starsky.json
+
+*/
+
 const swagger = require('./assets/config/starsky.json');
 
 function parseSwagger() {

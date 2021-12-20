@@ -1,9 +1,4 @@
-#if SYSTEM_TEXT_ENABLED
 using System.Text.Json.Serialization;
-#else
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json;
-#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,7 +59,8 @@ namespace starsky.foundation.platform.Models
 			if(!Directory.Exists(TempFolder)) Directory.CreateDirectory(TempFolder);
 		}
 
-		public string BaseDirectoryProject => AppDomain.CurrentDomain.BaseDirectory
+		public string BaseDirectoryProject => AppDomain.CurrentDomain
+			.BaseDirectory
 			.Replace("starskyadmincli", "starsky")
 			.Replace("starskysynchronizecli", "starsky")
 			.Replace("starskythumbnailcli", "starsky")
@@ -78,13 +74,11 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskywebftpcli", "starsky")
 			.Replace("starskywebhtmlcli", "starsky")
 			.Replace("starskygeocli", "starsky")
-			.Replace("starskytest", "starsky");
+			.Replace("starskytest", "starsky")
+			.Replace("starskydiskwatcherworkerservice", "starsky");
 
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-	    [JsonConverter(typeof(StringEnumConverter))]
-#endif
+		// newtonsoft uses: StringEnumConverter
 		public StarskyAppType ApplicationType { get; set; }
 
 		/// <summary>
@@ -127,7 +121,12 @@ namespace starsky.foundation.platform.Models
 			/// <summary>
 			/// Meta Thumbnail Generator CLI
 			/// </summary>
-			MetaThumbnail = 8
+			MetaThumbnail = 8,
+			
+			/// <summary>
+			/// DiskWatcherWorkerService
+			/// </summary>
+			DiskWatcherWorkerService = 9
 		}
 		
 		/// <summary>
@@ -232,11 +231,8 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Type of the database, sqlite, mysql or inmemory
 		/// </summary>
-#if SYSTEM_TEXT_ENABLED
 		[JsonConverter(typeof(JsonStringEnumConverter))]
-#else
-        [JsonConverter(typeof(StringEnumConverter))]
-#endif
+		// newtonsoft uses: StringEnumConverter
 		public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
 
 
@@ -468,7 +464,7 @@ namespace starsky.foundation.platform.Models
 		/// <summary>
 		/// Set Meta Thumbnails on import
 		/// </summary>
-		public bool? MetaThumbnailOnImport { get; set; }
+		public bool? MetaThumbnailOnImport { get; set; } = true;
 		
 		private string _webftp; 
 		public string WebFtp
@@ -551,7 +547,11 @@ namespace starsky.foundation.platform.Models
 			set => ApplicationInsightsInstrumentationKeyPrivate = value;
 		}
 
-		public int MaxDegreesOfParallelism => 6;
+		public bool? ApplicationInsightsLog { get; set; } = true;
+
+		public bool? ApplicationInsightsDatabaseTracking { get; set; } = false;
+
+		public int MaxDegreesOfParallelism { get; set; } = 6;
 	    
 		/// <summary>
 		/// Set to false when running on http-only service.
@@ -587,7 +587,7 @@ namespace starsky.foundation.platform.Models
 		/// use env variable: app__importIgnore__0 - value
 		/// Use always UNIX style
 		/// </summary>
-		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found"};
+		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found", ".Trashes"};
 	    
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------

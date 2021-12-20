@@ -9,6 +9,7 @@
         <IsPackable>false</IsPackable>
         <!-- used for RazorLight -->
         <PreserveCompilationContext>true</PreserveCompilationContext>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -19,13 +20,13 @@
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'" />
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'" />
     <ItemGroup>
-        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.18.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.17" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.17" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.17" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-        <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
-        <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.19.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.22" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.22" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.22" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+        <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
         <PackageReference Include="coverlet.collector" Version="3.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -57,7 +58,6 @@
         <ProjectReference Include="..\starskycore\starskycore.csproj" />
         <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
         <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
-        <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
         <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
         <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj" />
@@ -85,6 +85,7 @@
         <None Remove="netcore-coverage.opencover.xml" />
         <None Remove="coverage-report.zip" />
         <None Remove="TestResults\**" />
+        <None Remove="coverage-merge-sonarqube.xml" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />

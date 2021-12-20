@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.feature.import.Interfaces;
@@ -21,7 +21,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.worker.Services;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Models;
 
@@ -32,7 +32,7 @@ namespace starsky.Controllers
 	{
 		private readonly IImport _import;
 		private readonly AppSettings _appSettings;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IHttpClientHelper _httpClientHelper;
 		private readonly ISelectorStorage _selectorStorage;
 		private readonly IStorage _hostFileSystemStorage;
@@ -41,7 +41,7 @@ namespace starsky.Controllers
 		private readonly IWebLogger _logger;
 
 		public ImportController(IImport import, AppSettings appSettings,
-			IBackgroundTaskQueue queue, 
+			IUpdateBackgroundTaskQueue queue, 
 			IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, 
 			IServiceScopeFactory scopeFactory, IWebLogger logger)
 		{
@@ -113,11 +113,12 @@ namespace starsky.Controllers
 				var query = scope.ServiceProvider.GetRequiredService<IQuery>();
 				var console = scope.ServiceProvider.GetRequiredService<IConsole>();
 				var metaExifThumbnailService = scope.ServiceProvider.GetRequiredService<IMetaExifThumbnailService>();
+				var memoryCache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 
 				// use of IImport direct does not work
 				importedFiles = await new Import(selectorStorage,_appSettings,
 					importQuery, exifTool, query,console, 
-					metaExifThumbnailService).Importer(tempImportPaths, importSettings);
+					metaExifThumbnailService, _logger, memoryCache).Importer(tempImportPaths, importSettings);
 			}
 	            
 			if (isVerbose)

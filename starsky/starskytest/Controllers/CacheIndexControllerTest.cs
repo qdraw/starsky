@@ -20,6 +20,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
@@ -48,7 +49,7 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test1234");
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
-			_query = new Query(_context,memoryCache);
+			_query = new Query(_context,null,null,null,memoryCache);
             
 			// Inject Fake ExifTool; dependency injection
 			var services = new ServiceCollection();
@@ -76,8 +77,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
             
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();

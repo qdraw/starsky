@@ -126,11 +126,31 @@ namespace starskytest.starsky.foundation.platform.Services
 			Assert.AreEqual("error1",error);
 			Assert.AreEqual(LogLevel.Information,	logLevel);
 		}
-						
+		
 		[TestMethod]
 		public void Information_string_ConsoleFallback()
 		{
 			new WebLogger(null, _scopeFactory).LogInformation("message_info");
+			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
+			Assert.AreEqual("message_info",fakeConsole.WrittenLines[0]);
+		}
+		
+		[TestMethod]
+		public void Debug_string_ShouldPassFakeLogger()
+		{
+			var factory = new FakeILoggerFactory();
+			new WebLogger(factory).LogDebug("error1");
+			var error = factory.Storage.ErrorLog[0];
+			var logLevel = factory.Storage.LogLevelLog[0];
+
+			Assert.AreEqual("error1",error);
+			Assert.AreEqual(LogLevel.Debug,	logLevel);
+		}
+		
+		[TestMethod]
+		public void Debug_string_ConsoleFallback()
+		{
+			new WebLogger(null, _scopeFactory).LogDebug("message_info");
 			var fakeConsole = _scopeFactory?.CreateScope().ServiceProvider.GetService<IConsole>() as FakeConsoleWrapper;
 			Assert.AreEqual("message_info",fakeConsole.WrittenLines[0]);
 		}

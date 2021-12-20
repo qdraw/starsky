@@ -16,7 +16,7 @@ namespace starsky.feature.metaupdate.Interfaces
 		/// <param name="append"></param>
 		/// <param name="rotateClock"></param>
 		/// <returns></returns>
-		Task<List<FileIndexItem>> Update(
+		Task<List<FileIndexItem>> UpdateAsync(
 			Dictionary<string,List<string>> changedFileIndexItemName,
 			List<FileIndexItem> fileIndexResultsList,
 			FileIndexItem inputModel, // only when changedFileIndexItemName = null

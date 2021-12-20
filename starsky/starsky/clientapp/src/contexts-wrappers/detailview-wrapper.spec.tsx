@@ -1,5 +1,4 @@
 import { render } from "@testing-library/react";
-import { ReactWrapper } from "enzyme";
 import React from "react";
 import * as DetailView from "../containers/detailview";
 import * as useDetailViewContext from "../contexts/detailview-context";
@@ -126,7 +125,7 @@ describe("DetailViewWrapper", () => {
       expect(dispatch).toBeCalled();
       expect(dispatch).toBeCalledWith(detail[1]);
 
-      var element = (result.componentMount as any) as ReactWrapper;
+      var element = result.componentMount as any;
       element.unmount();
     });
   });

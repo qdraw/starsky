@@ -21,6 +21,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
@@ -37,7 +38,7 @@ namespace starskytest.Controllers
 		private readonly IExifTool _exifTool;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _createAnImage;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly ApplicationDbContext _context;
 		private readonly IReadMeta _readmeta;
 		private readonly IServiceScopeFactory _scopeFactory;
@@ -54,7 +55,8 @@ namespace starskytest.Controllers
 			builderDb.UseInMemoryDatabase("test1234");
 			var options = builderDb.Options;
 			_context = new ApplicationDbContext(options);
-			_query = new Query(_context,memoryCache);
+			_query = new Query(_context, 
+				new AppSettings(), null, new FakeIWebLogger(),memoryCache);
             
 			// Inject Fake ExifTool; dependency injection
 			var services = new ServiceCollection();
@@ -82,8 +84,8 @@ namespace starskytest.Controllers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
             
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
             
 			// build the service
 			var serviceProvider = services.BuildServiceProvider();
@@ -98,7 +100,7 @@ namespace starskytest.Controllers
 
             
 			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 	        
 			_iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 

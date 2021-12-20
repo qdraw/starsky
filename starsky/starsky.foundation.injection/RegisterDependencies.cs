@@ -13,7 +13,6 @@ namespace starsky.foundation.injection
 		{
 			// required by IHttpClientHelper
 			serviceCollection.AddSingleton<System.Net.Http.HttpClient>();
-			
 			// change to: *.Project.*", "*.Feature.*" "*.Foundation.*"
 			serviceCollection.AddClassesWithServiceAttribute("starsky*");
 		}

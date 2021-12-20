@@ -38,12 +38,11 @@ describe("AccountRegister", () => {
 
   it("not allowed get 403 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 403,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
     jest.spyOn(FetchGet, "default").mockReset();
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -73,12 +72,11 @@ describe("AccountRegister", () => {
 
   it("allowed get 200 from api", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -108,12 +106,11 @@ describe("AccountRegister", () => {
 
   it("allowed get 202 from api, it should hide sign in instead button", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 202,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -149,12 +146,11 @@ describe("AccountRegister", () => {
 
   it("submit no content", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -227,12 +223,11 @@ describe("AccountRegister", () => {
 
   it("submit short password", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -254,12 +249,11 @@ describe("AccountRegister", () => {
 
   it("submit password No Match", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -281,24 +275,22 @@ describe("AccountRegister", () => {
 
   it("submit password Happy flow", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: "Ok"
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchPostSpy = jest
       .spyOn(FetchPost, "default")
@@ -322,12 +314,11 @@ describe("AccountRegister", () => {
 
   it("submit password antiforgery token missing (return error 400 from api)", async () => {
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     jest
       .spyOn(FetchGet, "default")
@@ -337,12 +328,11 @@ describe("AccountRegister", () => {
       .mockImplementationOnce(() => mockGetIConnectionDefault);
 
     // use ==> import * as FetchPost from '../shared/fetch-post';
-    const mockPostIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockPostIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 400,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchPostSpy = jest
       .spyOn(FetchPost, "default")

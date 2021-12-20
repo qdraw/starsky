@@ -12,9 +12,9 @@
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application_
+     * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * __[Changelog](history.md) Release notes and history__
 
 ## Release notes of Starsky
@@ -38,11 +38,63 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
-- remove newtonsoft.json references
 
-# version 0.4.12 _(Unreleased)_ - 2021-09-??
+# version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
+- [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
+- [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)
+- [x]   (Breaking change) _Back-end_ Removed obsolete SubPathSlashRemove API (PR #563)
+- [x]   (Breaking change) _Back-end_ Removed old sync API  (PR #563)
+- [x]   (Security) _Front-end_  Upgrade Prettier 2.5.1 and React scripts 5.0.0 (PR #569)
+- [x]   (Breaking change) _Front-end_  Prettier new eslint rules 4.0.0 (PR #569)
+- [x]   (Fixed) _Back-end_  IndexController with empty string introduced with removal of SubPathSlashRemove (PR #571)
+- [x]   (Changed) _Back-end_ Upgrade Electron to 16.x and Electron Builder to 22.14.x (PR #571)
+- [x]   (Breaking change) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
+- [x]   (Breaking change) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
+
+- todo: test electron with new version
+
+# version 0.4.13 - 2021-12-15
+- [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
+- [x]   (Fixed) _Tools_ Dotnet SDK updater build tools (Work in progress) (PR #510)
+- [x]   (Fixed) _Back-end_  Fix for type LockoutEnd (PR #510)
+- [x]   (Changed) _Back-end_ Add migration for MakeModel in ImportIndex (PR #510)
+- [x]   (Fixed) _Tools_ Add push to gpx loader for mail  (PR #510)
+- [x]   (Added) _Back-end_ Add feature (appSettings) `ApplicationInsightsDatabaseTracking` - Track database dependencies  (PR #528)
+- [x]   (Added) _Back-end_ Add feature toggle (appSettings) `ApplicationInsightsLog` - Add WebLogger output to Application Insights (PR #528)
+- [x]   (Added) _Back-end_ Filter for DiskWatcher sync to prevent database overload (PR #529)
+- [x]   (Changed) _Back-end_ Upgrade dependencies for SixLabors.ImageSharp, ApplicationInsights, System.Threading.Tasks.Dataflow, Swashbuckle.AspNetCore and MSTest (PR #533)
+- [x]   (Changed) _Back-end_ Upgrade SDK Version to 3.1.415 & Runtime version to 3.1.21 (PR #535)
+- [x]   (Changed) _Back-end_ Rewrite thumbnail cleaner with chunks (CleanAllUnusedFilesAsync) (PR #531)
+- [x]   (Changed) _Back-end_ Auto download Exiftool from mirror when main source is not up (PR #531)
+- [x]   (Changed) _Back-end_ Change default LogLevel settings in appsettings.json (PR #531)
+- [x]   (Changed) _Back-end_ Handle exceptions for HttpClientHelper to not interupt (PR #531)
+- [x]   (Changed) _Back-end_ Change DiskWatcher background queue system (PR #536) 
+- [x]   (Changed) _Back-end_ Add disk telemetry-channels when app is crashed (PR #536)
+- [x]   (Changed) _Back-end_ Flush Application Insights on ApplicationStopping (PR #536)
+- [x]   (Changed) _Back-end_ Move GeoBackgroundTask to GeoLookUp feature (PR #540)
+- [x]   (Changed) _Back-end_ Add 10 seconds cache to UpdateAsync for performance reasons / diskWatcher catch up SetGetObjectByFilePathCache (PR #540)
+- [x]   (Changed) _Back-end_ Remove NewtonSoftJson from PublishManifest and use System.Text.Json (PR #540)
+- [x]   (Changed) _Back-end_ Remove NewtonSoftJson from various models (PR #540)
+- [x]   (Changed) _Back-end_ Remove sync CleanAllUnusedFiles (PR #540)
+- [x]   (Added) _Back-end_ Add event-counters to application insights https://docs.microsoft.com/en-us/azure/azure-monitor/app/eventcounters
+- [x]   (Added) _Back-end_ setAuthenticatedUserContext for Application Insights (PR #540)
+- [x]   (Added) _Back-end_ OperationId in RequestTelemetryHelper to track background Tasks in Application Insights (PR #540)
+- [x]   (Added) _Back-end_ QueueBackgroundWorkItem for DiskWatcher to have a separate queue (PR #540)
+- [x]   (Changed) _Back-end_ Change GeoLocationWrite to async variant  (PR #540)
+- [x]   (Security) _Back-end_ Upgrade dependencies (PR #548 & #547 & #546 & #545 & #544 & #543 & #542 & #541)
+- [x]   (Fixed) _Back-end_ Extend ServiceCollectionExtensions to load more Assemblies to get auto mapped by the service attribute (PR #550)
+- [x]   (Added) _Back-end_ Add Application Insights logging for CLI Applications (Admin, Geo, Import, Synchronize, Thumbnail) (PR #552)
+- [x]   (Changed) _Back-end_ Add dispose on parallel jobs  (PR #552)
+- [x]   (Added) _Back-end_  Add index for IX_ImportIndex_FileHash and IX_Credentials_Id_Identifier (PR #555)
+- [x]   (Added) _Back-end_ Fix for cache ManualSync when item is removed or added its now correct updated (PR #555)
+- [x]   (Fixed) _Front-end_ Fix for Safari 14.x and newer that after close a modal, the scroll isn't locked anymore (PR #555) 
+- [x]   (Fixed) _Back-end_ Add port to websocket url in connect-src for Safari 14.x using different port numbers  (PR #555)
+- [x]   (Fixed) _Back-end_ Exception fix SQLite System.InvalidOperationException: ExecuteReader (PR #556)
+- [x]   (Fixed) _Back-end_ Fix FlushApplicationInsights.FlushAsync System.NullReferenceException (PR #557)
+- [x]   (Changed) _Back-end_ Upgrade SDK Version to 3.1.416 & Runtime version to 3.1.22 (PR #558)
+
+# version 0.4.12 - 2021-11-04
 - [x]   (Changed) _Back-end_ Your account is locked for an hour when you enter 3 non valid passwords (PR #443 & #445 & #446)
 - [x]   (Changed) _Back-end_ Database migration for AccessFailedCount, LockoutEnabled and LockoutEnd in Users table (PR #443 & #445)
 - [x]   (Fixed) _Back-end_ Group parts of the regex together to make the intended operator precedence explicit for getting Filename in clientApp (PR #444)
@@ -56,6 +108,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ DiskWatcher in combination with child folders that have no access keeps a known issue 
 - [x]   (Fixed) _Back-end_ Skip folders with meta thumbnail tool when folder has no read rights (PR #490) 
 - [x]   (Added) _Back-end_  Filter for import (ImportIgnore) (PR #490)
+- [x]   (Added) _Back-end_ Add to docker hub and multi-arch build with buildx
+- [x]   (Added) _Back-end_ use docker hub to pull images: `docker pull qdraw/starsky`
 
 # version 0.4.11 - 2021-09-17
 - [x]   (Security) _Back-end_  Upgrade .NET Core (TargetFramework) to 3.1.17 (using SDK 3.1.411) (PR #428)

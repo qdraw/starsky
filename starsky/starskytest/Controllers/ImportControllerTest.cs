@@ -23,6 +23,7 @@ using starsky.foundation.metathumbnail.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskycore.Models;
@@ -36,7 +37,7 @@ namespace starskytest.Controllers
 	public class ImportControllerTest
 	{
 		private readonly IImport _import;
-		private readonly IBackgroundTaskQueue _bgTaskQueue;
+		private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly AppSettings _appSettings;
 
@@ -58,13 +59,13 @@ namespace starskytest.Controllers
 			_appSettings = new AppSettings();
 
 			// Add Background services
-			services.AddSingleton<IHostedService, BackgroundQueuedHostedService>();
-			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+			services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
+			services.AddSingleton<IUpdateBackgroundTaskQueue, UpdateBackgroundTaskQueue>();
 
 			var serviceProvider = services.BuildServiceProvider();
 
 			// get the background helper
-			_bgTaskQueue = serviceProvider.GetRequiredService<IBackgroundTaskQueue>();
+			_bgTaskQueue = serviceProvider.GetRequiredService<IUpdateBackgroundTaskQueue>();
 
 			_scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 			_import = new FakeIImport(new FakeSelectorStorage(new FakeIStorage()));
@@ -117,6 +118,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+			services.AddMemoryCache();
 
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -145,6 +147,7 @@ namespace starskytest.Controllers
 			services.AddSingleton<IImport, FakeIImport>();
 			services.AddSingleton<IConsole, FakeConsoleWrapper>();
 			services.AddSingleton<IMetaExifThumbnailService, FakeIMetaExifThumbnailService>();
+			services.AddMemoryCache();
 
 			var serviceProvider = services.BuildServiceProvider();
 			var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();

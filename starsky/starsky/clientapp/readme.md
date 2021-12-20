@@ -14,9 +14,9 @@
   - [starskyThumbnailCli](../../../starsky/starskythumbnailcli/readme.md) _speed web performance by generating smaller images_
   - [Starsky Business Logic](../../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
   - [starskyTest](../../../starsky/starskytest/readme.md) _mstest unit tests_
-- [starsky.netframework](../../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
 - [starsky-tools](../../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
 - [starskyapp](../../../starskyapp/readme.md) _Desktop Application_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
 - [Changelog](../../../history.md) _Release notes and history_
 
 ## starsky/starsky/clientapp docs
@@ -139,16 +139,13 @@ The following packages are added:
 
 ```
 npm install --save abortcontroller-polyfill
-npm install --save @reach/router
+npm install --save @reach/router --force
 npm install --save intersection-observer
 npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
-npm install --save enzyme
-npm install --save @types/enzyme
 npm install --save-dev @storybook/react
-npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
@@ -193,7 +190,7 @@ This is added to the `package.json`
 "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20210311  v4.0.3'"
+"upgrade": "echo 'check readme.md 20211219  v5.0.0'"
 ```
 
 ### collectCoverageFrom and coverageReporters

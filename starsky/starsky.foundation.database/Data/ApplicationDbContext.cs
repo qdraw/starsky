@@ -29,9 +29,9 @@ namespace starsky.foundation.database.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			// Do nothing because of that in debug mode this only triggered
-			#if (DEBUG) 
-				optionsBuilder.EnableSensitiveDataLogging();
-			#endif
+#if (DEBUG) 
+			optionsBuilder.EnableSensitiveDataLogging();
+#endif
 		}
 			
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,7 +41,7 @@ namespace starsky.foundation.database.Data
 			// Add Index to speed performance (on MySQL max key length is 3072 bytes)
 			modelBuilder.Entity<FileIndexItem>()
 				.HasIndex(x => new { x.FileName, x.ParentDirectory });
-	
+			
 			modelBuilder.Entity<User>(etb =>
 				{
 					etb.HasKey(e => e.Id);
@@ -55,16 +55,14 @@ namespace starsky.foundation.database.Data
 					var converter = new ValueConverter<DateTime, string>(
 						v =>
 							v.ToString(@"yyyy\-MM\-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-					v => string.IsNullOrWhiteSpace(v)
-							? DateTime.MinValue
-							: DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
-								CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
-								? parsedDateTime
-								: DateTime.MinValue
+						v => DateTime.TryParseExact(v, @"yyyy\-MM\-dd HH:mm:ss.fff", 
+							CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out parsedDateTime)
+							? parsedDateTime
+							: DateTime.MinValue
 					);
 					
 					etb.Property(e => e.LockoutEnd)
-						.HasColumnType("varchar(255)")
+						.HasColumnType("TEXT")
 						.HasConversion(converter);
 				}
 			);
@@ -82,16 +80,18 @@ namespace starsky.foundation.database.Data
 			);
 
 			modelBuilder.Entity<Credential>(etb =>
-				{
-					etb.HasKey(e => e.Id);
-					etb.Property(e => e.Id)
-						.ValueGeneratedOnAdd()
-						.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
-					etb.Property(e => e.Identifier).IsRequired().HasMaxLength(64);
-					etb.Property(e => e.Secret).HasMaxLength(1024);
-					etb.ToTable("Credentials");
-				}
-			);
+			{
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id)
+					.ValueGeneratedOnAdd()
+					.HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+				etb.Property(e => e.Identifier).IsRequired().HasMaxLength(64);
+				etb.Property(e => e.Secret).HasMaxLength(1024);
+				etb.ToTable("Credentials");
+			});
+
+			modelBuilder.Entity<Credential>()
+				.HasIndex(x => new { x.Id, x.Identifier });
 
 			modelBuilder.Entity<Role>(etb =>
 				{
@@ -130,6 +130,10 @@ namespace starsky.foundation.database.Data
 					etb.ToTable("RolePermissions");
 				}
 			);
+			
+			modelBuilder.Entity<ImportIndexItem>()
+				.HasIndex(x => new { x.FileHash });
+			
 		}
 	}
 }

@@ -24,6 +24,7 @@ namespace starsky.foundation.http.Services
 	    /// </summary>
 	    /// <param name="httpProvider">IHttpProvider</param>
 	    /// <param name="serviceScopeFactory">ScopeFactory contains a IStorageSelector</param>
+	    /// <param name="logger">WebLogger</param>
 	    public HttpClientHelper(IHttpProvider httpProvider, IServiceScopeFactory serviceScopeFactory, IWebLogger logger)
 	    {
 		    _httpProvider = httpProvider;
@@ -62,18 +63,25 @@ namespace starsky.foundation.http.Services
 		{
 			Uri sourceUri = new Uri(sourceHttpUrl);
 
-			Console.WriteLine("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+			_logger.LogInformation("[ReadString] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
 			// allow whitelist and https only
 			if (!AllowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https") return 
 				new KeyValuePair<bool, string>(false,string.Empty);
-            
-			using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
-			using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+
+			try
 			{
-				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
-				var result = await reader.ReadToEndAsync();
-				return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,result);
+				using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
+				using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+				{
+					var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
+					var result = await reader.ReadToEndAsync();
+					return new KeyValuePair<bool, string>(response.StatusCode == HttpStatusCode.OK,result);
+				}
+			}
+			catch (HttpRequestException exception)
+			{
+				return new KeyValuePair<bool, string>(false, exception.Message);
 			}
 		}
 
@@ -89,27 +97,34 @@ namespace starsky.foundation.http.Services
 
             Uri sourceUri = new Uri(sourceHttpUrl);
 
-            _logger.LogInformation("HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
+            _logger.LogInformation("[Download] HttpClientHelper > " + sourceUri.Host + " ~ " + sourceHttpUrl);
 
             // allow whitelist and https only
             if ( !AllowedDomains.Contains(sourceUri.Host) ||
                  sourceUri.Scheme != "https" )
             {
-	            _logger.LogInformation("HttpClientHelper > " + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);
+	            _logger.LogInformation("[Download] HttpClientHelper > " + "skip: domain not whitelisted " + " ~ " + sourceHttpUrl);
 	            return false;
             }
-            
-            using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
-            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
+            try
             {
-	            if ( response.StatusCode != HttpStatusCode.OK )
+	            using (HttpResponseMessage response = await _httpProvider.GetAsync(sourceHttpUrl))
+	            using (Stream streamToReadFrom = await response.Content.ReadAsStreamAsync())
 	            {
-		            _logger.LogInformation("HttpClientHelper > " + response.StatusCode + " ~ " + sourceHttpUrl);
-		            return false;
-	            }
+		            if ( response.StatusCode != HttpStatusCode.OK )
+		            {
+			            _logger.LogInformation("[Download] HttpClientHelper > " + response.StatusCode + " ~ " + sourceHttpUrl);
+			            return false;
+		            }
 
-                await _storage.WriteStreamAsync(streamToReadFrom, fullLocalPath);
-                return true;
+	                await _storage.WriteStreamAsync(streamToReadFrom, fullLocalPath);
+	                return true;
+	            }
+            }
+            catch (HttpRequestException exception)
+            {
+	            _logger.LogError(exception, $"[Download] {exception.Message}");
+	            return false;
             }
         }
     }

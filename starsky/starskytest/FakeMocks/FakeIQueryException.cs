@@ -79,7 +79,7 @@ namespace starskytest.FakeMocks
 			throw _exception;
 		}
 
-		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath)
+		public Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null)
 		{
 			throw _exception;
 		}
@@ -110,6 +110,11 @@ namespace starskytest.FakeMocks
 		}
 
 		public string GetSubPathByHash(string fileHash)
+		{
+			throw _exception;
+		}
+
+		public Task<List<FileIndexItem>> GetObjectsByFileHashAsync(List<string> fileHashesList)
 		{
 			throw _exception;
 		}
@@ -222,6 +227,17 @@ namespace starskytest.FakeMocks
 		public void Invoke(ApplicationDbContext applicationDbContext)
 		{
 			throw _exception;
+		}
+
+		public void SetGetObjectByFilePathCache(string filePath, FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+			throw _exception;
+		}
+		
+		public Task DisposeAsync()
+		{
+			return Task.CompletedTask;
 		}
 	}
 	

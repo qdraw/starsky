@@ -73,7 +73,55 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var result = new ExifToolDownload(null, _appSettings, new FakeIWebLogger()).GetWindowsZipFromChecksum(ExampleCheckSum);
 			Assert.AreEqual("exiftool-11.99.zip",result);
 		}
+
+		[TestMethod]
+		public async Task DownloadCheckSums_BaseChecksumDoesExist()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://exiftool.org/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Happy flow
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
+			Assert.AreEqual(true, result.Value.Key);
+		}
 		
+		[TestMethod]
+		public async Task DownloadCheckSums_BaseChecksumDoesNotExist()
+		{
+			// Main source is down, but mirror is up
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/checksums.txt", new StringContent(ExampleCheckSum)},
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Main source is down, but mirror is up
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			
+			Assert.AreEqual(ExampleCheckSum, result.Value.Value);
+			Assert.AreEqual(false, result.Value.Key);
+		}
+		
+		[TestMethod]
+		public async Task DownloadCheckSums_BothServicesAreDown()
+		{
+			// Main & Mirror source are down
+			var fakeIHttpProvider = new FakeIHttpProvider();
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			// Main & Mirror source are down
+			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+				.DownloadCheckSums();
+			
+			Assert.AreEqual(null, result);
+		}
+
 		[TestMethod]
 		public async Task GetExifToolByOs()
 		{
@@ -353,6 +401,57 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
 			var result = await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() ).StartDownloadForWindows();
 			Assert.IsFalse(result);
+		}
+
+		[TestMethod]
+		public async Task DownloadForUnix_FromMirrorInsteadOfMainSource()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
+				{"https://qdraw.nl/special/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			try
+			{
+				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+					.DownloadForUnix("Image-ExifTool-11.99.tar.gz", new List<string>().ToArray(), true);
+			}
+			catch ( HttpRequestException httpRequestException )
+			{
+				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
+				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
+				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
+				return;
+			}
+			throw new HttpRequestException("This test should hit the catch");
+		}
+		
+		
+		[TestMethod]
+		public async Task DownloadForWindows_FromMirrorInsteadOfMainSource()
+		{
+			var fakeIHttpProvider = new FakeIHttpProvider(new Dictionary<string, HttpContent>
+			{
+				{"https://qdraw.nl/special/exiftool/exiftool-11.99.zip", new StringContent("FAIL")},
+				{"https://qdraw.nl/special/exiftool/Image-ExifTool-11.99.tar.gz", new StringContent("FAIL")}
+			});
+			var httpClientHelper = new HttpClientHelper(fakeIHttpProvider, _serviceScopeFactory, new FakeIWebLogger());
+
+			try
+			{
+				await new ExifToolDownload(httpClientHelper,_appSettings, new FakeIWebLogger() )
+					.DownloadForWindows("exiftool-11.99.zip", new List<string>().ToArray(), true);
+			}
+			catch ( HttpRequestException httpRequestException )
+			{
+				// Expected:<checksum for ---/Debug/netcoreapp3.1/temp/exiftool.tar.gz is not valid
+				Assert.IsTrue(httpRequestException.Message.Contains("checksum for "));
+				Assert.IsTrue(httpRequestException.Message.Contains("is not valid"));
+				return;
+			}
+			throw new HttpRequestException("This test should hit the catch");
 		}
 	}
 }

@@ -4,6 +4,7 @@ import { IArchiveProps } from "../interfaces/IArchiveProps";
 import { PageType } from "../interfaces/IDetailView";
 import { IExifStatus } from "../interfaces/IExifStatus";
 import {
+  IFileIndexItem,
   ImageFormat,
   newIFileIndexItemArray
 } from "../interfaces/IFileIndexItem";
@@ -317,6 +318,35 @@ describe("ArchiveContext", () => {
 
     expect(result.fileIndexItems.length).toBe(0);
     expect(result.colorClassUsage).toStrictEqual([]);
+  });
+
+  it("add - overwrite tags", () => {
+    var state = {
+      fileIndexItems: [
+        {
+          filePath: "/test.jpg",
+          tags: "init"
+        }
+      ] as IFileIndexItem[],
+      colorClassUsage: [1, 2]
+    } as IArchiveProps;
+
+    const add = [
+      {
+        filePath: "/test.jpg",
+        status: IExifStatus.Ok,
+        tags: "test",
+        imageWidth: 150
+      } as IFileIndexItem
+    ];
+
+    // fullpath input
+    var action = { type: "add", add } as any;
+
+    var result = archiveReducer(state, action);
+
+    expect(result.fileIndexItems.length).toBe(1);
+    expect(result.fileIndexItems[0]).toBe(add[0]);
   });
 
   it("update - check if item is update (append false)", () => {

@@ -138,6 +138,8 @@ namespace starsky.Controllers
 			// Wrong input (extension is not allowed)
             if ( fileIndexResultsList.All(p => p.Status == ImportStatus.FileError) )
             {
+	            _logger.LogInformation($"Wrong input extension is not allowed" +
+					$" {string.Join(",",fileIndexResultsList.Select(p => p.FilePath))}");
 	            Response.StatusCode = 415;
             }
             

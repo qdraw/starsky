@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Models;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.database.QueryTest
 {
@@ -23,7 +25,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(null).Clone(dbContext);
+			var query = new Query(null,  
+				new AppSettings(), CreateNewScope(), new FakeIWebLogger(),new FakeMemoryCache()).Clone(dbContext);
 			
 			Assert.IsNull(query.GetSubPathByHash("4444"));
 		}
@@ -33,7 +36,8 @@ namespace starskytest.starsky.foundation.database.QueryTest
 		{
 			var dbContext = CreateNewScope().CreateScope()
 				.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-			var query = new Query(null);
+			var query = new Query(null, 
+				new AppSettings(), CreateNewScope(), new FakeIWebLogger(), new FakeMemoryCache());
 			query.Invoke(dbContext);
 			
 			Assert.IsNull(query.GetSubPathByHash("4444"));

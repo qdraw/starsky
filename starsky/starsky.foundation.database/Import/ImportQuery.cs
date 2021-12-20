@@ -10,6 +10,8 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Import
 {
@@ -19,6 +21,7 @@ namespace starsky.foundation.database.Import
 		private readonly bool _isConnection;
 		private readonly IServiceScopeFactory _scopeFactory;
 		private readonly ApplicationDbContext _dbContext;
+		private readonly IConsole _console;
 
 		/// <summary>
 		/// Query Already imported Database
@@ -26,14 +29,17 @@ namespace starsky.foundation.database.Import
 		/// @see: https://docs.microsoft.com/nl-nl/ef/core/miscellaneous/configuring-dbcontext#avoiding-dbcontext-threading-issues
 		/// </summary>
 		/// <param name="scopeFactory">to avoid threading issues with DbContext</param>
+		/// <param name="console">console output</param>
 		/// <param name="dbContext"></param>
-		public ImportQuery(IServiceScopeFactory scopeFactory, ApplicationDbContext dbContext = null)
+		public ImportQuery(IServiceScopeFactory scopeFactory, IConsole console,  ApplicationDbContext dbContext = null)
 		{
 			_scopeFactory = scopeFactory;
+
+			_console = console;
 			_dbContext = dbContext;
 			_isConnection = TestConnection();
 		}
-		
+
 		/// <summary>
 		/// Get the database context
 		/// </summary>
@@ -70,14 +76,15 @@ namespace starsky.foundation.database.Import
 		/// Add a new item to the imported database
 		/// </summary>
 		/// <param name="updateStatusContent">import database item</param>
+		/// <param name="writeConsole">add icon to console</param>
 		/// <returns>fail or success</returns>
-		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent)
+		public virtual async Task<bool> AddAsync(ImportIndexItem updateStatusContent, bool writeConsole = true)
 		{
 			var dbContext = GetDbContext();
 			updateStatusContent.AddToDatabase = DateTime.UtcNow;
 			await dbContext.ImportIndex.AddAsync(updateStatusContent);
 			await dbContext.SaveChangesAsync();
-			Console.Write("⬆️");
+			if ( writeConsole ) _console.Write("⬆️");
 			// removed MySqlException catch
 			return true;
 		}
@@ -97,7 +104,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = GetDbContext();
 			await dbContext.ImportIndex.AddRangeAsync(importIndexItemList);
 			await dbContext.SaveChangesAsync();
-			Console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
+			_console.Write($"⬆️ {importIndexItemList.Count} "); // arrowUp
 			return importIndexItemList;
 		}
 
@@ -106,7 +113,7 @@ namespace starsky.foundation.database.Import
 			var dbContext = GetDbContext();
 			dbContext.ImportIndex.AddRange(importIndexItemList);
 			dbContext.SaveChanges();
-			Console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
+			_console.Write($"⬆️ {importIndexItemList.Count} ️"); // arrow up
 			return importIndexItemList;
 		}
 	}

@@ -81,8 +81,9 @@ namespace starsky.foundation.database.Interfaces
         /// Get FirstOrDefault for that filePath
         /// </summary>
         /// <param name="filePath">subPath style</param>
+        /// <param name="cacheTime">time of cache </param>
         /// <returns>item</returns>
-        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath);
+        Task<FileIndexItem> GetObjectByFilePathAsync(string filePath, TimeSpan? cacheTime = null);
 
         /// <summary>
         /// Cached result that contain values
@@ -111,6 +112,10 @@ namespace starsky.foundation.database.Interfaces
         bool RemoveCacheParentItem(string directoryName);
 
         string GetSubPathByHash(string fileHash);
+
+        Task<List<FileIndexItem>> GetObjectsByFileHashAsync(
+	        List<string> fileHashesList);
+
 	    void ResetItemByHash(string fileHash);
 
 	    /// <summary>
@@ -134,9 +139,6 @@ namespace starsky.foundation.database.Interfaces
 
         Task<FileIndexItem> UpdateItemAsync(FileIndexItem updateStatusContent);
         Task<List<FileIndexItem>> UpdateItemAsync(List<FileIndexItem> updateStatusContentList);
-
-        [Obsolete("use PathHelper.RemoveLatestSlash()")]
-        string SubPathSlashRemove(string subPath = "/");
 
         RelativeObjects GetNextPrevInFolder(string currentFolder);
 
@@ -187,6 +189,12 @@ namespace starsky.foundation.database.Interfaces
         Task AddParentItemsAsync(string subPath);
         IQuery Clone( ApplicationDbContext applicationDbContext);
         void Invoke(ApplicationDbContext applicationDbContext);
+
+        void SetGetObjectByFilePathCache(string filePath, 
+	        FileIndexItem result,
+	        TimeSpan? cacheTime);
+
+        Task DisposeAsync();
     }
 }
 

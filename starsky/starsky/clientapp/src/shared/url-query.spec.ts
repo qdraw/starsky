@@ -7,19 +7,19 @@ describe("url-query", () => {
   it("UrlQuerySearchApi", () => {
     var result = urlQuery.UrlQuerySearchApi("for", 1);
     expect(result).toContain("for");
-    expect(result).toContain(1);
+    expect(result).toContain("1");
   });
 
   it("UrlSearchTrashApi", () => {
     var result = urlQuery.UrlSearchTrashApi(1);
-    expect(result).toContain(1);
+    expect(result).toContain("1");
   });
 
   it("UrlQueryServerApi f/colorclass/collections", () => {
     var result = urlQuery.UrlQueryServerApi(
       "?f=test&colorClass=1&collections=false&details=true"
     );
-    expect(result).toContain(1);
+    expect(result).toContain("1");
     expect(result).toContain("false");
     expect(result).toContain("test");
   });

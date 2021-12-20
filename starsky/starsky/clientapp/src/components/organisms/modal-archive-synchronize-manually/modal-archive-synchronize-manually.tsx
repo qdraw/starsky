@@ -21,9 +21,9 @@ interface IModalDisplayOptionsProps {
   parentFolder?: string;
 }
 
-const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOptionsProps> = (
-  props
-) => {
+const ModalArchiveSynchronizeManually: React.FunctionComponent<
+  IModalDisplayOptionsProps
+> = (props) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -110,10 +110,9 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<IModalDisplayOpti
 
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(
-      new UrlQuery().UrlGeoSync(),
-      bodyParams.toString()
-    ).then((_) => {});
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(
+      (_) => {}
+    );
   }
 
   function fetchGeoSyncStatus() {

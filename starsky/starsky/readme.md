@@ -12,9 +12,9 @@
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](../../starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](../../starskyapp/readme.md) _Desktop Application_
+    * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
  * [Changelog](../../history.md) _Release notes and history_
 
 ## starsky/starsky docs
@@ -50,8 +50,8 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 5.  `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your local timezone)
 
 ### Optional settings
-1. `Structure` - The structure that will be used when you import files, has a default fallback.
-2. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, defaults a empty list
+1. `Structure` - The structure that will be used when you import files, _has a default fallback_.
+2. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
 3. `AddMemoryCache` - Enable caching _(default true)_
      The only 2 build-in exceptions are when there are no accounts or you already logged in _(default false)_
 4. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
@@ -64,16 +64,20 @@ You could use machine specific configuration files: appsettings.{machinename}.js
 11. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 12. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 13. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User or Administrator _(default User)_
-14. `applicationInsightsInstrumentationKey` - Track telementry with Microsoft Application Insights _(default disabled)_
-15. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
+14. `applicationInsightsInstrumentationKey` - Track Telemetry with Microsoft Application Insights _(default disabled)_
+15. `ApplicationInsightsDatabaseTracking` - Track database dependencies (need to have InstrumentationKey) _(default disabled)_
+16. `ApplicationInsightsLog` - Add WebLogger output to Application Insights (need to have InstrumentationKey) _(default enabled, when key is provided)_
+17. `useHttpsRedirection` - Redirect users to https page. You should enable before going to production.
      This toggle is always disabled in debug/develop mode _(default false)_
-16. `Name` Name of the application, does not have much effect _(default Starsky)_
-17. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
-18. `UseRealtime` Update the user interface realtime _default true_
-19. `UseDiskWatcher` Watch the disk for changes and update the database _default false (but will change)_
-20. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
-21. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
-22. `ImportIgnore` ImportIgnore filter  _default list with: lost+found_
+18. `Name` Name of the application, does not have much effect _(default Starsky)_
+19. `AppSettingsPath` To store the settings by user in the AppData folder _(default empty string)_
+20. `UseRealtime` Update the user interface realtime _default true_
+21. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
+22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
+23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style and startsWith _default list with: /lost+found_
+24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
+25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
+26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
 
 ### Appsettings.json example
 ```json
@@ -181,11 +185,12 @@ Starsky has a Json restful API. Please read the documentation
 | /api/allowed-types/mimetype/sync   | GET   | A (string) list of allowed MIME-types ExtensionSyncSupportedList           |
 | /api/allowed-types/mimetype/thumb  | GET   | A (string) list of allowed ExtensionThumbSupportedList MimeTypes           |
 | /api/allowed-types/thumb           | GET   | Check if IsExtensionThumbnailSupported                                     |
-| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
-| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
 | /api/env                           | HEAD  | Show the runtime settings (dont allow AllowAnonymous)                      |
 | /api/env                           | GET   | Show the runtime settings (dont allow AllowAnonymous)                      |
 | /api/env                           | POST  | Show the runtime settings (dont allow AllowAnonymous)                      |
+| /api/cache/list                    | GET   | Get Database Cache (only the cache)                                        |
+| /api/remove-cache                  | GET   | Delete Database Cache (only the cache)                                     |
+| /api/remove-cache                  | POST  | Delete Database Cache (only the cache)                                     |
 | /api/delete                        | DELETE| Remove files from the disk, but the file must contain the !delete! tag     |
 | /api/download-sidecar              | GET   | Download sidecar file for example image.xmp                                |
 | /api/download-photo                | GET   | Select manually the original or thumbnail                                  |
@@ -197,7 +202,7 @@ Starsky has a Json restful API. Please read the documentation
 | /api/health                        | GET   | Check if the service has any known errors and return only a stringPublic...|
 | /api/health/details                | GET   | Check if the service has any known errorsFor Authorized Users only         |
 | /api/health/application-insights   | GET   | Add Application Insights script to user context                            |
-| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionuses x-api-v...|
+| /api/health/version                | POST  | Check if Client/App version has a match with the API-versionthe paramete...|
 | /api/health/check-for-updates      | GET   | Check if Client/App version has a match with the API-version               |
 | /search                            | POST  | Redirect to search GET page (HTML)                                         |
 | /search                            | GET   | Search GET page (HTML)                                                     |
@@ -225,11 +230,14 @@ Starsky has a Json restful API. Please read the documentation
 | /api/suggest/all                   | GET   | Show all items in the search suggest cache                                 |
 | /api/suggest/inflate               | GET   | To fill the cache with the data (only if cache is not already filled)      |
 | /api/sync/mkdir                    | POST  | Make a directory (-p)                                                      |
-| /api/sync                          | POST  | Do a file sync in a background process                                     |
+| /api/sync                          | POST  | Do a file sync in a background process (replace with /api/synchronize)     |
 | /api/sync/rename                   | POST  | Rename file/folder and update it in the database                           |
-| /api/synchronize                   | POST  | Experimental/Alpha API to sync data! Please use /api/sync                  |
-| /api/synchronize                   | GET   | Experimental/Alpha API to sync data! Please use /api/sync                  |
-| /api/thumbnail/{f}                 | GET   | Http Endpoint to get full size image or thumbnail                          |
+| /api/synchronize                   | POST  | Faster API to Check if directory is changed (not recursive)                |
+| /api/synchronize                   | GET   | Faster API to Check if directory is changed (not recursive)                |
+| /api/thumbnail/small/{f}           | GET   | Get thumbnail for index pages (300 px or 150px or 1000px (based on whats...|
+| /api/thumbnail/list-sizes/{f}      | GET   | Get overview of what exists by name                                        |
+| /api/thumbnail/{f}                 | GET   | Get thumbnail with fallback to original source image.Return source image...|
+| /api/thumbnail/zoom/{f}@{z}        | GET   | Get zoomed in image by fileHash.At the moment this is the source image     |
 | /api/thumbnail-generation          | POST  | Create thumbnails for a folder in the background                           |
 | /api/upload                        | POST  | Upload to specific folder (does not check if already has been imported)U...|
 | /api/upload-sidecar                | POST  | Upload sidecar file to specific folder (does not check if already has be...|

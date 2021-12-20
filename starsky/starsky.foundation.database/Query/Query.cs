@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -16,7 +16,6 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Services;
 
 namespace starsky.foundation.database.Query
 {
@@ -31,10 +30,9 @@ namespace starsky.foundation.database.Query
         private readonly IWebLogger _logger;
 
         public Query(ApplicationDbContext context, 
-            IMemoryCache memoryCache = null, 
-            AppSettings appSettings = null,
-            IServiceScopeFactory scopeFactory = null, 
-            IWebLogger logger = null)
+            AppSettings appSettings,
+            IServiceScopeFactory scopeFactory, 
+            IWebLogger logger, IMemoryCache memoryCache = null)
         {
 	        _context = context;
             _cache = memoryCache;
@@ -54,7 +52,9 @@ namespace starsky.foundation.database.Query
 			
             FileIndexItem LocalQuery(ApplicationDbContext context)
             {
-	            return context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            var item = context.FileIndex.FirstOrDefault(p => p.FilePath == filePath);
+	            if ( item != null ) item.Status = FileIndexItem.ExifStatus.Ok;
+	            return item;
             }
             
             try
@@ -67,19 +67,67 @@ namespace starsky.foundation.database.Query
 	            return LocalQuery(new InjectServiceScope(_scopeFactory).Context());
             }
         }
+		
+		internal static string GetObjectByFilePathAsyncCacheName(string subPath)
+		{
+			return $"_{nameof(GetObjectByFilePathAsyncCacheName)}~{subPath}";
+		}
+		
 
 		/// <summary>
 		/// Returns a database object file or folder
 		/// </summary>
 		/// <param name="filePath">relative database path</param>
+		/// <param name="cacheTime">time to have the cache present</param>
 		/// <returns>FileIndex-objects with database data</returns>
 		public async Task<FileIndexItem> GetObjectByFilePathAsync(
+			string filePath, TimeSpan? cacheTime = null)
+		{
+			// cache code:
+			if ( cacheTime != null && 
+			     _appSettings?.AddMemoryCache == true &&
+			     _cache != null &&
+			     _cache.TryGetValue(
+				     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
+			{
+				_logger.LogInformation("Get from cache " + GetObjectByFilePathAsyncCacheName(filePath));
+				if ( !(data is FileIndexItem fileIndexItem) ) return null;
+				fileIndexItem.Status = FileIndexItem.ExifStatus.OkAndSame;
+				return fileIndexItem;
+			}
+			// end cache
+
+			var result = ( await GetObjectByFilePathQueryAsync(filePath) );
+
+			// cache code:
+			if ( cacheTime == null || _appSettings?.AddMemoryCache != true || result == null)
+				return result;
+
+			SetGetObjectByFilePathCache(filePath, result.Clone(), cacheTime);
+
+			return result;
+		}
+
+		public void SetGetObjectByFilePathCache(string filePath, 
+			FileIndexItem result,
+			TimeSpan? cacheTime)
+		{
+			if ( _cache == null || cacheTime == null || result == null )
+			{
+				_logger.LogInformation("SetGetObjectByFilePathCache not used");
+				return;
+			}
+			_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+				result, cacheTime.Value );
+		}
+
+		private async Task<FileIndexItem> GetObjectByFilePathQueryAsync(
 			string filePath)
 		{
 			if ( filePath != "/" ) filePath = PathHelper.RemoveLatestSlash(filePath);
-
 			var paths = new List<string> {filePath};
-			return (await GetObjectsByFilePathQueryAsync(paths)).FirstOrDefault();
+			return ( await GetObjectsByFilePathQueryAsync(paths) )
+				.FirstOrDefault();
 		}
 	    
 		/// <summary>
@@ -96,13 +144,13 @@ namespace starsky.foundation.database.Query
 		    var queryHashListCacheName = CachingDbName("hashList", fileHash);
 
 		    // if result is not null return cached value
-		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubpath) 
-		         && !string.IsNullOrEmpty((string)cachedSubpath)) return ( string ) cachedSubpath;
+		    if ( _cache.TryGetValue(queryHashListCacheName, out var cachedSubPath) 
+		         && !string.IsNullOrEmpty((string)cachedSubPath)) return ( string ) cachedSubPath;
 
-		    cachedSubpath = QueryGetItemByHash(fileHash);
+		    cachedSubPath = QueryGetItemByHash(fileHash);
 		    
-		    _cache.Set(queryHashListCacheName, cachedSubpath, new TimeSpan(48,0,0));
-		    return (string) cachedSubpath;
+		    _cache.Set(queryHashListCacheName, cachedSubPath, new TimeSpan(48,0,0));
+		    return (string) cachedSubPath;
 		}
 
 		/// <summary>
@@ -127,7 +175,7 @@ namespace starsky.foundation.database.Query
         {   
 	        try
 	        {
-		       return _context.FileIndex.FirstOrDefault(
+		       return _context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && p.IsDirectory != true
 		        )?.FilePath;
@@ -135,31 +183,13 @@ namespace starsky.foundation.database.Query
 	        catch ( ObjectDisposedException )
 	        {
 		        var context = new InjectServiceScope(_scopeFactory).Context();
-		        return context.FileIndex.FirstOrDefault(
+		        return context.FileIndex.TagWith("QueryGetItemByHash").FirstOrDefault(
 			        p => p.FileHash == fileHash 
 			             && p.IsDirectory != true
 		        )?.FilePath;
 	        }
         }
-
-	    /// <summary>
-	    /// Remove the '/' from the end of the url
-	    /// </summary>
-	    /// <param name="subPath">path</param>
-	    /// <returns>removed / at end</returns>
-	    [Obsolete("use PathHelper.RemoveLatestSlash()")]
-        public string SubPathSlashRemove(string subPath = "/")
-        {
-            if (string.IsNullOrEmpty(subPath)) return subPath;
-
-            // remove / from end
-            if (subPath.Substring(subPath.Length - 1, 1) == "/" && subPath != "/")
-            {
-                subPath = subPath.Substring(0, subPath.Length - 1);
-            }
-
-            return subPath;
-        }
+        
 
         /// <summary>
         /// Get the name of Key in the cache db
@@ -167,7 +197,7 @@ namespace starsky.foundation.database.Query
         /// <param name="functionName">how is the function called</param>
         /// <param name="singleItemDbPath">the path</param>
         /// <returns>an unique key</returns>
-        private string CachingDbName(string functionName, string singleItemDbPath)
+        internal string CachingDbName(string functionName, string singleItemDbPath)
         {
 	        // when is nothing assume its the home item
             if ( string.IsNullOrWhiteSpace(singleItemDbPath) ) singleItemDbPath = "/";
@@ -193,6 +223,7 @@ namespace starsky.foundation.database.Query
 		        await context.SaveChangesAsync();
 		        context.Attach(fileIndexItem).State = EntityState.Detached;
 		        CacheUpdateItem(new List<FileIndexItem>{updateStatusContent});
+		        SetGetObjectByFilePathCache(fileIndexItem.FilePath, updateStatusContent, TimeSpan.FromMinutes(1));
 	        }
 
 	        try
@@ -290,7 +321,10 @@ namespace starsky.foundation.database.Query
         /// <param name="e">Exception</param>
         private async Task RetrySaveChangesAsync(FileIndexItem updateStatusContent, Exception e)
         {
-	        try
+	        _logger?.LogInformation(e,"[RetrySaveChangesAsync] retry catch-ed exception ");
+	        _logger?.LogInformation("[RetrySaveChangesAsync] next retry ~>");
+	        
+	        async Task LocalRetrySaveChangesAsyncQuery()
 	        {
 		        // InvalidOperationException: A second operation started on this context before a previous operation completed.
 		        // https://go.microsoft.com/fwlink/?linkid=2097913
@@ -298,7 +332,18 @@ namespace starsky.foundation.database.Query
 		        var context = new InjectServiceScope(_scopeFactory).Context();
 		        context.Attach(updateStatusContent).State = EntityState.Modified;
 		        await context.SaveChangesAsync();
-		        context.Attach(updateStatusContent).State = EntityState.Detached; 
+		        context.Attach(updateStatusContent).State = EntityState.Detached;
+		        await context.DisposeAsync();
+	        }
+
+	        try
+	        {
+		        await LocalRetrySaveChangesAsyncQuery();
+	        }
+	        catch ( MySqlException mySqlException)
+	        {
+		        _logger?.LogError(mySqlException,"[RetrySaveChangesAsync] MySqlException catch-ed and retry again");
+		        await LocalRetrySaveChangesAsyncQuery();
 	        }
 	        catch ( DbUpdateConcurrencyException concurrencyException)
 	        {
@@ -486,7 +531,7 @@ namespace starsky.foundation.database.Query
             // If cache is turned of
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 updateStatusContent.ParentDirectory);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
@@ -501,54 +546,68 @@ namespace starsky.foundation.database.Query
             _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
         }
 
-        /// <summary>
-        /// Cache API within Query to update cached items
-        /// </summary>
-        /// <param name="updateStatusContent">items to update</param>
-        public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
-        {
-            if( _cache == null || _appSettings?.AddMemoryCache == false) return;
+	    /// <summary>
+	    /// Cache API within Query to update cached items and implicit add items to list
+	    /// </summary>
+	    /// <param name="updateStatusContent">items to update</param>
+	    public void CacheUpdateItem(List<FileIndexItem> updateStatusContent)
+	    {
+		    if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var skippedCacheItems = new HashSet<string>();
-			foreach (var item in updateStatusContent.ToList())
-			{
-				// ToList() > Collection was modified; enumeration operation may not execute.
-				var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
-					item.ParentDirectory);
+		    var skippedCacheItems = new HashSet<string>();
+		    foreach (var item in updateStatusContent.ToList())
+		    {
+			    if ( item.Status == FileIndexItem.ExifStatus.OkAndSame || item.Status == FileIndexItem.ExifStatus.Default )
+			    {
+				    item.Status = FileIndexItem.ExifStatus.Ok;
+			    }
+			    
+			    // ToList() > Collection was modified; enumeration operation may not execute.
+			    var queryCacheName = CachingDbName(nameof(FileIndexItem), 
+				    item.ParentDirectory);
 
-				if ( !_cache.TryGetValue(queryCacheName,
-					out var objectFileFolders) )
-				{
-					skippedCacheItems.Add(item.ParentDirectory);
-					continue;
-				}
+			    if ( !_cache.TryGetValue(queryCacheName,
+				        out var objectFileFolders) )
+			    {
+				    skippedCacheItems.Add(item.ParentDirectory);
+				    continue;
+			    }
 				
-				var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
+			    var displayFileFolders = (List<FileIndexItem>) objectFileFolders;
 
-				// make it a list to avoid enum errors
-				displayFileFolders = displayFileFolders.ToList();
-				
-				var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
-				if (obj == null) continue;
-				displayFileFolders.Remove(obj);
-				// Add here item to cached index
-				displayFileFolders.Add(item);
-				
-				// make it a list to avoid enum errors
-				displayFileFolders = displayFileFolders.ToList();
-				// Order by filename
-				displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
-				
-				_cache.Remove(queryCacheName);
-				_cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
-			}
+			    // make it a list to avoid enum errors
+			    displayFileFolders = displayFileFolders.ToList();
 
-			if ( skippedCacheItems.Any() )
-			{
-				_logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
-			}
+
+				
+			    var obj = displayFileFolders.FirstOrDefault(p => p.FilePath == item.FilePath);
+			    if ( obj != null )
+			    {
+				    // remove add again
+				    displayFileFolders.Remove(obj);
+			    }
+			    
+			    if ( item.Status == FileIndexItem.ExifStatus.Ok) // ExifStatus.default is already changed
+			    {
+				    // Add here item to cached index
+				    displayFileFolders.Add(item);
+			    }
+				
+			    // make it a list to avoid enum errors
+			    displayFileFolders = displayFileFolders.ToList();
+			    // Order by filename
+			    displayFileFolders = displayFileFolders.OrderBy(p => p.FileName).ToList();
+				
+			    _cache.Remove(queryCacheName);
+			    _cache.Set(queryCacheName, displayFileFolders, new TimeSpan(1,0,0));
+		    }
+
+		    if ( skippedCacheItems.Any() )
+		    {
+			    _logger?.LogInformation($"[CacheUpdateItem] skipped: {string.Join(", ", skippedCacheItems)}");
+		    }
 			
-        }
+	    }
 
         /// <summary>
         /// Cache Only! Private api within Query to remove cached items
@@ -576,7 +635,7 @@ namespace starsky.foundation.database.Query
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return;
 
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 updateStatusContent.ParentDirectory);
 
             if (!_cache.TryGetValue(queryCacheName, out var objectFileFolders)) return;
@@ -601,7 +660,7 @@ namespace starsky.foundation.database.Query
             // Add protection for disabled caching
             if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
-            var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+            var queryCacheName = CachingDbName(nameof(FileIndexItem), 
                 PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
             if (!_cache.TryGetValue(queryCacheName, out _)) return false;
             
@@ -619,7 +678,7 @@ namespace starsky.foundation.database.Query
 	        // Add protection for disabled caching
 	        if( _cache == null || _appSettings?.AddMemoryCache == false) return false;
             
-	        var queryCacheName = CachingDbName(typeof(List<FileIndexItem>).Name, 
+	        var queryCacheName = CachingDbName(nameof(FileIndexItem), 
 		        PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()));
             
 	        _cache.Set(queryCacheName, items,  
@@ -869,5 +928,14 @@ namespace starsky.foundation.database.Query
 		    ResetItemByHash(updateStatusContent.FileHash);
 		    return updateStatusContent;
 	    }
+	    
+	    /// <summary>
+	    /// Use only when new Context item is created manualy, otherwise there is only 1 context
+	    /// </summary>
+	    public async Task DisposeAsync()
+	    {
+		    await _context.DisposeAsync();
+	    }
+	    
     }
 }
