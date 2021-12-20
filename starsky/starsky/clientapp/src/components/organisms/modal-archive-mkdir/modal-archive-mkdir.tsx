@@ -96,7 +96,7 @@ const ModalArchiveMkdir: React.FunctionComponent<IModalRenameFileProps> = ({
     bodyParams.append("f", newDirectorySubPath);
 
     var result = await FetchPost(
-      new UrlQuery().UrlSyncMkdir(),
+      new UrlQuery().UrlDiskMkdir(),
       bodyParams.toString()
     );
 

@@ -32,7 +32,7 @@ using starskytest.Models;
 namespace starskytest.Controllers
 {
 	[TestClass]
-	public class SyncControllerTest
+	public class DiskControllerTest
 	{
 		private readonly IQuery _query;
 		private readonly IExifTool _exifTool;
@@ -45,7 +45,7 @@ namespace starskytest.Controllers
 		private IStorage _iStorage;
 		private readonly ISync _isync;
 
-		public SyncControllerTest()
+		public DiskControllerTest()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -149,7 +149,7 @@ namespace starskytest.Controllers
 			var fakeStorage = new FakeIStorage();
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
-			var controller = new SyncController(_query, storageSelector, 
+			var controller = new DiskController(_query, storageSelector, 
 				new FakeIWebSocketConnectionsService());
 			controller.ControllerContext = context;
 
@@ -173,7 +173,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController( _query, storageSelector, 
+				new DiskController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -202,7 +202,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_query, storageSelector, 
+				new DiskController(_query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -233,7 +233,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 			
 			var controller =
-				new SyncController(_query, storageSelector, 
+				new DiskController(_query, storageSelector, 
 					socket)
 				{
 					ControllerContext = context
@@ -261,7 +261,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController( _query, storageSelector, 
+				new DiskController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context
@@ -287,7 +287,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController(_query, storageSelector, 
+				new DiskController(_query, storageSelector, 
 					socket)
 				{
 					ControllerContext = context
@@ -314,7 +314,7 @@ namespace starskytest.Controllers
 			var storageSelector = new FakeSelectorStorage(fakeStorage);
 
 			var controller =
-				new SyncController( _query, storageSelector, 
+				new DiskController( _query, storageSelector, 
 					new FakeIWebSocketConnectionsService())
 				{
 					ControllerContext = context

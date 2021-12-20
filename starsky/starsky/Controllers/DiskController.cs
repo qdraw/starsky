@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -13,22 +12,19 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.worker.Interfaces;
-using starskycore.Interfaces;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
     [Authorize]
-    public class SyncController : Controller
+    public class DiskController : Controller
     {
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
 
-        public SyncController(IQuery query, ISelectorStorage selectorStorage, 
+        public DiskController(IQuery query, ISelectorStorage selectorStorage, 
 	        IWebSocketConnectionsService connectionsService)
         {
             _query = query;
@@ -44,7 +40,7 @@ namespace starsky.Controllers
         /// <response code="200">create the item on disk and in db</response>
         /// <response code="409">A conflict, Directory already exist</response>
         /// <response code="401">User unauthorized</response>
-        [HttpPost("/api/sync/mkdir")]
+        [HttpPost("/api/disk/mkdir")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(List<SyncViewModel>),409)]
         [ProducesResponseType(typeof(string),401)]
@@ -122,7 +118,7 @@ namespace starsky.Controllers
 	    /// <response code="401">User unauthorized</response>
 	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-		[HttpPost("/api/sync/rename")]
+		[HttpPost("/api/disk/rename")]
 	    [Produces("application/json")]	    
 		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 	    {

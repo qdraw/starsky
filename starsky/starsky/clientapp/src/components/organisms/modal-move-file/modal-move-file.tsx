@@ -46,7 +46,7 @@ const ModalMoveFile: React.FunctionComponent<IModalMoveFileProps> = (props) => {
     bodyParams.append("collections", true.toString());
 
     const resultDo = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 
