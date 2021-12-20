@@ -179,7 +179,7 @@ describe("ModalMoveFile", () => {
     bodyParams.append("collections", true.toString());
 
     expect(fetchPostSpy).toBeCalledWith(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 
@@ -262,7 +262,7 @@ describe("ModalMoveFile", () => {
     bodyParams.append("collections", true.toString());
 
     expect(fetchPostSpy).toBeCalledWith(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 

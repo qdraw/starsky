@@ -113,7 +113,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (
     bodyParams.append("to", filePathAfterChange);
 
     const result = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 

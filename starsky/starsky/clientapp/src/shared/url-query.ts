@@ -348,15 +348,15 @@ export class UrlQuery {
   /**
    * Rename the file on disk and in the database
    */
-  public UrlSyncRename(): string {
-    return this.prefix + "/api/sync/rename";
+  public UrlDiskRename(): string {
+    return this.prefix + "/api/disk/rename";
   }
 
   /**
    * Create an directory on disk and database
    */
-  public UrlSyncMkdir(): string {
-    return this.prefix + "/api/sync/mkdir";
+  public UrlDiskMkdir(): string {
+    return this.prefix + "/api/disk/mkdir";
   }
 
   public UrlImportApi(): string {

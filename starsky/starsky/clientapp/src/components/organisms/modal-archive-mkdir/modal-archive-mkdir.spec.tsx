@@ -150,7 +150,7 @@ describe("ModalArchiveMkdir", () => {
       // to create new directory
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncMkdir(),
+        new UrlQuery().UrlDiskMkdir(),
         "f=%2Ftest%2Fnew+folder"
       );
 

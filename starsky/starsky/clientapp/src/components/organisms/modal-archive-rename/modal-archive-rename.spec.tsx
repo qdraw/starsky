@@ -119,7 +119,7 @@ describe("ModalArchiveRename", () => {
 
       await waitFor(() => expect(fetchPostSpy).toBeCalled());
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest&to=%2Fdirectory"
       );
 
@@ -289,7 +289,7 @@ describe("ModalArchiveRename", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest&to=%2Fdirectory"
       );
 

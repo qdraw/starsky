@@ -133,7 +133,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<
     );
 
     const result = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 

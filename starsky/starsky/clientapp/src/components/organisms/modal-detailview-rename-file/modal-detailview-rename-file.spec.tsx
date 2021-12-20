@@ -93,7 +93,7 @@ describe("ModalDetailviewRenameFile", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
       );
 
@@ -224,7 +224,7 @@ describe("ModalDetailviewRenameFile", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
       );
 
