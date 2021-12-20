@@ -36,7 +36,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"18","Minolta AF 28-80mm F3.5-5.6 II"},
 				{"19","Minolta AF 35mm F1.4 G"}, // # G added (ref 18), but not New as per ref 13
 				{"20","Minolta/Sony 135mm F2.8 [T4.5] STF"},
-				{"# 20","Sony 135mm F2.8 [T4.5] STF (SAL135F28)"}, // (ref JR)
+				// {"# 20","Sony 135mm F2.8 [T4.5] STF (SAL135F28)"}, // (ref JR)
 				{"22","Minolta AF 35-80mm F4-5.6 II"}, // # II added (ref 13)
 				{"23","Minolta AF 200mm F4 Macro APO G"},
 				{"24","Minolta/Sony AF 24-105mm F3.5-4.5 (D) or Sigma or Tamron Lens"},
@@ -57,39 +57,39 @@ namespace starsky.foundation.readmeta.Helpers
 				{"25.5","Sigma 24mm F1.8 EX DG ASP Macro"}, // #Florian Knorn
 				//25 - also seen for an "old Sigma 50mm Macro" (forum2833)
 				{"27","Minolta AF 85mm F1.4 G (D)"}, // # added (D) (ref 13)
-				{"# 27","Venus Optics Laowa 105mm F2 STF"}, // #IB (NC)
+				// 27","Venus Optics Laowa 105mm F2 STF"}, // #IB (NC)
 				{"28","Minolta/Sony AF 100mm F2.8 Macro (D) or Tamron Lens"},
-				{"# 28","Sony 100mm F2.8 Macro (SAL100M28)"}, // (ref 18/JR)
+				// 28","Sony 100mm F2.8 Macro (SAL100M28)"}, // (ref 18/JR)
 				{"28.1","Tamron SP AF 90mm F2.8 Di Macro"}, // #JD (Model 272E)
 				{"28.2","Tamron SP AF 180mm F3.5 Di LD [IF] Macro"}, // #27 (Model B01) ("SP" moved - ref JR)
 				{"29","Minolta/Sony AF 75-300mm F4.5-5.6 (D)"}, // # Sony added (ref 13)
-				{"# 29","Sony 75-300mm F4.5-5.6 (SAL75300)"}, // (ref JR)
+				// 29","Sony 75-300mm F4.5-5.6 (SAL75300)"}, // (ref JR)
 				{"30","Minolta AF 28-80mm F3.5-5.6 (D) or Sigma Lens"},
 				{"30.1","Sigma AF 10-20mm F4-5.6 EX DC"}, // #JD
 				{"30.2","Sigma AF 12-24mm F4.5-5.6 EX DG"},
 				{"30.3","Sigma 28-70mm EX DG F2.8"}, // #16
 				{"30.4","Sigma 55-200mm F4-5.6 DC"}, // #JD
 				{"31","Minolta/Sony AF 50mm F2.8 Macro (D) or F3.5"},
-				{"# 31","Sony 50mm F2.8 Macro (SAL50M28)"}, // (ref JR)
+				// 31","Sony 50mm F2.8 Macro (SAL50M28)"}, // (ref JR)
 				{"31.1","Minolta/Sony AF 50mm F3.5 Macro"},
 				{"32","Minolta/Sony AF 300mm F2.8 G or 1.5x Teleconverter"}, // #13/18
-				{"# 32","Minolta AF 300mm F2.8 APO G (D) SSM"}, // (ref 13) ("APO" added - ref JR)
-				{"# 32","Sony 300mm F2.8 G (SAL300F28G)"}, // (ref 18/JR)
+				// 32","Minolta AF 300mm F2.8 APO G (D) SSM"}, // (ref 13) ("APO" added - ref JR)
+				// 32","Sony 300mm F2.8 G (SAL300F28G)"}, // (ref 18/JR)
 				{"33","Minolta/Sony AF 70-200mm F2.8 G"},
-				{"# 33","Sony 70-200mm F2.8 G (SAL70200G)"}, // (ref JR)
-				{"# 33","Minolta AF 70-200mm F2.8 APO G (D) SSM"}, // (ref 13) ("APO" added - ref JR)
+				// 33","Sony 70-200mm F2.8 G (SAL70200G)"}, // (ref JR)
+				// 33","Minolta AF 70-200mm F2.8 APO G (D) SSM"}, // (ref 13) ("APO" added - ref JR)
 				{"35","Minolta AF 85mm F1.4 G (D) Limited"},
 				{"36","Minolta AF 28-100mm F3.5-5.6 (D)"},
 				{"38","Minolta AF 17-35mm F2.8-4 (D)"}, // # (Konica Minolta, ref 13)
 				{"39","Minolta AF 28-75mm F2.8 (D)"}, // # (Konica Minolta, ref 13)
 				{"40","Minolta/Sony AF DT 18-70mm F3.5-5.6 (D)"}, // # (Konica Minolta, ref 13)
-				{"# 40","Sony DT 18-70mm F3.5-5.6 (SAL1870)"}, // (ref JR)
-				{"#40.1","Sony AF DT 18-200mm F3.5-6.3"}, // #11 (anomaly? - PH)
+				// 40","Sony DT 18-70mm F3.5-5.6 (SAL1870)"}, // (ref JR)
+				//{"#40.1","Sony AF DT 18-200mm F3.5-6.3"}, // #11 (anomaly? - PH)
 				{"41","Minolta/Sony AF DT 11-18mm F4.5-5.6 (D) or Tamron Lens"}, // # (Konica Minolta, ref 13)
-				{"# 41","Sony DT 11-18mm F4.5-5.6 (SAL1118)"}, // (ref JR)
+				// 41","Sony DT 11-18mm F4.5-5.6 (SAL1118)"}, // (ref JR)
 				{"41.1","Tamron SP AF 11-18mm F4.5-5.6 Di II LD Aspherical IF"}, // #JD (Model A13)
 				{"42","Minolta/Sony AF DT 18-200mm F3.5-6.3 (D)"}, // # Sony added (ref 13) (Konica Minolta, ref 13)
-//   {"# 42","Sony DT 18-200mm F3.5-6.3 (SAL18200)"}, // (ref JR)
+				//   {"# 42","Sony DT 18-200mm F3.5-6.3 (SAL18200)"}, // (ref JR)
 				{"43","Sony 35mm F1.4 G (SAL35F14G)"}, // # changed from Minolta to Sony (ref 13/18/JR) (but ref 11 shows both!)
 				{"44","Sony 50mm F1.4 (SAL50F14)"}, // # changed from Minolta to Sony (ref 13/18/JR)
 				{"45","Carl Zeiss Planar T* 85mm F1.4 ZA (SAL85F14Z)"}, // #JR
@@ -101,8 +101,8 @@ namespace starsky.foundation.readmeta.Helpers
 				{"49","Sony DT 55-200mm F4-5.6 (SAL55200)"}, // #JD/JR
 				{"50","Sony DT 18-250mm F3.5-6.3 (SAL18250)"}, // #11/JR
 				{"51","Sony DT 16-105mm F3.5-5.6 (SAL16105)"}, // #11/JR
-				{"#51.1","Sony AF DT 55-200mm F4-5.5"}, // #11 (anomaly? - PH)
-//   {"# LensType 52 also seen for Fringer Contax_N to E-mount adapter Ver.31 and Ver.21 (ref JR)
+				//{"#51.1","Sony AF DT 55-200mm F4-5.5"}, // #11 (anomaly? - PH)
+				// # LensType 52 also seen for Fringer Contax_N to E-mount adapter Ver.31 and Ver.21 (ref JR)
 				{"52","Sony 70-300mm F4.5-5.6 G SSM (SAL70300G) or G SSM II or Tamron Lens"}, // #JD
 				{"52.1","Sony 70-300mm F4.5-5.6 G SSM II (SAL70300G2)"}, // #JR
 				{"52.2","Tamron SP 70-300mm F4-5.6 Di USD"}, // #JR,NJ (Model A005)
@@ -133,7 +133,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"128.1","Tamron AF 18-200mm F3.5-6.3 XR Di II LD Aspherical [IF] Macro"}, // #JR (Model A14)
 				{"# was 128.1","Tamron 18-200mm F3.5-6.3"},
 				{"128.2","Tamron AF 28-300mm F3.5-6.3 XR Di LD Aspherical [IF] Macro"}, // #JR (Model A061)
-				{"# was 128.2","Tamron 28-300mm F3.5-6.3"},
+				// was 128.2","Tamron 28-300mm F3.5-6.3"},
 				//  {"# (removed -- probably never existed, ref IB) 'Tamron 80-300mm F3.5-6.3"},
 				{"128.3","Tamron AF 28-200mm F3.8-5.6 XR Di Aspherical [IF] Macro"}, // #JD (Model A031)
 				// # also Tamron AF 28-200mm F3.8-5.6 Aspherical"}, // #IB (Model 71D)
@@ -163,7 +163,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"128.25'","Sigma 180mm F2.8 EX DG OS HSM APO Macro"}, // #IB
 				{"128.26'","Sigma 18-300mm F3.5-6.3 DC Macro HSM | C"}, // #IB/JR (014)
 				{"128.27'","Sigma 18-50mm F2.8-4.5 DC HSM"}, // #IB
-				{"129","Tamron Lens (129)"},
+				{"129","Tamron Lens"},
 				{"129.1","Tamron 200-400mm F5.6 LD"}, // #12 (LD ref 23)
 				{"129.2","Tamron 70-300mm F4-5.6 LD"}, // #12
 				{"131","Tamron 20-40mm F2.7-3.5 SP Aspherical IF"}, // #23 (Model 266D)
@@ -233,7 +233,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"25551.3","Sigma 75-200mm F2.8-3.5"}, // #22
 				{"25561","Minolta AF 135mm F2.8"},
 				{"25571","Minolta/Sony AF 28mm F2.8"}, // # Sony added (ref 18)
-				{"# 25571","Sony 28mm F2.8 (SAL28F28)"}, // (ref 18/JR)
+				// 25571","Sony 28mm F2.8 (SAL28F28)"}, // (ref 18/JR)
 				{"25581","Minolta AF 24-50mm F4"},
 				{"25601","Minolta AF 100-200mm F4.5"},
 				{"25611","Minolta AF 75-300mm F4.5-5.6 or Sigma Lens"}, // #13
@@ -266,7 +266,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"25781.2","Sigma 14mm F3.5"},
 				{"25781.3","Sigma 15mm F2.8 Fisheye"}, // #JD (writes 16mm to EXIF)
 				{"25791","Minolta/Sony AF 20mm F2.8 or Tokina Lens"}, // # Sony added (ref 11)
-				//{"# 25791","Sony 20mm F2.8 (SAL20F28)"}, // (ref JR)
+				// 25791","Sony 20mm F2.8 (SAL20F28)"}, // (ref JR)
 				{"25791.1","Tokina AT-X Pro DX 11-16mm F2.8"}, // #https://exiftool.org/forum/index.php/topic,3593.0.html
 				{"25811","Minolta AF 100mm F2.8 Macro [New] or Sigma or Tamron Lens"}, // # not Sony (ref 13/18)
 				{"25811.1","Sigma AF 90mm F2.8 Macro"}, // #JD
@@ -341,7 +341,7 @@ namespace starsky.foundation.readmeta.Helpers
 				// 48128: the Speed Booster Ultra appears to report type 48128 (=0xbc00)
 				// - this is the base to which the Canon LensType is added
 				{"48128","Metabones Canon EF Speed Booster Ultra"}, // #JR (to this, add Canon LensType)
-				//{"# 61184: older firmware versions of both the Speed Booster and the Smart Adapter
+				// 61184: older firmware versions of both the Speed Booster and the Smart Adapter
 				//  report type 61184 (=0xef00), and add only the lower byte of the Canon LensType (ref JR).
 				//For newer firmware versions this is only used by the Smart Adapter, and
 				//the full Canon LensType code is added - PH
@@ -350,7 +350,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"61184","Canon EF Adapter"}, // #JR (to this, add Canon LensType)
 				// 65280 = 0xff00
 				{"65280","Sigma 16mm F2.8 Filtermatic Fisheye"}, // #IB
-				//{"# all M42-type lenses give a value of 65535 (and FocalLength=0, FNumber=1)
+				// all M42-type lenses give a value of 65535 (and FocalLength=0, FNumber=1)
 				{"65535","E-Mount, T-Mount, Other Lens or no lens"}, // #JD/JR
 				{"65535.1'","Arax MC 35mm F2.8 Tilt+Shift"}, // #JD
 				{"65535.2'","Arax MC 80mm F2.8 Tilt+Shift"}, // #JD

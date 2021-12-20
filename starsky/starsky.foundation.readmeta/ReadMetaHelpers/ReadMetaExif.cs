@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
+using MetadataExtractor.Formats.Exif.Makernotes;
 using MetadataExtractor.Formats.Xmp;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -190,7 +191,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		            item.SetMakeModel(model,1);
 	            }
 
-	            var lensModel = GetMakeLensModel(exifItem,item.LensModel);
+	            var lensModel = GetMakeLensModel(exifItem);
 	            if (lensModel != string.Empty)
 	            {
 		            item.SetMakeModel(lensModel,2);
@@ -209,7 +210,44 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		            item.Software = software;
 	            }
             }
+
+            // last & out of the loop
+            var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
+            if ( !string.IsNullOrEmpty(sonyLensModel) )
+            {
+	            item.SetMakeModel(sonyLensModel,2);
+            }
+            
+            var imageStabilisation = GetSonyMakeLensModel(allExifItems, item.LensModel);
+            if ( !string.IsNullOrEmpty(imageStabilisation) )
+            {
+	            
+            }
+            
             return item;
+        }
+        
+        private string GetImageStabilisation(List<Directory> allExifItems)
+        {
+	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
+	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
+	        
+	        var nikonDirectory = allExifItems.OfType<NikonType2MakernoteDirectory>().FirstOrDefault();
+	        var imageStabilisationNikon = sonyDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
+
+	        
+		        
+	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
+        }
+
+        private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
+        {
+	        // only if there is nothing yet
+	        if ( !string.IsNullOrEmpty(lensModel) ) return string.Empty;
+	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
+	        var lensId = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagLensId);
+	        
+	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
         }
 
 		private ExtensionRolesHelper.ImageFormat GetFileSpecificTags(List<Directory> allExifItems)
@@ -292,23 +330,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	    /// </summary>
 	    /// <param name="exifItem"></param>
 	    /// <returns></returns>
-	    private string GetMakeLensModel(Directory exifItem, string prevLensModel)
+	    private string GetMakeLensModel(Directory exifItem)
 	    {
-		    if ( !string.IsNullOrEmpty(prevLensModel)  ) return string.Empty;
-
 		    var lensModel = exifItem.Tags.FirstOrDefault(
 			    p => p.DirectoryName == "Exif SubIFD"
 			         && p.Name == "Lens Model")?.Description;
 
-		    if ( string.IsNullOrEmpty(lensModel) || lensModel == "----" )
-		    {
-			    var id = exifItem.Tags.FirstOrDefault(
-				    p => p.DirectoryName == "Sony Makernote"
-				         && p.Name == "Lens ID")?.Description;
-			    lensModel = new SonyLensIdConverter().GetById(id);
-		    }
-		    
-		    return lensModel;
+		    return lensModel == "----" ? string.Empty : lensModel;
 	    }
 
 
