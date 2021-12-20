@@ -8,12 +8,11 @@ describe("ExportIntervalUpdate", () => {
   it("ready", async () => {
     var setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: true
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -32,12 +31,11 @@ describe("ExportIntervalUpdate", () => {
   it("fail", async () => {
     var setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 500,
         data: true
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -56,12 +54,11 @@ describe("ExportIntervalUpdate", () => {
   it("wait 206", async () => {
     var setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 206,
         data: true
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")
@@ -79,12 +76,11 @@ describe("ExportIntervalUpdate", () => {
   it("wait 404", async () => {
     var setProcessingSpy = jest.fn();
 
-    const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 404,
         data: true
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchGetSpy = jest
       .spyOn(FetchGet, "default")

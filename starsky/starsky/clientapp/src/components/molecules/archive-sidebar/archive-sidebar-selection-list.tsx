@@ -11,8 +11,8 @@ interface IDetailViewSidebarSelectionListProps {
   fileIndexItems: Array<IFileIndexItem>;
 }
 
-const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> = memo(
-  (props) => {
+const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSelectionListProps> =
+  memo((props) => {
     // content
     const settings = useGlobalSettings();
     const language = new Language(settings.language);
@@ -100,6 +100,5 @@ const ArchiveSidebarSelectionList: React.FunctionComponent<IDetailViewSidebarSel
         </ul>
       </div>
     );
-  }
-);
+  });
 export default ArchiveSidebarSelectionList;

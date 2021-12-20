@@ -47,11 +47,13 @@ namespace starsky.Controllers
             SortType sort = SortType.FileName
             )
         {
-            f = PathHelper.PrefixDbSlash(f);
             
             // Used in Detail and Index View => does not hide this single item
             var colorClassActiveList = new FileIndexItem().GetColorClassList(colorClass);
-            var subPath = _query.SubPathSlashRemove(f);
+
+            var subPath = PathHelper.PrefixDbSlash(f);
+            subPath = PathHelper.RemoveLatestSlash(subPath);
+            if ( string.IsNullOrEmpty(subPath) ) subPath = "/";
 
             // First check if it is a single Item
             var singleItem = _query.SingleItem(subPath, colorClassActiveList,collections,hidedelete, sort);

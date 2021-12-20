@@ -17,8 +17,8 @@ interface IListImageBox {
   children?: React.ReactNode;
 }
 
-const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = memo(
-  (props) => {
+const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> =
+  memo((props) => {
     const item = props.item;
     if (item.isDirectory === undefined) item.isDirectory = false;
 
@@ -121,7 +121,6 @@ const ListImageViewSelectContainer: React.FunctionComponent<IListImageBox> = mem
         </Link>
       </div>
     );
-  }
-);
+  });
 
 export default ListImageViewSelectContainer;

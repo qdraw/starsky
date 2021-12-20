@@ -82,12 +82,11 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("force-sync (only first get)", async () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-          {
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+          Promise.resolve({
             statusCode: 200,
             data: null
-          } as IConnectionDefault
-        );
+          } as IConnectionDefault);
 
         var fetchPostSpy = jest
           .spyOn(FetchPost, "default")
@@ -105,12 +104,11 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("remove-cache (only first get)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-          {
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+          Promise.resolve({
             statusCode: 200,
             data: null
-          } as IConnectionDefault
-        );
+          } as IConnectionDefault);
 
         var fetchGetSpy = jest
           .spyOn(FetchGet, "default")
@@ -130,12 +128,11 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("geo-sync (only first post)", async () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-          {
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+          Promise.resolve({
             statusCode: 200,
             data: null
-          } as IConnectionDefault
-        );
+          } as IConnectionDefault);
 
         var fetchPostSpy = jest
           .spyOn(FetchPost, "default")
@@ -157,12 +154,11 @@ describe("ModalArchiveSynchronizeManually", () => {
       });
 
       it("remove-cache (only first POST)", () => {
-        const mockGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-          {
+        const mockGetIConnectionDefault: Promise<IConnectionDefault> =
+          Promise.resolve({
             statusCode: 200,
             data: null
-          } as IConnectionDefault
-        );
+          } as IConnectionDefault);
 
         var fetchGetSpy = jest
           .spyOn(FetchPost, "default")

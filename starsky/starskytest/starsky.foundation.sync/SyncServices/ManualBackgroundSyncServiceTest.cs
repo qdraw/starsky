@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
@@ -19,6 +20,7 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 	[TestClass]
 	public class ManualBackgroundSyncServiceTest
 	{
+
 		private IServiceScopeFactory GetScope()
 		{
 			var services = new ServiceCollection();

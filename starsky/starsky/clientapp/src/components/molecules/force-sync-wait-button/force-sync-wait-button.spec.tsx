@@ -114,12 +114,11 @@ describe("ForceSyncWaitButton", () => {
   });
 
   it("ForceSyncRequestNewContent should when failed callback & dispatch", async () => {
-    const mockIConnectionDataFailed: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockIConnectionDataFailed: Promise<IConnectionDefault> =
+      Promise.resolve({
         ...newIConnectionDefault(),
         statusCode: 500 // < - - - - - -
-      }
-    );
+      });
 
     jest
       .spyOn(FetchGet, "default")

@@ -16,10 +16,6 @@ if [ -f starskyimportercli ]; then
     chmod +rwx ./starskyimportercli
 fi
 
-if [ -f starskysynccli ]; then
-    chmod +rwx ./starskysynccli
-fi
-
 if [ -f starskysynchronizecli ]; then
     chmod +rwx ./starskysynchronizecli
 fi

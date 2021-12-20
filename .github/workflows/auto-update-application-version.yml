@@ -1,4 +1,4 @@
-name: Nuget packages list update
+name: Application Version Auto update
 on:
   push:
     branches:
@@ -18,16 +18,17 @@ jobs:
       with:
         node-version: 16.x
       
-    - name: Npm generate package list
+    - name: Npm app-version-update
       working-directory: ./starsky-tools/build-tools
-      run: npm run nuget-package-list
+      run: npm run app-version-update
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
-        author_name: DocsUpdateBot
+        author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com
-        message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
-        add: "starsky/nuget-packages-list.json"
+        message: "Auto commited Application Version update"
+        add: "."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

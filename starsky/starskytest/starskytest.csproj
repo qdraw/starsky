@@ -58,7 +58,6 @@
         <ProjectReference Include="..\starskycore\starskycore.csproj" />
         <ProjectReference Include="..\starskygeocli\starskygeocli.csproj" />
         <ProjectReference Include="..\starskyimportercli\starskyimportercli.csproj" />
-        <ProjectReference Include="..\starskysynccli\starskysynccli.csproj" />
         <ProjectReference Include="..\starskysynchronizecli\starskysynchronizecli.csproj" />
         <ProjectReference Include="..\starskythumbnailcli\starskythumbnailcli.csproj" />
         <ProjectReference Include="..\starskythumbnailmetacli\starskythumbnailmetacli.csproj" />
@@ -86,6 +85,7 @@
         <None Remove="netcore-coverage.opencover.xml" />
         <None Remove="coverage-report.zip" />
         <None Remove="TestResults\**" />
+        <None Remove="coverage-merge-sonarqube.xml" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />

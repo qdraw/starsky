@@ -139,16 +139,13 @@ The following packages are added:
 
 ```
 npm install --save abortcontroller-polyfill
-npm install --save @reach/router
+npm install --save @reach/router --force
 npm install --save intersection-observer
 npm install --save @types/reach__router
 npm install --save leaflet
 npm install --save @types/leaflet
 npm install --save @types/storybook__react
-npm install --save enzyme
-npm install --save @types/enzyme
 npm install --save-dev @storybook/react
-npm install --save @wojtekmaj/enzyme-adapter-react-17
 npm install --save eslint-config-prettier
 npm install --save eslint-plugin-prettier
 npm install --save prettier
@@ -193,7 +190,7 @@ This is added to the `package.json`
 "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",
 "test:ci": "npm run lint && react-scripts test --watchAll=false --coverage --reporters=default 2>&1",
 "storybook": "start-storybook",
-"upgrade": "echo 'check readme.md 20210311  v4.0.3'"
+"upgrade": "echo 'check readme.md 20211219  v5.0.0'"
 ```
 
 ### collectCoverageFrom and coverageReporters

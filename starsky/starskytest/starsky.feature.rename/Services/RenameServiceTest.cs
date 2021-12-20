@@ -16,9 +16,9 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Helpers;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.SyncServices;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using SyncService = starskycore.Services.SyncService;
 
 namespace starskytest.starsky.feature.rename.Services
 {
@@ -28,7 +28,6 @@ namespace starskytest.starsky.feature.rename.Services
 		private readonly Query _query;
 		private readonly AppSettings _appSettings;
 		private readonly CreateAnImage _newImage;
-		private readonly SyncService _sync;
 		private readonly StorageSubPathFilesystem _iStorageSubPath;
 
 		public RenameServiceTest()
@@ -72,7 +71,8 @@ namespace starskytest.starsky.feature.rename.Services
 			var services = new ServiceCollection();
 			var selectorStorage = new FakeSelectorStorage(iStorage);
 
-			_sync = new SyncService(_query,_appSettings,selectorStorage);
+			_sync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
+
 		}
 
 		[TestMethod]
@@ -167,7 +167,7 @@ namespace starskytest.starsky.feature.rename.Services
 				File.Move(_newImage.FullFilePath,
 					_appSettings.DatabasePathToFilePath("/dir1/test3.jpg",false));
 			}
-			_sync.SingleFile("/dir1/test3.jpg");
+			await _sync.Sync("/dir1/test3.jpg");
 			
 			// query database
 			var all = await _query.GetAllRecursiveAsync();
@@ -200,6 +200,7 @@ namespace starskytest.starsky.feature.rename.Services
 		private FileIndexItem _folder1Exist;
 		private FileIndexItem _fileInExist;
 		private FileIndexItem _parentFolder;
+		private Synchronize _sync;
 
 		private void CreateFoldersAndFilesInDatabase()
 		{

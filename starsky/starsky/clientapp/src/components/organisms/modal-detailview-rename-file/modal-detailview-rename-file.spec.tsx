@@ -29,9 +29,8 @@ describe("ModalDetailviewRenameFile", () => {
     it("to wrong extension", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -94,7 +93,7 @@ describe("ModalDetailviewRenameFile", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Ffile-with-different-extension.tiff&collections=true"
       );
 
@@ -171,9 +170,8 @@ describe("ModalDetailviewRenameFile", () => {
     it("submit filename change", async () => {
       // spy on fetch
       // use this import => import * as FetchPost from '../shared/fetch-post';
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { statusCode: 200 } as IConnectionDefault
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ statusCode: 200 } as IConnectionDefault);
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -226,7 +224,7 @@ describe("ModalDetailviewRenameFile", () => {
 
       expect(fetchPostSpy).toBeCalled();
       expect(fetchPostSpy).toBeCalledWith(
-        new UrlQuery().UrlSyncRename(),
+        new UrlQuery().UrlDiskRename(),
         "f=%2Ftest%2Fimage.jpg&to=%2Ftest%2Fname.jpg&collections=true"
       );
 

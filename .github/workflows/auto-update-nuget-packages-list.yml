@@ -1,4 +1,4 @@
-name: Docs Update
+name: Auto update Nuget packages list
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
 
 jobs: 
   run:
-    name: Generate HTML
+    name: Update Nuget packages list
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
@@ -16,22 +16,18 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: 14.x
-    
-    - name: NpmCi
-      working-directory: ./starsky-tools/docs
-      run: npm ci
+        node-version: 16.x
       
-    - name: NpmBuild
-      working-directory: ./starsky-tools/docs
-      run: npm run build
+    - name: Npm generate package list
+      working-directory: ./starsky-tools/build-tools
+      run: npm run nuget-package-list
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v4
       with:
         author_name: DocsUpdateBot
         author_email: qdraw@users.noreply.github.com
-        message: "[DocsUpdateBot] Auto commited html update"
-        add: "docs/**"
+        message: "[NugetPackagesListUpdate] Auto commited nugetPackages list"
+        add: "starsky/nuget-packages-list.json"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

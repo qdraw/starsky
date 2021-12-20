@@ -100,10 +100,8 @@ const MenuArchive: React.FunctionComponent<IMenuArchiveProps> = memo(() => {
   }, [history.location.search]);
 
   const [isDisplayOptionsOpen, setDisplayOptionsOpen] = React.useState(false);
-  const [
-    isSynchronizeManuallyOpen,
-    setSynchronizeManuallyOpen
-  ] = React.useState(false);
+  const [isSynchronizeManuallyOpen, setSynchronizeManuallyOpen] =
+    React.useState(false);
   const [isModalMkdirOpen, setModalMkdirOpen] = React.useState(false);
   const [isModalRenameFolder, setModalRenameFolder] = React.useState(false);
   const [dropAreaUploadFilesList, setDropAreaUploadFilesList] = React.useState(

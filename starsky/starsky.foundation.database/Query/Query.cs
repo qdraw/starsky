@@ -189,25 +189,7 @@ namespace starsky.foundation.database.Query
 		        )?.FilePath;
 	        }
         }
-
-	    /// <summary>
-	    /// Remove the '/' from the end of the url
-	    /// </summary>
-	    /// <param name="subPath">path</param>
-	    /// <returns>removed / at end</returns>
-	    [Obsolete("use PathHelper.RemoveLatestSlash()")]
-        public string SubPathSlashRemove(string subPath = "/")
-        {
-            if (string.IsNullOrEmpty(subPath)) return subPath;
-
-            // remove / from end
-            if (subPath.Substring(subPath.Length - 1, 1) == "/" && subPath != "/")
-            {
-                subPath = subPath.Substring(0, subPath.Length - 1);
-            }
-
-            return subPath;
-        }
+        
 
         /// <summary>
         /// Get the name of Key in the cache db

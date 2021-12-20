@@ -18,10 +18,9 @@ interface IModalRenameFileProps {
   state: IDetailView;
 }
 
-const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> = ({
-  state,
-  ...props
-}) => {
+const ModalDetailviewRenameFile: React.FunctionComponent<
+  IModalRenameFileProps
+> = ({ state, ...props }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -134,7 +133,7 @@ const ModalDetailviewRenameFile: React.FunctionComponent<IModalRenameFileProps> 
     );
 
     const result = await FetchPost(
-      new UrlQuery().UrlSyncRename(),
+      new UrlQuery().UrlDiskRename(),
       bodyParams.toString()
     );
 

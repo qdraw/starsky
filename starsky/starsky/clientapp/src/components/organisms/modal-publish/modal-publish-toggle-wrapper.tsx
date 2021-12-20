@@ -13,28 +13,29 @@ interface IModalPublishWrapperProps {
 /**
  * Wrapper to hide modal in the menu
  */
-const ModalPublishToggleWrapper: React.FunctionComponent<IModalPublishWrapperProps> = memo(
-  ({
-    select,
-    stateFileIndexItems,
-    isModalPublishOpen,
-    setModalPublishOpen
-  }) => {
-    const selectFallback = select
-      ? new URLPath().MergeSelectFileIndexItem(select, stateFileIndexItems)
-      : [];
-    return (
-      <>
-        {select && isModalPublishOpen ? (
-          <ModalPublish
-            handleExit={() => setModalPublishOpen(!isModalPublishOpen)}
-            select={selectFallback}
-            isOpen={isModalPublishOpen}
-          />
-        ) : null}
-      </>
-    );
-  }
-);
+const ModalPublishToggleWrapper: React.FunctionComponent<IModalPublishWrapperProps> =
+  memo(
+    ({
+      select,
+      stateFileIndexItems,
+      isModalPublishOpen,
+      setModalPublishOpen
+    }) => {
+      const selectFallback = select
+        ? new URLPath().MergeSelectFileIndexItem(select, stateFileIndexItems)
+        : [];
+      return (
+        <>
+          {select && isModalPublishOpen ? (
+            <ModalPublish
+              handleExit={() => setModalPublishOpen(!isModalPublishOpen)}
+              select={selectFallback}
+              isOpen={isModalPublishOpen}
+            />
+          ) : null}
+        </>
+      );
+    }
+  );
 
 export default ModalPublishToggleWrapper;

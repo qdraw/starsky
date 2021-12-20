@@ -54,7 +54,6 @@ export async function checkForUpdatesWindow() {
     show: true,
     resizable: !isPackaged(),
     webPreferences: {
-      enableRemoteModule: false,
       partition: "persist:main",
       contextIsolation: true
     }

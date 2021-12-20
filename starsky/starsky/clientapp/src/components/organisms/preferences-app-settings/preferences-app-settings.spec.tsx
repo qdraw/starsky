@@ -128,9 +128,8 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => permissions)
         .mockImplementationOnce(() => appSettings);
 
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        newIConnectionDefault()
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve(newIConnectionDefault());
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
@@ -186,9 +185,8 @@ describe("PreferencesAppSettings", () => {
         .mockImplementationOnce(() => appSettings);
 
       // This fails -->
-      const mockIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-        { ...newIConnectionDefault(), statusCode: 404 }
-      );
+      const mockIConnectionDefault: Promise<IConnectionDefault> =
+        Promise.resolve({ ...newIConnectionDefault(), statusCode: 404 });
       var fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);

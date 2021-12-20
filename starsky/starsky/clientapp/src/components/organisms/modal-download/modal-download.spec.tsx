@@ -78,12 +78,11 @@ describe("ModalDownload", () => {
       .mockImplementationOnce(() => {});
 
     // use ==> import * as FetchGet from '../shared/fetch-get';
-    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> = Promise.resolve(
-      {
+    const mockFetchGetIConnectionDefault: Promise<IConnectionDefault> =
+      Promise.resolve({
         statusCode: 200,
         data: null
-      } as IConnectionDefault
-    );
+      } as IConnectionDefault);
 
     var fetchPostSpy = jest
       .spyOn(FetchPost, "default")

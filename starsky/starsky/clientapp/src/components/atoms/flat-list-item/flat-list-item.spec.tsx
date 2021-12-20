@@ -34,9 +34,8 @@ describe("FlatListItem", () => {
       <FlatListItem item={data} onSelectionCallback={jest.fn()} />
     );
 
-    const nameComponents = component.container.getElementsByClassName(
-      "lastedited"
-    );
+    const nameComponents =
+      component.container.getElementsByClassName("lastedited");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("30-1-2021 16:26:43");
@@ -72,9 +71,8 @@ describe("FlatListItem", () => {
       <FlatListItem item={data} onSelectionCallback={jest.fn()} />
     );
 
-    const nameComponents = component.container.getElementsByClassName(
-      "imageformat"
-    );
+    const nameComponents =
+      component.container.getElementsByClassName("imageformat");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("--");
@@ -86,9 +84,8 @@ describe("FlatListItem", () => {
       <FlatListItem item={data} onSelectionCallback={jest.fn()} />
     );
 
-    const nameComponents = component.container.getElementsByClassName(
-      "imageformat"
-    );
+    const nameComponents =
+      component.container.getElementsByClassName("imageformat");
 
     expect(nameComponents.length).toBe(1);
     expect(nameComponents[0].innerHTML).toBe("jpg");

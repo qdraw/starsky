@@ -12,7 +12,6 @@
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by generating smaller images_
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (netstandard 2.0)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests_
- * [starsky.netframework](starsky.netframework/readme.md) _Client for older machines (deprecated)_
  * [starsky-tools](starsky-tools/readme.md) _nodejs tools to add-on tasks_
  * [starskyapp](starskyapp/readme.md) _Desktop Application_
      * [Download Desktop App](https://qdraw.github.io/starsky/assets/download/download.html) _Windows and Mac OS version_
@@ -39,11 +38,21 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- remove old starskysynccli
 - change default option in thumbnailer cli to scan directories to enabled
 
 # version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
-- nothing yet
+- [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
+- [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)
+- [x]   (Breaking change) _Back-end_ Removed obsolete SubPathSlashRemove API (PR #563)
+- [x]   (Breaking change) _Back-end_ Removed old sync API  (PR #563)
+- [x]   (Security) _Front-end_  Upgrade Prettier 2.5.1 and React scripts 5.0.0 (PR #569)
+- [x]   (Breaking change) _Front-end_  Prettier new eslint rules 4.0.0 (PR #569)
+- [x]   (Fixed) _Back-end_  IndexController with empty string introduced with removal of SubPathSlashRemove (PR #571)
+- [x]   (Changed) _Back-end_ Upgrade Electron to 16.x and Electron Builder to 22.14.x (PR #571)
+- [x]   (Breaking change) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
+- [x]   (Breaking change) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
+
+- todo: test electron with new version
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)

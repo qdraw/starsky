@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -13,28 +12,21 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
-using starsky.foundation.worker.Interfaces;
-using starskycore.Interfaces;
 using starskycore.ViewModels;
 
 namespace starsky.Controllers
 {
     [Authorize]
-    public class SyncController : Controller
+    public class DiskController : Controller
     {
-        private readonly ISync _sync;
-        private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
         private readonly IQuery _query;
 	    private readonly IStorage _iStorage;
 	    private readonly IWebSocketConnectionsService _connectionsService;
 
-        public SyncController(ISync sync, IUpdateBackgroundTaskQueue queue, IQuery query, ISelectorStorage selectorStorage, 
+        public DiskController(IQuery query, ISelectorStorage selectorStorage, 
 	        IWebSocketConnectionsService connectionsService)
         {
-            _sync = sync;
-            _bgTaskQueue = queue;
             _query = query;
 	        _iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 	        _connectionsService = connectionsService;
@@ -48,7 +40,7 @@ namespace starsky.Controllers
         /// <response code="200">create the item on disk and in db</response>
         /// <response code="409">A conflict, Directory already exist</response>
         /// <response code="401">User unauthorized</response>
-        [HttpPost("/api/sync/mkdir")]
+        [HttpPost("/api/disk/mkdir")]
         [ProducesResponseType(typeof(List<SyncViewModel>),200)]
         [ProducesResponseType(typeof(List<SyncViewModel>),409)]
         [ProducesResponseType(typeof(string),401)]
@@ -114,79 +106,6 @@ namespace starsky.Controllers
         }
 
         /// <summary>
-        /// Do a file sync in a background process (replace with /api/synchronize)
-        /// </summary>
-        /// <param name="f">subPaths split by dot comma</param>
-        /// <returns>list of changed files</returns>
-        /// <response code="200">started sync as background job</response>
-        /// <response code="401">User unauthorized</response>
-        [HttpPost("/api/sync")]
-        [Obsolete("replace with /api/synchronize")]
-        [ProducesResponseType(typeof(List<SyncViewModel>),200)]
-        [ProducesResponseType(typeof(string),401)]
-        [Produces("application/json")]	    
-        public IActionResult SyncIndex(string f)
-        {
-            var inputFilePaths = PathHelper.SplitInputFilePaths(f).ToList();
-            // the result list
-            var syncResultsList = new List<SyncViewModel>();
-
-            foreach ( var inputSubPath in inputFilePaths )
-            {
-	            var subPath = PathHelper.RemoveLatestSlash(inputSubPath);
-	            if ( subPath == string.Empty ) subPath = "/";
-
-	            var folderStatus = _iStorage.IsFolderOrFile(subPath);
-	            if ( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Deleted )
-	            {
-		            var syncItem = new SyncViewModel
-		            {
-			            FilePath = subPath,
-			            Status = FileIndexItem.ExifStatus.NotFoundSourceMissing
-		            };
-		            syncResultsList.Add(syncItem);
-	            }
-	            else if( folderStatus == FolderOrFileModel.FolderOrFileTypeList.Folder)
-	            {
-		            var filesAndFoldersInDirectoryArray = _iStorage.GetAllFilesInDirectory(subPath)
-			            .Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
-
-		            var dirs = _iStorage.GetDirectoryRecursive(subPath);
-		            filesAndFoldersInDirectoryArray.AddRange(dirs);
-					
-		            foreach ( var fileInDirectory in filesAndFoldersInDirectoryArray )
-		            {
-			            var syncItem = new SyncViewModel
-			            {
-				            FilePath = fileInDirectory,
-				            Status = FileIndexItem.ExifStatus.Ok
-			            };
-			            syncResultsList.Add(syncItem);
-		            }
-	            }
-	            else // single file
-	            {
-		            var syncItem = new SyncViewModel
-		            {
-			            FilePath = subPath,
-			            Status = FileIndexItem.ExifStatus.Ok
-		            };
-		            syncResultsList.Add(syncItem);
-	            }
-	            // Update >
-#pragma warning disable 1998
-	            _bgTaskQueue.QueueBackgroundWorkItem(async token =>
-	            {
-		            _sync.SyncFiles(subPath,false);
-		            Console.WriteLine(">>> running clear cache "+ subPath);
-		            _query.RemoveCacheParentItem(subPath);
-	            });
-#pragma warning restore 1998
-            }
-			return Json(syncResultsList);
-        }
-			   
-	    /// <summary>
 	    /// Rename file/folder and update it in the database
 	    /// </summary>
 	    /// <param name="f">from subPath</param>
@@ -199,7 +118,7 @@ namespace starsky.Controllers
 	    /// <response code="401">User unauthorized</response>
 	    [ProducesResponseType(typeof(List<FileIndexItem>),200)]
 	    [ProducesResponseType(typeof(List<FileIndexItem>),404)]
-		[HttpPost("/api/sync/rename")]
+		[HttpPost("/api/disk/rename")]
 	    [Produces("application/json")]	    
 		public async Task<IActionResult> Rename(string f, string to, bool collections = true, bool currentStatus = true)
 	    {

@@ -103,8 +103,9 @@ function updateArchiveFromEvent(
 ) {
   const pushMessagesEvent = (event as CustomEvent<IFileIndexItem[]>).detail;
   // useLocation, state or archive is here always the default value
-  const parentLocationPath = new URLPath().StringToIUrl(window.location.search)
-    .f;
+  const parentLocationPath = new URLPath().StringToIUrl(
+    window.location.search
+  ).f;
 
   dispatchEmptyFolder(pushMessagesEvent, parentLocationPath, dispatch);
   const toAddedFiles = filterArchiveFromEvent(
