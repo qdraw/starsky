@@ -32,9 +32,13 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Filter = "*.txt";
 			wrapper.EnableRaisingEvents = true;
 			Assert.IsTrue(watcher.EnableRaisingEvents);
+			Assert.IsTrue(wrapper.EnableRaisingEvents);
+
 			wrapper.EnableRaisingEvents = false;
 			
 			Assert.IsFalse(watcher.EnableRaisingEvents);
+			Assert.IsFalse(wrapper.EnableRaisingEvents);
+
 			watcher.Dispose();
 		}
 		
@@ -46,6 +50,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Filter = "*.txt";
 			
 			Assert.AreEqual("*.txt", watcher.Filter);
+			Assert.AreEqual("*.txt", wrapper.Filter);
+
 			watcher.Dispose();
 		}
 				
@@ -57,6 +63,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.IncludeSubdirectories = true;
 			
 			Assert.AreEqual(true, watcher.IncludeSubdirectories);
+			Assert.AreEqual(true, wrapper.IncludeSubdirectories);
+
 			watcher.Dispose();
 		}
 						
@@ -68,6 +76,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.InternalBufferSize = 5000;
 			
 			Assert.AreEqual(5000, watcher.InternalBufferSize);
+			Assert.AreEqual(5000, wrapper.InternalBufferSize);
+
 			watcher.Dispose();
 		}
 		
@@ -79,6 +89,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.SynchronizingObject = null ;
 			
 			Assert.AreEqual(null, watcher.SynchronizingObject);
+			Assert.AreEqual(null, wrapper.SynchronizingObject);
+
 			watcher.Dispose();
 		}
 				
@@ -90,6 +102,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Site = null ;
 			
 			Assert.AreEqual(null, watcher.Site);
+			Assert.AreEqual(null, wrapper.Site);
+
 			watcher.Dispose();
 		}
 		
@@ -99,8 +113,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
-			// wrapper
+			
+			// wrapper only
 			Assert.AreEqual(true, wrapper.OrderByOldestFirst);
+			
 			watcher.Dispose();
 		}
 		
@@ -112,7 +128,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.EventQueueCapacity = 32;
 			
-			// wrapper
+			// wrapper only
 			Assert.AreEqual(32, wrapper.EventQueueCapacity);
 			watcher.Dispose();
 		}
