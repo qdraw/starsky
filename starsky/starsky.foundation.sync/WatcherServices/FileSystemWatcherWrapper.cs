@@ -133,12 +133,7 @@ namespace starsky.foundation.sync.WatcherServices
         [DefaultValue(false)]
         public bool OrderByOldestFirst { get; set; } = false;
 
-        private int _eventQueueSize = int.MaxValue;
-        public int EventQueueCapacity
-        {
-            get { return _eventQueueSize; }
-            set { _eventQueueSize = value; }
-        }
+        public int EventQueueCapacity { get; set;  } = int.MaxValue;
 
         #region New BufferingFileSystemWatcher specific events
         public event FileSystemEventHandler Existed
@@ -253,7 +248,7 @@ namespace starsky.foundation.sync.WatcherServices
         private void StopRaisingBufferedEvents(object _ = null, EventArgs __ = null)
         {
             _cancellationTokenSource?.Cancel();
-            _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>(_eventQueueSize);
+            _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>(EventQueueCapacity);
         }
 
         public event ErrorEventHandler Error
@@ -278,41 +273,53 @@ namespace starsky.foundation.sync.WatcherServices
         }
         #endregion
 
+        private void RaiseBufferedEventsUntilCancelledInLoop(
+	        FileSystemEventArgs fileSystemEventArgs)
+        {
+	        if (_onAllChangesHandler != null)
+		        InvokeHandler(_onAllChangesHandler, fileSystemEventArgs);
+	        else
+	        {
+		        switch (fileSystemEventArgs.ChangeType)
+		        {
+			        case WatcherChangeTypes.Created:
+				        InvokeHandler(_onCreatedHandler, fileSystemEventArgs);
+				        break;
+			        case WatcherChangeTypes.Changed:
+				        InvokeHandler(_onChangedHandler, fileSystemEventArgs);
+				        break;
+			        case WatcherChangeTypes.Deleted:
+				        InvokeHandler(_onDeletedHandler, fileSystemEventArgs);
+				        break;
+			        case WatcherChangeTypes.Renamed:
+				        InvokeHandler(_onRenamedHandler, fileSystemEventArgs as RenamedEventArgs);
+				        break;
+		        }
+	        }
+        }
+
         private void RaiseBufferedEventsUntilCancelled()
         {
             Task.Run(() =>
             {
-                try
-                {
-                    if (_onExistedHandler != null || _onAllChangesHandler != null)
-                        NotifyExistingFiles();
+	            try
+	            {
+		            if ( _onExistedHandler != null ||
+		                 _onAllChangesHandler != null )
+			            NotifyExistingFiles();
 
-                    foreach (FileSystemEventArgs e in _fileSystemEventBuffer.GetConsumingEnumerable(_cancellationTokenSource.Token))
-                    {
-                        if (_onAllChangesHandler != null)
-                            InvokeHandler(_onAllChangesHandler, e);
-                        else
-                        {
-                            switch (e.ChangeType)
-                            {
-                                case WatcherChangeTypes.Created:
-                                    InvokeHandler(_onCreatedHandler, e);
-                                    break;
-                                case WatcherChangeTypes.Changed:
-                                    InvokeHandler(_onChangedHandler, e);
-                                    break;
-                                case WatcherChangeTypes.Deleted:
-                                    InvokeHandler(_onDeletedHandler, e);
-                                    break;
-                                case WatcherChangeTypes.Renamed:
-                                    InvokeHandler(_onRenamedHandler, e as RenamedEventArgs);
-                                    break;
-                            }
-                        }
-                    }
-                }
-                catch (OperationCanceledException)
-                { } //ignore
+		            foreach ( FileSystemEventArgs fileSystemEventArgs in
+		                     _fileSystemEventBuffer.GetConsumingEnumerable(
+			                     _cancellationTokenSource.Token) )
+		            {
+			            RaiseBufferedEventsUntilCancelledInLoop(
+				            fileSystemEventArgs);
+		            }
+	            }
+	            catch ( OperationCanceledException )
+	            {
+		            // ignore
+	            } 
                 catch (Exception ex)
                 {
                     BufferingFileSystemWatcher_Error(this, new ErrorEventArgs(ex));
@@ -322,8 +329,6 @@ namespace starsky.foundation.sync.WatcherServices
 
         private void NotifyExistingFiles()
         {
-            //BufferingFileSystemWatcher_Error(this, new ErrorEventArgs(new Exception("test exception")));
-
             var searchSubDirectoriesOption = (IncludeSubdirectories) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             if (OrderByOldestFirst)
             {
@@ -387,14 +392,6 @@ namespace starsky.foundation.sync.WatcherServices
             {
                 _cancellationTokenSource?.Cancel();
                 _containedFsw?.Dispose();
-
-                //_onExistedHandler = null;
-                //_onAllChangesHandler = null;
-                //_onCreatedHandler = null;
-                //_onChangedHandler = null;
-                //_onDeletedHandler = null;
-                //_onRenamedHandler = null;
-                //_onErrorHandler = null;
             }
             base.Dispose(disposing);
         }

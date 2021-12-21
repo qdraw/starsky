@@ -2,7 +2,7 @@
 
 namespace starsky.foundation.sync.WatcherHelpers
 {
-    class EventQueueOverflowException : Exception
+    public class EventQueueOverflowException : Exception
     {
         public EventQueueOverflowException()
             : base() { }
