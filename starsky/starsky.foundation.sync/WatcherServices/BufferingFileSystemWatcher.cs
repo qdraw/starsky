@@ -3,12 +3,14 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherServices
 {
 	/// <summary>
@@ -52,6 +54,11 @@ namespace starsky.foundation.sync.WatcherServices
         public BufferingFileSystemWatcher()
         {
             _containedFsw = new FileSystemWatcher();
+        }
+
+        internal BufferingFileSystemWatcher(FileSystemWatcher fileSystemWatcher)
+        {
+	        _containedFsw = fileSystemWatcher;
         }
 
         public BufferingFileSystemWatcher(string path)
@@ -135,7 +142,7 @@ namespace starsky.foundation.sync.WatcherServices
 
         public int EventQueueCapacity { get; set;  } = int.MaxValue;
 
-        #region New BufferingFileSystemWatcher specific events
+        // New BufferingFileSystemWatcher specific events
         public event FileSystemEventHandler Existed
         {
             add
@@ -171,9 +178,9 @@ namespace starsky.foundation.sync.WatcherServices
             }
         }
 
-        #endregion
 
-        #region Standard FSW events
+        // region Standard FSW events
+        
         //- The _fsw events add to the buffer.
         //- The public events raise from the buffer to the consumer.
         public event FileSystemEventHandler Created
@@ -271,9 +278,10 @@ namespace starsky.foundation.sync.WatcherServices
         {
             InvokeHandler(_onErrorHandler, e);
         }
-        #endregion
+        
+        // end standard events
 
-        private void RaiseBufferedEventsUntilCancelledInLoop(
+        internal void RaiseBufferedEventsUntilCancelledInLoop(
 	        FileSystemEventArgs fileSystemEventArgs)
         {
 	        if (_onAllChangesHandler != null)
@@ -351,7 +359,7 @@ namespace starsky.foundation.sync.WatcherServices
             }
         }
 
-        #region InvokeHandlers
+        // InvokeHandlers
         // Automatically raise event in calling thread when _fsw.SynchronizingObject is set. Ex: When used as a component in Win Forms.
         //  remove redundancy. I don't understand how to cast the specific *EventHandler to a generic Delegate, EventHandler, Action or whatever.
         private void InvokeHandler(FileSystemEventHandler eventHandler, FileSystemEventArgs e)
@@ -384,7 +392,7 @@ namespace starsky.foundation.sync.WatcherServices
                     eventHandler(this, e);
             }
         }
-        #endregion
+        // end InvokeHandlers
 
         protected override void Dispose(bool disposing)
         {
