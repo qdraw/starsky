@@ -93,7 +93,7 @@ namespace starsky.Controllers
 			}
 			catch ( UnauthorizedAccessException e )
 			{
-				_logger.LogError($"[ThumbnailGenerationController] {e.Message}", e);
+				_logger.LogError($"[ThumbnailGenerationController] catch-ed exceptioin {e.Message}", e);
 			}
 		}
 	}
