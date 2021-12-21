@@ -1,0 +1,13 @@
+﻿using System;
+
+namespace starsky.foundation.sync.WatcherHelpers
+{
+    class EventQueueOverflowException : Exception
+    {
+        public EventQueueOverflowException()
+            : base() { }
+
+        public EventQueueOverflowException(string message)
+            : base(message) { }
+    }
+}

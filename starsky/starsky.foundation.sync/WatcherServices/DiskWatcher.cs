@@ -38,8 +38,7 @@ namespace starsky.foundation.sync.WatcherServices
 			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
 			        $"{DateTimeDebug()}");
 			
-			// why: https://stackoverflow.com/a/21000492
-			GC.KeepAlive(_fileSystemWatcherWrapper);  
+			// GC.KeepAlive why: https://stackoverflow.com/a/21000492
 
 			// Create a new FileSystemWatcher and set its properties.
 
@@ -90,7 +89,7 @@ namespace starsky.foundation.sync.WatcherServices
 			if ( e.GetException().Message == "test" ) return;
 			
 			// When fail it should try it again
-			Retry(new FileSystemWatcherWrapper());
+			Retry(new BufferingFileSystemWatcher(_fileSystemWatcherWrapper.Path));
 		}
 
 		/// <summary>
