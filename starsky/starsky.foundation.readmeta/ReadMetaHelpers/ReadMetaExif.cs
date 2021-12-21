@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
 using MetadataExtractor.Formats.Xmp;
 using starsky.foundation.database.Models;
@@ -204,13 +205,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		            item.FocalLength = focalLength;
 	            }
 
-	            var software = GetSoftware(exifItem);
-	            if (software != string.Empty) // string.Empty = is not the right tag or empty tag
-	            {
-		            item.Software = software;
-	            }
+
             }
 
+            item.Software = GetSoftware(allExifItems);
+            
             // last & out of the loop
             var sonyLensModel = GetSonyMakeLensModel(allExifItems, item.LensModel);
             if ( !string.IsNullOrEmpty(sonyLensModel) )
@@ -231,6 +230,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         {
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
+	        if ( !string.IsNullOrEmpty(imageStabilisation) )
+	        {
+		        
+	        }
 	        
 	        var nikonDirectory = allExifItems.OfType<NikonType2MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisationNikon = sonyDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
@@ -292,18 +295,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
         }
 
-		private string GetSoftware(Directory exifItem)
+		private string GetSoftware(List<Directory> allExifItems)
 		{
 			// [Exif IFD0] Software = 10.3.2
-	    
-			var tCounts =
-				exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == "Software");
-			if ( tCounts < 1 ) return string.Empty;
-
-			var software = exifItem.Tags.FirstOrDefault(
-				p => p.DirectoryName == "Exif IFD0"
-				     && p.Name == "Software")?.Description;
-			return software;
+			var exifIfd0Directory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
+			var tagSoftware = exifIfd0Directory?.GetDescription(ExifDirectoryBase.TagSoftware);
+			return tagSoftware;
 		}
 
 
