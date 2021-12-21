@@ -335,7 +335,7 @@ namespace starsky.foundation.sync.WatcherServices
             });
         }
 
-        private void NotifyExistingFiles()
+        internal void NotifyExistingFiles()
         {
             var searchSubDirectoriesOption = (IncludeSubdirectories) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
             if (OrderByOldestFirst)
