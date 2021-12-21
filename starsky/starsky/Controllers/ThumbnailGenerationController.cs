@@ -66,22 +66,30 @@ namespace starsky.Controllers
 		{
 			try
 			{
-				var thumbs = await new Thumbnail(subPathStorage, thumbnailStorage, _logger).CreateThumb(subPath);
+				_logger.LogInformation($"[ThumbnailGenerationController] start {subPath}");
+				var thumbnail = new Thumbnail(subPathStorage, 
+					thumbnailStorage, _logger);
+				var thumbs = await thumbnail.CreateThumb(subPath);
 				var getAllFilesAsync = await _query.GetAllFilesAsync(subPath);
 
 				var result = new List<FileIndexItem>();
-				foreach ( var item in getAllFilesAsync.Where(item => thumbs.FirstOrDefault(p =>
-					p.Item1 == item.FilePath).Item2) )
+				foreach ( var item in 
+				         getAllFilesAsync.Where(item => thumbs.FirstOrDefault(p => p.Item1 == item.FilePath).Item2) )
 				{
+					if ( item.Tags.Contains("!delete!") ) continue;
+
 					item.SetLastEdited();
 					result.Add(item);
 				}
 
 				if ( !result.Any() ) return;
 
+				await _connectionsService.SendToAllAsync("[system] /api/thumbnail-generation called",CancellationToken.None);
 				await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 					result,
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
+				
+				_logger.LogInformation($"[ThumbnailGenerationController] done {subPath}");
 			}
 			catch ( UnauthorizedAccessException e )
 			{
