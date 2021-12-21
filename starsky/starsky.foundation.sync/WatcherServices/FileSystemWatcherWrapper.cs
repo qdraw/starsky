@@ -352,8 +352,8 @@ namespace starsky.foundation.sync.WatcherServices
         }
 
         #region InvokeHandlers
-        //Automatically raise event in calling thread when _fsw.SynchronizingObject is set. Ex: When used as a component in Win Forms.
-        // TODO: remove redundancy. I don't understand how to cast the specific *EventHandler to a generic Delegate, EventHandler, Action or whatever.
+        // Automatically raise event in calling thread when _fsw.SynchronizingObject is set. Ex: When used as a component in Win Forms.
+        //  remove redundancy. I don't understand how to cast the specific *EventHandler to a generic Delegate, EventHandler, Action or whatever.
         private void InvokeHandler(FileSystemEventHandler eventHandler, FileSystemEventArgs e)
         {
             if (eventHandler != null)
