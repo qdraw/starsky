@@ -11,6 +11,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
@@ -90,7 +91,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>() as FakeIWebLogger;
 			
-			fakeIFileSystemWatcher.TriggerOnChanged(new FileSystemEventArgs(WatcherChangeTypes.Changed, "/","test"));
+			fakeIFileSystemWatcher.TriggerOnChanged(new FileSystemEventArgs(WatcherChangeTypes.Changed, "/","test.jpg"));
 
 			Console.WriteLine(logger.TrackedDebug.LastOrDefault().Item2);
 			Assert.IsTrue(logger.TrackedDebug.LastOrDefault().Item2.Contains("/test"));
@@ -147,6 +148,116 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var result = new DiskWatcher(fakeIFileSystemWatcher, _scopeFactory).Retry(fakeIFileSystemWatcher,1,0);
 			
 			Assert.IsFalse(result);	
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public void OnChanged_ShouldHitQueueProcessor()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
+				"t", "test.jpg");
+			
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null).OnChanged(null, event1);
+		}
+		
+		[TestMethod]
+		public void OnChanged_Should_Not_HitQueueProcessor_tmp()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
+				"t", "test.tmp");
+
+			QueueProcessor processor = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnChanged(null, event1);
+			
+			Assert.IsNull(processor);
+		}
+		
+		[TestMethod]
+		public void OnChanged_Should_Not_HitQueueProcessor_esp()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			var event1 = new FileSystemEventArgs(WatcherChangeTypes.Changed,
+				"t", "test.esp");
+
+			QueueProcessor processor = null;
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnChanged(null, event1);
+			
+			Assert.IsNull(processor);
+		}
+		
+		
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public void OnRenamed_ShouldHitQueueProcessor()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
+				"t", "test.jpg", "test2.jpg");
+			
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), null).OnRenamed(null, event1);
+		}
+		
+		[TestMethod]
+		public void OnRenamed_Should_Not_HitQueueProcessor_FromTmp()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			// /folder/.syncthing.20211222_112808_DSC00998.jpg.tmp OnRenamed to: /folder/20211222_112808_DSC00998.jpg
+			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
+				"t", "test2.jpg", ".syncthing.test.jpg.tmp" );
+
+			var processor = new FakeIQueueProcessor();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			
+			Assert.AreEqual(1, processor.Data.Count);
+			Assert.AreEqual("t/test2.jpg", processor.Data[0].Item1);
+			Assert.AreEqual(null, processor.Data[0].Item2);
+		}
+		
+		[TestMethod]
+		public void OnRenamed_Should_Not_HitQueueProcessor_ToTmp()
+		{
+			var fakeIFileSystemWatcher = new FakeIFileSystemWatcherWrapper()
+			{
+				CrashOnEnableRaisingEvents = true
+			};
+
+			// TO temp
+			// /folder/20211222_112808_DSC00998.jpg  OnRenamed to: /folder/.syncthing.20211222_112808_DSC00998.jpg.tmp
+			var event1 = new RenamedEventArgs(WatcherChangeTypes.Renamed, 
+				"t", ".syncthing.test.jpg.tmp","test2.jpg" );
+
+			var processor = new FakeIQueueProcessor();
+			// ReSharper disable once ExpressionIsAlwaysNull
+			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
+			
+			Assert.AreEqual(1, processor.Data.Count);
+			Assert.AreEqual("t/test2.jpg", processor.Data[0].Item1);
+			Assert.AreEqual(null, processor.Data[0].Item2);
 		}
 	}
 }
