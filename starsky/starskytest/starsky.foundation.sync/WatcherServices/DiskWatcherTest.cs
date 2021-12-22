@@ -69,6 +69,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			};
 			
 			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException("test") ));
+			fakeIFileSystemWatcher.TriggerOnError(new ErrorEventArgs(new InternalBufferOverflowException("test") ));
+
 			var wasSignaled = autoResetEvent.WaitOne(TimeSpan.FromSeconds(200));
 			
 			Assert.IsTrue(wasSignaled);
