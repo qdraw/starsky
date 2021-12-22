@@ -42,7 +42,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_serviceScope = scopeFactory.CreateScope();
 		}
 
-		private void InjectScopes()
+		internal bool InjectScopes()
 		{
 			// ISynchronize is a scoped service
 			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
@@ -50,6 +50,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_websockets = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 			_query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
 			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
+			return true;
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
