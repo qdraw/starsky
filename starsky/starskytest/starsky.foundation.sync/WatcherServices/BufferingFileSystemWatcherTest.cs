@@ -293,5 +293,86 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			watcher.Dispose();
 		}
+		
+				
+		[TestMethod]
+		public void NotifyExistingFiles_Changed_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			FileSystemEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+
+			wrapper.Changed += welcome;
+			wrapper.Changed -= welcome;
+		
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
+		
+						
+		[TestMethod]
+		public void NotifyExistingFiles_Deleted_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			FileSystemEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+
+			wrapper.Deleted += welcome;
+			wrapper.Deleted -= welcome;
+		
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
+		
+								
+		[TestMethod]
+		public void NotifyExistingFiles_Renamed_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			RenamedEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+
+			wrapper.Renamed += welcome;
+			wrapper.Renamed -= welcome;
+		
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
+
+		[TestMethod]
+		public void BufferEvent()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.EventQueueCapacity = 1;
+
+			wrapper.StopRaisingBufferedEvents();
+
+			wrapper.BufferEvent(null, null);
+			wrapper.BufferEvent(null, null);
+
+			Assert.IsNull(watcher.SynchronizingObject);
+		}
 	}
 }

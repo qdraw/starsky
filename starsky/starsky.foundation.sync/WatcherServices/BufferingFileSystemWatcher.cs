@@ -243,16 +243,14 @@ namespace starsky.foundation.sync.WatcherServices
             }
         }
 
-        private void BufferEvent(object _, FileSystemEventArgs e)
+        internal void BufferEvent(object _, FileSystemEventArgs e)
         {
-            if (!_fileSystemEventBuffer.TryAdd(e))
-            {
-                var ex = new EventQueueOverflowException($"Event queue size {_fileSystemEventBuffer.BoundedCapacity} events exceeded.");
-                InvokeHandler(_onErrorHandler, new ErrorEventArgs(ex));
-            }
+	        if ( _fileSystemEventBuffer.TryAdd(e) ) return;
+	        var ex = new EventQueueOverflowException($"Event queue size {_fileSystemEventBuffer.BoundedCapacity} events exceeded.");
+	        InvokeHandler(_onErrorHandler, new ErrorEventArgs(ex));
         }
 
-        private void StopRaisingBufferedEvents(object _ = null, EventArgs __ = null)
+        internal void StopRaisingBufferedEvents(object _ = null, EventArgs __ = null)
         {
             _cancellationTokenSource?.Cancel();
             _fileSystemEventBuffer = new BlockingCollection<FileSystemEventArgs>(EventQueueCapacity);
