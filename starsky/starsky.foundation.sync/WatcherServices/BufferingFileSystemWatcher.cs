@@ -272,14 +272,14 @@ namespace starsky.foundation.sync.WatcherServices
             }
         }
 
-        private void BufferingFileSystemWatcher_Error(object sender, ErrorEventArgs e)
+        internal void BufferingFileSystemWatcher_Error(object sender, ErrorEventArgs e)
         {
             InvokeHandler(_onErrorHandler, e);
         }
         
         // end standard events
 
-        internal void RaiseBufferedEventsUntilCancelledInLoop(
+        internal WatcherChangeTypes? RaiseBufferedEventsUntilCancelledInLoop(
 	        FileSystemEventArgs fileSystemEventArgs)
         {
 	        if (_onAllChangesHandler != null)
@@ -301,7 +301,10 @@ namespace starsky.foundation.sync.WatcherServices
 				        InvokeHandler(_onRenamedHandler, fileSystemEventArgs as RenamedEventArgs);
 				        break;
 		        }
+		        return fileSystemEventArgs.ChangeType;
 	        }
+
+	        return null;
         }
 
         private void RaiseBufferedEventsUntilCancelled()

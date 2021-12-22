@@ -24,6 +24,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		{
 			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
 			bufferingFileSystemWatcher.Dispose();
 		}
 		
@@ -31,6 +32,17 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		public void ctor_PathFilter()
 		{
 			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder,"*.txt");
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
+			Assert.IsNotNull(bufferingFileSystemWatcher);
+			bufferingFileSystemWatcher.Dispose();
+		}
+		
+		[TestMethod]
+		public void ctor_SetPath()
+		{
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher();
+			bufferingFileSystemWatcher.Path = new AppSettings().TempFolder;
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
 			bufferingFileSystemWatcher.Dispose();
 		}
@@ -373,6 +385,65 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.BufferEvent(null, null);
 
 			Assert.IsNull(watcher.SynchronizingObject);
+		}
+		
+		[TestMethod]
+		public void NotifyExistingFiles_Error_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			ErrorEventHandler welcome = (_, s) =>
+			{
+				message = s.ToString();
+			};
+
+			wrapper.Error += welcome;
+			wrapper.BufferingFileSystemWatcher_Error(null,
+				new ErrorEventArgs(new Exception("1")));
+			wrapper.Error -= welcome;
+		
+			Assert.AreEqual("System.IO.ErrorEventArgs",message);
+
+			watcher.Dispose();
+		}
+
+		[TestMethod]
+		public void RaiseBufferedEventsUntilCancelledInLoop_Created()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Created, string.Empty, string.Empty, string.Empty));
+			Assert.AreEqual(WatcherChangeTypes.Created, result);
+		}
+		
+		[TestMethod]
+		public void RaiseBufferedEventsUntilCancelledInLoop_Changed()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Changed, string.Empty, string.Empty, string.Empty));
+			Assert.AreEqual(WatcherChangeTypes.Changed, result);
+		}
+				
+		[TestMethod]
+		public void RaiseBufferedEventsUntilCancelledInLoop_Deleted()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Deleted, string.Empty, string.Empty, string.Empty));
+			Assert.AreEqual(WatcherChangeTypes.Deleted, result);
+		}
+						
+		[TestMethod]
+		public void RaiseBufferedEventsUntilCancelledInLoop_Renamed()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Renamed, string.Empty, string.Empty, string.Empty));
+			Assert.AreEqual(WatcherChangeTypes.Renamed, result);
 		}
 	}
 }
