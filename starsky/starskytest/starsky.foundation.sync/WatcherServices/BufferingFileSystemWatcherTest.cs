@@ -249,5 +249,49 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			watcher.Dispose();
 		}
+		
+		[TestMethod]
+		public void NotifyExistingFiles_Created_Add()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			FileSystemEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+
+			wrapper.Created += welcome;
+
+			
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
+		
+		[TestMethod]
+		public void NotifyExistingFiles_Created_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			FileSystemEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+
+			wrapper.Created += welcome;
+			wrapper.Created -= welcome;
+
+			wrapper.NotifyExistingFiles();
+			
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
 	}
 }

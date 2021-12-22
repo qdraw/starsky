@@ -234,7 +234,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
 			
 			Assert.AreEqual(1, processor.Data.Count);
-			Assert.AreEqual("t/test2.jpg", processor.Data[0].Item1);
+			Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
 			Assert.AreEqual(null, processor.Data[0].Item2);
 		}
 		
@@ -256,7 +256,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			new DiskWatcher(fakeIFileSystemWatcher, new FakeIWebLogger(), processor).OnRenamed(null, event1);
 			
 			Assert.AreEqual(1, processor.Data.Count);
-			Assert.AreEqual("t/test2.jpg", processor.Data[0].Item1);
+			Assert.AreEqual($"t{Path.DirectorySeparatorChar}test2.jpg", processor.Data[0].Item1);
 			Assert.AreEqual(null, processor.Data[0].Item2);
 		}
 	}
