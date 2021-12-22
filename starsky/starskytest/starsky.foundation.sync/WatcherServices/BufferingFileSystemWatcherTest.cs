@@ -445,5 +445,87 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Renamed, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Renamed, result);
 		}
+
+		[TestMethod]
+		public void InvokeHandlerFileSystemEventHandlerNull()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			FileSystemEventHandler t = null;
+			var result = wrapper.InvokeHandler(t, null);
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public void InvokeHandlerFileSystemEventHandler()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			var message = string.Empty;
+			FileSystemEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+			
+			wrapper.InvokeHandler(welcome, null);
+		}
+		
+		[TestMethod]
+		public void InvokeHandler_RenamedEventHandler_Null()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			RenamedEventHandler t = null;
+			var result = wrapper.InvokeHandler(t, null);
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public void InvokeHandler_RenamedEventHandler()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			var message = string.Empty;
+			RenamedEventHandler welcome = (_, s) =>
+			{
+				message = s.FullPath;
+			};
+			
+			wrapper.InvokeHandler(welcome, null);
+		}
+		
+				
+		[TestMethod]
+		public void InvokeHandler_ErrorEventHandler_Null()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			ErrorEventHandler t = null;
+			var result = wrapper.InvokeHandler(t, null);
+			Assert.IsNull(result);
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(NullReferenceException))]
+		public void InvokeHandler_ErrorEventHandler()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+
+			var message = string.Empty;
+			ErrorEventHandler welcome = (_, s) =>
+			{
+				message = s.ToString();
+			};
+			
+			wrapper.InvokeHandler(welcome, null);
+		}
 	}
 }

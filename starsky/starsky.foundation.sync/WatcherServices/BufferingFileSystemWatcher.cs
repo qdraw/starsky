@@ -363,35 +363,44 @@ namespace starsky.foundation.sync.WatcherServices
         // InvokeHandlers
         // Automatically raise event in calling thread when _fsw.SynchronizingObject is set. Ex: When used as a component in Win Forms.
         //  remove redundancy. I don't understand how to cast the specific *EventHandler to a generic Delegate, EventHandler, Action or whatever.
-        private void InvokeHandler(FileSystemEventHandler eventHandler, FileSystemEventArgs e)
+        internal bool? InvokeHandler(FileSystemEventHandler eventHandler, FileSystemEventArgs e)
         {
-            if (eventHandler != null)
-            {
-                if (_containedFsw.SynchronizingObject != null && this._containedFsw.SynchronizingObject.InvokeRequired)
-                    _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
-                else
-                    eventHandler(this, e);
-            }
+	        if ( eventHandler == null ) return null;
+	        if ( _containedFsw.SynchronizingObject != null && _containedFsw
+		            .SynchronizingObject.InvokeRequired )
+	        {
+		        _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
+		        return true;
+	        }
+
+	        eventHandler(this, e);
+	        return false;
         }
-        private void InvokeHandler(RenamedEventHandler eventHandler, RenamedEventArgs e)
+        internal bool? InvokeHandler(RenamedEventHandler eventHandler, RenamedEventArgs e)
         {
-            if (eventHandler != null)
-            {
-                if (_containedFsw.SynchronizingObject != null && this._containedFsw.SynchronizingObject.InvokeRequired)
-                    _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
-                else
-                    eventHandler(this, e);
-            }
+	        if ( eventHandler == null ) return null;
+	        if ( _containedFsw.SynchronizingObject != null && this._containedFsw
+		            .SynchronizingObject.InvokeRequired )
+	        {
+		        _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
+		        return true;
+	        }
+
+	        eventHandler(this, e);
+	        return false;
         }
-        private void InvokeHandler(ErrorEventHandler eventHandler, ErrorEventArgs e)
+        internal bool? InvokeHandler(ErrorEventHandler eventHandler, ErrorEventArgs e)
         {
-            if (eventHandler != null)
-            {
-                if (_containedFsw.SynchronizingObject != null && this._containedFsw.SynchronizingObject.InvokeRequired)
-                    _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
-                else
-                    eventHandler(this, e);
-            }
+	        if ( eventHandler == null ) return null;
+	        if ( _containedFsw.SynchronizingObject != null && this._containedFsw
+		            .SynchronizingObject.InvokeRequired )
+	        {
+		        _containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
+		        return true;
+	        }
+
+            eventHandler(this, e);
+            return false;
         }
         // end InvokeHandlers
 
