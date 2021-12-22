@@ -26,7 +26,16 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_processFile = processFile;
 			_memoryCache = memoryCache;
 		}
-		
+
+		internal QueueProcessor(IDiskWatcherBackgroundTaskQueue diskWatcherBackgroundTaskQueue,
+			SynchronizeDelegate processFile, IMemoryCache memoryCache, TimeSpan expirationTime)
+		{
+			_bgTaskQueue = diskWatcherBackgroundTaskQueue;
+			_processFile = processFile;
+			_memoryCache = memoryCache;
+			_expirationTime = expirationTime;
+		}
+
 		public delegate Task<List<FileIndexItem>> SynchronizeDelegate(Tuple<string, string, WatcherChangeTypes> value);
 
 		private static string CacheName(string filepath, string toPath)
