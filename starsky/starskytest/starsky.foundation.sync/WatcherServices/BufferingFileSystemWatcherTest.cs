@@ -10,6 +10,23 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 	[TestClass]
 	public class BufferingFileSystemWatcherTest
 	{
+
+		[TestMethod]
+		public void ctor_Default()
+		{
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher();
+			Assert.IsNotNull(bufferingFileSystemWatcher);
+			bufferingFileSystemWatcher.Dispose();
+		}
+		
+		[TestMethod]
+		public void ctor_Path()
+		{
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher("/test");
+			Assert.IsNotNull(bufferingFileSystemWatcher);
+			bufferingFileSystemWatcher.Dispose();
+		}
+
 		[TestMethod]
 		public void EnableRaisingEvents()
 		{
@@ -77,6 +94,20 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.AreEqual(5000, watcher.InternalBufferSize);
 			Assert.AreEqual(5000, wrapper.InternalBufferSize);
+
+			watcher.Dispose();
+		}
+		
+		[TestMethod]
+		public void NotifyFilter()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			const NotifyFilters expectedFilter = new NotifyFilters();
+			wrapper.NotifyFilter = expectedFilter;
+			
+			Assert.AreEqual(expectedFilter, watcher.NotifyFilter);
+			Assert.AreEqual(expectedFilter, wrapper.NotifyFilter);
 
 			watcher.Dispose();
 		}
@@ -186,6 +217,27 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.NotifyExistingFiles();
 			
 			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+
+			watcher.Dispose();
+		}
+		
+		[TestMethod]
+		public void NotifyExistingFiles_All_Remove()
+		{
+			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			wrapper.OrderByOldestFirst = true;
+			
+			var message = "";
+			// ReSharper disable once EventUnsubscriptionViaAnonymousDelegate
+			wrapper.All -= (_, s) =>
+			{
+				message = s.FullPath;
+			};
+			
+			wrapper.NotifyExistingFiles();
+			
+			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
 			watcher.Dispose();
 		}

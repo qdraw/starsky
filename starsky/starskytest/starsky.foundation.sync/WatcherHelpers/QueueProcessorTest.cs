@@ -81,7 +81,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			
 			// Run 3 times & 1 time different
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
-			await Task.Delay(TimeSpan.FromMilliseconds(2));
+			await Task.Delay(TimeSpan.FromMilliseconds(2)); // Sleep async
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
 
 			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
