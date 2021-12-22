@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.sync.WatcherBackgroundService;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -46,11 +47,11 @@ namespace starsky.foundation.sync.WatcherHelpers
 		public void QueueInput(string filepath, string toPath,  WatcherChangeTypes changeTypes)
 		{
 			// to avoid lots of events
-			if (_memoryCache.TryGetValue(CacheName( filepath,  toPath), out _))
+			if (_memoryCache != null && _memoryCache.TryGetValue(CacheName( filepath,  toPath), out _))
 			{
 				return;
 			}
-			_memoryCache.Set(CacheName( filepath,  toPath), 1, _expirationTime);
+			_memoryCache?.Set(CacheName( filepath,  toPath), 1, _expirationTime);
 			// ends of avoid lots of events
 			
 			_bgTaskQueue.QueueBackgroundWorkItem(async token =>

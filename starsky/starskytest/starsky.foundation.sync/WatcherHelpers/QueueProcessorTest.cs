@@ -64,7 +64,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		
 				
 		[TestMethod]
-		public void QueueProcessorTest_QueueInput_Counter_NoCache()
+		public async Task QueueProcessorTest_QueueInput_Counter_NoCache()
 		{
 			var provider = new ServiceCollection()
 				.AddMemoryCache()
@@ -77,10 +77,11 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			{
 				return Task.FromResult(new List<FileIndexItem>());
 			}
-			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local, memoryCache, TimeSpan.Zero);
+			var queueProcessor = new QueueProcessor(diskWatcherBackgroundTaskQueue, Local, memoryCache, TimeSpan.FromMilliseconds(1));
 			
 			// Run 3 times & 1 time different
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
+			await Task.Delay(TimeSpan.FromMilliseconds(2));
 			queueProcessor.QueueInput("t","T", WatcherChangeTypes.All);
 
 			Assert.AreEqual(2, diskWatcherBackgroundTaskQueue.QueueBackgroundWorkItemCalledCounter);
