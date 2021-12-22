@@ -26,7 +26,15 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.IsNotNull(bufferingFileSystemWatcher);
 			bufferingFileSystemWatcher.Dispose();
 		}
-
+		
+		[TestMethod]
+		public void ctor_PathFilter()
+		{
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder,"*.txt");
+			Assert.IsNotNull(bufferingFileSystemWatcher);
+			bufferingFileSystemWatcher.Dispose();
+		}
+		
 		[TestMethod]
 		public void EnableRaisingEvents()
 		{
