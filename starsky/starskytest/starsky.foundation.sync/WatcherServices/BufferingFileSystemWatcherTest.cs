@@ -22,7 +22,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void ctor_Path()
 		{
-			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher("/test");
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
 			bufferingFileSystemWatcher.Dispose();
 		}
