@@ -51,6 +51,10 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_ Upgrade Electron to 16.x and Electron Builder to 22.14.x (PR #571)
 - [x]   (Breaking change) _Back-end_ rename "/api/sync/mkdir" to /api/disk/mkdir (PR #574)
 - [x]   (Breaking change) _Back-end_ rename "/api/sync/rename" to /api/disk/rename (PR #574)
+- [x]   (Changed) _Tools_ Upgrade local build tools Cake and dotnet-reportgenerator-globaltool and dotnet-sonarscanner (PR #575) 
+- [x]   (Changed) _Back-end_  Avoid Disposed Query objects in syncWatcherConnector (PR #575)
+- [x]   (Changed) _Back-end_  change FileSystemWatcher to BufferingFileSystemWatcher (PR #575)
+- [x]   (Changed) _Back-end_  Add filter for FileSystemWatcher spamming with lots of events (PR #575)
 
 - todo: test electron with new version
 

@@ -8,9 +8,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Data;
+using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
+using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.realtime.Interfaces;
+using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherHelpers;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
@@ -33,7 +37,22 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 
 			Assert.AreEqual("/test", sync.Inputs[0].Item1);
 		}
-		
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public async Task Sync_InjectScopes_NullReferenceException()
+		{
+			var appSettings = new AppSettings();
+			var services = new ServiceCollection();
+			var serviceProvider = services.BuildServiceProvider();
+			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var syncWatcherPreflight = new SyncWatcherConnector(scope);
+			await syncWatcherPreflight.Sync(
+				new Tuple<string, string, WatcherChangeTypes>(
+					Path.Combine(appSettings.StorageFolder, "test"), null, WatcherChangeTypes.Changed));
+		}
+
 		[TestMethod]
 		public async Task Sync_Rename()
 		{
@@ -215,6 +234,27 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var result = new SyncWatcherConnector(null,null,
 				null,null, new FakeIWebLogger()).FilterBefore(fileIndexItems);
 			Assert.AreEqual(1,result.Count);
+		}
+		
+		[TestMethod]
+		public void InjectScopes()
+		{
+			var services = new ServiceCollection();
+
+			services.AddSingleton<ISynchronize, FakeISynchronize>();
+			services.AddSingleton<AppSettings>();
+			services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+			services.AddSingleton<IQuery, FakeIQuery>();
+			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+				
+			var serviceProvider = services.BuildServiceProvider();
+			
+			var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>();
+			
+			var syncWatcherPreflight = new SyncWatcherConnector(scope);
+			var result = syncWatcherPreflight.InjectScopes();
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

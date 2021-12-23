@@ -20,13 +20,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 {
 	public class SyncWatcherConnector
 	{
-		private readonly ISynchronize _synchronize;
-		private readonly AppSettings _appSettings;
-		private readonly IWebSocketConnectionsService _websockets;
-		private readonly IQuery _query;
-		private readonly IWebLogger _logger;
+		private ISynchronize _synchronize;
+		private AppSettings _appSettings;
+		private IWebSocketConnectionsService _websockets;
+		private IQuery _query;
+		private IWebLogger _logger;
+		private readonly IServiceScope _serviceScope;
 
-		public SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
+		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
 			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger)
 		{
 			_appSettings = appSettings;
@@ -38,19 +39,27 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
 		{
-			using var scope = scopeFactory.CreateScope();
-			// ISynchronize is a scoped service
-			_synchronize = scope.ServiceProvider.GetRequiredService<ISynchronize>();
-			_appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-			_websockets = scope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
-			_query = scope.ServiceProvider.GetRequiredService<IQuery>();
-			_logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
+			_serviceScope = scopeFactory.CreateScope();
+		}
 
+		internal bool InjectScopes()
+		{
+			// ISynchronize is a scoped service
+			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
+			_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
+			_websockets = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
+			_query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
+			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
+			return true;
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
 		{
+			// Avoid Disposed Query objects
+			if ( _serviceScope != null ) InjectScopes();
+
 			var (fullFilePath, toPath, type ) = watcherOutput;
+
 			var syncData = new List<FileIndexItem>();
 			
 			_logger.LogInformation($"[SyncWatcherConnector] [{fullFilePath}] - [{toPath}] - [{type}]");
@@ -88,7 +97,9 @@ namespace starsky.foundation.sync.WatcherHelpers
 			// remove files that are not in the index from cache
 			_query.RemoveCacheItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
-			
+
+			await _query?.DisposeAsync();
+
 			return syncData;
 		}
 

@@ -9,6 +9,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{894dce96-b51a-4ea2-80bf-e330bf1e8198}</ProjectGuid>
         <DefineConstants>SYSTEM_TEXT_ENABLED</DefineConstants>
+        <!-- DebugType https://stackoverflow.com/questions/46902377/what-is-the-difference-between-using-debugtypefull-debugtype-and-debugtype -->
         <DebugType>Full</DebugType>
         <!-- due missing support of ts4.1-->
         <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
@@ -31,6 +32,7 @@
         <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3.linux" Version="1.1.14" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
+    <!-- generate xml file for swagger -->
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>

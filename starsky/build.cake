@@ -344,6 +344,7 @@ Task("TestNetCore")
                           .Append("--no-restore")
                           .Append("--no-build")
                           .Append("--nologo")
+                          // .Append("--blame") // for debug
                           // .Append("-v=normal") // v=normal is to show test names
                           .Append("--logger trx")
                           .Append("--collect:\"XPlat Code Coverage\"")
@@ -868,6 +869,12 @@ Task("Default")
     .IsDependentOn("PublishWeb")
     .IsDependentOn("CoverageDocs")
     .IsDependentOn("Zip");
+
+// ./build.sh --Target=BuildAllNoPublish
+Task("BuildAllNoPublish")
+    .IsDependentOn("Client")
+    .IsDependentOn("SonarBuildTest")
+    .IsDependentOn("BuildNetCoreRuntimeSpecific");
 
 // ./build.sh --Target=BuildTestOnlyNetCore
 Task("BuildTestOnlyNetCore")

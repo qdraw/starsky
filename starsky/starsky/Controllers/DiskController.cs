@@ -127,6 +127,8 @@ namespace starsky.Controllers
 		    // When all items are not found
 		    if (rename.All(p => p.Status != FileIndexItem.ExifStatus.Ok))
 			    return NotFound(rename);
+		    
+		    await _connectionsService.SendToAllAsync($"[system] /api/disk/rename {f} > {to}", CancellationToken.None);
 		    await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(rename,
 			    DefaultJsonSerializer.CamelCase), CancellationToken.None);
 

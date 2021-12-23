@@ -8,11 +8,16 @@ namespace starskytest.FakeMocks
 	{
 		public void TriggerOnChanged(FileSystemEventArgs args)
 		{
-			Created?.Invoke(this, args);
+			Changed?.Invoke(this, args);
 		}
 		
 		public event FileSystemEventHandler Created;
 		
+		public void TriggerOnCreated(FileSystemEventArgs args)
+	    {
+	        Created?.Invoke(this, args);
+	    }
+        		
 		public void TriggerOnDeleted(RenamedEventArgs args)
 		{
 			Deleted?.Invoke(this, args);
@@ -26,11 +31,6 @@ namespace starskytest.FakeMocks
 		}
 		
 		public event RenamedEventHandler Renamed;
-		
-		public void TriggerOnChanged(RenamedEventArgs args)
-		{
-			Changed?.Invoke(this, args);
-		}
 		
 		public event FileSystemEventHandler Changed;
 		public event ErrorEventHandler Error;
