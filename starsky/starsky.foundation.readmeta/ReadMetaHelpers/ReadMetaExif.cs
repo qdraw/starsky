@@ -230,14 +230,20 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         {
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
+	        // 0 	0x0000	Off
+	        // 1 	0x0001	On
 	        if ( !string.IsNullOrEmpty(imageStabilisation) )
 	        {
 		        
 	        }
 	        
+	        // 0x00AC
 	        var nikonDirectory = allExifItems.OfType<NikonType2MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisationNikon = sonyDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
-
+		        // <item><c>VR-ON</c></item>
+		        // <item><c>VR-OFF</c></item>
+		        // <item><c>VR-HYBRID</c></item>
+		        // <item><c>VR-ACTIVE</c></item>
 	        
 		        
 	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
