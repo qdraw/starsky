@@ -302,14 +302,19 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.OrderByOldestFirst = true;
 			
 			var message = "";
-			wrapper.All += (_, s) =>
+			FileSystemEventHandler welcome = (_, s) =>
 			{
 				message = s.FullPath;
 			};
 			
+			wrapper.All += welcome;
+			
 			wrapper.NotifyExistingFiles();
 			
 			Assert.IsTrue(message.StartsWith(_tempFolder));
+
+			// and remove event
+			wrapper.All -= welcome;
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
