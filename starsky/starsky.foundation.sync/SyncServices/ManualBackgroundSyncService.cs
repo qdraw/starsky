@@ -78,6 +78,8 @@ namespace starsky.foundation.sync.SyncServices
 
 		internal async Task PushToSockets(List<FileIndexItem> updatedList)
 		{
+			await _connectionsService.SendToAllAsync($"[system] ManualBackgroundSyncService" +
+				$" {updatedList.FirstOrDefault()?.FilePath}", CancellationToken.None);
 			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(
 				updatedList,
 				DefaultJsonSerializer.CamelCase), CancellationToken.None);

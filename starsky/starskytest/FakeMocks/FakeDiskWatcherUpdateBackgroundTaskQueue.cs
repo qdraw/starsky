@@ -12,9 +12,12 @@ namespace starskytest.FakeMocks
 	public class FakeDiskWatcherUpdateBackgroundTaskQueue : IDiskWatcherBackgroundTaskQueue
 	{
 		public bool QueueBackgroundWorkItemCalled { get; set; }
+		public int QueueBackgroundWorkItemCalledCounter { get; set; } = 0;
+
 		public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
 		{
 			QueueBackgroundWorkItemCalled = true;
+			QueueBackgroundWorkItemCalledCounter++;
 		}
 
 		public Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken cancellationToken)

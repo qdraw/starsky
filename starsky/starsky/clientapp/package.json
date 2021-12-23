@@ -30,7 +30,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "postbuild": "npm run lint",
+    "z_postbuild": "npm run lint",
     "lint": "node node_modules/eslint/bin/eslint.js \"src/**\" --max-warnings 1055",
     "lint:fix": "node node_modules/eslint/bin/eslint.js --fix \"src/**\"",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md|vue)\"",

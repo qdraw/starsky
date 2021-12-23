@@ -128,11 +128,12 @@ namespace starsky.Controllers
 			}
 
 			// send all uploads as list
-			await _connectionsService.SendToAllAsync(
-				JsonSerializer.Serialize(
-					fileIndexResultsList
-						.Where(p => p.Status == ImportStatus.Ok)
-						.Select(item => item.FileIndexItem).ToList(), 
+			var socketResult = fileIndexResultsList
+				.Where(p => p.Status == ImportStatus.Ok)
+				.Select(item => item.FileIndexItem).ToList();
+			await _connectionsService.SendToAllAsync($"[system] /api/disk/rename" +
+				$" {socketResult.FirstOrDefault()?.FilePath}", CancellationToken.None);
+			await _connectionsService.SendToAllAsync(JsonSerializer.Serialize(socketResult, 
 					DefaultJsonSerializer.CamelCase), CancellationToken.None);
 			
 			// Wrong input (extension is not allowed)

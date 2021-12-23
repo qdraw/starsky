@@ -83,7 +83,7 @@ namespace starskytest.Controllers
 
 			await controller.WorkItem("/", storage, thumbStorage);
 
-			Assert.AreEqual(1, socket.FakeSendToAllAsync.Count);
+			Assert.AreEqual(1, socket.FakeSendToAllAsync.Count(p => !p.StartsWith("[system]")));
 		}
 		
 		[TestMethod]

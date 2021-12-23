@@ -92,7 +92,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 						"/GetFolders_multi_01",
 						"/GetFolders_multi_02"
 					}))
-				.OrderBy(p => p.FileName).ToList();
+				.OrderBy(p => p.FilePath).ToList();
 
 			Assert.AreEqual(2, items.Count);
 			Assert.AreEqual("/GetFolders_multi_01/test", items[0].FilePath);
