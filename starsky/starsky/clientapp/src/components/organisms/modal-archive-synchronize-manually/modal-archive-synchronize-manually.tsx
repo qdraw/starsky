@@ -110,9 +110,9 @@ const ModalArchiveSynchronizeManually: React.FunctionComponent<
 
     var bodyParams = new URLSearchParams();
     bodyParams.set("f", parentFolder);
-    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then(
-      (_) => {}
-    );
+    FetchPost(new UrlQuery().UrlGeoSync(), bodyParams.toString()).then((_) => {
+      // do nothing with result
+    });
   }
 
   function fetchGeoSyncStatus() {
