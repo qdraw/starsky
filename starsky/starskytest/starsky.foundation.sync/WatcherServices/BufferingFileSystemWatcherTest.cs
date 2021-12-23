@@ -23,11 +23,14 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		}
 		
 		[ClassCleanup]
-		public void ClassCleanup()
+		public static void ClassCleanup()
 		{
 			Console.WriteLine("cleanup run");
-			new StorageHostFullPathFilesystem().FolderDelete(_tempFolder);
-			new StorageHostFullPathFilesystem().FolderDelete(_tempExistingFilesFolder);
+			var tempFolder = Path.Combine(new AppSettings().TempFolder, "__watcher");
+			var tempExistingFilesFolder = Path.Combine(new AppSettings().TempFolder, "__watcher2");
+			
+			new StorageHostFullPathFilesystem().FolderDelete(tempFolder);
+			new StorageHostFullPathFilesystem().FolderDelete(tempExistingFilesFolder);
 		}
 		
 		
