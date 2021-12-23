@@ -2,38 +2,52 @@ using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
+using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.WatcherServices;
-using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherServices
 {
 	[TestClass]
 	public class BufferingFileSystemWatcherTest
 	{
+		private readonly string _tempFolder;
 
+		public BufferingFileSystemWatcherTest()
+		{
+			_tempFolder = Path.Combine(new AppSettings().TempFolder, "__watcher");
+			new StorageHostFullPathFilesystem().CreateDirectory(_tempFolder);
+		}
+		
+		
 		[TestMethod]
 		public void ctor_Default()
 		{
 			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher();
 			Assert.IsNotNull(bufferingFileSystemWatcher);
+
+			bufferingFileSystemWatcher.EnableRaisingEvents = false;
 			bufferingFileSystemWatcher.Dispose();
 		}
 		
 		[TestMethod]
 		public void ctor_Path()
 		{
-			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder);
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(_tempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
-			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, _tempFolder);
+
+			bufferingFileSystemWatcher.EnableRaisingEvents = false;
 			bufferingFileSystemWatcher.Dispose();
 		}
 		
 		[TestMethod]
 		public void ctor_PathFilter()
 		{
-			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(new AppSettings().TempFolder,"*.txt");
+			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(_tempFolder,"*.txt");
 			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
+
+			bufferingFileSystemWatcher.EnableRaisingEvents = false;
 			bufferingFileSystemWatcher.Dispose();
 		}
 		
@@ -44,22 +58,28 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			bufferingFileSystemWatcher.Path = new AppSettings().TempFolder;
 			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
+			
+			bufferingFileSystemWatcher.EnableRaisingEvents = false;
 			bufferingFileSystemWatcher.Dispose();
 		}
 		
 		[TestMethod]
 		public void EnableRaisingEvents()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			watcher.Filter = "*.txt";
 
-			new BufferingFileSystemWatcher(watcher).EnableRaisingEvents = true;
+			var wrapper = new BufferingFileSystemWatcher(watcher);
+			
+			wrapper.EnableRaisingEvents = true;
 			
 			Assert.IsTrue(watcher.EnableRaisingEvents);
 			
-			watcher.EnableRaisingEvents = false;
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
+
 		
 		[TestMethod]
 		public void EnableRaisingDisableEvents()
@@ -76,7 +96,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.IsFalse(watcher.EnableRaisingEvents);
 			Assert.IsFalse(wrapper.EnableRaisingEvents);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
+
 		}
 		
 		[TestMethod]
@@ -89,6 +112,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual("*.txt", watcher.Filter);
 			Assert.AreEqual("*.txt", wrapper.Filter);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 				
@@ -102,6 +127,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual(true, watcher.IncludeSubdirectories);
 			Assert.AreEqual(true, wrapper.IncludeSubdirectories);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 						
@@ -115,6 +142,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual(5000, watcher.InternalBufferSize);
 			Assert.AreEqual(5000, wrapper.InternalBufferSize);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -129,6 +158,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual(expectedFilter, watcher.NotifyFilter);
 			Assert.AreEqual(expectedFilter, wrapper.NotifyFilter);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -142,6 +173,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual(null, watcher.SynchronizingObject);
 			Assert.AreEqual(null, wrapper.SynchronizingObject);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 				
@@ -155,6 +188,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			Assert.AreEqual(null, watcher.Site);
 			Assert.AreEqual(null, wrapper.Site);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -168,6 +203,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			// wrapper only
 			Assert.AreEqual(true, wrapper.OrderByOldestFirst);
 			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -181,6 +218,9 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			// wrapper only
 			Assert.AreEqual(32, wrapper.EventQueueCapacity);
+
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 
@@ -199,6 +239,9 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.NotifyExistingFiles();
 			
 			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -218,6 +261,9 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.NotifyExistingFiles();
 			
 			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -238,6 +284,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -259,6 +307,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -280,6 +330,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -303,6 +355,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -325,6 +379,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -347,6 +403,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 		
@@ -369,6 +427,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 
@@ -385,6 +445,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.BufferEvent(null, null);
 
 			Assert.IsNull(watcher.SynchronizingObject);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -407,6 +471,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		
 			Assert.AreEqual("System.IO.ErrorEventArgs",message);
 
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
 			watcher.Dispose();
 		}
 
@@ -417,6 +483,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Created, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Created, result);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -435,6 +505,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Deleted, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Deleted, result);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 						
 		[TestMethod]
@@ -444,6 +518,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Renamed, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Renamed, result);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 
 		[TestMethod]
@@ -455,6 +533,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			FileSystemEventHandler t = null;
 			var result = wrapper.InvokeHandler(t, null);
 			Assert.IsNull(result);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -471,6 +553,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			};
 			
 			wrapper.InvokeHandler(welcome, null);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -482,6 +568,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			RenamedEventHandler t = null;
 			var result = wrapper.InvokeHandler(t, null);
 			Assert.IsNull(result);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 		[TestMethod]
@@ -498,6 +588,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			};
 			
 			wrapper.InvokeHandler(welcome, null);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 		
 				
@@ -526,6 +620,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			};
 			
 			wrapper.InvokeHandler(welcome, null);
+			
+			wrapper.EnableRaisingEvents = false;
+			wrapper.Dispose();
+			watcher.Dispose();
 		}
 	}
 }
