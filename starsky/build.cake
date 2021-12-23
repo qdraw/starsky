@@ -870,6 +870,12 @@ Task("Default")
     .IsDependentOn("CoverageDocs")
     .IsDependentOn("Zip");
 
+// ./build.sh --Target=BuildAllNoPublish
+Task("BuildAllNoPublish")
+    .IsDependentOn("Client")
+    .IsDependentOn("SonarBuildTest")
+    .IsDependentOn("BuildNetCoreRuntimeSpecific");
+
 // ./build.sh --Target=BuildTestOnlyNetCore
 Task("BuildTestOnlyNetCore")
     .IsDependentOn("TestEnv")

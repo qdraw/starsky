@@ -45,6 +45,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var ctor =
 				typeof(EventQueueOverflowException).GetConstructors(BindingFlags.Instance |
 					BindingFlags.NonPublic | BindingFlags.InvokeMethod).FirstOrDefault();
+			if ( ctor == null ) throw new NullReferenceException();
 			var instance =
 				( EventQueueOverflowException ) ctor.Invoke(new object[]
 				{
