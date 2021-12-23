@@ -44,7 +44,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		public void ctor_PathFilter()
 		{
 			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher(_tempFolder,"*.txt");
-			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, _tempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
 
 			bufferingFileSystemWatcher.EnableRaisingEvents = false;
