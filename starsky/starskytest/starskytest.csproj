@@ -91,7 +91,6 @@
         <None Remove="FakeCreateAn\CreateFakeExifToolWindows\exiftool.zip" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="FakeCreateAn\CreateAnImageCurrupt" />
         <Folder Include="starsky.feature.health\Helpers" />
     </ItemGroup>
     <ItemGroup>

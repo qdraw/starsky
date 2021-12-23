@@ -113,6 +113,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.database
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.consoletelemetry", "starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj", "{48D826B3-2262-422A-941A-AF90E458F647}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D668DDAD-BD6F-4C5B-9ACC-1FFE9E6C3E26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.sync.tests", "tests\starsky.foundation.sync.tests\starsky.foundation.sync.tests.csproj", "{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.storage.tests", "tests\starsky.foundation.storage.tests\starsky.foundation.storage.tests.csproj", "{BC511A6E-5ACE-42EC-8D96-0972A29802B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.platform.tests", "tests\starsky.foundation.platform.tests\starsky.foundation.platform.tests.csproj", "{88DAC892-4017-4AF7-A124-9269949B6E67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -267,6 +275,18 @@ Global
 		{48D826B3-2262-422A-941A-AF90E458F647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48D826B3-2262-422A-941A-AF90E458F647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48D826B3-2262-422A-941A-AF90E458F647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC511A6E-5ACE-42EC-8D96-0972A29802B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC511A6E-5ACE-42EC-8D96-0972A29802B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC511A6E-5ACE-42EC-8D96-0972A29802B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC511A6E-5ACE-42EC-8D96-0972A29802B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DAC892-4017-4AF7-A124-9269949B6E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DAC892-4017-4AF7-A124-9269949B6E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DAC892-4017-4AF7-A124-9269949B6E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88DAC892-4017-4AF7-A124-9269949B6E67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,5 +331,8 @@ Global
 		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{6A237457-45EF-47F2-A225-6340AFF19D4F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{48D826B3-2262-422A-941A-AF90E458F647} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{317E96D7-6CF8-44C0-9EE3-2E74AB25C4FC} = {D668DDAD-BD6F-4C5B-9ACC-1FFE9E6C3E26}
+		{BC511A6E-5ACE-42EC-8D96-0972A29802B4} = {D668DDAD-BD6F-4C5B-9ACC-1FFE9E6C3E26}
+		{88DAC892-4017-4AF7-A124-9269949B6E67} = {D668DDAD-BD6F-4C5B-9ACC-1FFE9E6C3E26}
 	EndGlobalSection
 EndGlobal
