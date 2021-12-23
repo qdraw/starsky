@@ -11,11 +11,23 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 	public class BufferingFileSystemWatcherTest
 	{
 		private readonly string _tempFolder;
+		private readonly string _tempExistingFilesFolder;
 
 		public BufferingFileSystemWatcherTest()
 		{
 			_tempFolder = Path.Combine(new AppSettings().TempFolder, "__watcher");
+			_tempExistingFilesFolder = Path.Combine(new AppSettings().TempFolder, "__watcher2");
+
 			new StorageHostFullPathFilesystem().CreateDirectory(_tempFolder);
+			new StorageHostFullPathFilesystem().CreateDirectory(_tempExistingFilesFolder);
+		}
+		
+		[ClassCleanup]
+		public void ClassCleanup()
+		{
+			Console.WriteLine("cleanup run");
+			new StorageHostFullPathFilesystem().FolderDelete(_tempFolder);
+			new StorageHostFullPathFilesystem().FolderDelete(_tempExistingFilesFolder);
 		}
 		
 		
@@ -55,8 +67,8 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		public void ctor_SetPath()
 		{
 			var bufferingFileSystemWatcher = new BufferingFileSystemWatcher();
-			bufferingFileSystemWatcher.Path = new AppSettings().TempFolder;
-			Assert.AreEqual(bufferingFileSystemWatcher.Path, new AppSettings().TempFolder);
+			bufferingFileSystemWatcher.Path = _tempFolder;
+			Assert.AreEqual(bufferingFileSystemWatcher.Path, _tempFolder);
 			Assert.IsNotNull(bufferingFileSystemWatcher);
 			
 			bufferingFileSystemWatcher.EnableRaisingEvents = false;
@@ -84,7 +96,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void EnableRaisingDisableEvents()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.Filter = "*.txt";
 			wrapper.EnableRaisingEvents = true;
@@ -105,7 +117,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void Filter()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.Filter = "*.txt";
 			
@@ -120,7 +132,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void IncludeSubdirectories()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.IncludeSubdirectories = true;
 			
@@ -135,7 +147,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void InternalBufferSize()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.InternalBufferSize = 5000;
 			
@@ -150,7 +162,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyFilter()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			const NotifyFilters expectedFilter = new NotifyFilters();
 			wrapper.NotifyFilter = expectedFilter;
@@ -166,7 +178,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void SynchronizingObject()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.SynchronizingObject = null ;
 			
@@ -181,7 +193,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void Site()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.Site = null ;
 			
@@ -196,7 +208,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void OrderByOldestFirst()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -212,7 +224,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void EventQueueCapacity()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.EventQueueCapacity = 32;
 			
@@ -227,7 +239,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
+			new StorageHostFullPathFilesystem().WriteStream(
+				new MemoryStream(new byte[] { }), path);
+			
+			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			
 			var message = "";
@@ -238,7 +254,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			wrapper.NotifyExistingFiles();
 			
-			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsTrue(message.StartsWith(_tempExistingFilesFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -248,7 +264,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_OrderByOldestFirst()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
+			new StorageHostFullPathFilesystem().WriteStream(
+				new MemoryStream(new byte[] { }), path);
+			
+			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -260,7 +280,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			wrapper.NotifyExistingFiles();
 			
-			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsTrue(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -270,7 +290,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_All()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var path = Path.Join(_tempExistingFilesFolder, "test.txt");
+			new StorageHostFullPathFilesystem().WriteStream(
+				new MemoryStream(new byte[] { }), path);
+			
+			var watcher = new FileSystemWatcher(_tempExistingFilesFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -282,7 +306,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			wrapper.NotifyExistingFiles();
 			
-			Assert.IsTrue(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsTrue(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -292,7 +316,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_All_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -305,7 +329,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			
 			wrapper.NotifyExistingFiles();
 			
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -315,7 +339,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Created_Add()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -328,7 +352,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Created += welcome;
 
 			
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -338,7 +362,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Created_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -353,7 +377,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 
 			wrapper.NotifyExistingFiles();
 			
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -364,7 +388,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Changed_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -377,7 +401,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Changed += welcome;
 			wrapper.Changed -= welcome;
 		
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -388,7 +412,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Deleted_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -401,7 +425,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Deleted += welcome;
 			wrapper.Deleted -= welcome;
 		
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -412,7 +436,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Renamed_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -425,7 +449,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 			wrapper.Renamed += welcome;
 			wrapper.Renamed -= welcome;
 		
-			Assert.IsFalse(message.StartsWith(new AppSettings().TempFolder));
+			Assert.IsFalse(message.StartsWith(_tempFolder));
 
 			wrapper.EnableRaisingEvents = false;
 			wrapper.Dispose();
@@ -435,7 +459,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void BufferEvent()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.EventQueueCapacity = 1;
 
@@ -454,7 +478,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void NotifyExistingFiles_Error_Remove()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			wrapper.OrderByOldestFirst = true;
 			
@@ -479,9 +503,11 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void RaiseBufferedEventsUntilCancelledInLoop_Created()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
-			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Created, string.Empty, string.Empty, string.Empty));
+			var args = new RenamedEventArgs(WatcherChangeTypes.Created,
+				string.Empty, string.Empty, string.Empty);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(args);
 			Assert.AreEqual(WatcherChangeTypes.Created, result);
 			
 			wrapper.EnableRaisingEvents = false;
@@ -492,16 +518,18 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void RaiseBufferedEventsUntilCancelledInLoop_Changed()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
-			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Changed, string.Empty, string.Empty, string.Empty));
+			var args = new RenamedEventArgs(WatcherChangeTypes.Changed,
+				string.Empty, string.Empty, string.Empty);
+			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(args);
 			Assert.AreEqual(WatcherChangeTypes.Changed, result);
 		}
 				
 		[TestMethod]
 		public void RaiseBufferedEventsUntilCancelledInLoop_Deleted()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Deleted, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Deleted, result);
@@ -514,7 +542,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void RaiseBufferedEventsUntilCancelledInLoop_Renamed()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 			var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(new RenamedEventArgs(WatcherChangeTypes.Renamed, string.Empty, string.Empty, string.Empty));
 			Assert.AreEqual(WatcherChangeTypes.Renamed, result);
@@ -527,7 +555,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void InvokeHandlerFileSystemEventHandlerNull()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			FileSystemEventHandler t = null;
@@ -543,7 +571,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[ExpectedException(typeof(NullReferenceException))]
 		public void InvokeHandlerFileSystemEventHandler()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			var message = string.Empty;
@@ -562,7 +590,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void InvokeHandler_RenamedEventHandler_Null()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			RenamedEventHandler t = null;
@@ -578,7 +606,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[ExpectedException(typeof(NullReferenceException))]
 		public void InvokeHandler_RenamedEventHandler()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			var message = string.Empty;
@@ -598,7 +626,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[TestMethod]
 		public void InvokeHandler_ErrorEventHandler_Null()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			ErrorEventHandler t = null;
@@ -610,7 +638,7 @@ namespace starskytest.starsky.foundation.sync.WatcherServices
 		[ExpectedException(typeof(NullReferenceException))]
 		public void InvokeHandler_ErrorEventHandler()
 		{
-			var watcher = new FileSystemWatcher(new AppSettings().TempFolder);
+			var watcher = new FileSystemWatcher(_tempFolder);
 			var wrapper = new BufferingFileSystemWatcher(watcher);
 
 			var message = string.Empty;
