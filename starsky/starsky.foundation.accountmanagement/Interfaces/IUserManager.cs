@@ -58,6 +58,14 @@ namespace starsky.foundation.accountmanagement.Interfaces
     {
 	    Task<List<User>> AllUsersAsync();
 	    
+	    /// <summary>
+	    /// Add a new user, including Roles and UserRoles
+	    /// </summary>
+	    /// <param name="name">Nice Name, default string.Emthy</param>
+	    /// <param name="credentialTypeCode">default is: Email</param>
+	    /// <param name="identifier">an email address, e.g. dont@mail.us</param>
+	    /// <param name="secret">Password</param>
+	    /// <returns>result object</returns>
         Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 	        string identifier, string secret);
         
