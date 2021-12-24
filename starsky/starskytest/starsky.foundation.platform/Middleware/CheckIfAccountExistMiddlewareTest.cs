@@ -62,7 +62,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		}
 		
 		[TestMethod]
-		public void NotLoggedIn()
+		public async Task NotLoggedIn()
 		{
 			var invoked = false;
 			var middleware = new CheckIfAccountExistMiddleware(next:
@@ -79,7 +79,7 @@ namespace starskytest.starsky.foundation.platform.Middleware
 					Path = "/api/index"
 				}
 			};
-			middleware.Invoke(httpContext);
+			await middleware.Invoke(httpContext);
 			Assert.IsTrue(invoked);
 		}
 		

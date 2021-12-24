@@ -28,6 +28,8 @@ namespace starskytest.FakeMocks
 		public Credential Credentials { get; set; }
 		public Role Role { get; set; }
 
+		public List<User> Users { get; set; } = new List<User>();
+
 		public Task<List<User>> AllUsersAsync()
 		{
 			return Task.FromResult(new List<User>{CurrentUser});
@@ -41,6 +43,11 @@ namespace starskytest.FakeMocks
 		public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 			string identifier, string secret)
 		{
+			Users.Add(new User{Name = name, Credentials = new List<Credential>
+			{
+				new Credential{ CredentialType = new CredentialType{Code = "email"}, Identifier = identifier, Secret = secret}
+			}});
+			
 			return Task.FromResult(new SignUpResult());
 		}
 

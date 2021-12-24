@@ -14,6 +14,7 @@ namespace starsky.foundation.accountmanagement.Helpers
 		/// <returns></returns>
 		public static bool IsHostLocalHost(IPAddress connectionLocalIpAddress, IPAddress connectionRemoteIpAddress)
 		{
+			if ( connectionLocalIpAddress == null || connectionRemoteIpAddress == null ) return false;
 			return connectionRemoteIpAddress.Equals(connectionLocalIpAddress) || IPAddress.IsLoopback(connectionRemoteIpAddress);
 		}
 	}

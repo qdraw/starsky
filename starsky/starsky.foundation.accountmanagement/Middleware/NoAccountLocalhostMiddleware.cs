@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
 
 // ReSharper disable once IdentifierTypo
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.accountmanagement.Middleware
 {
     /// <summary>
@@ -20,6 +22,8 @@ namespace starsky.foundation.accountmanagement.Middleware
 
         private readonly RequestDelegate _next;
 
+        internal const string Identifier = "mail@localhost";
+
         public async Task Invoke(HttpContext context)
         {
 	        var isHostLocal = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress, context.Connection.RemoteIpAddress);
@@ -31,13 +35,13 @@ namespace starsky.foundation.accountmanagement.Middleware
 	        {
 		        var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
 
-		        const string identifier = "mail@localhost";
-		        var users = userManager.GetUser("email", identifier);
+		        var users = userManager.GetUser("email", Identifier);
 		        if ( users == null )
 		        {
+			        var newPassword = Convert.ToBase64String(
+					        Pbkdf2Hasher.GenerateRandomSalt());
 			        await userManager.SignUpAsync(string.Empty, 
-				        "email", identifier, 
-				        Convert.ToBase64String(Pbkdf2Hasher.GenerateRandomSalt()));
+				        "email", Identifier, newPassword+newPassword);
 		        }
 		        
 		        await userManager.SignIn(context, users, true);
