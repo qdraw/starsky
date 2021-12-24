@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -292,7 +293,27 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 
 			Assert.AreEqual("GetUser",user.Name);
 		}
+		
+		[TestMethod]
+		public void GetUser_credentialTypeNull_IdDoesNotExist()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			var user = userManager.GetUser("email", "sfkknfdlknsdfl@mail.us");
+			Assert.IsNull(user);
+		}
 
+				
+		[TestMethod]
+		public void GetUser_IdDoesNotExist()
+		{
+			var userManager = new UserManager(_dbContext, new AppSettings(), _memoryCache);
+			userManager.AddDefaultCredentialType("email");
+			
+			var user = userManager.GetUser("email", "sfkknfdlknsdfl@mail.us");
+			Assert.IsNull(user);
+		}
+		
+		
 		[TestMethod]
 		public void PreflightValidate_Fail_stringEmpty()
 		{

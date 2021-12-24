@@ -94,7 +94,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// </summary>
 		/// <param name="credentialTypeCode">the type, for example email</param>
 		/// <returns></returns>
-		private CredentialType AddDefaultCredentialType(string credentialTypeCode)
+		internal async Task<CredentialType> AddDefaultCredentialType(string credentialTypeCode)
 		{
 			CredentialType credentialType = _dbContext
 				.CredentialTypes.TagWith("AddDefaultCredentialType")
@@ -111,7 +111,8 @@ namespace starsky.foundation.accountmanagement.Services
 					Position = 1,
 					Id = 1
 				};
-				_dbContext.CredentialTypes.Add(credentialType);
+				await _dbContext.CredentialTypes.AddAsync(credentialType);
+				await _dbContext.SaveChangesAsync();
 			}
 
 			return credentialType;
@@ -210,7 +211,7 @@ namespace starsky.foundation.accountmanagement.Services
 		public async Task<SignUpResult> SignUpAsync(string name,
 			string credentialTypeCode, string identifier, string secret)
 		{
-			var credentialType = AddDefaultCredentialType(credentialTypeCode);
+			var credentialType = await AddDefaultCredentialType(credentialTypeCode);
 			var roles = AddDefaultRoles();
 			AddDefaultPermissions();
 			AddDefaultRolePermissions();
@@ -620,7 +621,8 @@ namespace starsky.foundation.accountmanagement.Services
 		public User GetUser(string credentialTypeCode, string identifier)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
-			Credential credential = _dbContext.Credentials.FirstOrDefault(
+			if ( credentialType == null ) return null;
+			var credential = _dbContext.Credentials?.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
 			if ( credential == null ) return null;
 			return _dbContext.Users.TagWith("GetUser").FirstOrDefault(p => p.Id == credential.UserId);
