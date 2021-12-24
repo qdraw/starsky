@@ -22,6 +22,8 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				{
 					app.UseContentSecurityPolicy();
 					app.UseBasicAuthentication();
+					app.UseNoAccountLocalhost(false);
+					app.UseCheckIfAccountExist();
 				}).Build();
 
 			await host.StartAsync();

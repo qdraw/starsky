@@ -135,6 +135,11 @@ namespace starskytest.FakeMocks
 			return null;
 		}
 
+		public Task<User> Exist(int userTableId)
+		{
+			return Task.FromResult(CurrentUser) ;
+		}
+
 		public Role GetRole(string credentialTypeCode, string identifier)
 		{
 			return Role;
