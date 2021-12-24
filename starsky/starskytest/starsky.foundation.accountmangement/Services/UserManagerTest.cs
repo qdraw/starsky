@@ -372,5 +372,51 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.AreEqual(1, result.Count);
 			Assert.AreEqual("test", result[0].Value);
 		}
+		
+				
+		[TestMethod]
+		public async Task Cache_ExistsByUserTableId_HitResult()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
+
+			var result = await userManager.Exist(1);
+			
+			Assert.IsNotNull(result);
+		}
+		
+		[TestMethod]
+		public async Task Cache_ExistsByUserTableId_NotFound()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
+
+			var result = await userManager.Exist(2);
+			
+			Assert.IsNull(result);
+		}
+		
+						
+		[TestMethod]
+		public async Task Db_ExistsByUserTableId_HitResult()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, _memoryCache);
+			var id = await userManager.SignUpAsync(string.Empty, "email", "t", "t");
+			Assert.IsNotNull(id);
+
+			var result = await userManager.Exist(id.User.Id);
+			
+			Assert.IsNotNull(result);
+		}
+		
+		[TestMethod]
+		public async Task Db_ExistsByUserTableId_NotFound()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings{AddMemoryCache = false}, _memoryCache);
+
+			var result = await userManager.Exist(852);
+			
+			Assert.IsNull(result);
+		}
 	}
 }
