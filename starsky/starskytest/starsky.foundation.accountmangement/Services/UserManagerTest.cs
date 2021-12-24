@@ -391,7 +391,7 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
 			await userManager.AddUserToCache(new User{Name = "cachedUser", Id = 1});
 
-			var result = await userManager.Exist(2);
+			var result = await userManager.Exist(9822);
 			
 			Assert.IsNull(result);
 		}
