@@ -55,7 +55,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Back-end_  Avoid Disposed Query objects in syncWatcherConnector (PR #575)
 - [x]   (Changed) _Back-end_  change FileSystemWatcher to BufferingFileSystemWatcher (PR #575)
 - [x]   (Changed) _Back-end_  Add filter for FileSystemWatcher spamming with lots of events (PR #575)
-
+- [x]   (Added) _Back-end_ Feature toggle to disable login for localhost requests (PR #579)
+- [x]   (Added) _Back-end_ Check if account exists middleware _UseCheckIfAccountExist_  (PR #579)
+  
 - todo: test electron with new version
 
 # version 0.4.13 - 2021-12-15

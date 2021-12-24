@@ -94,7 +94,7 @@ namespace starsky.foundation.accountmanagement.Services
 		/// </summary>
 		/// <param name="credentialTypeCode">the type, for example email</param>
 		/// <returns></returns>
-		private CredentialType AddDefaultCredentialType(string credentialTypeCode)
+		internal async Task<CredentialType> AddDefaultCredentialType(string credentialTypeCode)
 		{
 			CredentialType credentialType = _dbContext
 				.CredentialTypes.TagWith("AddDefaultCredentialType")
@@ -111,7 +111,8 @@ namespace starsky.foundation.accountmanagement.Services
 					Position = 1,
 					Id = 1
 				};
-				_dbContext.CredentialTypes.Add(credentialType);
+				await _dbContext.CredentialTypes.AddAsync(credentialType);
+				await _dbContext.SaveChangesAsync();
 			}
 
 			return credentialType;
@@ -188,6 +189,17 @@ namespace starsky.foundation.accountmanagement.Services
 			return user;
 		}
 
+		public async Task<User> Exist(int userTableId)
+		{
+			if ( !IsCacheEnabled() )
+			{
+				return await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == userTableId);
+			}
+			
+			var users = await AllUsersAsync();
+			return users.FirstOrDefault(p => p.Id == userTableId);
+		}
+
 		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>
@@ -195,11 +207,11 @@ namespace starsky.foundation.accountmanagement.Services
 		/// <param name="credentialTypeCode">default is: Email</param>
 		/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 		/// <param name="secret">Password</param>
-		/// <returns></returns>
+		/// <returns>result object</returns>
 		public async Task<SignUpResult> SignUpAsync(string name,
 			string credentialTypeCode, string identifier, string secret)
 		{
-			var credentialType = AddDefaultCredentialType(credentialTypeCode);
+			var credentialType = await AddDefaultCredentialType(credentialTypeCode);
 			var roles = AddDefaultRoles();
 			AddDefaultPermissions();
 			AddDefaultRolePermissions();
@@ -214,14 +226,14 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( user == null )
 			{
 				// Check if user not already exist
-				var createdDate = DateTime.Now;
+				var createdDate = DateTime.UtcNow;
 				user = new User
 				{
 					Name = name,
 					Created = createdDate
 				};
 		        
-				_dbContext.Users.Add(user);
+				await _dbContext.Users.AddAsync(user);
 				await _dbContext.SaveChangesAsync();
 				await AddUserToCache(user);
 
@@ -254,7 +266,7 @@ namespace starsky.foundation.accountmanagement.Services
                 
 			credential.Secret = hash;
 			credential.Extra = Convert.ToBase64String(salt);
-			_dbContext.Credentials.Add(credential);
+			await _dbContext.Credentials.AddAsync(credential);
 			await _dbContext.SaveChangesAsync();
 
 			return new SignUpResult(user: user, success: true);
@@ -609,8 +621,10 @@ namespace starsky.foundation.accountmanagement.Services
 		public User GetUser(string credentialTypeCode, string identifier)
 		{
 			var credentialType = CachedCredentialType(credentialTypeCode);
-			Credential credential = _dbContext.Credentials.FirstOrDefault(
+			if ( credentialType == null ) return null;
+			var credential = _dbContext.Credentials?.FirstOrDefault(
 				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+			if ( credential == null ) return null;
 			return _dbContext.Users.TagWith("GetUser").FirstOrDefault(p => p.Id == credential.UserId);
 		}
 
@@ -661,8 +675,9 @@ namespace starsky.foundation.accountmanagement.Services
 		internal IEnumerable<Claim> GetUserPermissionClaims(Role role)
 		{
 			List<Claim> claims = new List<Claim>();
-			IEnumerable<int> permissionIds = _dbContext.RolePermissions.Where(
-				rp => rp.RoleId == role.Id).Select(rp => rp.PermissionId).ToList();
+			var rolePermissions = _dbContext.RolePermissions.Where(
+				rp => rp.RoleId == role.Id);
+			IEnumerable<int> permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
 			foreach (var permissionId in permissionIds)
 			{

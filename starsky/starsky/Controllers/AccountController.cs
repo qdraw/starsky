@@ -87,7 +87,7 @@ namespace starsky.Controllers
 		[HttpHead("/account/login")]
 		[ProducesResponseType(200)]
 		[Produces("text/html")]
-		public IActionResult LoginGet(string returnUrl = null)
+		public IActionResult LoginGet(string returnUrl = null, bool? fromLogout = null)
 		{
 			new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 			var clientApp = Path.Combine(_appSettings.BaseDirectoryProject,
@@ -158,7 +158,8 @@ namespace starsky.Controllers
         public IActionResult Logout(string returnUrl = null)
         {
             _userManager.SignOut(HttpContext);
-            return RedirectToAction(nameof(LoginGet), new {ReturnUrl = returnUrl});
+            // fromLogout is used in middleware
+            return RedirectToAction(nameof(LoginGet), new {ReturnUrl = returnUrl, fromLogout = true});
         }
         
         /// <summary>

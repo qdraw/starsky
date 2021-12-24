@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.health.HealthCheck;
+using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -266,7 +267,9 @@ namespace starsky
 
 			app.UseAuthentication();
             app.UseBasicAuthentication();
-
+            app.UseNoAccountLocalhost(_appSettings?.NoAccountLocalhost == true);
+            app.UseCheckIfAccountExist();
+            
 			app.UseAuthorization();
 			app.UseEndpoints(endpoints =>
 			{

@@ -36,6 +36,7 @@ export async function setupChildProcess() {
     app__thumbnailTempFolder: thumbnailTempFolder,
     app__tempFolder: tempFolder,
     app__appSettingsPath: appSettingsPath,
+    app__NoAccountLocalhost: "true",
     app__databaseConnection: databaseConnection,
     app__AccountRegisterDefaultRole: "Administrator",
     app__Verbose: !isPackaged() ? "true" : "false"
