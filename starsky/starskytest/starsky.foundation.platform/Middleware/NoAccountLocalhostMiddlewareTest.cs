@@ -129,6 +129,35 @@ namespace starskytest.starsky.foundation.platform.Middleware
 		}
 		
 		[TestMethod]
+		public async Task NullNotLoginShouldCreate()
+		{
+			var invoked = false;
+			var middleware = new NoAccountLocalhostMiddleware(next:
+				(_) =>
+				{
+					invoked = true;
+					return Task.FromResult(0);
+				});
+			
+			var services = new ServiceCollection();
+			services.AddSingleton<IUserManager, FakeUserManagerActiveUsers>();
+			var serviceProvider = services.BuildServiceProvider();
+			
+			var httpContext = new DefaultHttpContext
+			{
+				Connection = { RemoteIpAddress = IPAddress.Loopback, LocalIpAddress = IPAddress.Loopback},
+				RequestServices = serviceProvider
+				// Missing Path
+			};
+			await middleware.Invoke(httpContext);
+
+			var userManager = serviceProvider.GetService<IUserManager>() as FakeUserManagerActiveUsers;
+			Assert.IsTrue(userManager.Users.Any(p => p.Credentials.Any(p => p.Identifier == NoAccountLocalhostMiddleware.Identifier)));
+			
+			Assert.IsTrue(invoked);
+		}
+		
+		[TestMethod]
 		public async Task HasClaim_AndAuthenticated()
 		{
 			var invoked = false;

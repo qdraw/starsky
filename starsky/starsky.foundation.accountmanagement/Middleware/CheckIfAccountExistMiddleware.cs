@@ -22,6 +22,15 @@ namespace starsky.foundation.accountmanagement.Middleware
 
 		private readonly RequestDelegate _next;
 
+		internal static int GetUserTableIdFromClaims(HttpContext httpContext)
+		{
+			var idAsString = httpContext.User.Claims
+				.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
+				?.Value;
+			int.TryParse(idAsString, out var id);
+			return id;
+		}
+
 		public async Task Invoke(HttpContext context)
 		{
 			var isApiCall = context.Request.Path.HasValue && (
@@ -34,10 +43,8 @@ namespace starsky.foundation.accountmanagement.Middleware
 			if (context.User.Identity.IsAuthenticated && isApiCall)
 			{
 				var userManager = (IUserManager) context.RequestServices.GetService(typeof(IUserManager));
-				var idAsString = context.User.Claims
-					.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
-					?.Value;
-				int.TryParse(idAsString, out var id);
+
+				var id = GetUserTableIdFromClaims(context);
 				var result = await userManager.Exist(id);
 				if ( result == null)
 				{

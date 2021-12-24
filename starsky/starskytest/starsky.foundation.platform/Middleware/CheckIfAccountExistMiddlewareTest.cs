@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
@@ -135,6 +137,26 @@ namespace starskytest.starsky.foundation.platform.Middleware
 			
 			Assert.IsFalse(invoked);
 			Assert.AreEqual(401,httpContextAccessor.HttpContext.Response.StatusCode);
+		}
+
+		[TestMethod]
+		public void GetUserTableIdFromClaims_NameIdentifierNull()
+		{
+			var fromClaims = CheckIfAccountExistMiddleware.GetUserTableIdFromClaims(
+				new DefaultHttpContext{User = new ClaimsPrincipal()});
+			Assert.AreEqual(0,fromClaims);
+		}
+		
+		[TestMethod]
+		public void GetUserTableIdFromClaims_Valid()
+		{
+			var userId = "2";
+			var httpContext = new DefaultHttpContext();
+			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) };
+			httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			
+			var fromClaims = CheckIfAccountExistMiddleware.GetUserTableIdFromClaims(httpContext);
+			Assert.AreEqual(2,fromClaims);
 		}
 	}
 }
