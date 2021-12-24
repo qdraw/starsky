@@ -188,6 +188,17 @@ namespace starsky.foundation.accountmanagement.Services
 			return user;
 		}
 
+		public async Task<User> Exist(int userTableId)
+		{
+			if ( !IsCacheEnabled() )
+			{
+				return await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == userTableId);
+			}
+			
+			var users = await AllUsersAsync();
+			return users.FirstOrDefault(p => p.Id == userTableId);
+		}
+
 		/// <summary>
 		/// Add a new user, including Roles and UserRoles
 		/// </summary>

@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
-using starsky.foundation.database.Models.Account;
 
 // ReSharper disable once IdentifierTypo
 namespace starsky.foundation.accountmanagement.Middleware
 {
     /// <summary>
-    /// Accepts either username or email as user identifier for sign in with Http Basic authentication
+    /// Auto login when use is on localhost
     /// </summary>
     public class NoAccountLocalhostMiddleware
     {

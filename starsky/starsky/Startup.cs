@@ -268,7 +268,8 @@ namespace starsky
 			app.UseAuthentication();
             app.UseBasicAuthentication();
             app.UseNoAccountLocalhost(_appSettings?.NoAccountLocalhost == true);
-
+            app.UseCheckIfAccountExist();
+            
 			app.UseAuthorization();
 			app.UseEndpoints(endpoints =>
 			{

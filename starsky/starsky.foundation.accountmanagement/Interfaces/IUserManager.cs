@@ -85,6 +85,8 @@ namespace starsky.foundation.accountmanagement.Interfaces
         Task<ValidateResult> RemoveUser(string credentialTypeCode,
 	        string identifier);
         User Exist(string identifier);
+
+        Task<User> Exist(int userTableId);
         Role GetRole(string credentialTypeCode, string identifier);
         bool PreflightValidate(string userName, string password, string confirmPassword);
     }
