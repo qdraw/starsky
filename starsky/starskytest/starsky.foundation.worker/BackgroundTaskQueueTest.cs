@@ -85,6 +85,9 @@ namespace starskytest.starsky.foundation.worker
 
 			var backgroundQueue = serviceProvider.GetService<IUpdateBackgroundTaskQueue>();
 
+			if ( service == null )
+				throw new NullReferenceException("bg is null");
+			
 			await service.StartAsync(CancellationToken.None);
 
 			var isExecuted = false;
