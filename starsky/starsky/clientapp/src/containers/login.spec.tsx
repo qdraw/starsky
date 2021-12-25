@@ -1,5 +1,5 @@
 import { globalHistory } from "@reach/router";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { act } from "react-dom/test-utils";
 import * as useFetch from "../hooks/use-fetch";
@@ -35,12 +35,43 @@ describe("Login", () => {
       "get"
     );
 
-    const err = login.queryByTestId("logout-content");
+    const err = screen.queryByTestId("logout-content");
     expect(err).toBeTruthy();
 
     act(() => {
       globalHistory.navigate("/");
       login.unmount();
+    });
+  });
+
+  it("database error", () => {
+    globalHistory.navigate("/?ReturnUrl=/");
+
+    // usage ==> import * as useFetch from '../hooks/use-fetch';
+    const connectionDefaultExample = {
+      statusCode: 500,
+      data: ""
+    } as IConnectionDefault;
+
+    var useFetchSpy = jest
+      .spyOn(useFetch, "default")
+      .mockImplementationOnce(() => connectionDefaultExample)
+      .mockImplementationOnce(() => connectionDefaultExample);
+
+    var view = render(<Login />);
+
+    expect(useFetchSpy).toBeCalled();
+    expect(useFetchSpy).toBeCalledWith(
+      new UrlQuery().UrlAccountStatus(),
+      "get"
+    );
+
+    const err = screen.queryByTestId("logout-content");
+    expect(err).toBeTruthy();
+
+    act(() => {
+      globalHistory.navigate("/");
+      view.unmount();
     });
   });
 
