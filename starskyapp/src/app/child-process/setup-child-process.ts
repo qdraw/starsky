@@ -38,12 +38,13 @@ export async function setupChildProcess() {
     ASPNETCORE_URLS: `http://localhost:${appPort}`,
     app__thumbnailTempFolder: thumbnailTempFolder,
     app__tempFolder: tempFolder,
-    app__appSettingsPath: appSettingsPath,
+    app__appsettingspath: appSettingsPath,
     app__NoAccountLocalhost: "true",
     app__databaseConnection: databaseConnection,
     app__AccountRegisterDefaultRole: "Administrator",
     app__Verbose: !isPackaged() ? "true" : "false"
   };
+  process.env = {...process.env, ...env};
 
   logger.info("env settings ->");
   logger.info(env);
@@ -59,7 +60,7 @@ export async function setupChildProcess() {
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
     detached: true,
-    env: {...process.env, ...env},
+    env: process.env,
   });
 
   starskyChild.stdout.on("data", function (data) {
