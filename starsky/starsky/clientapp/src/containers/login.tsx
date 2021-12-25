@@ -52,6 +52,10 @@ const Login: React.FC<ILoginProps> = () => {
     "Er is geen verbinding mogelijk, probeer het later opnieuw",
     "No connection is possible, please try again later"
   );
+  const MessageDatabaseConnection = language.text(
+    "Er zijn problemen met de verbinding met de database. Controleer en pas de appsettings aan",
+    "There are database connection issues. Check and edit the appsettings"
+  );
   const LogoutWarning = language.text(
     "Wil je uitloggen?",
     "Do you want to log out?"
@@ -137,6 +141,14 @@ const Login: React.FC<ILoginProps> = () => {
           <div className="warning-box">
             Your browser is not supported, please try the latest version of
             Firefox or Chrome
+          </div>
+        </div>
+      ) : null}
+
+      {accountStatus.statusCode === 500 ? (
+        <div className="content">
+          <div data-test="message-database-connection" className="warning-box">
+            {MessageDatabaseConnection}
           </div>
         </div>
       ) : null}
