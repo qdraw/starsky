@@ -31,6 +31,9 @@ export async function setupChildProcess() {
 
   appPort = await getFreePort();
 
+  logger.info('-appSettingsPath >');
+  logger.info(appSettingsPath);
+
   const env = {
     ASPNETCORE_URLS: `http://localhost:${appPort}`,
     app__thumbnailTempFolder: thumbnailTempFolder,
@@ -56,7 +59,7 @@ export async function setupChildProcess() {
   const starskyChild = spawn(appStarskyPath, {
     cwd: path.dirname(appStarskyPath),
     detached: true,
-    env
+    env: {...process.env, ...env},
   });
 
   starskyChild.stdout.on("data", function (data) {
