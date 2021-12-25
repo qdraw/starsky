@@ -38,8 +38,7 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 		[TestMethod]
 		public void AppInsights_DoNotInjectClient()
 		{
-			var taskQueue = new DiskWatcherBackgroundTaskQueue(
-				new TelemetryClient(new TelemetryConfiguration()));
+			var taskQueue = new DiskWatcherBackgroundTaskQueue();
 			var result = taskQueue.TrackQueue();
 			Assert.IsFalse(result);
 		}
