@@ -32,8 +32,10 @@ function setRouter(app) {
 
   app.get(prefix + '/', (req, res) => res.send('Hello World!'));
 
-  app.get(prefix + '/api/account/status', (req, res) => res.json(accountStatus));
-
+  app.get(prefix + '/api/account/status', (req, res) => {
+    res.statusCode = 200
+    res.json(accountStatus)
+  });
 
   var isChangePasswordSuccess = false;
   app.post(prefix + '/api/account/change-secret/', (req, res) => {

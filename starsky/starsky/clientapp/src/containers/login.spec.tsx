@@ -44,7 +44,7 @@ describe("Login", () => {
     });
   });
 
-  it("database error", () => {
+  it("database error message-database-connection", () => {
     globalHistory.navigate("/?ReturnUrl=/");
 
     // usage ==> import * as useFetch from '../hooks/use-fetch';
@@ -66,7 +66,7 @@ describe("Login", () => {
       "get"
     );
 
-    const err = screen.queryByTestId("logout-content");
+    const err = screen.queryByTestId("message-database-connection");
     expect(err).toBeTruthy();
 
     act(() => {
