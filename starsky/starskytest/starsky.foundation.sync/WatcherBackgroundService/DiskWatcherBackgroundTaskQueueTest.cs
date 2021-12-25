@@ -1,6 +1,9 @@
 using System.Threading;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.sync.WatcherBackgroundService;
+using starskytest.FakeMocks;
 
 namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 {
@@ -21,6 +24,24 @@ namespace starskytest.starsky.foundation.sync.WatcherBackgroundService
 			queue.DequeueAsync(token);
 			Assert.IsNotNull(token);
 
+		}
+
+		[TestMethod]
+		public void AppInsights_InjectClient()
+		{
+			var taskQueue = new DiskWatcherBackgroundTaskQueue(
+				new TelemetryClient(new TelemetryConfiguration()));
+			var result = taskQueue.TrackQueue();
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void AppInsights_DoNotInjectClient()
+		{
+			var taskQueue = new DiskWatcherBackgroundTaskQueue(
+				new TelemetryClient(new TelemetryConfiguration()));
+			var result = taskQueue.TrackQueue();
+			Assert.IsFalse(result);
 		}
 	}
 }
