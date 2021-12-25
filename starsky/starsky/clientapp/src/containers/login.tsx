@@ -147,7 +147,9 @@ const Login: React.FC<ILoginProps> = () => {
 
       {accountStatus.statusCode === 500 ? (
         <div className="content">
-          <div className="warning-box">{MessageDatabaseConnection}</div>
+          <div data-test="message-database-connection" className="warning-box">
+            {MessageDatabaseConnection}
+          </div>
         </div>
       ) : null}
 
