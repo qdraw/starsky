@@ -36,7 +36,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 					"{\n \"app\" :{\n   \"isAccountRegisterOpen\": \"true\"\n }\n}\n");
 
 			await _hostStorage.WriteStreamAsync(example, path);
-			Environment.SetEnvironmentVariable("app__AppSettingsPath", path);
+			Environment.SetEnvironmentVariable("app__appsettingspath", path);
 			var builder = await SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
 			var appSettings = SetupAppSettings.ConfigurePoCoAppSettings(services, builder);
@@ -46,13 +46,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 			Assert.AreEqual(path,appSettings.AppSettingsPath );
 			
 			_hostStorage.FolderDelete(appDataFolderFullPath);
-			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
+			Environment.SetEnvironmentVariable("app__appsettingspath", null);
 		}
 		
 		[TestMethod]
 		public async Task SetLocalAppData_ShouldTakeDefault()
 		{
-			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
+			Environment.SetEnvironmentVariable("app__appsettingspath", null);
 			
 			var builder = await SetupAppSettings.AppSettingsToBuilder();
 			var services = new ServiceCollection();
@@ -154,13 +154,13 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
 				" }\n}\n"), Path.Combine(testDir, "appsettings_ref_patch.json"));
 			
-			Environment.SetEnvironmentVariable("app__AppSettingsPath", Path.Combine(testDir, "appsettings_ref_patch.json"));
+			Environment.SetEnvironmentVariable("app__appsettingspath", Path.Combine(testDir, "appsettings_ref_patch.json"));
 			
 			var result = await SetupAppSettings.MergeJsonFiles(testDir);
 			Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
 			Assert.AreEqual(false, result.AddSwagger);
 			
-			Environment.SetEnvironmentVariable("app__AppSettingsPath", null);
+			Environment.SetEnvironmentVariable("app__appsettingspath", null);
 		}
 	}
 }
