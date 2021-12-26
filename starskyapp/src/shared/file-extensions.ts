@@ -18,6 +18,6 @@ export class FileExtensions {
     var filenameRegex = /[^/]+(?=\.[\w]+\.$)|[^/]+$/;
     var fileNameMatchArray = filePath.match(filenameRegex);
     if (!fileNameMatchArray) return "/";
-    return fileNameMatchArray[0];
+    return fileNameMatchArray[0].replace("\n","");
   }
 }
