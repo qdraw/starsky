@@ -14,7 +14,7 @@ namespace starsky.Controllers
 	public class MemoryCacheDebugController: Controller
 	{
 		private readonly IMemoryCache _memoryCache;
-		private IWebLogger _logger;
+		private readonly IWebLogger _logger;
 
 		public MemoryCacheDebugController(IMemoryCache memoryCache, IWebLogger logger)
 		{
