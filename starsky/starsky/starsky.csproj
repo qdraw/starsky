@@ -118,6 +118,15 @@
         <None Remove="clientapp\node_modules\**" />
         <None Remove="clientapp\coverage\**" />
     </ItemGroup>
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Account\ChangePassword.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ConfirmEmail.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\ResetPasswordConfirmation.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\SignedOut.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Account\_StatusMessage.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
+    </ItemGroup>
     <PropertyGroup>
         <SourceRevisionId>build$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</SourceRevisionId>
     </PropertyGroup>

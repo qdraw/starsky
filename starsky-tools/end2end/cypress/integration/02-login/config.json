@@ -2,17 +2,17 @@
     "starsky": {
       "local": {
         "isEnabled": true,
-        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F",
+        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F&fromLogout=true",
         "successUrl" : "/?f=/"
       },
       "heroku-demo" : {
         "isEnabled": true,
-        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F",
+        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F&fromLogout=true",
         "successUrl" : "/?f=/"
       },
       "no-create-account" : {
         "isEnabled": true,
-        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F",
+        "url": "/account/login?ReturnUrl=%2F%3Ff%3D%2F&fromLogout=true",
         "successUrl" : "/?f=/"
       }
     }
