@@ -395,10 +395,29 @@ namespace starsky.foundation.accountmanagement.Services
 				return ( Credential ) objectCredentialTypeCode;
 			}
 
-			var credential = _dbContext.Credentials.TagWith("Credential").FirstOrDefault(
-				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier);
+			
+			var credentialSelect = _dbContext.Credentials.AsNoTracking().TagWith("Credential").Where(
+				c => c.CredentialTypeId == credentialType.Id && c.Identifier == identifier).Select(x => new
+			{
+				x.Id,
+				x.UserId,
+				x.CredentialTypeId,
+				x.Secret,
+				x.Extra
+			}).FirstOrDefault();
 
-			if ( IsCacheEnabled() && credential != null )
+			if ( credentialSelect == null ) return null;
+
+			var credential = new Credential
+			{
+				Id = credentialSelect.Id,
+				UserId = credentialSelect.UserId,
+				CredentialTypeId = credentialSelect.CredentialTypeId,
+				Secret = credentialSelect.Secret,
+				Extra = credentialSelect.Extra,
+			};
+
+			if ( IsCacheEnabled())
 			{
 				_cache.Set(key, credential,new TimeSpan(99,0,0));
 			}
@@ -421,10 +440,25 @@ namespace starsky.foundation.accountmanagement.Services
 			{
 				return ( CredentialType ) objectCredentialTypeCode;
 			}
+			
+			var credentialTypeSelect = _dbContext.CredentialTypes.AsNoTracking().TagWith("CredentialType").Where(
+				ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower())).Select(x => new {
+				x.Id,
+				x.Code,
+				x.Name,
+				x.Position
+			}).FirstOrDefault();
+			if ( credentialTypeSelect == null ) return null;
 
-			var credentialType = _dbContext.CredentialTypes.TagWith("CredentialType").FirstOrDefault(
-				ct => ct.Code.ToLower().Equals(credentialTypeCode.ToLower()));
-			if ( IsCacheEnabled() && credentialType != null )
+			var credentialType = new CredentialType
+			{
+				Id = credentialTypeSelect.Id,
+				Code = credentialTypeSelect.Code,
+				Name = credentialTypeSelect.Name,
+				Position = credentialTypeSelect.Position
+			};
+
+			if ( IsCacheEnabled() )
 			{
 				_cache.Set(cacheKey, credentialType, 
 					new TimeSpan(99,0,0));

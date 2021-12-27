@@ -246,7 +246,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        // <item><c>VR-ACTIVE</c></item>
 	        
 		        
-	        return string.IsNullOrEmpty(lensId) ? string.Empty : new SonyLensIdConverter().GetById(lensId);
+	        return string.IsNullOrEmpty(imageStabilisation) ? string.Empty : new SonyLensIdConverter().GetById(imageStabilisation);
         }
 
         private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)
