@@ -58,7 +58,7 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=mkdir]').click()
 
-    cy.intercept('/starsky/api/sync/mkdir').as('mkdir')
+    cy.intercept('/starsky/api/disk/mkdir').as('mkdir')
     cy.get('[data-name=directoryname]').type('z_test_auto_created')
     cy.get('.btn.btn--default').click()
     cy.wait('@mkdir')
@@ -75,7 +75,7 @@ describe('Create Rename Dir', () => {
     cy.get('.item.item--more').click()
     cy.get('[data-test=rename]').click()
 
-    cy.intercept('/starsky/api/sync/rename').as('rename')
+    cy.intercept('/starsky/api/disk/rename').as('rename')
 
     cy.get('[data-name=foldername]').type('_update')
     cy.get('.btn.btn--default').click()

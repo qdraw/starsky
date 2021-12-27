@@ -517,6 +517,11 @@ namespace starsky.foundation.platform.Models
 		public bool? IsAccountRegisterOpen { get; set; }
 
 		/// <summary>
+		/// Used for Desktop App, to allow localhost logins without password and use default account
+		/// </summary>
+		public bool? NoAccountLocalhost { get; set; } = false;
+		
+		/// <summary>
 		/// When a new account is created, which Account Role is assigned 
 		/// Defaults to User, but can also be Administrator
 		/// </summary>

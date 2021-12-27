@@ -61,6 +61,12 @@ var blobPathList = [
 	"starskyapp/docs-assets/starskyapp-mac-gatekeeper.jpg",
 ];
 
+
+marked.setOptions({
+  mangle:false // avoid emails to have different outputs
+});
+
+
 /**
  * Look ma, it's cp -R.
  * @param {string} src  The path to the thing to copy.

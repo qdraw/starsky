@@ -1,7 +1,7 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
 import flow from './flow.json'
-const config = configFile[envFolder][envName]
+const config = configFile[envFolder][envName] as any
 
 describe('Login', () => {
   beforeEach('Check some config settings and do them before each test', () => {

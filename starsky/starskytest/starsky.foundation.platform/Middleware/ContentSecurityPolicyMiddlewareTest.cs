@@ -3,6 +3,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using starsky.foundation.accountmanagement.Extensions;
 using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Middleware;
@@ -21,6 +22,9 @@ namespace starskytest.starsky.foundation.platform.Middleware
 				{
 					app.UseContentSecurityPolicy();
 					app.UseBasicAuthentication();
+					app.UseNoAccountLocalhost(false);
+					app.UseNoAccountLocalhost(true);
+					app.UseCheckIfAccountExist();
 				}).Build();
 
 			await host.StartAsync();

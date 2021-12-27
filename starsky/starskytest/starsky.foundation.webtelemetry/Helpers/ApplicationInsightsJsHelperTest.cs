@@ -75,8 +75,6 @@ namespace starskytest.Helpers
 		{
 			var services = new ServiceCollection();
 			// IHttpContextAccessor is required for SignInManager, and UserManager
-
-
 			
 			var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
 			builder.UseInMemoryDatabase("test");

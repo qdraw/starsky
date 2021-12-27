@@ -93,7 +93,7 @@ namespace starsky.foundation.http.Streaming
                 if (hasContentDispositionHeader && MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                 {
                     var sourceFileName = contentDisposition.FileName.ToString().Replace("\"", string.Empty);
-                    var inputExtension = Path.GetExtension(sourceFileName);
+                    var inputExtension = Path.GetExtension(sourceFileName).Replace("\n",string.Empty);
 
                     var tempHash = appSettings.GenerateSlug(Path.GetFileNameWithoutExtension(sourceFileName),
 	                    true, false); // underscore allowed

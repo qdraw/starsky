@@ -20,10 +20,10 @@ namespace starsky.foundation.database.Models
 		Default,
 		Ok,
 		IgnoredAlreadyImported,
-		AgeToOld,
 		FileError,
 		NotFound,
-		Ignore
+		Ignore,
+		ParentDirectoryNotFound
 	}
 	
     public class ImportIndexItem

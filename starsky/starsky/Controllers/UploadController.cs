@@ -86,7 +86,7 @@ namespace starsky.Controllers
 			var parentDirectory = GetParentDirectoryFromRequestHeader();
 			if ( parentDirectory == null )
 			{
-				return NotFound(new ImportIndexItem());
+				return NotFound(new ImportIndexItem{Status = ImportStatus.ParentDirectoryNotFound});
 			}
 			
 			var tempImportPaths = await Request.StreamFile(_appSettings,_selectorStorage);

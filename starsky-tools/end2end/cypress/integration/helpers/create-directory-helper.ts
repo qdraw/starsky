@@ -12,7 +12,9 @@ function createDirectory (config) {
     body: `f=${config.mkdirPath}`,
     failOnStatusCode: false
   }).then((res) => {
-    console.log(res)
+    cy.log('mkdir done')
+    cy.log(res.body)
+    cy.log(res.status.toString())
   })
 }
 
@@ -26,6 +28,7 @@ export function checkIfExistAndCreate (config) {
     }
   } as RequestOptions).then((data) => {
     if (data.body.searchCount === 0) {
+      cy.log('next: create directory')
       createDirectory(config)
     }
   })

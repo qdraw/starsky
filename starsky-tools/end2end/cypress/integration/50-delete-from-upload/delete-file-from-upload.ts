@@ -66,7 +66,7 @@ describe('Delete file from upload (50)', () => {
     })
   })
 
-  function waitOnUploadIsDone (index:number, max: number = 10) {
+  function waitOnUploadIsDone (index: number, max: number = 10) {
     cy.request({
       url: config.urlApiCollectionsFalse,
       method: 'GET',
@@ -134,7 +134,7 @@ describe('Delete file from upload (50)', () => {
     })
   })
 
-  function waitFileInTrash (index:number, filePath: string, max: number = 15) {
+  function waitFileInTrash (index: number, filePath: string, max: number = 15) {
     cy.request({
       url: '/api/search/trash',
       method: 'GET',
@@ -178,21 +178,65 @@ describe('Delete file from upload (50)', () => {
     waitFileInTrash(0, `/starsky-end2end-test/${fileName1}`)
     cy.visit(config.trash)
 
+    cy.log('view trash')
+
     cy.get('.item.item--select').click()
+
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).click()
+
+    cy.log('next: click more and restore from trash')
 
     // restore
     cy.get('.item.item--more').click()
+
+    cy.intercept('/starsky/api/replace').as('replace')
     cy.get('[data-test=restore-from-trash]').click()
+    cy.wait('@replace')
+
+    cy.log('next: should be restored')
 
     // item should be in the trash
     cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"] button`).should('not.exist')
 
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test').as('e2e_page')
     cy.visit(config.url)
+    cy.wait('@e2e_page')
 
-    cy.get('.folder > div').should(($lis) => {
-      expect($lis).to.have.length(3)
+    if (envName === 'local') {
+      cy.request('/starsky/api/index?f=/starsky-end2end-test').then((res) => {
+        cy.log(JSON.stringify(res.body.fileIndexItems.find(p => p.fileName === fileName1)))
+      })
+    }
+
+    // remove keys when exists, switching can be so fast that the removal isn't done
+    cy.window().then(win => {
+      const keys = Object.keys(win.sessionStorage)
+      keys.forEach(key => {
+        if (key.startsWith('starsky')) {
+          win.sessionStorage.removeItem(key)
+          cy.log('key removed')
+        }
+      })
     })
+
+    // display keys
+    cy.window().then(win => {
+      const keys = Object.keys(win.sessionStorage)
+      keys.forEach(key => {
+        cy.log(key)
+      })
+    })
+
+    cy.request('/starsky/api/memorycachedebug').then((res) => {
+      cy.log(JSON.stringify(res.body))
+    })
+
+    cy.request('/starsky/api/index?f=/starsky-end2end-test').then((res) => {
+      expect(res.status).to.eq(200)
+      expect(JSON.stringify(res.body.fileIndexItems.find(p => p.fileName === fileName1))).contain(fileName1)
+    })
+
+    cy.get('.folder > div').contains(fileName1)
   })
 
   it('remove item and remove from trash', () => {

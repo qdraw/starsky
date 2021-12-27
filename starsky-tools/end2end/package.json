@@ -18,6 +18,9 @@
     "e2e:env:record": "cypress run --record",
     "cache-path": "cypress cache path",
     "cache": "cypress cache path",
+    "e2e:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run e2e:env",
+    "start:azure": "export CYPRESS_BASE_URL=https://demostarsky.azurewebsites.net && export cypress_name=no-create-account && export cypress_AUTH_USER=demo@qdraw.nl && export cypress_AUTH_PASS=demo@qdraw.nl && npm run open:env",
+    "open:azure": "npm run start:azure",
     "lint": "node node_modules/eslint/bin/eslint.js \"**\" --max-warnings 0"
   },
   "devDependencies": {

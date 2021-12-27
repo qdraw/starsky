@@ -89,6 +89,9 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({
 
     undoSelection();
 
+    // do it double since to avoid switching to fast
+    new FileListCache().CacheCleanEverything();
+
     // to replace
     FetchPost(new UrlQuery().UrlReplaceApi(), bodyParams.toString()).then(
       () => {
