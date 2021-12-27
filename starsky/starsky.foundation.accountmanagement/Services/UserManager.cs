@@ -171,7 +171,7 @@ namespace starsky.foundation.accountmanagement.Services
 			if ( !IsCacheEnabled() ) return;
 			var allUsers = await AllUsersAsync();
 			allUsers.Remove(user);
-			_cache.Set("UserManager_AllUsers", allUsers, 
+			_cache.Set(AllUsersCacheKey, allUsers, 
 				new TimeSpan(99,0,0));
 		}
 
