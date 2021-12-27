@@ -9,6 +9,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
+using starsky.foundation.storage.Storage;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -133,6 +134,14 @@ namespace starskytest.Services
 			Assert.AreEqual( "Sony", item.Make);
 			Assert.AreEqual( "SLT-A58", item.Model);
 			Assert.AreEqual( "24-105mm F3.5-4.5", item.LensModel);
+		}
+
+		[TestMethod]
+		public void ExifRead_ReadExifFromF11ileTest()
+		{
+			var fakeStorage = new StorageHostFullPathFilesystem();
+		     
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/opt/data/testcontent/101NZ_50/DSC_0045.JPG");
 		}
 
 		[TestMethod]

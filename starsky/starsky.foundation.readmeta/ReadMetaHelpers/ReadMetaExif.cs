@@ -217,36 +217,35 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	            item.SetMakeModel(sonyLensModel,2);
             }
             
-            var imageStabilisation = GetSonyMakeLensModel(allExifItems, item.LensModel);
-            if ( !string.IsNullOrEmpty(imageStabilisation) )
-            {
-	            
-            }
-            
+            item.ImageStabilisation = GetImageStabilisation(allExifItems);
+
             return item;
         }
         
-        private string GetImageStabilisation(List<Directory> allExifItems)
+        private ImageStabilisationType GetImageStabilisation(List<Directory> allExifItems)
         {
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
 	        // 0 	0x0000	Off
 	        // 1 	0x0001	On
-	        if ( !string.IsNullOrEmpty(imageStabilisation) )
+	        switch ( imageStabilisation )
 	        {
-		        
+		        case "Off":
+			        return ImageStabilisationType.Off;
+		        case "On":
+			        return ImageStabilisationType.On;
 	        }
 	        
 	        // 0x00AC
 	        var nikonDirectory = allExifItems.OfType<NikonType2MakernoteDirectory>().FirstOrDefault();
-	        var imageStabilisationNikon = sonyDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
+	        var imageStabilisationNikon = nikonDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
 		        // <item><c>VR-ON</c></item>
 		        // <item><c>VR-OFF</c></item>
 		        // <item><c>VR-HYBRID</c></item>
 		        // <item><c>VR-ACTIVE</c></item>
 	        
-		        
-	        return string.IsNullOrEmpty(imageStabilisation) ? string.Empty : new SonyLensIdConverter().GetById(imageStabilisation);
+		        // string.IsNullOrEmpty(imageStabilisation) ? string.Empty : new SonyLensIdConverter().GetById(imageStabilisation);
+		    return ImageStabilisationType.Unknown;
         }
 
         private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)

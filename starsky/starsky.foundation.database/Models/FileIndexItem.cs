@@ -1003,8 +1003,11 @@ namespace starsky.foundation.database.Models
 
 			return toBeAddedKeywords;
 		}
-	    
-	} // end class
+		
+		public ImageStabilisationType ImageStabilisation { get; set; }
+	}
+
+	// end class
 	
 	
     
