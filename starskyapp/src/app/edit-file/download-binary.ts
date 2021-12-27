@@ -1,3 +1,4 @@
+import { rmSync } from "fs";
 import * as path from "path";
 import { FileExtensions } from "../../shared/file-extensions";
 import { IFileIndexItem } from "../../shared/IFileindexItem";
@@ -23,12 +24,27 @@ export async function downloadBinary(
 
   logger.info("fileOnDisk > " + fileOnDisk);
 
-  await downloadNetRequest(
-    `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
-      lastSubPath
-    )}`,
-    session,
-    fileOnDisk
-  );
+  try {
+    await downloadNetRequest(
+      `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
+        lastSubPath
+      )}`,
+      session,
+      fileOnDisk
+    );
+  } catch (error) {
+    logger.info("retry > " + fileOnDisk);
+    
+    rmSync(fileOnDisk);
+      await downloadNetRequest(
+        `${(await GetBaseUrlFromSettings()).location}${new UrlQuery().DownloadPhoto(
+          lastSubPath
+        )}`,
+        session,
+        fileOnDisk
+      );
+
+  }
+
   return fileOnDisk;
 }

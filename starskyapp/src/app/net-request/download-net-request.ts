@@ -29,9 +29,16 @@ export function downloadNetRequest(
         return;
       }
 
+      if (!response.headers["content-length"]) {
+        logger.info("no content length");
+        logger.info(JSON.stringify(response))
+        reject(-1);
+        return;
+      }
+
       fs.promises.writeFile(
         toPath + ".info",
-        response.headers["content-length"].toString()
+        response.headers["content-length"]?.toString()
       );
 
       // @ts-ignore

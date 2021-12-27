@@ -12,7 +12,7 @@ export function copyWithId(identifier: string, toName: string) {
   const afterCopyTo = path.join(__dirname, "..", "..", toName);
 
   try {
-    fs.rmdirSync(afterCopyTo, { recursive: true });
+    fs.rmSync(afterCopyTo, { recursive: true });
   } catch (err) {
     console.log(err);
   }
