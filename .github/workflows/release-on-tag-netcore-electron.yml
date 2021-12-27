@@ -165,8 +165,8 @@ jobs:
             _When you are not sure pick the Desktop App_
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
-            - starsky-mac-desktop.zip - __Starsky Desktop App for Intel Mac OS 10.12 or newer__
-            - starsky-osx.10.12-x64.zip - Starsky as Web Application (start from command line) only for Mac OS 10.12 or newer
+            - starsky-mac-desktop.zip - __Starsky Desktop App for Intel Mac OS *10.15* or newer__
+            - starsky-osx.10.12-x64.zip - Starsky as Web Application (start from command line) only for Mac OS *10.15* or newer
             - starsky-win-desktop.zip - __Starsky Desktop App for Windows 7 (64 bits) or newer__
             - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 7 (64 bits) or newer
 
