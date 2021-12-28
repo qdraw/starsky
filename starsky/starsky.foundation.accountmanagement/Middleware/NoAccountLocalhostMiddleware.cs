@@ -31,7 +31,9 @@ namespace starsky.foundation.accountmanagement.Middleware
         public async Task Invoke(HttpContext context)
         {
 	        var isHostLocal = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress, context.Connection.RemoteIpAddress);
-	        var isApiCall = context.Request.Path.HasValue && context.Request.Path.Value.StartsWith("/api");
+	        var isApiCall = context.Request.Path.HasValue && (context.Request.Path.Value.StartsWith("/api") || 
+		        context.Request.Path.Value.StartsWith("/realtime"));
+	        
 	        var isFromLogoutCall = context.Request.QueryString.HasValue && 
 	                               context.Request.QueryString.Value.Contains("fromLogout");
 	        
