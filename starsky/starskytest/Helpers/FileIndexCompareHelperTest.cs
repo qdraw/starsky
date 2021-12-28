@@ -146,6 +146,15 @@ namespace starskytest.Helpers
 		}
 		
 		[TestMethod]
+		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_Equal_NotUpdate()
+		{
+			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			FileIndexCompareHelper.Compare(source, update);
+			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+		}
+		
+		[TestMethod]
 		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_ShouldUpdate()
 		{
 			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Unknown};
