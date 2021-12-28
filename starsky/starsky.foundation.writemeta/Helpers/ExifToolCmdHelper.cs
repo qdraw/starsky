@@ -502,7 +502,7 @@ namespace starsky.foundation.writemeta.Helpers
 			if ( !string.IsNullOrWhiteSpace(updateModel.LensModel) )
 			{
 				// add space before
-				command += $" -lensmodel=\"{updateModel.LensModel}\" ";
+				command += $" -lensmodel=\"{updateModel.LensModel}\" -xmp:lensmodel=\"{updateModel.LensModel}\"";
 			}
 		    
 			return command;
