@@ -61,6 +61,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
 - [x]   (Fixed) _Back-end_  NoAccountLocalhostMiddleware with no database has no roles error (PR #483)
 - [x]   (Fixed) _Back-end_ Add ImageStabilisation and database migration (only add new field)  (PR #483)
+- [x]   (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are diplaying dashes (PR #483)
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
