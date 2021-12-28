@@ -158,6 +158,8 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	            var lensModel = GetContentNameSpace(property, "exifEX:LensModel");
 	            if (lensModel != null) item.SetMakeModel(lensModel,2);
 	            
+	            // ImageStabilisation is not found in XMP
+	            
 	            // dont show in production 
 				// Console.WriteLine($"Path={property.Path} Namespace={property.Namespace} Value={property.Value}");
 
