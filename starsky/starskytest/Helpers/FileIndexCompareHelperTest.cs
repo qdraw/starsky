@@ -20,7 +20,7 @@ namespace starskytest.Helpers
 			FileIndexCompareHelper.Compare(source, update);
 			Assert.AreEqual("update",source.Tags);
 		}
-	    
+
 		[TestMethod]
 		public void FileIndexCompareHelperTest_StringList_Compare()
 		{
@@ -135,6 +135,24 @@ namespace starskytest.Helpers
 			Assert.AreEqual("/test",source.FilePath);
 		}
 	    
+				
+		[TestMethod]
+		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_NotUpdate()
+		{
+			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Unknown};
+			FileIndexCompareHelper.Compare(source, update);
+			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+		}
+		
+		[TestMethod]
+		public void FileIndexCompareHelperTest_ImageStabilisationType_Compare_ShouldUpdate()
+		{
+			var source = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Unknown};
+			var update = new FileIndexItem {ImageStabilisation = ImageStabilisationType.Off};
+			FileIndexCompareHelper.Compare(source, update);
+			Assert.AreEqual( ImageStabilisationType.Off,source.ImageStabilisation);
+		}
 	    
 		[TestMethod]
 		public void FileIndexCompareHelperTest__CheckIfPropertyExist_Tags_True()
