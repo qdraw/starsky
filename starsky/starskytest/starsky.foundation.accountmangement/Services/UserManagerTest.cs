@@ -45,6 +45,49 @@ namespace starskytest.starsky.foundation.accountmangement.Services
 			Assert.AreEqual(false, result.Success);
 			Assert.AreEqual(result.Error, ValidateResultError.CredentialTypeNotFound);
 		}
+
+		[TestMethod]
+		public async Task SignInNull()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), null));
+		}
+		
+		
+		[TestMethod]
+		public async Task SignInNoUserId()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User()));
+		}
+		
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public async Task SignInSystemArgumentNullException()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+			// not having SignUpAsync registered
+			Assert.IsFalse(await userManager.SignIn(new DefaultHttpContext(), new User{Id = 1}));
+		}
+		
+		[TestMethod]
+		public void GetUserClaims_NoId()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var claims = userManager.GetUserClaims(new User());
+			Assert.AreEqual(0,claims.Count());
+		}
+		
+		[TestMethod]
+		public void GetUserClaims_Null()
+		{
+			var userManager = new UserManager(_dbContext,new AppSettings(), _memoryCache);
+
+			var claims = userManager.GetUserClaims(null);
+			Assert.AreEqual(0,claims.Count());
+		}
+		
 		
 		[TestMethod]
 		public async Task ValidateAsync_Credential_NotFound()

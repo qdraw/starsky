@@ -76,7 +76,9 @@ namespace starsky.foundation.accountmanagement.Interfaces
         ChangeSecretResult ChangeSecret(string credentialTypeCode, string identifier, string secret);
         Task<ValidateResult> ValidateAsync(string credentialTypeCode,
 	        string identifier, string secret);
-        Task SignIn(HttpContext httpContext, User user, bool isPersistent = false);
+
+        Task<bool> SignIn(HttpContext httpContext, User user,
+	        bool isPersistent = false);
         void SignOut(HttpContext httpContext);
         int GetCurrentUserId(HttpContext httpContext);
         User GetCurrentUser(HttpContext httpContext);

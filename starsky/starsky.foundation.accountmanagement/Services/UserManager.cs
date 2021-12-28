@@ -569,10 +569,13 @@ namespace starsky.foundation.accountmanagement.Services
 			return new ValidateResult(success: false, error: errorReason);
 		}
         
-		public async Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+		public async Task<bool> SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
-			ClaimsIdentity identity = new ClaimsIdentity(
-				GetUserClaims(user), CookieAuthenticationDefaults.AuthenticationScheme);
+			if ( user == null ) return false;
+			var claims = GetUserClaims(user).ToList();
+			if ( !claims.Any() ) return false;
+			
+			ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 			ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 			
 			await httpContext.SignInAsync(
@@ -583,6 +586,7 @@ namespace starsky.foundation.accountmanagement.Services
 			
 			// Required in the direct context;  when using a REST like call
 			httpContext.User = principal;
+			return true;
 		}
 
 		/// <summary>
@@ -678,8 +682,13 @@ namespace starsky.foundation.accountmanagement.Services
 				.FirstOrDefault(p => p.UserId == userId);
 		}
 
-		private IEnumerable<Claim> GetUserClaims(User user)
+		internal IEnumerable<Claim> GetUserClaims(User user)
 		{
+			if ( user == null || user.Id == 0 )
+			{
+				return new List<Claim>();
+			}
+			
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
