@@ -36,22 +36,7 @@ namespace starsky.foundation.writemeta.Helpers
 			_readMeta = readMeta;
 			_thumbnailStorage = thumbnailStorage;
 		}
-
-		/// <summary>
-		/// To update ExifTool (both Thumbnail as Storage item)
-		/// </summary>
-		/// <param name="updateModel">update model</param>
-		/// <param name="comparedNames">list,string e.g. Tags</param>
-		/// <param name="includeSoftware">include software export</param>
-		/// <returns></returns>
-		public string Update(FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware = true)
-		{
-			var exifUpdateFilePaths = new List<string>
-			{
-				updateModel.FilePath           
-			};
-			return UpdateAsyncWrapperBoth(updateModel, exifUpdateFilePaths, comparedNames, includeSoftware).Result;
-		}
+		
 
 		/// <summary>
 		/// To update ExifTool (both Thumbnail as Storage item)
@@ -113,7 +98,7 @@ namespace starsky.foundation.writemeta.Helpers
 		/// <param name="comparedNames">list of fields that are changed, other fields are ignored</param>
 		/// <param name="includeSoftware">to include the original software name</param>
 		/// <returns>command line args</returns>
-		private string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
+		internal string ExifToolCommandLineArgs( FileIndexItem updateModel, List<string> comparedNames, bool includeSoftware )
 		{
 			var command = "-json -overwrite_original";
 			var initCommand = command; // to check if nothing
@@ -149,7 +134,8 @@ namespace starsky.foundation.writemeta.Helpers
 			command = UpdateFocalLengthCommand(command, comparedNames, updateModel);
 
 			command = UpdateMakeModelCommand(command, comparedNames, updateModel);
-
+			command = UpdateImageStabilization(command, comparedNames, updateModel);
+				
 			if ( command == initCommand ) return string.Empty;
 		    
 			return command;
@@ -532,5 +518,15 @@ namespace starsky.foundation.writemeta.Helpers
 			return command;
 		}
 
+		private static string UpdateImageStabilization(string command, List<string> comparedNames, FileIndexItem updateModel)
+		{
+			if (comparedNames.Contains(nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant()) && 
+			    updateModel.ImageStabilisation != ImageStabilisationType.Unknown)
+			{
+				// there is no XMP version of the name
+				command += " -ImageStabilization=\"" + updateModel.ImageStabilisation + "\"";
+			}
+			return command;
+		}
 	}
 }
