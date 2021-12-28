@@ -70,6 +70,13 @@ namespace starsky.foundation.database.Helpers
                     var newRotationValue = (FileIndexItem.Rotation)propertiesB [i].GetValue(updateObject, null);
                     CompareRotation(propertiesB[i].Name, sourceIndexItem, oldRotationValue, newRotationValue, differenceList); 
                 }
+                
+                if (propertiesA[i].PropertyType == typeof(ImageStabilisationType))
+                {
+	                var oldRotationValue = (ImageStabilisationType)propertiesA [i].GetValue(sourceIndexItem, null);
+	                var newRotationValue = (ImageStabilisationType)propertiesB [i].GetValue(updateObject, null);
+	                CompareImageStabilisationType(propertiesB[i].Name, sourceIndexItem, oldRotationValue, newRotationValue, differenceList); 
+                }
 	            
 	            if (propertiesA[i].PropertyType == typeof(double))
 	            {
@@ -110,7 +117,7 @@ namespace starsky.foundation.database.Helpers
             return differenceList;
         }
 
-	    /// <summary>
+        /// <summary>
 	    /// Set values by string name. fieldContent must by the right type
 	    /// wrong types are ignored by default
 	    /// </summary>
@@ -265,6 +272,13 @@ namespace starsky.foundation.database.Helpers
 		    differenceList.Add(propertyName.ToLowerInvariant());
 	    }
 	    
+	    private static void CompareImageStabilisationType(string propertyName, FileIndexItem sourceIndexItem, 
+		    ImageStabilisationType oldImageStabValue, ImageStabilisationType newImageStabValue, List<string> differenceList)
+	    {
+		    if (oldImageStabValue == newImageStabValue || newImageStabValue == ImageStabilisationType.Unknown) return;
+		    sourceIndexItem.GetType().GetProperty(propertyName).SetValue(sourceIndexItem, newImageStabValue, null);
+		    differenceList.Add(propertyName.ToLowerInvariant());
+	    }
 	    
 	    /// <summary>
 	    /// Compare DateTime type 

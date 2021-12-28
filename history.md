@@ -58,10 +58,12 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Added) _Back-end_ Feature toggle to disable login for localhost requests (PR #579)
 - [x]   (Added) _Back-end_ Check if account exists middleware _UseCheckIfAccountExist_  (PR #579)
 - [x]   (Added) _Front-end_ Setup with wrong database connection give now explanation (PR #581)
-- [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582) 
+- [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
+- [x]   (Fixed) _Back-end_  NoAccountLocalhostMiddleware with no database has no roles error (PR #483)
+- [x]   (Fixed) _Back-end_ Add ImageStabilisation and database migration (only add new field)  (PR #483)
+- [x]   (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are diplaying dashes (PR #483)
+- [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
 - [x]   (Breaking change) _Back_-end_ Droped support for older Mac OS version: now 10.15+ is required see: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
-
-- todo: test electron with new version
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)

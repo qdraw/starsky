@@ -311,6 +311,14 @@ namespace starskytest.Models
 			var item = new FileIndexItem{MakeModel = null};
 			Assert.AreEqual(string.Empty, item.LensModel);
 		}
+		
+		[TestMethod]
+		public void FileIndexItemTest_MakeModel_IgnoreDashDash()
+		{
+			var item = new FileIndexItem{MakeModel = null};
+			item.SetMakeModel("----",0);
+			Assert.AreEqual(string.Empty, item.LensModel);
+		}
 
 		[TestMethod]
 		public void FileIndexItemTest_SetMakeModel_Model()
@@ -320,7 +328,6 @@ namespace starskytest.Models
 
 			Assert.AreEqual("iPhone", item.Model);
 			Assert.AreEqual("|iPhone|", item.MakeModel);
-
 		}
 
 		[TestMethod]

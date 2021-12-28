@@ -97,9 +97,9 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public Task SignIn(HttpContext httpContext, User user, bool isPersistent = false)
+		public Task<bool> SignIn(HttpContext httpContext, User user, bool isPersistent = false)
 		{
-			return Task.CompletedTask;
+			return Task.FromResult(true);
 		}
 
 		public void SignOut(HttpContext httpContext)

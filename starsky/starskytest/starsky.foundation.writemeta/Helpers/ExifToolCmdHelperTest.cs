@@ -193,5 +193,44 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 	        Assert.IsTrue(helperResult.Item1.Contains("tags"));
 	        Assert.IsTrue(helperResult.Item1.Contains("Description"));
         }
+
+        
+        [TestMethod]
+        public void ExifToolCommandLineArgsImageStabilisation()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        ImageStabilisation = ImageStabilisationType.On // < - - - - include here
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant(),
+	        };
+
+	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
+
+	        var result = exifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		        comparedNames, true);
+	        
+	        Assert.AreEqual("-json -overwrite_original -ImageStabilization=\"On\"",result);
+        }
+        
+        [TestMethod]
+        public void ExifToolCommandLineArgsImageStabilisationUnknown()
+        {
+	        var updateModel = new FileIndexItem
+	        {
+		        ImageStabilisation = ImageStabilisationType.Unknown // < - - - - include here
+	        };
+	        var comparedNames = new List<string>{
+		        nameof(FileIndexItem.ImageStabilisation).ToLowerInvariant(),
+	        };
+
+	        var exifToolCmdHelper = new ExifToolCmdHelper(null, null, null, null);
+
+	        var result = exifToolCmdHelper.ExifToolCommandLineArgs(updateModel,
+		        comparedNames, true);
+	        
+	        Assert.AreEqual(string.Empty,result);
+        }
 	}
 }
