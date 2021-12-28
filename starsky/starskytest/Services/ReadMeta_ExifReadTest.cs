@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Storage;
@@ -137,16 +138,7 @@ namespace starskytest.Services
 			Assert.AreEqual( ImageStabilisationType.Unknown, item.ImageStabilisation);
 
 		}
-
-		[TestMethod]
-		public void ExifRead_ReadExifFromF11ileTest()
-		{
-			
-			var fakeStorage = new StorageHostFullPathFilesystem();
-		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/Users/dion/Downloads/test.jpg");
-		}
-
+		
 		[TestMethod]
 		public void ImageStabilisationOn()
 		{

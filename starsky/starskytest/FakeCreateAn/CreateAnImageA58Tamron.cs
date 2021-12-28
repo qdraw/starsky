@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
-namespace starsky.foundation.readmeta.Helpers
+namespace starskytest.FakeCreateAn
 {
 
 public static class CreateAnImageA58Tamron

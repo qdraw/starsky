@@ -4,8 +4,8 @@ using starskycore.Helpers;
 namespace starsky.foundation.readmeta.Helpers
 {
 	
-public static class CreateAnImageA6600
-{
+	public static class CreateAnImageA6600
+	{
 
 	/// <summary>
 	/// @see: https://superuser.com/a/1467266 and 80 chars
