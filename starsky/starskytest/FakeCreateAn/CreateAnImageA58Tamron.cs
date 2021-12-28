@@ -1,7 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using starskycore.Helpers;
 
-namespace starskytest.FakeCreateAn;
+namespace starsky.foundation.readmeta.Helpers
+{
 
 public static class CreateAnImageA58Tamron
 {
@@ -766,4 +767,5 @@ public static class CreateAnImageA58Tamron
              "ChABAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwD" + 
              "AAABEQIRAD8AfwD/2Q==";
 	public static readonly byte[] Bytes = Base64Helper.TryParse(Base64JpgString);
+}
 }
