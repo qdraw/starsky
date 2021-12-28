@@ -129,7 +129,7 @@ namespace starsky.foundation.readmeta.Helpers
 				{"68","Sony DT 55-300mm F4.5-5.6 SAM (SAL55300)"}, // #29
 				{"69","Sony 70-400mm F4-5.6 G SSM II (SAL70400G2)"}, // #JR
 				{"70","Carl Zeiss Planar T* 50mm F1.4 ZA SSM (SAL50F14Z)"}, // #JR
-				{"128","Tamron or Sigma Lens (128)"},
+				{"128","Tamron or Sigma Lens"}, //  (128)
 				{"128.1","Tamron AF 18-200mm F3.5-6.3 XR Di II LD Aspherical [IF] Macro"}, // #JR (Model A14)
 				{"# was 128.1","Tamron 18-200mm F3.5-6.3"},
 				{"128.2","Tamron AF 28-300mm F3.5-6.3 XR Di LD Aspherical [IF] Macro"}, // #JR (Model A061)

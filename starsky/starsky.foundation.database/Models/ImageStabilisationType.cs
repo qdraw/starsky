@@ -4,7 +4,6 @@ namespace starsky.foundation.database.Models
 	{
 		Unknown = 0,
 		On = 1,
-		Off = 2,
-		Vr = 3
+		Off = 2
 	}
 }

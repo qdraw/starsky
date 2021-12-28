@@ -222,7 +222,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             return item;
         }
         
-        private ImageStabilisationType GetImageStabilisation(List<Directory> allExifItems)
+        /// <summary>
+        /// Currently only for Sony cameras
+        /// </summary>
+        /// <param name="allExifItems">all items</param>
+        /// <returns>Enum</returns>
+        private static ImageStabilisationType GetImageStabilisation(List<Directory> allExifItems)
         {
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
@@ -235,17 +240,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		        case "On":
 			        return ImageStabilisationType.On;
 	        }
-	        
-	        // 0x00AC
-	        var nikonDirectory = allExifItems.OfType<NikonType2MakernoteDirectory>().FirstOrDefault();
-	        var imageStabilisationNikon = nikonDirectory?.GetDescription(NikonType2MakernoteDirectory.TagImageStabilisation);
-		        // <item><c>VR-ON</c></item>
-		        // <item><c>VR-OFF</c></item>
-		        // <item><c>VR-HYBRID</c></item>
-		        // <item><c>VR-ACTIVE</c></item>
-	        
-		        // string.IsNullOrEmpty(imageStabilisation) ? string.Empty : new SonyLensIdConverter().GetById(imageStabilisation);
-		    return ImageStabilisationType.Unknown;
+	        return ImageStabilisationType.Unknown;
         }
 
         private string GetSonyMakeLensModel(List<Directory> allExifItems, string lensModel)

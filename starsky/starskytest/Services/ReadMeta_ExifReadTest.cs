@@ -134,14 +134,50 @@ namespace starskytest.Services
 			Assert.AreEqual( "Sony", item.Make);
 			Assert.AreEqual( "SLT-A58", item.Model);
 			Assert.AreEqual( "24-105mm F3.5-4.5", item.LensModel);
+			Assert.AreEqual( ImageStabilisationType.Unknown, item.ImageStabilisation);
+
 		}
 
 		[TestMethod]
 		public void ExifRead_ReadExifFromF11ileTest()
 		{
+			
 			var fakeStorage = new StorageHostFullPathFilesystem();
 		     
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/opt/data/testcontent/101NZ_50/DSC_0045.JPG");
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/Users/dion/Downloads/test.jpg");
+		}
+
+		[TestMethod]
+		public void ImageStabilisationOn()
+		{
+			var newImage = CreateAnImageA6600.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			 
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			Assert.AreEqual( ImageStabilisationType.On, item.ImageStabilisation);
+		}
+		
+		[TestMethod]
+		public void ImageStabilisationOff()
+		{
+			var newImage = CreateAnImageA58Tamron.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			 
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			Assert.AreEqual( ImageStabilisationType.Off, item.ImageStabilisation);
+		}
+				
+		[TestMethod]
+		public void LensModelTamRon()
+		{
+			var newImage = CreateAnImageA58Tamron.Bytes;
+			var fakeStorage = new FakeIStorage(new List<string>{"/"},
+				new List<string>{"/test.jpg"},new List<byte[]>{newImage});
+			 
+			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.jpg");
+			Assert.AreEqual( "Tamron or Sigma Lens", item.LensModel);
 		}
 
 		[TestMethod]
