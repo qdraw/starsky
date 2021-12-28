@@ -14,6 +14,7 @@ on:
     - '.github/workflows/starsky-docker-deploy-demo-env.yml'
     - 'starsky/Dockerfile'
     - 'starsky/docker_demo_setup.sh'
+  workflow_dispatch:
     
 jobs:
   deploy:
