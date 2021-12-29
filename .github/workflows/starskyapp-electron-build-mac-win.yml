@@ -29,12 +29,12 @@ jobs:
       - name: Fake Starsky Zip (Mac)
         shell: bash
         working-directory: ./starsky
-        run: cp starsky-win7-x64.zip starsky-osx.10.12-x64.zip
+        run: cp starsky-win7-x64.zip starsky-osx-x64.zip
                 
       - name: Unzip Mac OS bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-osx.10.12-x64.zip -d osx.10.12-x64     
+        run: unzip starsky-osx-x64.zip -d osx-x64     
                     
       - name: Unzip Windows bundle
         shell: bash
