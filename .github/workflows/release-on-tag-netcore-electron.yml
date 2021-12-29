@@ -1,5 +1,7 @@
 on:
   push:
+    branches: 
+      master
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
@@ -143,6 +145,7 @@ jobs:
   
   create_release:
     name: Create Release
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: [build_core, build_mac, build_win]
     runs-on: ubuntu-latest
     steps:
