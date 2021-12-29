@@ -19,10 +19,10 @@ jobs:
         with:
           dotnet-version: 3.1.416
 
-      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx.10.12-x64
+      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx.10.12-x64" --no-unit-test    
+        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx-x64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
@@ -42,11 +42,11 @@ jobs:
           name: win7-x64
           path: ./starsky/starsky-win7-x64.zip
   
-      - name: Upload osx.10.12-x64 as build artifact
+      - name: Upload osx-x64 as build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: osx.10.12-x64
-          path: ./starsky/starsky-osx.10.12-x64.zip         
+          name: osx-x64
+          path: ./starsky/starsky-osx-x64.zip         
   
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@v2
@@ -62,25 +62,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download osx.10.12-x64 as build artifact
+      - name: Download osx-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: osx.10.12-x64
+          name: osx-x64
           path: ./starsky
 
       - name: Unzip Mac OS bundle
         shell: bash
         working-directory: ./starsky
-        run: unzip starsky-osx.10.12-x64.zip -d osx.10.12-x64     
+        run: unzip starsky-osx-x64.zip -d osx-x64     
         
       - name: Restore rights pm2-restore-x-rights.sh 
         shell: bash
-        working-directory: ./starsky/osx.10.12-x64
+        working-directory: ./starsky/osx-x64
         run: chmod 777 pm2-restore-x-rights.sh 
         
       - name: run pm2-restore-x-rights.sh 
         shell: bash
-        working-directory: ./starsky/osx.10.12-x64
+        working-directory: ./starsky/osx-x64
         run: bash pm2-restore-x-rights.sh 
                 
       - name: List
@@ -161,13 +161,15 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
           body: |
-            ## Builds for different OSes
+            ## Desktop app versions:
             _When you are not sure pick the Desktop App_
+            - starsky-mac-desktop.zip - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
+            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 7 (64 bits) or newer (Intel)__
+
+            ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
-            - starsky-mac-desktop.zip - __Starsky Desktop App for Intel Mac OS *10.15* or newer__
-            - starsky-osx.10.12-x64.zip - Starsky as Web Application (start from command line) only for Mac OS *10.15* or newer
-            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 7 (64 bits) or newer__
+            - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *10.15* or newer
             - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 7 (64 bits) or newer
 
             ## Changelog
@@ -175,21 +177,21 @@ jobs:
           draft: true
           prerelease: false
           
-      - name: Download osx.10.12-x64 as build artifact
+      - name: Download osx-x64 as build artifact
         uses: actions/download-artifact@v2
         with:
-          name: osx.10.12-x64
+          name: osx-x64
           path: ./starsky
            
-      - name: Upload Release Asset osx.10.12-x64
+      - name: Upload Release Asset osx-x64
         id: upload-osx
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./starsky/starsky-osx.10.12-x64.zip
-          asset_name: starsky-osx.10.12-x64.zip
+          asset_path: ./starsky/starsky-osx-x64.zip
+          asset_name: starsky-osx-x64.zip
           asset_content_type: application/zip      
 
       - name: Download win7-x64 as build artifact
