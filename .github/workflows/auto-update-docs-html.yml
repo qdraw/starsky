@@ -4,6 +4,12 @@ on:
     branches:
       - master
       - release/*
+    paths:
+      - '**.md'
+      - '**.jpg'
+      - '**.png'
+  workflow_dispatch:
+    
 
 jobs: 
   run:
