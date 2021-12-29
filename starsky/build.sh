@@ -1,17 +1,21 @@
 #!/bin/sh
 
 # Windows 64 bits: 'win7-x64'
-# Mac: 'osx.10.12-x64'
+# Mac: 'osx-x64'
 # ARM64: 'linux-arm64'
 # Raspberry Pi: 'linux-arm'
 # Windows 32 bits: 'win7-x86'
 
-# >>>>>>>>>>>                RUN FIRST!!    >>>
+# >>>>>>>>>>>                WHEN NEW PROJECT RUN FIRST!!    >>>
 # dotnet new tool-manifest
 # dotnet tool install Cake.Tool
-# <<<<<<<<<<<               RUN FIRST!!    <<<
+# <<<<<<<<<<<               WHEN NEW PROJECT RUN FIRST!!    <<<
 
 #  Source: Simplifying the Cake global tool bootstrapper scripts with .NET Core 3 local tools (https://andrewlock.net/simplifying-the-cake-global-tool-bootstrapper-scripts-in-netcore3-with-local-tools/)
+
+# set some .NET settings 
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 
 pushd $(dirname "$0")
 
