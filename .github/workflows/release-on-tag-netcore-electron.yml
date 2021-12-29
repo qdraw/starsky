@@ -6,7 +6,7 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Create Release on tag for .Net Core and Electron
+name: Create Desktop Release on tag for .Net Core and Electron
 
 jobs:
   build_core:
@@ -21,10 +21,10 @@ jobs:
         with:
           dotnet-version: 3.1.416
 
-      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64
+      - name: Build  --no-unit-test  linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64
         shell: bash
         working-directory: ./starsky
-        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx-x64" --no-unit-test    
+        run: bash build.sh --runtime="linux-arm,linux-arm64,win7-x64,osx-x64,linux-x64" --no-unit-test    
    
       - name: Upload linux-arm as build artifact
         uses: actions/upload-artifact@v2
@@ -44,12 +44,18 @@ jobs:
           name: win7-x64
           path: ./starsky/starsky-win7-x64.zip
   
+      - name: Upload linux-x64 as build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-x64
+          path: ./starsky/starsky-linux-x64.zip         
+
       - name: Upload osx-x64 as build artifact
         uses: actions/upload-artifact@v2
         with:
           name: osx-x64
-          path: ./starsky/starsky-osx-x64.zip         
-  
+          path: ./starsky/starsky-osx-x64.zip      
+ 
       - name: Upload slack-notification as build artifact
         uses: actions/upload-artifact@v2
         with:
