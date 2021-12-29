@@ -231,13 +231,13 @@ The Cake script provide options to build for specific runtimes.
 _Using bash_
 
 ```sh
-./build.sh --runtime="osx.10.12-x64"
+./build.sh --runtime="osx-x64"
 ```
 
 _Using powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
+powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64"'
 ```
 
 ### To build server app for 64 bits Windows

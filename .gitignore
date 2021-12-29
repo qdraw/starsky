@@ -351,6 +351,7 @@ starsky-tools/docs/*/*.jpg
 starsky-tools/docs/*/*/*.jpg
 starsky-tools/docs/*/*/*/*.jpg
 
+**/osx-x64/*
 **/osx.10.12-x64/*
 **/linux-arm/*
 **/linux-arm64/*
@@ -363,6 +364,8 @@ starsky-tools/docs/*/*/*/*.jpg
 
 starsky-linux-arm.zip
 starsky-linux-arm64.zip
+
+starsky-osx-x64.zip
 starsky-osx.10.12-x64.zip
 starsky-win7-x86.zip
 starsky-win7-x64.zip

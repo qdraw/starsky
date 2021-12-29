@@ -14,7 +14,7 @@ export function childProcessPath(): string {
           "../",
           "../",
           "starsky",
-          "osx.10.12-x64",
+          "osx-x64",
           "starsky"
         );
       case "win32":

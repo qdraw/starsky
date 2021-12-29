@@ -96,10 +96,10 @@ _We assume that you run it on an Intel powered Mac_
 _When running bash_
 
 ```bash
-../starsky/build.sh --Runtime=osx.10.12-x64
+../starsky/build.sh --Runtime=osx-x64
 ```
 
-For Mac OS there is a folder created: `starsky/osx.10.12-x64` and this is copied to the desktop application
+For Mac OS there is a folder created: `starsky/osx-x64` and this is copied to the desktop application
 
 ## Build Electron
 
