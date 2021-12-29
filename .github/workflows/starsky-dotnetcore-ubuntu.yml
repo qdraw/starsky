@@ -10,7 +10,8 @@ on:
     - '!starsky/docker_demo_setup.sh'
     - '.github/workflows/**'
   workflow_dispatch:
-    
+  schedule:
+    - cron: '5 2 * * *'
 
 jobs:
   build:
