@@ -3,6 +3,11 @@ on:
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  # PR is for debug only
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/release-on-tag-netcore-electron.yml':
 
 name: Create Release on tag for .Net Core and Electron
 
