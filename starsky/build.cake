@@ -1,15 +1,15 @@
 // CAKE FILE - a C# make file
 
 /*
-powershell -File build.ps1 -ScriptArgs '-runtime="osx.10.12-x64"'
-./build.sh --runtime="osx.10.12-x64"
+powershell -File build.ps1 -ScriptArgs '-runtime="osx-x64"'
+./build.sh --runtime="osx-x64"
 // or:
  ./build.sh --runtime="linux-arm,linux-arm64"
 
 .\build.ps1 --Target=BuildTestOnlyNetCore
 
 Windows 64 bits: 'win7-x64'
-Mac: 'osx.10.12-x64'
+Mac: 'osx-x64'
 ARM64: 'linux-arm64'
 Raspberry Pi: 'linux-arm'
 Windows 32 bits: 'win7-x86'
@@ -887,7 +887,7 @@ Task("BuildTestOnlyNetCore")
 
 
 // To get fast all (net core) assemblies
-// ./build.sh --Runtime=osx.10.12-x64 --Target=BuildPublishWithoutTest
+// ./build.sh --Runtime=osx-x64 --Target=BuildPublishWithoutTest
 Task("BuildPublishWithoutTest")
     .IsDependentOn("BuildNetCore")
     .IsDependentOn("PublishWeb");

@@ -8,7 +8,7 @@ exports.default = (context: {
 
   switch (context.platform.buildConfigurationKey) {
     case "mac":
-      copyWithId("osx.10.12-x64", "runtime-starsky-mac");
+      copyWithId("osx-x64", "runtime-starsky-mac");
       break;
     case "win":
       copyWithId("win7-x64", "runtime-starsky-win");

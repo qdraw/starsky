@@ -19,7 +19,7 @@ case $(uname -m) in
 
   "x86_64")
     if [ $(uname) = "Darwin" ]; then
-        RUNTIME="osx.10.12-x64"
+        RUNTIME="osx-x64"
     fi
     ;;
 esac

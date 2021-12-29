@@ -6,7 +6,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          mv $(Build.SourcesDirectory)/osx.10.12-x64/starsky-osx.10.12-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip
+          mv $(Build.SourcesDirectory)/osx-x64/starsky-osx-x64.zip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip
 
     - task: Bash@3
       enabled: true
@@ -22,7 +22,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          unzip $(Build.SourcesDirectory)/starsky/starsky-osx.10.12-x64.zip -d $(Build.SourcesDirectory)/starsky/osx.10.12-x64
+          unzip $(Build.SourcesDirectory)/starsky/starsky-osx-x64.zip -d $(Build.SourcesDirectory)/starsky/osx-x64
 
     - task: Bash@3
       enabled: true
@@ -30,8 +30,8 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-          chmod 777 $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
-          bash $(Build.SourcesDirectory)/starsky/osx.10.12-x64/pm2-restore-x-rights.sh
+          chmod 777 $(Build.SourcesDirectory)/starsky/osx-x64/pm2-restore-x-rights.sh
+          bash $(Build.SourcesDirectory)/starsky/osx-x64/pm2-restore-x-rights.sh
 
     - task: Bash@3
       enabled: true
