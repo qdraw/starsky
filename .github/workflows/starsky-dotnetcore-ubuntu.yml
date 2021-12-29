@@ -1,11 +1,6 @@
 name: Starsky .NET Core (Ubuntu)
 
 on:
-  push:
-    branches: [ master ]
-    paths:
-    - 'starsky/**'
-    - '!starsky/starsky/clientapp/**'
   pull_request:
     branches: [ master ]
     paths:
