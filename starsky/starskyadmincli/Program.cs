@@ -18,6 +18,10 @@ namespace starskyAdminCli
 {
 	internal static class Program
 	{
+		/// <summary>
+		/// Starsky Admin CLI to manage user admin tasks
+		/// </summary>
+		/// <param name="args">use -h to see all options</param>
 		internal static async Task Main(string[] args)
 		{
 			// Use args in application
