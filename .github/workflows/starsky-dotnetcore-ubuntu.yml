@@ -52,6 +52,7 @@ jobs:
 
   trigger_pipe_release_desktop:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
     # needs nothting
     steps:
       - name: trigger release-on-tag-netcore-desktop-electron
