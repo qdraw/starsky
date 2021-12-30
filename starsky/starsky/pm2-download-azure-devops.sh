@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# For insiders only
+# For insiders only - requires token
 # Please use: 
 # ./pm2-install-latest-release.sh 
 # for public builds
