@@ -59,7 +59,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_websockets = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
 			var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
 			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
-			var memoryCache = _serviceScope.ServiceProvider.GetRequiredService<IMemoryCache>();
+			var memoryCache = _serviceScope.ServiceProvider.GetService<IMemoryCache>();
 			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
 				memoryCache, _appSettings, _logger).Query();
 			_telemetryClient = _serviceScope.ServiceProvider

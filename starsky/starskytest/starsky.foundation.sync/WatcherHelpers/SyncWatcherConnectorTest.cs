@@ -237,7 +237,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 		}
 		
 		[TestMethod]
-		public void InjectScopes()
+		public void Sync_InjectScopes()
 		{
 			var services = new ServiceCollection();
 
@@ -246,6 +246,7 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 			services.AddSingleton<IQuery, FakeIQuery>();
 			services.AddSingleton<IWebLogger, FakeIWebLogger>();
+			services.AddMemoryCache();
 				
 			var serviceProvider = services.BuildServiceProvider();
 			
