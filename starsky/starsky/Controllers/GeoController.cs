@@ -92,7 +92,7 @@ namespace starsky.Controllers
 				var result = await geoBackgroundTask.GeoBackgroundTaskAsync(f, index,
 					overwriteLocationNames);
 				
-				operationHolder.SetData(result);
+				operationHolder.SetData(_serviceScopeFactory, result);
 				
 				_logger.LogInformation($"{nameof(GeoSyncFolder)} end {f} {operationHolder.Telemetry?.Duration}");
 			});

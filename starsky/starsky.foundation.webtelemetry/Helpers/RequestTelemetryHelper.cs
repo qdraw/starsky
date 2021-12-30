@@ -19,12 +19,17 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return requestTelemetry == null ? string.Empty : requestTelemetry.Context.Operation.Id;
 		}
 
+		private static TelemetryClient? GetTelemetryClient(IServiceScopeFactory scopeFactory)
+		{
+			return scopeFactory.CreateScope()
+				.ServiceProvider.GetService<TelemetryClient>();
+		}
+
 		public static IOperationHolder<DependencyTelemetry> GetOperationHolder(IServiceScopeFactory scopeFactory, string jobName, string operationId)
 		{
 			if ( string.IsNullOrEmpty(operationId) ) return new EmptyOperationHolder<DependencyTelemetry>();
-			
-			var telemetryClient = scopeFactory.CreateScope()
-				.ServiceProvider.GetService<TelemetryClient>();
+			var telemetryClient = GetTelemetryClient(scopeFactory);
+
 			if ( telemetryClient == null ) return new EmptyOperationHolder<DependencyTelemetry>();
 			
 			var operationHolder = telemetryClient.StartOperation<DependencyTelemetry>(
@@ -33,14 +38,17 @@ namespace starsky.foundation.webtelemetry.Helpers
 			return operationHolder;
 		}
 
-		public static void SetData(this IOperationHolder<DependencyTelemetry>? operationHolder, object? data)
+		public static void SetData(this IOperationHolder<DependencyTelemetry>? operationHolder, IServiceScopeFactory scopeFactory, object? data)
 		{
+
 			if ( data == null || operationHolder == null ) return;
 			operationHolder.Telemetry.Data = JsonSerializer.Serialize(data);
-			operationHolder.Telemetry.Target = "BackgroundTask";
-			operationHolder.Telemetry.Type = "Task";
+			operationHolder.Telemetry.Target = "Task";
+			operationHolder.Telemetry.Type = "BackgroundTask";
 			operationHolder.Telemetry.ResultCode = "OK";
 			operationHolder.Telemetry.Duration = DateTimeOffset.UtcNow - operationHolder.Telemetry.Timestamp;
+			var telemetryClient = GetTelemetryClient(scopeFactory);
+			telemetryClient?.StopOperation(operationHolder);
 			operationHolder.Dispose();
 		}
 	}

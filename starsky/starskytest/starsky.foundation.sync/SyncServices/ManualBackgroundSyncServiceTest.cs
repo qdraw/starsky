@@ -82,14 +82,14 @@ namespace starskytest.starsky.foundation.sync.SyncServices
 			
 			var cachedContent = new List<FileIndexItem>
 			{
-				new FileIndexItem("/test.jpg")
+				new FileIndexItem("/test999.jpg")
 			};
 			memoryCache.Set(cacheDbName, cachedContent);
-			await query.AddItemAsync(new FileIndexItem("/test.jpg"));
+			await query.AddItemAsync(new FileIndexItem("/test999.jpg"));
 
 			var item = new FakeSelectorStorage(
 					new FakeIStorage(new List<string> { "/" }, 
-						new List<string>{"/test2.jpg","/test3.jpg"}, 
+						new List<string>{"/test2__1234.jpg","/test3__1234.jpg"}, 
 						new List<byte[]>{FakeCreateAn.CreateAnImage.Bytes, FakeCreateAn.CreateAnImage.Bytes}));
 			
 			await new ManualBackgroundSyncService(

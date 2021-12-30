@@ -6,14 +6,22 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
+using starsky.foundation.database.Query;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
+using starsky.foundation.webtelemetry.Initializers;
+using starsky.foundation.webtelemetry.Models;
 
 [assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.sync.WatcherHelpers
@@ -26,6 +34,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private IQuery _query;
 		private IWebLogger _logger;
 		private readonly IServiceScope _serviceScope;
+		private TelemetryClient _telemetryClient;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
 			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger)
@@ -48,16 +57,53 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 			_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
 			_websockets = _serviceScope.ServiceProvider.GetRequiredService<IWebSocketConnectionsService>();
-			_query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
+			var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
 			_logger = _serviceScope.ServiceProvider.GetRequiredService<IWebLogger>();
+			var memoryCache = _serviceScope.ServiceProvider.GetRequiredService<IMemoryCache>();
+			_query = new QueryFactory(new SetupDatabaseTypes(_appSettings), query,
+				memoryCache, _appSettings, _logger).Query();
+			_telemetryClient = _serviceScope.ServiceProvider
+				.GetService<TelemetryClient>();
 			return true;
+		}
+
+		private IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry()
+		{
+			if ( string.IsNullOrEmpty(_appSettings
+				    .ApplicationInsightsInstrumentationKey) )
+			{
+				return new EmptyOperationHolder<RequestTelemetry>();
+			}
+
+			var requestTelemetry = new RequestTelemetry {Name = "FSW " + nameof(SyncWatcherConnector) };
+			var operation = _telemetryClient.StartOperation(requestTelemetry);
+			operation.Telemetry.Timestamp = DateTimeOffset.UtcNow;
+			operation.Telemetry.Source = "FileSystem";
+			new CloudRoleNameInitializer($"{_appSettings.ApplicationType}").Initialize(requestTelemetry);
+			return operation;
+		}
+
+		private void EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
+		{
+			if ( string.IsNullOrEmpty(_appSettings
+				    .ApplicationInsightsInstrumentationKey) )
+			{
+				return;
+			}
+			
+			// end operation
+			operation.Telemetry.Success = true;
+			operation.Telemetry.Duration = DateTimeOffset.UtcNow - operation.Telemetry.Timestamp;
+			operation.Telemetry.ResponseCode = "200";
+			_telemetryClient?.StopOperation(operation);
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
 		{
 			// Avoid Disposed Query objects
 			if ( _serviceScope != null ) InjectScopes();
-
+			var operation = CreateNewRequestTelemetry();
+			
 			var (fullFilePath, toPath, type ) = watcherOutput;
 
 			var syncData = new List<FileIndexItem>();
@@ -82,6 +128,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			var filtered = FilterBefore(syncData);
 			if ( !filtered.Any() )
 			{
+				EndRequestOperation(operation);
 				return syncData;
 			}
 
@@ -98,8 +145,9 @@ namespace starsky.foundation.sync.WatcherHelpers
 			_query.RemoveCacheItem(filtered.Where(p => p.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex || 
 				p.Status == FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList());
 
-			await _query?.DisposeAsync();
-
+			if ( _serviceScope != null ) await _query?.DisposeAsync();
+			EndRequestOperation(operation);
+			
 			return syncData;
 		}
 
