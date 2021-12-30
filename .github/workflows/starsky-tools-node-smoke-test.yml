@@ -32,7 +32,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        
+
+    - name: NpmCi Mock
+      working-directory: ./starsky-tools/mock
+      run: npm ci
+    - name: Node Run Mock SetRouter
+      working-directory: ./starsky-tools/mock
+      run: node set-router.js
+
     - name: NpmCi dropbox-import
       working-directory: ./starsky-tools/dropbox-import
       run: npm ci
@@ -47,4 +54,5 @@ jobs:
          
     - name: NpmCi thumbnail
       working-directory: ./starsky-tools/thumbnail
-      run: npm ci          
+      run: npm ci  
+      
