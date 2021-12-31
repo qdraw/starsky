@@ -49,7 +49,6 @@ namespace starsky.foundation.webtelemetry.Helpers
 			operationHolder.Telemetry.Duration = DateTimeOffset.UtcNow - operationHolder.Telemetry.Timestamp;
 			var telemetryClient = GetTelemetryClient(scopeFactory);
 			telemetryClient?.StopOperation(operationHolder);
-			operationHolder.Dispose();
 		}
 	}
 }
