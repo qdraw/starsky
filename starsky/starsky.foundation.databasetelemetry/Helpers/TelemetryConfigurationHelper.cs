@@ -11,6 +11,7 @@ namespace starsky.foundation.databasetelemetry.Helpers
 		{
 			var module = CreateDatabaseDependencyTrackingTelemetryModule();
 			var telemetryConfiguration = CreateTelemetryConfiguration(appInsightsConnectionString);
+			if ( telemetryConfiguration == null ) return null;
 			var telemetryClient = new TelemetryClient(telemetryConfiguration);
 			telemetryClient.Context.Cloud.RoleName = roleName;
 			telemetryClient.Context.Cloud.RoleInstance = Environment.MachineName;
@@ -20,10 +21,16 @@ namespace starsky.foundation.databasetelemetry.Helpers
 
 		private static TelemetryConfiguration CreateTelemetryConfiguration(string appInsightsInstrumentationKey)
 		{
-			TelemetryConfiguration telemetryConfiguration = TelemetryConfiguration.CreateDefault();
-			telemetryConfiguration.InstrumentationKey = appInsightsInstrumentationKey;
-			telemetryConfiguration.TelemetryInitializers.Add(new HttpDependenciesParsingTelemetryInitializer());
-			return telemetryConfiguration;
+			try
+			{
+				var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+				telemetryConfiguration.InstrumentationKey = appInsightsInstrumentationKey;
+				return telemetryConfiguration;
+			}
+			catch (OutOfMemoryException)
+			{
+				return null;
+			}
 		}
 
 		private static DependencyTrackingTelemetryModule CreateDatabaseDependencyTrackingTelemetryModule()
