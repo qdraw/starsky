@@ -294,6 +294,18 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			connector.EndRequestOperation(operationHolder);
 		}
 		
+		[TestMethod]
+		public void CreateNewRequestTelemetry_Key_NoTelemetryClient()
+		{
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
+				new FakeIWebLogger(), null); // <-- no tel client
+
+			var operationHolder = connector.CreateNewRequestTelemetry();
+			
+			var operationHolder2 = operationHolder as EmptyOperationHolder<RequestTelemetry>;
+			Assert.IsTrue(operationHolder2.Empty);
+		}
 		
 		[TestMethod]
 		public void EndRequestOperation_NoKey()
@@ -318,6 +330,21 @@ namespace starskytest.starsky.foundation.sync.WatcherHelpers
 			var result = connector.EndRequestOperation(operationHolder);
 
 			Assert.IsTrue(result);
+		}
+		
+				
+		[TestMethod]
+		public void EndRequestOperation_Key_NoTelemetryClient()
+		{
+			var connector = new SyncWatcherConnector(new AppSettings{ ApplicationInsightsInstrumentationKey = "1"}, new FakeISynchronize(),
+				new FakeIWebSocketConnectionsService(), new FakeIQuery(),
+				new FakeIWebLogger(), null); // <-- no tel client
+
+			var operationHolder = connector.CreateNewRequestTelemetry();
+
+			var result = connector.EndRequestOperation(operationHolder);
+
+			Assert.IsFalse(result);
 		}
 	}
 }

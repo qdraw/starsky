@@ -70,7 +70,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry()
 		{
-			if ( string.IsNullOrEmpty(_appSettings
+			if (_telemetryClient == null || string.IsNullOrEmpty(_appSettings
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return new EmptyOperationHolder<RequestTelemetry>();
@@ -86,7 +86,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 
 		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
 		{
-			if ( string.IsNullOrEmpty(_appSettings
+			if ( _telemetryClient == null || string.IsNullOrEmpty(_appSettings
 				    .ApplicationInsightsInstrumentationKey) )
 			{
 				return false;
@@ -96,7 +96,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			operation.Telemetry.Success = true;
 			operation.Telemetry.Duration = DateTimeOffset.UtcNow - operation.Telemetry.Timestamp;
 			operation.Telemetry.ResponseCode = "200";
-			_telemetryClient?.StopOperation(operation);
+			_telemetryClient.StopOperation(operation);
 			return true;
 		}
 
