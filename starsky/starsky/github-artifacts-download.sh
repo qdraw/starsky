@@ -119,12 +119,8 @@ RESULT_ARTIFACTS=$(curl --user :$STARSKY_GITHUB_PAT -sS $ARTIFACTS_URL)
 # ([0-9a-zA-Z]|\/|:| |,|\"|_|\.|\t|\n|\r|-)
 
 DOWNLOAD_URL=$(echo $RESULT_ARTIFACTS|tr -d '\n')
-
-
-REGEXX="name\": \""$VERSION"\".*"
-echo $REGEXX
-DOWNLOAD_URL=$(grep -E -o "$REGEXX" <<< $RESULT_ARTIFACTS)
-echo "0 > "$DOWNLOAD_URL
+INDEX_DOWNLOAD_URL=$(echo $DOWNLOAD_URL | grep -aob $VERSION"\"" --color=never | \grep -oE '^[0-9]+')
+DOWNLOAD_URL="${DOWNLOAD_URL:INDEX_DOWNLOAD_URL}"
 
 DOWNLOAD_URL=$(grep -E -o "\"archive_download_url\": \"(\d|\.|\w|\:|\/)+" <<< $DOWNLOAD_URL)
 
@@ -177,7 +173,7 @@ then
     unzip -p "starsky-"$RUNTIME".zip" "pm2-new-instance.sh" > "${OUTPUT_DIR}pm2-new-instance.sh"
     
     if [ -f "${OUTPUT_DIR}pm2-new-instance.sh" ]; then
-        chmod +rwx ./pm2-new-instance.sh
+        chmod +rwx "${OUTPUT_DIR}pm2-new-instance.sh"
         echo "run for the setup:"
         echo "./pm2-new-instance.sh"
     else 
