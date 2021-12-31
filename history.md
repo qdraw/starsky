@@ -39,8 +39,14 @@ node starsky-tools/build-tools/app-version-update.js
 # Expected breaking changes in a future release:
 
 - change default option in thumbnailer cli to scan directories to enabled
+- package telementry
+- change mirror locations
 
-# version 0.5.0-beta.0 _(Unreleased)_ - 2021-12-?
+# version 0.5.0-beta.1 _(Unreleased)_ - 2022-01-??
+- [x]   (App) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
+- [x]   (App) _Tools_ Add insider script for download Github artifacts (PR #589)
+
+# version 0.5.0-beta.0 - 2021-12-29
 - [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
 - [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)
 - [x]   (Breaking change) _Back-end_ Removed obsolete SubPathSlashRemove API (PR #563)
