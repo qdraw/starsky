@@ -37,13 +37,14 @@ namespace starsky.foundation.sync.WatcherHelpers
 		private TelemetryClient _telemetryClient;
 
 		internal SyncWatcherConnector(AppSettings appSettings, ISynchronize synchronize, 
-			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger)
+			IWebSocketConnectionsService websockets, IQuery query, IWebLogger logger, TelemetryClient telemetryClient)
 		{
 			_appSettings = appSettings;
 			_synchronize = synchronize;
 			_websockets = websockets;
 			_query = query;
 			_logger = logger;
+			_telemetryClient = telemetryClient;
 		}
 
 		public SyncWatcherConnector(IServiceScopeFactory scopeFactory)
@@ -67,7 +68,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return true;
 		}
 
-		private IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry()
+		internal IOperationHolder<RequestTelemetry> CreateNewRequestTelemetry()
 		{
 			if ( string.IsNullOrEmpty(_appSettings
 				    .ApplicationInsightsInstrumentationKey) )
@@ -83,12 +84,12 @@ namespace starsky.foundation.sync.WatcherHelpers
 			return operation;
 		}
 
-		private void EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
+		internal bool EndRequestOperation(IOperationHolder<RequestTelemetry> operation)
 		{
 			if ( string.IsNullOrEmpty(_appSettings
 				    .ApplicationInsightsInstrumentationKey) )
 			{
-				return;
+				return false;
 			}
 			
 			// end operation
@@ -96,6 +97,7 @@ namespace starsky.foundation.sync.WatcherHelpers
 			operation.Telemetry.Duration = DateTimeOffset.UtcNow - operation.Telemetry.Timestamp;
 			operation.Telemetry.ResponseCode = "200";
 			_telemetryClient?.StopOperation(operation);
+			return true;
 		}
 
 		public async Task<List<FileIndexItem>> Sync(Tuple<string, string, WatcherChangeTypes> watcherOutput)
