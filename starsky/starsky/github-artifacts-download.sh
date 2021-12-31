@@ -147,6 +147,7 @@ if [ ! -f "${OUTPUT_ZIP_PATH}_tmp.zip" ]; then
     exit 1
 fi
 
+rm ${OUTPUT_ZIP_PATH}
 
 # contains an zip in a zip
 unzip -q -o -j "${OUTPUT_ZIP_PATH}_tmp.zip" -d "${OUTPUT_DIR}temp"
