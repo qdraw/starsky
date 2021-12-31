@@ -49,5 +49,5 @@ EXITSTATUS=$?
 
 popd
 
-[ $EXITSTATUS -eq 0 ] && echo "build was successful" || echo "build failed"
+[ $EXITSTATUS -eq 0 ] && echo "Build was successful :)" || echo "Build has failed - unit test search for: Error Message"
 exit $EXITSTATUS

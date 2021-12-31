@@ -84,7 +84,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 		public void SetDataDataNull()
 		{
 			var holder = new EmptyOperationHolder<DependencyTelemetry>();
-			holder.SetData(null);
+			holder.SetData(null,null);
 			Assert.IsNotNull(holder);
 		}
 		
@@ -94,7 +94,7 @@ namespace starskytest.starsky.foundation.webtelemetry.Helpers
 			IOperationHolder<DependencyTelemetry> holder = null;
 			
 			// ReSharper disable once ExpressionIsAlwaysNull
-			holder.SetData(null);
+			holder.SetData(null,null);
 			Assert.IsNull(holder);
 		}
 		

@@ -90,7 +90,7 @@ namespace starsky.Controllers
 					metaUpdateService.UpdateAsync(changedFileIndexItemName, fileIndexResultsList,
 						null,
 						collections, append, rotateClock);
-				operationHolder.SetData(data);
+				operationHolder.SetData(_scopeFactory, data);
 			});
 			
 			// When all items are not found

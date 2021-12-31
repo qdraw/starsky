@@ -103,7 +103,7 @@ namespace starsky.foundation.sync.SyncServices
 			                       $"{DateTime.Now.ToShortTimeString()}");
 			_logger.LogInformation($"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
 			                       $" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");
-			operationHolder.SetData(updatedList);
+			operationHolder.SetData(_scopeFactory, updatedList);
 		}
 		
 		internal List<FileIndexItem> FilterBefore(IReadOnlyCollection<FileIndexItem> syncData)

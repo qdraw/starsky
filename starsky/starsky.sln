@@ -114,6 +114,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.database
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "starsky.foundation.consoletelemetry", "starsky.foundation.consoletelemetry\starsky.foundation.consoletelemetry.csproj", "{48D826B3-2262-422A-941A-AF90E458F647}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A3C71266-A3AD-4611-8990-846EC0DDA16E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools", "{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -312,5 +316,6 @@ Global
 		{E0559015-77F2-4135-9AF5-41EBEA6C2C9C} = {B974FC20-C3EE-4EB0-AF25-F0D8DA2C28D7}
 		{6A237457-45EF-47F2-A225-6340AFF19D4F} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
 		{48D826B3-2262-422A-941A-AF90E458F647} = {1C1EB4A5-08D0-4014-AE1F-962642A4E5D3}
+		{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25} = {A3C71266-A3AD-4611-8990-846EC0DDA16E}
 	EndGlobalSection
 EndGlobal
