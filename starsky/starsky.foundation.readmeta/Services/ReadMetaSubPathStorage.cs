@@ -20,9 +20,9 @@ namespace starsky.foundation.readmeta.Services
 			_readMeta = new ReadMeta(storage, appSettings, memoryCache);
 		}
 		
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+		public FileIndexItem ReadExifAndXmpFromFile(string subPath, bool enableCache)
 		{
-			return _readMeta.ReadExifAndXmpFromFile(subPath);
+			return _readMeta.ReadExifAndXmpFromFile(subPath,enableCache);
 		}
 
 		public List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList,

@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
@@ -15,11 +16,13 @@ namespace starsky.foundation.sync.Helpers
 	{
 		private readonly IStorage _subPathStorage;
 		private readonly IReadMeta _readMeta;
+		private readonly AppSettings _appSettings;
 
-		public NewItem(IStorage subPathStorage, IReadMeta readMeta)
+		public NewItem(IStorage subPathStorage, IReadMeta readMeta, AppSettings appSettings)
 		{
 			_subPathStorage = subPathStorage;
 			_readMeta = readMeta;
+			_appSettings = appSettings;
 		}
 		
 		/// <summary>
@@ -43,7 +46,9 @@ namespace starsky.foundation.sync.Helpers
 		/// <returns></returns>
 		public async Task<FileIndexItem> NewFileItem(string filePath, string fileHash, string parentDirectory, string fileName)
 		{
-			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(filePath);
+			var enableCache = _appSettings.ApplicationType ==
+			                  AppSettings.StarskyAppType.WebController;
+			var updatedDatabaseItem = _readMeta.ReadExifAndXmpFromFile(filePath, enableCache);
 			updatedDatabaseItem.ImageFormat = ExtensionRolesHelper
 				.GetImageFormat(_subPathStorage.ReadStream(filePath,50));
 
@@ -66,7 +71,7 @@ namespace starsky.foundation.sync.Helpers
 		/// <returns>the updated item</returns>
 		public async Task<FileIndexItem> PrepareUpdateFileItem(FileIndexItem dbItem, long size)
 		{
-			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath);
+			var metaDataItem = _readMeta.ReadExifAndXmpFromFile(dbItem.FilePath,false);
 			FileIndexCompareHelper.Compare(dbItem, metaDataItem);
 			dbItem.Size = size;
 			await SetFileHashStatus(dbItem.FilePath, dbItem.FileHash, dbItem);

@@ -9,8 +9,9 @@ namespace starsky.foundation.readmeta.Interfaces
 		/// this returns only meta data > so no fileName or fileHash
 		/// </summary>
 		/// <param name="subPath">subPath</param>
+		/// <param name="enableCache">use cache</param>
 		/// <returns></returns>
-	    FileIndexItem ReadExifAndXmpFromFile(string subPath);
+	    FileIndexItem ReadExifAndXmpFromFile(string subPath, bool enableCache);
         List<FileIndexItem> ReadExifAndXmpFromFileAddFilePathHash(List<string> subPathList, List<string> fileHashes = null);
         void RemoveReadMetaCache(string fullFilePath);
         void UpdateReadMetaCache(IEnumerable<FileIndexItem> objectExifToolModel);

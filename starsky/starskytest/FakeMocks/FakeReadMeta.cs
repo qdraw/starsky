@@ -23,7 +23,7 @@ namespace starskytest.FakeMocks
 			};
 		}
 
-		public FileIndexItem ReadExifAndXmpFromFile(string path)
+		public FileIndexItem ReadExifAndXmpFromFile(string path, bool enableCache)
 		{
 			return new FileIndexItem
 			{

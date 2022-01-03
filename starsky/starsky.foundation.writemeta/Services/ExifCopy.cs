@@ -76,7 +76,7 @@ namespace starsky.foundation.writemeta.Services
 		/// <returns></returns>
 		internal async Task<string> CopyExifPublish(string fromSubPath, string toSubPath)
 		{
-			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath);
+			var updateModel = _readMeta.ReadExifAndXmpFromFile(fromSubPath,false);
 			var comparedNames = FileIndexCompareHelper.Compare(new FileIndexItem(), updateModel);
 			comparedNames.Add(nameof(FileIndexItem.Software));
 			updateModel.SetFilePath(toSubPath);

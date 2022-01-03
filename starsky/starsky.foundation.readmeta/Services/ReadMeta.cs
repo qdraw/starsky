@@ -75,7 +75,7 @@ namespace starsky.foundation.readmeta.Services
 			{
 				var subPath = subPathList[i];
 		        
-				var returnItem = ReadExifAndXmpFromFile(subPath);
+				var returnItem = ReadExifAndXmpFromFile(subPath, false);
 				var imageFormat = ExtensionRolesHelper.GetImageFormat(_iStorage.ReadStream(subPath, 50)); 
 
 				returnItem.ImageFormat = imageFormat;
@@ -106,11 +106,12 @@ namespace starsky.foundation.readmeta.Services
 		/// Short living cache Max 1. minutes
 		/// </summary>
 		/// <param name="subPath">path</param>
+		/// <param name="enableCache"></param>
 		/// <returns>metaData</returns>
-		public FileIndexItem ReadExifAndXmpFromFile(string subPath)
+		public FileIndexItem ReadExifAndXmpFromFile(string subPath, bool enableCache)
 		{
 			// The CLI programs uses no cache
-			if( _cache == null || _appSettings?.AddMemoryCache == false) 
+			if( !enableCache || _cache == null || _appSettings?.AddMemoryCache == false) 
 				return ReadExifAndXmpFromFileDirect(subPath);
             
 			// Return values from IMemoryCache
@@ -123,7 +124,7 @@ namespace starsky.foundation.readmeta.Services
 			// Try to catch a new object
 			objectExifToolModel = ReadExifAndXmpFromFileDirect(subPath);
 			_cache.Set(queryReadMetaCacheName, objectExifToolModel, 
-				new TimeSpan(0,1,0));
+				new TimeSpan(0,5,0));
 			return (FileIndexItem) objectExifToolModel;
 		}
 

@@ -78,7 +78,7 @@ namespace starsky.feature.metaupdate.Services
         
 				foreach ( var collectionSubPath in collectionSubPathList )
 				{
-					var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath);
+					var collectionItem = _readMeta.ReadExifAndXmpFromFile(collectionSubPath, true);
 		            
 					collectionItem.Status = statusResults;
 					collectionItem.CollectionPaths = collectionSubPathList;

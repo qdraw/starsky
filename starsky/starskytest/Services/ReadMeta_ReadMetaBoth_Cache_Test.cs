@@ -54,7 +54,7 @@ namespace starskytest.Services
 			var iStorage = new FakeIStorage();
 			var fakeCache =
 				new FakeMemoryCache(new Dictionary<string, object>{{"info_test",new FileIndexItem(){Tags = "test"}}});
-			Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache).ReadExifAndXmpFromFile("test").Tags);
+			Assert.AreEqual("test",new ReadMeta(iStorage,null, fakeCache).ReadExifAndXmpFromFile("test", false).Tags);
 		}
 	}
 }

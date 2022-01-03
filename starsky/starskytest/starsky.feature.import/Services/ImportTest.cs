@@ -366,7 +366,7 @@ namespace starskytest.starsky.feature.import.Services
 		/// <returns>expected result</returns>
 		public static string GetExpectedFilePath(IStorage storage, AppSettings appSettings, string inputFileFullPath, int index = 0)
 		{
-			var fileIndexItem = new ReadMeta(storage).ReadExifAndXmpFromFile(inputFileFullPath);
+			var fileIndexItem = new ReadMeta(storage).ReadExifAndXmpFromFile(inputFileFullPath,false);
 			var importIndexItem = new ImportIndexItem(appSettings)
 			{
 				FileIndexItem = fileIndexItem,

@@ -47,7 +47,7 @@ namespace starskytest.Services
 			var fakeIStorage = new FakeIStorage(new List<string> {"/"}, 
 				new List<string> {"/test.arw", "/test.xmp"}, new List<byte[]>{CreateAnImage.Bytes,xmpByteArray}  );
 		    
-			var data = new ReadMeta(fakeIStorage).ReadExifAndXmpFromFile("/test.arw");
+			var data = new ReadMeta(fakeIStorage).ReadExifAndXmpFromFile("/test.arw",false);
 		    
 			// Is in source file
 			Assert.AreEqual(200,data.IsoSpeed);
@@ -85,7 +85,7 @@ namespace starskytest.Services
 				}
 			});
 		    
-			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg", false).Tags);
 		}
 	    
 	    
@@ -105,7 +105,7 @@ namespace starskytest.Services
 				}
 			);
 		    
-			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg").Tags);
+			Assert.AreEqual("t2",readMeta.ReadExifAndXmpFromFile("/test.jpg",false).Tags);
 		}
 	}
 }

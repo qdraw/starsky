@@ -30,7 +30,8 @@ namespace starsky.foundation.sync.SyncServices
 			_appSettings = appSettings;
 			_subPathStorage = subPathStorage;
 			_query = query;
-			_newItem = new NewItem(_subPathStorage, new ReadMeta(_subPathStorage, appSettings));
+			var readMeta = new ReadMeta(_subPathStorage, appSettings);
+			_newItem = new NewItem(_subPathStorage, readMeta, appSettings);
 			_logger = logger;
 		}
 
