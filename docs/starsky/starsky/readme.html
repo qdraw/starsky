@@ -783,6 +783,19 @@ For example the <code>lost+found</code> folder</p>
 <pre><code>[DiskWatcher] (catch-ed) Access to the path &#39;/mnt/external_disk/lost+found&#39; is denied
 </code></pre>
 <p>Solution: make sure that all child folder are accessible</p>
+<h4 id="diskwatcher-in-combination-with-mac-os-apfs-disk">DiskWatcher in combination with Mac OS APFS Disk</h4>
+<p>When you set <code>/System/Volumes/Data</code> to watch for changes this makes the application crash with
+<code>System.ArgumentOutOfRangeException</code> when a single file is changed. There is currently no solution for this problem other then don&#39;t use the Diskwatcher with this location.</p>
+<pre><code class="language-c#">Unhandled exception. System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
+   at System.IO.FileSystemWatcher.RunningInstance.ProcessEvents(Int32 numEvents, Byte** eventPaths, FSEventStreamEventFlags* eventFlags, UInt64* eventIds, FileSystemWatcher watcher)
+   at System.IO.FileSystemWatcher.RunningInstance.&lt;&gt;c__DisplayClass14_0.&lt;FileSystemEventCallback&gt;b__0(Object o)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.IO.FileSystemWatcher.RunningInstance.FileSystemEventCallback(IntPtr streamRef, IntPtr clientCallBackInfo, IntPtr numEvents, Byte** eventPaths, FSEventStreamEventFlags* eventFlags, UInt64* eventIds)
+...
+</code></pre>
 
     </div>
 </div>
