@@ -48,7 +48,14 @@ namespace starsky.foundation.storage.Storage
 		
 		public void CreateDirectory(string path)
 		{
-			Directory.CreateDirectory(path);
+			try
+			{
+				Directory.CreateDirectory(path);
+			}
+			catch ( System.ArgumentOutOfRangeException e )
+			{
+				Console.WriteLine(e);
+			}
 		}
 
 		public bool FolderDelete(string path)
