@@ -11,7 +11,7 @@ export function electronCacheLocation() {
       return path.join(
         os.homedir(),
         "Library",
-        "ApplicationSupport",
+        "Application Support",
         "starsky"
       );
     case "win32":
