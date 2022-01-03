@@ -51,8 +51,6 @@ namespace starsky.foundation.sync.WatcherServices
 			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
 			        $"{DateTimeDebug()}");
 			
-			// GC.KeepAlive why: https://stackoverflow.com/a/21000492
-
 			// Create a new FileSystemWatcher and set its properties.
 
 			_fileSystemWatcherWrapper.Path = fullFilePath;

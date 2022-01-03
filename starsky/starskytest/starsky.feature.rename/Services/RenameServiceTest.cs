@@ -71,7 +71,7 @@ namespace starskytest.starsky.feature.rename.Services
 			var services = new ServiceCollection();
 			var selectorStorage = new FakeSelectorStorage(iStorage);
 
-			_sync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
+			//_sync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger());
 
 		}
 
@@ -167,7 +167,7 @@ namespace starskytest.starsky.feature.rename.Services
 				File.Move(_newImage.FullFilePath,
 					_appSettings.DatabasePathToFilePath("/dir1/test3.jpg",false));
 			}
-			await _sync.Sync("/dir1/test3.jpg");
+			//await _sync.Sync("/dir1/test3.jpg");
 			
 			// query database
 			var all = await _query.GetAllRecursiveAsync();
@@ -200,7 +200,7 @@ namespace starskytest.starsky.feature.rename.Services
 		private FileIndexItem _folder1Exist;
 		private FileIndexItem _fileInExist;
 		private FileIndexItem _parentFolder;
-		private Synchronize _sync;
+		//private Synchronize _sync;
 
 		private void CreateFoldersAndFilesInDatabase()
 		{

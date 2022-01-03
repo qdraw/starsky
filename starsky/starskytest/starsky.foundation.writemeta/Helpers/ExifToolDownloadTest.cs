@@ -152,8 +152,16 @@ namespace starskytest.starsky.foundation.writemeta.Helpers
 			Directory.CreateDirectory(appSettings.TempFolder);
 			Directory.CreateDirectory(Path.Combine(appSettings.TempFolder,"exiftool-unix"));
 			var stream = new PlainTextFileHelper().StringToStream("#!/bin/bash");
-			await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
-				Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool"));
+			try
+			{
+				await new StorageHostFullPathFilesystem().WriteStreamAsync(stream,
+					Path.Combine(appSettings.TempFolder, "exiftool-unix", "exiftool"));
+			}
+			catch ( ArgumentOutOfRangeException e )
+			{
+				Console.WriteLine(e);
+				throw;
+			}
 			
 			return appSettings;
 		}

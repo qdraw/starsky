@@ -77,7 +77,6 @@ namespace starskytest.Controllers
 			var readMeta = new ReadMeta(_iStorage,_appSettings);
                         
 			var selectorStorage = new FakeSelectorStorage(_iStorage);
-			var iSync = new Synchronize(_appSettings, _query, selectorStorage, new FakeIWebLogger(), _memoryCache);
 
 			_import = new Import(selectorStorage, _appSettings, new FakeIImportQuery(),
 				new FakeExifTool(_iStorage,_appSettings), _query, new ConsoleWrapper(), 
