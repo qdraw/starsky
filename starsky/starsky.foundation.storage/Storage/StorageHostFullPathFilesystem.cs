@@ -62,14 +62,16 @@ namespace starsky.foundation.storage.Storage
 			{
 				Directory.Delete(path, true);
 			}
-			catch (IOException exception) 
+			catch ( IOException exception )
 			{
-				_logger?.LogInformation(exception, "[FolderDelete] catch-ed IOException");
+				_logger?.LogInformation(exception,
+					"[FolderDelete] catch-ed IOException");
 				Directory.Delete(path, true);
 			}
-			catch (UnauthorizedAccessException exception)
+			catch ( UnauthorizedAccessException exception )
 			{
-				_logger?.LogInformation(exception, "[FolderDelete] catch-ed UnauthorizedAccessException");
+				_logger?.LogInformation(exception,
+					"[FolderDelete] catch-ed UnauthorizedAccessException");
 				Directory.Delete(path, true);
 			}
 			return true;
