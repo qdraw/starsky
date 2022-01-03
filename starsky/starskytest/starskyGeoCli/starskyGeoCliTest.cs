@@ -34,28 +34,28 @@ namespace starskytest.starskyGeoCli
 			Assert.IsNotNull(args);
 		}
         
-		[ExcludeFromCoverage]
-		[TestMethod]
-		public void StarskyGeoCli_SubPathOneImage()
-		{
-			var newImage = new CreateAnImage();
-			var args = new List<string> {
-				"-v",
-				"-c","test",
-				"-d", "InMemoryDatabase", 
-				"-p", newImage.BasePath, 
-				"--thumbnailtempfolder", newImage.BasePath, 
-				"--exiftoolpath", newImage.FullFilePath 
-			}.ToArray();
-            
-			foreach (var arg in args)
-			{
-				Console.WriteLine(arg);
-			}
-            
-			Program.Main(args);
-			Assert.IsNotNull(args);
-		}
+		// [ExcludeFromCoverage]
+		// [TestMethod]
+		// public void StarskyGeoCli_SubPathOneImage()
+		// {
+		// 	var newImage = new CreateAnImage();
+		// 	var args = new List<string> {
+		// 		"-v",
+		// 		"-c","test",
+		// 		"-d", "InMemoryDatabase", 
+		// 		"-p", newImage.BasePath, 
+		// 		"--thumbnailtempfolder", newImage.BasePath, 
+		// 		"--exiftoolpath", newImage.FullFilePath 
+		// 	}.ToArray();
+  //           
+		// 	foreach (var arg in args)
+		// 	{
+		// 		Console.WriteLine(arg);
+		// 	}
+  //           
+		// 	Program.Main(args);
+		// 	Assert.IsNotNull(args);
+		// }
 	
         
 	}

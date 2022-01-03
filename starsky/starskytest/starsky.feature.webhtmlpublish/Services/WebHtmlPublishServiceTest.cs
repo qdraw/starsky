@@ -557,31 +557,31 @@ namespace starskytest.starsky.feature.webhtmlpublish.Services
 			Assert.IsTrue(storage.ExistFile("/test.jpg"));
 		}
 
-		[TestMethod]
-		public async Task GenerateZip_RealFsTest()
-		{
-			var appSettings = new AppSettings();
-			
-			// RealFs
-			var storage = new StorageHostFullPathFilesystem();
-			var selectorStorage = new FakeSelectorStorage(storage);
-			
-			var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
-				selectorStorage, appSettings,
-				new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
-				new ConsoleWrapper(), new FakeIWebLogger());
-
-			await service.GenerateZip(new CreateAnImage().BasePath, "test", 
-				new Dictionary<string, bool>{
-				{
-					new CreateAnImage().FileName,true
-				}}, true);
-
-			var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
-			
-			Assert.IsTrue(storage.ExistFile(outputFile));
-			
-			storage.FileDelete(outputFile);
-		}
+		// [TestMethod]
+		// public async Task GenerateZip_RealFsTest()
+		// {
+		// 	var appSettings = new AppSettings();
+		// 	
+		// 	// RealFs
+		// 	var storage = new StorageHostFullPathFilesystem();
+		// 	var selectorStorage = new FakeSelectorStorage(storage);
+		// 	
+		// 	var service = new WebHtmlPublishService(new PublishPreflight(appSettings, new ConsoleWrapper()), 
+		// 		selectorStorage, appSettings,
+		// 		new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
+		// 		new ConsoleWrapper(), new FakeIWebLogger());
+		//
+		// 	await service.GenerateZip(new CreateAnImage().BasePath, "test", 
+		// 		new Dictionary<string, bool>{
+		// 		{
+		// 			new CreateAnImage().FileName,true
+		// 		}}, true);
+		//
+		// 	var outputFile = Path.Combine(new CreateAnImage().BasePath, "test.zip");
+		// 	
+		// 	Assert.IsTrue(storage.ExistFile(outputFile));
+		// 	
+		// 	storage.FileDelete(outputFile);
+		// }
 	}
 }

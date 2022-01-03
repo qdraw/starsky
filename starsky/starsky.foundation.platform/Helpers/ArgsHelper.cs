@@ -281,7 +281,7 @@ namespace starsky.foundation.platform.Helpers
 			if (!_appSettings.IsVerbose()) return;
 			
 			_console.WriteLine(string.Empty);
-			_console.WriteLine("AppSettings:");
+			_console.WriteLine("AppSettings: " + _appSettings.ApplicationType);
 			_console.WriteLine("Database Type (-d --databasetype) "+ _appSettings.DatabaseType);
 			_console.WriteLine("DatabaseConnection (-c --connection) " + _appSettings.DatabaseConnection);
 			_console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");

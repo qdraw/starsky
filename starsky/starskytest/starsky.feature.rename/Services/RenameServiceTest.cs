@@ -114,87 +114,87 @@ namespace starskytest.starsky.feature.rename.Services
 			Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex, renameFs.FirstOrDefault().Status );
 		}
 		
-		[TestMethod]
-		public async Task RenameFsTest_MoveFileToExistFolder_Items()
-		{
-			CreateFoldersAndFilesInDatabase();
-
-			// remove file if already exist; we are not testing duplicate support here
-			var existFullPath = Path.Combine(_newImage.BasePath, "exist");
-			if ( File.Exists(Path.Combine(existFullPath, "test2.jpg")) )
-			{
-				File.Delete(Path.Combine(existFullPath, "test2.jpg"));
-			}
-			
-			// check if dir exist
-			if (!Directory.Exists(existFullPath) )
-			{
-				Directory.CreateDirectory(existFullPath);
-			}
-			
-			var renameFs1 = await new RenameService(_query,_iStorageSubPath)
-				.Rename(_newImage.DbPath, "/exist/test2.jpg");
-			var renameFs = renameFs1
-				.Where( p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
-
-			Assert.AreEqual(1,renameFs.Count);
-			
-			// query database
-			var all = _query.GetAllRecursive();
-			Assert.AreEqual("test2.jpg", all.FirstOrDefault(
-				p => p.FileName == "test2.jpg").FileName);
-			
-			
-			// use cached view
-			var singleItem = _query.SingleItem("/exist/test2.jpg");
-			Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
-
-			new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(_newImage.BasePath, "exist"));
-
-			RemoveFoldersAndFilesInDatabase();
-		}
+		// [TestMethod]
+		// public async Task RenameFsTest_MoveFileToExistFolder_Items()
+		// {
+		// 	CreateFoldersAndFilesInDatabase();
+		//
+		// 	// remove file if already exist; we are not testing duplicate support here
+		// 	var existFullPath = Path.Combine(_newImage.BasePath, "exist");
+		// 	if ( File.Exists(Path.Combine(existFullPath, "test2.jpg")) )
+		// 	{
+		// 		File.Delete(Path.Combine(existFullPath, "test2.jpg"));
+		// 	}
+		// 	
+		// 	// check if dir exist
+		// 	if (!Directory.Exists(existFullPath) )
+		// 	{
+		// 		Directory.CreateDirectory(existFullPath);
+		// 	}
+		// 	
+		// 	var renameFs1 = await new RenameService(_query,_iStorageSubPath)
+		// 		.Rename(_newImage.DbPath, "/exist/test2.jpg");
+		// 	var renameFs = renameFs1
+		// 		.Where( p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing).ToList();
+		//
+		// 	Assert.AreEqual(1,renameFs.Count);
+		// 	
+		// 	// query database
+		// 	var all = _query.GetAllRecursive();
+		// 	Assert.AreEqual("test2.jpg", all.FirstOrDefault(
+		// 		p => p.FileName == "test2.jpg").FileName);
+		// 	
+		// 	
+		// 	// use cached view
+		// 	var singleItem = _query.SingleItem("/exist/test2.jpg");
+		// 	Assert.AreEqual("test2.jpg",singleItem.FileIndexItem.FileName);		
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs.FirstOrDefault().Status );
+		//
+		// 	new StorageHostFullPathFilesystem().FolderDelete(Path.Combine(_newImage.BasePath, "exist"));
+		//
+		// 	RemoveFoldersAndFilesInDatabase();
+		// }
 	
-		[TestMethod]
-		public async Task RenameFsTest_MoveDirWithItemsTest()
-		{
-			var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
-			Directory.CreateDirectory(existFullDirPath);
-			// move an item to this directory	
-			
-			if (! File.Exists(_appSettings.DatabasePathToFilePath("/dir1/test3.jpg")) )
-			{
-				File.Move(_newImage.FullFilePath,
-					_appSettings.DatabasePathToFilePath("/dir1/test3.jpg",false));
-			}
-			//await _sync.Sync("/dir1/test3.jpg");
-			
-			// query database
-			var all = await _query.GetAllRecursiveAsync();
-			// ReSharper disable once PossibleNullReferenceException
-			Assert.AreEqual("test3.jpg", all.FirstOrDefault(
-				p => p.FileName == "test3.jpg").FileName );
-			
-			var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
-
-			if ( new StorageHostFullPathFilesystem().ExistFolder(dir2FullDirPath) )
-			{
-				new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
-			}
-			
-			var renameFs = await new RenameService(_query,_iStorageSubPath).Rename("/dir1", "/dir2");
-			// check if files are moved in the database
-
-			var all2 = await _query.GetAllRecursiveAsync();
-
-			var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test3.jpg");
-			Assert.AreEqual("test3.jpg",selectFile3.FileName);
-			Assert.AreEqual("/dir2",selectFile3.ParentDirectory);
-			Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
-			
-
-			new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
-		}
+		// [TestMethod]
+		// public async Task RenameFsTest_MoveDirWithItemsTest()
+		// {
+		// 	var existFullDirPath = Path.Combine(_newImage.BasePath, "dir1");
+		// 	Directory.CreateDirectory(existFullDirPath);
+		// 	// move an item to this directory	
+		// 	
+		// 	if (! File.Exists(_appSettings.DatabasePathToFilePath("/dir1/test3.jpg")) )
+		// 	{
+		// 		File.Move(_newImage.FullFilePath,
+		// 			_appSettings.DatabasePathToFilePath("/dir1/test3.jpg",false));
+		// 	}
+		// 	//await _sync.Sync("/dir1/test3.jpg");
+		// 	
+		// 	// query database
+		// 	var all = await _query.GetAllRecursiveAsync();
+		// 	// ReSharper disable once PossibleNullReferenceException
+		// 	Assert.AreEqual("test3.jpg", all.FirstOrDefault(
+		// 		p => p.FileName == "test3.jpg").FileName );
+		// 	
+		// 	var dir2FullDirPath = Path.Combine(_newImage.BasePath, "dir2");
+		//
+		// 	if ( new StorageHostFullPathFilesystem().ExistFolder(dir2FullDirPath) )
+		// 	{
+		// 		new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
+		// 	}
+		// 	
+		// 	var renameFs = await new RenameService(_query,_iStorageSubPath).Rename("/dir1", "/dir2");
+		// 	// check if files are moved in the database
+		//
+		// 	var all2 = await _query.GetAllRecursiveAsync();
+		//
+		// 	var selectFile3 = all2.FirstOrDefault(p => p.FileName == "test3.jpg");
+		// 	Assert.AreEqual("test3.jpg",selectFile3.FileName);
+		// 	Assert.AreEqual("/dir2",selectFile3.ParentDirectory);
+		// 	Assert.AreEqual(FileIndexItem.ExifStatus.Ok, renameFs[1].Status );
+		// 	
+		//
+		// 	new StorageHostFullPathFilesystem().FolderDelete(dir2FullDirPath);
+		// }
 
 		private FileIndexItem _folderExist;
 		private FileIndexItem _folder1Exist;

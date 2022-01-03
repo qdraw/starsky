@@ -35,6 +35,7 @@ namespace starsky.feature.import.Services
 		/// <returns>Void Task</returns>
 		public async Task Importer(string[] args)
 		{
+			Console.WriteLine("run importer");
 			_appSettings.Verbose = new ArgsHelper().NeedVerbose(args);
 
 			await _exifToolDownload.DownloadExifTool(_appSettings.IsWindows);
@@ -75,6 +76,8 @@ namespace starsky.feature.import.Services
 			var result = await _importService.Importer(inputPathListFormArgs, importSettings);
 
 			WriteOutputStatus(importSettings, result, stopWatch);
+			Console.WriteLine("done import");
+
 		}
 
 		private void WriteOutputStatus(ImportSettingsModel importSettings, List<ImportIndexItem> result, Stopwatch stopWatch)
