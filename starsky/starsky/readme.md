@@ -296,3 +296,20 @@ Then DiskWatcher is stopping and retry 20 times before the state will be disable
 ```
 
 Solution: make sure that all child folder are accessible
+
+#### DiskWatcher in combination with Mac OS APFS Disk
+
+When you set `/System/Volumes/Data` to watch for changes this makes the application crash with
+`System.ArgumentOutOfRangeException` when a single file is changed. There is currently no solution for this problem other then don't use the Diskwatcher with this location.
+
+```c#
+Unhandled exception. System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
+   at System.IO.FileSystemWatcher.RunningInstance.ProcessEvents(Int32 numEvents, Byte** eventPaths, FSEventStreamEventFlags* eventFlags, UInt64* eventIds, FileSystemWatcher watcher)
+   at System.IO.FileSystemWatcher.RunningInstance.<>c__DisplayClass14_0.<FileSystemEventCallback>b__0(Object o)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.IO.FileSystemWatcher.RunningInstance.FileSystemEventCallback(IntPtr streamRef, IntPtr clientCallBackInfo, IntPtr numEvents, Byte** eventPaths, FSEventStreamEventFlags* eventFlags, UInt64* eventIds)
+...
+```
