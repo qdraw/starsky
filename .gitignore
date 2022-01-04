@@ -47,6 +47,7 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
+!**/Properties/default-init-launchSettings.json
 
 *_i.c
 *_p.c
