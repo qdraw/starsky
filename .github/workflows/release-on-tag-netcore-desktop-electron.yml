@@ -174,13 +174,13 @@ jobs:
             ## Desktop app versions:
             _When you are not sure pick the Desktop App_
             - starsky-mac-desktop.zip - __Starsky Desktop App for Mac OS *10.15* or newer (Intel)__
-            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 7 (64 bits) or newer (Intel)__
+            - starsky-win-desktop.zip - __Starsky Desktop App for Windows 10 1607+ or 11 (Intel 64 bits)__
 
             ## Server versions:
             - starsky-linux-arm.zip - Starsky as Web Application (start from command line) only for Raspberry Pi's
             - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's 
             - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *10.15* or newer
-            - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 7 (64 bits) or newer
+            - starsky-win7-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1607+ or 11 (Intel 64 bits)
 
             ## Changelog
             [There is an changelog to see the recent changes](https://qdraw.github.io/starsky/history.html)
