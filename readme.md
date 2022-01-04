@@ -65,7 +65,7 @@ _See `./pipelines/azure` for details_
 #### Ubuntu
 
 ![Starsky .NET Core (Ubuntu)](https://github.com/qdraw/starsky/workflows/Starsky%20.NET%20Core%20(Ubuntu)/badge.svg)
-![Starsky ClientApp (React)](https://github.com/qdraw/starsky/workflows/Starsky%20ClientApp%20(React)/badge.svg)
+[![ClientApp React Linux CI](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/clientapp-react-linux-ci.yml)
 
 #### App on Windows and Mac OS
 
