@@ -1,4 +1,5 @@
 name: ClientApp React Linux CI
+# see also Windows CI
 
 on:
   push:
