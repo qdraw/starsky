@@ -581,7 +581,11 @@ Task("PublishWeb")
                     Configuration = configuration,
                     OutputDirectory = distDirectory, // <= first to generic
                     ArgumentCustomization = args => args
-                      .Append("--nologo").Append("--no-build").Append("--no-restore").Append("--no-dependencies"),
+                      .Append("--nologo")
+                      .Append("--no-build")
+                      .Append("--no-restore")
+                      .Append("--no-dependencies")
+                      .Append("--self-contained true"),
                 };
 
 
