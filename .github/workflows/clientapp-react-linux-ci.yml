@@ -1,4 +1,4 @@
-name: Starsky ClientApp (React)
+name: ClientApp React Linux CI
 
 on:
   push:
