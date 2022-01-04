@@ -53,26 +53,22 @@ namespace starsky.foundation.sync.WatcherServices
         /// </devdoc>
         public BufferingFileSystemWatcher()
         {
-	        try
-	        {
-		        _containedFsw = new FileSystemWatcher();
-	        }
-	        catch ( ArgumentOutOfRangeException e)
-	        {
-		        Console.WriteLine(e);
-	        }
+	        _containedFsw = new FileSystemWatcher();
         }
 
         public BufferingFileSystemWatcher(string path)
         {
-	        try
-	        {
-		        _containedFsw = new FileSystemWatcher(path, "*.*");
-	        }
-	        catch ( ArgumentOutOfRangeException e)
-	        {
-		        Console.WriteLine(e);
-	        }
+	        _containedFsw = new FileSystemWatcher(path, "*.*");
+        }
+        
+        public BufferingFileSystemWatcher(string path, string filter)
+        {
+	        _containedFsw = new FileSystemWatcher(path, filter);
+        }
+        
+        public BufferingFileSystemWatcher(FileSystemWatcher fileSystemWatcher)
+        {
+	        _containedFsw = fileSystemWatcher;
         }
 
         public bool EnableRaisingEvents
