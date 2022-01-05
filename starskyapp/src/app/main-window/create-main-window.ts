@@ -59,6 +59,14 @@ async function createMainWindow(
     newWindow.show();
   });
 
+  newWindow.webContents.setWindowOpenHandler(({ url }) => {
+    // set cookies for all domains
+    if (url.startsWith('http')) {
+      return { action: 'allow' }
+    }
+    return { action: 'deny' }
+  })
+
   // normal navigations
   newWindow.webContents.on("did-navigate", () => {
     saveRememberUrl(newWindow);
