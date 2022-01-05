@@ -10,6 +10,12 @@ Push-Location $PSScriptRoot
 
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = "true"
 $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+try { 
+    [System.Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT','true')
+    [System.Environment]::SetEnvironmentVariable('DOTNET_SKIP_FIRST_TIME_EXPERIENCE','1') 
+}
+catch {}
+
 
 # Restore Cake tool
 & dotnet tool restore
