@@ -25,7 +25,7 @@ jest.mock("electron", () => {
 });
 
 describe("create settings window", () => {
-  it("create a new window", async () => {
+  it("create a new window (settings)", async () => {
     jest
       .spyOn(windowStateKeeper, "windowStateKeeper")
       .mockImplementationOnce(() =>
