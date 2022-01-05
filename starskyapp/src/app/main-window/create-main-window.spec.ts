@@ -22,7 +22,8 @@ jest.mock("electron", () => {
           on: (_: string, func: Function) => {
             return func();
           },
-          getURL: () => "https://test.com/?f="
+          getURL: () => "https://test.com/?f=",
+          setWindowOpenHandler: jest.fn()
         },
         once: (_: string, func: Function) => {
           return func();
@@ -37,7 +38,7 @@ jest.mock("electron", () => {
 });
 
 describe("create main window", () => {
-  it("create a new window", async () => {
+  it("create a new window (main)", async () => {
     jest
       .spyOn(windowStateKeeper, "windowStateKeeper")
       .mockImplementationOnce(() =>
