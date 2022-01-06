@@ -29,10 +29,7 @@ export class DocumentTitle {
       archive.pageType === PageType.Search &&
       (archive as IArchiveProps).searchQuery
     ) {
-      let query = (archive as IArchiveProps).searchQuery as string;
-      if (query) {
-        name = query;
-      }
+      name = (archive as IArchiveProps).searchQuery as string;
     }
 
     document.title = this.GetDocumentTitle(name);
