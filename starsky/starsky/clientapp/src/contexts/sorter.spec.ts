@@ -96,8 +96,7 @@ describe("sorter", () => {
       {
         fileName: "a",
         imageFormat: ImageFormat.unknown
-      } as IFileIndexItem,
-
+      } as IFileIndexItem
     ] as IFileIndexItem[];
 
     const resultList = sorter(list, SortType.imageFormat);
