@@ -20,13 +20,16 @@ export class DocumentTitle {
       }
     }
 
+    if (archive.pageType === PageType.Trash) {
+      name = "Trash";
+    }
+
     // For search
     if (
       archive.pageType === PageType.Search &&
       (archive as IArchiveProps).searchQuery
     ) {
       let query = (archive as IArchiveProps).searchQuery as string;
-      query = query.replace("!delete!", "Trash");
       if (query) {
         name = query;
       }
