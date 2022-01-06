@@ -20,6 +20,18 @@ export class DocumentTitle {
       }
     }
 
+    // For search
+    if (
+      archive.pageType === PageType.Search &&
+      (archive as IArchiveProps).searchQuery
+    ) {
+      let query = (archive as IArchiveProps).searchQuery as string;
+      query = query.replace("!delete!", "Trash");
+      if (query) {
+        name = query;
+      }
+    }
+
     document.title = this.GetDocumentTitle(name);
   };
 
