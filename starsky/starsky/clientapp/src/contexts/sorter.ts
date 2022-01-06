@@ -18,6 +18,8 @@ export function sorter(
         if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
 
         const enumOrder = Object.values(ImageFormat);
+        console.log(enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat));
+
         return (
           enumOrder.indexOf(a.imageFormat) - enumOrder.indexOf(b.imageFormat) ||
           a.fileName.localeCompare(a.fileName, "en", { sensitivity: "base" })
