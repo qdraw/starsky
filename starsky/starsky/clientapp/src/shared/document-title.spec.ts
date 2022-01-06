@@ -36,13 +36,43 @@ describe("document-title", () => {
       expect(document.title).toContain("test");
     });
 
-    it("Search", () => {
+    it("Search fallback", () => {
       var state = {
         pageType: PageType.Search,
         breadcrumb: ["/", "search"]
       } as IArchiveProps;
       new DocumentTitle().SetDocumentTitle(state);
       expect(document.title).toContain("search");
+    });
+
+    it("Search fallback 2", () => {
+      var state = {
+        pageType: PageType.Search,
+        breadcrumb: ["/", "search"],
+        searchQuery: undefined
+      } as IArchiveProps;
+      new DocumentTitle().SetDocumentTitle(state);
+      expect(document.title).toContain("search");
+    });
+
+    it("Search with title", () => {
+      var state = {
+        pageType: PageType.Search,
+        breadcrumb: ["/", "search"],
+        searchQuery: "test"
+      } as IArchiveProps;
+      new DocumentTitle().SetDocumentTitle(state);
+      expect(document.title).toContain("test");
+    });
+
+    it("Trash with trash", () => {
+      var state = {
+        pageType: PageType.Trash,
+        breadcrumb: ["/", "search"],
+        searchQuery: "!delete!"
+      } as IArchiveProps;
+      new DocumentTitle().SetDocumentTitle(state);
+      expect(document.title).toContain("Trash");
     });
 
     it("GetDocumentTitle title Electron", () => {

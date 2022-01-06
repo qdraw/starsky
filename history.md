@@ -46,7 +46,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (App) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
 - [x]   (App) _Tools_ Add insider script for download Github artifacts (PR #589)
 - [x]   (App) _App_ Middle mouse click in Electron app shows login page instead of content (PR #596 Issue #592)
-
+- [x]   (Changed) _Front-end_ Add Trash title instead of !delete! (PR #597)
+- [x]   (Changed) _Front-end_ Add Search query title instead (PR #597)
+ 
 # version 0.5.0-beta.0 - 2021-12-29
 - [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
 - [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)

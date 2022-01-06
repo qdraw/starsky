@@ -20,6 +20,18 @@ export class DocumentTitle {
       }
     }
 
+    if (archive.pageType === PageType.Trash) {
+      name = "Trash";
+    }
+
+    // For search
+    if (
+      archive.pageType === PageType.Search &&
+      (archive as IArchiveProps).searchQuery
+    ) {
+      name = (archive as IArchiveProps).searchQuery as string;
+    }
+
     document.title = this.GetDocumentTitle(name);
   };
 
