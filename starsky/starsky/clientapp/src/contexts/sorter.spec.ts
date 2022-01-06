@@ -46,8 +46,8 @@ describe("sorter", () => {
 
     const resultList = sorter(list, SortType.imageFormat);
 
-    expect(resultList[0].fileName).toBe("b");
-    expect(resultList[1].fileName).toBe("a");
+    expect(resultList[0].fileName).toBe("a");
+    expect(resultList[1].fileName).toBe("b");
   });
 
   it("sort on imageFormat", () => {
@@ -87,7 +87,7 @@ describe("sorter", () => {
     expect(resultList[1].fileName).toBe("b");
   });
 
-  it("sort on imageFormat 2 same type", () => {
+  it("sort on imageFormat 2 same type 1", () => {
     const list = [
       {
         fileName: "b",
