@@ -13,7 +13,7 @@ export function sorter(
         a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
       );
     case SortType.imageFormat:
-      const imageFormats = [...concatenatedFileIndexItems].sort((a, b) => {
+      return [...concatenatedFileIndexItems].sort((a, b) => {
         if (!a.imageFormat) a.imageFormat = ImageFormat.unknown;
         if (!b.imageFormat) b.imageFormat = ImageFormat.unknown;
 
@@ -23,7 +23,6 @@ export function sorter(
           a.fileName.localeCompare(b.fileName, "en", { sensitivity: "base" })
         );
       });
-      return imageFormats;
     default:
       return [];
   }
