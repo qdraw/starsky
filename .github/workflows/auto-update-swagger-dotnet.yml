@@ -1,0 +1,50 @@
+name: Auto Update Swagger
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+    - '**.cshtml'
+    - '**.cs'
+    - '**.sln'
+    - '**.cake'
+    - '**.json'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/auto-update-swagger-dotnet.yml'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.416
+
+    - name: Cache nuget packages (*nix)
+      uses: actions/cache@v2
+      with:
+        # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-build-netcore-${{ hashFiles('./starsky/starsky/nuget-packages-list.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-netcore-
+ 
+    - name: BuildNetCore
+      shell: bash
+      working-directory: ./starsky
+      run: bash build.sh --Target=BuildNetCore --no-sonar
+
+    - name: TestNetCore
+      shell: bash
+      working-directory: ./starsky
+      env: 
+      run: dotnet run
+
+
