@@ -40,9 +40,10 @@ namespace starsky.foundation.thumbnailgeneration.Helpers
 		///  Or File
 		/// </summary>
 		/// <param name="subPath">folder subPath style</param>
+		/// <param name="recursive">recursive</param>
 		/// <returns>fail/pass</returns>
 		/// <exception cref="FileNotFoundException">if folder/file not exist</exception>
-		public async Task<List<(string, bool)>> CreateThumb(string subPath)
+		public async Task<List<(string, bool)>> CreateThumb(string subPath, bool recursive = true)
 		{
 			var isFolderOrFile = _iStorage.IsFolderOrFile(subPath);
 			var result = new List<(string, bool)>();

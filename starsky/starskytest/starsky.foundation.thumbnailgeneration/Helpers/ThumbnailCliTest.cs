@@ -14,7 +14,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 	public class ThumbnailCliTest
 	{
 		[TestMethod]
-		public async Task Thumbnail_NoArgs_Assume_DoNothing()
+		public async Task Thumbnail_NoArgs_Assume_T_True()
 		{
 			var fakeConsole = new FakeConsoleWrapper();
 			var storage = new FakeIStorage(new List<string> {"/"}, new List<string> {"/test.jpg"});
@@ -24,7 +24,7 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Helpers
 			
 			await thumbnailService.Thumbnail(new string[0]);
 			
-			Assert.AreEqual(0, fakeConsole.WrittenLines.Count);
+			Assert.AreEqual(1, fakeConsole.WrittenLines.Count);
 		}
 		
 		[TestMethod]
