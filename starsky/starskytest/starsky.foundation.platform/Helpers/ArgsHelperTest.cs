@@ -449,7 +449,7 @@ namespace starskytest.starsky.foundation.platform.Helpers
 		public void ArgsHelper_NeedHelpShowDialog_Sync()
 		{
 			var console = new FakeConsoleWrapper();
-			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Sync})
+			new ArgsHelper(new AppSettings {ApplicationType = AppSettings.StarskyAppType.Sync},console)
 				.NeedHelpShowDialog();
 			Assert.IsTrue(console.WrittenLines[0].Contains("Sync"));
 		}
