@@ -16,7 +16,8 @@
     "windows": "npm run build && electron-builder build -w",
     "macwindows": "npm run build && electron-builder build -mw",
     "test": "jest --watch",
-    "test:ci": "jest  --watchAll=false --coverage --reporters=default 2>&1"
+    "test:ci": "jest  --watchAll=false --coverage --reporters=default 2>&1",
+    "build:runtime": "pwsh ../starsky/build.ps1 --runtime=osx-x64,win7-x64"
   },
   "author": "",
   "license": "ISC",

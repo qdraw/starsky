@@ -28,6 +28,7 @@ async function createMainWindow(
     webPreferences: {
       allowRunningInsecureContent: false,
       nodeIntegration: false,
+      nativeWindowOpen: true,
       sandbox: false,
       partition: "persist:main",
       contextIsolation: true,
@@ -60,11 +61,16 @@ async function createMainWindow(
   });
 
   newWindow.webContents.setWindowOpenHandler(({ url }) => {
-    // set cookies for all domains
-    if (url.startsWith('http')) {
-      return { action: 'allow' }
+    return {
+      action: 'allow',
+      overrideBrowserWindowOptions: {
+        webPreferences: {
+          partition: "persist:main",
+          contextIsolation: true,
+          preload: path.join(__dirname, "..", "..", "preload", "preload-main.js") // use a preload script
+        }
+      }
     }
-    return { action: 'deny' }
   })
 
   // normal navigations
