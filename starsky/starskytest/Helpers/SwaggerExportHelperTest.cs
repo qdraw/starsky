@@ -74,6 +74,28 @@ namespace starskytest.Helpers
 			
 			Assert.IsFalse(result);
 		}
+		
+		[TestMethod]
+		public void Add04SwaggerExportExitAfter_True()
+		{
+			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = true, AddSwaggerExportExitAfter = true};
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var appLifeTime = new FakeIApplicationLifetime();
+			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void Add04SwaggerExportExitAfter_False()
+		{
+			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false, AddSwaggerExportExitAfter = false};
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var appLifeTime = new FakeIApplicationLifetime();
+			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
+			
+			Assert.IsFalse(result);
+		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]

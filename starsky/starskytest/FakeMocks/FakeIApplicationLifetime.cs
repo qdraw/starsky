@@ -8,7 +8,7 @@ namespace starskytest.FakeMocks
 	{
 		public void StopApplication()
 		{
-			throw new NotImplementedException();
+			// nothing here
 		}
 
 		public CancellationToken ApplicationStarted { get; }
