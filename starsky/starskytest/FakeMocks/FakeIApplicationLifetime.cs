@@ -1,18 +1,19 @@
 using System;
 using System.Threading;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace starskytest.FakeMocks;
-
-public class FakeIApplicationLifetime : IHostApplicationLifetime
+namespace starskytest.FakeMocks
 {
-	public void StopApplication()
+	public class FakeIApplicationLifetime : IHostApplicationLifetime
 	{
-		throw new NotImplementedException();
-	}
+		public void StopApplication()
+		{
+			throw new NotImplementedException();
+		}
 
-	public CancellationToken ApplicationStarted { get; }
-	public CancellationToken ApplicationStopped { get; }
-	public CancellationToken ApplicationStopping { get; }
+		public CancellationToken ApplicationStarted { get; }
+		public CancellationToken ApplicationStopped { get; }
+		public CancellationToken ApplicationStopping { get; }
+	}
 }
+
