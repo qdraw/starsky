@@ -453,6 +453,29 @@ namespace starskytest.starsky.foundation.platform.Helpers
 				.NeedHelpShowDialog();
 			Assert.IsTrue(console.WrittenLines[0].Contains("Sync"));
 		}
+		
+		[TestMethod]
+		public void ArgsHelper_AppInsightsKey_ApplicationInsightsDatabaseTracking()
+		{
+			var console = new FakeConsoleWrapper();
+			new ArgsHelper(new AppSettings { ApplicationInsightsInstrumentationKey = "1", 
+					ApplicationType = AppSettings.StarskyAppType.Sync, Verbose = true},console)
+				.NeedHelpShowDialog();
+			
+			Assert.IsTrue(console.WrittenLines.Any(p => p.Contains("ApplicationInsightsDatabaseTracking")));
+		}
+		
+				
+		[TestMethod]
+		public void ArgsHelper_AppInsightsKey_ApplicationInsightsDatabaseTracking_NoKey()
+		{
+			var console = new FakeConsoleWrapper();
+			new ArgsHelper(new AppSettings { 
+					ApplicationType = AppSettings.StarskyAppType.Sync, Verbose = true},console)
+				.NeedHelpShowDialog();
+			
+			Assert.IsFalse(console.WrittenLines.Any(p => p.Contains("ApplicationInsightsDatabaseTracking")));
+		}
 
 		[TestMethod]
 		public void NeedHelpShowDialog_WebHtml_Verbose()
