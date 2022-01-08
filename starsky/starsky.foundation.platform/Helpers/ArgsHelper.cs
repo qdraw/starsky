@@ -224,8 +224,18 @@ namespace starsky.foundation.platform.Helpers
 					                   ", use for example '1' to select yesterday. (structure is required)");
 					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 					
-					_console.WriteLine("--recursive or -r == SubPath Directory recursive " +
-					                   "(default: false / only the selected folder) ");
+					_console.WriteLine("recursive is enabled by default");
+					break;
+				case AppSettings.StarskyAppType.MetaThumbnail:
+					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+					                   ", use for example '1' to select yesterday. (structure is required)");
+					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					
+					_console.WriteLine("recursive is enabled by default");
 					break;
 				case AppSettings.StarskyAppType.Admin:
 					_console.WriteLine("--name or -n == string ; username / email");
