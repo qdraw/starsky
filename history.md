@@ -45,7 +45,7 @@ node starsky-tools/build-tools/app-version-update.js
 # version 0.5.0-beta.1 _(Unreleased)_ - 2022-01-??
 - [x]   (App) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
 - [x]   (App) _Tools_ Add insider script for download Github artifacts (PR #589)
-- [x]   (App) _App_ Middle mouse click in Electron app shows login page instead of content (PR #596 Issue #592)
+- [x]   (App) _App_ Middle mouse click in Electron app shows login page instead of content (PR #596 Issue #592 and PR #600)
 - [x]   (Changed) _Front-end_ Add Trash title instead of !delete! (PR #597)
 - [x]   (Changed) _Front-end_ Add Search query title instead (PR #597)
 - [x]   (Changed) _Front-end_ Order by ImageFormat and then by filename (PR #598)
