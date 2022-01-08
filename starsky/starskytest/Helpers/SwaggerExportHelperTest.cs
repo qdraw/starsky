@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
@@ -50,6 +53,8 @@ namespace starskytest.Helpers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 			services.AddScoped<ISwaggerProvider, FakeISwaggerProvider>();
+			services.AddScoped<IHostApplicationLifetime, FakeIApplicationLifetime>();
+
 			_serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
