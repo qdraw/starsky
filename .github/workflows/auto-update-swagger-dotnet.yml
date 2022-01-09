@@ -19,6 +19,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
     - uses: actions/checkout@v2
@@ -45,6 +46,9 @@ jobs:
       shell: bash
       working-directory: ./starsky
       env: 
+          app__AddSwagger: "true"
+          app__AddSwaggerExport: "true"
+          app__AddSwaggerExportExitAfter: "true"
       run: dotnet run
 
 
