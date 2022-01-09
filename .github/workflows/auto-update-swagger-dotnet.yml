@@ -46,9 +46,9 @@ jobs:
       shell: bash
       working-directory: ./starsky
       env: 
-          app__AddSwagger: "true"
-          app__AddSwaggerExport: "true"
-          app__AddSwaggerExportExitAfter: "true"
+        app__AddSwagger: "true"
+        app__AddSwaggerExport: "true"
+        app__AddSwaggerExportExitAfter: "true"
       run: dotnet run
 
 
