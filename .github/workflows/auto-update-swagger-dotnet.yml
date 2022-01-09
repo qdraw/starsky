@@ -10,6 +10,7 @@ on:
     - '**.sln'
     - '**.cake'
     - '**.json'
+    - '.github/workflows/auto-update-swagger-dotnet.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -42,9 +43,9 @@ jobs:
       working-directory: ./starsky
       run: bash build.sh --Target=BuildNetCore --no-sonar
 
-    - name: TestNetCore
+    - name: Run With Exit
       shell: bash
-      working-directory: ./starsky
+      working-directory: ./starsky/starsky
       env: 
         app__AddSwagger: "true"
         app__AddSwaggerExport: "true"
