@@ -38,7 +38,6 @@ node starsky-tools/build-tools/app-version-update.js
 
 # Expected breaking changes in a future release:
 
-- change default option in thumbnailer cli to scan directories to enabled
 - package telementry
 - change mirror locations
 
@@ -49,7 +48,8 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Front-end_ Add Trash title instead of !delete! (PR #597)
 - [x]   (Changed) _Front-end_ Add Search query title instead (PR #597)
 - [x]   (Changed) _Front-end_ Order by ImageFormat and then by filename (PR #598)
- 
+- [x]   (Breaking change) _Back-end_ change default option in thumbnailer cli to scan directories to enabled (-t true default) 
+
 # version 0.5.0-beta.0 - 2021-12-29
 - [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
 - [x]   (Removed) _CLI_ Removed Net framework version which is replaced by .NET Core (PR #563)

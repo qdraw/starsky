@@ -459,7 +459,11 @@ namespace starsky.foundation.platform.Models
 		/// </summary>	    
 		public bool? AddSwaggerExport { get; set; } = false;
 
-		public bool AddLegacyOverwrite { get; set; } = Type.GetType("Mono.Runtime") != null;
+		/// <summary>
+		/// Stop application after swagger Export.
+		/// Need to set AddSwagger and AddSwaggerExport also to true to take effect
+		/// </summary>
+		public bool? AddSwaggerExportExitAfter { get; set; } = false;
 
 		/// <summary>
 		/// Set Meta Thumbnails on import

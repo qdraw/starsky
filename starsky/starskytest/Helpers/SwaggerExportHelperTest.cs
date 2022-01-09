@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
@@ -50,6 +53,8 @@ namespace starskytest.Helpers
 			services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 			services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 			services.AddScoped<ISwaggerProvider, FakeISwaggerProvider>();
+			services.AddScoped<IHostApplicationLifetime, FakeIApplicationLifetime>();
+
 			_serviceProvider = services.BuildServiceProvider();
 			_serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
 		}
@@ -66,6 +71,28 @@ namespace starskytest.Helpers
 			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false};
 			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
 			var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
+			
+			Assert.IsFalse(result);
+		}
+		
+		[TestMethod]
+		public void Add04SwaggerExportExitAfter_True()
+		{
+			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = true, AddSwaggerExportExitAfter = true};
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var appLifeTime = new FakeIApplicationLifetime();
+			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
+			
+			Assert.IsTrue(result);
+		}
+		
+		[TestMethod]
+		public void Add04SwaggerExportExitAfter_False()
+		{
+			var appSettings = new AppSettings {AddSwagger = true, AddSwaggerExport = false, AddSwaggerExportExitAfter = false};
+			var swagger = new SwaggerExportHelper(null, new FakeIWebLogger());
+			var appLifeTime = new FakeIApplicationLifetime();
+			var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
 			
 			Assert.IsFalse(result);
 		}

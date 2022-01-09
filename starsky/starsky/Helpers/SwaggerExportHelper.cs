@@ -41,7 +41,10 @@ namespace starsky.Helpers
 				var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
 				var selectorStorage = scope.ServiceProvider.GetRequiredService<ISelectorStorage>();
 				var swaggerProvider = scope.ServiceProvider.GetRequiredService<ISwaggerProvider>();
+				var applicationLifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
+				
 				Add03AppExport(appSettings, selectorStorage, swaggerProvider);
+				Add04SwaggerExportExitAfter(appSettings, applicationLifetime);
 			}
 			return Task.CompletedTask;
 		}
@@ -78,6 +81,16 @@ namespace starsky.Helpers
 				swaggerJsonFullPath);
 
 			_logger?.LogInformation($"app__addSwaggerExport {swaggerJsonFullPath}");
+			return true;
+		}
+
+		public bool Add04SwaggerExportExitAfter(AppSettings appSettings, IHostApplicationLifetime applicationLifetime)
+		{
+			if ( appSettings.AddSwagger != true ||
+			     appSettings.AddSwaggerExport != true ||
+			     appSettings.AddSwaggerExportExitAfter != true ) return false;
+			
+			applicationLifetime.StopApplication();
 			return true;
 		}
 

@@ -213,6 +213,30 @@ namespace starsky.foundation.platform.Helpers
 			
 			switch (_appSettings.ApplicationType)
 			{
+				case AppSettings.StarskyAppType.Thumbnail:
+					
+					_console.WriteLine("-t == enable thumbnail (default true)");
+					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+					                   ", use for example '1' to select yesterday. (structure is required)");
+					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					
+					_console.WriteLine("recursive is enabled by default");
+					break;
+				case AppSettings.StarskyAppType.MetaThumbnail:
+					_console.WriteLine("--path or -p == parameter: (string) ; " +
+					                   "'full path', only child items of the database folder are supported," +
+					                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+					_console.WriteLine("--subpath or -s == parameter: (string) ; relative path in the database");
+					_console.WriteLine("--subpathrelative or -g == Overwrite sub-path to use relative days to select a folder" +
+					                   ", use for example '1' to select yesterday. (structure is required)");
+					_console.WriteLine("-p, -s, -g == you need to select one of those tags");
+					
+					_console.WriteLine("recursive is enabled by default");
+					break;
 				case AppSettings.StarskyAppType.Admin:
 					_console.WriteLine("--name or -n == string ; username / email");
 					_console.WriteLine("--password == string ; password");
@@ -293,7 +317,11 @@ namespace starsky.foundation.platform.Helpers
 			_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 			_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 			_console.WriteLine($"ApplicationInsightsKey {_appSettings.ApplicationInsightsInstrumentationKey} ");
-			_console.WriteLine($"AIdbTracking {_appSettings.ApplicationInsightsDatabaseTracking} AIlog {_appSettings.ApplicationInsightsLog} ");
+			if ( !string.IsNullOrEmpty(_appSettings.ApplicationInsightsInstrumentationKey) )
+			{
+				_console.WriteLine($"ApplicationInsightsDatabaseTracking {_appSettings.ApplicationInsightsDatabaseTracking} \n" +
+				                   $"ApplicationInsightsLog {_appSettings.ApplicationInsightsLog} ");
+			}
 
 			_console.Write("SyncIgnore ");
 			foreach ( var rule in _appSettings.SyncIgnore ) _console.Write($"{rule}, ");
@@ -606,7 +634,7 @@ namespace starsky.foundation.platform.Helpers
 		/// <returns>bool</returns>
 		public bool GetThumbnail(IReadOnlyList<string> args)
 		{
-			var isThumbnail = false;
+			var isThumbnail = true;
 			
 			for (int arg = 0; arg < args.Count; arg++)
 			{
