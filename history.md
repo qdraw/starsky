@@ -41,14 +41,18 @@ node starsky-tools/build-tools/app-version-update.js
 - package telementry
 - change mirror locations
 
-# version 0.5.0-beta.1 _(Unreleased)_ - 2022-01-??
-- [x]   (App) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
-- [x]   (App) _Tools_ Add insider script for download Github artifacts (PR #589)
-- [x]   (App) _App_ Middle mouse click in Electron app shows login page instead of content (PR #596 Issue #592 and PR #600)
+# version 0.5.0-beta.2 _(Unreleased)_ - 2022-01-??
+- nothing yet
+
+# version 0.5.0-beta.1 - 2022-01-11
+- [x]   (Changed) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
+- [x]   (Changed) _Tools_ Add insider script for download Github artifacts (PR #589)
+- [x]   (Changed) _App_ Middle mouse click in Electron app shows login page instead of content (PR #596 Issue #592 and PR #600)
 - [x]   (Changed) _Front-end_ Add Trash title instead of !delete! (PR #597)
 - [x]   (Changed) _Front-end_ Add Search query title instead (PR #597)
 - [x]   (Changed) _Front-end_ Order by ImageFormat and then by filename (PR #598)
-- [x]   (Breaking change) _Back-end_ change default option in thumbnailer cli to scan directories to enabled (-t true default) 
+- [x]   (Breaking change) _Back-end_ change default option in Thumbnail-er cli to scan directories to enabled (-t true default) (PR #601) 
+- [x]   (Added) _Back-end_ env variable to create swagger export and exit (PR #601)
 
 # version 0.5.0-beta.0 - 2021-12-29
 - [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
@@ -74,6 +78,9 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Fixed) _Back-end_ Fixed issue with Sony Lens Tamron lenses are diplaying dashes (PR #483)
 - [x]   (App) _Back-end_  UI update with storage folder is reverted after restart (PR #584 Issue #582)
 - [x]   (Breaking change) _Back_-end_ Droped support for older Mac OS version: now 10.15+ is required see: https://github.com/dotnet/core/blob/main/release-notes/3.1/3.1-supported-os.md
+- [x]   (Added) _Back-end_ Application Insights track events in DiskwatcherQueue (PR #583)
+- [x]   (Changed) _App_ Missing content length (PR #587)
+- [x]   (Changed) _App_ Use generic OSX id (PR #588)
 
 # version 0.4.13 - 2021-12-15
 - [x]   (Added) _CLI_  Add csv option for import CLI (PR #510)
