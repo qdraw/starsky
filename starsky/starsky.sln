@@ -118,6 +118,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A3C71266-A3AD-4611-8990-846EC0DDA16E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build-tools", "Build-tools", "{52237C88-FC6B-4DE3-BB27-8D2F9FF45F25}"
+	ProjectSection(SolutionItems) = preProject
+		..\starsky-tools\build-tools\app-version-update.js = ..\starsky-tools\build-tools\app-version-update.js
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

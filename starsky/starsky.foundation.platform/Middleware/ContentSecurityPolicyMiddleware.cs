@@ -29,12 +29,20 @@ namespace starsky.foundation.platform.Middleware
 				var socketUrl = httpContext.Request.Scheme == "http" 
 					? $"ws://{httpContext.Request.Host.Host}" : $"wss://{httpContext.Request.Host.Host}";
 
+				// For Safari localhost
+				var socketUrlWithPort = string.Empty;
+				if ( httpContext.Request.Host.Port != null )
+				{
+					socketUrlWithPort =
+						$"{socketUrl}:{httpContext.Request.Host.Port}";
+				}
+
 				// When change also update in Electron
 				httpContext.Response.Headers
 					.Add("Content-Security-Policy",
 						$"default-src 'self'; img-src 'self' https://*.tile.openstreetmap.org; script-src 'self' " +
 						$"https://az416426.vo.msecnd.net \'nonce-{nonce}\'; " +
-						$"connect-src 'self' {socketUrl} {socketUrl}:{httpContext.Request.Host.Port} " +
+						$"connect-src 'self' {socketUrl} {socketUrlWithPort} " +
 						$"https://*.in.applicationinsights.azure.com https://dc.services.visualstudio.com/v2/track; " +
 						$"style-src 'self'; " +
 						$"font-src 'self'; frame-ancestors 'none'; base-uri 'none'; " +
