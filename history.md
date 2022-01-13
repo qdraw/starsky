@@ -42,7 +42,7 @@ node starsky-tools/build-tools/app-version-update.js
 - change mirror locations
 
 # version 0.5.0-beta.2 _(Unreleased)_ - 2022-01-??
-- nothing yet
+- [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)
 
 # version 0.5.0-beta.1 - 2022-01-11
 - [x]   (Changed) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
