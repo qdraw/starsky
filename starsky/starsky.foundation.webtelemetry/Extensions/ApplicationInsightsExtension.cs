@@ -52,13 +52,14 @@ namespace starsky.foundation.webtelemetry.Extensions
 		}
 
 		/// <summary>
+		/// Add Event Counters to Application Insights
 		/// @see: https://docs.microsoft.com/en-us/azure/azure-monitor/app/eventcounters
 		/// </summary>
 		/// <param name="module">Modules</param>
 		internal static void SetEventCounterCollectionModule(
 			EventCounterCollectionModule module)
 		{
-			// in .NET Core 3 there are no default Counters
+			// in .NET Core 3 there are no default Counters (Event counters)
 			module.Counters.Clear();
 			// https://docs.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
 			module.Counters.Add(
