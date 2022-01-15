@@ -13,6 +13,7 @@ export function downloadNetRequest(
     }
 
     var file = fs.createWriteStream(toPath);
+    logger.info("> request: " + url + " - " + toPath);
 
     const request = net.request({
       useSessionCookies: true,
