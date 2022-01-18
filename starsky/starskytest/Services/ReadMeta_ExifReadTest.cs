@@ -7,6 +7,7 @@ using MetadataExtractor.Formats.Iptc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.readmeta.Services;
@@ -90,20 +91,19 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest()
 		{
-			var dir2 = new ExifIfd0Directory();
+			var container = new List<Directory>();
+			var dir2 = new ExifSubIfdDirectory();
 			dir2.Set(IptcDirectory.TagDigitalDateCreated, "20101212");
 			dir2.Set(IptcDirectory.TagDigitalTimeCreated, "124135+0000");
 			dir2.Set(ExifDirectoryBase.TagDateTimeDigitized, "2010:12:12 12:41:35");
 			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
 			dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
-
-			var t = new ReadMetaExif(null).GetExifDateTime(dir2);
-			var date2 = new DateTime(2010, 12, 12, 12, 41, 35);
-			var date = new DateTime();
-			Assert.AreEqual(
-				date, t);
-			Assert.AreNotEqual(t,null);
-			Assert.AreNotEqual(t,date2);
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
 		}
 
 		[TestMethod]
@@ -227,7 +227,10 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseUTCTime = new List<CameraMakeModel>
+			{
+				new CameraMakeModel("Apple","MacbookPro15,1")
+			}}).ReadExifFromFile("/test.mp4");
 
 			var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Utc).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
@@ -246,7 +249,7 @@ namespace starskytest.Services
 
 			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
 
-			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Utc).ToLocalTime();
+			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(640, item.ImageWidth);
 			Assert.AreEqual(360, item.ImageHeight);

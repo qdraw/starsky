@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Exif.Makernotes;
+using MetadataExtractor.Formats.QuickTime;
 using MetadataExtractor.Formats.Xmp;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -17,6 +18,7 @@ using starsky.foundation.storage.Interfaces;
 using Directory = MetadataExtractor.Directory;
 
 [assembly: InternalsVisibleTo("starsky.foundation.metathumbnail.Services")]
+[assembly: InternalsVisibleTo("starskytest")]
 namespace starsky.foundation.readmeta.ReadMetaHelpers
 {
 	public class ReadMetaExif
@@ -122,13 +124,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
                      item.Title = title;
                 }
                 
-                // DateTime of image
-                var dateTime = GetExifDateTime(exifItem);
-                if(dateTime.Year > 2) // 0 = is not the right tag or empty tag
-                {
-                    item.DateTime = dateTime;
-                }
-                
                 // Orientation of image
                 var orientation = GetOrientationFromExifItem(exifItem);
                 if (orientation != FileIndexItem.Rotation.DoNotChange)
@@ -180,18 +175,6 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		            item.SetIsoSpeed(isoSpeed);
 	            }
 
-	            var make = GetMakeModel(exifItem,true);
-	            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
-	            {
-		            item.SetMakeModel(make,0);
-	            }
-	            
-	            var model = GetMakeModel(exifItem,false);
-	            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
-	            {
-		            item.SetMakeModel(model,1);
-	            }
-
 	            var lensModel = GetMakeLensModel(exifItem);
 	            if (lensModel != string.Empty)
 	            {
@@ -207,6 +190,19 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 
             }
+            
+            var make = GetMakeModel(allExifItems,true);
+            if (make != string.Empty) // string.Empty = is not the right tag or empty tag
+            {
+	            item.SetMakeModel(make,0);
+            }
+	            
+            var model = GetMakeModel(allExifItems,false);
+            if (model != string.Empty) // string.Empty = is not the right tag or empty tag
+            {
+	            item.SetMakeModel(model,1);
+            }
+            
 
             item.Software = GetSoftware(allExifItems);
             
@@ -218,6 +214,13 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
             }
             
             item.ImageStabilisation = GetImageStabilisation(allExifItems);
+            
+            // DateTime of image
+            var dateTime = GetExifDateTime(allExifItems, new CameraMakeModel(item.Make, item.Model));
+            if ( dateTime != null )
+            {
+	            item.DateTime = (DateTime)dateTime;
+            }
 
             return item;
         }
@@ -227,7 +230,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// </summary>
         /// <param name="allExifItems">all items</param>
         /// <returns>Enum</returns>
-        private static ImageStabilisationType GetImageStabilisation(List<Directory> allExifItems)
+        private static ImageStabilisationType GetImageStabilisation(IEnumerable<Directory> allExifItems)
         {
 	        var sonyDirectory = allExifItems.OfType<SonyType1MakernoteDirectory>().FirstOrDefault();
 	        var imageStabilisation = sonyDirectory?.GetDescription(SonyType1MakernoteDirectory.TagImageStabilisation);
@@ -304,22 +307,25 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 		}
 
 
-	    private string GetMakeModel(MetadataExtractor.Directory exifItem, bool isMake)
+	    private string GetMakeModel(List<Directory> allExifItems, bool isMake)
 	    {
 		    // [Exif IFD0] Make = SONY
 		    // [Exif IFD0] Model = SLT-A58
 
-		    var makeModel = isMake ? "Make" : "Model";
+		    var exifIfd0Directory = allExifItems.OfType<ExifIfd0Directory>().FirstOrDefault();
+		    var tagMakeModelExif = isMake ? ExifDirectoryBase.TagMake : ExifDirectoryBase.TagModel;
 		    
-		    var tCounts =
-			    exifItem.Tags.Count(p => p.DirectoryName == "Exif IFD0" && p.Name == makeModel);
-		    if ( tCounts < 1 ) return string.Empty;
-
-		    var caption = exifItem.Tags.FirstOrDefault(
-			    p => p.DirectoryName == "Exif IFD0"
-			         && p.Name == makeModel)?.Description;
+		    var captionExifIfd0 = exifIfd0Directory?.GetDescription(tagMakeModelExif);
+		    if ( !string.IsNullOrEmpty(captionExifIfd0) )
+		    {
+			    return captionExifIfd0;
+		    }
 		    
-		    return caption;
+		    var quickTimeMetaDataDirectory = allExifItems.OfType<QuickTimeMetadataHeaderDirectory>().FirstOrDefault();
+		    var tagMakeModelQuickTime = isMake ? QuickTimeMetadataHeaderDirectory.TagMake : QuickTimeMetadataHeaderDirectory.TagModel;
+		    
+		    var captionQuickTime = quickTimeMetaDataDirectory?.GetDescription(tagMakeModelQuickTime);
+		    return !string.IsNullOrEmpty(captionQuickTime) ? captionQuickTime : string.Empty;
 	    }
 
 	    /// <summary>
@@ -461,54 +467,85 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <summary>
         /// Get the EXIF/SubIFD or PNG Created Datetime
         /// </summary>
-        /// <param name="exifItem">Directory</param>
+        /// <param name="allExifItems">Directory</param>
+        /// <param name="cameraMakeModel">cameraMakeModel</param>
         /// <returns>Datetime</returns>
-        public DateTime GetExifDateTime(Directory exifItem)
+        internal DateTime? GetExifDateTime(List<Directory> allExifItems, CameraMakeModel cameraMakeModel = null)
         {
-            var itemDateTime = new DateTime();
-            
-            string pattern = "yyyy:MM:dd HH:mm:ss";
-            CultureInfo provider = CultureInfo.InvariantCulture;
-            
-            var dtCounts = exifItem.Tags.Count(p => p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized");
-            if (dtCounts >= 1)
-            {
-                var dateString = exifItem.Tags.FirstOrDefault(p => 
-	                p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Digitized")?.Description;
-    
-                // https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
-                //2018:01:01 11:29:36
-                DateTime.TryParseExact(dateString, pattern, provider, 
-	                DateTimeStyles.AdjustToUniversal, out itemDateTime);
-            }
+	        var exifSubIfd = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+	        var provider = CultureInfo.InvariantCulture;
+	        var pattern = "yyyy:MM:dd HH:mm:ss";
+	        //     https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
+	        //     2018:01:01 11:29:36
+	        
+	        var tagDateTimeDigitized = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeDigitized);
+	        DateTime.TryParseExact(tagDateTimeDigitized, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
+	        if ( itemDateTimeDigitized.Year >= 2 )
+	        {
+		        return itemDateTimeDigitized;
+	        }
+	        
+	        var tagDateTimeOriginal = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal);
+	        DateTime.TryParseExact(tagDateTimeOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeOriginal);
+	        if ( itemDateTimeOriginal.Year >= 2 )
+	        {
+		        return itemDateTimeOriginal;
+	        }
+	        
+	        // 1970-01-01T02:00:03 formatted
+	        var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
 
-            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+	        var photoShopDateCreated = GetXmpData(xmpDirectory, "photoshop:DateCreated");
+	        DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, 
+	         DateTimeStyles.AdjustToUniversal, out var xmpItemDateTime);
+	        
+	        if ( xmpItemDateTime.Year >= 2 )
+	        {
+		        return xmpItemDateTime;
+	        }
 
-            var dateStringOriginal = exifItem.Tags.FirstOrDefault(p => 
-	            p.DirectoryName == "Exif SubIFD" && p.Name == "Date/Time Original")?.Description;
-            DateTime.TryParseExact(dateStringOriginal, pattern, provider, 
-	            DateTimeStyles.AdjustToUniversal, out itemDateTime);
-            
-            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
+	        var useUtcTime = _appSettings?.VideoUseUTCTime?.Any(p =>
+		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) &&
+		        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase));
+	        
+	        
+	        var quickTimeDirectory = allExifItems.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
 
-            // 1970-01-01T02:00:03 formatted
-            var photoShopDateCreated = GetXmpData(exifItem, "photoshop:DateCreated");
-            DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, 
-	            DateTimeStyles.AdjustToUniversal, out itemDateTime);
-           
-            if (itemDateTime.Year != 1 || itemDateTime.Month != 1) return itemDateTime;
+	        var quickTimeCreated = quickTimeDirectory?.GetDescription(QuickTimeMovieHeaderDirectory.TagCreated);
 
-            // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
-            var quickTimeCreated = exifItem.Tags.FirstOrDefault(p => 
-	            p.DirectoryName == "QuickTime Movie Header" && p.Name == "Created")?.Description;
-            DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", CultureInfo.CurrentCulture, 
-	            DateTimeStyles.AssumeUniversal, out var itemDateTimeQuickTime);
-            // to avoid errors scanning gpx files (with this it would be Local)
-            itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
-            
-            if ( itemDateTimeQuickTime.Year > 1970 ) itemDateTime = itemDateTimeQuickTime;
+	        var dateTimeStyle = useUtcTime == true
+		        ? DateTimeStyles.AssumeUniversal
+		        : DateTimeStyles.AdjustToUniversal;
+	        
+	        // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
+	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
+		        dateTimeStyle, out var itemDateTimeQuickTime);
 
-            return itemDateTime;
+	        if ( useUtcTime == true)
+	        {
+		        // to avoid errors scanning gpx files (with this it would be Local)
+		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
+	        }
+	        else if ( _appSettings?.CameraTimeZoneInfo != null )
+	        {
+		        try
+		        {
+			        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
+				        _appSettings?.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
+		        }
+		        catch ( ArgumentNullException)
+		        {
+			        // do nothing
+		        }
+	        }
+
+	        if ( itemDateTimeQuickTime.Year >= 1970 )
+	        {
+		        return itemDateTimeQuickTime;
+	        }
+	        
+	        return null;
         }
         
         /// <summary>
