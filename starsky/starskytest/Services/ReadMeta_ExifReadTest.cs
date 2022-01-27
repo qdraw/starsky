@@ -4,6 +4,7 @@ using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
@@ -15,6 +16,9 @@ using starsky.foundation.storage.Storage;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using XmpCore;
+using XmpCore.Impl;
+using XmpCore.Options;
 
 namespace starskytest.Services
 {
@@ -102,6 +106,44 @@ namespace starskytest.Services
 			
 			var result = new ReadMetaExif(null).GetExifDateTime(container);
 			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+				 
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_TagDateTimeOriginal()
+		{
+			var container = new List<Directory>();
+			var dir2 = new ExifSubIfdDirectory();
+			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_GetXmpData()
+		{
+			var container = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.SetXmpMeta(new XmpMeta());
+			if ( dir2.XmpMeta == null )
+			{
+				throw new NullReferenceException(
+					"ExifRead_GetExifDateTimeTest_GetXmpData xmpMeta Field");
+			}
+			
+			dir2.XmpMeta.SetProperty("http://ns.adobe.com/photoshop/1.0/", "photoshop:DateCreated","2020-03-14T14:00:51" );
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2020, 3, 14, 14, 0, 51);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
