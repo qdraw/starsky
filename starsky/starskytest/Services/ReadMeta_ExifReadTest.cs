@@ -11,14 +11,10 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
-using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Storage;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using XmpCore;
 using XmpCore.Impl;
-using XmpCore.Options;
 
 namespace starskytest.Services
 {
