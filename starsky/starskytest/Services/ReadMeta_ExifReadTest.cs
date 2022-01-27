@@ -4,6 +4,7 @@ using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.QuickTime;
 using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -118,6 +119,70 @@ namespace starskytest.Services
 			
 			var result = new ReadMetaExif(null).GetExifDateTime(container);
 			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+			{
+				new CameraMakeModel("test","test")
+			},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+				
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_BrandOnly()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+				{
+					new CameraMakeModel("test", string.Empty)
+				},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_AssumeLocal()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+				{
+					new CameraMakeModel("Apple", string.Empty)
+				},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container);
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}

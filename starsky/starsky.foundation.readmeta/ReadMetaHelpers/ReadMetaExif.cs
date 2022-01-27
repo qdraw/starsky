@@ -506,8 +506,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
 	        var useUtcTime = _appSettings?.VideoUseUTCTime?.Any(p =>
-		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) &&
-		        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase));
+					string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
+			        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase) ||
+			        string.IsNullOrEmpty(p.Model) ));
 	        
 	        
 	        var quickTimeDirectory = allExifItems.OfType<QuickTimeMovieHeaderDirectory>().FirstOrDefault();
@@ -515,29 +516,30 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        var quickTimeCreated = quickTimeDirectory?.GetDescription(QuickTimeMovieHeaderDirectory.TagCreated);
 
 	        var dateTimeStyle = useUtcTime == true
-		        ? DateTimeStyles.AssumeUniversal
-		        : DateTimeStyles.AdjustToUniversal;
+		        ? DateTimeStyles.AdjustToUniversal
+		        : DateTimeStyles.AssumeLocal;
 	        
 	        // [QuickTime Movie Header] Created = Tue Oct 11 09:40:04 2011 or Sat Mar 20 21:29:11 2010 // time is in UTC
 	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
 		        dateTimeStyle, out var itemDateTimeQuickTime);
 
-	        if ( useUtcTime == true)
-	        {
-		        // to avoid errors scanning gpx files (with this it would be Local)
-		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
-	        }
-	        else if ( _appSettings?.CameraTimeZoneInfo != null )
+	        if ( useUtcTime == true && _appSettings?.CameraTimeZoneInfo != null)
 	        {
 		        try
 		        {
+			        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
 			        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
-				        _appSettings?.CameraTimeZoneInfo, TimeZoneInfo.Utc); 
+				        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
 		        }
 		        catch ( ArgumentNullException)
 		        {
 			        // do nothing
 		        }
+	        }
+	        else
+	        {
+		        // to avoid errors scanning gpx files (with this it would be Local)
+		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Local);
 	        }
 
 	        if ( itemDateTimeQuickTime.Year >= 1970 )

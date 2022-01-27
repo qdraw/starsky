@@ -608,7 +608,7 @@ namespace starsky.foundation.platform.Models
 		/// </summary>
 		public List<CameraMakeModel> VideoUseUTCTime { get; set; } = new List<CameraMakeModel>
 		{
-			new CameraMakeModel("test","testType")
+			new CameraMakeModel("Apple",string.Empty)
 		};
 		
 		// -------------------------------------------------
