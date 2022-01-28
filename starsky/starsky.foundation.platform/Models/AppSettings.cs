@@ -606,7 +606,7 @@ namespace starsky.foundation.platform.Models
 		/// But it seems a lot of cameras don't do this
 		/// We assume that the standard is followed, and for Camera brands that don't follow the specs use this setting.
 		/// </summary>
-		public List<CameraMakeModel> VideoUseUTCTime { get; set; } = new List<CameraMakeModel>
+		public List<CameraMakeModel> VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
 		{
 			new CameraMakeModel("Apple",string.Empty)
 		};

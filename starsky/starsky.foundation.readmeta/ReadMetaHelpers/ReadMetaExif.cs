@@ -505,7 +505,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
-	        var useUtcTime = _appSettings?.VideoUseUTCTime?.Any(p =>
+	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Any(p =>
 					string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
 			        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase) ||
 			        string.IsNullOrEmpty(p.Model) ));
@@ -515,7 +515,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        var quickTimeCreated = quickTimeDirectory?.GetDescription(QuickTimeMovieHeaderDirectory.TagCreated);
 
-	        var dateTimeStyle = useUtcTime == true
+	        var dateTimeStyle = useUseLocalTime == true
 		        ? DateTimeStyles.AdjustToUniversal
 		        : DateTimeStyles.AssumeLocal;
 	        
@@ -523,7 +523,11 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
 		        dateTimeStyle, out var itemDateTimeQuickTime);
 
-	        if ( useUtcTime == true && _appSettings?.CameraTimeZoneInfo != null)
+	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
+		        DateTimeStyles.None, out var itemDateTimeQuickTime2);
+	        
+
+	        if ( useUseLocalTime != true && _appSettings?.CameraTimeZoneInfo != null)
 	        {
 		        try
 		        {
@@ -536,11 +540,9 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 			        // do nothing
 		        }
 	        }
-	        else
-	        {
-		        // to avoid errors scanning gpx files (with this it would be Local)
-		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Local);
-	        }
+	        
+	        // to avoid errors scanning gpx files (with this it would be Local)
+	        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Local);
 
 	        if ( itemDateTimeQuickTime.Year >= 1970 )
 	        {

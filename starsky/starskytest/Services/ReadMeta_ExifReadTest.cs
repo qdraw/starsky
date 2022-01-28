@@ -132,7 +132,7 @@ namespace starskytest.Services
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
 			{
 				new CameraMakeModel("test","test")
 			},
@@ -154,7 +154,7 @@ namespace starskytest.Services
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
 				{
 					new CameraMakeModel("test", string.Empty)
 				},
@@ -175,7 +175,7 @@ namespace starskytest.Services
 			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
 			container.Add(dir2);
 			
-			var result = new ReadMetaExif(null, new AppSettings{ VideoUseUTCTime = new List<CameraMakeModel>
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
 				{
 					new CameraMakeModel("Apple", string.Empty)
 				},
@@ -330,7 +330,7 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseUTCTime = new List<CameraMakeModel>
+			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
 			{
 				new CameraMakeModel("Apple","MacbookPro15,1")
 			}}).ReadExifFromFile("/test.mp4");
