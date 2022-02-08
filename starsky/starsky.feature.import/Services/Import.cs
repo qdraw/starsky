@@ -79,7 +79,7 @@ namespace starsky.feature.import.Services
             _thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 
             _appSettings = appSettings;
-            _readMetaHost = new ReadMeta(_filesystemStorage);
+            _readMetaHost = new ReadMeta(_filesystemStorage, appSettings);
             _exifTool = exifTool;
             _query = query;
             _console = console;

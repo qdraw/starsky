@@ -519,6 +519,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         private DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
 	        IEnumerable<Directory> allExifItems, IFormatProvider provider)
         {
+	        if ( _appSettings == null ) Console.WriteLine("app settings is null");
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
 	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Any(p =>
 		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
@@ -538,26 +539,21 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
 		        dateTimeStyle, out var itemDateTimeQuickTime);
 
-	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
-		        DateTimeStyles.None, out var itemDateTimeQuickTime2);
+	        // ReSharper disable once InvertIf
+	        if ( useUseLocalTime != true && _appSettings?.CameraTimeZoneInfo != null)
+	        {
+		        try
+		        {
+			        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
+			        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
+				        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
+		        }
+		        catch ( ArgumentNullException)
+		        {
+			        // do nothing
+		        }
+	        }
 
-
-	        if ( useUseLocalTime == true ||
-	             _appSettings?.CameraTimeZoneInfo == null )
-	        {
-		        return itemDateTimeQuickTime;
-	        }
-	        
-	        try
-	        {
-		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
-		        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
-			        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
-	        }
-	        catch ( ArgumentNullException)
-	        {
-		        // do nothing
-	        }
 
 	        return itemDateTimeQuickTime;
         }
