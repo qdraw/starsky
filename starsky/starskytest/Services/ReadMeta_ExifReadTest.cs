@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using MetadataExtractor.Formats.Iptc;
+using MetadataExtractor.Formats.QuickTime;
+using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Helpers;
+using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.Helpers;
 using starsky.foundation.readmeta.ReadMetaHelpers;
-using starsky.foundation.readmeta.Services;
-using starsky.foundation.storage.Storage;
 using starskycore.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using XmpCore.Impl;
 
 namespace starskytest.Services
 {
@@ -90,20 +93,121 @@ namespace starskytest.Services
 		[ExcludeFromCoverage]
 		public void ExifRead_GetExifDateTimeTest()
 		{
-			var dir2 = new ExifIfd0Directory();
+			var container = new List<Directory>();
+			var dir2 = new ExifSubIfdDirectory();
 			dir2.Set(IptcDirectory.TagDigitalDateCreated, "20101212");
 			dir2.Set(IptcDirectory.TagDigitalTimeCreated, "124135+0000");
 			dir2.Set(ExifDirectoryBase.TagDateTimeDigitized, "2010:12:12 12:41:35");
 			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
 			dir2.Set(ExifDirectoryBase.TagDateTime, "2010:12:12 12:41:35");
-
-			var t = new ReadMetaExif(null).GetExifDateTime(dir2);
-			var date2 = new DateTime(2010, 12, 12, 12, 41, 35);
-			var date = new DateTime();
-			Assert.AreEqual(
-				date, t);
-			Assert.AreNotEqual(t,null);
-			Assert.AreNotEqual(t,date2);
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+				 
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_TagDateTimeOriginal()
+		{
+			var container = new List<Directory>();
+			var dir2 = new ExifSubIfdDirectory();
+			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2010:12:12 12:41:35");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2010, 12, 12, 12, 41, 35);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_SetUtc()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
+			{
+				new CameraMakeModel("test","test")
+			},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+				
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_BrandOnly()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
+				{
+					new CameraMakeModel("test", string.Empty)
+				},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_AssumeLocal()
+		{
+			var container = new List<Directory>();
+			var dir2 = new QuickTimeMovieHeaderDirectory();
+			dir2.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011");
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null, new AppSettings{ VideoUseLocalTime = new List<CameraMakeModel>
+				{
+					new CameraMakeModel("Apple", string.Empty)
+				},
+				CameraTimeZone = "Europe/London"
+			}).GetExifDateTime(container);
+			
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		[ExcludeFromCoverage]
+		public void ExifRead_GetExifDateTimeTest_GetXmpData()
+		{
+			var container = new List<Directory>();
+			var dir2 = new XmpDirectory();
+			dir2.SetXmpMeta(new XmpMeta());
+			if ( dir2.XmpMeta == null )
+			{
+				throw new NullReferenceException(
+					"ExifRead_GetExifDateTimeTest_GetXmpData xmpMeta Field");
+			}
+			
+			dir2.XmpMeta.SetProperty("http://ns.adobe.com/photoshop/1.0/", "photoshop:DateCreated","2020-03-14T14:00:51" );
+			container.Add(dir2);
+			
+			var result = new ReadMetaExif(null).GetExifDateTime(container);
+			var expectedExifDateTime = new DateTime(2020, 3, 14, 14, 0, 51);
+			
+			Assert.AreEqual(expectedExifDateTime, result);
 		}
 
 		[TestMethod]
@@ -227,16 +331,122 @@ namespace starskytest.Services
 			var fakeStorage = new FakeIStorage(new List<string> {"/"},
 				new List<string> {"/test.mp4"}, new List<byte[]> {newImage});
 
-			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
+			var item = new ReadMetaExif(fakeStorage, new AppSettings{VideoUseLocalTime = new List<CameraMakeModel>
+			{
+				new CameraMakeModel("Apple","MacbookPro15,1")
+			}}).ReadExifFromFile("/test.mp4");
 
-			var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Utc).ToLocalTime();
+			var date = new DateTime(2020, 03, 29, 13, 10, 07);
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(20, item.ImageWidth);
 			Assert.AreEqual(20, item.ImageHeight);
 			Assert.AreEqual(false,item.IsDirectory );
 		}
 
-		 
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_AssumeUtc_CameraTimeZoneMissing()
+		{
+			// CameraTimeZone = "Europe/London" is missing
+
+			var fakeStorage = new FakeIStorage();
+			
+			var item = new ReadMetaExif(fakeStorage);
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel(),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{new CameraMakeModel("test","test")},
+				CameraTimeZone = "Europe/London"
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime1_WithTimeZone()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{},
+				CameraTimeZone = "Europe/London"
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime_WithTimeZone_Wrong()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{},
+				CameraTimeZone = ""
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_NoVideoUsedSet()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = null,
+				CameraTimeZone = ""
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+
 		[TestMethod]
 		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
 		{
@@ -246,7 +456,7 @@ namespace starskytest.Services
 
 			var item = new ReadMetaExif(fakeStorage).ReadExifFromFile("/test.mp4");
 
-			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Utc).ToLocalTime();
+			var date = new DateTime(2020, 04, 04, 12, 50, 19, DateTimeKind.Local).ToLocalTime();
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(640, item.ImageWidth);
 			Assert.AreEqual(360, item.ImageHeight);

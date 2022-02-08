@@ -77,6 +77,9 @@ namespace starsky.foundation.platform.Models
 			.Replace("starskytest", "starsky")
 			.Replace("starskydiskwatcherworkerservice", "starsky");
 
+		/// <summary>
+		/// Application Type, defaults to WebController
+		/// </summary>
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		// newtonsoft uses: StringEnumConverter
 		public StarskyAppType ApplicationType { get; set; }
@@ -177,7 +180,7 @@ namespace starsky.foundation.platform.Models
 			return Verbose == true;
 		}
 
-		// Used in the webhtmlcli to store the log item name
+		// Used in the webHtmlCli to store the log item name
 		// used for the url
 		private string _name;
 		public string Name
@@ -194,7 +197,7 @@ namespace starsky.foundation.platform.Models
 			}
 		}
         
-		// Used to template config > appsettingsPubProfile
+		// Used to template config > appSettingsPubProfile
 		public string GetWebSafeReplacedName(string input, string name)
 		{
 			// Included slash dd the end of this file
@@ -234,7 +237,6 @@ namespace starsky.foundation.platform.Models
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		// newtonsoft uses: StringEnumConverter
 		public DatabaseTypeList DatabaseType { get; set; } = DatabaseTypeList.Sqlite;
-
 
 		public enum DatabaseTypeList
 		{
@@ -597,7 +599,18 @@ namespace starsky.foundation.platform.Models
 		/// Use always UNIX style
 		/// </summary>
 		public List<string> ImportIgnore { get; set; } = new List<string> {"lost+found", ".Trashes"};
-	    
+
+		/// <summary>
+		/// According to Phil Harvey (exiftool's creator),
+		/// Quicktime timestamps are supposed to be set to UTC time as per the standard.
+		/// But it seems a lot of cameras don't do this
+		/// We assume that the standard is followed, and for Camera brands that don't follow the specs use this setting.
+		/// </summary>
+		public List<CameraMakeModel> VideoUseLocalTime { get; set; } = new List<CameraMakeModel>
+		{
+			new CameraMakeModel("Apple",string.Empty)
+		};
+		
 		// -------------------------------------------------
 		// ------------------- Modifiers -------------------
 		// -------------------------------------------------
