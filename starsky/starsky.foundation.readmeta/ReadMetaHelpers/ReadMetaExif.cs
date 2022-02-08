@@ -491,22 +491,37 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        {
 		        return itemDateTimeOriginal;
 	        }
+			
+	        var itemDateTimeQuickTime = ParseQuickTimeDateTime(cameraMakeModel, allExifItems, provider);
+
+	        // to avoid errors scanning gpx files (with this it would be Local)
+
+	        if ( itemDateTimeQuickTime.Year >= 1970 )
+	        {
+		        return itemDateTimeQuickTime;
+	        }
 	        
 	        // 1970-01-01T02:00:03 formatted
 	        var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
 
 	        var photoShopDateCreated = GetXmpData(xmpDirectory, "photoshop:DateCreated");
 	        DateTime.TryParseExact(photoShopDateCreated, "yyyy-MM-ddTHH:mm:ss", provider, 
-	         DateTimeStyles.AdjustToUniversal, out var xmpItemDateTime);
+		        DateTimeStyles.AdjustToUniversal, out var xmpItemDateTime);
 	        
 	        if ( xmpItemDateTime.Year >= 2 )
 	        {
 		        return xmpItemDateTime;
 	        }
+	        
+	        return null;
+        }
 
+        private DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
+	        IEnumerable<Directory> allExifItems, IFormatProvider provider)
+        {
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
 	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Any(p =>
-					string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
+		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
 			        string.Equals(p.Model, cameraMakeModel.Model, StringComparison.InvariantCultureIgnoreCase) ||
 			        string.IsNullOrEmpty(p.Model) ));
 	        
@@ -525,31 +540,26 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 
 	        DateTime.TryParseExact(quickTimeCreated, "ddd MMM dd HH:mm:ss yyyy", provider, 
 		        DateTimeStyles.None, out var itemDateTimeQuickTime2);
-	        
 
-	        if ( useUseLocalTime != true && _appSettings?.CameraTimeZoneInfo != null)
-	        {
-		        try
-		        {
-			        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
-			        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
-				        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
-		        }
-		        catch ( ArgumentNullException)
-		        {
-			        // do nothing
-		        }
-	        }
-	        
-	        // to avoid errors scanning gpx files (with this it would be Local)
-	        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Local);
 
-	        if ( itemDateTimeQuickTime.Year >= 1970 )
+	        if ( useUseLocalTime == true ||
+	             _appSettings?.CameraTimeZoneInfo == null )
 	        {
 		        return itemDateTimeQuickTime;
 	        }
 	        
-	        return null;
+	        try
+	        {
+		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
+		        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
+			        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
+	        }
+	        catch ( ArgumentNullException)
+	        {
+		        // do nothing
+	        }
+
+	        return itemDateTimeQuickTime;
         }
         
         /// <summary>
@@ -704,7 +714,7 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        // no -0 as result
 	        if(Math.Abs(altitude) < 0.001) return 0;
 	        
-	        if (altitudeRef) altitude = altitude * -1;
+	        if (altitudeRef) altitude *= -1;
 	        return altitude;
         }
         
