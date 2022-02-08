@@ -125,7 +125,7 @@ namespace starskytest.Services
 		
 		[TestMethod]
 		[ExcludeFromCoverage]
-		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory()
+		public void ExifRead_GetExifDateTimeTest_QuickTimeMovieHeaderDirectory_SetUtc()
 		{
 			var container = new List<Directory>();
 			var dir2 = new QuickTimeMovieHeaderDirectory();
@@ -139,7 +139,7 @@ namespace starskytest.Services
 				CameraTimeZone = "Europe/London"
 			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
 			
-			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -161,7 +161,7 @@ namespace starskytest.Services
 				CameraTimeZone = "Europe/London"
 			}).GetExifDateTime(container, new CameraMakeModel("test","test"));
 			
-			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -182,7 +182,7 @@ namespace starskytest.Services
 				CameraTimeZone = "Europe/London"
 			}).GetExifDateTime(container);
 			
-			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
 			
 			Assert.AreEqual(expectedExifDateTime, result);
 		}
@@ -335,7 +335,7 @@ namespace starskytest.Services
 				new CameraMakeModel("Apple","MacbookPro15,1")
 			}}).ReadExifFromFile("/test.mp4");
 
-			var date = new DateTime(2020, 03, 29, 13, 10, 07, DateTimeKind.Utc).ToLocalTime();
+			var date = new DateTime(2020, 03, 29, 13, 10, 07);
 			Assert.AreEqual(date, item.DateTime);
 			Assert.AreEqual(20, item.ImageWidth);
 			Assert.AreEqual(20, item.ImageHeight);

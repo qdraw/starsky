@@ -52,9 +52,11 @@ namespace starskytest.starsky.foundation.thumbnailmeta.Helpers
 				new AppSettings(), console, fakeMetaThumb);
 			
 			await metaCli.CommandLineAsync(new List<string> {"-g", "0"}.ToArray());
-			
-			Assert.IsTrue(fakeMetaThumb.Input[0].Item1.Contains(new DateTime().Year.ToString()));
 
+			var inputDate = fakeMetaThumb.Input[0].Item1;
+			var currentYear = DateTime.Now.Year.ToString();
+
+			Assert.IsTrue(inputDate.Contains(currentYear));
 			Assert.IsTrue(console.WrittenLines.LastOrDefault().Contains("Done"));
 		}
 	}
