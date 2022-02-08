@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
@@ -342,7 +343,89 @@ namespace starskytest.Services
 			Assert.AreEqual(false,item.IsDirectory );
 		}
 
-		 
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_AssumeUtc_CameraTimeZoneMissing()
+		{
+			// CameraTimeZone = "Europe/London" is missing
+
+			var fakeStorage = new FakeIStorage();
+			
+			var item = new ReadMetaExif(fakeStorage);
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel(),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{new CameraMakeModel("test","test")},
+				CameraTimeZone = "Europe/London"
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime1_WithTimeZone()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{},
+				CameraTimeZone = "Europe/London"
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 10, 40, 4);
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+		
+		[TestMethod]
+		public void ExifRead_ParseQuickTimeDateTime_UseLocalTime1_WithTimeZone_Wrong()
+		{
+			var fakeStorage = new FakeIStorage();
+			var item = new ReadMetaExif(fakeStorage, new AppSettings
+			{
+				VideoUseLocalTime = new List<CameraMakeModel>{},
+				CameraTimeZone = ""
+			});
+
+			var dir = new QuickTimeMovieHeaderDirectory();
+			dir.Set(QuickTimeMovieHeaderDirectory.TagCreated, "Tue Oct 11 09:40:04 2011" );
+			
+			var result = item.ParseQuickTimeDateTime(new CameraMakeModel("test","test"),
+				new List<Directory>{dir}, CultureInfo.InvariantCulture);
+		
+			var expectedExifDateTime = new DateTime(2011, 10, 11, 9, 40, 4).ToLocalTime();
+
+			Assert.AreEqual(expectedExifDateTime, result);
+		}
+
 		[TestMethod]
 		public void ExifRead_ReadExif_FromQuickTimeMp4InFileXMP_WithLocation_FileTest()
 		{

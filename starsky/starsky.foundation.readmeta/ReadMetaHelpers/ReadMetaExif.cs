@@ -516,10 +516,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        return null;
         }
 
-        private DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
+        internal DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,
 	        IEnumerable<Directory> allExifItems, IFormatProvider provider)
         {
-	        if ( _appSettings == null ) Console.WriteLine("app settings is null");
+	        if ( _appSettings == null ) Console.WriteLine("[ParseQuickTimeDateTime] app settings is null");
 	        if ( cameraMakeModel == null ) cameraMakeModel = new CameraMakeModel();
 	        var useUseLocalTime = _appSettings?.VideoUseLocalTime?.Any(p =>
 		        string.Equals(p.Make, cameraMakeModel.Make, StringComparison.InvariantCultureIgnoreCase) && (
@@ -542,18 +542,10 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        // ReSharper disable once InvertIf
 	        if ( useUseLocalTime != true && _appSettings?.CameraTimeZoneInfo != null)
 	        {
-		        try
-		        {
-			        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
-			        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
-				        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
-		        }
-		        catch ( ArgumentNullException)
-		        {
-			        // do nothing
-		        }
+		        itemDateTimeQuickTime = DateTime.SpecifyKind(itemDateTimeQuickTime, DateTimeKind.Utc);
+		        itemDateTimeQuickTime =  TimeZoneInfo.ConvertTime(itemDateTimeQuickTime, 
+			        TimeZoneInfo.Utc, _appSettings?.CameraTimeZoneInfo); 
 	        }
-
 
 	        return itemDateTimeQuickTime;
         }
