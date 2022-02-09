@@ -404,7 +404,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+			        _logger?.LogError(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
 
@@ -452,7 +452,7 @@ namespace starsky.foundation.database.Query
 		        }
 		        catch ( DbUpdateConcurrencyException e)
 		        {
-			        _logger?.LogInformation(e, "[UpdateItem] save failed after DbUpdateConcurrencyException");
+			        _logger?.LogError(e, "[List<>UpdateItem] save failed after DbUpdateConcurrencyException");
 		        }
 	        }
 	        
@@ -467,7 +467,8 @@ namespace starsky.foundation.database.Query
 	        {
 		        SolveConcurrencyException(entry.Entity, entry.CurrentValues,
 			        entry.GetDatabaseValues(), entry.Metadata.Name, 
-			        entry.OriginalValues.SetValues);
+			        // former values from database
+			        entry.CurrentValues.SetValues);
 	        }
         }
         
