@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 
@@ -20,10 +21,22 @@ namespace starsky.foundation.database.Query
 				await context.FileIndex.AddRangeAsync(fileIndexItemList);
 				await context.SaveChangesAsync();
 			}
-			
+
 			try
 			{
 				await LocalQuery(_context);
+			}
+			catch ( DbUpdateConcurrencyException concurrencyException)
+			{
+				SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch ( DbUpdateConcurrencyException e)
+				{
+					_logger?.LogError(e, "[AddRangeAsync] save failed after DbUpdateConcurrencyException");
+				}
 			}
 			catch (ObjectDisposedException)
 			{
