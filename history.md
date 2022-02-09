@@ -43,6 +43,9 @@ node starsky-tools/build-tools/app-version-update.js
 
 # version 0.5.0-beta.2 _(Unreleased)_ - 2022-01-??
 - [x]   (Changed) _Back-end_ Add correct connect-src url for websocket without port (PR #606)
+- [x]   (Changed) _Back-end_ UTC Time fix for quicktime based videos (PR #617)
+- [x]   (Fixed) _Back-end_ Unit test fix for dates that does not contain 1 (PR #617)
+- [x]   (Fixed) _Back-end_ AddRangeAsync fix for DbUpdateConcurrencyException (PR #634)
 
 # version 0.5.0-beta.1 - 2022-01-11
 - [x]   (Changed) _Back-end_  Add request tracking for FSW SyncWatcherConnector (PR #589)
