@@ -56,7 +56,7 @@ namespace starsky.feature.health.HealthCheck
 			{
 				drivesList = DriveInfo.GetDrives();
 			}
-			catch
+			catch (Exception)
 			{
 				return ( false, 0L );
 			}
