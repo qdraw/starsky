@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,7 +76,7 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
-		
+
 		[TestMethod]
 		public void AddRange()
 		{
@@ -98,6 +99,46 @@ namespace starskytest.starsky.foundation.database.QueryTest
 			Assert.AreEqual(expectedResult.FirstOrDefault().FileHash, queryFromDb.FirstOrDefault().FileHash);
 			Assert.AreEqual(expectedResult[1].FileHash, queryFromDb[1].FileHash);
 		}
+
+		private class ConException : ApplicationDbContext
+		{
+			public ConException(DbContextOptions options) : base(options)
+			{
+			}
+
+			public override DbSet<FileIndexItem> FileIndex
+			{
+				get => throw new DbUpdateConcurrencyException();
+				set
+				{
+				}
+			}
+			public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) {
+				throw new DbUpdateConcurrencyException();
+			}
+		}
 		
+		[TestMethod]
+		public async Task AddRangeAsync_DbUpdateConcurrencyException()
+		{
+			var expectedResult = new List<FileIndexItem>
+			{
+				new FileIndexItem {FileHash = "TEST4"},
+				new FileIndexItem {FileHash = "TEST5"}
+			};
+			var serviceScopeFactory = CreateNewScope();
+			var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+				.UseInMemoryDatabase(databaseName: "MovieListDatabase")
+				.Options;
+			var dbContext = new ConException(options);
+
+			var webLogger = new FakeIWebLogger();
+			await new Query(dbContext, 
+				new AppSettings {
+					AddMemoryCache = false 
+				}, serviceScopeFactory, webLogger, new FakeMemoryCache()).AddRangeAsync(expectedResult);
+			
+			Assert.AreEqual("[AddRangeAsync] save failed after DbUpdateConcurrencyException",webLogger.TrackedExceptions[0].Item2);
+		}
 	}
 }
