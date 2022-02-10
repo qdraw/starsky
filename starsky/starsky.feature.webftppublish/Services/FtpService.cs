@@ -158,7 +158,14 @@ namespace starsky.feature.webftppublish.Services
 				                 item;
 
 				_console.Write(".");
-				if ( Upload(parentDirectory, item, toFtpPath) ) continue;
+
+				bool LocalUpload()
+				{
+					return Upload(parentDirectory, item, toFtpPath);
+				}
+				RetryHelper.Do(LocalUpload, TimeSpan.FromSeconds(10));
+				
+				if ( _storage.ExistFile(parentDirectory + item) ) continue;
 				_console.WriteLine($"Fail > upload file => {item} {toFtpPath}");
 				return false;
 			}
