@@ -247,6 +247,22 @@ namespace starskytest.Services
 		}
 		
 		[TestMethod]
+		public void ParseSubIfdDateTime_NonValidDate()
+		{
+			var container = new List<Directory>();
+			var dir1 = new ExifSubIfdDirectory();
+			dir1.Set(ExifDirectoryBase.TagDateTimeOriginal, "test_not_valid_date");
+			dir1.Set(ExifDirectoryBase.TagDateTimeDigitized, "test_not_valid_date");
+
+			container.Add(dir1);
+			
+			var provider = CultureInfo.InvariantCulture;
+
+			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			Assert.AreEqual(new DateTime(),result);
+		}
+		
+		[TestMethod]
 		public void ParseSubIfdDateTime_Nothing()
 		{
 			var container = new List<Directory>();
