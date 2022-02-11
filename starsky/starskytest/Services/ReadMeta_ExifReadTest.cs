@@ -211,6 +211,55 @@ namespace starskytest.Services
 		}
 
 		[TestMethod]
+		public void ParseSubIfdDateTime_NotInFirstContainer_TagDateTimeOriginal()
+		{
+			var container = new List<Directory>();
+			
+			// for raw the first container does not contain dates
+			var dir1 = new ExifSubIfdDirectory();
+			container.Add(dir1);
+
+			var dir2 = new ExifSubIfdDirectory();
+			dir2.Set(ExifDirectoryBase.TagDateTimeOriginal, "2022:02:02 20:22:02");
+			container.Add(dir2);
+			var provider = CultureInfo.InvariantCulture;
+
+			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			Assert.AreEqual(new DateTime(2022,02,02,20,22,02),result);
+		}
+		
+		[TestMethod]
+		public void ParseSubIfdDateTime_NotInFirstContainer_TagDateTimeDigitized()
+		{
+			var container = new List<Directory>();
+			
+			// for raw the first container does not contain dates
+			var dir1 = new ExifSubIfdDirectory();
+			container.Add(dir1);
+
+			var dir2 = new ExifSubIfdDirectory();
+			dir2.Set(ExifDirectoryBase.TagDateTimeDigitized, "2022:02:02 20:22:02");
+			container.Add(dir2);
+			var provider = CultureInfo.InvariantCulture;
+
+			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			Assert.AreEqual(new DateTime(2022,02,02,20,22,02),result);
+		}
+		
+		[TestMethod]
+		public void ParseSubIfdDateTime_Nothing()
+		{
+			var container = new List<Directory>();
+			var dir1 = new ExifSubIfdDirectory();
+			container.Add(dir1);
+			
+			var provider = CultureInfo.InvariantCulture;
+
+			var result = new ReadMetaExif(null).ParseSubIfdDateTime(container, provider);
+			Assert.AreEqual(new DateTime(),result);
+		}
+
+		[TestMethod]
 		public void ExifRead_ReadExifFromFileTest()
 		{
 			var newImage = CreateAnImage.Bytes;

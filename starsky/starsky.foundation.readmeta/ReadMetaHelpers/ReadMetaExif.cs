@@ -472,24 +472,12 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
         /// <returns>Datetime</returns>
         internal DateTime? GetExifDateTime(List<Directory> allExifItems, CameraMakeModel cameraMakeModel = null)
         {
-	        var exifSubIfd = allExifItems.OfType<ExifSubIfdDirectory>().FirstOrDefault();
 	        var provider = CultureInfo.InvariantCulture;
-	        var pattern = "yyyy:MM:dd HH:mm:ss";
-	        //     https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
-	        //     2018:01:01 11:29:36
-	        
-	        var tagDateTimeDigitized = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeDigitized);
-	        DateTime.TryParseExact(tagDateTimeDigitized, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
-	        if ( itemDateTimeDigitized.Year >= 2 )
+
+	        var itemDateTimeSubIfd = ParseSubIfdDateTime(allExifItems, provider);
+	        if ( itemDateTimeSubIfd.Year >= 2 )
 	        {
-		        return itemDateTimeDigitized;
-	        }
-	        
-	        var tagDateTimeOriginal = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal);
-	        DateTime.TryParseExact(tagDateTimeOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeOriginal);
-	        if ( itemDateTimeOriginal.Year >= 2 )
-	        {
-		        return itemDateTimeOriginal;
+		        return itemDateTimeSubIfd;
 	        }
 			
 	        var itemDateTimeQuickTime = ParseQuickTimeDateTime(cameraMakeModel, allExifItems, provider);
@@ -514,6 +502,34 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers
 	        }
 	        
 	        return null;
+        }
+
+        internal DateTime ParseSubIfdDateTime(IEnumerable<Directory> allExifItems, IFormatProvider provider)
+        {
+	        var pattern = "yyyy:MM:dd HH:mm:ss";
+
+	        // Raw files have multiple ExifSubIfdDirectories
+	        var exifSubIfdList = allExifItems.OfType<ExifSubIfdDirectory>().ToList();
+	        foreach ( var exifSubIfd in exifSubIfdList )
+	        {
+		        //     https://odedcoster.com/blog/2011/12/13/date-and-time-format-strings-in-net-understanding-format-strings/
+		        //     2018:01:01 11:29:36
+		        var tagDateTimeDigitized = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeDigitized);
+		        DateTime.TryParseExact(tagDateTimeDigitized, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeDigitized);
+		        if ( itemDateTimeDigitized.Year >= 2 )
+		        {
+			        return itemDateTimeDigitized;
+		        }
+	        
+		        var tagDateTimeOriginal = exifSubIfd?.GetDescription(ExifDirectoryBase.TagDateTimeOriginal);
+		        DateTime.TryParseExact(tagDateTimeOriginal, pattern, provider, DateTimeStyles.AdjustToUniversal, out var itemDateTimeOriginal);
+		        if ( itemDateTimeOriginal.Year >= 2 )
+		        {
+			        return itemDateTimeOriginal;
+		        }
+	        }
+
+	        return new DateTime();
         }
 
         internal DateTime ParseQuickTimeDateTime(CameraMakeModel cameraMakeModel,

@@ -467,7 +467,7 @@ namespace starsky.feature.import.Services
 		    // Creation of a sidecar xmp file
 		    if ( _appSettings.ExifToolImportXmpCreate && !xmpExistForThisFileType)
 		    {
-			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage));
+			    var exifCopy = new ExifCopy(_subPathStorage, _thumbnailStorage, _exifTool, new ReadMeta(_subPathStorage, _appSettings));
 			    await exifCopy.XmpSync(importIndexItem.FileIndexItem.FilePath);
 		    }
 
@@ -549,7 +549,7 @@ namespace starsky.feature.import.Services
 			};
 
 			await new ExifToolCmdHelper(_exifTool,_subPathStorage, _thumbnailStorage, 
-				new ReadMeta(_subPathStorage)).UpdateAsync(fileIndexItem, comparedNamesList);
+				new ReadMeta(_subPathStorage, _appSettings)).UpdateAsync(fileIndexItem, comparedNamesList);
 			
 			return fileIndexItem.Clone();
 		}
