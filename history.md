@@ -56,6 +56,7 @@ node starsky-tools/build-tools/app-version-update.js
 - [x]   (Changed) _Front-end_ Order by ImageFormat and then by filename (PR #598)
 - [x]   (Breaking change) _Back-end_ change default option in Thumbnail-er cli to scan directories to enabled (-t true default) (PR #601) 
 - [x]   (Added) _Back-end_ env variable to create swagger export and exit (PR #601)
+- [x]   (Added) _Back-end_ ARW SubIfd does contain multiple objects (PR #639)
 
 # version 0.5.0-beta.0 - 2021-12-29
 - [x]   (Breaking change) _CLI_ Removed sync cli (starskysynccli) which is replaced by starskysynchronizecli (PR #563)
